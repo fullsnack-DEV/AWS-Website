@@ -103,9 +103,9 @@ export const post = async (url, token, body) => {
     }
     else {
         headers = {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "x-access-token": token
+            'Content-Type': 'application/json',
+                 Authorization: 'Bearer ' + token,
+
         }
     }
    
@@ -229,3 +229,49 @@ export const deleteApi = async (url, token) => {
         return
     }
 }
+
+
+
+
+
+export const getLocation = async (url, token) => {
+    var headers
+
+    if (token == '' || token == null || token == undefined) {
+        headers = {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+
+        }
+    }
+    else {
+        headers = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-access-token": token
+        }
+    }
+    const completeUrl =Url.GET_LOCATION +"mohali"
+    console.log('completeUrl.........', completeUrl)
+
+    const response = await fetch(completeUrl, {
+        method: 'GET',
+        headers
+    })
+
+    let res = await response.json();
+console.log("ressssssponsse.................locatiionnnn",res)
+    if (res !== null) {
+        return res;
+
+        // if (res !== null && Object.keys(res).length !== 0) {
+        //     if (res.statusCode === 200 || res.statusCode === 303) {
+                
+
+        //     }
+        // }
+        // console.log('res', res)
+        // Alert.alert('', res.error)
+    }
+
+};

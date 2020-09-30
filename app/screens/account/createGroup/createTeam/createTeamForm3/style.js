@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: colors.whiteColor,
     fontSize: wp('4%'),
+    fontFamily: fonts.RBold,
     marginVertical: 10,
   },
   descriptionTxt: {

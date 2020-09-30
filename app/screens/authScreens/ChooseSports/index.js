@@ -15,9 +15,10 @@ import {
 
 import API from 'apisauce';
 
-import constants from '../../../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
-
+// import constants from '../../../config/constants';
+// const {strings, colors, fonts, urls, PATH} = constants;
+import PATH from "../../../Constants/ImagePath"
+import strings from "../../../Constants/String"
 import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
@@ -49,14 +50,14 @@ function ChooseSportsScreen({navigation, route}) {
 
   }
   
-  // loadSportsList1 = () => {
-  //   var arr = [];
-  //   for (var tempData of getSportsList.data.payload) {
-  //     tempData['isChecked'] = false;
-  //     arr.push(tempData);
-  //   }
-  //   setSports(arr);
-  // };
+  loadSportsList1 = () => {
+    var arr = [];
+    for (var tempData of getSportsList.data.payload) {
+      tempData['isChecked'] = false;
+      arr.push(tempData);
+    }
+    setSports(arr);
+  };
 
   isIconCheckedOrNot = ({item, index}) => {
     console.log('SELECTED:::', index);

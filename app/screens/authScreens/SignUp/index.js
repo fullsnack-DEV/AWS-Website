@@ -20,8 +20,8 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-community/async-storage';
 import {create} from 'apisauce';
 
-import constants from '../../../config/constants';
-const {strings, urls, PATH, endPoints} = constants;
+// import constants from '../../../config/constants';
+// const {strings, urls, PATH, endPoints} = constants;
 
 import TCForm from '../../../components/TCForm';
 import TCFormField from '../../../components/TCFormField';
@@ -30,6 +30,8 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import Loader from '../../../components/loader/Loader';
 import styles from "./style"
 import * as Utility from '../../../utility/index';
+import PATH from "../../../Constants/ImagePath"
+import strings from "../../../Constants/String"
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
   authDomain: 'townscup-fee6e.firebaseapp.com',

@@ -33,8 +33,8 @@ function CreateTeamForm2({navigation, route}) {
         <View style={styles.form3}></View>
         <View style={styles.form4}></View>
       </View>
-      <Text style={styles.membershipText}>Membership</Text>
-      <Text style={styles.whoJoinText}>Who can join the team?</Text>
+      <Text style={styles.membershipText}>{strings.membershipTitle}</Text>
+      <Text style={styles.whoJoinText}>{strings.whoJoinTitle}</Text>
 
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setSelected(0)}>
@@ -47,7 +47,7 @@ function CreateTeamForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>Everyone</Text>
+        <Text style={styles.radioText}>{strings.everyoneText}</Text>
       </View>
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setSelected(1)}>
@@ -60,9 +60,7 @@ function CreateTeamForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>
-          A person whose membership request has been accepted by a team admin
-        </Text>
+        <Text style={styles.radioText}>{strings.membershipRequestText}</Text>
       </View>
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setSelected(2)}>
@@ -75,14 +73,14 @@ function CreateTeamForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>Invite only</Text>
+        <Text style={styles.radioText}>{strings.inviteText}</Text>
       </View>
 
       <TouchableOpacity onPress={() => navigation.navigate('CreateTeamForm3')}>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
           style={styles.nextButton}>
-          <Text style={styles.nextButtonText}>NEXT</Text>
+          <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </ScrollView>

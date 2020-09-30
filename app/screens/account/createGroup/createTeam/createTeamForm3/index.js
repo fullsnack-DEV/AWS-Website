@@ -36,17 +36,16 @@ function CreateTeamForm3({navigation, route}) {
           <View style={styles.form3}></View>
           <View style={styles.form4}></View>
         </View>
-        <Text style={styles.registrationText}>Registration Fee</Text>
+        <Text style={styles.registrationText}>{strings.registerTitle}</Text>
         <Text style={styles.registrationDescText}>
-          A team admin can send a new member the invoice for the registration
-          fee after the member joins your team.
+          {strings.registerSubTitle}
         </Text>
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Basic Fee</Text>
+          <Text style={styles.fieldTitle}>{strings.basicFeeTitle}</Text>
         </View>
         <View style={styles.matchFeeView}>
           <TextInput
-            placeholder={'Enter fee'}
+            placeholder={strings.enterFeePlaceholder}
             style={styles.feeText}
             onChangeText={(text) => setBasicFee(text)}
             value={basicFee}
@@ -55,24 +54,25 @@ function CreateTeamForm3({navigation, route}) {
         </View>
 
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Fee Details</Text>
+          <Text style={styles.fieldTitle}>{strings.feeDetailsText}</Text>
           <TextInput
             style={styles.descriptionTxt}
             onChangeText={(text) => setBasicFeeDetail(text)}
             value={basicFeeDetail}
             multiline
             numberOfLines={4}
-            placeholder={'Write Details regarding the registration fee…'}
+            placeholder={strings.feeDetailsPlaceholder}
           />
         </View>
-        <Text style={styles.registrationText}>Membership Fee</Text>
+        <Text style={styles.registrationText}>
+          {strings.membershipFeeTitle}
+        </Text>
         <Text style={styles.registrationDescText}>
-          A team admin can send a member the invoice for the membership fee
-          regularly.
+          {strings.membershipSubTitle}
         </Text>
 
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Basic Fee</Text>
+          <Text style={styles.fieldTitle}>{strings.basicFeeTitle}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -86,7 +86,7 @@ function CreateTeamForm3({navigation, route}) {
             }}>
             <RNPickerSelect
               placeholder={{
-                label: 'Male',
+                label: strings.genderTitle,
                 value: null,
               }}
               items={[
@@ -136,7 +136,7 @@ function CreateTeamForm3({navigation, route}) {
             />
             <View style={styles.halfMatchFeeView}>
               <TextInput
-                placeholder={'Enter fee'}
+                placeholder={strings.enterFeePlaceholder}
                 style={styles.halffeeText}
                 keyboardType={'decimal-pad'}
                 onChangeText={(text) => setMembershipFee(text)}
@@ -146,14 +146,14 @@ function CreateTeamForm3({navigation, route}) {
           </View>
         </View>
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Fee Details</Text>
+          <Text style={styles.fieldTitle}>{strings.feeDetailsText}</Text>
           <TextInput
             style={styles.descriptionTxt}
             onChangeText={(text) => setMembershipFeeDetail(text)}
             value={membershipFeeDetail}
             multiline
             numberOfLines={4}
-            placeholder={'Write Details regarding the membership fee…'}
+            placeholder={strings.membershipPlaceholder}
           />
         </View>
         <TouchableOpacity
@@ -161,7 +161,7 @@ function CreateTeamForm3({navigation, route}) {
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>NEXT</Text>
+            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>

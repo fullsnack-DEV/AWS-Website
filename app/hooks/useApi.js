@@ -29,8 +29,9 @@ export default useApi = (apiFunction) => {
   const request = async (...args) => {
     setLoading(true);
     const response = await apiFunction(...args);
+    console.log("response..........",response)
     let json = await response.json();
-
+    console.log("Json..........",json)
     if (!json.status) return setError(true);
 
     setData(json);

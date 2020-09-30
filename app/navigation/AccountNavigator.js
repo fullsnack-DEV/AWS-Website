@@ -12,7 +12,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import constants from '../config/constants';
 const {strings, colors, fonts, urls, PATH} = constants;
 
-import AccountScreen from '../screens/account';
+import AccountScreen from '../screens/account/index';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import GameDetail from '../screens/account/schedule/GameDetail';
 import GameRecording from '../screens/account/schedule/GameRecording';

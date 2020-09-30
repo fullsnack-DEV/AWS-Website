@@ -12,7 +12,9 @@ import RNPickerSelect, {defaultStyles} from 'react-native-picker-select';
 
 import styles from './style';
 import constants from '../../../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+const {colors, fonts, urls} = constants;
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
 
 function RegisterPlayer({navigation, route}) {
   const [sports, setSports] = useState('');
@@ -20,33 +22,13 @@ function RegisterPlayer({navigation, route}) {
   const [description, onChangeText] = React.useState('');
   const [matchFee, onMatchFeeChanged] = React.useState(0.0);
 
-  renderItem = ({item, index}) => {
-    return (
-      <View style={{flexDirection: 'column'}}>
-        <View style={styles.addCertificateView}>
-          <TouchableOpacity>
-            <Image style={styles.certificateImg} />
-            <Image source={PATH.certificateUpload} style={styles.chooseImage} />
-          </TouchableOpacity>
-          <TextInput
-            placeholder={'Title or Description'}
-            style={styles.matchFeeTxt}
-            onChangeText={(text) => onMatchFeeChanged(text)}
-            value={matchFee}></TextInput>
-        </View>
-        <TouchableOpacity>
-          <Text style={styles.delete}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
   return (
     <>
       <ScrollView style={styles.mainContainer}>
-        <Text style={styles.LocationText}>SPORTS EVENTS</Text>
+        <Text style={styles.LocationText}>{strings.sportsEventsTitle}</Text>
         <RNPickerSelect
           placeholder={{
-            label: 'Select Sport',
+            label: strings.selectSportPlaceholder,
             value: null,
           }}
           items={[
@@ -71,8 +53,8 @@ function RegisterPlayer({navigation, route}) {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-          <Text style={styles.LocationText}>DESCRIPTION</Text>
-          <Text style={styles.smallTxt}> (Optional) </Text>
+          <Text style={styles.LocationText}>{strings.descriptionText}</Text>
+          <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
         </View>
         <TextInput
           style={styles.descriptionTxt}
@@ -80,12 +62,13 @@ function RegisterPlayer({navigation, route}) {
           value={description}
           multiline
           numberOfLines={4}
-          placeholder={'Describe your self as a personal player'}
+          placeholder={strings.descriptionPlaceholder}
         />
         <View style={styles.separatorLine}></View>
 
         <Text style={styles.LocationText}>
-          MATCH FEE <Text style={styles.smallTxt}> (per hour) </Text>
+          {strings.matchFeesTitle}{' '}
+          <Text style={styles.smallTxt}> {strings.perHourText} </Text>
         </Text>
         <View style={styles.matchFeeView}>
           <TextInput
@@ -97,7 +80,7 @@ function RegisterPlayer({navigation, route}) {
         <View style={styles.separatorLine}></View>
       </ScrollView>
       <TouchableOpacity style={[styles.doneButton]}>
-        <Text style={[styles.signUpText]}>DONE</Text>
+        <Text style={[styles.signUpText]}>{strings.doneTitle}</Text>
       </TouchableOpacity>
     </>
   );

@@ -43,11 +43,9 @@ function CreateClubForm2({navigation, route}) {
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
       </View>
-      <Text style={styles.membershipText}>Invitation to Membership</Text>
-      <Text style={styles.smallText}>USER</Text>
-      <Text style={styles.whoJoinText}>
-        Does a user need an invitation from the club to join It?
-      </Text>
+      <Text style={styles.membershipText}>{strings.inviteTitle}</Text>
+      <Text style={styles.smallText}>{strings.userText}</Text>
+      <Text style={styles.whoJoinText}>{strings.userSubtitle}</Text>
 
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setMembershipUserSelected(0)}>
@@ -60,7 +58,7 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>No, a user doesn’t.</Text>
+        <Text style={styles.radioText}>{strings.noUserText}</Text>
       </View>
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setMembershipUserSelected(1)}>
@@ -73,13 +71,11 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>Yes, a user does.</Text>
+        <Text style={styles.radioText}>{strings.yesUserText}</Text>
       </View>
 
-      <Text style={styles.smallText}>TEAM</Text>
-      <Text style={styles.whoJoinText}>
-        Does a user need an invitation from the club to join It?
-      </Text>
+      <Text style={styles.smallText}>{strings.teamText}</Text>
+      <Text style={styles.whoJoinText}>{strings.teamSubTitle}</Text>
 
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setMembershipTeamSelected(0)}>
@@ -92,7 +88,7 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>No, a team doesn’t.</Text>
+        <Text style={styles.radioText}>{strings.noTeamText}</Text>
       </View>
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback onPress={() => setMembershipTeamSelected(1)}>
@@ -105,17 +101,14 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>Yes, a team does.</Text>
+        <Text style={styles.radioText}>{strings.yesTeamText}</Text>
       </View>
 
       <View style={styles.separatorLine}></View>
 
-      <Text style={styles.membershipText}>Approval for Membership request</Text>
-      <Text style={styles.smallText}>USER</Text>
-      <Text style={styles.whoJoinText}>
-        Does a user need the approval for his or her membership request from the
-        club to join it?
-      </Text>
+      <Text style={styles.membershipText}>{strings.approvalTitle}</Text>
+      <Text style={styles.smallText}>{strings.userText}</Text>
+      <Text style={styles.whoJoinText}>{strings.approvalUserSubTitle}</Text>
 
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback
@@ -129,7 +122,7 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>No, a user doesn’t.</Text>
+        <Text style={styles.radioText}>{strings.noUserText}</Text>
       </View>
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback
@@ -143,14 +136,11 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>Yes, a user does.</Text>
+        <Text style={styles.radioText}>{strings.yesUserText}</Text>
       </View>
 
-      <Text style={styles.smallText}>TEAM</Text>
-      <Text style={styles.whoJoinText}>
-        Does a user need the approval for its membership request from the club
-        to join it?
-      </Text>
+      <Text style={styles.smallText}>{strings.teamText}</Text>
+      <Text style={styles.whoJoinText}>{strings.approvalTeamSubTitle}</Text>
 
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback
@@ -164,7 +154,7 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>No, a team doesn’t.</Text>
+        <Text style={styles.radioText}>{strings.noTeamText}</Text>
       </View>
       <View style={styles.radioButtonView}>
         <TouchableWithoutFeedback
@@ -178,13 +168,13 @@ function CreateClubForm2({navigation, route}) {
             />
           )}
         </TouchableWithoutFeedback>
-        <Text style={styles.radioText}>Yes, a team does.</Text>
+        <Text style={styles.radioText}>{strings.yesTeamText}</Text>
       </View>
       <TouchableOpacity onPress={() => console.log('form filling ended')}>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
           style={styles.nextButton}>
-          <Text style={styles.nextButtonText}>NEXT</Text>
+          <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </ScrollView>

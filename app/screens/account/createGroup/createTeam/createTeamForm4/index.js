@@ -35,17 +35,14 @@ function CreateTeamForm4({navigation, route}) {
           <View style={styles.form3}></View>
           <View style={styles.form4}></View>
         </View>
-        <Text style={styles.registrationText}>Match fee</Text>
+        <Text style={styles.registrationText}>{strings.matchFeeTitle}</Text>
         <Text style={styles.registrationDescText}>
-          When your team accepts a game reservation request from another team
-          and plays a game against the team, the team will pay your team the
-          below amount of the match fee. It may be refunded when the game is
-          canceled.
+          {strings.matchFeeSubTitle}
         </Text>
 
         <View style={styles.matchFeeView}>
           <TextInput
-            placeholder={'Enter fee'}
+            placeholder={strings.enterFeePlaceholder}
             style={styles.feeText}
             keyboardType={'decimal-pad'}
             onChangeText={(text) => setMatchFee(text)}
@@ -53,9 +50,11 @@ function CreateTeamForm4({navigation, route}) {
           <Text style={styles.curruency}>CAD</Text>
         </View>
         <View>
-          <Text style={styles.membershipText}>Cancellation Policies</Text>
+          <Text style={styles.membershipText}>
+            {strings.cancellationPolicyTitle}
+          </Text>
           <Text style={styles.whoJoinText}>
-            Please, choose one the cancellation policies below
+            {strings.cancellationpolicySubTitle}
           </Text>
         </View>
 
@@ -70,7 +69,7 @@ function CreateTeamForm4({navigation, route}) {
               />
             )}
           </TouchableWithoutFeedback>
-          <Text style={styles.radioText}>Strict</Text>
+          <Text style={styles.radioText}>{strings.strictText}</Text>
         </View>
         <View style={styles.radioButtonView}>
           <TouchableWithoutFeedback onPress={() => setSelected(1)}>
@@ -83,7 +82,7 @@ function CreateTeamForm4({navigation, route}) {
               />
             )}
           </TouchableWithoutFeedback>
-          <Text style={styles.radioText}>Moderate</Text>
+          <Text style={styles.radioText}>{strings.moderateText}</Text>
         </View>
         <View style={styles.radioButtonView}>
           <TouchableWithoutFeedback onPress={() => setSelected(2)}>
@@ -96,86 +95,72 @@ function CreateTeamForm4({navigation, route}) {
               />
             )}
           </TouchableWithoutFeedback>
-          <Text style={styles.radioText}>Flexible</Text>
+          <Text style={styles.radioText}>{strings.flexibleText}</Text>
         </View>
         <Text style={styles.registrationDescText}>
-          *Requester: The team or person who sends the game reservation request
-          initialy *Requestee: The team or person who receives the game
-          reservation request initialy
+          {strings.requesterWarningText}
         </Text>
 
         {selected == 0 && (
           <View>
-            <Text style={styles.membershipText}>Strict </Text>
+            <Text style={styles.membershipText}>{strings.strictText} </Text>
             <Text style={styles.whoJoinText}>
               <Text style={styles.membershipSubText}>
-                -Cancellation 7 days in advance -
+                {strings.strictPoint1Title}
               </Text>
-              {'\n'}The challenge sender can cancel the game reservation up to 7
-              days before the game starting time and get a 50% refund, but not
-              service fee. If only 50% of the reservation has been paid, no
-              refund will be issued and the remaining 50% will simply not be
-              charged.
               {'\n'}
-              {'\n'}{' '}
+              {strings.strictPoint1Desc}
+              {'\n'}
+              {'\n'}
               <Text style={styles.membershipSubText}>
-                {' '}
-                -Cancellation less than 7 days in advance -
+                {strings.strictPoint2Title}
               </Text>
               {'\n'}
-              If the challenge sender cancels less than 7 days before the game
-              starting time the game fee and service fee are not refunded.
+              {strings.strictPoint2Desc}
             </Text>
           </View>
         )}
         {selected == 1 && (
           <View>
-            <Text style={styles.membershipText}>Moderate </Text>
+            <Text style={styles.membershipText}>{strings.moderateText} </Text>
             <Text style={styles.whoJoinText}>
               <Text style={styles.membershipSubText}>
-                -Cancellation 14 days in advance-
+                {strings.moderatePoint1Title}
               </Text>
-              {'\n'}Free cancellation until 14 days before the game starting
-              time.
+              {'\n'}
+              {strings.moderatePoint1Desc}
               {'\n'}
               {'\n'}
               <Text style={styles.membershipSubText}>
-                {' '}
-                -Cancellation less than 14 days in advance-
+                {strings.moderatePoint2Title}
               </Text>
               {'\n'}
-              The challenge sender can cancel less than 7 days before the game
-              starting time and get a 50% refund, but not service fee. If only
-              50% of the reservation has been paid, no refund will be issued and
-              the remaining 50% will simply not be charged.
+              {strings.moderatePoint2Desc}
               {'\n'}
               {'\n'}
               <Text style={styles.membershipSubText}>
-                -Cancellation less than 24 hours in advance-
+                {strings.moderatePoint3Title}
               </Text>
-              If the challenge sender cancels less than 24 hours before the game
-              starting time the game fee and service fee are not refunded.
+              {strings.moderatePoint3Desc}
             </Text>
           </View>
         )}
         {selected == 2 && (
           <View>
-            <Text style={styles.membershipText}>Flexible </Text>
+            <Text style={styles.membershipText}>{strings.flexibleText} </Text>
             <Text style={styles.whoJoinText}>
               <Text style={styles.membershipSubText}>
-                -Cancellation 24 hours in advance-
+                {strings.flexiblePoint1Title}
               </Text>
-              {'\n'}Free cancellation until 24 hours before the game starting
-              time.
               {'\n'}
-              {'\n'}{' '}
+              {strings.flexiblePoint1Desc}
+              {'\n'}
+              {'\n'}
               <Text style={styles.membershipSubText}>
-                {' '}
-                -Cancellation less than 24 hours in advance-
+                {strings.flexiblePoint2Title}
               </Text>
               {'\n'}
-              If the challenge sender cancels less than 24 hours before the game
-              starting time the game fee and service fee are not refunded.
+              {strings.flexiblePoint2Desc}
             </Text>
           </View>
         )}
@@ -183,7 +168,7 @@ function CreateTeamForm4({navigation, route}) {
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>NEXT</Text>
+            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>

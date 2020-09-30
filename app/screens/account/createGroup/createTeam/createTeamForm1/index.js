@@ -42,11 +42,12 @@ function CreateTeamForm1({navigation, route}) {
         </View>
         <View>
           <Text style={styles.fieldTitle}>
-            Sports<Text style={styles.mendatory}> *</Text>
+            {strings.SportsTextFieldTitle}
+            <Text style={styles.mendatory}> {strings.star}</Text>
           </Text>
           <RNPickerSelect
             placeholder={{
-              label: 'Select Sport',
+              label: strings.selectSportPlaceholder,
               value: null,
             }}
             items={[
@@ -69,7 +70,7 @@ function CreateTeamForm1({navigation, route}) {
         </View>
         <View style={styles.fieldView}>
           <Text style={styles.fieldTitle}>
-            Team Name <Text style={styles.mendatory}> *</Text>
+            {strings.teamNameTitle} <Text style={styles.mendatory}> *</Text>
           </Text>
 
           <TextInput
@@ -79,25 +80,25 @@ function CreateTeamForm1({navigation, route}) {
         </View>
         {sports == 'tennis' && (
           <View>
-            <Text style={styles.fieldTitle}>Players</Text>
+            <Text style={styles.fieldTitle}>{strings.playerTitle}</Text>
             <View style={styles.fieldView}>
-              <Text style={styles.playerTitle}>Player 1</Text>
+              <Text style={styles.playerTitle}>{strings.player1Title}</Text>
               <View style={styles.searchView}>
                 <Image source={PATH.searchLocation} style={styles.searchImg} />
                 <TextInput
                   style={styles.searchTextField}
-                  placeholder={'Search here'}
+                  placeholder={strings.searchHereText}
                   onChangeText={(text) => console.log()}></TextInput>
               </View>
             </View>
             <View style={styles.fieldView}>
-              <Text style={styles.playerTitle}>Player 2</Text>
+              <Text style={styles.playerTitle}>{strings.player2Title}</Text>
 
               <View style={styles.searchView}>
                 <Image source={PATH.searchLocation} style={styles.searchImg} />
                 <TextInput
                   style={styles.searchTextField}
-                  placeholder={'Search here'}
+                  placeholder={strings.searchHereText}
                   onChangeText={(text) => console.log()}></TextInput>
               </View>
             </View>
@@ -105,10 +106,10 @@ function CreateTeamForm1({navigation, route}) {
         )}
 
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Member's Gender</Text>
+          <Text style={styles.fieldTitle}>{strings.genderTitle}</Text>
           <RNPickerSelect
             placeholder={{
-              label: 'Select Gender',
+              label: strings.selectGenderPlaceholder,
               value: null,
             }}
             items={[
@@ -128,7 +129,7 @@ function CreateTeamForm1({navigation, route}) {
           />
         </View>
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Member's Age</Text>
+          <Text style={styles.fieldTitle}>{strings.membersAgeTitle}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -142,7 +143,7 @@ function CreateTeamForm1({navigation, route}) {
             }}>
             <RNPickerSelect
               placeholder={{
-                label: 'Min',
+                label: strings.minPlaceholder,
                 value: null,
               }}
               items={[
@@ -193,7 +194,7 @@ function CreateTeamForm1({navigation, route}) {
             />
             <RNPickerSelect
               placeholder={{
-                label: 'Max',
+                label: strings.maxPlaceholder,
                 value: null,
               }}
               items={[
@@ -245,18 +246,20 @@ function CreateTeamForm1({navigation, route}) {
           </View>
           <View style={styles.fieldView}>
             <Text style={styles.fieldTitle}>
-              Location <Text style={styles.mendatory}> *</Text>
+              {strings.locationTitle}{' '}
+              <Text style={styles.mendatory}> {strings.star}</Text>
             </Text>
 
             <TextInput
-              placeholder={'Search by city or postal code'}
+              placeholder={strings.searchCityPlaceholder}
               style={styles.matchFeeTxt}
               onChangeText={(text) => setCity(text)}
               value={city}></TextInput>
           </View>
           <View style={{marginLeft: 15}}>
             <Text style={styles.smallTxt}>
-              (<Text style={styles.mendatory}>* </Text>required)
+              (<Text style={styles.mendatory}>{strings.star} </Text>
+              {strings.requiredText})
             </Text>
           </View>
         </View>
@@ -265,7 +268,7 @@ function CreateTeamForm1({navigation, route}) {
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>NEXT</Text>
+            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>

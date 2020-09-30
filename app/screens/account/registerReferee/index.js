@@ -18,7 +18,9 @@ import RNPickerSelect, {defaultStyles} from 'react-native-picker-select';
 
 import styles from './style';
 import constants from '../../../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+const {colors, fonts, urls} = constants;
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
 
 import {
   widthPercentageToDP as wp,
@@ -27,10 +29,10 @@ import {
 
 function RegisterReferee({navigation, route}) {
   const placeholder = {
-    label: 'Select Sports',
+    label: strings.selectSportPlaceholder,
     value: null,
   };
-  const [sports, setSports] = useState('java');
+  const [sports, setSports] = useState('');
   const [certificate, setSCertificate] = useState([]);
   const [description, onChangeText] = React.useState('');
   const [matchFee, onMatchFeeChanged] = React.useState(0.0);
@@ -51,13 +53,13 @@ function RegisterReferee({navigation, route}) {
             <Image source={PATH.certificateUpload} style={styles.chooseImage} />
           </TouchableOpacity>
           <TextInput
-            placeholder={'Title or Description'}
+            placeholder={strings.titleOrDescriptionText}
             style={styles.certificateDescription}
             onChangeText={(text) => onMatchFeeChanged(text)}
             value={matchFee}></TextInput>
         </View>
         <TouchableOpacity>
-          <Text style={styles.delete}>Delete</Text>
+          <Text style={styles.delete}>{strings.deleteTitle}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -68,7 +70,7 @@ function RegisterReferee({navigation, route}) {
         <Text style={styles.LocationText}>SPORTS EVENTS</Text>
         <RNPickerSelect
           placeholder={{
-            label: 'Select Sport',
+            label: strings.selectSportPlaceholder,
             value: null,
           }}
           items={[
@@ -94,8 +96,8 @@ function RegisterReferee({navigation, route}) {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-          <Text style={styles.LocationText}>DESCRIPTION</Text>
-          <Text style={styles.smallTxt}> (Optional) </Text>
+          <Text style={styles.LocationText}>{strings.descriptionText}</Text>
+          <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
         </View>
         <TextInput
           style={styles.descriptionTxt}
@@ -103,28 +105,14 @@ function RegisterReferee({navigation, route}) {
           value={description}
           multiline
           numberOfLines={4}
-          placeholder={'Describe your self as a personal player'}
+          placeholder={strings.descriptionPlaceholder}
         />
         <View style={styles.separatorLine}></View>
         <Text style={styles.LocationText}>
-          CERTIFICATES <Text style={styles.smallTxt}> (Optional) </Text>
+          {strings.certificateTitle}
+          <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
         </Text>
-        <Text style={styles.LocationText}>
-          Please add the certificates or documents showing your professional
-          experience.
-        </Text>
-
-        {/* <View style={styles.addCertificateView}>
-          <TouchableOpacity>
-            <Image style={styles.certificateImg} />
-            <Image source={PATH.certificateUpload} style={styles.chooseImage} />
-          </TouchableOpacity>
-          <TextInput
-            placeholder={'Title or Description'}
-            style={styles.matchFeeTxt}
-            onChangeText={(text) => onMatchFeeChanged(text)}
-            value={matchFee}></TextInput>
-        </View> */}
+        <Text style={styles.LocationText}>{strings.certificateSubTitle}</Text>
 
         <FlatList
           scrollEnabled={false}
@@ -135,14 +123,17 @@ function RegisterReferee({navigation, route}) {
         <TouchableOpacity
           onPress={this.addMore}
           style={styles.addCertificateButton}>
-          <Text style={[styles.addCertificateText]}>Add a Certificate</Text>
+          <Text style={[styles.addCertificateText]}>
+            {strings.addCertificateTitle}
+          </Text>
         </TouchableOpacity>
         <Text style={styles.LocationText}>
-          LANGUAGE <Text style={styles.smallTxt}> (Optional) </Text>
+          {strings.languageTitle}
+          <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
         </Text>
         <RNPickerSelect
           placeholder={{
-            label: 'Select Language',
+            label: strings.languagePlaceholder,
             value: null,
           }}
           items={[
@@ -164,7 +155,8 @@ function RegisterReferee({navigation, route}) {
         />
         <View style={styles.separatorLine}></View>
         <Text style={styles.LocationText}>
-          REFEREE FEE <Text style={styles.smallTxt}> (per hour) </Text>
+          {strings.refereeFeesTitle}
+          <Text style={styles.smallTxt}> {strings.perHourText} </Text>
         </Text>
         <View style={styles.matchFeeView}>
           <TextInput
@@ -176,7 +168,7 @@ function RegisterReferee({navigation, route}) {
         <View style={styles.separatorLine}></View>
       </ScrollView>
       <TouchableOpacity style={[styles.doneButton]}>
-        <Text style={[styles.signUpText]}>DONE</Text>
+        <Text style={[styles.signUpText]}>{strings.doneTitle}</Text>
       </TouchableOpacity>
     </>
   );

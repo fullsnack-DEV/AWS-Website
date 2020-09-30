@@ -13,15 +13,19 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {create} from 'apisauce';
-import constants from '../../../config/constants';
+
+// import constants from '../../../config/constants';
+import PATH from "../../../Constants/ImagePath"
+import strings from "../../../Constants/String"
 import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import AuthContext from '../../../auth/context';
 import styles from "./style"
-const {strings, colors, fonts, urls, PATH} = constants;
-
+// const {strings, colors, fonts, urls, PATH} = constants;
+import * as Service from '../../../api/services'
+import * as Url from '../../../api/Url'
 export default function FollowTeams({navigation, route}) {
   const [teams, setTeams] = useState([]);
   const [token, setToken] = useState('');
@@ -96,7 +100,9 @@ export default function FollowTeams({navigation, route}) {
       country: route.params.country,
       club_ids: followedTeam,
     };
-
+// console.log("user data",data)
+// let res =await Service.post(Url.CREATE_USER,data)
+// console.log("create user details response",res)
     const response = await api.post('users', data);
 
     if (response.data.status == true) {
@@ -155,6 +161,7 @@ export default function FollowTeams({navigation, route}) {
     });
 
     const response = await api.get('users/' + uid);
+    // console.log("user Deatisl",response)
 
     if (response.data.status == true) {
       console.log('PAYLOAD::', JSON.stringify(response.data));

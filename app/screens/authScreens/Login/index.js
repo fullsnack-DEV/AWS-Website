@@ -31,7 +31,7 @@ import Loader from '../../../components/loader/Loader';
 import styles from "./style"
 import PATH from "../../../Constants/ImagePath"
 import strings from "../../../Constants/String"
-
+import * as Utility from '../../../utility/index'
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
   password: Yup.string().required().min(6).label('Password'),
@@ -60,20 +60,21 @@ function LoginScreen({navigation}) {
           try {
             storage.storeData('token', JSON.stringify(idTokenResult.token));
             console.log('Stored Token: ', idTokenResult.token);
-            //storeToken(idTokenResult.token);
+            // storeToken(idTokenResult.token);
 
             storage.storeData('expiryTime', idTokenResult.expirationTime);
-            console.log('Expiry time: ', idTokenResult.expirationTime);
-            //storeExpiry(idTokenResult.expirationTime);
+            console.log('Expiry time....: ', idTokenResult.expirationTime);
+            // storeExpiry(idTokenResult.expirationTime);
 
             storage.storeData('UID', user.uid);
-            console.log('Firebse UID: ', user.uid);
+            tokenrefresh()
+
+            console.log('Firebse UID:........ ', user.uid);
             // navigation.navigate("NewsFeedNavigator")
             Alert.alert("User Login sucessfull")
-            // navigation.navigate('HomeScreen');
-            //storeUID(user.uid);
+        
           } catch (error) {
-            console.log(error.message);
+            console.log("error....",error.message);
           }
         });
       }
@@ -137,11 +138,12 @@ function LoginScreen({navigation}) {
           // some error occurred
         });
     } else if (getUserData.data.status == false) {
-      console.log('STATUS::', getUserData.data.status);
-      navigation.navigate('ChooseLocationScreen');
+      console.log('STATUS::...........', getUserData.data.status);
+      // navigation.navigate('ChooseLocationScreen');
     }
   };
   const loginUser = async (email, password) => {
+    firebase.
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async () => {
@@ -161,7 +163,48 @@ function LoginScreen({navigation}) {
         }
       });
   };
+const  tokenrefresh= async()=>{
+  
+  console.log("sffgfhgffasff")
+const uid =  await Utility .getFromLocalStorge("firebasetoken")
+console.log(uid)
+const vid=JSON.parse(uid)
+console.log("json remove ",vid)
+// try{
+  
+//     firebase.auth().revokeRefreshTokens(vid)
+//   .then(() => {
+//     return firebase.auth().getUser(vid);
+//   })
+//   .then((userRecord) => {
+//     return new Date(userRecord.tokensValidAfterTime).getTime() / 1000;
+//   })
+//   .then((timestamp) => {
+//     console.log('Tokens revoked at: ', timestamp);
+//   });
+// }catch(error){
+//   console.log(" firebase bekar error",error.toString(error));
+// }
 
+
+
+
+firebase.
+  auth().onAuthStateChanged((user) => {
+        if (user) {
+          user.getIdTokenResult().then((idTokenResult) => {
+            try {
+              storage.storeData('token.....................', JSON.stringify(idTokenResult.token));
+              console.log('Stored Token...........: ', idTokenResult.token);
+             
+            } catch (error) {
+              console.log(error.message);
+            }
+          });
+        }
+      });
+  
+    }
   return (
     <View style={styles.mainContainer}>
       {/* <Loader visible={getUserData.loading} /> */}

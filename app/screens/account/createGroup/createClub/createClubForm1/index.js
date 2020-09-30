@@ -21,6 +21,7 @@ import constants from '../../../../../config/constants';
 const {colors, fonts, urls} = constants;
 import PATH from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
+import {string} from 'yup';
 
 function CreateClubForm1({navigation, route}) {
   const [sports, setSports] = useState('');
@@ -42,11 +43,12 @@ function CreateClubForm1({navigation, route}) {
         </View>
         <View>
           <Text style={styles.fieldTitle}>
-            Sports<Text style={styles.mendatory}> *</Text>
+            {strings.SportsTextFieldTitle}
+            <Text style={styles.mendatory}> {strings.star}</Text>
           </Text>
           <RNPickerSelect
             placeholder={{
-              label: 'Select Sport',
+              label: strings.selectSportPlaceholder,
               value: null,
             }}
             items={[
@@ -68,7 +70,8 @@ function CreateClubForm1({navigation, route}) {
         </View>
         <View style={styles.fieldView}>
           <Text style={styles.fieldTitle}>
-            Club Name <Text style={styles.mendatory}> *</Text>
+            {strings.clubNameTitle}
+            <Text style={styles.mendatory}> {strings.star}</Text>
           </Text>
 
           <TextInput
@@ -77,10 +80,10 @@ function CreateClubForm1({navigation, route}) {
             value={clubName}></TextInput>
         </View>
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Member's Gender</Text>
+          <Text style={styles.fieldTitle}>{strings.genderTitle}</Text>
           <RNPickerSelect
             placeholder={{
-              label: 'Select Gender',
+              label: strings.selectGenderPlaceholder,
               value: null,
             }}
             items={[
@@ -100,7 +103,7 @@ function CreateClubForm1({navigation, route}) {
           />
         </View>
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>Member's Age</Text>
+          <Text style={styles.fieldTitle}>{strings.membersAgeTitle}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -114,7 +117,7 @@ function CreateClubForm1({navigation, route}) {
             }}>
             <RNPickerSelect
               placeholder={{
-                label: 'Min',
+                label: strings.minPlaceholder,
                 value: null,
               }}
               items={[
@@ -165,7 +168,7 @@ function CreateClubForm1({navigation, route}) {
             />
             <RNPickerSelect
               placeholder={{
-                label: 'Max',
+                label: strings.maxPlaceholder,
                 value: null,
               }}
               items={[
@@ -217,18 +220,20 @@ function CreateClubForm1({navigation, route}) {
           </View>
           <View style={styles.fieldView}>
             <Text style={styles.fieldTitle}>
-              Location <Text style={styles.mendatory}> *</Text>
+              {strings.locationTitle}
+              <Text style={styles.mendatory}> {strings.star}</Text>
             </Text>
 
             <TextInput
-              placeholder={'Search by city or postal code'}
+              placeholder={strings.searchCityPlaceholder}
               style={styles.matchFeeTxt}
               onChangeText={(text) => setLocation(text)}
               value={location}></TextInput>
           </View>
           <View style={{marginLeft: 15}}>
             <Text style={styles.smallTxt}>
-              (<Text style={styles.mendatory}>* </Text>required)
+              (<Text style={styles.mendatory}>{strings.star} </Text>
+              {strings.requiredText})
             </Text>
           </View>
         </View>
@@ -237,7 +242,7 @@ function CreateClubForm1({navigation, route}) {
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>NEXT</Text>
+            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>

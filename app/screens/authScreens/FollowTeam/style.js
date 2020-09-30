@@ -7,8 +7,9 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
   } from 'react-native-responsive-screen';
+import colors from "../../../Constants/Colors"
   import constants from '../../../config/constants';
-  const {strings, colors, fonts, urls, PATH} = constants;
+  const {strings,  fonts, urls, PATH} = constants;
 const styles = StyleSheet.create({
     mainContainer: {
       flex: 1,
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
     sportText: {
       marginTop: hp('12%'),
       marginBottom: hp('4%'),
-      // color: colors.whiteColor,
+      color: colors.whiteColor,
       fontSize: wp('6%'),
       textAlign: 'left',
       fontFamily: fonts.RBold,
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
       width: wp('70%'),
     },
     teamNameText: {
-      // color: colors.whiteColor,
+      color: colors.whiteColor,
       fontSize: wp('4%'),
       textAlign: 'left',
       fontFamily: fonts.RBlack,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
       textAlignVertical: 'center',
     },
     cityText: {
-      // color: colors.whiteColor,
+      color: colors.whiteColor,
       fontSize: wp('3.5%'),
       textAlign: 'left',
       fontFamily: fonts.RRegular,
@@ -98,17 +99,17 @@ const styles = StyleSheet.create({
       backgroundColor: 'transparent',
       borderRadius: 5,
       borderWidth: 1,
-      // borderColor: colors.whiteColor,
+      borderColor: colors.whiteColor,
     },
     followingBtn: {
       width: 70,
       height: 25,
       alignItems: 'center',
       justifyContent: 'center',
-      // backgroundColor: colors.whiteColor,
+      backgroundColor: colors.whiteColor,
       borderRadius: 5,
       borderWidth: 1,
-      // borderColor: colors.whiteColor,
+      borderColor: colors.whiteColor,
     },
     followBtn: {
       width: 70,
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   
       borderRadius: 5,
       borderWidth: 1,
-      // borderColor: colors.whiteColor,
+      borderColor: colors.whiteColor,
     },
     followingText: {
       color: colors.themeColor,
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
       fontFamily: fonts.RBlack,
     },
     followText: {
-      // color: colors.whiteColor,
+      color: colors.whiteColor,
       fontSize: wp('3%'),
       fontFamily: fonts.RBlack,
     },

@@ -19,6 +19,8 @@ import {
 } from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
 import Separator from '../../components/Separator';
+import {get} from '../../api/services';
+import {GET_UNREAD_COUNT_URL} from '../../api/Url';
 
 import constants from '../../config/constants';
 const {colors, fonts, urls} = constants;
@@ -42,6 +44,7 @@ export default function AccountScreen({navigation, route}) {
   }, [navigation]);
   useEffect(() => {
     getToken();
+    get(GET_UNREAD_COUNT_URL, token);
   });
 
   const connectChat = () => {
