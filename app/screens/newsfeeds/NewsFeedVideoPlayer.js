@@ -20,11 +20,12 @@ import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 //import VideoPlayer from 'react-native-video-controls';
 
-import constants from '../../config/constants';
-
 import WritePost from '../../components/newsFeed/WritePost';
 
-const {strings, colors, fonts, urls, PATH} = constants;
+import constants from '../../config/constants';
+const {colors, fonts, urls} = constants;
+import PATH from '../../Constants/ImagePath';
+import strings from '../../Constants/String';
 
 const url =
   'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';

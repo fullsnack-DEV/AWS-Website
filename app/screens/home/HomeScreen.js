@@ -7,10 +7,13 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../../config/constants';
+const {colors, fonts, urls} = constants;
+import PATH from '../../Constants/ImagePath';
+import strings from '../../Constants/String';
+
 import storage from '../../auth/storage';
 import AsyncStorage from '@react-native-community/async-storage';
 import Loader from '../../components/loader/Loader';
-const {strings, colors, fonts, urls, PATH} = constants;
 
 export default function HomeScreen({navigation, route}) {
   const [token, setToken] = useState('');

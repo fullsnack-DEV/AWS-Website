@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  TouchableWithoutFeedback,
-  Image,
-  StyleSheet,
-} from 'react-native';
+
 import 'react-native-gesture-handler';
 
 import {createStackNavigator} from '@react-navigation/stack';
