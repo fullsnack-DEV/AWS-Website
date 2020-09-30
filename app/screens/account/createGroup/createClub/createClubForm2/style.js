@@ -24,9 +24,9 @@ const styles = StyleSheet.create({
 
   nextButton: {
     width: '90%',
-    height: hp('5%'),
+    height: 45,
     alignSelf: 'center',
-    marginTop: wp('10%'),
+    marginTop: wp('12%'),
     borderRadius: 30,
     marginBottom: 40,
   },
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     height: 22,
     width: 22,
     resizeMode: 'contain',
-
+    tintColor: colors.grayColor,
     alignSelf: 'center',
   },
   radioButtonView: {

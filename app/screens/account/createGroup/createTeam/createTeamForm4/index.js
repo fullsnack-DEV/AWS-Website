@@ -164,6 +164,7 @@ function CreateTeamForm4({navigation, route}) {
             </Text>
           </View>
         )}
+
         <TouchableOpacity onPress={() => console.log('Form filling ended')}>
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}

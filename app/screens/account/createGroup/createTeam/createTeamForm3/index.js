@@ -23,9 +23,11 @@ import PATH from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
 function CreateTeamForm3({navigation, route}) {
-  const [basicFee, setBasicFee] = useState(0);
-  const [membershipFee, setMembershipFee] = useState(0);
+  const [basicFee, setBasicFee] = useState('');
+  const [membershipFee, setMembershipFee] = useState('');
   const [basicFeeDetail, setBasicFeeDetail] = useState('');
+  const [feeCycle, setFeeCycle] = useState('');
+
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
   return (
     <>
@@ -86,16 +88,20 @@ function CreateTeamForm3({navigation, route}) {
             }}>
             <RNPickerSelect
               placeholder={{
-                label: strings.genderTitle,
+                label: strings.feeCyclePlaceholder,
                 value: null,
               }}
               items={[
-                {label: 'Male', value: 'male'},
-                {label: 'Female', value: 'female'},
+                {label: 'Weekly', value: 'weekly'},
+                {label: 'Biweekly', value: 'biweekly'},
+                {label: 'Monthly', value: 'monthly'},
+                {label: 'Yearly', value: 'yearly'},
               ]}
               onValueChange={(value) => {
-                setMinAge(value);
+                setFeeCycle(value);
               }}
+              value={feeCycle}
+              useNativeAndroidPickerStyle={false}
               style={{
                 inputIOS: {
                   height: 40,
@@ -115,14 +121,22 @@ function CreateTeamForm3({navigation, route}) {
                   shadowRadius: 1,
                 },
                 inputAndroid: {
-                  fontSize: 16,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  borderWidth: 0.5,
-                  borderColor: 'purple',
-                  borderRadius: 8,
+                  height: 40,
+
+                  fontSize: wp('4%'),
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  width: wp('45%'),
                   color: 'black',
-                  paddingRight: 30, // to ensure the text is never behind the icon
+                  paddingRight: 30,
+                  backgroundColor: colors.offwhite,
+
+                  borderRadius: 5,
+                  shadowColor: colors.googleColor,
+                  shadowOffset: {width: 0, height: 1},
+                  shadowOpacity: 0.5,
+                  shadowRadius: 1,
+                  elevation: 3,
                 },
               }}
               Icon={() => {

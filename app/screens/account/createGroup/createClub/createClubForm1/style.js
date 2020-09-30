@@ -40,13 +40,12 @@ const styles = StyleSheet.create({
   },
 
   nextButton: {
-    position: 'absolute',
-
     width: '90%',
-    height: hp('5%'),
+    height: 45,
     alignSelf: 'center',
     marginTop: wp('12%'),
     borderRadius: 30,
+    marginBottom: 40,
   },
   inputIOS: {
     height: 40,
@@ -66,16 +65,27 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+    elevation: 3,
   },
   inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'purple',
-    borderRadius: 8,
+    height: 40,
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+    fontSize: wp('3.5%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
   },
   downArrow: {
     height: 12,
@@ -140,7 +150,7 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
-    fontSize: wp('3.5%'),
+    fontSize: wp('3.8%'),
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -153,6 +163,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+    elevation: 3,
   },
   fieldView: {
     marginTop: 15,

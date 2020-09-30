@@ -38,11 +38,13 @@ const strings = {
   SportsTextFieldTitle: 'Sports',
   selectSportPlaceholder: 'Select Sport',
   teamNameTitle: 'Team Name',
+  teamNamePlaceholder: 'Enter Team Name',
   playerTitle: 'Players',
   player1Title: 'Player 1',
   player2Title: 'Player 2',
   searchHereText: 'Search here',
   genderTitle: "Member's Gender",
+  feeCyclePlaceholder: 'Fees cycle',
   selectGenderPlaceholder: 'Select Gender',
   membersAgeTitle: "Member's Age",
   maxPlaceholder: 'Max',
@@ -112,7 +114,7 @@ const strings = {
 
   //CreateClub Screen 1
   clubNameTitle: 'Club Name',
-
+  clubNameplaceholder: 'Enter Club Name',
   //CreateClub Screen 2
   inviteTitle: 'Invitation to Membership',
   userText: 'USER',
@@ -130,21 +132,21 @@ const strings = {
     'Does a user need the approval for its membership request from the club to join it?',
 
   //Register Player Screen
-  sportsEventsTitle: 'SPORTS EVENTS',
-  descriptionText: 'DESCRIPTION',
+  sportsEventsTitle: 'Sports Events',
+  descriptionText: 'Description',
   opetionalText: '(Optional)',
   descriptionPlaceholder: 'Describe your self as a personal player',
-  matchFeesTitle: 'MATCH FEE',
+  matchFeesTitle: 'Match Fee',
   perHourText: '(per hour)',
 
   //Register Referee Screen
-  certificateTitle: 'CERTIFICATES',
+  certificateTitle: 'Certificates',
   certificateSubTitle:
     'Please add the certificates or documents showing your professional experience.',
   addCertificateTitle: 'Add a Certificate',
-  languageTitle: 'LANGUAGE',
+  languageTitle: 'Language',
   languagePlaceholder: 'Select Language',
-  refereeFeesTitle: 'REFEREE FEE',
+  refereeFeesTitle: 'Referee Fee',
   deleteTitle: 'Delete',
   titleOrDescriptionText: 'Title or Description',
 };

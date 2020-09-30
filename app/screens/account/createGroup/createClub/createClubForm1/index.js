@@ -59,7 +59,46 @@ function CreateClubForm1({navigation, route}) {
             onValueChange={(value) => {
               setSports(value);
             }}
-            style={{...styles}}
+            useNativeAndroidPickerStyle={false}
+            style={{
+              inputIOS: {
+                height: 40,
+                width: wp('92%'),
+                alignSelf: 'center',
+                marginTop: 12,
+                fontSize: wp('3.5%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+
+                color: 'black',
+                paddingRight: 30,
+                backgroundColor: colors.offwhite,
+
+                borderRadius: 5,
+                shadowColor: colors.googleColor,
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.5,
+                shadowRadius: 1,
+                elevation: 3,
+              },
+              inputAndroid: {
+                height: 40,
+                width: wp('92%'),
+                alignSelf: 'center',
+                marginTop: 12,
+                fontSize: wp('4%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+
+                color: 'black',
+                paddingRight: 30,
+                backgroundColor: colors.offwhite,
+
+                borderRadius: 5,
+
+                elevation: 3,
+              },
+            }}
             value={sports}
             Icon={() => {
               return (
@@ -75,6 +114,7 @@ function CreateClubForm1({navigation, route}) {
           </Text>
 
           <TextInput
+            placeholder={strings.clubNameplaceholder}
             style={styles.matchFeeTxt}
             onChangeText={(text) => setClubName(text)}
             value={clubName}></TextInput>
@@ -93,7 +133,46 @@ function CreateClubForm1({navigation, route}) {
             onValueChange={(value) => {
               setGender(value);
             }}
-            style={{...styles}}
+            useNativeAndroidPickerStyle={false}
+            style={{
+              inputIOS: {
+                height: 40,
+                width: wp('92%'),
+                alignSelf: 'center',
+                marginTop: 12,
+                fontSize: wp('3.5%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+
+                color: 'black',
+                paddingRight: 30,
+                backgroundColor: colors.offwhite,
+
+                borderRadius: 5,
+                shadowColor: colors.googleColor,
+                shadowOffset: {width: 0, height: 1},
+                shadowOpacity: 0.5,
+                shadowRadius: 1,
+                elevation: 3,
+              },
+              inputAndroid: {
+                height: 40,
+                width: wp('92%'),
+                alignSelf: 'center',
+                marginTop: 12,
+                fontSize: wp('4%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+
+                color: 'black',
+                paddingRight: 30,
+                backgroundColor: colors.offwhite,
+
+                borderRadius: 5,
+
+                elevation: 3,
+              },
+            }}
             value={gender}
             Icon={() => {
               return (
@@ -127,6 +206,7 @@ function CreateClubForm1({navigation, route}) {
               onValueChange={(value) => {
                 setMinAge(value);
               }}
+              useNativeAndroidPickerStyle={false}
               style={{
                 inputIOS: {
                   height: 40,
@@ -146,14 +226,23 @@ function CreateClubForm1({navigation, route}) {
                   shadowRadius: 1,
                 },
                 inputAndroid: {
-                  fontSize: 16,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  borderWidth: 0.5,
-                  borderColor: 'purple',
-                  borderRadius: 8,
+                  height: 40,
+
+                  fontSize: wp('4%'),
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  width: wp('45%'),
                   color: 'black',
-                  paddingRight: 30, // to ensure the text is never behind the icon
+                  paddingRight: 30,
+                  backgroundColor: colors.offwhite,
+
+                  borderRadius: 5,
+                  shadowColor: colors.googleColor,
+                  shadowOffset: {width: 0, height: 1},
+                  shadowOpacity: 0.5,
+                  shadowRadius: 1,
+
+                  elevation: 3,
                 },
               }}
               value={minAge}
@@ -178,13 +267,16 @@ function CreateClubForm1({navigation, route}) {
               onValueChange={(value) => {
                 setMaxAge(value);
               }}
+              useNativeAndroidPickerStyle={false}
               style={{
+                iconContainer: {},
                 inputIOS: {
                   height: 40,
 
                   fontSize: wp('3.5%'),
                   paddingVertical: 12,
                   paddingHorizontal: 15,
+
                   width: wp('45%'),
                   color: 'black',
 
@@ -195,16 +287,20 @@ function CreateClubForm1({navigation, route}) {
                   shadowOffset: {width: 0, height: 1},
                   shadowOpacity: 0.5,
                   shadowRadius: 1,
+                  elevation: 3,
                 },
                 inputAndroid: {
-                  fontSize: 16,
+                  height: 40,
+                  fontSize: wp('4%'),
                   paddingHorizontal: 10,
                   paddingVertical: 8,
-                  borderWidth: 0.5,
-                  borderColor: 'purple',
-                  borderRadius: 8,
+                  width: wp('45%'),
+                  backgroundColor: colors.offwhite,
+
+                  borderRadius: 5,
                   color: 'black',
-                  paddingRight: 30, // to ensure the text is never behind the icon
+
+                  elevation: 3,
                 },
               }}
               value={maxAge}

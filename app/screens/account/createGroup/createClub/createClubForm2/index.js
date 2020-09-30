@@ -170,6 +170,7 @@ function CreateClubForm2({navigation, route}) {
         </TouchableWithoutFeedback>
         <Text style={styles.radioText}>{strings.yesTeamText}</Text>
       </View>
+
       <TouchableOpacity onPress={() => console.log('form filling ended')}>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}

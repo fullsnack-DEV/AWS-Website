@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import RNPickerSelect, {defaultStyles} from 'react-native-picker-select';
+import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
 import constants from '../../../config/constants';
@@ -39,6 +40,7 @@ function RegisterPlayer({navigation, route}) {
           onValueChange={(value) => {
             setSports(value);
           }}
+          useNativeAndroidPickerStyle={false}
           style={{...styles}}
           value={sports}
           Icon={() => {
@@ -47,7 +49,7 @@ function RegisterPlayer({navigation, route}) {
             );
           }}
         />
-        <View style={styles.separatorLine}></View>
+
         <View
           style={{
             flexDirection: 'row',
@@ -64,24 +66,29 @@ function RegisterPlayer({navigation, route}) {
           numberOfLines={4}
           placeholder={strings.descriptionPlaceholder}
         />
-        <View style={styles.separatorLine}></View>
 
         <Text style={styles.LocationText}>
-          {strings.matchFeesTitle}{' '}
+          {strings.matchFeesTitle}
           <Text style={styles.smallTxt}> {strings.perHourText} </Text>
         </Text>
+
         <View style={styles.matchFeeView}>
           <TextInput
-            style={styles.matchFeeTxt}
+            placeholder={strings.enterFeePlaceholder}
+            style={styles.feeText}
             onChangeText={(text) => onMatchFeeChanged(text)}
-            value={matchFee}></TextInput>
+            value={matchFee}
+            keyboardType={'decimal-pad'}></TextInput>
           <Text style={styles.curruency}>CAD</Text>
         </View>
-        <View style={styles.separatorLine}></View>
+        <TouchableOpacity onPress={() => console.log('player registered')}>
+          <LinearGradient
+            colors={[colors.yellowColor, colors.themeColor]}
+            style={styles.nextButton}>
+            <Text style={styles.nextButtonText}>{strings.doneTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </ScrollView>
-      <TouchableOpacity style={[styles.doneButton]}>
-        <Text style={[styles.signUpText]}>{strings.doneTitle}</Text>
-      </TouchableOpacity>
     </>
   );
 }
