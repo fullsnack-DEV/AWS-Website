@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 
 import constants from '../../config/constants';
+const {colors, fonts} = constants;
+import PATH from '../../Constants/ImagePath';
+import strings from '../../Constants/String';
+
 import NewsFeedVideoPlayer from '../../screens/newsfeeds/NewsFeedVideoPlayer';
 import Moment from 'moment';
 
@@ -18,7 +22,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-const {colors, fonts, PATH} = constants;
 let {width} = Dimensions.get('window');
 
 function Feed({data, navigation, route}) {

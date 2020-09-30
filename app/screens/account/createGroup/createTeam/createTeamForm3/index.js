@@ -23,8 +23,8 @@ import PATH from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
 function CreateTeamForm3({navigation, route}) {
-  const [basicFee, setBasicFee] = useState(0.0);
-  const [membershipFee, setMembershipFee] = useState(0.0);
+  const [basicFee, setBasicFee] = useState(0);
+  const [membershipFee, setMembershipFee] = useState(0);
   const [basicFeeDetail, setBasicFeeDetail] = useState('');
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
   return (
