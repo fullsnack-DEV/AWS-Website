@@ -188,7 +188,6 @@ console.log("json remove ",vid)
 
 
 
-
 firebase.
   auth().onAuthStateChanged((user) => {
         if (user) {
@@ -205,6 +204,37 @@ firebase.
       });
   
     }
+
+
+
+
+    const loginUsers = async (email, password) => {
+      
+      firebase
+      
+         .auth()
+         .signInWithEmailAndPassword(email, password)
+         .then(async res => {
+              console.log("resssss",res);
+             console.log("user",res.user.email);
+             await Utility.setInLocalStorge("useremail",res.user.email)
+             const tokeen= await Utility.getFromLocalStorge("useremail")
+             console.log("tokeeennn",tokeen)
+             navigation.navigate("BottomTab")
+      })
+      .catch((error) => {
+        if (error.code === 'auth/user-not-found') {
+          alert('This email address is not registerd');
+        }
+        if (error.code === 'auth/email-already-in-use') {
+          alert('That email address is already in use!');
+        }
+        if (error.code === 'auth/invalid-email') {
+          alert('That email address is invalid!');
+        }
+      });
+
+    } 
   return (
     <View style={styles.mainContainer}>
       {/* <Loader visible={getUserData.loading} /> */}
@@ -221,7 +251,7 @@ firebase.
           email: '',
           password: '',
         }}
-        onSubmit={(values) => loginUser(values.email, values.password)}
+        onSubmit={(values) => loginUsers(values.email, values.password)}
         validationSchema={validationSchema}>
         <TCFormField
           placeholder={strings.emailPlaceHolder}
