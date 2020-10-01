@@ -26,6 +26,8 @@ function CreateTeamForm1({navigation, route}) {
   const [gender, setGender] = useState('');
   const [minAge, setMinAge] = useState('');
   const [maxAge, setMaxAge] = useState('');
+  const [player1, setPlayer1] = useState('');
+  const [player2, setPlayer2] = useState('');
 
   const [description, onChangeText] = React.useState('');
   const [teamName, setTeamName] = useState('');
@@ -59,6 +61,7 @@ function CreateTeamForm1({navigation, route}) {
             onValueChange={(value) => {
               setSports(value);
             }}
+            useNativeAndroidPickerStyle={false}
             style={{...styles}}
             value={sports}
             Icon={() => {
@@ -74,6 +77,7 @@ function CreateTeamForm1({navigation, route}) {
           </Text>
 
           <TextInput
+            placeholder={strings.teamNamePlaceholder}
             style={styles.matchFeeTxt}
             onChangeText={(text) => setTeamName(text)}
             value={teamName}></TextInput>
@@ -88,7 +92,8 @@ function CreateTeamForm1({navigation, route}) {
                 <TextInput
                   style={styles.searchTextField}
                   placeholder={strings.searchHereText}
-                  onChangeText={(text) => console.log()}></TextInput>
+                  onChangeText={(text) => setPlayer1(text)}
+                  value={player1}></TextInput>
               </View>
             </View>
             <View style={styles.fieldView}>
@@ -99,7 +104,8 @@ function CreateTeamForm1({navigation, route}) {
                 <TextInput
                   style={styles.searchTextField}
                   placeholder={strings.searchHereText}
-                  onChangeText={(text) => console.log()}></TextInput>
+                  onChangeText={(text) => setPlayer2(text)}
+                  value={player2}></TextInput>
               </View>
             </View>
           </View>
@@ -119,7 +125,10 @@ function CreateTeamForm1({navigation, route}) {
             onValueChange={(value) => {
               setGender(value);
             }}
-            style={{...styles}}
+            useNativeAndroidPickerStyle={false}
+            style={{
+              ...styles,
+            }}
             value={gender}
             Icon={() => {
               return (
@@ -153,7 +162,12 @@ function CreateTeamForm1({navigation, route}) {
               onValueChange={(value) => {
                 setMinAge(value);
               }}
+              useNativeAndroidPickerStyle={false}
               style={{
+                iconContainer: {
+                  top: 0,
+                  right: 0,
+                },
                 inputIOS: {
                   height: 40,
 
@@ -172,14 +186,20 @@ function CreateTeamForm1({navigation, route}) {
                   shadowRadius: 1,
                 },
                 inputAndroid: {
-                  fontSize: 16,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  borderWidth: 0.5,
-                  borderColor: 'purple',
-                  borderRadius: 8,
+                  height: 40,
+
+                  fontSize: wp('4%'),
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  width: wp('45%'),
                   color: 'black',
-                  paddingRight: 30, // to ensure the text is never behind the icon
+
+                  backgroundColor: colors.offwhite,
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: '#fff',
+
+                  elevation: 3,
                 },
               }}
               value={minAge}
@@ -204,6 +224,7 @@ function CreateTeamForm1({navigation, route}) {
               onValueChange={(value) => {
                 setMaxAge(value);
               }}
+              useNativeAndroidPickerStyle={false}
               style={{
                 inputIOS: {
                   height: 40,
@@ -223,14 +244,15 @@ function CreateTeamForm1({navigation, route}) {
                   shadowRadius: 1,
                 },
                 inputAndroid: {
-                  fontSize: 16,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  borderWidth: 0.5,
-                  borderColor: 'purple',
-                  borderRadius: 8,
+                  height: 40,
+                  fontSize: wp('4%'),
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  width: wp('45%'),
                   color: 'black',
-                  paddingRight: 30, // to ensure the text is never behind the icon
+                  backgroundColor: colors.offwhite,
+                  borderRadius: 5,
+                  elevation: 3,
                 },
               }}
               value={maxAge}
@@ -246,7 +268,7 @@ function CreateTeamForm1({navigation, route}) {
           </View>
           <View style={styles.fieldView}>
             <Text style={styles.fieldTitle}>
-              {strings.locationTitle}{' '}
+              {strings.locationTitle}
               <Text style={styles.mendatory}> {strings.star}</Text>
             </Text>
 

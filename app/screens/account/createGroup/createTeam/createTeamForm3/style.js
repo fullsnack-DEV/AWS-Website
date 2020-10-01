@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 
   nextButton: {
     width: '90%',
-    height: hp('5%'),
+    height: 45,
     alignSelf: 'center',
     marginTop: wp('12%'),
     borderRadius: 30,
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+    elevation: 3,
   },
   halfMatchFeeView: {
     flexDirection: 'row',
@@ -125,14 +126,19 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+    elevation: 3,
   },
   feeText: {
     width: '96%',
     fontSize: wp('3.8%'),
+    height: 40,
+    alignSelf: 'center',
   },
   halffeeText: {
     width: '90%',
     fontSize: wp('3.8%'),
+    height: 40,
+    alignSelf: 'center',
   },
   fieldTitle: {
     marginTop: hp('2%'),
@@ -175,6 +181,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+    elevation: 3,
   },
   miniDownArrow: {
     height: 12,

@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {color} from 'react-native-reanimated';
 
 import {
   widthPercentageToDP as wp,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
 
   nextButton: {
     width: '90%',
-    height: hp('5%'),
+    height: 45,
     alignSelf: 'center',
     marginTop: wp('12%'),
     borderRadius: 30,
@@ -76,16 +77,24 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+    elevation: 3,
   },
   inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'purple',
-    borderRadius: 8,
+    height: 40,
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+    fontSize: wp('4%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+
+    elevation: 3,
   },
   downArrow: {
     height: 12,
@@ -102,7 +111,6 @@ const styles = StyleSheet.create({
     width: 12,
     resizeMode: 'contain',
 
-    alignSelf: 'center',
     tintColor: colors.grayColor,
 
     top: 15,
@@ -150,7 +158,7 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
-    fontSize: wp('3.5%'),
+    fontSize: wp('3.8%'),
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -163,6 +171,8 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 1,
+
+    elevation: 3,
   },
   fieldView: {
     marginTop: 15,
@@ -206,12 +216,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 1,
     flexDirection: 'row',
+
+    elevation: 3,
   },
   searchTextField: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#fff',
-    color: '#424242',
+    color: colors.blackColor,
+
+    height: 40,
+    width: wp('92%'),
+    alignSelf: 'center',
   },
 });
 

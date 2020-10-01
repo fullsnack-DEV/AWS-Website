@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   LocationText: {
     marginTop: hp('2%'),
     color: colors.grayColor,
-    fontSize: wp('3.5%'),
+    fontSize: wp('3.8%'),
     textAlign: 'left',
     // fontFamily: fonts.RBold,
     paddingLeft: 15,
@@ -35,29 +35,74 @@ const styles = StyleSheet.create({
     height: 120,
     // alignSelf: 'center',
     width: wp('92%'),
-    fontSize: wp('4%'),
-    backgroundColor: colors.textFieldColor,
-    paddingLeft: 10,
-    paddingRight: 10,
+    fontSize: wp('3.8%'),
+
     marginTop: 12,
-    marginLeft: 15,
+
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
   },
+  // curruency: {
+  //   height: 40,
+  //   width: 50,
+  //   marginTop: 12,
+  //   backgroundColor: colors.textFieldColor,
+  //   textAlign: 'center',
+  //   lineHeight: 37,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   fontSize: wp('4%'),
+  // },
   curruency: {
-    height: 40,
-    width: 50,
-    marginTop: 12,
-    backgroundColor: colors.textFieldColor,
-    textAlign: 'center',
-    lineHeight: 37,
-    justifyContent: 'center',
-    alignItems: 'center',
     fontSize: wp('4%'),
+    alignSelf: 'flex-end',
   },
+  feeText: {
+    width: '96%',
+    fontSize: wp('3.8%'),
+  },
+  // matchFeeView: {
+  //   flexDirection: 'row',
+  //   height: 40,
+
+  //   marginBottom: 14,
+  // },
   matchFeeView: {
     flexDirection: 'row',
     height: 40,
 
-    marginBottom: 14,
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+    fontSize: wp('3.5%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
   },
   matchFeeTxt: {
     height: 40,
@@ -75,23 +120,37 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
+    fontSize: wp('3.5%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
+  },
+  inputAndroid: {
+    height: 40,
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
     fontSize: wp('4%'),
     paddingVertical: 12,
     paddingHorizontal: 15,
 
     color: 'black',
     paddingRight: 30,
-    backgroundColor: colors.textFieldColor, // to ensure the text is never behind the icon
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'purple',
-    borderRadius: 8,
-    color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+
+    elevation: 3,
   },
   separatorLine: {
     backgroundColor: colors.grayColor,
@@ -177,31 +236,21 @@ const styles = StyleSheet.create({
     color: colors.blackColor,
   },
   delete: {alignSelf: 'flex-end', marginRight: 15, color: colors.fbTextColor},
-  curruency: {
-    height: 40,
-    width: 50,
-    marginTop: 12,
-    backgroundColor: colors.textFieldColor,
-    textAlign: 'center',
-    lineHeight: 37,
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: wp('4%'),
-  },
-  matchFeeView: {
-    flexDirection: 'row',
-    height: 40,
-    alignSelf: 'center',
-    marginBottom: 14,
-  },
-  matchFeeTxt: {
-    height: 40,
-    //alignSelf: 'center',
-    width: wp('80%'),
-    backgroundColor: colors.textFieldColor,
 
-    paddingLeft: 10,
-    marginTop: 12,
+  nextButton: {
+    width: '90%',
+    height: 45,
+    alignSelf: 'center',
+    marginTop: wp('12%'),
+    borderRadius: 30,
+    marginBottom: 40,
+  },
+  nextButtonText: {
+    alignSelf: 'center',
+    color: colors.whiteColor,
+    fontSize: wp('4%'),
+    fontFamily: fonts.RBold,
+    marginVertical: 10,
   },
 });
 
