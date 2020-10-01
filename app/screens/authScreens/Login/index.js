@@ -1,5 +1,12 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {StyleSheet, View, Text, Image, TouchableOpacity, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -28,10 +35,12 @@ import useApi from '../../../hooks/useApi';
 import listing from '../../../api/listing';
 import storage from '../../../auth/storage';
 import Loader from '../../../components/loader/Loader';
-import styles from "./style"
-import PATH from "../../../Constants/ImagePath"
-import strings from "../../../Constants/String"
-import * as Utility from '../../../utility/index'
+import styles from './style';
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
+import * as Utility from '../../../utility/index';
+import {get} from '../../../api/services';
+import {CREATE_USER} from '../../../api/Url';
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
   password: Yup.string().required().min(6).label('Password'),
@@ -56,171 +65,131 @@ function LoginScreen({navigation}) {
   const authToken = () => {
     auth().onAuthStateChanged((user) => {
       if (user) {
-        user.getIdTokenResult().then((idTokenResult) => {
+        user.getIdTokenResult().then(async (idTokenResult) => {
           try {
-            storage.storeData('token', JSON.stringify(idTokenResult.token));
-            console.log('Stored Token: ', idTokenResult.token);
-            // storeToken(idTokenResult.token);
+            await Utility.setInLocalStorge(
+              'token',
+              JSON.stringify(idTokenResult.token),
+            );
+            const token = await Utility.getFromLocalStorge('token');
+            console.log('Stored Token: ', token);
 
-            storage.storeData('expiryTime', idTokenResult.expirationTime);
+            await Utility.setInLocalStorge(
+              'expiryTime',
+              idTokenResult.expirationTime,
+            );
+
             console.log('Expiry time....: ', idTokenResult.expirationTime);
-            // storeExpiry(idTokenResult.expirationTime);
 
-            storage.storeData('UID', user.uid);
-            tokenrefresh()
+            await Utility.setInLocalStorge('UID', JSON.stringify(user.uid));
+            //tokenrefresh();
 
-            console.log('Firebse UID:........ ', user.uid);
+            console.log('Firebse UID:........ ', JSON.stringify(user.uid));
             // navigation.navigate("NewsFeedNavigator")
-            Alert.alert("User Login sucessfull")
-        
+            getUser(JSON.stringify(user.uid));
           } catch (error) {
-            console.log("error....",error.message);
+            console.log('error....', error.message);
           }
         });
       }
     });
   };
-  getUser = (uid) => {
-    // new Promise(function (resolve, reject) {
-    //   setTimeout(() => resolve(1), 1000);
-    // })
-    //   .then(function () {
-    //     getUserData.request(JSON.parse(uid));
-    //   })
-    //   .then(function () {
-    //     console.log('PAYLOAD::', getUserData.data);
-    //     if (
-    //       getUserData.data.status == true ||
-    //       getUserData.data.status == undefined
-    //     ) {
-    //       authContext.setUser(getUserData.data.payload);
-    //       storage.storeData('user', getUserData.data.payload);
-    //     } else if (getUserData.data.status == false) {
-    //       console.log(getUserData.data);
-    //       navigation.navigate('ChooseLocationScreen');
-    //     } else {
-    //       alert('Login not working..!!');
-    //     }
-    //   });
+  getUser = async (uid) => {
+    const value = await Utility.getFromLocalStorge('token');
+    const endPoint = CREATE_USER + JSON.parse(uid);
+    console.log('endPoint  IS: ', endPoint);
+    get(endPoint, JSON.parse(value)).then((response) => {
+      console.log('RESPONSE OF USER  IS: ', JSON.stringify(response));
+      if (response.status == true) {
+        authContext.setUser(response.payload);
+        storage.storeData('user', response.payload);
+        console.log('STATUS::', response.status);
+        console.log('authContext::', JSON.stringify(authContext.user));
 
-    getUserData.request(JSON.parse(uid));
-    if (getUserData.data.status == true) {
-      authContext.setUser(getUserData.data.payload);
-      storage.storeData('user', getUserData.data.payload);
-      console.log('STATUS::', getUserData.data.status);
-      console.log('UID of Quickblox::', uid);
-
-      QB.auth
-        .login({
-          login: JSON.parse(uid),
-          password: 'quickblox',
-        })
-        .then(function (info) {
-          alert('signed in successfully, handle info as necessary', info);
-          console.log('signed in successfully, handle info as necessary');
-          // signed in successfully, handle info as necessary
-          // info.user - user information
-          // info.session - current session
-        })
-        .catch(function (e) {
-          // handle error
-        });
-      QB.chat
-        .connect({
-          userId: JSON.parse(uid),
-          password: 'quickblox',
-        })
-        .then(function () {
-          // connected successfully
-          alert('Connected  successfully');
-        })
-        .catch(function (e) {
-          // some error occurred
-        });
-    } else if (getUserData.data.status == false) {
-      console.log('STATUS::...........', getUserData.data.status);
-      // navigation.navigate('ChooseLocationScreen');
-    }
-  };
-  const loginUser = async (email, password) => {
-    firebase.
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(async () => {
-        authToken();
-        const uid = await storage.retriveData('UID');
-        getUser(uid);
-      })
-      .catch((error) => {
-        if (error.code === 'auth/user-not-found') {
-          alert('This email address is not registerd');
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          alert('That email address is already in use!');
-        }
-        if (error.code === 'auth/invalid-email') {
-          alert('That email address is invalid!');
-        }
-      });
-  };
-const  tokenrefresh= async()=>{
-  
-  console.log("sffgfhgffasff")
-const uid =  await Utility .getFromLocalStorge("firebasetoken")
-console.log(uid)
-const vid=JSON.parse(uid)
-console.log("json remove ",vid)
-// try{
-  
-//     firebase.auth().revokeRefreshTokens(vid)
-//   .then(() => {
-//     return firebase.auth().getUser(vid);
-//   })
-//   .then((userRecord) => {
-//     return new Date(userRecord.tokensValidAfterTime).getTime() / 1000;
-//   })
-//   .then((timestamp) => {
-//     console.log('Tokens revoked at: ', timestamp);
-//   });
-// }catch(error){
-//   console.log(" firebase bekar error",error.toString(error));
-// }
-
-
-
-firebase.
-  auth().onAuthStateChanged((user) => {
-        if (user) {
-          user.getIdTokenResult().then((idTokenResult) => {
-            try {
-              storage.storeData('token.....................', JSON.stringify(idTokenResult.token));
-              console.log('Stored Token...........: ', idTokenResult.token);
-             
-            } catch (error) {
-              console.log(error.message);
-            }
+        QB.auth
+          .login({
+            login: JSON.parse(uid),
+            password: 'quickblox',
+          })
+          .then(function (info) {
+            alert('QB signed in successfully');
+            console.log('signed in successfully, handle info as necessary');
+            // signed in successfully, handle info as necessary
+            // info.user - user information
+            // info.session - current session
+          })
+          .catch(function (e) {
+            // handle error
           });
-        }
-      });
-  
-    }
+        QB.chat
+          .connect({
+            userId: JSON.parse(uid),
+            password: 'quickblox',
+          })
+          .then(function () {
+            // connected successfully
+            alert('Connected  successfully');
+          })
+          .catch(function (e) {
+            // some error occurred
+          });
+      } else {
+        alert(response.messages);
+      }
+    });
+  };
+  const tokenrefresh = async () => {
+    console.log('sffgfhgffasff');
+    const uid = await Utility.getFromLocalStorge('firebasetoken');
+    console.log(uid);
+    const vid = JSON.parse(uid);
+    console.log('json remove ', vid);
+    // try{
 
+    //     firebase.auth().revokeRefreshTokens(vid)
+    //   .then(() => {
+    //     return firebase.auth().getUser(vid);
+    //   })
+    //   .then((userRecord) => {
+    //     return new Date(userRecord.tokensValidAfterTime).getTime() / 1000;
+    //   })
+    //   .then((timestamp) => {
+    //     console.log('Tokens revoked at: ', timestamp);
+    //   });
+    // }catch(error){
+    //   console.log(" firebase bekar error",error.toString(error));
+    // }
 
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        user.getIdTokenResult().then((idTokenResult) => {
+          try {
+            storage.storeData(
+              'token.....................',
+              JSON.stringify(idTokenResult.token),
+            );
+            console.log('Stored Token...........: ', idTokenResult.token);
+          } catch (error) {
+            console.log(error.message);
+          }
+        });
+      }
+    });
+  };
 
+  const loginUsers = async (email, password) => {
+    firebase
 
-    const loginUsers = async (email, password) => {
-      
-      firebase
-      
-         .auth()
-         .signInWithEmailAndPassword(email, password)
-         .then(async res => {
-              console.log("resssss",res);
-             console.log("user",res.user.email);
-             await Utility.setInLocalStorge("useremail",res.user.email)
-             const tokeen= await Utility.getFromLocalStorge("useremail")
-             console.log("tokeeennn",tokeen)
-             navigation.navigate("BottomTab")
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(async (res) => {
+        authToken();
+        console.log('resssss', res);
+        console.log('user', res.user.email);
+        await Utility.setInLocalStorge('useremail', res.user.email);
+        const tokeen = await Utility.getFromLocalStorge('useremail');
+        console.log('tokeeennn', tokeen);
+        navigation.navigate('BottomTab');
       })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
@@ -233,8 +202,7 @@ firebase.
           alert('That email address is invalid!');
         }
       });
-
-    } 
+  };
   return (
     <View style={styles.mainContainer}>
       {/* <Loader visible={getUserData.loading} /> */}
