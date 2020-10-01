@@ -47,7 +47,20 @@ import strings from "../../../Constants/String"
 
     }
 
-
+    resend=()=>{
+      console.log("link send again ")
+      // console.log("resend link by user")
+      // firebase.auth().onAuthStateChanged(function(user) {
+      //   user.sendEmailVerification(); })
+      const user = firebase.auth().currentUser;
+  
+      user.sendEmailVerification().then(function() {
+    Alert.alert("Verification Link sucessfull")
+      }).catch(function(error) {
+        // An error happened.
+      });
+      
+    }
  
   return (
     <View style={styles.mainContainer}>
@@ -65,7 +78,7 @@ import strings from "../../../Constants/String"
           </View>
           </TouchableOpacity>
           <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>this.resend()}>
           <View style={{borderRadius:40,backgroundColor:'white',width:"80%",justifyContent:"center",alignItems:"center",alignSelf:"center",marginTop:"4%",height:50}}>
             <Text style={{color:"orange",fontSize:15,fontWeight:"700"}} >Resend Verification Link </Text>
           </View>

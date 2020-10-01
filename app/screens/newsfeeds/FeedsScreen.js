@@ -13,7 +13,7 @@ import storage from '../../auth/storage';
 import WritePost from '../../components/newsFeed/WritePost';
 import Feed from '../../components/newsFeed/Feed';
 import Loader from '../../components/loader/Loader';
-
+import NewsFeedList from "./NewsFeedList"
 const {strings, colors, fonts, urls, PATH} = constants;
 var uid = '';
 
@@ -38,12 +38,13 @@ export default function FeedsScreen({navigation, route}) {
       {/* <Loader visible={getFeedList.loading} /> */}
       <ScrollView>
         <WritePost />
-        <FlatList
+        <NewsFeedList></NewsFeedList>
+        {/* <FlatList
           data={feedData}
           keyExtractor={(feedData) => feedData.id}
           renderItem={this.renderItem}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
       </ScrollView>
     </View>
   );

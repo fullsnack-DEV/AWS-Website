@@ -42,7 +42,7 @@ function WelcomeScreen({navigation}) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('LoginScreen')}
+        onPress={() => navigation.navigate('BottomTab')}
         style={styles.alreadyView}>
         <Text style={styles.alreadyMemberText}>{strings.alreadyMember}</Text>
       </TouchableOpacity>

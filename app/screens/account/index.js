@@ -21,7 +21,7 @@ import AuthContext from '../../auth/context';
 import Separator from '../../components/Separator';
 import {get} from '../../api/services';
 import {GET_UNREAD_COUNT_URL} from '../../api/Url';
-
+import * as Utility from '../../utility/index'
 import constants from '../../config/constants';
 const {colors, fonts, urls} = constants;
 import PATH from '../../Constants/ImagePath';
@@ -76,7 +76,13 @@ export default function AccountScreen({navigation, route}) {
       // error reading value
     }
   };
-  const handleLogOut = () => {
+  const handleLogOut = async() => {
+    await Utility.removeAuthKey("useremail")
+    let tokeen= await Utility.getFromLocalStorge("useremail")
+    console.log("tokeeennn",tokeen)
+    if(tokeen==null){
+      navigation.navigate("WelcomeScreen")
+    }
     authContext.setUser(null);
     AsyncStorage.removeItem('user');
     QB.auth

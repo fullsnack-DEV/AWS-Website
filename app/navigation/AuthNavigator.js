@@ -13,7 +13,7 @@ import FollowTeams from '../screens/authScreens/FollowTeam';
 import HomeScreen from '../screens/home/HomeScreen';
 import TotalTeamsScreen from '../screens/authScreens/TotalTeam';
 import EmailVerification from "../screens/authScreens/EmailVerifiation"
-
+import BottomTab from "../components/BottomTab"
 import constants from '../config/constants';
 const {strings, colors, fonts, urls, PATH} = constants;
 
@@ -53,6 +53,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="FollowTeams" component={FollowTeams} options={{}} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{}} />
       <Stack.Screen name="EmailVerification" component={EmailVerification} options={{}} />
+      <Stack.Screen name="BottomTab" component={BottomTab} options={{headerShown: false}} />
       <Stack.Screen
         name="TotalTeamsScreen"
         component={TotalTeamsScreen}
@@ -63,3 +64,13 @@ const AuthNavigator = () => {
 };
 
 export default AuthNavigator;
+
+
+
+
+
+
+
+
+
+
