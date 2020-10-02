@@ -17,8 +17,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 export default function App() {
   const [user, setUser] = useState();
   const [switchBy, setSwitchBy] = useState('user');
-  const [team, setTeam] = useState('');
-  const [club, setClub] = useState('');
+  const [team, setTeam] = useState();
+  const [club, setClub] = useState();
   const authValue = useMemo(
     () => ({
       switchBy,
