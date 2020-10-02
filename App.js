@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 // import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
@@ -16,6 +16,22 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 export default function App() {
   const [user, setUser] = useState();
+  const [switchBy, setSwitchBy] = useState('user');
+  const [team, setTeam] = useState('');
+  const [club, setClub] = useState('');
+  const authValue = useMemo(
+    () => ({
+      switchBy,
+      setSwitchBy,
+      user,
+      setUser,
+      team,
+      setTeam,
+      club,
+      setClub,
+    }),
+    [switchBy, user, team, club],
+  );
   const appSettings = {
     appId: '79537',
     authKey: 'bMFuNaWXVNJGqzY',
@@ -46,9 +62,7 @@ export default function App() {
     //   appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
     //   measurementId: 'G-N44NC0Z1Q7',
     // });
-
     // requestPermission();
-    retriveUser();
   }, []);
   QB.settings
     .init(appSettings)
@@ -60,24 +74,9 @@ export default function App() {
       // Some error occured, look at the exception message for more details
     });
   QB.settings.enableAutoReconnect({enable: true});
-  retriveUser = async () => {
-    try {
-      const userData = await AsyncStorage.getItem('user');
-
-      console.log('User full name : ', userData.full_name);
-      if (userData !== null) {
-        setUser(userData);
-        console.log('USER RETRIVED');
-      } else {
-        console.log('USER EMPTY');
-      }
-    } catch (e) {
-      // error reading value
-    }
-  };
 
   return (
-    <AuthContext.Provider value={{user, setUser}}>
+    <AuthContext.Provider value={authValue}>
       <NavigationContainer theme={navigationTheme}>
         {user ? <AppNavigator /> : <AuthNavigator />}
         {/* <AppNavigator /> */}

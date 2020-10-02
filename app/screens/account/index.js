@@ -1,14 +1,8 @@
 import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import QB from 'quickblox-react-native-sdk';
 
-import storage from '../../auth/storage';
-import AsyncStorage from '@react-native-community/async-storage';
 import ActionSheet from 'react-native-actionsheet';
 import styles from './style';
 
@@ -18,10 +12,10 @@ import {
   ScrollView,
 } from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
-import Separator from '../../components/Separator';
+
 import {get} from '../../api/services';
 import {GET_UNREAD_COUNT_URL} from '../../api/Url';
-import * as Utility from '../../utility/index'
+import * as Utility from '../../utility/index';
 import constants from '../../config/constants';
 const {colors, fonts, urls} = constants;
 import PATH from '../../Constants/ImagePath';
@@ -29,6 +23,7 @@ import strings from '../../Constants/String';
 
 export default function AccountScreen({navigation, route}) {
   const [token, setToken] = useState('');
+  const [group, setGroup] = useState([]);
   const authContext = useContext(AuthContext);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,9 +38,9 @@ export default function AccountScreen({navigation, route}) {
     });
   }, [navigation]);
   useEffect(() => {
+    //alert(JSON.stringify(authContext.user));
     getToken();
-    get(GET_UNREAD_COUNT_URL, token);
-  });
+  }, []);
 
   const connectChat = () => {
     QB.chat
@@ -65,10 +60,26 @@ export default function AccountScreen({navigation, route}) {
   };
   const getToken = async () => {
     try {
-      const value = await AsyncStorage.getItem('token');
+      const value = await Utility.getFromLocalStorge('token');
+
       if (value !== null) {
-        console.log('TOKEN RETRIVED... ');
+        console.log('TOKEN RETRIVED...:::', value);
         setToken(value);
+        get(GET_UNREAD_COUNT_URL, JSON.parse(value)).then((response) => {
+          console.log(
+            'RESPONSE OF UNREAD COUNT IS: ',
+            JSON.stringify(response),
+          );
+          if (response.status == true) {
+            let teams = response.payload.teams;
+            let clubs = response.payload.clubs;
+            const groups = [...clubs, ...teams];
+
+            setGroup(groups);
+          } else {
+            alert(response.messages);
+          }
+        });
       } else {
         console.log('TOKEN::::::::::::EMPTY');
       }
@@ -76,15 +87,26 @@ export default function AccountScreen({navigation, route}) {
       // error reading value
     }
   };
-  const handleLogOut = async() => {
-    await Utility.removeAuthKey("useremail")
-    let tokeen= await Utility.getFromLocalStorge("useremail")
-    console.log("tokeeennn",tokeen)
-    if(tokeen==null){
-      navigation.navigate("WelcomeScreen")
+  const switchProfile = (item) => {
+    authContext.setClub(item);
+    if (item.entity_type == 'club') {
+      authContext.setSwitchBy('club');
+      console.log('ITEM:', item.entity_type);
+    }
+    if (item.entity_type == 'team') {
+      authContext.setSwitchBy('club');
+    }
+  };
+  const handleLogOut = async () => {
+    await Utility.removeAuthKey('token');
+
+    let tokeen = await Utility.getFromLocalStorge('token');
+    console.log('tokeeennn', tokeen);
+    if (tokeen == null) {
+      navigation.navigate('WelcomeScreen');
     }
     authContext.setUser(null);
-    AsyncStorage.removeItem('user');
+    await Utility.removeAuthKey('user');
     QB.auth
       .logout()
       .then(function () {
@@ -115,9 +137,15 @@ export default function AccountScreen({navigation, route}) {
   return (
     <ScrollView style={styles.mainContainer}>
       <View style={styles.profileView}>
-        <Image source={PATH.profilePlaceHolder} style={styles.profileImg} />
-        <Text style={styles.nameText}>Kishan Makani</Text>
-        <Text style={styles.locationText}>Vancouver, BC</Text>
+        <Image
+          source={{uri: authContext.user.full_image}}
+          style={styles.profileImg}
+        />
+
+        <Text style={styles.nameText}>{authContext.user.full_name}</Text>
+        <Text style={styles.locationText}>
+          {authContext.user.city}, {authContext.user.state_abbr}
+        </Text>
       </View>
       <View style={styles.separatorLine}></View>
       <FlatList
@@ -152,21 +180,56 @@ export default function AccountScreen({navigation, route}) {
       <View style={styles.separatorView}></View>
       <Text style={styles.switchAccount}>Switch Account</Text>
       <FlatList
-        data={[
-          {key: 'Schedule'},
-          {key: 'Referee'},
-          {key: 'Teams'},
-          {key: 'Clubs'},
-          {key: 'Leagues'},
-        ]}
-        renderItem={({item}) => (
+        data={group}
+        renderItem={({item, index}) => (
           <TouchableWithoutFeedback
             style={styles.listContainer}
-            onPress={() => alert('clicked row..!!')}>
-            <Image source={PATH} style={styles.entityImg} />
+            onPress={() => {
+              switchProfile({item});
+            }}>
+            <View>
+              {!item.full_image && item.entity_type == 'club' && (
+                <Image source={PATH.club_ph} style={styles.entityImg} />
+              )}
+              {item.entity_type == 'team' && (
+                <Image source={PATH.team_ph} style={styles.entityImg} />
+              )}
+
+              {item.full_image && (
+                <Image
+                  source={{uri: item.full_image}}
+                  style={styles.entityImg}
+                />
+              )}
+
+              {item.unread > 0 && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    right: 10,
+                    top: 10,
+
+                    backgroundColor: 'red',
+                    height: 20,
+                    width: 20,
+                    borderRadius: 10,
+                  }}>
+                  <Text
+                    style={{
+                      alignSelf: 'center',
+                      color: colors.whiteColor,
+                    }}>
+                    {item.unread}
+                  </Text>
+                </View>
+              )}
+            </View>
+
             <View style={styles.textContainer}>
-              <Text style={styles.entityNameText}>Kishan Makani</Text>
-              <Text style={styles.entityLocationText}>Vancouver, BC</Text>
+              <Text style={styles.entityNameText}>{item.group_name}</Text>
+              <Text style={styles.entityLocationText}>
+                {item.city},{item.state_abbr}
+              </Text>
             </View>
           </TouchableWithoutFeedback>
         )}

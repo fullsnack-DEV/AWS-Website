@@ -1,5 +1,5 @@
-import React,{useEffect, useState}  from 'react';
-import { View, Text, Image, TouchableOpacity, Alert} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Image, TouchableOpacity, Alert} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -8,11 +8,10 @@ import {
 
 import FacebookButton from '../../../components/FacebookButton';
 import GoogleButton from '../../../components/GoogleButton';
-import styles from "./style"
-import PATH from "../../../Constants/ImagePath"
-import strings from "../../../Constants/String"
+import styles from './style';
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
 function WelcomeScreen({navigation}) {
- 
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={PATH.orangeLayer} />
@@ -42,13 +41,12 @@ function WelcomeScreen({navigation}) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('BottomTab')}
+        onPress={() => navigation.navigate('LoginScreen')}
         style={styles.alreadyView}>
         <Text style={styles.alreadyMemberText}>{strings.alreadyMember}</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
 
 export default WelcomeScreen;

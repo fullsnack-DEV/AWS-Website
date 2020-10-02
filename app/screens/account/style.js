@@ -30,14 +30,14 @@ const styles = StyleSheet.create({
   nameText: {
     marginTop: hp('1%'),
     fontSize: wp('5%'),
-    // fontFamily: fonts.RRegular,
-    color: colors.blackColor,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
     alignSelf: 'center',
   },
   locationText: {
     fontSize: wp('4%'),
-    // fontFamily: fonts.RLight,
-    color: colors.blackColor,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
     alignSelf: 'center',
   },
   logout: {
@@ -100,19 +100,19 @@ const styles = StyleSheet.create({
   entityNameText: {
     marginTop: hp('1%'),
     fontSize: wp('4%'),
-    // fontFamily: fonts.RBold,
-    color: colors.blackColor,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
   },
   entityLocationText: {
-    fontSize: wp('4%'),
-    // fontFamily: fonts.RLight,
-    color: colors.blackColor,
+    fontSize: wp('3.8%'),
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginTop: 5,
   },
   entityImg: {
     height: 60,
     width: 60,
     resizeMode: 'cover',
-    backgroundColor: colors.grayColor,
 
     alignSelf: 'center',
     borderRadius: 10,
