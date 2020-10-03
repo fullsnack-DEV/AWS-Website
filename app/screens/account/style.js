@@ -38,12 +38,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteColor,
   },
+  clubView: {
+    height: 30,
+    width: 30,
+    resizeMode: 'cover',
+    //backgroundColor: colors.themeColor,
+
+    alignSelf: 'center',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: colors.whiteColor,
+  },
   nameText: {
     marginTop: hp('1%'),
     fontSize: wp('4.5%'),
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     alignSelf: 'center',
+  },
+  clubNameText: {
+    fontSize: wp('3.5%'),
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    marginLeft: 10,
   },
   locationText: {
     fontSize: wp('4%'),
@@ -75,6 +93,18 @@ const styles = StyleSheet.create({
     tintColor: colors.grayColor,
 
     marginRight: 10,
+  },
+  nextArrowClub: {
+    position: 'absolute',
+    right: 15,
+    height: 18,
+    width: 18,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
+    alignSelf: 'center',
+    tintColor: colors.grayColor,
+
+    marginRight: 0,
   },
   listContainer: {
     flex: 1,
@@ -179,6 +209,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginLeft: 10,
     marginTop: 10,
+    alignSelf: 'center',
+  },
+  clubBadge: {
+    backgroundColor: colors.purpleColor,
+    height: 16,
+    width: 16,
+    borderRadius: 3,
+    marginLeft: 10,
+
     alignSelf: 'center',
   },
 });

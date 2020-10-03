@@ -159,7 +159,7 @@ export const heightPercentageToDP = (heightPercent) => {
   const elemHeight = parseFloat(heightPercent);
   return PixelRatio.roundToNearestPixel((screenHeight * elemHeight) / 100);
 };
-export const AuthToken = async (key: String) => {
+export const AuthToken = async (key) => {
   try {
     const token = await AsyncStorage.getItem(key);
     return token ? JSON.parse(token) : null;

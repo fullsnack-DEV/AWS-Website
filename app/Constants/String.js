@@ -52,7 +52,8 @@ const strings = {
   locationTitle: 'Location',
   searchCityPlaceholder: 'Search by city or postal code',
   requiredText: 'required',
-
+  clubBelongText: 'The created team will belong to',
+  clubText: 'Club',
   //CreateTeam Screen 2
 
   membershipTitle: 'Membership',
@@ -115,6 +116,7 @@ const strings = {
   //CreateClub Screen 1
   clubNameTitle: 'Club Name',
   clubNameplaceholder: 'Enter Club Name',
+
   //CreateClub Screen 2
   inviteTitle: 'Invitation to Membership',
   userText: 'USER',
@@ -130,7 +132,13 @@ const strings = {
     'Does a user need the approval for his or her membership request from the club to join it?',
   approvalTeamSubTitle:
     'Does a user need the approval for its membership request from the club to join it?',
-
+  whoJoinText: 'Who can join the club?',
+  everyoneText: 'Everyone and Every team',
+  onlyPersonText: 'Only person or team invited by club',
+  whoseApprovalText:
+    'Whose approval does an applicant need when joining the club?',
+  noneText: 'None',
+  clubAdminText: 'A club admin',
   //Register Player Screen
   sportsEventsTitle: 'Sports Events',
   descriptionText: 'Description',

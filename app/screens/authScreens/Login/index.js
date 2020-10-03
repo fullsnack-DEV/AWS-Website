@@ -99,7 +99,6 @@ function LoginScreen({navigation}) {
     const endPoint = CREATE_USER + JSON.parse(uid);
     console.log('endPoint  IS: ', endPoint);
     get(endPoint, JSON.parse(value)).then((response) => {
-      console.log('RESPONSE OF USER  IS: ', JSON.stringify(response));
       if (response.status == true) {
         authContext.setUser(response.payload);
         storage.storeData('user', response.payload);

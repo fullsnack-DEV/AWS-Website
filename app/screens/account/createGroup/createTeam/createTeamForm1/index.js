@@ -42,6 +42,46 @@ function CreateTeamForm1({navigation, route}) {
           <View style={styles.form3}></View>
           <View style={styles.form4}></View>
         </View>
+        {route.params != null && (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginLeft: 15,
+                marginTop: 15,
+              }}>
+              {!route.params.clubObject.full_image && (
+                <Image source={PATH.club_ph} style={styles.profileImgGroup} />
+              )}
+
+              {route.params.clubObject.full_image && (
+                <Image
+                  source={{uri: route.params.clubObject.full_image}}
+                  style={styles.profileImgGroup}
+                />
+              )}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'center',
+                  height: 20,
+                }}>
+                <Text style={styles.nameText}>
+                  {route.params.clubObject.group_name}
+                </Text>
+                <View style={styles.identityViewClub}>
+                  <Text style={styles.badgeCounter}>C</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.separatorLine}></View>
+            <Text style={styles.clubBelongText}>
+              {strings.clubBelongText} {route.params.clubObject.group_name}{' '}
+              {strings.clubText}.
+            </Text>
+          </>
+        )}
+
         <View>
           <Text style={styles.fieldTitle}>
             {strings.SportsTextFieldTitle}

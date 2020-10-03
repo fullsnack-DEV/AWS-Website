@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   form3: {
-    backgroundColor: colors.lightgrayColor,
+    backgroundColor: colors.themeColor,
     height: 5,
     width: 10,
     marginLeft: 2,
@@ -65,71 +65,21 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     marginRight: 2,
   },
-
-  nextButtonText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontSize: wp('4%'),
-    fontFamily: fonts.RBold,
-    marginVertical: 10,
-  },
-  membershipText: {
+  registrationText: {
     fontSize: wp('5%'),
     marginLeft: 15,
     marginTop: 20,
     color: colors.lightBlackColor,
   },
-  smallText: {
-    fontSize: wp('3%'),
-    marginLeft: 20,
-    marginTop: 10,
-
-    color: colors.lightBlackColor,
-  },
-  whoJoinText: {
+  registrationDescText: {
     fontSize: wp('4%'),
-    fontFamily: fonts.RRegular,
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 15,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 10,
     marginBottom: 20,
     color: colors.lightBlackColor,
   },
-  radioImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    tintColor: colors.radioButtonColor,
-    alignSelf: 'center',
-  },
-  unSelectRadioImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    alignSelf: 'center',
-  },
-  radioButtonView: {
-    flexDirection: 'row',
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 15,
-  },
-  radioText: {
-    fontSize: wp('4%'),
-    marginLeft: 15,
-    alignSelf: 'center',
-    marginRight: 15,
-    color: colors.lightBlackColor,
-  },
-  separatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('90%'),
-    marginTop: 20,
 
-    height: 0.5,
-    alignSelf: 'center',
-  },
   curruency: {
     fontSize: wp('4%'),
     alignSelf: 'flex-end',
@@ -156,8 +106,36 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 3,
   },
+  halfMatchFeeView: {
+    flexDirection: 'row',
+    height: 40,
+
+    width: wp('46%'),
+    alignSelf: 'center',
+
+    fontSize: wp('3.5%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
+  },
   feeText: {
     width: '96%',
+    fontSize: wp('3.8%'),
+    height: 40,
+    alignSelf: 'center',
+  },
+  halffeeText: {
+    width: '90%',
     fontSize: wp('3.8%'),
     height: 40,
     alignSelf: 'center',
@@ -171,6 +149,50 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
 
     color: colors.lightBlackColor,
+  },
+  nextButtonText: {
+    alignSelf: 'center',
+    color: colors.whiteColor,
+    fontSize: wp('4%'),
+    fontFamily: fonts.RBold,
+    marginVertical: 10,
+  },
+  descriptionTxt: {
+    height: 120,
+    // alignSelf: 'center',
+    width: wp('92%'),
+    fontSize: wp('3.8%'),
+
+    marginTop: 12,
+
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
+  },
+  miniDownArrow: {
+    height: 12,
+    width: 12,
+    resizeMode: 'contain',
+
+    alignSelf: 'center',
+    tintColor: colors.grayColor,
+
+    top: 15,
+    right: 15,
   },
 });
 

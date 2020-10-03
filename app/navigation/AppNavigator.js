@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {Image, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -8,6 +8,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import AccountNavigator from './AccountNavigator';
 import NewsFeedNavigator from './NewsFeedNavigator';
 
+import AuthContext from '../auth/context';
 import constants from '../config/constants';
 const {urls, colors, fonts, endPoints} = constants;
 import PATH from '../Constants/ImagePath';
@@ -32,7 +33,8 @@ getTabBarVisibility = (route) => {
     routeName === 'CreateTeamForm3' ||
     routeName === 'CreateTeamForm4' ||
     routeName === 'CreateClubForm1' ||
-    routeName === 'CreateClubForm2'
+    routeName === 'CreateClubForm2' ||
+    routeName === 'CreateClubForm3'
   ) {
     return false;
   }
@@ -41,6 +43,16 @@ getTabBarVisibility = (route) => {
 };
 
 function AppNavigator() {
+  const authContext = useContext(AuthContext);
+  const [switchBy, setSwitchBy] = useState('user');
+  useEffect(() => {
+    switchByEntity();
+  });
+  switchByEntity = async () => {
+    const switchEntities = await Utility.getStorage('switchBy');
+    setSwitchBy(switchEntities);
+    console.log('SWITCH BY :', switchBy);
+  };
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -106,19 +118,51 @@ function AppNavigator() {
           ),
         }}
       />
-      <Tab.Screen
-        name="Account"
-        component={AccountNavigator}
-        options={({route}) => ({
-          tabBarVisible: this.getTabBarVisibility(route),
-          tabBarIcon: ({focused}) => (
-            <Image
-              source={PATH.tab_account}
-              style={focused ? styles.selectedTabImg : styles.tabImg}
-            />
-          ),
-        })}
-      />
+      {authContext.switchBy == 'team' && (
+        <Tab.Screen
+          name="Account"
+          component={AccountNavigator}
+          options={({route}) => ({
+            tabBarVisible: this.getTabBarVisibility(route),
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={PATH.team_ph}
+                style={focused ? styles.selectedEntity : styles.tabEntity}
+              />
+            ),
+          })}
+        />
+      )}
+      {authContext.switchBy == 'user' && (
+        <Tab.Screen
+          name="Account"
+          component={AccountNavigator}
+          options={({route}) => ({
+            tabBarVisible: this.getTabBarVisibility(route),
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={PATH.tab_account}
+                style={focused ? styles.selectedTabImg : styles.tabImg}
+              />
+            ),
+          })}
+        />
+      )}
+      {authContext.switchBy == 'club' && (
+        <Tab.Screen
+          name="Account"
+          component={AccountNavigator}
+          options={({route}) => ({
+            tabBarVisible: this.getTabBarVisibility(route),
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={PATH.club_ph}
+                style={focused ? styles.selectedEntity : styles.tabEntity}
+              />
+            ),
+          })}
+        />
+      )}
     </Tab.Navigator>
   );
 }
@@ -129,14 +173,37 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'contain',
     alignSelf: 'center',
-    tintColor: colors.grayColor,
+    borderRadius: 5,
+    //tintColor: colors.grayColor,
   },
   selectedTabImg: {
     width: 30,
     height: 30,
     resizeMode: 'contain',
     alignSelf: 'center',
+    borderRadius: 5,
     tintColor: colors.themeColor,
+  },
+  tabEntity: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: colors.grayColor,
+
+    //tintColor: colors.grayColor,
+  },
+  selectedEntity: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: colors.themeColor,
+    //tintColor: colors.themeColor,
   },
 });
 export default AppNavigator;

@@ -22,6 +22,7 @@ import CreateTeamForm4 from '../screens/account/createGroup/createTeam/createTea
 
 import CreateClubForm1 from '../screens/account/createGroup/createClub/createClubForm1';
 import CreateClubForm2 from '../screens/account/createGroup/createClub/createClubForm2';
+import CreateClubForm3 from '../screens/account/createGroup/createClub/createClubForm3';
 
 const Stack = createStackNavigator();
 
@@ -246,6 +247,22 @@ const AccountNavigator = () => {
       <Stack.Screen
         name="CreateClubForm2"
         component={CreateClubForm2}
+        options={{
+          title: 'Create a Club',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="CreateClubForm3"
+        component={CreateClubForm3}
         options={{
           title: 'Create a Club',
           headerTintColor: colors.blackColor,
