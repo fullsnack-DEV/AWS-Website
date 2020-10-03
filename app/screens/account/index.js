@@ -23,8 +23,43 @@ import strings from '../../Constants/String';
 
 export default function AccountScreen({navigation, route}) {
   const [token, setToken] = useState('');
-  const [group, setGroup] = useState([]);
+  const [switchBy, setSwitchBy] = useState('user');
+  const [group, setGroup] = useState({});
+  const [playerAdd, setPlayerAdd] = useState(false);
+  const [entities, setEntities] = useState([]);
+  const [groupList, setGroupList] = useState([]);
   const authContext = useContext(AuthContext);
+  const userMenu = [
+    {key: 'Schedule'},
+    {key: 'Referee'},
+    {key: 'Teams'},
+    {key: 'Clubs'},
+    {key: 'Leagues'},
+    {key: 'Register as a Referee'},
+    {key: 'Register as a personal player'},
+    {key: 'Create Group'},
+    {key: 'Reservations'},
+    {key: 'Payment & Payout'},
+  ];
+  const teamMenu = [
+    {key: 'Members'},
+    {key: 'Leagues'},
+    {key: 'Schedule'},
+    {key: 'Create Club'},
+    {key: 'Setting & Privacy'},
+    {key: 'Reservations'},
+    {key: 'Payment & Payout'},
+  ];
+  const clubMenu = [
+    {key: 'Members'},
+    {key: 'Teams'},
+    {key: 'Leagues'},
+    {key: 'Schedule'},
+    {key: 'Create Team'},
+    {key: 'Invite Teams'},
+    {key: 'Setting & Privacy'},
+    {key: 'Payment & Payout'},
+  ];
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -38,7 +73,6 @@ export default function AccountScreen({navigation, route}) {
     });
   }, [navigation]);
   useEffect(() => {
-    //alert(JSON.stringify(authContext.user));
     getToken();
   }, []);
 
@@ -61,21 +95,20 @@ export default function AccountScreen({navigation, route}) {
   const getToken = async () => {
     try {
       const value = await Utility.getFromLocalStorge('token');
+      const switchByGroup = await Utility.getFromLocalStorge('switchBy');
+      setSwitchBy(switchByGroup);
 
       if (value !== null) {
         console.log('TOKEN RETRIVED...:::', value);
         setToken(value);
         get(GET_UNREAD_COUNT_URL, JSON.parse(value)).then((response) => {
-          console.log(
-            'RESPONSE OF UNREAD COUNT IS: ',
-            JSON.stringify(response),
-          );
           if (response.status == true) {
             let teams = response.payload.teams;
             let clubs = response.payload.clubs;
-            const groups = [...clubs, ...teams];
-
-            setGroup(groups);
+            setEntities([...clubs, ...teams]);
+            //arr.shift();
+            setSwitchBy('user');
+            setGroupList([...clubs, ...teams]);
           } else {
             alert(response.messages);
           }
@@ -87,14 +120,76 @@ export default function AccountScreen({navigation, route}) {
       // error reading value
     }
   };
-  const switchProfile = (item) => {
-    authContext.setClub(item);
+  const switchProfile = async ({item}) => {
     if (item.entity_type == 'club') {
-      authContext.setSwitchBy('club');
-      console.log('ITEM:', item.entity_type);
+      if (!entities.includes(authContext.user, 0)) {
+        let i = entities.indexOf(authContext.user);
+        if (i == -1) {
+          entities.unshift(authContext.user);
+          //setPlayerAdd(true);
+          setGroupList(entities);
+          //setGroupList(entities);
+        }
+      }
+      let index = entities.indexOf(item);
+      if (!playerAdd) {
+        entities.splice(index, 1);
+        setGroupList(entities);
+      } else if (group.entity_type == 'player') {
+        entities.splice(index, 1);
+        setGroupList(entities);
+      } else {
+        entities.splice(index, 1, group);
+        setGroupList(entities);
+      }
+
+      await Utility.setStorage('club', item);
+      await Utility.setStorage('switchBy', 'club');
+      await Utility.removeAuthKey('team');
+      setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
+      setSwitchBy('club');
+      setGroup(item);
+      setGroupList(entities);
     }
     if (item.entity_type == 'team') {
-      authContext.setSwitchBy('club');
+      if (!entities.includes(authContext.user, 0)) {
+        let i = entities.indexOf(authContext.user);
+        if (i == -1) {
+          entities.unshift(authContext.user);
+          setPlayerAdd(true);
+          setGroupList(entities);
+        }
+      }
+
+      let index = entities.indexOf(item);
+      if (!playerAdd) {
+        entities.splice(index, 1);
+        setGroupList(entities);
+      } else if (group.entity_type == 'player') {
+        entities.splice(index, 1);
+        setGroupList(entities);
+      } else {
+        entities.splice(index, 1, group);
+        setGroupList(entities);
+      }
+
+      await Utility.setStorage('team', item);
+      await Utility.setStorage('switchBy', 'team');
+      await Utility.removeAuthKey('club');
+      setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
+      setSwitchBy('team');
+      setGroup(item);
+      setGroupList(entities);
+    }
+    if (item.entity_type == 'player') {
+      await Utility.setStorage('switchBy', 'user');
+      await Utility.removeAuthKey('club');
+      await Utility.removeAuthKey('team');
+      entities.splice(0, 1);
+      entities.push(group);
+      setSwitchBy('user');
+      setGroup(item);
+      setGroupList(entities);
     }
   };
   const handleLogOut = async () => {
@@ -136,51 +231,144 @@ export default function AccountScreen({navigation, route}) {
   };
   return (
     <ScrollView style={styles.mainContainer}>
-      <View style={styles.profileView}>
-        <Image
-          source={{uri: authContext.user.full_image}}
-          style={styles.profileImg}
-        />
+      {switchBy == 'user' && (
+        <View style={styles.profileView}>
+          {!authContext.user.full_image && (
+            <Image source={PATH.profilePlaceHolder} style={styles.entityImg} />
+          )}
+          {authContext.user.full_image && (
+            <Image
+              source={{uri: authContext.user.full_image}}
+              style={styles.profileImg}
+            />
+          )}
 
-        <Text style={styles.nameText}>{authContext.user.full_name}</Text>
-        <Text style={styles.locationText}>
-          {authContext.user.city}, {authContext.user.state_abbr}
-        </Text>
-      </View>
-      <View style={styles.separatorLine}></View>
-      <FlatList
-        data={[
-          {key: 'Schedule'},
-          {key: 'Referee'},
-          {key: 'Teams'},
-          {key: 'Clubs'},
-          {key: 'Leagues'},
-          {key: 'Register as a Referee'},
-          {key: 'Register as a personal player'},
-          {key: 'Create Group'},
-          {key: 'Reservations'},
-          {key: 'Payment & Payout'},
-        ]}
-        renderItem={({item, index}) => (
-          <TouchableWithoutFeedback
-            style={styles.listContainer}
-            onPress={() => {
-              handleOpetions({item});
+          <Text style={styles.nameText}>{authContext.user.full_name}</Text>
+          <Text style={styles.locationText}>
+            {authContext.user.city}, {authContext.user.state_abbr}
+          </Text>
+        </View>
+      )}
+      {switchBy == 'team' && (
+        <View style={styles.profileView}>
+          {!group.full_image && (
+            <Image source={PATH.team_ph} style={styles.profileImgGroup} />
+          )}
+
+          {group.full_image && (
+            <Image
+              source={{uri: group.full_image}}
+              style={styles.profileImgGroup}
+            />
+          )}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+              paddingLeft: 30,
             }}>
-            <Text style={styles.listItems}>{item.key}</Text>
-            <Image source={PATH.nextArrow} style={styles.nextArrow} />
-          </TouchableWithoutFeedback>
-        )}
-        ItemSeparatorComponent={() => (
-          <View style={styles.separatorLine}></View>
-        )}
-        scrollEnabled={false}
-      />
+            <Text style={styles.nameText}>{group.group_name}</Text>
+            <View style={styles.identityView}>
+              <Text style={styles.badgeCounter}>T</Text>
+            </View>
+          </View>
 
+          <Text style={styles.locationText}>
+            {group.city}, {group.state_abbr}
+          </Text>
+        </View>
+      )}
+      {switchBy == 'club' && (
+        <View style={styles.profileView}>
+          {!group.full_image && (
+            <Image source={PATH.club_ph} style={styles.profileImgGroup} />
+          )}
+
+          {group.full_image && (
+            <Image
+              source={{uri: group.full_image}}
+              style={styles.profileImgGroup}
+            />
+          )}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+              paddingLeft: 30,
+            }}>
+            <Text style={styles.nameText}>{group.group_name}</Text>
+            <View style={styles.identityViewClub}>
+              <Text style={styles.badgeCounter}>C</Text>
+            </View>
+          </View>
+
+          <Text style={styles.locationText}>
+            {group.city}, {group.state_abbr}
+          </Text>
+        </View>
+      )}
+      <View style={styles.separatorLine}></View>
+      {switchBy == 'user' && (
+        <FlatList
+          data={userMenu}
+          renderItem={({item, index}) => (
+            <TouchableWithoutFeedback
+              style={styles.listContainer}
+              onPress={() => {
+                handleOpetions({item});
+              }}>
+              <Text style={styles.listItems}>{item.key}</Text>
+              <Image source={PATH.nextArrow} style={styles.nextArrow} />
+            </TouchableWithoutFeedback>
+          )}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separatorLine}></View>
+          )}
+          scrollEnabled={false}
+        />
+      )}
+      {switchBy == 'team' && (
+        <FlatList
+          data={teamMenu}
+          renderItem={({item, index}) => (
+            <TouchableWithoutFeedback
+              style={styles.listContainer}
+              onPress={() => {
+                handleOpetions({item});
+              }}>
+              <Text style={styles.listItems}>{item.key}</Text>
+              <Image source={PATH.nextArrow} style={styles.nextArrow} />
+            </TouchableWithoutFeedback>
+          )}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separatorLine}></View>
+          )}
+          scrollEnabled={false}
+        />
+      )}
+      {switchBy == 'club' && (
+        <FlatList
+          data={clubMenu}
+          renderItem={({item, index}) => (
+            <TouchableWithoutFeedback
+              style={styles.listContainer}
+              onPress={() => {
+                handleOpetions({item});
+              }}>
+              <Text style={styles.listItems}>{item.key}</Text>
+              <Image source={PATH.nextArrow} style={styles.nextArrow} />
+            </TouchableWithoutFeedback>
+          )}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separatorLine}></View>
+          )}
+          scrollEnabled={false}
+        />
+      )}
       <View style={styles.separatorView}></View>
       <Text style={styles.switchAccount}>Switch Account</Text>
       <FlatList
-        data={group}
+        data={groupList}
         renderItem={({item, index}) => (
           <TouchableWithoutFeedback
             style={styles.listContainer}
@@ -188,45 +376,54 @@ export default function AccountScreen({navigation, route}) {
               switchProfile({item});
             }}>
             <View>
-              {!item.full_image && item.entity_type == 'club' && (
-                <Image source={PATH.club_ph} style={styles.entityImg} />
-              )}
-              {item.entity_type == 'team' && (
-                <Image source={PATH.team_ph} style={styles.entityImg} />
-              )}
-
-              {item.full_image && (
-                <Image
-                  source={{uri: item.full_image}}
-                  style={styles.entityImg}
-                />
-              )}
+              {item.entity_type == 'player' &&
+                (item.full_image ? (
+                  <Image
+                    source={{uri: item.full_image}}
+                    style={styles.playerImg}
+                  />
+                ) : (
+                  <Image
+                    source={PATH.profilePlaceHolder}
+                    style={styles.entityImg}
+                  />
+                ))}
+              {item.entity_type == 'club' &&
+                (item.full_image ? (
+                  <Image
+                    source={{uri: item.full_image}}
+                    style={styles.entityImg}
+                  />
+                ) : (
+                  <Image source={PATH.club_ph} style={styles.entityImg} />
+                ))}
+              {item.entity_type == 'team' &&
+                (item.full_image ? (
+                  <Image
+                    source={{uri: item.full_image}}
+                    style={styles.entityImg}
+                  />
+                ) : (
+                  <Image source={PATH.team_ph} style={styles.entityImg} />
+                ))}
 
               {item.unread > 0 && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    right: 10,
-                    top: 10,
-
-                    backgroundColor: 'red',
-                    height: 20,
-                    width: 20,
-                    borderRadius: 10,
-                  }}>
-                  <Text
-                    style={{
-                      alignSelf: 'center',
-                      color: colors.whiteColor,
-                    }}>
-                    {item.unread}
-                  </Text>
+                <View style={styles.badgeView}>
+                  <Text style={styles.badgeCounter}>{item.unread}</Text>
                 </View>
               )}
             </View>
 
             <View style={styles.textContainer}>
-              <Text style={styles.entityNameText}>{item.group_name}</Text>
+              {item.entity_type == 'player' && (
+                <Text style={styles.entityNameText}>{item.full_name}</Text>
+              )}
+              {item.entity_type == 'team' && (
+                <Text style={styles.entityNameText}>{item.group_name}</Text>
+              )}
+              {item.entity_type == 'club' && (
+                <Text style={styles.entityNameText}>{item.group_name}</Text>
+              )}
               <Text style={styles.entityLocationText}>
                 {item.city},{item.state_abbr}
               </Text>

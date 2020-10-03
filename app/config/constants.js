@@ -39,6 +39,8 @@ const colors = {
   offwhite: '#fcfcfc',
   radioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
+  purpleColor: '#c08bd1',
+  lightBlueColor: '#5ecceb',
 };
 
 const fonts = {
@@ -83,7 +85,6 @@ const fonts = {
 //   checkEditor: require('../assets/images/ic_check_editor.png'),
 //   uncheckEditor: require('../assets/images/ic_uncheck_editor.png'),
 
-
 //   groupIcon: require('../assets/images/ic_group.png'),
 //   club_ph: require('../assets/images/club_profile_placeholder.png'),
 //   team_ph: require('../assets/images/team_profile_placeholder.png'),
@@ -118,10 +119,6 @@ const fonts = {
 //   videoPlayerHandle: require('../assets/images/oval.png'),
 // };
 
-  
-
-
-
 const endPoints = {
   createProfile: 'users',
   searchTeams: 'groups/search',
@@ -132,4 +129,4 @@ const endPoints = {
   getNewsFeeds: 'newsfeeds',
 };
 
-export default { urls,  fonts,endPoints,colors};
+export default {urls, fonts, endPoints, colors};
