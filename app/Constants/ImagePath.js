@@ -49,6 +49,7 @@ const PATH = {
   club_ph_selected: require('../assets/images/club_profile_placeholder_selected.png'),
 
   team_ph: require('../assets/images/team_profile_placeholder.png'),
+  group_ph: require('../assets/images/group_ph.png'),
   team_ph_selected: require('../assets/images/team_profile_placeholder_selected.png'),
 
   tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
@@ -64,6 +65,8 @@ const PATH = {
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
+
+  backArrow: require('../assets/images/back_arrow.png'),
 };
 
 export default PATH;

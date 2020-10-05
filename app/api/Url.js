@@ -10,3 +10,4 @@ export const GET_LOCATION =
 export const GROUP_SEARCH = '/groups/search?';
 export const CREATE_USER = 'users/';
 export const GET_PARENT_CLUB = 'groups/';
+export const CREATE_TEAM = 'groups';

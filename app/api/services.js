@@ -1,7 +1,7 @@
 import * as Url from './Url';
 import {alert, Alert} from 'react-native';
 
-export const get = async (url, token) => {
+export const get = async (url, token, caller_id, caller) => {
   var headers;
 
   if (token == '' || token == null || token == undefined) {
@@ -10,11 +10,28 @@ export const get = async (url, token) => {
       'Content-Type': 'application/json',
     };
   } else {
-    headers = {
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'application/json',
-    };
+    if (caller_id == null && caller == null) {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      };
+    } else if (caller == null) {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        caller_id: '' + caller_id,
+      };
+    } else {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        caller_id: '' + caller_id,
+        caller: '' + caller,
+      };
+    }
   }
   const completeUrl = Url.BASE_URL + url;
   console.log('completeUrl', completeUrl);
@@ -81,7 +98,7 @@ export const upLoad = async (url, token, body) => {
   }
 };
 
-export const post = async (url, token, body) => {
+export const post = async (url, token, body, caller_id, caller) => {
   var headers;
   if (token == '' || token == null || token == undefined) {
     headers = {
@@ -89,10 +106,28 @@ export const post = async (url, token, body) => {
       'Content-Type': 'application/json',
     };
   } else {
-    headers = {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + token,
-    };
+    if (caller_id == null && caller == null) {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      };
+    } else if (caller == null) {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        caller_id: '' + caller_id,
+      };
+    } else {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        caller_id: '' + caller_id,
+        caller: '' + caller,
+      };
+    }
   }
 
   let data = JSON.stringify(body);
@@ -104,15 +139,9 @@ export const post = async (url, token, body) => {
     body: data,
   });
   let res = await response.json();
+  console.log('ressssssponsse', JSON.stringify(res));
   if (res !== null) {
-    if (res !== null && Object.keys(res).length !== 0) {
-      if (res.statusCode === 200 || res.statusCode === 303) {
-        return res;
-      }
-    }
-    console.log('res', res);
-    Alert.alert('', res.error);
-
+    return res;
     // throw new Error(res.error)
   }
 };
