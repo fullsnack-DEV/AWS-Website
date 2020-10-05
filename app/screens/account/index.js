@@ -14,7 +14,7 @@ import {
 import AuthContext from '../../auth/context';
 
 import {get} from '../../api/services';
-import {GET_UNREAD_COUNT_URL} from '../../api/Url';
+import {GET_UNREAD_COUNT_URL, GET_PARENT_CLUB} from '../../api/Url';
 import * as Utility from '../../utility/index';
 import constants from '../../config/constants';
 const {colors, fonts, urls} = constants;
@@ -25,10 +25,14 @@ export default function AccountScreen({navigation, route}) {
   const [token, setToken] = useState('');
   const [switchBy, setSwitchBy] = useState('user');
   const [group, setGroup] = useState({});
+  const [parentGroup, setParentGroup] = useState(null);
+
   const [playerAdd, setPlayerAdd] = useState(false);
   const [entities, setEntities] = useState([]);
   const [groupList, setGroupList] = useState([]);
   const authContext = useContext(AuthContext);
+
+  //Account menu opetions
   const userMenu = [
     {key: 'Schedule'},
     {key: 'Referee'},
@@ -45,7 +49,7 @@ export default function AccountScreen({navigation, route}) {
     {key: 'Members'},
     {key: 'Leagues'},
     {key: 'Schedule'},
-    {key: 'Create Club'},
+    {key: 'Create a Club'},
     {key: 'Setting & Privacy'},
     {key: 'Reservations'},
     {key: 'Payment & Payout'},
@@ -55,10 +59,32 @@ export default function AccountScreen({navigation, route}) {
     {key: 'Teams'},
     {key: 'Leagues'},
     {key: 'Schedule'},
-    {key: 'Create Team'},
+    {key: 'Create a Team'},
     {key: 'Invite Teams'},
     {key: 'Setting & Privacy'},
     {key: 'Payment & Payout'},
+  ];
+
+  // Payment menu opetions
+  const userPaymentOpetions = [
+    'Payment Method',
+    'Payout Method',
+    'Received Invoices',
+    'Transactions',
+    'Cancel',
+  ];
+  const teamPaymentOpetions = [
+    'Payment Method',
+    'Payout Method',
+    'Invoicing',
+    'Transactions',
+    'Cancel',
+  ];
+  const clubPaymentOpetions = [
+    'Payment Method',
+    'Payout Method',
+    'Transactions',
+    'Cancel',
   ];
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -83,7 +109,6 @@ export default function AccountScreen({navigation, route}) {
         occupantsIds: ['jE8OTmUmJ0WyoT2zGL1Oee5PfWJ3'],
       })
       .then(function (dialog) {
-        alert('connect successfully');
         // handle as neccessary, i.e.
         // subscribe to chat events, typing events, etc.
       })
@@ -91,6 +116,35 @@ export default function AccountScreen({navigation, route}) {
         // handle error
         alert(e);
       });
+  };
+  const getParentClubDetail = async (item) => {
+    try {
+      const value = await Utility.getFromLocalStorge('token');
+      if (value !== null) {
+        console.log('TOKEN RETRIVED...:::', value);
+        let endPoint = GET_PARENT_CLUB + item.group_id;
+        get(endPoint, JSON.parse(value)).then((response) => {
+          if (response.status == true) {
+            if (response.payload.club != undefined) {
+              setParentGroup(response.payload.club);
+            } else {
+              setParentGroup(null);
+            }
+
+            console.log(
+              'GROUP API RESPONSE::',
+              JSON.stringify(response.payload),
+            );
+          } else {
+            alert(response.messages);
+          }
+        });
+      } else {
+        console.log('TOKEN::::::::::::EMPTY');
+      }
+    } catch (e) {
+      alert(e);
+    }
   };
   const getToken = async () => {
     try {
@@ -150,6 +204,7 @@ export default function AccountScreen({navigation, route}) {
       setSwitchBy('club');
       setGroup(item);
       setGroupList(entities);
+      authContext.setSwitchBy('club');
     }
     if (item.entity_type == 'team') {
       if (!entities.includes(authContext.user, 0)) {
@@ -176,10 +231,14 @@ export default function AccountScreen({navigation, route}) {
       await Utility.setStorage('team', item);
       await Utility.setStorage('switchBy', 'team');
       await Utility.removeAuthKey('club');
+
+      getParentClubDetail(item);
+
       setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
       setSwitchBy('team');
       setGroup(item);
       setGroupList(entities);
+      authContext.setSwitchBy('team');
     }
     if (item.entity_type == 'player') {
       await Utility.setStorage('switchBy', 'user');
@@ -190,6 +249,7 @@ export default function AccountScreen({navigation, route}) {
       setSwitchBy('user');
       setGroup(item);
       setGroupList(entities);
+      authContext.setSwitchBy('user');
     }
   };
   const handleLogOut = async () => {
@@ -224,6 +284,10 @@ export default function AccountScreen({navigation, route}) {
       navigation.navigate('RegisterPlayer');
     } else if (item.key == 'Create Group') {
       groupOpetionActionSheet.show();
+    } else if (item.key == 'Create a Team') {
+      navigation.navigate('CreateTeamForm1', {clubObject: group});
+    } else if (item.key == 'Create a Club') {
+      navigation.navigate('CreateClubForm1');
     } else if (item.key == 'Reservations') {
     } else if (item.key == 'Payment & Payout') {
       paymentOpetionActionSheet.show();
@@ -308,63 +372,66 @@ export default function AccountScreen({navigation, route}) {
         </View>
       )}
       <View style={styles.separatorLine}></View>
-      {switchBy == 'user' && (
-        <FlatList
-          data={userMenu}
-          renderItem={({item, index}) => (
-            <TouchableWithoutFeedback
-              style={styles.listContainer}
-              onPress={() => {
-                handleOpetions({item});
+      {parentGroup != null && (
+        <>
+          <TouchableWithoutFeedback style={{flexDirection: 'row', padding: 15}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginLeft: 15,
               }}>
-              <Text style={styles.listItems}>{item.key}</Text>
-              <Image source={PATH.nextArrow} style={styles.nextArrow} />
-            </TouchableWithoutFeedback>
-          )}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-          scrollEnabled={false}
-        />
+              {!parentGroup.full_image && (
+                <Image source={PATH.club_ph} style={styles.clubView} />
+              )}
+
+              {parentGroup.full_image && (
+                <Image
+                  source={{uri: parentGroup.full_image}}
+                  style={styles.clubView}
+                />
+              )}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'center',
+                  height: 20,
+                }}>
+                <Text style={styles.clubNameText}>
+                  {parentGroup.group_name}
+                </Text>
+                <View style={styles.clubBadge}>
+                  <Text style={styles.badgeCounter}>C</Text>
+                </View>
+              </View>
+            </View>
+            <Image source={PATH.nextArrow} style={styles.nextArrowClub} />
+          </TouchableWithoutFeedback>
+          <View style={styles.separatorLine}></View>
+        </>
       )}
-      {switchBy == 'team' && (
-        <FlatList
-          data={teamMenu}
-          renderItem={({item, index}) => (
-            <TouchableWithoutFeedback
-              style={styles.listContainer}
-              onPress={() => {
-                handleOpetions({item});
-              }}>
-              <Text style={styles.listItems}>{item.key}</Text>
-              <Image source={PATH.nextArrow} style={styles.nextArrow} />
-            </TouchableWithoutFeedback>
-          )}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-          scrollEnabled={false}
-        />
-      )}
-      {switchBy == 'club' && (
-        <FlatList
-          data={clubMenu}
-          renderItem={({item, index}) => (
-            <TouchableWithoutFeedback
-              style={styles.listContainer}
-              onPress={() => {
-                handleOpetions({item});
-              }}>
-              <Text style={styles.listItems}>{item.key}</Text>
-              <Image source={PATH.nextArrow} style={styles.nextArrow} />
-            </TouchableWithoutFeedback>
-          )}
-          ItemSeparatorComponent={() => (
-            <View style={styles.separatorLine}></View>
-          )}
-          scrollEnabled={false}
-        />
-      )}
+
+      <FlatList
+        data={
+          (switchBy == 'team' && teamMenu) ||
+          (switchBy == 'club' && clubMenu) ||
+          (switchBy == 'user' && userMenu)
+        }
+        renderItem={({item, index}) => (
+          <TouchableWithoutFeedback
+            style={styles.listContainer}
+            onPress={() => {
+              handleOpetions({item});
+            }}>
+            <Text style={styles.listItems}>{item.key}</Text>
+            <Image source={PATH.nextArrow} style={styles.nextArrow} />
+          </TouchableWithoutFeedback>
+        )}
+        ItemSeparatorComponent={() => (
+          <View style={styles.separatorLine}></View>
+        )}
+        scrollEnabled={false}
+      />
+
       <View style={styles.separatorView}></View>
       <Text style={styles.switchAccount}>Switch Account</Text>
       <FlatList
@@ -446,14 +513,16 @@ export default function AccountScreen({navigation, route}) {
       <ActionSheet
         ref={(paymentOpetion) => (paymentOpetionActionSheet = paymentOpetion)}
         //title={'Which one do you like ?'}
-        options={[
-          'Payment Method',
-          'Payout Method',
-          'Received Invoices',
-          'Transactions',
-          'Cancel',
-        ]}
-        cancelButtonIndex={4}
+        options={
+          (switchBy == 'team' && teamPaymentOpetions) ||
+          (switchBy == 'club' && clubPaymentOpetions) ||
+          (switchBy == 'user' && userPaymentOpetions)
+        }
+        cancelButtonIndex={
+          (switchBy == 'team' && teamPaymentOpetions.length - 1) ||
+          (switchBy == 'club' && clubPaymentOpetions.length - 1) ||
+          (switchBy == 'user' && userPaymentOpetions.length - 1)
+        }
         //destructiveButtonIndex={1}
         onPress={(index) => {
           /* do something */

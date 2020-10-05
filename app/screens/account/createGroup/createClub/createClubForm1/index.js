@@ -40,6 +40,7 @@ function CreateClubForm1({navigation, route}) {
         <View style={styles.formSteps}>
           <View style={styles.form1}></View>
           <View style={styles.form2}></View>
+          <View style={styles.form3}></View>
         </View>
         <View>
           <Text style={styles.fieldTitle}>

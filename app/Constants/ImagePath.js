@@ -46,7 +46,11 @@ const PATH = {
 
   groupIcon: require('../assets/images/ic_group.png'),
   club_ph: require('../assets/images/club_profile_placeholder.png'),
+  club_ph_selected: require('../assets/images/club_profile_placeholder_selected.png'),
+
   team_ph: require('../assets/images/team_profile_placeholder.png'),
+  team_ph_selected: require('../assets/images/team_profile_placeholder_selected.png'),
+
   tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
   tab_search: require('../assets/images/tab_search.png'),
   tab_home: require('../assets/images/tab_home.png'),

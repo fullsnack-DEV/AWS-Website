@@ -25,7 +25,7 @@ export const get = async (url, token) => {
   });
 
   let res = await response.json();
-  console.log('ressssssponsse', res);
+  console.log('ressssssponsse', JSON.stringify(res));
   if (res !== null) {
     return res;
 
