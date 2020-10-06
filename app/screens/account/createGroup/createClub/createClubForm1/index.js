@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 
 import {
@@ -14,6 +15,7 @@ import {
 } from 'react-native-responsive-screen';
 import RNPickerSelect, {defaultStyles} from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
+import {useIsFocused} from '@react-navigation/native';
 
 import styles from './style';
 
@@ -24,16 +26,71 @@ import strings from '../../../../../Constants/String';
 import {string} from 'yup';
 
 function CreateClubForm1({navigation, route}) {
+  const isFocused = useIsFocused();
   const [sports, setSports] = useState('');
   const [gender, setGender] = useState('');
-  const [minAge, setMinAge] = useState('');
-  const [maxAge, setMaxAge] = useState('');
+  const [minAge, setMinAge] = useState(0);
+  const [maxAge, setMaxAge] = useState(0);
   const [clubName, setClubName] = useState('');
   const [location, setLocation] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
 
-  const [description, onChangeText] = React.useState('');
-  const [matchFee, onMatchFeeChanged] = React.useState(0.0);
+  const [minAgeValue, setMinAgeValue] = React.useState([]);
+  const [maxAgeValue, setMaxAgeValue] = React.useState([]);
 
+  useEffect(() => {
+    let minAgeArray = [];
+    let maxAgeArray = [];
+    for (let i = 1; i <= 70; i++) {
+      let dataSource = {
+        label: '' + i,
+        value: i,
+      };
+      minAgeArray.push(dataSource);
+    }
+    for (let i = minAge; i <= 70; i++) {
+      let dataSource = {
+        label: '' + i,
+        value: i,
+      };
+      maxAgeArray.push(dataSource);
+    }
+    setMinAgeValue(minAgeArray);
+    setMaxAgeValue(maxAgeArray);
+    if (minAge == 0 || minAge == null) {
+      setMaxAge((maxAgeArray = []));
+    }
+
+    if (route.params && route.params.city) {
+      setCity(route.params.city);
+      setState(route.params.state);
+      setCountry(route.params.country);
+      setLocation(
+        route.params.city +
+          ', ' +
+          route.params.state +
+          ', ' +
+          route.params.country,
+      );
+    } else {
+      setCity('');
+      setState('');
+      setCountry('');
+      setLocation('');
+    }
+  }, [minAge, isFocused]);
+
+  checkValidation = () => {
+    if (sports == '') {
+      Alert.alert('Towns Cup', 'Sports cannot be blank');
+    } else if (clubName == '') {
+      Alert.alert('Towns Cup', 'Team name cannot be blank');
+    } else if (location == '') {
+      Alert.alert('Towns Cup', 'Location cannot be blank');
+    }
+  };
   return (
     <>
       <ScrollView style={styles.mainContainer}>
@@ -55,6 +112,7 @@ function CreateClubForm1({navigation, route}) {
             items={[
               {label: 'Football', value: 'football'},
               {label: 'Baseball', value: 'baseball'},
+              {label: 'Tennis', value: 'tennis'},
               {label: 'Hockey', value: 'hockey'},
             ]}
             onValueChange={(value) => {
@@ -200,10 +258,7 @@ function CreateClubForm1({navigation, route}) {
                 label: strings.minPlaceholder,
                 value: null,
               }}
-              items={[
-                {label: 'Male', value: 'male'},
-                {label: 'Female', value: 'female'},
-              ]}
+              items={minAgeValue}
               onValueChange={(value) => {
                 setMinAge(value);
               }}
@@ -261,10 +316,7 @@ function CreateClubForm1({navigation, route}) {
                 label: strings.maxPlaceholder,
                 value: null,
               }}
-              items={[
-                {label: 'Male', value: 'male'},
-                {label: 'Female', value: 'female'},
-              ]}
+              items={maxAgeValue}
               onValueChange={(value) => {
                 setMaxAge(value);
               }}
@@ -320,12 +372,19 @@ function CreateClubForm1({navigation, route}) {
               {strings.locationTitle}
               <Text style={styles.mendatory}> {strings.star}</Text>
             </Text>
-
-            <TextInput
-              placeholder={strings.searchCityPlaceholder}
-              style={styles.matchFeeTxt}
-              onChangeText={(text) => setLocation(text)}
-              value={location}></TextInput>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('SearchLocationScreen', {
+                  comeFrom: 'CreateClubForm1',
+                })
+              }>
+              <TextInput
+                placeholder={strings.searchCityPlaceholder}
+                style={styles.matchFeeTxt}
+                value={location}
+                editable={false}
+                pointerEvents="none"></TextInput>
+            </TouchableOpacity>
           </View>
           <View style={{marginLeft: 15}}>
             <Text style={styles.smallTxt}>
@@ -335,7 +394,29 @@ function CreateClubForm1({navigation, route}) {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('CreateClubForm2')}>
+          onPress={() => {
+            let form1 = {};
+            if (minAge != 0) {
+              form1.min_age = minAge;
+            } else if (maxAge != 0) {
+              form1.max_age = maxAge;
+            } else if (gender != '') {
+              form1.gender = gender;
+            }
+            checkValidation();
+            if (sports != '' && clubName != '' && location != '') {
+              navigation.navigate('CreateClubForm2', {
+                createClubForm1: {
+                  ...form1,
+                  sport: sports,
+                  group_name: clubName,
+                  city: city,
+                  state_abbr: state,
+                  country: country,
+                },
+              });
+            }
+          }}>
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>

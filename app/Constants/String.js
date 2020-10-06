@@ -30,6 +30,7 @@ const strings = {
   confirmPasswordText: 'Confirm Password',
 
   locationText: 'Your Location',
+  searchHereText: 'Search here',
   locationPlaceholderText: 'Search cities or postal codes',
   sportText: 'Select your favourite sport event.',
 
@@ -139,6 +140,8 @@ const strings = {
     'Whose approval does an applicant need when joining the club?',
   noneText: 'None',
   clubAdminText: 'A club admin',
+  inviteUserText: 'Invite user to club',
+  goToClubText: 'Go to club home',
   //Register Player Screen
   sportsEventsTitle: 'Sports Events',
   descriptionText: 'Description',

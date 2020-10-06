@@ -17,18 +17,78 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
 
+import * as Utility from '../../../../../utility/index';
+import {get, post} from '../../../../../api/services';
+import {CREATE_CLUB} from '../../../../../api/Url';
 import constants from '../../../../../config/constants';
-const {colors, fonts, urls} = constants;
+const {colors, fonts} = constants;
 import PATH from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
 function CreateClubForm3({navigation, route}) {
-  const [basicFee, setBasicFee] = useState('');
-  const [membershipFee, setMembershipFee] = useState('');
-  const [basicFeeDetail, setBasicFeeDetail] = useState('');
+  const [membershipFee, setMembershipFee] = useState(0);
   const [feeCycle, setFeeCycle] = useState('');
-
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
+  useEffect(() => {}, []);
+
+  const creatClubCall = async () => {
+    let bodyParams = {...route.params.createClubForm2};
+
+    if (feeCycle != '') {
+      bodyParams.membership_fee_type = feeCycle;
+    }
+    if (membershipFee != 0) {
+      bodyParams.membership_fee = membershipFee;
+    }
+    if (membershipFeeDetail != '') {
+      bodyParams.details = membershipFeeDetail;
+    }
+    bodyParams.privacy_profile = 'members';
+    bodyParams.allclubmemberautomatically_sync = false;
+    bodyParams.homefield_address_longitude = 0.0;
+    bodyParams.homefield_address_latitude = 0.0;
+    bodyParams.allclubmembermannually_sync = false;
+    bodyParams.office_address_longitude = 0.0;
+    bodyParams.office_address_latitude = 0.0;
+    bodyParams.privacy_events = 'everyone';
+    bodyParams.privacy_followers = 'everyone';
+    (bodyParams.createdAt = 0.0), (bodyParams.entity_type = 'club');
+    bodyParams.unread = 0;
+    console.log('BODY PARAMS:', bodyParams);
+
+    const token = await Utility.getStorage('token');
+    const switchEntity = Utility.getStorage('switchBy');
+    const teamObject = Utility.getStorage('team');
+    const endPoint = CREATE_CLUB;
+    console.log('endPoint  IS: ', endPoint, token);
+
+    if (teamObject != null) {
+      post(
+        endPoint,
+        JSON.parse(token),
+        bodyParams,
+        teamObject.group_id,
+        'team',
+      ).then((response) => {
+        if (response.status == true) {
+          navigation.navigate('ClubCreatedScreen', {
+            groupName: response.payload.group_name,
+          });
+        }
+        console.log('RESPONSE WITH TEAM IS:: ', response);
+      });
+    } else {
+      post(endPoint, JSON.parse(token), bodyParams).then((response) => {
+        if (response.status == true) {
+          navigation.navigate('ClubCreatedScreen', {
+            groupName: response.payload.group_name,
+          });
+        }
+        console.log('RESPONSE IS:: ', response);
+      });
+    }
+  };
+
   return (
     <>
       <ScrollView style={styles.mainContainer}>
@@ -139,11 +199,15 @@ function CreateClubForm3({navigation, route}) {
             placeholder={strings.membershipPlaceholder}
           />
         </View>
-        <TouchableOpacity onPress={() => console.log('filling ended..')}>
+        <TouchableOpacity
+          onPress={() => {
+            console.log('filling ended..');
+            creatClubCall();
+          }}>
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
+            <Text style={styles.nextButtonText}>{strings.doneTitle}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>

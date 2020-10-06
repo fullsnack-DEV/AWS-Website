@@ -221,12 +221,12 @@ const styles = StyleSheet.create({
   },
   searchTextField: {
     flex: 1,
-    padding: 10,
     color: colors.blackColor,
-
+    marginLeft:10,
     height: 40,
-    width: wp('92%'),
+    width: wp('80%'),
     alignSelf: 'center',
+    
   },
   profileImgGroup: {
     height: 30,

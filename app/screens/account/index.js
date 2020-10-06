@@ -262,6 +262,9 @@ export default function AccountScreen({navigation, route}) {
     }
     authContext.setUser(null);
     await Utility.removeAuthKey('user');
+    await Utility.removeAuthKey('team');
+    await Utility.removeAuthKey('club');
+    await Utility.removeAuthKey('switchBy');
     QB.auth
       .logout()
       .then(function () {
