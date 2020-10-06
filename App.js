@@ -11,6 +11,8 @@ import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
 import AsyncStorage from '@react-native-community/async-storage';
+import * as Utility from './app/utility/index';
+import TeamCreatedScreen from './app/screens/account/createGroup/createTeam/teamCreated';
 // import ChooseSportsScreen from './app/screens/authScreens/ChooseSportsScreen';
 // import NewsFeedVideoPlayer from './app/screens/newsfeeds/NewsFeedVideoPlayer';
 
@@ -32,6 +34,14 @@ export default function App() {
     }),
     [switchBy, user, team, club],
   );
+
+  const getLoginUserDetail = async () => {
+    const loginUserObject = await Utility.getStorage('user');
+    console.log('USER OBJECT EXISTS:', JSON.stringify(loginUserObject));
+    if (loginUserObject != null || loginUserObject != undefined)
+      setUser(loginUserObject);
+  };
+
   const appSettings = {
     appId: '79537',
     authKey: 'bMFuNaWXVNJGqzY',
@@ -63,6 +73,8 @@ export default function App() {
     //   measurementId: 'G-N44NC0Z1Q7',
     // });
     // requestPermission();
+
+    getLoginUserDetail();
   }, []);
   QB.settings
     .init(appSettings)
@@ -81,6 +93,7 @@ export default function App() {
         {user ? <AppNavigator /> : <AuthNavigator />}
         {/* <AppNavigator /> */}
         {/* <NewsFeedVideoPlayer /> */}
+        {/* {<TeamCreatedScreen />} */}
       </NavigationContainer>
     </AuthContext.Provider>
   );

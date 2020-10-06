@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Component} from 'react';
+import React, {useState, useEffect, Component, useContext} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,10 @@ import RNPickerSelect, {defaultStyles} from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
+import AuthContext from '../../../../../auth/context';
+import * as Utility from '../../../../../utility/index';
+import {get, post} from '../../../../../api/services';
+import {CREATE_TEAM} from '../../../../../api/Url';
 
 import constants from '../../../../../config/constants';
 const {colors, fonts, urls} = constants;
@@ -26,6 +30,74 @@ import strings from '../../../../../Constants/String';
 function CreateTeamForm4({navigation, route}) {
   const [selected, setSelected] = useState(0);
   const [matchFee, setMatchFee] = useState(0.0);
+
+  const creatTeamCall = async () => {
+    let bodyParams = {...route.params.createTeamForm3};
+
+    if (selected == 0) {
+      bodyParams.cancellation_policy = 'strict';
+    } else if (selected == 1) {
+      bodyParams.cancellation_policy = 'moderate';
+    } else {
+      bodyParams.cancellation_policy = 'flexible';
+    }
+
+    bodyParams.gamefee = matchFee;
+    bodyParams.invite_required = false;
+    bodyParams.privacy_profile = 'members';
+    bodyParams.createdAt = 0.0;
+    bodyParams.unread = 0;
+    bodyParams.homefield_address_longitude = 0.0;
+    bodyParams.homefield_address_latitude = 0.0;
+    bodyParams.office_address_latitude = 0.0;
+    bodyParams.office_address_longitude = 0.0;
+    bodyParams.privacy_members = 'everyone';
+    bodyParams.approval_required = false;
+    bodyParams.is_following = false;
+    bodyParams.privacy_events = 'everyone';
+    bodyParams.is_joined = false;
+    bodyParams.privacy_followers = 'everyone';
+    bodyParams.entity_type = 'team';
+    bodyParams.is_admin = false;
+    bodyParams.should_hide = false;
+    console.log('bodyPARAMS:: ', bodyParams);
+
+    const token = await Utility.getStorage('token');
+    const switchEntity = Utility.getStorage('switchBy');
+    const clubObject = Utility.getStorage('club');
+    const endPoint = CREATE_TEAM;
+    console.log('endPoint  IS: ', endPoint, token);
+    if (clubObject != null) {
+      post(
+        endPoint,
+        JSON.parse(token),
+        bodyParams,
+        clubObject.group_id,
+        'club',
+      ).then((response) => {
+        if (response.status == true) {
+          navigation.navigate('TeamCreatedScreen', {
+            groupName: response.payload.group_name,
+          });
+        }
+        console.log('RESPONSE IS:: ', response);
+      });
+    } else {
+      post(endPoint, JSON.parse(token), bodyParams).then((response) => {
+        if (response.status == true) {
+          navigation.navigate('TeamCreatedScreen', {
+            groupName: response.payload.group_name,
+          });
+        }
+        console.log('RESPONSE IS:: ', response);
+      });
+    }
+    navigation.navigate('TeamCreatedScreen', {
+      // groupName: response.payload.group_name,
+      groupName: 'Kishan Football Team',
+    });
+  };
+
   return (
     <>
       <ScrollView style={styles.mainContainer}>
@@ -165,7 +237,7 @@ function CreateTeamForm4({navigation, route}) {
           </View>
         )}
 
-        <TouchableOpacity onPress={() => console.log('Form filling ended')}>
+        <TouchableOpacity onPress={() => creatTeamCall()}>
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>

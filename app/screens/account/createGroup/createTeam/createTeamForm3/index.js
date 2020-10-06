@@ -23,12 +23,12 @@ import PATH from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
 function CreateTeamForm3({navigation, route}) {
-  const [basicFee, setBasicFee] = useState('');
-  const [membershipFee, setMembershipFee] = useState('');
+  const [basicFee, setBasicFee] = useState(0.0);
+  const [membershipFee, setMembershipFee] = useState(0.0);
   const [basicFeeDetail, setBasicFeeDetail] = useState('');
   const [feeCycle, setFeeCycle] = useState('');
-
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
+
   return (
     <>
       <ScrollView style={styles.mainContainer}>
@@ -171,7 +171,18 @@ function CreateTeamForm3({navigation, route}) {
           />
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('CreateTeamForm4')}>
+          onPress={() =>
+            navigation.navigate('CreateTeamForm4', {
+              createTeamForm3: {
+                ...route.params.createTeamForm2,
+                registration_fee: basicFee,
+                registration_details: basicFeeDetail,
+                membership_fee_type: feeCycle,
+                membership_fee: membershipFee,
+                details: membershipFeeDetail,
+              },
+            })
+          }>
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>

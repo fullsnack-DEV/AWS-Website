@@ -19,10 +19,13 @@ import CreateTeamForm1 from '../screens/account/createGroup/createTeam/createTea
 import CreateTeamForm2 from '../screens/account/createGroup/createTeam/createTeamForm2';
 import CreateTeamForm3 from '../screens/account/createGroup/createTeam/createTeamForm3';
 import CreateTeamForm4 from '../screens/account/createGroup/createTeam/createTeamForm4';
+import TeamCreatedScreen from '../screens/account/createGroup/createTeam/teamCreated';
 
 import CreateClubForm1 from '../screens/account/createGroup/createClub/createClubForm1';
 import CreateClubForm2 from '../screens/account/createGroup/createClub/createClubForm2';
 import CreateClubForm3 from '../screens/account/createGroup/createClub/createClubForm3';
+
+import SearchLocationScreen from '../screens/account/commonScreen/searchLocation';
 
 const Stack = createStackNavigator();
 
@@ -274,6 +277,25 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
+        }}
+      />
+      <Stack.Screen
+        name="TeamCreatedScreen"
+        component={TeamCreatedScreen}
+        options={{
+          // headerTransparent: true,
+          // title: ' ',
+          // headerTintColor: colors.whiteColor,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="SearchLocationScreen"
+        component={SearchLocationScreen}
+        options={{
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
         }}
       />
     </Stack.Navigator>

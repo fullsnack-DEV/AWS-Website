@@ -136,11 +136,12 @@ export const setStorage = async (key, value) => {
 //New Utility Method for get any kind of value
 export const getStorage = async (key) => {
   try {
-    var jsonValue = await AsyncStorage.getItem(key);
-  } catch (e) {
-    console.log('getting Error', err);
+    const jsonValue = await AsyncStorage.getItem(key);
+    return jsonValue ? JSON.parse(jsonValue) : null;
+    // console.log("console chal nahi",);
+  } catch (err) {
+    console.log('getFromLocalStorge Error', err);
   }
-
   if (typeof jsonValue === 'Object') {
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } else {

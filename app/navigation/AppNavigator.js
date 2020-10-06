@@ -34,7 +34,9 @@ getTabBarVisibility = (route) => {
     routeName === 'CreateTeamForm4' ||
     routeName === 'CreateClubForm1' ||
     routeName === 'CreateClubForm2' ||
-    routeName === 'CreateClubForm3'
+    routeName === 'CreateClubForm3' ||
+    routeName === 'TeamCreatedScreen' ||
+    routeName === 'SearchLocationScreen'
   ) {
     return false;
   }
