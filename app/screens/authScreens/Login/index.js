@@ -41,6 +41,7 @@ import strings from '../../../Constants/String';
 import * as Utility from '../../../utility/index';
 import {get} from '../../../api/services';
 import {CREATE_USER} from '../../../api/Url';
+import { token_details } from '../../../utils/constant';
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
   password: Yup.string().required().min(6).label('Password'),
@@ -66,29 +67,29 @@ function LoginScreen({navigation}) {
     auth().onAuthStateChanged((user) => {
       if (user) {
         user.getIdTokenResult().then(async (idTokenResult) => {
+          let tokenDetail = {
+            token: idTokenResult.token,
+            expirationTime: idTokenResult.expirationTime,
+          };
+
+          await AsyncStorage.setItem(token_details, JSON.stringify(tokenDetail));
+
           try {
             await Utility.setInLocalStorge(
               'token',
               JSON.stringify(idTokenResult.token),
             );
             const token = await Utility.getFromLocalStorge('token');
-            console.log('Stored Token: ', token);
-
             await Utility.setInLocalStorge(
               'expiryTime',
               idTokenResult.expirationTime,
             );
-
-            console.log('Expiry time....: ', idTokenResult.expirationTime);
-
             await Utility.setInLocalStorge('UID', JSON.stringify(user.uid));
             //tokenrefresh();
-
-            console.log('Firebse UID:........ ', JSON.stringify(user.uid));
             // navigation.navigate("NewsFeedNavigator")
             getUser(JSON.stringify(user.uid));
           } catch (error) {
-            console.log('error....', error.message);
+            // console.log('error....', error.message);
           }
         });
       }
