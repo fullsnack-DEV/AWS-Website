@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 
   LocationText: {
     marginTop: hp('2%'),
-    color: colors.grayColor,
+    color: colors.lightBlackColor,
     fontSize: wp('3.8%'),
     textAlign: 'left',
     // fontFamily: fonts.RBold,
@@ -251,6 +251,43 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
     fontFamily: fonts.RBold,
     marginVertical: 10,
+  },
+  radioButtonView: {
+    flexDirection: 'row',
+    marginTop: 15,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  radioText: {
+    fontSize: wp('3.8%'),
+    marginLeft: 15,
+    alignSelf: 'center',
+    marginRight: 15,
+    color: colors.lightBlackColor,
+  },
+  radioImage: {
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
+    tintColor: colors.radioButtonColor,
+    alignSelf: 'center',
+  },
+  unSelectRadioImage: {
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
+    alignSelf: 'center',
+  },
+  membershipText: {
+    fontSize: wp('5%'),
+    marginLeft: 15,
+    marginTop: 20,
+    color: colors.lightBlackColor,
+    //fontWeight: 'bold',
+  },
+  mendatory: {
+    color: 'red',
   },
 });
 

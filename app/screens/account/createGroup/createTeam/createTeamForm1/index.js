@@ -61,11 +61,12 @@ function CreateTeamForm1({navigation, route}) {
       };
       maxAgeArray.push(dataSource);
     }
+    if (minAge == 0) {
+      maxAgeArray = [];
+      setMaxAge(maxAgeArray);
+    }
     setMinAgeValue(minAgeArray);
     setMaxAgeValue(maxAgeArray);
-    if (minAge == 0 || minAge == null) {
-      setMaxAge((maxAgeArray = []));
-    }
 
     if (route.params && route.params.clubObject) {
       setParentGroupID(route.params.clubObject.group_id);
@@ -113,7 +114,9 @@ function CreateTeamForm1({navigation, route}) {
     } else if (location == '') {
       Alert.alert('Towns Cup', 'Location cannot be blank');
     } else if (player1ID == player2ID) {
-      Alert.alert('Towns Cup', 'Both player cannot be same');
+      if (player1ID != '' && player2ID != '') {
+        Alert.alert('Towns Cup', 'Both player cannot be same');
+      }
     } else if (
       (player1ID == '' && player2ID != '') ||
       (player1ID != '' && player2ID == '')
@@ -179,7 +182,7 @@ function CreateTeamForm1({navigation, route}) {
           <RNPickerSelect
             placeholder={{
               label: strings.selectSportPlaceholder,
-              value: null,
+              value: '',
             }}
             items={[
               {label: 'Football', value: 'football'},
@@ -259,7 +262,7 @@ function CreateTeamForm1({navigation, route}) {
             <RNPickerSelect
               placeholder={{
                 label: strings.selectGenderPlaceholder,
-                value: null,
+                value: '',
               }}
               items={[
                 {label: 'Male', value: 'male'},
@@ -301,7 +304,7 @@ function CreateTeamForm1({navigation, route}) {
               <RNPickerSelect
                 placeholder={{
                   label: strings.minPlaceholder,
-                  value: null,
+                  value: 0,
                 }}
                 items={minAgeValue}
                 onValueChange={(value) => {
@@ -360,7 +363,7 @@ function CreateTeamForm1({navigation, route}) {
               <RNPickerSelect
                 placeholder={{
                   label: strings.maxPlaceholder,
-                  value: null,
+                  value: 0,
                 }}
                 items={maxAgeValue}
                 onValueChange={(value) => {

@@ -127,13 +127,7 @@ const styles = StyleSheet.create({
 
     elevation: 3,
   },
-  separatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('92%'),
-    height: 0.5,
-    alignSelf: 'center',
-    marginTop: 14,
-  },
+
   doneButton: {
     position: 'absolute',
     bottom: 30,
@@ -281,6 +275,75 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
     fontFamily: fonts.RBold,
     marginVertical: 10,
+  },
+  mendatory: {
+    color: 'red',
+  },
+  separatorLine: {
+    backgroundColor: colors.grayColor,
+    width: wp('100%'),
+    height: 0.5,
+    alignSelf: 'center',
+  },
+  languageApplyButton: {
+    width: '90%',
+    height: 45,
+    alignSelf: 'center',
+    marginTop: wp('5%'),
+    borderRadius: 30,
+    marginBottom: 40,
+  },
+  shortSeparatorLine: {
+    backgroundColor: colors.grayColor,
+    width: wp('90%'),
+    height: 0.5,
+    alignSelf: 'center',
+  },
+  languageList: {
+    marginLeft: 20,
+    marginBottom: 20,
+    marginTop: 20,
+    color: colors.lightBlackColor,
+    fontSize: wp('4%'),
+    fontFamily: fonts.RRegular,
+  },
+  checkboxImg: {
+    width: wp('5.5%'),
+
+    //paddingLeft: wp('25%'),
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    tintColor: colors.themeColor,
+  },
+  checkbox: {
+    alignSelf: 'center',
+    position: 'absolute',
+    right: wp('5%'),
+  },
+  searchView: {
+    height: 40,
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+    paddingLeft: 15,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    flexDirection: 'row',
+
+    elevation: 3,
+  },
+  searchTextField: {
+    flex: 1,
+    color: colors.blackColor,
+    fontSize: wp('3.8%'),
+    height: 40,
+    width: wp('80%'),
+    alignSelf: 'center',
   },
 });
 

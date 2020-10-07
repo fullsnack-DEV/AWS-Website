@@ -67,6 +67,7 @@ const PATH = {
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
   backArrow: require('../assets/images/back_arrow.png'),
+  checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
 };
 
 export default PATH;

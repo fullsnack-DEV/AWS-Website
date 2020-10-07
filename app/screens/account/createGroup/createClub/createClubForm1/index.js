@@ -107,7 +107,7 @@ function CreateClubForm1({navigation, route}) {
           <RNPickerSelect
             placeholder={{
               label: strings.selectSportPlaceholder,
-              value: null,
+              value: '',
             }}
             items={[
               {label: 'Football', value: 'football'},
@@ -183,7 +183,7 @@ function CreateClubForm1({navigation, route}) {
           <RNPickerSelect
             placeholder={{
               label: strings.selectGenderPlaceholder,
-              value: null,
+              value: '',
             }}
             items={[
               {label: 'Male', value: 'male'},
@@ -256,7 +256,7 @@ function CreateClubForm1({navigation, route}) {
             <RNPickerSelect
               placeholder={{
                 label: strings.minPlaceholder,
-                value: null,
+                value: 0,
               }}
               items={minAgeValue}
               onValueChange={(value) => {
@@ -314,7 +314,7 @@ function CreateClubForm1({navigation, route}) {
             <RNPickerSelect
               placeholder={{
                 label: strings.maxPlaceholder,
-                value: null,
+                value: 0,
               }}
               items={maxAgeValue}
               onValueChange={(value) => {
