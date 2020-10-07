@@ -40,7 +40,7 @@ export const get = async (url, token, caller_id, caller) => {
     method: 'GET',
     headers,
   });
-
+  console.log('HEADER IS: ', headers);
   let res = await response.json();
   console.log('ressssssponsse', JSON.stringify(res));
   if (res !== null) {

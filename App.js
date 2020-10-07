@@ -13,6 +13,7 @@ import navigationTheme from './app/navigation/navigationTheme';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Utility from './app/utility/index';
 import TeamCreatedScreen from './app/screens/account/createGroup/createTeam/teamCreated';
+import SearchPlayerScreen from './app/screens/account/createGroup/createTeam/searchPlayer';
 // import ChooseSportsScreen from './app/screens/authScreens/ChooseSportsScreen';
 // import NewsFeedVideoPlayer from './app/screens/newsfeeds/NewsFeedVideoPlayer';
 
@@ -93,7 +94,7 @@ export default function App() {
         {user ? <AppNavigator /> : <AuthNavigator />}
         {/* <AppNavigator /> */}
         {/* <NewsFeedVideoPlayer /> */}
-        {/* {<TeamCreatedScreen />} */}
+        {/* {<SearchPlayerScreen />} */}
       </NavigationContainer>
     </AuthContext.Provider>
   );

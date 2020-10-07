@@ -257,7 +257,26 @@ function CreateClubForm2({navigation, route}) {
           keyboardType={'decimal-pad'}></TextInput>
         <Text style={styles.curruency}>CAD</Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('CreateClubForm3')}>
+      <TouchableOpacity
+        onPress={() => {
+          let form2 = {};
+          if (membershipUserSelected == 0) {
+            form2.join_type = 'anyone';
+          } else {
+            form2.join_type = 'invited';
+          }
+          if (membershipTeamSelected == 0) {
+            form2.approval_required = false;
+          } else {
+            form2.approval_required = true;
+          }
+          if (registrationFee != 0) {
+            form2.registration_fee = registrationFee;
+          }
+          navigation.navigate('CreateClubForm3', {
+            createClubForm2: {...route.params.createClubForm1, ...form2},
+          });
+        }}>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
           style={styles.nextButton}>

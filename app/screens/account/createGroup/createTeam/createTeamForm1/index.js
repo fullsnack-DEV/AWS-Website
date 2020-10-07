@@ -32,17 +32,19 @@ function CreateTeamForm1({navigation, route}) {
   const [maxAge, setMaxAge] = useState(0);
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');
-  const [parentGroupID, setParentGroupID] = useState();
-  const [switchBy, setSwitchBy] = useState();
+  const [player1ID, setPlayer1ID] = useState('');
+  const [player2ID, setPlayer2ID] = useState('');
+  const [parentGroupID, setParentGroupID] = useState('');
 
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
-
   const [teamName, setTeamName] = useState('');
   const [location, setLocation] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
 
   useEffect(() => {
-    getEntityPreference();
     let minAgeArray = [];
     let maxAgeArray = [];
     for (let i = 1; i <= 70; i++) {
@@ -62,13 +64,16 @@ function CreateTeamForm1({navigation, route}) {
     setMinAgeValue(minAgeArray);
     setMaxAgeValue(maxAgeArray);
     if (minAge == 0 || minAge == null) {
-      setMaxAge(0);
+      setMaxAge((maxAgeArray = []));
     }
 
-    if (switchBy == 'club') {
+    if (route.params && route.params.clubObject) {
       setParentGroupID(route.params.clubObject.group_id);
     }
-    if (route.params != null || route.params != undefined) {
+    if (route.params && route.params.city) {
+      setCity(route.params.city);
+      setState(route.params.state);
+      setCountry(route.params.country);
       setLocation(
         route.params.city +
           ', ' +
@@ -76,6 +81,27 @@ function CreateTeamForm1({navigation, route}) {
           ', ' +
           route.params.country,
       );
+    } else {
+      setCity('');
+      setState('');
+      setCountry('');
+      setLocation('');
+    }
+    if (route.params && route.params.user) {
+      if (route.params.selectedPlayer == 1) {
+        setPlayer1(
+          route.params.user.first_name + ' ' + route.params.user.last_name,
+        );
+        setPlayer1ID(route.params.user.user_id);
+      } else if (route.params.selectedPlayer == 2) {
+        setPlayer2(
+          route.params.user.first_name + ' ' + route.params.user.last_name,
+        );
+        setPlayer2ID(route.params.user.user_id);
+      }
+    } else {
+      setPlayer1('');
+      setPlayer2('');
     }
   }, [minAge, isFocused]);
 
@@ -86,12 +112,16 @@ function CreateTeamForm1({navigation, route}) {
       Alert.alert('Towns Cup', 'Team name cannot be blank');
     } else if (location == '') {
       Alert.alert('Towns Cup', 'Location cannot be blank');
+    } else if (player1ID == player2ID) {
+      Alert.alert('Towns Cup', 'Both player cannot be same');
+    } else if (
+      (player1ID == '' && player2ID != '') ||
+      (player1ID != '' && player2ID == '')
+    ) {
+      Alert.alert('Towns Cup', 'One player cannot be blank');
     }
   };
-  getEntityPreference = async () => {
-    const switchEntity = await Utility.getStorage('switchBy');
-    setSwitchBy(switchEntity);
-  };
+
   return (
     <>
       <ScrollView style={styles.mainContainer}>
@@ -101,7 +131,7 @@ function CreateTeamForm1({navigation, route}) {
           <View style={styles.form3}></View>
           <View style={styles.form4}></View>
         </View>
-        {parentGroupID != null && (
+        {parentGroupID != '' && (
           <>
             <View
               style={{
@@ -188,11 +218,18 @@ function CreateTeamForm1({navigation, route}) {
               <Text style={styles.playerTitle}>{strings.player1Title}</Text>
               <View style={styles.searchView}>
                 <Image source={PATH.searchLocation} style={styles.searchImg} />
-                <TextInput
-                  style={styles.searchTextField}
-                  placeholder={strings.searchHereText}
-                  onChangeText={(text) => setPlayer1(text)}
-                  value={player1}></TextInput>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('SearchPlayerScreen', {player: 1});
+                  }}>
+                  <TextInput
+                    style={styles.searchTextField}
+                    placeholder={strings.searchHereText}
+                    onChangeText={(text) => setPlayer1(text)}
+                    value={player1}
+                    editable={false}
+                    pointerEvents="none"></TextInput>
+                </TouchableOpacity>
               </View>
             </View>
             <View style={styles.fieldView}>
@@ -200,11 +237,18 @@ function CreateTeamForm1({navigation, route}) {
 
               <View style={styles.searchView}>
                 <Image source={PATH.searchLocation} style={styles.searchImg} />
-                <TextInput
-                  style={styles.searchTextField}
-                  placeholder={strings.searchHereText}
-                  onChangeText={(text) => setPlayer2(text)}
-                  value={player2}></TextInput>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('SearchPlayerScreen', {player: 2});
+                  }}>
+                  <TextInput
+                    style={styles.searchTextField}
+                    placeholder={strings.searchHereText}
+                    onChangeText={(text) => setPlayer2(text)}
+                    value={player2}
+                    editable={false}
+                    pointerEvents="none"></TextInput>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -380,7 +424,6 @@ function CreateTeamForm1({navigation, route}) {
               <TextInput
                 placeholder={strings.searchCityPlaceholder}
                 style={styles.matchFeeTxt}
-                onChangeText={(text) => setLocation(text)}
                 value={location}
                 editable={false}
                 pointerEvents="none"></TextInput>
@@ -393,24 +436,52 @@ function CreateTeamForm1({navigation, route}) {
             </Text>
           </View>
         </View>
-        {parentGroupID != null && (
+        {parentGroupID != '' && (
           <TouchableOpacity
             onPress={() => {
               checkValidation();
-              if (sports != '' && teamName != '' && location != '') {
-                navigation.navigate('CreateTeamForm2', {
-                  createTeamForm1: {
-                    sport: sports,
-                    group_name: teamName,
-                    gender: gender,
-                    min_age: minAge,
-                    max_age: maxAge,
-                    city: route.params.city,
-                    state_abbr: route.params.state,
-                    country: route.params.country,
-                    parent_group_id: parentGroupID,
-                  },
-                });
+              if (
+                (player1ID != '' && player2 != '') ||
+                (player1ID == '' && player2 == '')
+              ) {
+                if (
+                  sports != '' &&
+                  teamName != '' &&
+                  location != '' &&
+                  player1ID != player2ID
+                ) {
+                  if (player1ID != '' && player2 != '') {
+                    navigation.navigate('CreateTeamForm2', {
+                      createTeamForm1: {
+                        sport: sports,
+                        group_name: teamName,
+                        gender: gender,
+                        min_age: minAge,
+                        max_age: maxAge,
+                        city: city,
+                        state_abbr: state,
+                        country: country,
+                        parent_group_id: parentGroupID,
+                        player1: player1ID,
+                        player2: player2ID,
+                      },
+                    });
+                  } else {
+                    navigation.navigate('CreateTeamForm2', {
+                      createTeamForm1: {
+                        sport: sports,
+                        group_name: teamName,
+                        gender: gender,
+                        min_age: minAge,
+                        max_age: maxAge,
+                        city: city,
+                        state_abbr: state,
+                        country: country,
+                        parent_group_id: parentGroupID,
+                      },
+                    });
+                  }
+                }
               }
             }}>
             <LinearGradient
@@ -420,23 +491,51 @@ function CreateTeamForm1({navigation, route}) {
             </LinearGradient>
           </TouchableOpacity>
         )}
-        {parentGroupID == null && (
+        {parentGroupID == '' && (
           <TouchableOpacity
             onPress={() => {
               checkValidation();
-              if (sports != '' && teamName != '' && location != '') {
-                navigation.navigate('CreateTeamForm2', {
-                  createTeamForm1: {
-                    sport: sports,
-                    group_name: teamName,
-                    gender: gender,
-                    min_age: minAge,
-                    max_age: maxAge,
-                    city: route.params.city,
-                    state_abbr: route.params.state,
-                    country: route.params.country,
-                  },
-                });
+              if (
+                (player1ID != '' && player2 != '') ||
+                (player1ID == '' && player2 == '')
+              ) {
+                if (
+                  sports != '' &&
+                  teamName != '' &&
+                  location != '' &&
+                  player1ID != player2ID
+                ) {
+                  if (player1ID != '' && player2 != '') {
+                    navigation.navigate('CreateTeamForm2', {
+                      createTeamForm1: {
+                        sport: sports,
+                        group_name: teamName,
+                        gender: gender,
+                        min_age: minAge,
+                        max_age: maxAge,
+                        city: city,
+                        state_abbr: state,
+                        country: country,
+
+                        player1: player1ID,
+                        player2: player2ID,
+                      },
+                    });
+                  } else {
+                    navigation.navigate('CreateTeamForm2', {
+                      createTeamForm1: {
+                        sport: sports,
+                        group_name: teamName,
+                        gender: gender,
+                        min_age: minAge,
+                        max_age: maxAge,
+                        city: city,
+                        state_abbr: state,
+                        country: country,
+                      },
+                    });
+                  }
+                }
               }
             }}>
             <LinearGradient
