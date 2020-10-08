@@ -146,6 +146,59 @@ export const post = async (url, token, body, caller_id, caller) => {
   }
 };
 
+export const patch = async (url, token, body, caller_id, caller) => {
+  var headers;
+  if (token == '' || token == null || token == undefined) {
+    headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    };
+  } else {
+    if (caller_id == null && caller == null) {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      };
+    } else if (caller == null) {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        caller_id: '' + caller_id,
+      };
+    } else {
+      headers = {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        caller_id: '' + caller_id,
+        caller: '' + caller,
+      };
+    }
+  }
+  const completeUrl = Url.BASE_URL + url;
+  console.log('completeUrl', completeUrl);
+  let data = JSON.stringify(body);
+  try {
+    const response = await fetch(completeUrl, {
+      method: 'PATCH',
+      headers,
+      body: data,
+    });
+
+    let res = await response.json();
+    console.log('API Response: ', JSON.stringify(res));
+    if (res !== null) {
+      return res;
+      // throw new Error(res.error)
+    }
+  } catch (error) {
+    console.log('patch::error', error.message);
+    return;
+  }
+};
+
 export const put = async (url, token, body) => {
   var headers;
 
