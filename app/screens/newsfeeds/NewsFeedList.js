@@ -5,7 +5,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {getClientDetails} from '../../api/client';
+import { getNewsFeedDetails } from '../../api/NewsFeedapi';
 
 import constants from '../../config/constants';
 
@@ -14,7 +14,7 @@ import PATH from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 export default function NewsFeedList() {
   useEffect(() => {
-    getClientDetails();
+    getNewsFeedDetails();
   }, []);
 
   return (

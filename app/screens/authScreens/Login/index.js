@@ -41,7 +41,7 @@ import strings from '../../../Constants/String';
 import * as Utility from '../../../utility/index';
 import {get} from '../../../api/services';
 import {CREATE_USER} from '../../../api/Url';
-import { token_details } from '../../../utils/constant';
+import {token_details} from '../../../utils/constant';
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
   password: Yup.string().required().min(6).label('Password'),
@@ -65,6 +65,7 @@ function LoginScreen({navigation}) {
 
   const authToken = () => {
     auth().onAuthStateChanged((user) => {
+      console.log('User :-', user);
       if (user) {
         user.getIdTokenResult().then(async (idTokenResult) => {
           let tokenDetail = {
@@ -72,7 +73,10 @@ function LoginScreen({navigation}) {
             expirationTime: idTokenResult.expirationTime,
           };
 
-          await AsyncStorage.setItem(token_details, JSON.stringify(tokenDetail));
+          await AsyncStorage.setItem(
+            token_details,
+            JSON.stringify(tokenDetail),
+          );
 
           try {
             await Utility.setInLocalStorge(
