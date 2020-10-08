@@ -32,6 +32,7 @@ import styles from "./style"
 import * as Utility from '../../../utility/index';
 import PATH from "../../../Constants/ImagePath"
 import strings from "../../../Constants/String"
+import { token_details } from '../../../utils/constant';
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
   authDomain: 'townscup-fee6e.firebaseapp.com',
@@ -65,12 +66,17 @@ function SignupScreen({navigation, route}) {
   authToken = () => {
     auth().onAuthStateChanged((user) => {
       if (user) {
-        user.getIdTokenResult().then(function (idTokenResult) {
+        user.getIdTokenResult().then(async (idTokenResult) => {
           try {
             console.log('User JWT: ', idTokenResult.token);
             //console.log('User JWT Expiry time: ', idTokenResult.expirationTime);
             console.log('auth Token called... ');
-
+            let tokenDetail = {
+              token: idTokenResult.token,
+              expirationTime: idTokenResult.expirationTime,
+            };
+  
+            await AsyncStorage.setItem(token_details, JSON.stringify(tokenDetail));
             storeToken(idTokenResult.token);
             storeExpiry(idTokenResult.expirationTime);
             storeUID(user.uid);

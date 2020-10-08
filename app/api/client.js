@@ -21,6 +21,8 @@ import {create} from 'apisauce';
 import auth from '@react-native-firebase/auth';
 
 import constants from '../../app/config/constants';
+import {makeAPIRequest} from '../utils/Global';
+import {api} from '../utils/apiConstants';
 const {urls} = constants;
 
 const apiPostClient = (body, query) => {
@@ -91,4 +93,23 @@ export default {
   apiGetClient,
   apiGetGoogleClient,
   apiGetClientQuery,
+};
+
+export const getClientDetails = async() => {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  return makeAPIRequest({
+    method: 'get',
+    url: api.baseURL + api.newsFeed,
+    headers: headers,
+  })
+    .then((response) => {
+      console.log('Get Client Details Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      console.log('Get Client Details Error ::', error.response);
+    });
 };
