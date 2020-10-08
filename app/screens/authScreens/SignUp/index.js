@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Alert
+  Alert,
 } from 'react-native';
 
 import {
@@ -23,16 +23,17 @@ import {create} from 'apisauce';
 // import constants from '../../../config/constants';
 // const {strings, urls, PATH, endPoints} = constants;
 
+import {getuserDetail} from '../../../api/Authapi';
 import TCForm from '../../../components/TCForm';
 import TCFormField from '../../../components/TCFormField';
 import TCFormSubmit from '../../../components/TCFormSubmit';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import Loader from '../../../components/loader/Loader';
-import styles from "./style"
+import styles from './style';
 import * as Utility from '../../../utility/index';
-import PATH from "../../../Constants/ImagePath"
-import strings from "../../../Constants/String"
-import { token_details } from '../../../utils/constant';
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
+import {token_details} from '../../../utils/constant';
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
   authDomain: 'townscup-fee6e.firebaseapp.com',
@@ -75,12 +76,15 @@ function SignupScreen({navigation, route}) {
               token: idTokenResult.token,
               expirationTime: idTokenResult.expirationTime,
             };
-  
-            await AsyncStorage.setItem(token_details, JSON.stringify(tokenDetail));
+
+            await AsyncStorage.setItem(
+              token_details,
+              JSON.stringify(tokenDetail),
+            );
             storeToken(idTokenResult.token);
             storeExpiry(idTokenResult.expirationTime);
             storeUID(user.uid);
-            getUserDetail();
+            getUserInfo();
           } catch (error) {
             console.log(error.message);
           }
@@ -123,13 +127,13 @@ function SignupScreen({navigation, route}) {
     }
   };
 
-  signUpUser = async(fname, lname, email, password) => {
-    await Utility.setInLocalStorge("email",email)
-    await Utility.setInLocalStorge("password",password)
+  signUpUser = async (fname, lname, email, password) => {
+    await Utility.setInLocalStorge('email', email);
+    await Utility.setInLocalStorge('password', password);
     auth()
       .createUserWithEmailAndPassword(email, password)
       .then((response) => {
-        console.log('User account created & signed in!',response);
+        console.log('User account created & signed in!', response);
         authToken();
         var user = {
           first_name: fname,
@@ -138,21 +142,10 @@ function SignupScreen({navigation, route}) {
           thumbnail: '',
           full_image: '',
         };
-    
 
-        firebase.auth().onAuthStateChanged(function(user) {
-          user.sendEmailVerification(); 
-          // this.modal();
-          // Alert.alert(
-          //   'Alert Title',
-          //   'alertMessage',
-          //   [
-          //     {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-          //     {text: 'OK', onPress:() =>console.log("ffffjhfgdhfhf")},
-          //   ],
-          //   { cancelable: false })
-          
-        })
+        firebase.auth().onAuthStateChanged(function (user) {
+          user.sendEmailVerification();
+        });
         try {
           AsyncStorage.setItem('userInfo', JSON.stringify(user));
           console.log('DATA STORED... ');
@@ -170,7 +163,7 @@ function SignupScreen({navigation, route}) {
         }
       });
   };
-  getUserDetail = async () => {
+  getUserInfo = async () => {
     console.log('get user detail called... ');
     var uid = '';
     var token = '';
@@ -190,24 +183,35 @@ function SignupScreen({navigation, route}) {
     } catch (e) {
       // error reading value
     }
-    const api = create({
-      baseURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+    // const api = create({
+    //   baseURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + token,
+    //   },
+    // });
+
+    getuserDetail(uid).then((response) => {
+      console.log('PAYLOAD::', JSON.stringify(response));
+      if (response.status == true) {
+        //authContext.setUser(data);
+        navigation.navigate('LoginScreen');
+      } else {
+        console.log(response);
+        navigation.navigate('EmailVerification');
+      }
     });
 
-    const response = await api.get('users/' + uid);
+    //const response = await api.get('users/' + uid);
 
-    if (response.data.status == true) {
-      console.log('PAYLOAD::', JSON.stringify(response.data));
-      //authContext.setUser(data);
-      navigation.navigate('LoginScreen');
-    } else if (response.data.status == false) {
-      console.log(response);
-      navigation.navigate('EmailVerification');
-    }
+    // if (response.data.status == true) {
+    //   console.log('PAYLOAD::', JSON.stringify(response.data));
+    //   //authContext.setUser(data);
+    //   navigation.navigate('LoginScreen');
+    // } else if (response.data.status == false) {
+    //   console.log(response);
+    //   navigation.navigate('EmailVerification');
+    // }
   };
   return (
     <View style={styles.mainContainer}>

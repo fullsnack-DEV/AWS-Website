@@ -19,8 +19,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import styles from './style';
 import AuthContext from '../../../../../auth/context';
 import * as Utility from '../../../../../utility/index';
-import {get, post} from '../../../../../api/services';
-import {CREATE_TEAM} from '../../../../../api/Url';
+
+import {postGroups} from '../../../../../api/Accountapi';
 
 import constants from '../../../../../config/constants';
 const {colors, fonts, urls} = constants;
@@ -62,39 +62,20 @@ function CreateTeamForm4({navigation, route}) {
     bodyParams.should_hide = false;
     console.log('bodyPARAMS:: ', bodyParams);
 
-    const token = await Utility.getStorage('token');
-    const switchEntity = Utility.getStorage('switchBy');
     const clubObject = Utility.getStorage('club');
-    const endPoint = CREATE_TEAM;
-    console.log('endPoint  IS: ', endPoint, token);
-    if (clubObject != null) {
-      post(
-        endPoint,
-        JSON.parse(token),
-        bodyParams,
-        clubObject.group_id,
-        'club',
-      ).then((response) => {
-        if (response.status == true) {
-          navigation.navigate('TeamCreatedScreen', {
-            groupName: response.payload.group_name,
-          });
-        }
-        console.log('RESPONSE IS:: ', response);
-      });
-    } else {
-      post(endPoint, JSON.parse(token), bodyParams).then((response) => {
-        if (response.status == true) {
-          navigation.navigate('TeamCreatedScreen', {
-            groupName: response.payload.group_name,
-          });
-        }
-        console.log('RESPONSE IS:: ', response);
-      });
-    }
-    navigation.navigate('TeamCreatedScreen', {
-      // groupName: response.payload.group_name,
-      groupName: 'Kishan Football Team',
+    postGroups(
+      bodyParams,
+      clubObject.group_id || null,
+      clubObject.group_id ? 'club' : null,
+    ).then((response) => {
+      if (response.status == true) {
+        navigation.navigate('TeamCreatedScreen', {
+          groupName: response.payload.group_name,
+        });
+      } else {
+        alert(response.messages);
+      }
+      console.log('RESPONSE IS:: ', response);
     });
   };
 

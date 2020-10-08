@@ -13,16 +13,14 @@ import {
 } from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
 
-import {get} from '../../api/services';
-import {GET_UNREAD_COUNT_URL, GET_PARENT_CLUB} from '../../api/Url';
+import {getParentClubDetail, getUnreadCount} from '../../api/Accountapi';
+
 import * as Utility from '../../utility/index';
 import constants from '../../config/constants';
 const {colors, fonts, urls} = constants;
 import PATH from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
 
 export default function AccountScreen({navigation, route}) {
-  const [token, setToken] = useState('');
   const [switchBy, setSwitchBy] = useState('user');
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState(null);
@@ -117,62 +115,36 @@ export default function AccountScreen({navigation, route}) {
         alert(e);
       });
   };
-  const getParentClubDetail = async (item) => {
-    try {
-      const value = await Utility.getFromLocalStorge('token');
-      if (value !== null) {
-        console.log('TOKEN RETRIVED...:::', value);
-        let endPoint = GET_PARENT_CLUB + item.group_id;
-        get(endPoint, JSON.parse(value)).then((response) => {
-          if (response.status == true) {
-            if (response.payload.club != undefined) {
-              setParentGroup(response.payload.club);
-            } else {
-              setParentGroup(null);
-            }
-
-            console.log(
-              'GROUP API RESPONSE::',
-              JSON.stringify(response.payload),
-            );
-          } else {
-            alert(response.messages);
-          }
-        });
+  const getParentClub = async (item) => {
+    getParentClubDetail(item.group_id).then((response) => {
+      if (response.status == true) {
+        if (response.payload.club != undefined) {
+          setParentGroup(response.payload.club);
+        } else {
+          setParentGroup(null);
+        }
+        console.log('GROUP API RESPONSE::', JSON.stringify(response.payload));
       } else {
-        console.log('TOKEN::::::::::::EMPTY');
+        alert(response.messages);
       }
-    } catch (e) {
-      alert(e);
-    }
+    });
   };
   const getToken = async () => {
     try {
-      const value = await Utility.getFromLocalStorge('token');
       const switchByGroup = await Utility.getFromLocalStorge('switchBy');
       setSwitchBy(switchByGroup);
-
-      if (value !== null) {
-        console.log('TOKEN RETRIVED...:::', value);
-        setToken(value);
-        get(GET_UNREAD_COUNT_URL, JSON.parse(value)).then((response) => {
-          if (response.status == true) {
-            let teams = response.payload.teams;
-            let clubs = response.payload.clubs;
-            setEntities([...clubs, ...teams]);
-            //arr.shift();
-            setSwitchBy('user');
-            setGroupList([...clubs, ...teams]);
-          } else {
-            alert(response.messages);
-          }
-        });
-      } else {
-        console.log('TOKEN::::::::::::EMPTY');
-      }
-    } catch (e) {
-      // error reading value
-    }
+      getUnreadCount().then((response) => {
+        if (response.status == true) {
+          let teams = response.payload.teams;
+          let clubs = response.payload.clubs;
+          setEntities([...clubs, ...teams]);
+          setSwitchBy('user');
+          setGroupList([...clubs, ...teams]);
+        } else {
+          alert(response.messages);
+        }
+      });
+    } catch (e) {}
   };
   const switchProfile = async ({item}) => {
     if (item.entity_type == 'club') {
@@ -232,7 +204,7 @@ export default function AccountScreen({navigation, route}) {
       await Utility.setStorage('switchBy', 'team');
       await Utility.removeAuthKey('club');
 
-      getParentClubDetail(item);
+      getParentClub(item);
 
       setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
       setSwitchBy('team');

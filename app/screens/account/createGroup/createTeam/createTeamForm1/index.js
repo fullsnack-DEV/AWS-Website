@@ -106,7 +106,7 @@ function CreateTeamForm1({navigation, route}) {
     }
   }, [minAge, isFocused]);
 
-  checkValidation = () => {
+  const checkValidation = () => {
     if (sports == '') {
       Alert.alert('Towns Cup', 'Sports cannot be blank');
     } else if (teamName == '') {
@@ -191,6 +191,8 @@ function CreateTeamForm1({navigation, route}) {
               {label: 'Hockey', value: 'hockey'},
             ]}
             onValueChange={(value) => {
+              setPlayer1ID('');
+              setPlayer2ID('');
               setSports(value);
             }}
             useNativeAndroidPickerStyle={false}
@@ -443,47 +445,38 @@ function CreateTeamForm1({navigation, route}) {
           <TouchableOpacity
             onPress={() => {
               checkValidation();
-              if (
-                (player1ID != '' && player2 != '') ||
-                (player1ID == '' && player2 == '')
-              ) {
-                if (
-                  sports != '' &&
-                  teamName != '' &&
-                  location != '' &&
-                  player1ID != player2ID
-                ) {
-                  if (player1ID != '' && player2 != '') {
-                    navigation.navigate('CreateTeamForm2', {
-                      createTeamForm1: {
-                        sport: sports,
-                        group_name: teamName,
-                        gender: gender,
-                        min_age: minAge,
-                        max_age: maxAge,
-                        city: city,
-                        state_abbr: state,
-                        country: country,
-                        parent_group_id: parentGroupID,
-                        player1: player1ID,
-                        player2: player2ID,
-                      },
-                    });
-                  } else {
-                    navigation.navigate('CreateTeamForm2', {
-                      createTeamForm1: {
-                        sport: sports,
-                        group_name: teamName,
-                        gender: gender,
-                        min_age: minAge,
-                        max_age: maxAge,
-                        city: city,
-                        state_abbr: state,
-                        country: country,
-                        parent_group_id: parentGroupID,
-                      },
-                    });
-                  }
+
+              if (sports != '' && teamName != '' && location != '') {
+                if (player1ID != '' && player2 != '') {
+                  navigation.navigate('CreateTeamForm2', {
+                    createTeamForm1: {
+                      sport: sports,
+                      group_name: teamName,
+                      gender: gender,
+                      min_age: minAge,
+                      max_age: maxAge,
+                      city: city,
+                      state_abbr: state,
+                      country: country,
+                      parent_group_id: parentGroupID,
+                      player1: player1ID,
+                      player2: player2ID,
+                    },
+                  });
+                } else {
+                  navigation.navigate('CreateTeamForm2', {
+                    createTeamForm1: {
+                      sport: sports,
+                      group_name: teamName,
+                      gender: gender,
+                      min_age: minAge,
+                      max_age: maxAge,
+                      city: city,
+                      state_abbr: state,
+                      country: country,
+                      parent_group_id: parentGroupID,
+                    },
+                  });
                 }
               }
             }}>
@@ -498,46 +491,38 @@ function CreateTeamForm1({navigation, route}) {
           <TouchableOpacity
             onPress={() => {
               checkValidation();
-              if (
-                (player1ID != '' && player2 != '') ||
-                (player1ID == '' && player2 == '')
-              ) {
-                if (
-                  sports != '' &&
-                  teamName != '' &&
-                  location != '' &&
-                  player1ID != player2ID
-                ) {
-                  if (player1ID != '' && player2 != '') {
-                    navigation.navigate('CreateTeamForm2', {
-                      createTeamForm1: {
-                        sport: sports,
-                        group_name: teamName,
-                        gender: gender,
-                        min_age: minAge,
-                        max_age: maxAge,
-                        city: city,
-                        state_abbr: state,
-                        country: country,
 
-                        player1: player1ID,
-                        player2: player2ID,
-                      },
-                    });
-                  } else {
-                    navigation.navigate('CreateTeamForm2', {
-                      createTeamForm1: {
-                        sport: sports,
-                        group_name: teamName,
-                        gender: gender,
-                        min_age: minAge,
-                        max_age: maxAge,
-                        city: city,
-                        state_abbr: state,
-                        country: country,
-                      },
-                    });
-                  }
+              if (sports != '' && teamName != '' && location != '') {
+                if (player1ID != '' && player2 != '') {
+                  navigation.navigate('CreateTeamForm2', {
+                    createTeamForm1: {
+                      sport: sports,
+                      group_name: teamName,
+                      gender: gender,
+                      min_age: minAge,
+                      max_age: maxAge,
+                      city: city,
+                      state_abbr: state,
+                      country: country,
+
+                      player1: player1ID,
+                      player2: player2ID,
+                    },
+                  });
+                } else {
+                  console.log('MOVE TO NEXT');
+                  navigation.navigate('CreateTeamForm2', {
+                    createTeamForm1: {
+                      sport: sports,
+                      group_name: teamName,
+                      gender: gender,
+                      min_age: minAge,
+                      max_age: maxAge,
+                      city: city,
+                      state_abbr: state,
+                      country: country,
+                    },
+                  });
                 }
               }
             }}>

@@ -19,8 +19,8 @@ const {colors, fonts, urls} = constants;
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import * as Utility from '../../../utility/index';
-import {patch} from '../../../api/services';
-import {GET_USERS} from '../../../api/Url';
+
+import {patchRegisterPlayerDetails} from '.././../../api/Accountapi';
 
 function RegisterPlayer({navigation, route}) {
   const [sports, setSports] = useState('');
@@ -36,7 +36,7 @@ function RegisterPlayer({navigation, route}) {
     }
   };
 
-  registerPlayerCall = async () => {
+  registerPlayerCall = () => {
     checkValidation();
     if (sports != '' && matchFee != 0.0) {
       let bodyParams = {registered_sports: []};
@@ -54,13 +54,13 @@ function RegisterPlayer({navigation, route}) {
       }
 
       console.log('bodyPARAMS:: ', bodyParams);
-      const token = await Utility.getStorage('token');
-      const endPoint = GET_USERS;
-      console.log('endPoint  IS: ', endPoint, token);
-      patch(endPoint, JSON.parse(token), bodyParams).then((response) => {
+
+      patchRegisterPlayerDetails(bodyParams).then((response) => {
         if (response.status == true) {
           Alert.alert('Towns Cup', 'Player sucessfully registered');
           navigation.navigate('AccountScreen');
+        } else {
+          Alert.alert('Towns Cup', response.messages);
         }
         console.log('RESPONSE IS:: ', response);
       });

@@ -10,8 +10,8 @@ export const makeAPIRequest = ({
   headers,
   params,
   responseType,
-  caller,
   caller_id,
+  caller,
 }) =>
   new Promise(async (resolve, reject) => {
     const tokenDetails = await AsyncStorage.getItem(token_details);
@@ -75,6 +75,7 @@ export const makeAPIRequest = ({
       responseType: responseType,
     };
 
+    console.log('API Option ::', JSON.stringify(options));
     await axios(options)
       .then((response) => {
         resolve(response);
