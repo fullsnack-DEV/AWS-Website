@@ -18,12 +18,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import styles from './style';
 
 import * as Utility from '../../../../../utility/index';
-import {get, post} from '../../../../../api/services';
-import {CREATE_CLUB} from '../../../../../api/Url';
+
+import {postGroups} from '../../../../../api/Accountapi';
 import constants from '../../../../../config/constants';
 const {colors, fonts} = constants;
 import PATH from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
+import {replace} from 'formik';
 
 function CreateClubForm3({navigation, route}) {
   const [membershipFee, setMembershipFee] = useState(0);
@@ -56,37 +57,21 @@ function CreateClubForm3({navigation, route}) {
     bodyParams.unread = 0;
     console.log('BODY PARAMS:', bodyParams);
 
-    const token = await Utility.getStorage('token');
-    const switchEntity = Utility.getStorage('switchBy');
     const teamObject = Utility.getStorage('team');
-    const endPoint = CREATE_CLUB;
-    console.log('endPoint  IS: ', endPoint, token);
-
-    if (teamObject != null) {
-      post(
-        endPoint,
-        JSON.parse(token),
-        bodyParams,
-        teamObject.group_id,
-        'team',
-      ).then((response) => {
-        if (response.status == true) {
-          navigation.navigate('ClubCreatedScreen', {
-            groupName: response.payload.group_name,
-          });
-        }
-        console.log('RESPONSE WITH TEAM IS:: ', response);
-      });
-    } else {
-      post(endPoint, JSON.parse(token), bodyParams).then((response) => {
-        if (response.status == true) {
-          navigation.navigate('ClubCreatedScreen', {
-            groupName: response.payload.group_name,
-          });
-        }
-        console.log('RESPONSE IS:: ', response);
-      });
-    }
+    postGroups(
+      bodyParams,
+      teamObject.group_id || null,
+      teamObject.group_id ? 'team' : null,
+    ).then((response) => {
+      if (response.status == true) {
+        navigation.navigate('ClubCreatedScreen', {
+          groupName: response.payload.group_name,
+        });
+      } else {
+        alert(response.messages);
+      }
+      console.log('RESPONSE WITH TEAM IS:: ', response);
+    });
   };
 
   return (
