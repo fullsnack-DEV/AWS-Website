@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,54 +12,43 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import AsyncStorage from '@react-native-community/async-storage';
 
-import API from 'apisauce';
+import {getSportsList, createUser, getuserDetail} from '../../../api/Authapi';
 
-// import constants from '../../../config/constants';
-// const {strings, colors, fonts, urls, PATH} = constants;
-import PATH from "../../../Constants/ImagePath"
-import strings from "../../../Constants/String"
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
 import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
+import AuthContext from '../../../auth/context';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import listing from '../../../api/listing';
-import apiClient from '../../../api/client';
-import useApi from '../../../hooks/useApi';
 import Loader from '../../../components/loader/Loader';
-import styles from "./style"
-import * as Service from '../../../api/services'
-import * as Url from '../../../api/Url'
+import * as Utility from '../../../utility/index';
+import styles from './style';
+
 function ChooseSportsScreen({navigation, route}) {
-  const getSportsList = useApi(listing.getListing);
-
   const [sports, setSports] = useState([]);
-  const [sportList, setListSport] = useState([]);
+  const authContext = useContext(AuthContext);
   var selectedSports = [];
-  useEffect(() => {
-    getSportsList.request().then(() => {
-      loadSportsList1();
-   getList()
 
+  useEffect(() => {
+    getSportsList().then((response) => {
+      if (response.status == true) {
+        console.log('response', response.payload);
+
+        var arr = [];
+        for (var tempData of response.payload) {
+          tempData['isChecked'] = false;
+          arr.push(tempData);
+        }
+        setSports(arr);
+      } else {
+        alert(response.messages);
+      }
     });
   }, []);
-  getList=async()=>{
-    let response=await Service.get(Url.GET_SPORT_URL)
- console.log("response",response.payload)
- setListSport(response.payload);
 
-
-  }
-  
-  loadSportsList1 = () => {
-    var arr = [];
-    for (var tempData of getSportsList.data.payload) {
-      tempData['isChecked'] = false;
-      arr.push(tempData);
-    }
-    setSports(arr);
-  };
-
-  isIconCheckedOrNot = ({item, index}) => {
+  const isIconCheckedOrNot = ({item, index}) => {
     console.log('SELECTED:::', index);
 
     sports[index].isChecked = !item.isChecked;
@@ -75,12 +64,63 @@ function ChooseSportsScreen({navigation, route}) {
     console.log('sports Checked ?:::', selectedSports);
   };
 
+  const signUpWithTC = async () => {
+    var userInfo = {};
+
+    try {
+      let user = await AsyncStorage.getItem('userInfo');
+      if (JSON.parse(user) !== null) {
+        userInfo = JSON.parse(user);
+        console.log('DATA RETRIVED USER INFO... ', userInfo);
+      }
+    } catch (error) {
+      console.log('Error while get data', error.message);
+    }
+
+    let data = {
+      first_name: userInfo.first_name,
+      last_name: userInfo.last_name,
+      email: userInfo.email,
+      thumbnail: '',
+      full_image: '',
+      sports: route.params.sports,
+      city: route.params.city,
+      state_abbr: route.params.state,
+      country: route.params.country,
+    };
+
+    createUser(data).then((response) => {
+      if (response.status == true) {
+        console.log('PAYLOAD::', JSON.stringify(response));
+        getUserInfo();
+      } else {
+        alert(response.messages);
+      }
+    });
+  };
+  const getUserInfo = async () => {
+    var uid = (uid = await Utility.getStorage('UID'));
+    getuserDetail(uid).then((response) => {
+      if (response.status == true) {
+        console.log('PAYLOAD OF GET USER::', JSON.stringify(response.payload));
+        authContext.setUser(response.payload);
+
+        Utility.setStorage('user', response.payload);
+        Utility.setStorage('switchBy', 'user');
+        //navigation.navigate('HomeScreen');
+      } else {
+        console.log(response);
+        alert('Something went wrong..!!');
+      }
+    });
+  };
+
   renderItem = ({item, index}) => {
     return (
       <TouchableWithoutFeedback
         style={styles.listItem}
         onPress={() => {
-          this.isIconCheckedOrNot({item, index});
+          isIconCheckedOrNot({item, index});
         }}>
         {item.sport_name == 'Soccer' && (
           <Image source={PATH.footballSport} style={styles.sportImg} />
@@ -114,36 +154,38 @@ function ChooseSportsScreen({navigation, route}) {
   return (
     <>
       <View style={styles.mainContainer}>
-        <Loader visible={getSportsList.loading} />
+        {/* <Loader visible={getSportsList.loading} /> */}
         <Image style={styles.background} source={PATH.orangeLayer} />
         <Image style={styles.background} source={PATH.bgImage} />
 
         <Text style={styles.sportText}>{strings.sportText}</Text>
         {/* <ActivityIndicator animating={loading} size="large" /> */}
         <FlatList
-          data={sportList}
-          keyExtractor={(sportList) => sportList.sport_name}
+          data={sports}
+          keyExtractor={(sports) => sports.sport_name}
           renderItem={this.renderItem}
         />
 
         <TCButton
           title={strings.applyTitle}
           extraStyle={{position: 'absolute', bottom: hp('7%')}}
-          onPress={() =>
-            navigation.navigate('FollowTeams', {
-              teamData: route.params.teamData,
-              city: route.params.city,
-              state: route.params.state,
-              country: route.params.country,
-              sports: selectedSports,
-            })
-          }
+          onPress={() => {
+            if (route.params && route.params.teamData) {
+              navigation.navigate('FollowTeams', {
+                teamData: route.params.teamData,
+                city: route.params.city,
+                state: route.params.state,
+                country: route.params.country,
+                sports: selectedSports,
+              });
+            } else {
+              signUpWithTC();
+            }
+          }}
         />
       </View>
     </>
   );
 }
-
-
 
 export default ChooseSportsScreen;

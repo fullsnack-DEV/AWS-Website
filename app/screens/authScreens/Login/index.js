@@ -39,8 +39,8 @@ import styles from './style';
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import * as Utility from '../../../utility/index';
-import {get} from '../../../api/services';
-import {CREATE_USER} from '../../../api/Url';
+
+import {getuserDetail} from '../../../api/Authapi';
 import {token_details} from '../../../utils/constant';
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
@@ -49,7 +49,7 @@ const validationSchema = Yup.object().shape({
 
 function LoginScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  const getUserData = useApi(listing.getUserDetail);
+
   useEffect(() => {
     firebase.initializeApp({
       apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -100,10 +100,7 @@ function LoginScreen({navigation}) {
     });
   };
   getUser = async (uid) => {
-    const value = await Utility.getFromLocalStorge('token');
-    const endPoint = CREATE_USER + JSON.parse(uid);
-    console.log('endPoint  IS: ', endPoint);
-    get(endPoint, JSON.parse(value)).then((response) => {
+    getuserDetail(JSON.parse(uid)).then((response) => {
       if (response.status == true) {
         authContext.setUser(response.payload);
         storage.storeData('user', response.payload);
@@ -142,45 +139,6 @@ function LoginScreen({navigation}) {
       }
     });
   };
-  const tokenrefresh = async () => {
-    console.log('sffgfhgffasff');
-    const uid = await Utility.getFromLocalStorge('firebasetoken');
-    console.log(uid);
-    const vid = JSON.parse(uid);
-    console.log('json remove ', vid);
-    // try{
-
-    //     firebase.auth().revokeRefreshTokens(vid)
-    //   .then(() => {
-    //     return firebase.auth().getUser(vid);
-    //   })
-    //   .then((userRecord) => {
-    //     return new Date(userRecord.tokensValidAfterTime).getTime() / 1000;
-    //   })
-    //   .then((timestamp) => {
-    //     console.log('Tokens revoked at: ', timestamp);
-    //   });
-    // }catch(error){
-    //   console.log(" firebase bekar error",error.toString(error));
-    // }
-
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        user.getIdTokenResult().then((idTokenResult) => {
-          try {
-            storage.storeData(
-              'token.....................',
-              JSON.stringify(idTokenResult.token),
-            );
-            console.log('Stored Token...........: ', idTokenResult.token);
-          } catch (error) {
-            console.log(error.message);
-          }
-        });
-      }
-    });
-  };
-
   const loginUsers = async (email, password) => {
     firebase
 
