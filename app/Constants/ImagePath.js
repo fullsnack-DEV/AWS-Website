@@ -46,12 +46,7 @@ const PATH = {
 
   groupIcon: require('../assets/images/ic_group.png'),
   club_ph: require('../assets/images/club_profile_placeholder.png'),
-  club_ph_selected: require('../assets/images/club_profile_placeholder_selected.png'),
-
   team_ph: require('../assets/images/team_profile_placeholder.png'),
-  group_ph: require('../assets/images/group_ph.png'),
-  team_ph_selected: require('../assets/images/team_profile_placeholder_selected.png'),
-
   tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
   tab_search: require('../assets/images/tab_search.png'),
   tab_home: require('../assets/images/tab_home.png'),
@@ -65,9 +60,15 @@ const PATH = {
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
-
-  backArrow: require('../assets/images/back_arrow.png'),
-  checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
+  dotImage:require("../assets/images/ic_dot.png"),
+  footplayer:require("../assets/images/footballPlayer.png"),
+  footballGround:require("../assets/images/footballGround.png"),
+  comment:require("../assets/images/comment.png"),
+  exitGrey:require("../assets/images/exitGrey.png"),
+  gallaryImage:require("../assets/images/image.png"),
+  bagTick:require("../assets/images/bagTick.png"),
+  attatchmentGrey:require("../assets/images/attachmentGrey.png"),
+  likeOrange:require("../assets/images/orangeLike.png")
 };
 
 export default PATH;
