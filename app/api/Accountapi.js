@@ -12,7 +12,7 @@ export const patchRegisterPlayerDetails = async (params) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -26,7 +26,7 @@ export const getParentClubDetail = async (groupID) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -40,7 +40,7 @@ export const getUnreadCount = async () => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -57,7 +57,7 @@ export const postGroups = async (params, caller_id, caller) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -71,7 +71,7 @@ export const getJoinedTeams = async () => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -89,6 +89,6 @@ export const getTeamsByClub = async (clubID) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
