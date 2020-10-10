@@ -12,7 +12,7 @@ export const patchRegisterPlayerDetails = async (params) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -26,7 +26,7 @@ export const getParentClubDetail = async (groupID) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -40,7 +40,7 @@ export const getUnreadCount = async () => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -57,6 +57,38 @@ export const postGroups = async (params, caller_id, caller) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
+    });
+};
+
+export const getJoinedTeams = async () => {
+  return makeAPIRequest({
+    method: 'get',
+    url: api.baseURL + api.account.joinedTeams,
+  })
+    .then((response) => {
+      console.log('Get Client Details Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      alert('Get Client Details Error ::', error.response);
+    });
+};
+
+export const getTeamsByClub = async (clubID) => {
+  return makeAPIRequest({
+    method: 'get',
+    url:
+      api.baseURL +
+      api.account.parentClubDetail +
+      clubID +
+      api.account.teamsByClub,
+  })
+    .then((response) => {
+      console.log('Get Client Details Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      alert('Get Client Details Error ::', error.response);
     });
 };

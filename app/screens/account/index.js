@@ -131,6 +131,7 @@ export default function AccountScreen({navigation, route}) {
   };
   const getToken = async () => {
     try {
+      console.log('AUTHCONTEXT::', authContext.user);
       const switchByGroup = await Utility.getFromLocalStorge('switchBy');
       setSwitchBy(switchByGroup);
       getUnreadCount().then((response) => {
@@ -251,7 +252,9 @@ export default function AccountScreen({navigation, route}) {
       navigation.navigate('ScheduleScreen');
     } else if (item.key == 'Referee') {
     } else if (item.key == 'Teams') {
+      navigation.navigate('JoinedTeamsScreen');
     } else if (item.key == 'Clubs') {
+      navigation.navigate('JoinedClubsScreen');
     } else if (item.key == 'Leagues') {
     } else if (item.key == 'Register as a Referee') {
       navigation.navigate('RegisterReferee');
@@ -406,9 +409,13 @@ export default function AccountScreen({navigation, route}) {
         )}
         scrollEnabled={false}
       />
+      {groupList.length > 0 && (
+        <>
+          <View style={styles.separatorView}></View>
+          <Text style={styles.switchAccount}>Switch Account</Text>
+        </>
+      )}
 
-      <View style={styles.separatorView}></View>
-      <Text style={styles.switchAccount}>Switch Account</Text>
       <FlatList
         data={groupList}
         renderItem={({item, index}) => (

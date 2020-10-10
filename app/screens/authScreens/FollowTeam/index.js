@@ -12,7 +12,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {create} from 'apisauce';
 
 import {getuserDetail, createUser} from '../../../api/Authapi';
 import PATH from '../../../Constants/ImagePath';
@@ -22,15 +21,15 @@ import Separator from '../../../components/Separator';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import AuthContext from '../../../auth/context';
+import * as Utility from '../../../utility/index';
 import styles from './style';
 // const {strings, colors, fonts, urls, PATH} = constants;
-import * as Service from '../../../api/services';
-import * as Url from '../../../api/Url';
+
 export default function FollowTeams({navigation, route}) {
   const [teams, setTeams] = useState([]);
-  const [token, setToken] = useState('');
 
   const authContext = useContext(AuthContext);
+
   var followedTeam = [];
 
   useEffect(() => {
@@ -48,16 +47,8 @@ export default function FollowTeams({navigation, route}) {
     };
     setFollowData();
   }, []);
-  const storeUser = async (user) => {
-    try {
-      AsyncStorage.setItem('user', JSON.stringify(user));
-      console.log('USER STORED... ');
-    } catch (error) {
-      console.log('error while store data ', error);
-    }
-  };
-  signUpWithTC = async () => {
-    var token = '';
+
+  const signUpWithTC = async () => {
     var userInfo = {};
 
     try {
@@ -69,24 +60,6 @@ export default function FollowTeams({navigation, route}) {
     } catch (error) {
       console.log('Error while get data', error.message);
     }
-    try {
-      token = await AsyncStorage.getItem('token');
-      if (token !== null) {
-        console.log('TOKEN RETRIVED... ', token);
-        setToken(token);
-      } else {
-        console.log('TOKEN::::::::::::EMPTY');
-      }
-    } catch (e) {
-      // error reading value
-    }
-    const api = create({
-      baseURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
-    });
 
     let data = {
       first_name: userInfo.first_name,
@@ -101,7 +74,6 @@ export default function FollowTeams({navigation, route}) {
       club_ids: followedTeam,
     };
 
-    //const response = await api.post('users', data);
     createUser(data).then((response) => {
       if (response.status == true) {
         console.log('PAYLOAD::', JSON.stringify(response));
@@ -127,34 +99,26 @@ export default function FollowTeams({navigation, route}) {
 
     console.log('Followed Team:::', followedTeam);
   };
-  getUserInfo = async () => {
+  const getUserInfo = async () => {
     var uid = '';
-    var token = '';
+
     try {
-      token = await AsyncStorage.getItem('token');
-      if (token !== null) {
-        setToken(token);
-      } else {
-        console.log('TOKEN::::::::::::EMPTY');
-      }
-    } catch (e) {
-      // error reading value
-    }
-    try {
-      uid = await AsyncStorage.getItem('UID');
+      uid = await Utility.getStorage('UID');
       if (uid !== null) {
-        console.log('UID RETRIVED... ');
+        console.log('UID RETRIVED... ', uid);
       } else {
-        console.log('TOKEN::::::::::::EMPTY');
+        console.log('UID::::::::::::EMPTY');
       }
     } catch (e) {
       // error reading value
     }
     getuserDetail(uid).then((response) => {
       if (response.status == true) {
-        console.log('PAYLOAD::', JSON.stringify(response));
+        console.log('PAYLOAD OF GET USER::', JSON.stringify(response.payload));
         authContext.setUser(response.payload);
-        storeUser(response.payload);
+
+        Utility.setStorage('user', response.payload);
+        Utility.setStorage('switchBy', 'user');
         //navigation.navigate('HomeScreen');
       } else {
         console.log(response);
@@ -220,7 +184,7 @@ export default function FollowTeams({navigation, route}) {
       <TCButton
         title={strings.applyTitle}
         extraStyle={{marginBottom: hp('6.5%'), marginTop: hp('2%')}}
-        onPress={() => this.signUpWithTC()}
+        onPress={() => signUpWithTC()}
       />
     </View>
   );

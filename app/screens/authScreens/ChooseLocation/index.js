@@ -9,28 +9,16 @@ import {
   Alert,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {create} from 'apisauce';
-
-// import constants from '../../../config/constants';
-// const {strings, colors, fonts, urls, PATH} = constants;
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import useApi from '../../../hooks/useApi';
-import listing from '../../../api/listing';
 import Loader from '../../../components/loader/Loader';
 import styles from './style';
 import colors from '../../../Constants/Colors';
-import * as Service from '../../../api/services';
-import * as Url from '../../../api/Url';
+import {searchLocationList, searchGroupList} from '../../../api/Authapi';
+
 function ChooseLocationScreen({navigation, route}) {
-  const getCityList = useApi(listing.getCityList);
-  const getTeamListing = useApi(listing.getTeamList);
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -39,80 +27,47 @@ function ChooseLocationScreen({navigation, route}) {
     this.getLocationData(searchText);
   }, [searchText]);
 
-  getLocationData = async (searchText, token) => {
-    // if (searchText.length >= 3) {
-    //   getCityList.request(searchText);
-    //   setNoData(false);
-    //   setCityData(getCityList.data.predictions);
-    // } else {
-    //   setNoData(true);
-    //   setCityData([]);
-    // }
-
+  getLocationData = async (searchText) => {
     console.log('search Text', searchText);
-    var headers;
 
-    if (token == '' || token == null || token == undefined) {
-      headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      };
+    if (searchText.length >= 3) {
+      searchLocationList(searchText).then((response) => {
+        setNoData(false);
+        setCityData(response.predictions);
+      });
     } else {
-      headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'x-access-token': token,
-      };
-    }
-    const completeUrl = Url.GET_LOCATION + searchText;
-    console.log('completeUrl.........', completeUrl);
-
-    const response = await fetch(completeUrl, {
-      method: 'GET',
-      headers,
-    });
-
-    let res = await response.json();
-    console.log('ressssssponsse.................', res);
-    setCityData(res.predictions);
-
-    if (res !== null) {
-      return res;
+      setNoData(true);
+      setCityData([]);
     }
   };
 
   getTeamsData = async (item) => {
-    // const queryParams = {
-    //   state: item.terms[1].value,
-    //   city: item.terms[0].value,
-    // };
-    let state = item.terms[1].value;
-    console.log('state', state);
-    let city = item.terms[0].value;
-    console.log('city', city);
-    // let stringData = JSON.stringify(getTeamListing.data);
-    // let teamList = await JSON.parse(stringData);
-    // let length = getTeamListing.data.payload.length;
+    const queryParams = {
+      state: item.terms[1].value,
+      city: item.terms[0].value,
+    };
 
-    console.log('CITY::', item.terms[0].value);
-    console.log('STATE::', item.terms[1].value);
-    try {
-      let res = await Service.get(
-        Url.GROUP_SEARCH + `state=${state}&city=${city}`,
-      );
-      console.log('Group Search ', res);
-      console.log('TEAM DATA::', res.payload);
-      console.log('TotalTeam', res.payload.length);
-      navigation.navigate('TotalTeamsScreen', {
-        city: item.terms[0].value,
-        state: item.terms[1].value,
-        country: item.terms[2].value,
-        totalTeams: res.payload.length,
-        teamData: res.payload,
-      });
-    } catch (error) {
-      // alert('Error:', error);
-    }
+    searchGroupList(queryParams).then((response) => {
+      if (response.status == true) {
+        if (response.payload.length > 0) {
+          navigation.navigate('TotalTeamsScreen', {
+            city: item.terms[0].value,
+            state: item.terms[1].value,
+            country: item.terms[2].value,
+            totalTeams: response.payload.length,
+            teamData: response.payload,
+          });
+        } else {
+          navigation.navigate('ChooseSportsScreen', {
+            city: item.terms[0].value,
+            state: item.terms[1].value,
+            country: item.terms[2].value,
+          });
+        }
+      } else {
+        alert('Towns Cup', response.messages);
+      }
+    });
   };
 
   renderItem = ({item, index}) => {
@@ -129,7 +84,7 @@ function ChooseLocationScreen({navigation, route}) {
 
   return (
     <View style={styles.mainContainer}>
-      <Loader visible={getTeamListing.loading} />
+      {/* <Loader visible={getTeamListing.loading} /> */}
       <Image style={styles.background} source={PATH.orangeLayer} />
       <Image style={styles.background} source={PATH.bgImage} />
       <Text style={styles.LocationText}>{strings.locationText}</Text>

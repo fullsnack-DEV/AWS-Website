@@ -14,13 +14,11 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import PATH from "../../../Constants/ImagePath"
-import strings from "../../../Constants/String"
-// import constants from '../../../config/constants';
 
+import PATH from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
 import TCButton from '../../../components/TCButton';
-import styles from "./style"
-// const {strings, colors, fonts, urls, PATH} = constants;
+import styles from './style';
 
 function TotalTeamsScreen({navigation, route}) {
   return (
@@ -54,6 +52,5 @@ function TotalTeamsScreen({navigation, route}) {
     </View>
   );
 }
-
 
 export default TotalTeamsScreen;

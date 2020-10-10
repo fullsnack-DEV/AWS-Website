@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -24,6 +24,7 @@ import {create} from 'apisauce';
 // const {strings, urls, PATH, endPoints} = constants;
 
 import {getuserDetail} from '../../../api/Authapi';
+import AuthContext from '../../../auth/context';
 import TCForm from '../../../components/TCForm';
 import TCFormField from '../../../components/TCFormField';
 import TCFormSubmit from '../../../components/TCFormSubmit';
@@ -60,11 +61,13 @@ const validationSchema = Yup.object().shape({
 });
 
 function SignupScreen({navigation, route}) {
+  const authContext = useContext(AuthContext);
+
   useEffect(() => {
     firebase.initializeApp(config);
   });
 
-  authToken = () => {
+  const authToken = () => {
     auth().onAuthStateChanged((user) => {
       if (user) {
         user.getIdTokenResult().then(async (idTokenResult) => {
@@ -81,9 +84,10 @@ function SignupScreen({navigation, route}) {
               token_details,
               JSON.stringify(tokenDetail),
             );
-            storeToken(idTokenResult.token);
-            storeExpiry(idTokenResult.expirationTime);
-            storeUID(user.uid);
+
+            Utility.setStorage('token', idTokenResult.token);
+            Utility.setStorage('expiryTime', idTokenResult.expirationTime);
+            Utility.setStorage('UID', user.uid);
             getUserInfo();
           } catch (error) {
             console.log(error.message);
@@ -92,39 +96,6 @@ function SignupScreen({navigation, route}) {
         });
       }
     });
-  };
-
-  const storeToken = async (value) => {
-    try {
-      await AsyncStorage.setItem('token', value);
-      console.log('TOKEN STORED... ');
-    } catch (error) {
-      console.log('error while store token ', error);
-    }
-  };
-  const storeExpiry = async (value) => {
-    try {
-      await AsyncStorage.setItem('expiryTime', value);
-      console.log('Expiry STORED... ');
-    } catch (error) {
-      console.log('error while store token ', error);
-    }
-  };
-  const storeUID = async (value) => {
-    try {
-      await AsyncStorage.setItem('UID', value);
-      console.log('UID STORED... ');
-    } catch (error) {
-      console.log('error while store token ', error);
-    }
-  };
-  const storeUser = async (user) => {
-    try {
-      AsyncStorage.setItem('user', JSON.stringify(user));
-      console.log('DATA STORED... ');
-    } catch (error) {
-      console.log('error while store data ', error);
-    }
   };
 
   signUpUser = async (fname, lname, email, password) => {
@@ -168,50 +139,31 @@ function SignupScreen({navigation, route}) {
     var uid = '';
     var token = '';
     try {
-      token = await AsyncStorage.getItem('token');
+      token = await Utility.getStorage('token');
       console.log('TOKEN RETRIVED... get user detail ');
     } catch (e) {
       // error reading value
     }
     try {
-      uid = await AsyncStorage.getItem('UID');
+      uid = await await Utility.getStorage('UID');
       if (uid !== null) {
-        console.log('UID RETRIVED... get user detail');
+        console.log('UID RETRIVED... ', uid);
       } else {
         console.log('UID::::::::::::EMPTY...get user detail');
       }
     } catch (e) {
       // error reading value
     }
-    // const api = create({
-    //   baseURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + token,
-    //   },
-    // });
-
     getuserDetail(uid).then((response) => {
       console.log('PAYLOAD::', JSON.stringify(response));
       if (response.status == true) {
-        //authContext.setUser(data);
+        //authContext.setUser(response.payload);
         navigation.navigate('LoginScreen');
       } else {
         console.log(response);
         navigation.navigate('EmailVerification');
       }
     });
-
-    //const response = await api.get('users/' + uid);
-
-    // if (response.data.status == true) {
-    //   console.log('PAYLOAD::', JSON.stringify(response.data));
-    //   //authContext.setUser(data);
-    //   navigation.navigate('LoginScreen');
-    // } else if (response.data.status == false) {
-    //   console.log(response);
-    //   navigation.navigate('EmailVerification');
-    // }
   };
   return (
     <View style={styles.mainContainer}>
