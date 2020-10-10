@@ -1,22 +1,21 @@
 import React from 'react';
 import {StyleSheet, View, Image, Text} from 'react-native';
 import constants from '../../config/constants';
-
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
-const {colors, fonts} = constants;
+const {colors} = constants;
 import PATH from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
 
-function WritePost() {
+function WritePost({navigation}) {
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.profileImg} source={PATH.profilePlaceHolder} />
 
-      <Text style={styles.writePostText} onPress={() => console.log('Pressed')}>
+      <Text
+        style={styles.writePostText}
+        onPress={() => navigation.navigate('WritePostScreen')}>
         Write a post...
       </Text>
 
@@ -28,12 +27,11 @@ function WritePost() {
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    //backgroundColor: 'red',
     height: 70,
   },
   profileImg: {
-    height: 50,
-    width: 50,
+    height: hp('5%'),
+    width: hp('5%'),
     resizeMode: 'cover',
     backgroundColor: colors.themeColor,
     marginLeft: 10,
@@ -47,7 +45,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     backgroundColor: colors.grayColor,
-
     justifyContent: 'center',
     alignItems: 'center',
     width: wp('100%'),
@@ -66,7 +63,6 @@ const styles = StyleSheet.create({
     shadowColor: colors.googleColor,
     shadowOpacity: 0.5,
 
-    // fontFamily: fonts.RRegular,
     fontSize: wp('3.6%'),
     color: colors.grayColor,
     backgroundColor: colors.whiteColor,

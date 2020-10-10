@@ -11,6 +11,7 @@ export const api = {
   // NewsFeed Constants
   newsFeed: {
     newsFeedDetail: 'newsfeeds',
+    postDetail: 'posts',
   },
   // Search Constants
   search: {},
