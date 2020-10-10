@@ -32,6 +32,8 @@ import SearchLocationScreen from '../screens/account/commonScreen/searchLocation
 import JoinedTeamsScreen from '../screens/account/teams';
 import JoinedClubsScreen from '../screens/account/clubs';
 
+import GroupSettingPrivacyScreen from '../screens/account/groupSettingPrivacy';
+
 const Stack = createStackNavigator();
 
 const AccountNavigator = () => {
@@ -350,6 +352,22 @@ const AccountNavigator = () => {
         component={JoinedClubsScreen}
         options={{
           title: 'Clubs',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+       <Stack.Screen
+        name="GroupSettingPrivacyScreen"
+        component={GroupSettingPrivacyScreen}
+        options={{
+          title: 'Setting & Privacy',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

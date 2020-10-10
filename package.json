@@ -30,6 +30,7 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-dash": "0.0.11",
     "react-native-events-calendar": "^1.0.8",
+    "react-native-expandable-section-flatlist": "^1.2.2",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-media-controls": "^2.1.0",
