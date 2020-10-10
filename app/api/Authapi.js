@@ -11,7 +11,7 @@ export const getuserDetail = async (uid) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -26,7 +26,7 @@ export const createUser = async (params) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -40,7 +40,7 @@ export const getSportsList = async () => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -54,7 +54,7 @@ export const searchLocationList = async (query) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
 
@@ -69,6 +69,6 @@ export const searchGroupList = async (params) => {
       return Promise.resolve(response.data);
     })
     .catch((error) => {
-      console.log('Get Client Details Error ::', error.response);
+      alert('Get Client Details Error ::', error.response);
     });
 };
