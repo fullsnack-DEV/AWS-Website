@@ -8,7 +8,7 @@ export const getNewsFeedDetails = async () => {
   })
     .then((response) => {
       console.log('Get News Feed Details Response ::', response);
-      return Promise.resolve(response.data.payload.results);
+      return Promise.resolve(response.data);
     })
     .catch((error) => {
       console.log('Get News Feed Details Error ::', error.response);
@@ -22,9 +22,10 @@ export const getPostDetails = async () => {
   })
     .then((response) => {
       console.log('Get Post Details Response ::', response);
-      return Promise.resolve(response.data.payload.results);
+      return Promise.resolve(response.data);
     })
     .catch((error) => {
       console.log('Get Post Details Error ::', error.response);
+      return Promise.reject(error);
     });
 };

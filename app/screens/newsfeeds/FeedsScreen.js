@@ -15,17 +15,20 @@ export default function FeedsScreen({navigation}) {
   const [loading, setloading] = useState(true);
   useEffect(() => {
     // getNewsFeedDetails().then((response) => {
-    //   if (response) {
-    //     setloading(false);
-    //     setNewsFeedData(response);
+    //   if (response.status == true) {
+    //     setPostData(response.payload.results);
+    //   } else {
+    //     alert(response.messages);
     //   }
+    // setloading(false);
     // });
-    getPostDetails().then((res) => {
-      console.log('Feeds Screen Response :-', res);
-      if (res) {
-        setloading(false);
-        setPostData(res);
+    getPostDetails().then((response) => {
+      if (response.status == true) {
+        setPostData(response.payload.results);
+      } else {
+        alert(response.messages);
       }
+      setloading(false);
     });
   }, []);
 

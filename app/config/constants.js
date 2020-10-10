@@ -42,6 +42,7 @@ const colors = {
   purpleColor: '#c08bd1',
   lightBlueColor: '#5ecceb',
   disableColor: '#cccccc',
+  postSeprator: '#e1e1e1',
 };
 
 const fonts = {
@@ -134,5 +135,11 @@ const endPoints = {
   getUserFeed: 'posts',
   getNewsFeeds: 'newsfeeds',
 };
+
+export const development = 'DEVELOPMENT';
+
+export const staging = 'STAGING';
+
+export const production = 'PRODUCTION';
 
 export default {urls, fonts, endPoints, colors, PATH};

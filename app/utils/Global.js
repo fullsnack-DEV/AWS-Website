@@ -1,7 +1,10 @@
+// import React, {useContext} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import {token_details} from '../utils/constant';
 import firebase from '@react-native-firebase/app';
+// import {AppContext} from '../context/index';
+// import {Value} from 'react-native-reanimated';
 
 export const makeAPIRequest = ({
   method,
@@ -14,10 +17,14 @@ export const makeAPIRequest = ({
   caller,
 }) =>
   new Promise(async (resolve, reject) => {
+    // const {loading, updateLoadingState} = useContext(AppContext);
     const tokenDetails = await AsyncStorage.getItem(token_details);
     var authToken = JSON.parse(tokenDetails).token;
     var expiryDate = new Date(JSON.parse(tokenDetails).expirationTime);
     var currentDate = new Date();
+
+    // console.log('calleddd ... . ');
+    // updateLoadingState(true);
 
     if (expiryDate.getTime() <= currentDate.getTime()) {
       firebase.auth().onAuthStateChanged((user) => {
@@ -78,9 +85,14 @@ export const makeAPIRequest = ({
     console.log('API Option ::', JSON.stringify(options));
     await axios(options)
       .then((response) => {
-        resolve(response);
+        if (response.data.status) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
       })
       .catch(async (error) => {
+        alert(error.response.data.message);
         reject(error);
       });
   });

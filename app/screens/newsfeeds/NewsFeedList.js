@@ -21,20 +21,20 @@ import PATH from '../../Constants/ImagePath';
 import moment from 'moment';
 
 export default function NewsFeedList({navigation, newsFeedData, postData}) {
-  console.log('Post Data :-', newsFeedData);
+  console.log('Post Data :-', postData);
 
   const [searchText, setSearchText] = useState(false);
   const [id, setId] = useState();
 
-  likePress = (item) => {
-    console.log('selected item', item);
-    // setSearchText(!item.likeValue)
-    setId(item.id);
-    const search = setSearchText(!searchText);
+  // likePress = (item) => {
+  //   console.log('selected item', item);
+  //   // setSearchText(!item.likeValue)
+  //   setId(item.id);
+  //   const search = setSearchText(!searchText);
 
-    console.log('search', search);
-    console.log('id', id);
-  };
+  //   console.log('search', search);
+  //   console.log('id', id);
+  // };
 
   return (
     <View>
@@ -44,8 +44,8 @@ export default function NewsFeedList({navigation, newsFeedData, postData}) {
           <View
             style={{
               marginTop: 10,
-              height: 1,
-              backgroundColor: colors.disableColor,
+              height: 8,
+              backgroundColor: colors.postSeprator,
             }}
           />
         )}
@@ -87,6 +87,7 @@ export default function NewsFeedList({navigation, newsFeedData, postData}) {
                     <FlatList
                       data={attachedImages}
                       horizontal={true}
+                      bounces={false}
                       showsHorizontalScrollIndicator={false}
                       ItemSeparatorComponent={() => {
                         return <View style={{width: wp(1)}} />;
@@ -124,6 +125,7 @@ export default function NewsFeedList({navigation, newsFeedData, postData}) {
                     <FlatList
                       data={attachedImages}
                       horizontal={true}
+                      bounces={false}
                       showsHorizontalScrollIndicator={false}
                       ItemSeparatorComponent={() => {
                         return <View style={{width: wp(1)}} />;
@@ -162,11 +164,21 @@ export default function NewsFeedList({navigation, newsFeedData, postData}) {
                     style={styles.shareImage}
                     source={PATH.exitGrey}></Image>
                   <View style={styles.likeImageView}>
-                    <TouchableOpacity onPress={() => this.likePress(item)}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        // this.likePress(item)
+                        console.log('selected item', item);
+                        // setSearchText(!item.likeValue)
+                        setId(item.id);
+                        const search = setSearchText(!searchText);
+
+                        console.log('search', search);
+                        console.log('id', id);
+                      }}>
                       {searchText == true && id == item.id ? (
                         <Image
-                          style={styles.likeImage}
-                          source={PATH.likeOrange}></Image>
+                          style={[styles.likeImage, {tintColor: '#ff892c'}]}
+                          source={PATH.feedLike}></Image>
                       ) : (
                         <Image
                           style={styles.likeImage}
@@ -176,12 +188,21 @@ export default function NewsFeedList({navigation, newsFeedData, postData}) {
                   </View>
                 </View>
 
-                <View style={styles.commentShareLikeTxtView}>
-                  <Text style={styles.commentNo}>12 commnet</Text>
-                  <Text style={styles.shareNo}>1 share</Text>
+                <View>
+                  <View
+                    style={{
+                      marginVertical: 8,
+                      height: 1,
+                      backgroundColor: colors.disableColor,
+                    }}
+                  />
+                  <View style={styles.commentShareLikeTxtView}>
+                    <Text style={styles.commentNo}>12 comments</Text>
+                    <Text style={styles.shareNo}>1 share</Text>
 
-                  <View style={styles.LikeTxtView}>
-                    <Text style={styles.likeTxt}>22 Likes</Text>
+                    <View style={styles.LikeTxtView}>
+                      <Text style={styles.likeTxt}>22 Likes</Text>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -234,7 +255,7 @@ const styles = StyleSheet.create({
   },
   commentShareLikeView: {
     marginHorizontal: '5%',
-    marginVertical: '3%',
+    marginVertical: '2%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
