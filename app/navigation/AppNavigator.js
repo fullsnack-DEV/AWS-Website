@@ -57,7 +57,6 @@ function AppNavigator() {
   switchByEntity = async () => {
     const switchEntities = await Utility.getStorage('switchBy');
     setSwitchBy(switchEntities);
-    console.log('SWITCH BY :', switchBy);
   };
   return (
     <Tab.Navigator
@@ -66,64 +65,70 @@ function AppNavigator() {
         inactiveTintColor: colors.grayColor,
         labelStyle: {
           fontSize: 11,
-          marginTop: -6,
+          marginTop: -8,
           paddingTop: 5,
         },
         style: {
-          tabBackgroundColor: colors.tabBackgroundColor,
-
-          borderTopColor: colors.googleColor,
+          height:85,
+          backgroundColor: colors.offwhite,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.4,
+          shadowRadius: 15,  
+          elevation: 5,
+          
         },
       }}>
-      <Tab.Screen
-        name="Newsfeed"
-        component={NewsFeedNavigator}
-        options={({route}) => ({
-          tabBarVisible: this.getTabBarVisibility(route),
-          tabBarIcon: ({focused}) => (
-            <Image
-              source={PATH.tab_newsfeed}
-              style={focused ? styles.selectedTabImg : styles.tabImg}
-            />
-          ),
-        })}
-      />
-      <Tab.Screen
-        name="Search"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <Image
-              source={PATH.tab_search}
-              style={focused ? styles.selectedTabImg : styles.tabImg}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
+         <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={PATH.tab_home}
+              source={focused ? PATH.tab_home_selected : PATH.tab_home}
+              style={styles.tabImg}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Reservation"
+        component={NewsFeedNavigator}
+        options={({route}) => ({
+          tabBarVisible: this.getTabBarVisibility(route),
+          tabBarIcon: ({focused}) => (
+            <Image
+              source={focused ? PATH.tab_reservation_selected : PATH.tab_reservation}
+              style={styles.tabImg}
+            />
+          ),
+        })}
+      />
+       <Tab.Screen
+        name="Notification"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <Image
+              source={focused ? PATH.tab_notification_selected : PATH.tab_notification}
               style={focused ? styles.selectedTabImg : styles.tabImg}
             />
           ),
         }}
       />
       <Tab.Screen
-        name="Notification"
+        name="Message"
         component={HomeScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={PATH.tab_notification}
+              source={focused ? PATH.tab_message_selected : PATH.tab_message}
               style={focused ? styles.selectedTabImg : styles.tabImg}
             />
           ),
         }}
       />
+     
       {authContext.switchBy == 'team' && (
         <Tab.Screen
           name="Account"
@@ -132,7 +137,7 @@ function AppNavigator() {
             tabBarVisible: this.getTabBarVisibility(route),
             tabBarIcon: ({focused}) => (
               <Image
-                source={PATH.team_ph}
+              source={focused ? PATH.tab_account_group_selected : PATH.tab_account_group}
                 style={focused ? styles.selectedEntity : styles.tabEntity}
               />
             ),
@@ -147,8 +152,8 @@ function AppNavigator() {
             tabBarVisible: this.getTabBarVisibility(route),
             tabBarIcon: ({focused}) => (
               <Image
-                source={PATH.tab_account}
-                style={focused ? styles.selectedTabImg : styles.tabImg}
+                source={focused ? PATH.tab_account_selected : PATH.tab_account}
+                style={styles.tabImg}
               />
             ),
           })}
@@ -162,8 +167,8 @@ function AppNavigator() {
             tabBarVisible: this.getTabBarVisibility(route),
             tabBarIcon: ({focused}) => (
               <Image
-                source={PATH.club_ph}
-                style={focused ? styles.selectedEntity : styles.tabEntity}
+              source={focused ? PATH.tab_account_group_selected : PATH.tab_account_group}
+                style={styles.tabEntity}
               />
             ),
           })}
@@ -175,41 +180,36 @@ function AppNavigator() {
 
 const styles = StyleSheet.create({
   tabImg: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
     alignSelf: 'center',
     borderRadius: 5,
-    //tintColor: colors.grayColor,
+   
   },
   selectedTabImg: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
     alignSelf: 'center',
     borderRadius: 5,
-    tintColor: colors.themeColor,
+   
   },
   tabEntity: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
     alignSelf: 'center',
     borderRadius: 5,
-    borderWidth: 1,
-    borderColor: colors.grayColor,
-
-    //tintColor: colors.grayColor,
+   
   },
   selectedEntity: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
     alignSelf: 'center',
     borderRadius: 5,
-    borderWidth: 1,
-    borderColor: colors.themeColor,
-    //tintColor: colors.themeColor,
+   
   },
 });
 export default AppNavigator;

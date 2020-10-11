@@ -160,5 +160,16 @@ const strings = {
   refereeFeesTitle: 'Referee Fee',
   deleteTitle: 'Delete',
   titleOrDescriptionText: 'Title or Description',
+
+  // Group setting & Privacy
+  connectionTitle: 'Connetions',
+  whoCanSeeClub: 'Who can see members in club connections?',
+  whoCanSeeTeam: 'Who can see members in team connections?',
+  whoCanSeeClubFollowers: 'Who can see followers in club connections?',
+  whoCanSeeTeamFollowers: 'Who can see followers in team connections?',
+  everyoneRadio: 'Everyone',
+  followersRadio: 'Followers',
+  clubMembersRadio: 'Club Members',
+  adminsRadio: 'Only Club & Team Admins',
 };
 export default strings;

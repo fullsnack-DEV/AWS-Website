@@ -1,19 +1,18 @@
 import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, Image, FlatList,ScrollView} from 'react-native';
 
 import QB from 'quickblox-react-native-sdk';
 
 import ActionSheet from 'react-native-actionsheet';
+import ExpanableList from 'react-native-expandable-section-flatlist';
 import styles from './style';
 
 import {
   TouchableWithoutFeedback,
-  FlatList,
-  ScrollView,
 } from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
 
-import {getParentClubDetail, getUnreadCount} from '../../api/Accountapi';
+import {getParentClubDetail, getUnreadCount,getJoinedTeams, getTeamsByClub} from '../../api/Accountapi';
 
 import * as Utility from '../../utility/index';
 import constants from '../../config/constants';
@@ -29,38 +28,42 @@ export default function AccountScreen({navigation, route}) {
   const [entities, setEntities] = useState([]);
   const [groupList, setGroupList] = useState([]);
   const authContext = useContext(AuthContext);
+  // for set/get teams
+  const [teamList, setTeamList] = useState([]);
 
   //Account menu opetions
   const userMenu = [
-    {key: 'Schedule'},
-    {key: 'Referee'},
-    {key: 'Teams'},
-    {key: 'Clubs'},
-    {key: 'Leagues'},
-    {key: 'Register as a Referee'},
-    {key: 'Register as a personal player'},
-    {key: 'Create Group'},
-    {key: 'Reservations'},
+    {key: 'My Schedule', },
+    {key: 'My Sports',member:[{opetions: 'Add a sport'}]},
+    {key: 'My Refereeing',member:[{opetions: 'Register as a referee'}]},
+    {key: 'My Teams', member:[{opetions: 'Create a Team'}]},
+    {key: 'My Clubs', member:[{opetions: 'Create a Club'}]},
+    {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
+    //{key: 'Register as a Referee'},
+    //{key: 'Register as a personal player'},
+    //{key: 'Create Group'},
+    // {key: 'Reservations'},
     {key: 'Payment & Payout'},
+    {key: 'Setting & Privacy'},
   ];
   const teamMenu = [
     {key: 'Members'},
-    {key: 'Leagues'},
+    {key: 'My Leagues'},
     {key: 'Schedule'},
     {key: 'Create a Club'},
-    {key: 'Setting & Privacy'},
     {key: 'Reservations'},
     {key: 'Payment & Payout'},
+    {key: 'Setting & Privacy'},
   ];
   const clubMenu = [
     {key: 'Members'},
-    {key: 'Teams'},
-    {key: 'Leagues'},
+    {key: 'My Teams'},
+    {key: 'My Leagues'},
     {key: 'Schedule'},
     {key: 'Create a Team'},
     {key: 'Invite Teams'},
-    {key: 'Setting & Privacy'},
     {key: 'Payment & Payout'},
+    {key: 'Setting & Privacy'},
   ];
 
   // Payment menu opetions
@@ -98,6 +101,7 @@ export default function AccountScreen({navigation, route}) {
   }, [navigation]);
   useEffect(() => {
     getToken();
+    getTeamsList();
   }, []);
 
   const connectChat = () => {
@@ -146,6 +150,29 @@ export default function AccountScreen({navigation, route}) {
         }
       });
     } catch (e) {}
+  };
+  const getTeamsList = async () => {
+    let switchBy = await Utility.getStorage('switchBy');
+    if (switchBy == 'club') {
+      let clubObject = await Utility.getStorage('club');
+      getTeamsByClub(clubObject.group_id).then((response) => {
+        if (response.status == true) {
+          console.log('RESPONSE OF TEAM LIST BY CLUB::', response.payload);
+          setTeamList(response.payload);
+        } else {
+          alert(response.messages);
+        }
+      });
+    } else {
+      getJoinedTeams().then((response) => {
+        if (response.status == true) {
+          console.log('RESPONSE OF TEAM LIST::', response.payload);
+          setTeamList(response.payload.teams);
+        } else {
+          alert(response.messages);
+        }
+      });
+    }
   };
   const switchProfile = async ({item}) => {
     if (item.entity_type == 'club') {
@@ -247,40 +274,62 @@ export default function AccountScreen({navigation, route}) {
         // handle error
       });
   };
-  const handleOpetions = ({item}) => {
-    if (item.key == 'Schedule') {
+  const handleSections = async(section) => {
+    if (section == 'My Schedule') {
       navigation.navigate('ScheduleScreen');
-    } else if (item.key == 'Referee') {
-    } else if (item.key == 'Teams') {
-      navigation.navigate('JoinedTeamsScreen');
-    } else if (item.key == 'Clubs') {
+    }else if (section == 'My Clubs') {
       navigation.navigate('JoinedClubsScreen');
-    } else if (item.key == 'Leagues') {
-    } else if (item.key == 'Register as a Referee') {
+    } else if (section == 'My Leagues') {
+    } else if (section == 'Register as a Referee') {
       navigation.navigate('RegisterReferee');
-    } else if (item.key == 'Register as a personal player') {
+    } else if (section == 'Register as a personal player') {
       navigation.navigate('RegisterPlayer');
-    } else if (item.key == 'Create Group') {
+    } else if (section == 'Create Group') {
       groupOpetionActionSheet.show();
-    } else if (item.key == 'Create a Team') {
+    } else if (section == 'Create a Team') {
       navigation.navigate('CreateTeamForm1', {clubObject: group});
-    } else if (item.key == 'Create a Club') {
+    } else if (section == 'Create a Club') {
       navigation.navigate('CreateClubForm1');
-    } else if (item.key == 'Reservations') {
-    } else if (item.key == 'Payment & Payout') {
+    } else if (section == 'Reservations') {
+    } else if (section == 'Setting & Privacy') {
+      const switchEntity = await Utility.getStorage('switchBy');
+      navigation.navigate('GroupSettingPrivacyScreen',{switchBy: switchEntity});
+    } else if (section == 'Payment & Payout') {
       paymentOpetionActionSheet.show();
-    }
+    } 
+  };
+
+  const handleOpetions = async(opetions) => {
+     if (opetions == 'My Teams') {
+      navigation.navigate('JoinedTeamsScreen');
+    } else if (opetions == 'My Clubs') {
+      navigation.navigate('JoinedClubsScreen');
+    } else if (opetions == 'My Leagues') {
+    } else if (opetions == 'Register as a referee') {
+      navigation.navigate('RegisterReferee');
+    } else if (opetions == 'Add a sport') {
+      navigation.navigate('RegisterPlayer');
+    } else if (opetions == 'Create Group') {
+      groupOpetionActionSheet.show();
+    } else if (opetions == 'Create a Team') {
+      navigation.navigate('CreateTeamForm1', {clubObject: group});
+    } else if (opetions == 'Create a Club') {
+      navigation.navigate('CreateClubForm1');
+    } else if (opetions == 'Reservations') {
+    }  else if (opetions == 'Payment & Payout') {
+      paymentOpetionActionSheet.show();
+    } 
   };
   return (
     <ScrollView style={styles.mainContainer}>
       {switchBy == 'user' && (
         <View style={styles.profileView}>
-          {!authContext.user.full_image && (
+          {!authContext.user.thumbnail && (
             <Image source={PATH.profilePlaceHolder} style={styles.entityImg} />
           )}
-          {authContext.user.full_image && (
+          {authContext.user.thumbnail && (
             <Image
-              source={{uri: authContext.user.full_image}}
+              source={{uri: authContext.user.thumbnail}}
               style={styles.profileImg}
             />
           )}
@@ -293,13 +342,13 @@ export default function AccountScreen({navigation, route}) {
       )}
       {switchBy == 'team' && (
         <View style={styles.profileView}>
-          {!group.full_image && (
+          {!group.thumbnail && (
             <Image source={PATH.team_ph} style={styles.profileImgGroup} />
           )}
 
-          {group.full_image && (
+          {group.thumbnail && (
             <Image
-              source={{uri: group.full_image}}
+              source={{uri: group.thumbnail}}
               style={styles.profileImgGroup}
             />
           )}
@@ -322,13 +371,13 @@ export default function AccountScreen({navigation, route}) {
       )}
       {switchBy == 'club' && (
         <View style={styles.profileView}>
-          {!group.full_image && (
+          {!group.thumbnail && (
             <Image source={PATH.club_ph} style={styles.profileImgGroup} />
           )}
 
-          {group.full_image && (
+          {group.thumbnail && (
             <Image
-              source={{uri: group.full_image}}
+              source={{uri: group.thumbnail}}
               style={styles.profileImgGroup}
             />
           )}
@@ -358,13 +407,13 @@ export default function AccountScreen({navigation, route}) {
                 flexDirection: 'row',
                 marginLeft: 15,
               }}>
-              {!parentGroup.full_image && (
+              {!parentGroup.thumbnail && (
                 <Image source={PATH.club_ph} style={styles.clubView} />
               )}
 
-              {parentGroup.full_image && (
+              {parentGroup.thumbnail && (
                 <Image
-                  source={{uri: parentGroup.full_image}}
+                  source={{uri: parentGroup.thumbnail}}
                   style={styles.clubView}
                 />
               )}
@@ -388,7 +437,7 @@ export default function AccountScreen({navigation, route}) {
         </>
       )}
 
-      <FlatList
+      {/* <FlatList
         data={
           (switchBy == 'team' && teamMenu) ||
           (switchBy == 'club' && clubMenu) ||
@@ -400,6 +449,15 @@ export default function AccountScreen({navigation, route}) {
             onPress={() => {
               handleOpetions({item});
             }}>
+              {item.key == 'My Schedule' && <Image source={PATH.mySchedule} style={styles.menuItem} />}
+              {item.key == 'My Sports' && <Image source={PATH.mySports} style={styles.menuItem} />}
+              {item.key == 'My Refereeing' && <Image source={PATH.myRefereeing} style={styles.menuItem} />}
+              {item.key == 'My Teams' && <Image source={PATH.myTeams} style={styles.menuItem} />}
+              {item.key == 'My Clubs' && <Image source={PATH.myClubs} style={styles.menuItem} />}
+              {item.key == 'My Leagues' && <Image source={PATH.myLeagues} style={styles.menuItem} />}
+              {item.key == 'Payment & Payout' && <Image source={PATH.paymentPayout} style={styles.menuItem} />}
+              {item.key == 'Setting & Privacy' && <Image source={PATH.SettingPrivacy} style={styles.menuItem} />}
+
             <Text style={styles.listItems}>{item.key}</Text>
             <Image source={PATH.nextArrow} style={styles.nextArrow} />
           </TouchableWithoutFeedback>
@@ -408,11 +466,96 @@ export default function AccountScreen({navigation, route}) {
           <View style={styles.separatorLine}></View>
         )}
         scrollEnabled={false}
+      /> */}
+      <ExpanableList
+        dataSource={
+          userMenu
+        }
+        
+        headerKey={"key"}
+        memberKey="member"
+        renderRow={(rowItem, rowId, sectionId)=>(<>
+        {teamList.length >0 && <FlatList
+        data={teamList}
+        keyExtractor={(item, index) => item.group_id}
+        renderItem={({item, index}) => (
+          <TouchableWithoutFeedback
+            style={styles.listContainer}
+            onPress={() => {
+              console.log('Pressed Team..');
+            }}>
+           
+
+            <View style={styles.entityTextContainer}>
+            {item.full_image ? (
+                <Image
+                  source={{uri: item.full_image}}
+                  style={styles.smallProfileImg}
+                />
+              ) : (
+                <Image source={PATH.teamPlaceholder} style={styles.smallProfileImg} />
+              )}
+              <Text style={styles.entityName}>{item.group_name}</Text>
+
+              {/* <Text style={styles.entityLocationText}>
+                {item.city}, {item.state_abbr}, {item.country}
+              </Text> */}
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+        // ItemSeparatorComponent={() => (
+        //   <View style={styles.separatorLine}></View>
+        // )}
+        scrollEnabled={false}
+      />}
+        
+      
+        <TouchableWithoutFeedback
+          style={styles.listContainer}
+          onPress={()=>{
+            console.log('Pressed::', rowItem.opetions);
+          }}>
+            {rowItem.opetions == 'Add a sport' && <Image source={PATH.addSport} style={styles.subMenuItem} />}
+            {rowItem.opetions == 'Register as a referee' && <Image source={PATH.registerReferee} style={styles.subMenuItem} />}
+            {rowItem.opetions == 'Create a Team' && <Image source={PATH.createTeam} style={styles.subMenuItem} />}
+            {rowItem.opetions == 'Create a Club' && <Image source={PATH.createClub} style={styles.subMenuItem} />}
+            {rowItem.opetions == 'Create a League' && <Image source={PATH.createLeague} style={styles.subMenuItem} />}
+          <Text style={styles.listItems}>{rowItem.opetions}</Text>
+          <Image source={PATH.nextArrow} style={styles.nextArrow} />
+        </TouchableWithoutFeedback>
+        <View style={styles.halfSeparatorLine}/></>)}
+
+        renderSectionHeaderX={(section, sectionId)=>(<><TouchableWithoutFeedback
+          style={styles.listContainer}
+          onPress={()=>{
+            handleSections(section);
+          }}>
+            {section == 'My Schedule' && <Image source={PATH.mySchedule} style={styles.menuItem} />}
+            {section == 'My Sports' && <Image source={PATH.mySports} style={styles.menuItem} />}
+            {section == 'My Refereeing' && <Image source={PATH.myRefereeing} style={styles.menuItem} />}
+            {section == 'My Teams' && <Image source={PATH.myTeams} style={styles.menuItem} />}
+            {section == 'My Clubs' && <Image source={PATH.myClubs} style={styles.menuItem} />}
+            {section == 'My Leagues' && <Image source={PATH.myLeagues} style={styles.menuItem} />}
+            {section == 'Payment & Payout' && <Image source={PATH.paymentPayout} style={styles.menuItem} />}
+            {section == 'Setting & Privacy' && <Image source={PATH.SettingPrivacy} style={styles.menuItem} />}
+
+          <Text style={styles.listItems}>{section}</Text>
+          <Image source={PATH.nextArrow} style={styles.nextArrow} />
+        </TouchableWithoutFeedback>
+        <View style={styles.separatorLine}/>
+        </>)}
+        
+
       />
+
       {groupList.length > 0 && (
         <>
           <View style={styles.separatorView}></View>
+          <View style={{flexDirection:'row'}}>
+          
+          <Image source={PATH.switchAccount} style={styles.switchAccountIcon} />
           <Text style={styles.switchAccount}>Switch Account</Text>
+          </View>
         </>
       )}
 
@@ -426,11 +569,13 @@ export default function AccountScreen({navigation, route}) {
             }}>
             <View>
               {item.entity_type == 'player' &&
-                (item.full_image ? (
+                (item.thumbnail ? (
+                  <View style={styles.imageContainer}>
                   <Image
-                    source={{uri: item.full_image}}
+                    source={{uri: item.thumbnail}}
                     style={styles.playerImg}
                   />
+                  </View>
                 ) : (
                   <Image
                     source={PATH.profilePlaceHolder}
@@ -438,22 +583,22 @@ export default function AccountScreen({navigation, route}) {
                   />
                 ))}
               {item.entity_type == 'club' &&
-                (item.full_image ? (
+                (item.thumbnail ? (
                   <Image
-                    source={{uri: item.full_image}}
+                    source={{uri: item.thumbnail}}
                     style={styles.entityImg}
                   />
                 ) : (
-                  <Image source={PATH.club_ph} style={styles.entityImg} />
+                  <Image source={PATH.clubPlaceholder} style={styles.entityImg} />
                 ))}
               {item.entity_type == 'team' &&
-                (item.full_image ? (
+                (item.thumbnail ? (
                   <Image
-                    source={{uri: item.full_image}}
+                    source={{uri: item.thumbnail}}
                     style={styles.entityImg}
                   />
                 ) : (
-                  <Image source={PATH.team_ph} style={styles.entityImg} />
+                  <Image source={PATH.teamPlaceholder} style={styles.entityImg} />
                 ))}
 
               {item.unread > 0 && (
@@ -488,7 +633,8 @@ export default function AccountScreen({navigation, route}) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={handleLogOut}>
-        <Text style={styles.listItems}>Logout</Text>
+          <Image source={PATH.logoutIcon} style={styles.switchAccountIcon} />
+        <Text style={styles.listItems}>Log out</Text>
         <Image source={PATH.nextArrow} style={styles.nextArrow} />
       </TouchableWithoutFeedback>
 
