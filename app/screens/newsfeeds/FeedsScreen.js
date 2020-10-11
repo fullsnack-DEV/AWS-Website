@@ -1,50 +1,47 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, ScrollView, FlatList} from 'react-native';
-
+import {StyleSheet, View, ScrollView} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
-import constants from '../../config/constants';
-import listing from '../../api/listing';
-import useApi from '../../hooks/useApi';
-import storage from '../../auth/storage';
 import WritePost from '../../components/newsFeed/WritePost';
-import Feed from '../../components/newsFeed/Feed';
-import Loader from '../../components/loader/Loader';
-import NewsFeedList from "./NewsFeedList"
-const {strings, colors, fonts, urls, PATH} = constants;
-var uid = '';
+import NewsFeedList from './NewsFeedList';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+import {getNewsFeedDetails, getPostDetails} from '../../api/NewsFeedapi';
 
-export default function FeedsScreen({navigation, route}) {
-  const getFeedList = useApi(listing.getFeedDetail);
-  const [feedData, setFeedData] = useState([]);
+export default function FeedsScreen({navigation}) {
+  const [postData, setPostData] = useState([]);
+  const [newsFeedData, setNewsFeedData] = useState([]);
+  const [loading, setloading] = useState(true);
   useEffect(() => {
-    getStorageData();
+    // getNewsFeedDetails().then((response) => {
+    //   if (response.status == true) {
+    //     setPostData(response.payload.results);
+    //   } else {
+    //     alert(response.messages);
+    //   }
+    // setloading(false);
+    // });
+    getPostDetails().then((response) => {
+      if (response.status == true) {
+        setPostData(response.payload.results);
+      } else {
+        alert(response.messages);
+      }
+      setloading(false);
+    });
   }, []);
-  const getStorageData = async () => {
-    uid = await storage.retriveData('UID');
 
-    await getFeedList.request();
-    setFeedData(getFeedList.data.payload.results);
-    console.log('JSON DATA : ', feedData);
-  };
-  renderItem = ({item, index}) => {
-    return <Feed data={item} navigation={navigation} />;
-  };
   return (
     <View style={styles.mainContainer}>
-      {/* <Loader visible={getFeedList.loading} /> */}
+      <ActivityLoader visible={loading} />
       <ScrollView>
-        <WritePost />
-        <NewsFeedList></NewsFeedList>
-        {/* <FlatList
-          data={feedData}
-          keyExtractor={(feedData) => feedData.id}
-          renderItem={this.renderItem}
-          showsHorizontalScrollIndicator={false}
-        /> */}
+        <WritePost navigation={navigation} />
+        <NewsFeedList
+          navigation={navigation}
+          newsFeedData={newsFeedData}
+          postData={postData}
+        />
       </ScrollView>
     </View>
   );

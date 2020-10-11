@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, useContext} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 // import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
@@ -7,6 +7,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import QB from 'quickblox-react-native-sdk';
 
 import AuthContext from './app/auth/context';
+// import {AppContext} from './app/context/index';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
@@ -14,10 +15,14 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as Utility from './app/utility/index';
 import TeamCreatedScreen from './app/screens/account/createGroup/createTeam/teamCreated';
 import SearchPlayerScreen from './app/screens/account/createGroup/createTeam/searchPlayer';
+// import ActivityLoader from './app/components/loader/ActivityLoader';
 // import ChooseSportsScreen from './app/screens/authScreens/ChooseSportsScreen';
 // import NewsFeedVideoPlayer from './app/screens/newsfeeds/NewsFeedVideoPlayer';
 
 export default function App() {
+  // const {loading, updateLoadingState} = useContext(AppContext);
+  // console.log('loading :: ', loading);
+  // updateLoadingState();
   const [user, setUser] = useState();
   const [switchBy, setSwitchBy] = useState('user');
   const [team, setTeam] = useState();
@@ -91,6 +96,7 @@ export default function App() {
   return (
     <AuthContext.Provider value={authValue}>
       <NavigationContainer theme={navigationTheme}>
+        {/* <ActivityLoader visible={loading} /> */}
         {user ? <AppNavigator /> : <AuthNavigator />}
         {/* <AppNavigator /> */}
         {/* <NewsFeedVideoPlayer /> */}

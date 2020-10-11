@@ -10,6 +10,8 @@ const {strings, colors, fonts, urls, PATH} = constants;
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
 import Feed from '../components/newsFeed/Feed';
+import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
+import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +33,40 @@ const NewsFeedNavigator = () => {
           headerTitleStyle: {
             fontWeight: '500',
           },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="WritePostScreen"
+        component={WritePostScreen}
+        options={{
+          title: 'Write Post',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="WriteCommentScreen"
+        component={WriteCommentScreen}
+        options={{
+          title: 'Write Comment',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,

@@ -1,5 +1,7 @@
+import {API_BASE_URL} from './setting';
+
 export const api = {
-  baseURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
+  baseURL: API_BASE_URL,
   auth: {
     userDetail: 'users/',
     addUser: 'users',
@@ -11,6 +13,7 @@ export const api = {
   // NewsFeed Constants
   newsFeed: {
     newsFeedDetail: 'newsfeeds',
+    postDetail: 'posts',
   },
   // Search Constants
   search: {},
