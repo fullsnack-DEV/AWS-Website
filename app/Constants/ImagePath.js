@@ -54,9 +54,25 @@ const PATH = {
 
   tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
   tab_search: require('../assets/images/tab_search.png'),
+
   tab_home: require('../assets/images/tab_home.png'),
+  tab_home_selected: require('../assets/images/tab_home_selected.png'),
+
+  tab_reservation: require('../assets/images/tab_reservation.png'),
+  tab_reservation_selected: require('../assets/images/tab_reservation_selected.png'),
+
   tab_notification: require('../assets/images/tab_notification.png'),
+  tab_notification_selected: require('../assets/images/tab_notification_selected.png'),
+
+  tab_message: require('../assets/images/tab_messages.png'),
+  tab_message_selected: require('../assets/images/tab_messages_selected.png'),
+
   tab_account: require('../assets/images/tab_account.png'),
+  tab_account_selected: require('../assets/images/tab_account_selected.png'),
+
+  tab_account_group: require('../assets/images/tab_account_group.png'),
+  tab_account_group_selected: require('../assets/images/tab_account_group_selected.png'),
+
   messageBox_account: require('../assets/images/ic_message_box.png'),
   nextArrow: require('../assets/images/ic_next_arrow.png'),
 
@@ -68,6 +84,28 @@ const PATH = {
 
   backArrow: require('../assets/images/back_arrow.png'),
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
+  mySchedule: require('../assets/images/My_Schedule.png'),
+  mySports: require('../assets/images/My_Sports.png'),
+  myRefereeing: require('../assets/images/My_Refereeing.png'),
+  myTeams: require('../assets/images/My_Teams.png'),
+  myClubs: require('../assets/images/My_Clubs.png'),
+  myLeagues: require('../assets/images/My_Leagues.png'),
+  paymentPayout: require('../assets/images/PaymentPayout.png'),
+  SettingPrivacy: require('../assets/images/SettingPrivacy.png'),
+
+  createTeam: require('../assets/images/Create_a_team.png'),
+  createClub: require('../assets/images/Create_a_club.png'),
+  createLeague: require('../assets/images/Create_a_league.png'),
+  addSport: require('../assets/images/Add_a_sport.png'),
+  registerReferee: require('../assets/images/Register_as_a_referee.png'),
+
+  switchAccount: require('../assets/images/switch_account.png'),
+  teamPlaceholder: require('../assets/images/team_placeholder.png'),
+  clubPlaceholder: require('../assets/images/club_placeholder.png'),
+  leaguePlaceholder: require('../assets/images/league_placeholder.png'),
+
+  logoutIcon: require('../assets/images/logout_icon.png'),
+  
 };
 
 export default PATH;

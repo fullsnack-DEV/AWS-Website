@@ -22,7 +22,7 @@ import PATH from '../../../Constants/ImagePath';
 
 export default function JoinedTeamsScreen({navigation, route}) {
   const [teamList, setTeamList] = useState([]);
-  const authContext = useContext(AuthContext);
+  
 
   useEffect(() => {
     getTeamsList();
