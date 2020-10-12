@@ -25,9 +25,6 @@ import {create} from 'apisauce';
 
 import {getuserDetail} from '../../../api/Authapi';
 import AuthContext from '../../../auth/context';
-import TCForm from '../../../components/TCForm';
-import TCFormField from '../../../components/TCFormField';
-import TCFormSubmit from '../../../components/TCFormSubmit';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import Loader from '../../../components/loader/Loader';
 import styles from './style';
@@ -35,6 +32,8 @@ import * as Utility from '../../../utility/index';
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import {token_details} from '../../../utils/constant';
+import TCButton from '../../../components/TCButton';
+import TCTextField from '../../../components/TCTextField';
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
   authDomain: 'townscup-fee6e.firebaseapp.com',
@@ -46,118 +45,141 @@ const config = {
   measurementId: 'G-N44NC0Z1Q7',
 };
 
-const validationSchema = Yup.object().shape({
-  fname: Yup.string().required().label('First name'),
-  lname: Yup.string().required().label('Last name'),
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-  cpassword: Yup.string()
-    .required()
-    .oneOf(
-      [Yup.ref('password'), null],
-      'Confirm passwords must match with password field',
-    )
-    .label('Confirm password'),
-});
+
 
 function SignupScreen({navigation, route}) {
+  const [fName, setFName] = useState('');
+  const [lName, setLName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [cPassword, setCPassword] = useState('');
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
     firebase.initializeApp(config);
   });
 
+  const checkValidation = () => {
+    if (fName == '') {
+      Alert.alert('Towns Cup', 'First name cannot be blank');
+     
+    } else if (lName == '') {
+      Alert.alert('Towns Cup', 'Last name cannot be blank');
+     
+    } else if (email == '') {
+      Alert.alert('Towns Cup', 'Email cannot be blank');
+     
+    }else if (password == '') {
+      Alert.alert('Towns Cup', 'Password cannot be blank');
+     
+    } else if (cPassword == '') {
+      Alert.alert('Towns Cup', 'Conform password cannot be blank');
+     
+    }  else if (password != cPassword) {
+      Alert.alert('Towns Cup', 'Both password should be same');
+    }
+  };
+
   const authToken = () => {
     auth().onAuthStateChanged((user) => {
       if (user) {
         user.getIdTokenResult().then(async (idTokenResult) => {
-          try {
+         
             console.log('User JWT: ', idTokenResult.token);
-            //console.log('User JWT Expiry time: ', idTokenResult.expirationTime);
-            console.log('auth Token called... ');
             let tokenDetail = {
               token: idTokenResult.token,
               expirationTime: idTokenResult.expirationTime,
             };
 
-            await AsyncStorage.setItem(
-              token_details,
-              JSON.stringify(tokenDetail),
-            );
+            // await AsyncStorage.setItem(
+            //   token_details,
+            //   JSON.stringify(tokenDetail),
+            // );
 
-            Utility.setStorage('token', idTokenResult.token);
-            Utility.setStorage('expiryTime', idTokenResult.expirationTime);
-            Utility.setStorage('UID', user.uid);
-            getUserInfo();
-          } catch (error) {
-            console.log(error.message);
-          }
+            await Utility.setStorage(token_details, JSON.stringify(tokenDetail));
+
+            await Utility.setStorage('token', idTokenResult.token);
+            await Utility.setStorage('expiryTime', idTokenResult.expirationTime);
+            await Utility.setStorage('UID', user.uid);
+            let userDetail={
+              first_name: fName,
+              last_name:lName,
+              email:email
+            };
+            await Utility.setStorage('userInfo', userDetail);
+            
+            navigation.navigate('EmailVerification',{email:email,password:password});
+            //getUserInfo();
+         
           //console.log('TokenID', idToken);
         });
       }
     });
   };
 
-  signUpUser = async (fname, lname, email, password) => {
-    await Utility.setInLocalStorge('email', email);
-    await Utility.setInLocalStorge('password', password);
+  const signUpUser = async (fname, lname, email, password) => {
+    console.log('Welcome to signupuser function..');
     auth()
       .createUserWithEmailAndPassword(email, password)
       .then((response) => {
-        console.log('User account created & signed in!', response);
-        authToken();
-        var user = {
-          first_name: fname,
-          last_name: lname,
-          email: email,
-          thumbnail: '',
-          full_image: '',
-        };
+        console.log('User account created & signed in!', JSON.stringify(response));
+
 
         firebase.auth().onAuthStateChanged(function (user) {
           user.sendEmailVerification();
         });
-        try {
-          AsyncStorage.setItem('userInfo', JSON.stringify(user));
-          console.log('DATA STORED... ');
+        
+          //AsyncStorage.setItem('userInfo', JSON.stringify(user));
+          //console.log('DATA STORED... ');
           authToken();
-        } catch (error) {
-          console.log('error while store data ', error);
-        }
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
-          //alert('This email address is already registered please login!');
-          authToken();
+          alert('That email address is already in use!');
+          
         }
         if (error.code === 'auth/invalid-email') {
+          alert('That email address is invalid!');
         }
       });
+
+
+      // firebase
+
+      // .auth()
+      // .signInWithEmailAndPassword(email, password)
+      // .then(async (res) => {
+      //   authToken();
+      //   console.log('resssss', res);
+      //   console.log('user', res.user.email);
+      //   await Utility.setInLocalStorge('useremail', res.user.email);
+      //   const tokeen = await Utility.getFromLocalStorge('useremail');
+      //   console.log('tokeeennn', tokeen);
+      //   navigation.navigate('BottomTab');
+      // })
+      // .catch((error) => {
+      //   if (error.code === 'auth/user-not-found') {
+      //     alert('This email address is not registerd');
+      //   }
+      //   if (error.code === 'auth/email-already-in-use') {
+      //     alert('That email address is already in use!');
+      //   }
+      //   if (error.code === 'auth/invalid-email') {
+      //     alert('That email address is invalid!');
+      //   }
+      // });
+
+
+
+
+
   };
-  getUserInfo = async () => {
+ const getUserInfo = async () => {
     console.log('get user detail called... ');
-    var uid = '';
-    var token = '';
-    try {
-      token = await Utility.getStorage('token');
-      console.log('TOKEN RETRIVED... get user detail ');
-    } catch (e) {
-      // error reading value
-    }
-    try {
-      uid = await await Utility.getStorage('UID');
-      if (uid !== null) {
-        console.log('UID RETRIVED... ', uid);
-      } else {
-        console.log('UID::::::::::::EMPTY...get user detail');
-      }
-    } catch (e) {
-      // error reading value
-    }
+    var uid = await Utility.getStorage('UID');
     getuserDetail(uid).then((response) => {
       console.log('PAYLOAD::', JSON.stringify(response));
       if (response.status == true) {
-        //authContext.setUser(response.payload);
         navigation.navigate('LoginScreen');
       } else {
         console.log(response);
@@ -176,53 +198,41 @@ function SignupScreen({navigation, route}) {
           style={styles.profile}>
           <Image style={styles.profile} source={PATH.profilePlaceHolder} />
         </TouchableOpacity>
-
-        <TCForm
-          initialValues={{
-            fname: '',
-            lname: '',
-            email: '',
-            password: '',
-            cpassword: '',
-          }}
-          onSubmit={(values) =>
-            signUpUser(
-              values.fname,
-              values.lname,
-              values.email,
-              values.password,
-            )
-          }
-          validationSchema={validationSchema}>
           <TCKeyboardView>
-            <TCFormField placeholder={strings.fnameText} name="fname" />
-            <TCFormField placeholder={strings.lnameText} name="lname" />
-            <TCFormField
+            <TCTextField placeholder={strings.fnameText}  onChangeText={(text) => setFName(text)} value={fName}/>
+            <TCTextField placeholder={strings.lnameText} onChangeText={(text) => setLName(text)} value={lName} />
+            <TCTextField
               placeholder={strings.emailPlaceHolder}
               autoCapitalize="none"
               keyboardType="email-address"
-              name="email"
+              onChangeText={(text) => setEmail(text)} value={email}
             />
-            <TCFormField
+            <TCTextField
               placeholder={strings.passwordText}
               autoCapitalize="none"
               secureText={true}
-              name="password"
+              onChangeText={(text) => setPassword(text)} value={password}
             />
-            <TCFormField
+            <TCTextField
               placeholder={strings.confirmPasswordText}
               autoCapitalize="none"
               secureText={true}
-              name="cpassword"
+              onChangeText={(text) => setCPassword(text)} value={cPassword}
             />
           </TCKeyboardView>
 
-          <TCFormSubmit
+          <TCButton
             title={strings.signUpCapitalText}
             extraStyle={{marginTop: hp('10%'), marginBottom: hp('4%')}}
+            onPress={()=>{
+              checkValidation();
+              if(fName != '' && lName!='' && email != '' && password != '' && cPassword !='' && password == cPassword){
+                signUpUser(fName,lName,email,password);
+              }
+            }}
             //() => navigation.navigate('ChooseLocationScreen')
           />
-        </TCForm>
+       
       </ScrollView>
     </View>
   );

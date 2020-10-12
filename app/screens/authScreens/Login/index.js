@@ -63,77 +63,11 @@ function LoginScreen({navigation}) {
     });
   }, []);
 
-  const authToken = () => {
-    auth().onAuthStateChanged((user) => {
-      console.log('User :-', user);
-      if (user) {
-        user.getIdTokenResult().then(async (idTokenResult) => {
-          let tokenDetail = {
-            token: idTokenResult.token,
-            expirationTime: idTokenResult.expirationTime,
-          };
-
-          await AsyncStorage.setItem(
-            token_details,
-            JSON.stringify(tokenDetail),
-          );
-
-          try {
-            await Utility.setInLocalStorge(
-              'token',
-              JSON.stringify(idTokenResult.token),
-            );
-            const token = await Utility.getFromLocalStorge('token');
-            await Utility.setInLocalStorge(
-              'expiryTime',
-              idTokenResult.expirationTime,
-            );
-            await Utility.setInLocalStorge('UID', JSON.stringify(user.uid));
-            //tokenrefresh();
-            // navigation.navigate("NewsFeedNavigator")
-            getUser(JSON.stringify(user.uid));
-          } catch (error) {
-            // console.log('error....', error.message);
-          }
-        });
-      }
-    });
-  };
-  getUser = async (uid) => {
-    getuserDetail(JSON.parse(uid)).then((response) => {
+  const getUser = async (uid) => {
+    getuserDetail(JSON.parse(uid)).then(async(response) => {
       if (response.status == true) {
-        authContext.setUser(response.payload);
-        storage.storeData('user', response.payload);
-        console.log('STATUS::', response.status);
-        console.log('authContext::', JSON.stringify(authContext.user));
-
-        QB.auth
-          .login({
-            login: JSON.parse(uid),
-            password: 'quickblox',
-          })
-          .then(function (info) {
-            alert('QB signed in successfully');
-            console.log('signed in successfully, handle info as necessary');
-            // signed in successfully, handle info as necessary
-            // info.user - user information
-            // info.session - current session
-          })
-          .catch(function (e) {
-            // handle error
-          });
-        QB.chat
-          .connect({
-            userId: JSON.parse(uid),
-            password: 'quickblox',
-          })
-          .then(function () {
-            // connected successfully
-            alert('Connected  successfully');
-          })
-          .catch(function (e) {
-            // some error occurred
-          });
+        await Utility.setStorage('user',response.payload);
+        authContext.setUser(response.payload); 
       } else {
         alert(response.messages);
       }
@@ -144,14 +78,24 @@ function LoginScreen({navigation}) {
 
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(async (res) => {
-        authToken();
-        console.log('resssss', res);
-        console.log('user', res.user.email);
-        await Utility.setInLocalStorge('useremail', res.user.email);
-        const tokeen = await Utility.getFromLocalStorge('useremail');
-        console.log('tokeeennn', tokeen);
-        navigation.navigate('BottomTab');
+      .then(async (response) => {
+        console.log('FIREBASE RESPONSE:', JSON.stringify(response));
+        auth().onAuthStateChanged((user) => {
+          console.log('User :-', user);
+          if (user) {
+            user.getIdTokenResult().then(async (idTokenResult) => {
+              let tokenDetail = {
+                token: idTokenResult.token,
+                expirationTime: idTokenResult.expirationTime,
+              };
+    
+              await Utility.setStorage(token_details,JSON.stringify(tokenDetail));
+              await Utility.setStorage('UID', JSON.stringify(user.uid));
+              getUser(JSON.stringify(user.uid));
+            
+            });
+          }
+        });
       })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {

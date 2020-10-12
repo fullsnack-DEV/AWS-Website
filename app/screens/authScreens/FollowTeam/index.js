@@ -27,11 +27,12 @@ import styles from './style';
 
 export default function FollowTeams({navigation, route}) {
   const [teams, setTeams] = useState([]);
+  const [followed, setFollowed] = useState([]);
 
   const authContext = useContext(AuthContext);
 
-  var followedTeam = [];
-
+  
+var followedTeam=[];
   useEffect(() => {
     console.log('UseEffect Called... :::');
 
@@ -71,7 +72,7 @@ export default function FollowTeams({navigation, route}) {
       city: route.params.city,
       state_abbr: route.params.state,
       country: route.params.country,
-      club_ids: followedTeam,
+      club_ids: followed,
     };
 
     createUser(data).then((response) => {
@@ -96,32 +97,19 @@ export default function FollowTeams({navigation, route}) {
         followedTeam.push(temp.group_id);
       }
     }
+    setFollowed(followedTeam);
 
     console.log('Followed Team:::', followedTeam);
   };
   const getUserInfo = async () => {
-    var uid = '';
-
-    try {
-      uid = await Utility.getStorage('UID');
-      if (uid !== null) {
-        console.log('UID RETRIVED... ', uid);
-      } else {
-        console.log('UID::::::::::::EMPTY');
-      }
-    } catch (e) {
-      // error reading value
-    }
-    getuserDetail(uid).then((response) => {
+   
+    let  uid = await Utility.getStorage('UID');
+    
+    getuserDetail(uid).then(async(response) => {
       if (response.status == true) {
-        console.log('PAYLOAD OF GET USER::', JSON.stringify(response.payload));
+        await Utility.setStorage('user', response.payload);
         authContext.setUser(response.payload);
-
-        Utility.setStorage('user', response.payload);
-        Utility.setStorage('switchBy', 'user');
-        //navigation.navigate('HomeScreen');
       } else {
-        console.log(response);
         alert('Something went wrong..!!');
       }
     });

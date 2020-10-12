@@ -23,10 +23,10 @@ export default function App() {
   // const {loading, updateLoadingState} = useContext(AppContext);
   // console.log('loading :: ', loading);
   // updateLoadingState();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [switchBy, setSwitchBy] = useState('user');
-  const [team, setTeam] = useState();
-  const [club, setClub] = useState();
+  const [team, setTeam] = useState(null);
+  const [club, setClub] = useState(null);
   const authValue = useMemo(
     () => ({
       switchBy,
@@ -68,16 +68,7 @@ export default function App() {
   // };
 
   useEffect(() => {
-    // firebase.initializeApp({
-    //   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
-    //   authDomain: 'townscup-fee6e.firebaseapp.com',
-    //   databaseURL: 'https://townscup-fee6e.firebaseio.com',
-    //   projectId: 'townscup-fee6e',
-    //   storageBucket: 'townscup-fee6e.appspot.com',
-    //   messagingSenderId: '1003329053001',
-    //   appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
-    //   measurementId: 'G-N44NC0Z1Q7',
-    // });
+   
     // requestPermission();
 
     getLoginUserDetail();

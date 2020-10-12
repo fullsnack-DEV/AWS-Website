@@ -49,16 +49,17 @@ const AccountNavigator = () => {
         name="AccountScreen"
         component={AccountScreen}
         options={{
-          title: 'Account',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
+          // title: 'Account',
+          // headerTintColor: colors.blackColor,
+          // headerTitleStyle: {
+          //   fontWeight: '500',
+          // },
+          // headerStyle: {
+          //   backgroundColor: colors.whiteColor,
+          //   borderBottomColor: colors.grayColor,
+          //   borderBottomWidth: 0.3,
+          // },
+          headerShown: false,
         }}
       />
       <Stack.Screen
