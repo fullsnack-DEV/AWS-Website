@@ -77,16 +77,16 @@ const PATH = {
   radioSelect: require('../assets/images/ic_radio_select.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
-  dotImage:require("../assets/images/ic_dot.png"),
-  footplayer:require("../assets/images/footballPlayer.png"),
-  footballGround:require("../assets/images/footballGround.png"),
-  comment:require("../assets/images/comment.png"),
-  exitGrey:require("../assets/images/exitGrey.png"),
-  gallaryImage:require("../assets/images/image.png"),
-  bagTick:require("../assets/images/bagTick.png"),
-  attatchmentGrey:require("../assets/images/attachmentGrey.png"),
-  likeOrange:require("../assets/images/orangeLike.png")
-  
+  dotImage: require('../assets/images/ic_dot.png'),
+  footplayer: require('../assets/images/footballPlayer.png'),
+  footballGround: require('../assets/images/footballGround.png'),
+  comment: require('../assets/images/comment.png'),
+  exitGrey: require('../assets/images/exitGrey.png'),
+  gallaryImage: require('../assets/images/image.png'),
+  bagTick: require('../assets/images/bagTick.png'),
+  attatchmentGrey: require('../assets/images/attachmentGrey.png'),
+  likeOrange: require('../assets/images/orangeLike.png'),
+
   backArrow: require('../assets/images/back_arrow.png'),
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
@@ -110,7 +110,6 @@ const PATH = {
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
 
   logoutIcon: require('../assets/images/logout_icon.png'),
-
 };
 
 export default PATH;
