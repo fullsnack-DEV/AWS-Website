@@ -77,6 +77,7 @@ const PATH = {
   radioSelect: require('../assets/images/ic_radio_select.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
+
   dotImage:require("../assets/images/ic_dot.png"),
   footplayer:require("../assets/images/footballPlayer.png"),
   footballGround:require("../assets/images/footballGround.png"),
@@ -120,7 +121,6 @@ const PATH = {
   teamSqure: require('../assets/images/team_squre.png'),
   
   logoutIcon: require('../assets/images/logout_icon.png'),
-
 };
 
 export default PATH;
