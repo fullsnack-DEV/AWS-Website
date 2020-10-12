@@ -62,7 +62,7 @@ function CreateTeamForm4({navigation, route}) {
     bodyParams.should_hide = false;
     console.log('bodyPARAMS:: ', bodyParams);
 
-    const clubObject = Utility.getStorage('club');
+    const clubObject = await Utility.getStorage('club');
     postGroups(
       bodyParams,
       clubObject.group_id || null,

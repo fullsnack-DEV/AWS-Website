@@ -3,6 +3,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import {token_details} from '../utils/constant';
 import firebase from '@react-native-firebase/app';
+import * as Utility from '../utility/index';
 // import {AppContext} from '../context/index';
 // import {Value} from 'react-native-reanimated';
 
@@ -18,7 +19,9 @@ export const makeAPIRequest = ({
 }) =>
   new Promise(async (resolve, reject) => {
     // const {loading, updateLoadingState} = useContext(AppContext);
-    const tokenDetails = await AsyncStorage.getItem(token_details);
+    //const tokenDetails = await AsyncStorage.getItem(token_details);
+
+    const tokenDetails = await Utility.getStorage(token_details);
     var authToken = JSON.parse(tokenDetails).token;
     var expiryDate = new Date(JSON.parse(tokenDetails).expirationTime);
     var currentDate = new Date();

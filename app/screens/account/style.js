@@ -15,13 +15,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  profileView: {height: 170},
+  profileView: {height: 170 , marginTop:Platform.OS == 'ios' ? 50 : 0},
   profileImg: {
     height: 50,
     width: 50,
     resizeMode: 'cover',
     //backgroundColor: colors.themeColor,
-    marginTop: 20,
+    
     alignSelf: 'center',
     borderRadius: 25,
     borderWidth: 1,
@@ -48,6 +48,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: colors.whiteColor,
+  },
+  clubLable: {
+    height: 20,
+    width: 20,
+    resizeMode: 'cover',
+    borderRadius: 10,
+    marginLeft:20,
+  },
+  clubLableView:{
+    height: 40,
+    width: 230,
+    resizeMode: 'cover',
+    //backgroundColor: colors.themeColor,
+    position:'absolute',
+    alignSelf: 'center',
+   //marginLeft:20,
   },
   nameText: {
     marginTop: hp('1%'),
@@ -119,8 +135,8 @@ const styles = StyleSheet.create({
   nextArrowClub: {
     position: 'absolute',
     right: 15,
-    height: 18,
-    width: 18,
+    height: 15,
+    width: 15,
     resizeMode: 'contain',
     tintColor: colors.blackColor,
     alignSelf: 'center',
@@ -171,9 +187,21 @@ const styles = StyleSheet.create({
   },
   entityName: {
     
-    fontSize: wp('4%'),
-    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+  },
+  teamSportView: {
+    
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.themeColor,
+  },
+  clubSportView: {
+    
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.greeColor,
   },
   entityNameText: {
     
@@ -181,11 +209,31 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
+  oneCharacterText: {
+    //alignSelf:'center',
+    position:'absolute',
+    fontSize: 12,
+    fontFamily: fonts.RBlack,
+    color: colors.whiteColor,
+    paddingBottom:5,
+  },
   entityLocationText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginTop: 5,
+  },
+  placeholderView:{
+    height: 50,
+    width: 50,
+   
+    justifyContent:'center',
+    alignItems:'center',
+    alignSelf: 'center',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: colors.offwhite,
+    margin: 15,
   },
   entityImg: {
     height: 50,
@@ -233,9 +281,11 @@ const styles = StyleSheet.create({
   entityTextContainer: {
     justifyContent: 'center',
     flexDirection:'row',
-    height: 50,
+    height: 40,
     alignItems:'center',
     marginLeft : 40,
+    marginRight:20,
+    //backgroundColor:'red',
   },
   badgeView: {
     position: 'absolute',
@@ -248,6 +298,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   badgeCounter: {
+    position:'absolute',
+    height: 17,
+    width: 17,
+    alignSelf:'center',
     textAlign: 'center',
     textAlignVertical: 'center',
     color: colors.whiteColor,
@@ -255,12 +309,22 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
   },
   identityView: {
-    backgroundColor: colors.lightBlueColor,
+    //backgroundColor: colors.lightBlueColor,
     height: 16,
     width: 16,
     borderRadius: 3,
     marginLeft: 10,
     marginTop: 10,
+    alignSelf: 'center',
+  },
+  identityViewTop: {
+    //backgroundColor: colors.lightBlueColor,
+    height: 16,
+    width: 16,
+    borderRadius: 3,
+    marginLeft: 10,
+    
+    
     alignSelf: 'center',
   },
   identityViewClub: {

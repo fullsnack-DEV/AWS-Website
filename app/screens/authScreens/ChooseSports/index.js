@@ -12,7 +12,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import AsyncStorage from '@react-native-community/async-storage';
+
 
 import {getSportsList, createUser, getuserDetail} from '../../../api/Authapi';
 
@@ -28,6 +28,7 @@ import styles from './style';
 
 function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
+  const [selected, setSelected] = useState([]);
   const authContext = useContext(AuthContext);
   var selectedSports = [];
 
@@ -61,29 +62,22 @@ function ChooseSportsScreen({navigation, route}) {
       }
     }
 
+    setSelected(selectedSports);
     console.log('sports Checked ?:::', selectedSports);
   };
 
   const signUpWithTC = async () => {
-    var userInfo = {};
-
-    try {
-      let user = await AsyncStorage.getItem('userInfo');
-      if (JSON.parse(user) !== null) {
-        userInfo = JSON.parse(user);
-        console.log('DATA RETRIVED USER INFO... ', userInfo);
-      }
-    } catch (error) {
-      console.log('Error while get data', error.message);
-    }
-
+     
+      let user = await Utility.getStorage('userInfo');
+      console.log('DATA RETRIVED USER INFO... ', JSON.stringify(user));
+     
     let data = {
-      first_name: userInfo.first_name,
-      last_name: userInfo.last_name,
-      email: userInfo.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
       thumbnail: '',
       full_image: '',
-      sports: route.params.sports,
+      sports: selected,
       city: route.params.city,
       state_abbr: route.params.state,
       country: route.params.country,
@@ -99,15 +93,13 @@ function ChooseSportsScreen({navigation, route}) {
     });
   };
   const getUserInfo = async () => {
-    var uid = (uid = await Utility.getStorage('UID'));
-    getuserDetail(uid).then((response) => {
+    var uid =  await Utility.getStorage('UID');
+    getuserDetail(uid).then(async(response) => {
       if (response.status == true) {
-        console.log('PAYLOAD OF GET USER::', JSON.stringify(response.payload));
-        authContext.setUser(response.payload);
-
-        Utility.setStorage('user', response.payload);
-        Utility.setStorage('switchBy', 'user');
-        //navigation.navigate('HomeScreen');
+       
+        await Utility.setStorage('user', response.payload);
+        authContext.setUser(response.payload); 
+       
       } else {
         console.log(response);
         alert('Something went wrong..!!');
@@ -176,7 +168,7 @@ function ChooseSportsScreen({navigation, route}) {
                 city: route.params.city,
                 state: route.params.state,
                 country: route.params.country,
-                sports: selectedSports,
+                sports: selected,
               });
             } else {
               signUpWithTC();

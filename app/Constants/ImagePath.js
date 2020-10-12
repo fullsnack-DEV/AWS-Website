@@ -77,16 +77,17 @@ const PATH = {
   radioSelect: require('../assets/images/ic_radio_select.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
-  dotImage: require('../assets/images/ic_dot.png'),
-  footplayer: require('../assets/images/footballPlayer.png'),
-  footballGround: require('../assets/images/footballGround.png'),
-  comment: require('../assets/images/comment.png'),
-  exitGrey: require('../assets/images/exitGrey.png'),
-  gallaryImage: require('../assets/images/image.png'),
-  bagTick: require('../assets/images/bagTick.png'),
-  attatchmentGrey: require('../assets/images/attachmentGrey.png'),
-  likeOrange: require('../assets/images/orangeLike.png'),
 
+  dotImage:require("../assets/images/ic_dot.png"),
+  footplayer:require("../assets/images/footballPlayer.png"),
+  footballGround:require("../assets/images/footballGround.png"),
+  comment:require("../assets/images/comment.png"),
+  exitGrey:require("../assets/images/exitGrey.png"),
+  gallaryImage:require("../assets/images/image.png"),
+  bagTick:require("../assets/images/bagTick.png"),
+  attatchmentGrey:require("../assets/images/attachmentGrey.png"),
+  likeOrange:require("../assets/images/orangeLike.png"),
+  
   backArrow: require('../assets/images/back_arrow.png'),
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
@@ -97,6 +98,7 @@ const PATH = {
   myLeagues: require('../assets/images/My_Leagues.png'),
   paymentPayout: require('../assets/images/PaymentPayout.png'),
   SettingPrivacy: require('../assets/images/SettingPrivacy.png'),
+  Members: require('../assets/images/members.png'),
 
   createTeam: require('../assets/images/Create_a_team.png'),
   createClub: require('../assets/images/Create_a_club.png'),
@@ -109,6 +111,15 @@ const PATH = {
   clubPlaceholder: require('../assets/images/club_placeholder.png'),
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
 
+  Payout_method: require('../assets/images/Payout_method.png'),
+  Transations: require('../assets/images/Transations.png'),
+  Payment_method: require('../assets/images/Payment_method.png'),
+  Invoicing: require('../assets/images/Invoicing.png'),
+
+  clubLable: require('../assets/images/club_lable.png'),
+  clubSqure: require('../assets/images/club_squre.png'),
+  teamSqure: require('../assets/images/team_squre.png'),
+  
   logoutIcon: require('../assets/images/logout_icon.png'),
 };
 

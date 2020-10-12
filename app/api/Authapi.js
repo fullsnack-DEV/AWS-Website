@@ -7,11 +7,12 @@ export const getuserDetail = async (uid) => {
     url: api.baseURL + api.auth.userDetail + uid,
   })
     .then((response) => {
-      console.log('Get Client Details Response ::', response);
+      
       return Promise.resolve(response.data);
     })
     .catch((error) => {
       alert('Get Client Details Error ::', error.response);
+      console.log('Get Client Details Error ::', error.response);
     });
 };
 
@@ -22,11 +23,13 @@ export const createUser = async (params) => {
     data: params,
   })
     .then((response) => {
-      console.log('Get Client Details Response ::', response);
+      
       return Promise.resolve(response.data);
     })
     .catch((error) => {
+      console.log('Get Client Details error ::', error.response);
       alert('Get Client Details Error ::', error.response);
+      
     });
 };
 

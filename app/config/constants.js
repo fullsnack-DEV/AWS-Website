@@ -43,6 +43,7 @@ const colors = {
   lightBlueColor: '#5ecceb',
   disableColor: '#cccccc',
   postSeprator: '#e1e1e1',
+  greeColor: '#45C188',
 };
 
 const fonts = {

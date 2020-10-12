@@ -17,17 +17,14 @@ import auth from '@react-native-firebase/auth';
 
 import PATH from "../../../Constants/ImagePath"
 import strings from "../../../Constants/String"
-  function EmailVerification({navigation}) {
+  function EmailVerification({navigation,route}) {
 
     verifyUserEmail=async()=>{
-        let userEmail=await Utility.getFromLocalStorge("email")
-        console.log("useremail",userEmail)
-        let userPassword=await Utility.getFromLocalStorge("password")
-        console.log("useremail",userPassword)
+        
         try {
             firebase
                .auth()
-               .signInWithEmailAndPassword(userEmail, userPassword)
+               .signInWithEmailAndPassword(route.params.email, route.params.password)
                .then(res => {
                     console.log(res);
                    console.log(res.user.email);
@@ -39,12 +36,6 @@ import strings from "../../../Constants/String"
             });} catch (error) {
             console.log(error.toString(error));
           }
-          
-      
-        console.log("vikkkkkkakakkakkakkaka");
-
-
-
     }
 
     resend=()=>{
@@ -55,7 +46,7 @@ import strings from "../../../Constants/String"
       const user = firebase.auth().currentUser;
   
       user.sendEmailVerification().then(function() {
-    Alert.alert("Verification Link sucessfull")
+    Alert.alert("Verification Link send sucessfully")
       }).catch(function(error) {
         // An error happened.
       });

@@ -59,6 +59,7 @@ function ChooseLocationScreen({navigation, route}) {
           });
         } else {
           navigation.navigate('ChooseSportsScreen', {
+            
             city: item.terms[0].value,
             state: item.terms[1].value,
             country: item.terms[2].value,

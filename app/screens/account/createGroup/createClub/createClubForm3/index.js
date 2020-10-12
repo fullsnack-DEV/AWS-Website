@@ -57,7 +57,7 @@ function CreateClubForm3({navigation, route}) {
     bodyParams.unread = 0;
     console.log('BODY PARAMS:', bodyParams);
 
-    const teamObject = Utility.getStorage('team');
+    const teamObject = await Utility.getStorage('team');
     postGroups(
       bodyParams,
       teamObject.group_id || null,
