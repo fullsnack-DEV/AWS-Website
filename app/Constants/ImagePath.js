@@ -81,17 +81,20 @@ const PATH = {
   radioSelect: require('../assets/images/ic_radio_select.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
+  dotImage: require('../assets/images/ic_dot.png'),
+  footplayer: require('../assets/images/footballPlayer.png'),
+  footballGround: require('../assets/images/footballGround.png'),
+  comment: require('../assets/images/comment.png'),
+  share: require('../assets/images/share.png'),
+  mute: require('../assets/images/mute.png'),
+  unmute: require('../assets/images/unmute.png'),
+  playPause: require('../assets/images/play_pause.png'),
+  exitGrey: require('../assets/images/exitGrey.png'),
+  gallaryImage: require('../assets/images/image.png'),
+  bagTick: require('../assets/images/bagTick.png'),
+  attatchmentGrey: require('../assets/images/attachmentGrey.png'),
+  likeOrange: require('../assets/images/orangeLike.png'),
 
-  dotImage:require("../assets/images/ic_dot.png"),
-  footplayer:require("../assets/images/footballPlayer.png"),
-  footballGround:require("../assets/images/footballGround.png"),
-  comment:require("../assets/images/comment.png"),
-  exitGrey:require("../assets/images/exitGrey.png"),
-  gallaryImage:require("../assets/images/image.png"),
-  bagTick:require("../assets/images/bagTick.png"),
-  attatchmentGrey:require("../assets/images/attachmentGrey.png"),
-  likeOrange:require("../assets/images/orangeLike.png"),
-  
   backArrow: require('../assets/images/back_arrow.png'),
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
@@ -123,7 +126,7 @@ const PATH = {
   clubLable: require('../assets/images/club_lable.png'),
   clubSqure: require('../assets/images/club_squre.png'),
   teamSqure: require('../assets/images/team_squre.png'),
-  
+
   logoutIcon: require('../assets/images/logout_icon.png'),
 };
 

@@ -48,6 +48,7 @@
     "react-native-screens": "^2.11.0",
     "react-native-segmented-control-tab": "^3.4.1",
     "react-native-slider": "^0.11.0",
+    "react-native-snap-carousel": "^3.9.1",
     "react-native-tag-select": "^2.0.0",
     "react-native-vector-icons": "^7.1.0",
     "react-native-video": "^5.1.0-alpha8",

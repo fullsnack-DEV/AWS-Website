@@ -8,22 +8,30 @@ import {
   TouchableOpacity,
   SafeAreaView,
   KeyboardAvoidingView,
+  Platform,
+  FlatList,
 } from 'react-native';
-
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import constants from '../../config/constants';
-import {ScrollView} from 'react-native-gesture-handler';
+import WriteCommentItems from '../../components/newsFeed/WriteCommentItems';
 const {PATH} = constants;
 
-export default function WriteCommentScreen({navigation}) {
+export default function WriteCommentScreen({
+  navigation,
+  route: {
+    params: {data},
+  },
+}) {
   const [commentTxt, setCommentText] = useState('');
 
   return (
-    <KeyboardAvoidingView style={{flex: 1}} behavior={'padding'}>
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <SafeAreaView style={styles.mainContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <View style={{width: wp('20%')}}>
@@ -34,10 +42,23 @@ export default function WriteCommentScreen({navigation}) {
         <View style={{width: wp('20%')}} />
       </SafeAreaView>
       <View style={styles.topSepratorStyle}></View>
-      <ScrollView style={{flex: 1}}>
-        {/* <View style={styles.bottomSperateLine}></View> */}
-      </ScrollView>
-      <SafeAreaView style={{flexDirection: 'row', marginBottom: 10}}>
+
+      {data &&
+      data.own_reactions &&
+      data.own_reactions.comment !== undefined ? (
+        <FlatList
+          data={data.own_reactions.comment}
+          renderItem={({item, index}) => {
+            return <WriteCommentItems data={item} />;
+          }}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      ) : (
+        <View style={{flex: 1}} />
+      )}
+
+      <SafeAreaView
+        style={{flexDirection: 'row', marginBottom: 10, marginTop: 10}}>
         <View style={{width: wp('15%')}}>
           <Image style={styles.background} source={PATH.profilePlaceHolder} />
         </View>
@@ -49,13 +70,15 @@ export default function WriteCommentScreen({navigation}) {
           style={{
             width: wp('67%'),
             marginHorizontal: '1%',
-            padding: 25,
-            maxHeight: 60,
+            padding: 0,
+            paddingVertical: hp(1.5),
             borderWidth: 1,
             paddingLeft: 8,
             borderColor: colors.disableColor,
             alignSelf: 'center',
-          }}></TextInput>
+            maxHeight: hp(20),
+          }}
+        />
         <View
           style={{
             justifyContent: 'center',
@@ -86,7 +109,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: wp('1%'),
-    marginBottom: hp('1.5%'),
+    marginVertical: hp('1.5%'),
+    alignItems: 'center',
   },
   backImage: {
     height: hp('2.5%'),
