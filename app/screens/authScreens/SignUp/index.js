@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  TextInput,
+  TouchableWithoutFeedback
 } from 'react-native';
 
 import {
@@ -34,6 +36,8 @@ import strings from '../../../Constants/String';
 import {token_details} from '../../../utils/constant';
 import TCButton from '../../../components/TCButton';
 import TCTextField from '../../../components/TCTextField';
+import   colors from "../../../Constants/Colors";
+
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
   authDomain: 'townscup-fee6e.firebaseapp.com',
@@ -53,33 +57,48 @@ function SignupScreen({navigation, route}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
+  const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
     firebase.initializeApp(config);
-  });
+  },[]);
 
   const checkValidation = () => {
     if (fName == '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
-     
+      return false
     } else if (lName == '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
-     
+      return false
     } else if (email == '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');
-     
+      return false
+    }else if(ValidateEmail(email) == false){
+      Alert.alert('Towns Cup', 'You have entered an invalid email address!');
+      return false
     }else if (password == '') {
       Alert.alert('Towns Cup', 'Password cannot be blank');
-     
+      return false
     } else if (cPassword == '') {
       Alert.alert('Towns Cup', 'Conform password cannot be blank');
-     
+      return false
     }  else if (password != cPassword) {
       Alert.alert('Towns Cup', 'Both password should be same');
+      return false
+    }else{
+      return true
     }
   };
-
+  const ValidateEmail = (email) =>
+  {
+   if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email))
+    {
+      return (true)
+    }
+      
+      return (false)
+  }
   const authToken = () => {
     auth().onAuthStateChanged((user) => {
       if (user) {
@@ -142,38 +161,8 @@ function SignupScreen({navigation, route}) {
           alert('That email address is invalid!');
         }
       });
-
-
-      // firebase
-
-      // .auth()
-      // .signInWithEmailAndPassword(email, password)
-      // .then(async (res) => {
-      //   authToken();
-      //   console.log('resssss', res);
-      //   console.log('user', res.user.email);
-      //   await Utility.setInLocalStorge('useremail', res.user.email);
-      //   const tokeen = await Utility.getFromLocalStorge('useremail');
-      //   console.log('tokeeennn', tokeen);
-      //   navigation.navigate('BottomTab');
-      // })
-      // .catch((error) => {
-      //   if (error.code === 'auth/user-not-found') {
-      //     alert('This email address is not registerd');
-      //   }
-      //   if (error.code === 'auth/email-already-in-use') {
-      //     alert('That email address is already in use!');
-      //   }
-      //   if (error.code === 'auth/invalid-email') {
-      //     alert('That email address is invalid!');
-      //   }
-      // });
-
-
-
-
-
   };
+  
  const getUserInfo = async () => {
     console.log('get user detail called... ');
     var uid = await Utility.getStorage('UID');
@@ -187,6 +176,9 @@ function SignupScreen({navigation, route}) {
       }
     });
   };
+  const hideShowPassword = () =>{
+    setHidePassword(!hidePassword);
+  }
   return (
     <View style={styles.mainContainer}>
       {/* <Loader visible={true} /> */}
@@ -207,12 +199,22 @@ function SignupScreen({navigation, route}) {
               keyboardType="email-address"
               onChangeText={(text) => setEmail(text)} value={email}
             />
-            <TCTextField
-              placeholder={strings.passwordText}
-              autoCapitalize="none"
-              secureText={true}
-              onChangeText={(text) => setPassword(text)} value={password}
-            />
+
+           <View style={styles.passwordView}>
+            <TextInput
+                style={styles.textInput}
+                placeholder={strings.passwordText}
+                onChangeText={(text) => setPassword(text)} 
+                value={password}
+                placeholderTextColor={colors.themeColor}
+                secureTextEntry={hidePassword}
+                keyboardType={'default'}
+              />
+              <TouchableWithoutFeedback onPress={()=>hideShowPassword()}>
+              {hidePassword ? <Image source={PATH.showPassword} style={styles.passwordEyes} /> : <Image source={PATH.hidePassword} style={styles.passwordEyes} />}
+              </TouchableWithoutFeedback> 
+            </View>
+            
             <TCTextField
               placeholder={strings.confirmPasswordText}
               autoCapitalize="none"
@@ -225,8 +227,8 @@ function SignupScreen({navigation, route}) {
             title={strings.signUpCapitalText}
             extraStyle={{marginTop: hp('10%'), marginBottom: hp('4%')}}
             onPress={()=>{
-              checkValidation();
-              if(fName != '' && lName!='' && email != '' && password != '' && cPassword !='' && password == cPassword){
+              
+              if(checkValidation()){
                 signUpUser(fName,lName,email,password);
               }
             }}

@@ -13,6 +13,8 @@ const strings = {
   enterEmailPlaceholder: 'Enter your email',
   passwordPlaceHolder: 'Password',
   forgotPassword: 'Forgot Password?',
+  checkEmailText: 'Please check your e-mail',
+  checkEmailDescText: 'We have sent you an email with a link to reset your password. It may take a few minutes for you to receive it.',
   signTerms:
     "By continuing you agree to Towny's Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.",
   resetText: 'Reset your password.',
@@ -34,7 +36,22 @@ const strings = {
   locationPlaceholderText: 'Search cities or postal codes',
   sportText: 'Select your favourite sport event.',
 
-  //CreateTeam Screen 1
+//Add Birthday screen
+addBirthdayText: 'Add your birthday.',
+notDisplayText:'This won’t be displayed in your public profile.',
+whyAskingText:"Why is TownsCup asking for my birthday?",
+birthdatText:'You must be at least 13 years old to have an TownsCup account in most countries. If accounts represent someone under the age of 13, they must clearly state in the account’s bio that the account is managed by a parent or manager. This information also helps TownsCup provide age-appropriate service to its users. Furthermore, this information is required when you join a group or sprots match which has age requirements in TownsCup community.',
+ 
+// Choose gender screen
+addGenderText:'Add your gender.',
+notDisplayGenderText:'This won’t be displayed in your public profile.',
+whyAskingGenderText:'Why is TownsCup asking for my gender?',
+genderText:'This information helps TownsCup provide gender-appropriate service to its users. Furthermore, this information is also required when you join a group or sprots match which has gender requirement in TownsCup community.',
+maleRadioText: 'Male',
+femaleRadioText: 'Female',
+otherRadioText: 'Other',
+
+//CreateTeam Screen 1
   star: '*',
   SportsTextFieldTitle: 'Sports',
   selectSportPlaceholder: 'Select Sport',
@@ -51,6 +68,7 @@ const strings = {
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
   locationTitle: 'Location',
+  birthdateText: 'Choose Date of birth',
   searchCityPlaceholder: 'Search by city or postal code',
   requiredText: 'required',
   clubBelongText: 'The created team will belong to',

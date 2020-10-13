@@ -4,6 +4,10 @@ const PATH = {
   signUpBg2: require('../assets/images/ic_signup_bg_2.png'),
   signUpBg3: require('../assets/images/ic_signup_bg_3.png'),
   townsCupLogo: require('../assets/images/ic_townscup_logo.png'),
+
+  hidePassword: require('../assets/images/ic_hidepassword.png'),
+  showPassword: require('../assets/images/ic_showpassword.png'),
+
   email: require('../assets/images/normal_signup.png'),
   signUpFb: require('../assets/images/signup_fb.png'),
   signUpGoogle: require('../assets/images/signup_google.png'),

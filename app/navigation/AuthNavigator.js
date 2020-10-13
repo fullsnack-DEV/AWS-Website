@@ -13,6 +13,11 @@ import FollowTeams from '../screens/authScreens/FollowTeam';
 import HomeScreen from '../screens/home/HomeScreen';
 import TotalTeamsScreen from '../screens/authScreens/TotalTeam';
 import EmailVerification from '../screens/authScreens/EmailVerifiation';
+import ForgotPasswordLinkSentScreen from '../screens/authScreens/forgotPasswordLinkSent';
+import AddBirthdayScreen from '../screens/authScreens/addYourBirthday';
+import ChooseGenderScreen from '../screens/authScreens/chooseGender';
+
+
 import BottomTab from '../components/BottomTab';
 import constants from '../config/constants';
 const {strings, colors, fonts, urls, PATH} = constants;
@@ -36,6 +41,11 @@ const AuthNavigator = () => {
       <Stack.Screen
         name="ForgotPasswordScreen"
         component={ForgotPasswordScreen}
+        options={{}}
+      />
+       <Stack.Screen
+        name="ForgotPasswordLinkSentScreen"
+        component={ForgotPasswordLinkSentScreen}
         options={{}}
       />
       <Stack.Screen name="SignupScreen" component={SignupScreen} options={{}} />
@@ -65,6 +75,16 @@ const AuthNavigator = () => {
       <Stack.Screen
         name="TotalTeamsScreen"
         component={TotalTeamsScreen}
+        options={{}}
+      />
+      <Stack.Screen
+        name="AddBirthdayScreen"
+        component={AddBirthdayScreen}
+        options={{}}
+      />
+      <Stack.Screen
+        name="ChooseGenderScreen"
+        component={ChooseGenderScreen}
         options={{}}
       />
     </Stack.Navigator>

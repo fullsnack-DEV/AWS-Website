@@ -16,6 +16,7 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Loader from '../../../components/loader/Loader';
 import styles from './style';
 import colors from '../../../Constants/Colors';
+import * as Utility from '../../../utility/index';
 import {searchLocationList, searchGroupList} from '../../../api/Authapi';
 
 function ChooseLocationScreen({navigation, route}) {
