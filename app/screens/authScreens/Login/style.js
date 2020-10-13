@@ -6,7 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 import   colors from "../../../Constants/Colors";
 import constants from '../../../config/constants';
-const {strings, urls, PATH, endPoints,fonts} = constants;
+const {fonts} = constants;
 
 const styles = StyleSheet.create({
     mainContainer: {
@@ -56,6 +56,42 @@ const styles = StyleSheet.create({
       fontFamily: fonts.RLight,
       fontSize: wp('4%'),
       textDecorationLine: 'underline',
+    },
+    passwordEyes: {
+      width: 22,
+      height: 22,
+      resizeMode: 'contain',
+      alignSelf: 'center',
+    },
+    passwordView: {
+      flexDirection: 'row',
+      height: 40,
+      width:wp('84%'),
+     
+      alignSelf: 'center',
+      marginTop: 4,
+      fontSize: wp('4%'),
+      color: 'black',
+      backgroundColor: colors.whiteColor,
+  
+      borderRadius: 5,
+      shadowColor: colors.googleColor,
+      shadowOffset: {width: 0, height: 4},
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    textInput: {
+      
+      borderRadius: 5,
+      fontSize: wp('4%'),
+      color: colors.blackColor,
+      fontFamily: fonts.RRegular,
+      paddingLeft: 17,
+      height: 40,
+      width:wp('75%'),
+      
+      backgroundColor: colors.whiteColor,
     },
   });
   export default styles;

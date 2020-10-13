@@ -18,22 +18,27 @@ const styles = StyleSheet.create({
       width: '100%',
       resizeMode: 'stretch',
     },
-    forgotText: {
-      marginTop: hp('12%'),
+    checkEmailText: {
+      
       color: colors.whiteColor,
-      fontSize: 25,
+      fontSize: 28,
       textAlign: 'left',
       fontFamily: fonts.RBold,
-      paddingLeft: 30,
+     
     },
     resetText: {
-      marginTop: hp('0.5%'),
-      marginBottom: hp('11%'),
+     marginLeft:20,
+     marginRight:20,
+     marginTop:10,
       color: colors.whiteColor,
-      fontSize: 14,
-      textAlign: 'left',
+      fontSize: 16,
+      textAlign: 'center',
       fontFamily: fonts.RRegular,
-      paddingLeft: 30,
+      
     },
+    textContainer:{
+      flex:1,
+      justifyContent: 'center',
+      alignItems: 'center'}
   });
   export default styles

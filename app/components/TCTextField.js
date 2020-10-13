@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowColor: colors.googleColor,
     shadowOpacity: 0.5,
-    // fontFamily: fonts.RRegular,
+    fontFamily: fonts.RRegular,
     fontSize: wp('4%'),
     color: colors.blackColor,
     paddingLeft: 17,

@@ -11,12 +11,12 @@ import PATH from "../Constants/ImagePath"
 import strings from "../Constants/String"
 const { colors, fonts, urls, } = constants;
 
-function FacebookButton() {
+function FacebookButton({onPress}) {
   return (
     <SafeAreaView>
       <TouchableOpacity
         style={[styles.imgWithText, styles.allButton]}
-        onPress={() => alert('fb signup..')}>
+        onPress={onPress}>
         <Image source={PATH.signUpFb} style={styles.fbImg} />
         <Text style={styles.fbText}>{strings.fbText}</Text>
       </TouchableOpacity>

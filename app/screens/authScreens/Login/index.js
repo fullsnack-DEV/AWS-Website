@@ -1,68 +1,78 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {
-  StyleSheet,
+  
   View,
   Text,
   Image,
   TouchableOpacity,
   Alert,
+  TextInput,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import QB from 'quickblox-react-native-sdk';
+
 
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
-import * as Yup from 'yup';
-import {create} from 'apisauce';
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import { GoogleSignin } from '@react-native-community/google-signin';
+
 
 import FacebookButton from '../../../components/FacebookButton';
 import GoogleButton from '../../../components/GoogleButton';
-
-import TCForm from '../../../components/TCForm';
-
-import TCFormField from '../../../components/TCFormField';
-import TCFormSubmit from '../../../components/TCFormSubmit';
-
-import constants from '../../../config/constants';
-
-import AsyncStorage from '@react-native-community/async-storage';
 import AuthContext from '../../../auth/context';
-import useApi from '../../../hooks/useApi';
-import listing from '../../../api/listing';
-import storage from '../../../auth/storage';
 import Loader from '../../../components/loader/Loader';
 import styles from './style';
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import * as Utility from '../../../utility/index';
+import   colors from "../../../Constants/Colors";
 
 import {getuserDetail} from '../../../api/Authapi';
 import {token_details} from '../../../utils/constant';
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-});
+import TCButton from '../../../components/TCButton';
+import TCTextField from '../../../components/TCTextField';
+
+const config = {
+  apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
+  authDomain: 'townscup-fee6e.firebaseapp.com',
+  databaseURL: 'https://townscup-fee6e.firebaseio.com',
+  projectId: 'townscup-fee6e',
+  storageBucket: 'townscup-fee6e.appspot.com',
+  messagingSenderId: '1003329053001',
+  appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
+  measurementId: 'G-N44NC0Z1Q7',
+};
 
 function LoginScreen({navigation}) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
 
-  useEffect(() => {
-    firebase.initializeApp({
-      apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
-      authDomain: 'townscup-fee6e.firebaseapp.com',
-      databaseURL: 'https://townscup-fee6e.firebaseio.com',
-      projectId: 'townscup-fee6e',
-      storageBucket: 'townscup-fee6e.appspot.com',
-      messagingSenderId: '1003329053001',
-      appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
-      measurementId: 'G-N44NC0Z1Q7',
-    });
-  }, []);
+  //Google sign-in configuration initialization
+  GoogleSignin.configure({
+    webClientId: '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
+    offlineAccess:false,
+  });
 
+  useEffect(() => {
+    firebase.initializeApp(config);
+  },[]);
+  const checkValidation = () => {
+     if (email == '') {
+      Alert.alert('Towns Cup', 'Email cannot be blank');
+     
+    }else if (password == '') {
+      Alert.alert('Towns Cup', 'Password cannot be blank');
+     
+    }
+  };
+  
   const getUser = async (uid) => {
     getuserDetail(JSON.parse(uid)).then(async(response) => {
       if (response.status == true) {
@@ -109,6 +119,91 @@ function LoginScreen({navigation}) {
         }
       });
   };
+
+  //Psaaword Hide/Show function for setState
+  const hideShowPassword = () =>{
+    setHidePassword(!hidePassword);
+  }
+
+  // Login With Facebook manage function
+  const onFacebookButtonPress = async()=> {
+    const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+    if (result.isCancelled) {
+      throw 'User cancelled the login process';
+    }
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data) {
+      throw 'Something went wrong obtaining access token';
+    }
+    const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+    auth().signInWithCredential(facebookCredential).then(async(authResult) => {
+      console.log('FACEBOOK DETAIL:', JSON.stringify(authResult));
+      auth().onAuthStateChanged((user) => {
+        console.log('User :-', user);
+        if (user) {
+          user.getIdTokenResult().then(async (idTokenResult) => {
+            let tokenDetail = {
+              token: idTokenResult.token,
+              expirationTime: idTokenResult.expirationTime,
+            };
+  
+            await Utility.setStorage(token_details,JSON.stringify(tokenDetail));
+            await Utility.setStorage('UID', JSON.stringify(user.uid));
+            getUser(JSON.stringify(user.uid));
+          
+          });
+        }
+      });
+    })
+    .catch((error) => {
+      if (error.code === 'auth/user-not-found') {
+        alert('This email address is not registerd');
+      }
+      if (error.code === 'auth/email-already-in-use') {
+        alert('That email address is already in use!');
+      }
+      if (error.code === 'auth/invalid-email') {
+        alert('That email address is invalid!');
+      }
+    });;  
+  }
+
+  // Login With Google manage function
+  const  onGoogleButtonPress =async()=> {
+    const { idToken } = await GoogleSignin.signIn();
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+     auth().signInWithCredential(googleCredential).then(async(authResult) => {
+      console.log('GOOGLE DETAIL:', JSON.stringify(authResult));
+      auth().onAuthStateChanged((user) => {
+        console.log('User :-', user);
+        if (user) {
+          user.getIdTokenResult().then(async (idTokenResult) => {
+            let tokenDetail = {
+              token: idTokenResult.token,
+              expirationTime: idTokenResult.expirationTime,
+            };
+  
+            await Utility.setStorage(token_details,JSON.stringify(tokenDetail));
+            await Utility.setStorage('UID', JSON.stringify(user.uid));
+            getUser(JSON.stringify(user.uid));
+          
+          });
+        }
+      });
+    })
+    .catch((error) => {
+      if (error.code === 'auth/user-not-found') {
+        alert('This email address is not registerd');
+      }
+      if (error.code === 'auth/email-already-in-use') {
+        alert('That email address is already in use!');
+      }
+      if (error.code === 'auth/invalid-email') {
+        alert('That email address is invalid!');
+      }
+    });;  ;
+  }
+
   return (
     <View style={styles.mainContainer}>
       {/* <Loader visible={getUserData.loading} /> */}
@@ -116,36 +211,46 @@ function LoginScreen({navigation}) {
       <Image style={styles.background} source={PATH.bgImage} />
 
       <Text style={styles.loginText}>{strings.loginText}</Text>
-      <FacebookButton />
-      <GoogleButton />
+      <FacebookButton onPress={() => onFacebookButtonPress()}/>
+      <GoogleButton onPress={() => onGoogleButtonPress()}/>
       <Text style={styles.orText}>{strings.orText}</Text>
-
-      <TCForm
-        initialValues={{
-          email: '',
-          password: '',
-        }}
-        onSubmit={(values) => loginUsers(values.email, values.password)}
-        validationSchema={validationSchema}>
-        <TCFormField
+      
+        <TCTextField
           placeholder={strings.emailPlaceHolder}
           autoCapitalize="none"
           keyboardType="email-address"
-          name="email"
+          onChangeText={(text) => setEmail(text)} 
+          value={email}
         />
-        <TCFormField
+       
+      <View style={styles.passwordView}>
+        <TextInput
+          style={styles.textInput}
           placeholder={strings.passwordPlaceHolder}
-          autoCapitalize="none"
-          secureText={true}
-          name="password"
+          onChangeText={(text) => setPassword(text)} 
+          value={password}
+          placeholderTextColor={colors.themeColor}
+          secureTextEntry={hidePassword}
+          keyboardType={'default'}
         />
-
-        <TCFormSubmit
-          title={strings.loginCapTitle}
-          extraStyle={{marginTop: hp('3%')}}
-          //() => navigation.navigate('ChooseLocationScreen')
-        />
-      </TCForm>
+        <TouchableWithoutFeedback onPress={()=>hideShowPassword()}>
+        {hidePassword ? <Image source={PATH.showPassword} style={styles.passwordEyes} /> : <Image source={PATH.hidePassword} style={styles.passwordEyes} />}
+        </TouchableWithoutFeedback>
+        
+      </View>
+        
+            <TCButton
+            title={strings.loginCapTitle}
+            extraStyle={{marginTop: hp('10%'), marginTop: hp('3%')}}
+            onPress={()=>{
+              checkValidation();
+              if(email != '' && password != ''){
+                loginUsers(email, password)
+              }
+            }}
+          />
+        
+      
       <TouchableOpacity
         onPress={() => navigation.navigate('ForgotPasswordScreen')}>
         <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>

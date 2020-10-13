@@ -19,6 +19,7 @@ const colors = {
   kHexColor35B9A8: '#35B9A8',
   themeColor: '#FF8A01',
   whiteColor: '#FFFFFF',
+  parrotColor:'#E8FFB4',
   fbTextColor: '#4574DB',
   googleColor: '#616161',
   blackColor: '#000000',

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  profileView: {height: 170 , marginTop:Platform.OS == 'ios' ? 50 : 0},
+  profileView: {height: 150 , marginTop:Platform.OS == 'ios' ? 50 : 0},
   profileImg: {
     height: 50,
     width: 50,

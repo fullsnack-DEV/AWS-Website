@@ -12,12 +12,12 @@ import PATH from "../Constants/ImagePath"
 import strings from "../Constants/String"
 const { colors, fonts, urls} = constants;
 
-function GoogleButton() {
+function GoogleButton({onPress}) {
   return (
     <SafeAreaView>
       <TouchableOpacity
         style={[styles.imgWithText, styles.allButton]}
-        onPress={() => alert('google sign up..')}>
+        onPress={onPress}>
         <Image source={PATH.signUpGoogle} style={styles.googleImg} />
         <Text style={styles.googleText}>{strings.googleText}</Text>
       </TouchableOpacity>
