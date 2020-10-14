@@ -30,14 +30,6 @@ export default function FeedsScreen({navigation}) {
     });
   }, [navigation]);
   useEffect(() => {
-    // getNewsFeedDetails().then((response) => {
-    //   if (response.status == true) {
-    //     setPostData(response.payload.results);
-    //   } else {
-    //     alert(response.messages);
-    //   }
-    // setloading(false);
-    // });
     getPostDetails().then((response) => {
       if (response.status == true) {
         setPostData(response.payload.results);
@@ -45,7 +37,7 @@ export default function FeedsScreen({navigation}) {
         alert(response.messages);
       }
       setloading(false);
-    });
+    }, (error) => setloading(false));
   }, []);
 
   return (

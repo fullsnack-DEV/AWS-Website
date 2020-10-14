@@ -28,13 +28,13 @@ const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
     height: 70,
+    paddingHorizontal: wp('4%'),
   },
   profileImg: {
     height: hp('5%'),
     width: hp('5%'),
     resizeMode: 'cover',
     backgroundColor: colors.themeColor,
-    marginLeft: 10,
     alignSelf: 'center',
     borderRadius: 35,
     borderWidth: 1,
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
 
   writePostText: {
-    marginLeft: wp('2.5%'),
+    marginLeft: wp('4%'),
 
     borderWidth: 1,
     borderRadius: 5,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
 
     height: 40,
-    width: wp('80%'),
+    width: wp('75%'),
   },
 });
 

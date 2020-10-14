@@ -82,14 +82,15 @@ function AppNavigator() {
       <Tab.Screen
         name="Home"
         component={NewsFeedNavigator}
-        options={{
+        options={({route}) => ({
+          tabBarVisible: this.getTabBarVisibility(route),
           tabBarIcon: ({focused}) => (
             <Image
               source={focused ? PATH.tab_home_selected : PATH.tab_home}
               style={styles.tabImg}
             />
           ),
-        }}
+        })}
       />
       <Tab.Screen
         name="Reservation"
