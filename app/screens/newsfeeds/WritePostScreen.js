@@ -6,99 +6,176 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  FlatList,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
-const {PATH} = constants;
+const {PATH, colors, fonts} = constants;
 import AuthContext from '../../auth/context';
+import ImageButton from '../../components/WritePost/ImageButton';
+import SelectedImageList from '../../components/WritePost/SelectedImageList';
 
 export default function WritePostScreen({navigation}) {
+  const ImagesSelection = [
+    {id: 0, image: PATH.club_ph},
+    {id: 1, image: PATH.club_ph},
+    {id: 2, image: PATH.club_ph},
+    {id: 3, image: PATH.club_ph},
+    {id: 4, image: PATH.club_ph},
+  ];
   const authContext = useContext(AuthContext);
   const [searchText, setSearchText] = useState('');
   return (
-    <View>
-      <View style={styles.mainContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <View style={{flexDirection: 'row'}}>
-            <Image source={PATH.backArrow} style={styles.backImage}></Image>
-            <Text style={styles.cancelTxt}> Cancel</Text>
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      <SafeAreaView>
+        <View style={styles.containerStyle}>
+          <View style={styles.backIconViewStyle}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image source={PATH.backArrow} style={styles.backImage} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-        <Text style={styles.headingTitle}>Write Post</Text>
-        <Text
-          style={{
-            fontSize: 18,
-            color: searchText.length == 0 ? '#cccccc' : 'black',
-          }}
-          onPress={() =>
-            searchText.length == 0
-              ? console.log('disble')
-              : navigation.navigate('FeedsScreen')
-          }>
-          Done
-        </Text>
-      </View>
+          <View style={styles.writePostViewStyle}>
+            <Text style={styles.writePostTextStyle}>Write Post</Text>
+          </View>
+          <View style={styles.doneViewStyle}>
+            <Text
+              style={styles.doneTextStyle}
+              onPress={() =>
+                searchText.length == 0
+                  ? console.log('disble')
+                  : navigation.navigate('FeedsScreen')
+              }>
+              Done
+            </Text>
+          </View>
+        </View>
+      </SafeAreaView>
       <View style={styles.sperateLine}></View>
       <View style={styles.userDetailView}>
-        <Image
-          style={styles.background}
-          source={PATH.profilePlaceHolder}></Image>
+        <Image style={styles.background} source={PATH.profilePlaceHolder} />
         <View style={styles.userTxtView}>
           <Text style={styles.userTxt}>{authContext.user.full_name}</Text>
         </View>
       </View>
-      <TextInput
-        placeholder="What' going on?"
-        placeholderTextColor="grey"
-        onChangeText={(text) => setSearchText(text)}
-        style={styles.textInputField}
-        multiline={true}></TextInput>
-      <View style={styles.bottomSperateLine}></View>
-      <View style={styles.bottomImgView}>
-        <TouchableOpacity
-          onPress={() => {
-            console.log('Pressed!');
-          }}>
-          <Image source={PATH.gallaryImage} style={styles.gallaryImage}></Image>
-        </TouchableOpacity>
-        <Image source={PATH.bagTick} style={styles.bagTick}></Image>
-        <Image
-          source={PATH.attatchmentGrey}
-          style={styles.attatchmentImage}></Image>
-      </View>
-    </View>
+
+      <ScrollView bounces={false}>
+        <TextInput
+          placeholder="What's going on?"
+          placeholderTextColor={colors.userPostTimeColor}
+          onChangeText={(text) => setSearchText(text)}
+          style={styles.textInputField}
+          multiline={true}
+        />
+        <FlatList
+          data={ImagesSelection}
+          horizontal={true}
+          // scrollEnabled={true}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({item, index}) => {
+            return <SelectedImageList data={item} onItemPress={() => {
+              console.log('Item Cancel Pressed');
+            }} />;
+          }}
+          ItemSeparatorComponent={() => {
+            return(
+              <View style={{width: wp('1%')}} />
+            );
+          }}
+          style={{paddingTop: 10, marginHorizontal: wp('3%') }}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </ScrollView>
+
+      <SafeAreaView style={styles.bottomSafeAreaStyle}>
+        {/* <View style={styles.bottomSperateLine} /> */}
+        <View style={styles.bottomImgView}>
+          <View style={styles.onlyMeViewStyle}>
+            <ImageButton
+              source={PATH.lock}
+              imageStyle={{width: 18, height: 21}}
+              onImagePress={() => {
+                console.log('Image Pressed!');
+              }}
+            />
+            <Text style={styles.onlyMeTextStyle}>Only me</Text>
+          </View>
+          <View style={[styles.onlyMeViewStyle, {justifyContent: 'flex-end'}]}>
+            <ImageButton
+              source={PATH.pickImage}
+              imageStyle={{width: 19, height: 19, marginHorizontal: wp('2%')}}
+              onImagePress={() => {
+                console.log('Image Pressed!');
+              }}
+            />
+            <ImageButton
+              source={PATH.tagImage}
+              imageStyle={{width: 22, height: 22, marginLeft: wp('2%')}}
+              onImagePress={() => {
+                console.log('Image Pressed!');
+              }}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  containerStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: hp('5%'),
-    marginLeft: wp('2%'),
-    marginRight: wp('4%'),
-    marginBottom: hp('2%'),
+    alignSelf: 'center',
+    width: wp('92%'),
+    paddingVertical: hp('1%'),
   },
   background: {
     height: hp('6%'),
-    width: wp('13%'),
+    width: hp('6%'),
     resizeMode: 'stretch',
   },
-  backImage: {
-    height: hp('2.5%'),
-    width: wp('4%'),
+  backIconViewStyle: {
+    width: wp('17%'),
+    justifyContent: 'center',
   },
-  cancelTxt: {fontSize: 18},
-  headingTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+  backImage: {
+    height: hp('2%'),
+    width: hp('1.5%'),
+    tintColor: colors.lightBlackColor,
+  },
+  writePostViewStyle: {
+    width: wp('58%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  writePostTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+  doneViewStyle: {
+    width: wp('17%'),
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  doneTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
   },
   sperateLine: {
+    marginVertical: hp('1%'),
     borderWidth: 0.5,
-    borderColor: '#cccccc',
+    borderColor: colors.writePostSepratorColor,
   },
   userDetailView: {
     margin: wp('3%'),
@@ -110,41 +187,43 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   userTxt: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 16,
+    fontFamily: fonts.RBold,
     marginLeft: wp('4%'),
   },
   textInputField: {
-    width: wp('90%'),
-    height: hp('20%'),
-    justifyContent: 'center',
+    width: wp('92%'),
+    height: hp('15%'),
     alignSelf: 'center',
+    fontSize: 16,
   },
   bottomSperateLine: {
     borderWidth: 0.5,
-    borderColor: '#cccccc',
-    marginTop: hp('50%'),
+    borderColor: colors.writePostSepratorColor,
+  },
+  bottomSafeAreaStyle: {
+    backgroundColor: '#fff',
+    shadowOpacity: 0.3,
+    shadowOffset: {
+      height: -3,
+      width: 0
+    }
   },
   bottomImgView: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignSelf: 'flex-end',
-    margin: wp('5%'),
+    alignSelf: 'center',
+    width: wp('92%'),
+    paddingVertical: hp('1%'),
   },
-  gallaryImage: {
-    height: hp('2.5%'),
-    width: wp('6%'),
-    right: wp('5%'),
+  onlyMeViewStyle: {
+    flexDirection: 'row',
+    width: wp('46%'),
+    alignItems: 'center',
   },
-  bagTick: {
-    height: hp('4%'),
-    width: wp('8%'),
-    bottom: hp('0.8%'),
-    right: wp('2%'),
-  },
-  attatchmentImage: {
-    height: hp('3%'),
-    width: wp('6%'),
-    bottom: hp('0%'),
-  },
+  onlyMeTextStyle: {
+    marginLeft: wp('2%'),
+    fontSize: 15,
+    fontFamily: fonts.RRegular,
+    color: colors.googleColor
+  }
 });

@@ -61,19 +61,19 @@ const styles = StyleSheet.create({
     marginLeft: wp('4%'),
   },
   userNameTxt: {
-    fontSize: hp('2.1%'),
+    fontSize: 17,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   commentTextStyle: {
-    fontSize: hp('1.8%'),
+    fontSize: 15,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   activeTimeAgoTxt: {
     color: colors.userPostTimeColor,
     top: 2,
-    fontSize: hp('1.7%'),
+    fontSize: 14,
     fontFamily: fonts.RRegular,
   },
   userCommentTextStyle: {

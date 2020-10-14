@@ -1,60 +1,54 @@
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
+import PATH from '../../Constants/ImagePath';
 const {fonts} = constants;
 
-function PostImageSet({data, itemNumber, totalItemNumber}) {
+function SelectedImageList({data, onItemPress}) {
   return (
     <View style={styles.uploadedImage}>
       <FastImage
         style={styles.uploadedImage}
-        source={{
-          uri: data.thumbnail,
-        }}
+        source={data.image}
         resizeMode={FastImage.resizeMode.cover}
       />
-      <View style={styles.lengthViewStyle}>
-        <Text style={styles.lengthTextStyle}>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
-      </View>
+      <TouchableOpacity style={styles.lengthViewStyle} onPress={onItemPress}>
+        <Image source={PATH.cancelImage} style={styles.cancelImageStyle} />
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   uploadedImage: {
-    height: wp('91%'),
-    width: wp('91%'),
+    height: wp('30%'),
+    width: wp('30%'),
     marginVertical: '1%',
     borderRadius: wp('4%'),
-    alignSelf: 'center',
   },
   lengthViewStyle: {
     position: 'absolute',
     backgroundColor: 'red',
     alignSelf: 'flex-end',
-    top: wp('5%'),
-    right: wp('3%'),
-    padding: wp('1.5%'),
-    borderRadius: wp('5%'),
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    top: wp('1%'),
+    right: wp('1%'),
+    // padding: wp('1.5%'),
+    height: wp('6%'),
+    width: wp('6%'),
+    borderRadius: wp('3%'),
+    backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  lengthTextStyle: {
-    fontSize: 15,
-    color: '#fff',
-    paddingHorizontal: wp('1.5%'),
-    fontFamily: fonts.RRegular,
-  },
+  cancelImageStyle: {
+      height: 12,
+      width: 12,
+  }
 });
 
-export default PostImageSet;
+export default SelectedImageList;

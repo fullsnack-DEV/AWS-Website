@@ -47,6 +47,7 @@ const colors = {
   disableColor: '#cccccc',
   postSeprator: '#e1e1e1',
   greeColor: '#45C188',
+  writePostSepratorColor: '#E0E0E0'
 };
 
 const fonts = {
@@ -123,6 +124,10 @@ const PATH = {
   feedComment: require('../assets/images/feed_comment.png'),
   feedShare: require('../assets/images/feed_share.png'),
   feedLike: require('../assets/images/feed_like.png'),
+  lock: require('../assets/images/lock.png'),
+  pickImage: require('../assets/images/pick_image.png'),
+  tagImage: require('../assets/images/tag.png'),
+  cancelImage: require('../assets/images/cancel.png'),
   videoPlayerHandle: require('../assets/images/oval.png'),
 
   gallaryImage: require('../assets/images/image.png'),

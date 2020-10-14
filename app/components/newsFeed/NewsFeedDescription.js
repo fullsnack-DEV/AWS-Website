@@ -28,11 +28,11 @@ function NewsFeedDescription({descriptions, character}) {
 const styles = StyleSheet.create({
   descriptionTxt: {
     padding: '2%',
-    fontSize: 17,
+    fontSize: 16,
   },
   descText: {
     color: 'gray',
-    fontSize: 17,
+    fontSize: 12,
   },
 });
 

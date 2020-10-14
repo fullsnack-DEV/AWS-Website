@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   lengthTextStyle: {
-    fontSize: hp('1.9%'),
+    fontSize: 15,
     color: '#fff',
     paddingHorizontal: wp('1.5%'),
     fontFamily: fonts.RRegular,
