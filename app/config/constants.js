@@ -40,6 +40,7 @@ const colors = {
   offwhite: '#fcfcfc',
   radioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
+  veryLightBlack:'#616161',
   purpleColor: '#c08bd1',
   lightBlueColor: '#5ecceb',
   disableColor: '#cccccc',

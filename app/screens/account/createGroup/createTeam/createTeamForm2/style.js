@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     height: 22,
     width: 22,
     resizeMode: 'contain',
-    tintColor: colors.radioButtonColor,
+    //tintColor: colors.radioButtonColor,
     alignSelf: 'center',
   },
   unSelectRadioImage: {

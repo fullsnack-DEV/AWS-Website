@@ -26,6 +26,7 @@ import FacebookButton from '../../../components/FacebookButton';
 import GoogleButton from '../../../components/GoogleButton';
 import AuthContext from '../../../auth/context';
 import Loader from '../../../components/loader/Loader';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import styles from './style';
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
@@ -53,6 +54,8 @@ function LoginScreen({navigation}) {
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
+ // For activity indigator
+ const [loading, setloading] = useState(false);
 
   //Google sign-in configuration initialization
   GoogleSignin.configure({
@@ -74,6 +77,7 @@ function LoginScreen({navigation}) {
   };
   
   const getUser = async (uid) => {
+    setloading(true);
     getuserDetail(JSON.parse(uid)).then(async(response) => {
       if (response.status == true) {
         await Utility.setStorage('user',response.payload);
@@ -82,6 +86,7 @@ function LoginScreen({navigation}) {
         alert(response.messages);
       }
     });
+    setloading(false);
   };
   const loginUsers = async (email, password) => {
     firebase
@@ -206,6 +211,7 @@ function LoginScreen({navigation}) {
 
   return (
     <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
       {/* <Loader visible={getUserData.loading} /> */}
       <Image style={styles.background} source={PATH.orangeLayer} />
       <Image style={styles.background} source={PATH.bgImage} />

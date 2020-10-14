@@ -100,8 +100,33 @@ export default function ChooseGenderScreen({navigation}) {
       </View>
       <TCButton
         title={strings.continueCapTitle}
-        onPress={() => {
-          navigation.navigate('LoginScreen');
+        onPress={async() => {
+          let userGender = {};
+          let user = await Utility.getStorage('userInfo');
+            if(selected == 0)
+            {
+               userGender = {
+                ...user,
+                gender:'male',
+              }
+            }
+             else if(selected ==1)
+             {
+               userGender = {
+                ...user,
+                gender:'female',
+              }
+             }
+             else if(selected == 2)
+             {
+               userGender = {
+                ...user,
+                gender:'other',
+              }
+             }         
+          
+          await Utility.setStorage('userInfo', userGender);
+          navigation.navigate('ChooseLocationScreen');
         }}
         extraStyle={{bottom: hp('4%'), position: 'absolute'}}
       />

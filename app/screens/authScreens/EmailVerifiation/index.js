@@ -30,7 +30,8 @@ import strings from "../../../Constants/String"
                    console.log(res.user.email);
                    console.log(res.user.emailVerified);
                    if(res.user.emailVerified){
-                     navigation.navigate("ChooseLocationScreen")
+                    navigation.navigate("AddBirthdayScreen")
+                     //navigation.navigate("ChooseLocationScreen")
                    }
       
             });} catch (error) {

@@ -8,6 +8,7 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 
 import FacebookButton from '../../../components/FacebookButton';
 import GoogleButton from '../../../components/GoogleButton';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AuthContext from '../../../auth/context';
 import styles from './style';
 import PATH from '../../../Constants/ImagePath';
@@ -29,6 +30,8 @@ const config = {
 
 
 function WelcomeScreen({navigation}) {
+   // For activity indigator
+ const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -40,19 +43,25 @@ GoogleSignin.configure({
   offlineAccess:false,
 });
 const getUser =  (uid) => {
-  getuserDetail(JSON.parse(uid)).then((response) => {
+  getuserDetail(uid).then((response) => {
+    setloading(false);
     if (response.status == true) {
       Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
       
     } else {
-      navigation.navigate('ChooseLocationScreen');
+      navigation.navigate("AddBirthdayScreen")
+      //navigation.navigate('ChooseLocationScreen');
     }
+  }).catch((error) => {
+    navigation.navigate("AddBirthdayScreen") 
   });
+  setloading(false);
 };
 
 
 // Login With Facebook manage function
 const onFacebookButtonPress = async()=> {
+  
   const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
   if (result.isCancelled) {
     throw 'User cancelled the login process';
@@ -110,7 +119,7 @@ const onFacebookButtonPress = async()=> {
     if (error.code === 'auth/invalid-email') {
       alert('That email address is invalid!');
     }
-  });;  
+  });
 }
 
 // Login With Google manage function
@@ -168,6 +177,7 @@ const  onGoogleButtonPress =async()=> {
 }
   return (
     <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
       <Image style={styles.background} source={PATH.orangeLayer} />
       <Image style={styles.background} source={PATH.signUpBg1} />
 

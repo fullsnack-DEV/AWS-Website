@@ -5,7 +5,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import constants from '../../../config/constants';
+import constants from '../../../../config/constants';
 const {strings, colors, fonts, urls, PATH} = constants;
 
 const styles = StyleSheet.create({
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   form2: {
-    backgroundColor: colors.lightgrayColor,
+    backgroundColor: colors.themeColor,
     height: 5,
     width: 10,
     marginLeft: 2,
@@ -90,8 +90,9 @@ const styles = StyleSheet.create({
   curruency: {
     fontSize: 15,
     fontFamily:fonts.RRegular,
-    //alignSelf: 'flex-end',
+    alignSelf: 'center',
     color:colors.lightBlackColor,
+    textAlign:'center',
   },
   feeText: {
     width: '84%',
@@ -301,69 +302,33 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   membershipText: {
-    fontSize: wp('5%'),
+    fontSize: 16,
     marginLeft: 15,
     marginTop: 20,
-    color: colors.lightBlackColor,
-    //fontWeight: 'bold',
+    color: colors.veryLightBlack,
+    fontFamily:fonts.RBold,
   },
   mendatory: {
     color: 'red',
   },
-  searchView: {
-    height: 40,
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    paddingLeft: 15,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    flexDirection: 'row',
-
-    elevation: 3,
-  },
-  searchTextField: {
-    flex: 1,
-    color: colors.blackColor,
-    fontSize: wp('3.8%'),
-    height: 40,
-    width: wp('80%'),
-    alignSelf: 'center',
-  },
-  languageApplyButton: {
-    width: '90%',
-    height: 45,
-    alignSelf: 'center',
-    marginTop: wp('5%'),
-    borderRadius: 30,
-    marginBottom: 40,
-  },
-  languageList: {
-    marginLeft: 20,
-    marginBottom: 20,
+  membershipSubText: {
+    fontSize: 16,
+    fontFamily:fonts.RRegular,
+    marginLeft: 15,
     marginTop: 20,
-    color: colors.lightBlackColor,
-    fontSize: wp('4%'),
-    fontFamily: fonts.RRegular,
+    color: colors.veryLightBlack,
+    fontWeight: 'bold',
+    lineHeight: 20,
   },
-  checkboxImg: {
-    width: wp('5.5%'),
+  whoJoinText: {
+    fontSize: 16,
+    fontFamily:fonts.RMedium,
+    marginLeft: 15,
+    marginTop: 10,
+    marginBottom: 20,
+    color: colors.veryLightBlack,
+  },
 
-    //paddingLeft: wp('25%'),
-    resizeMode: 'contain',
-    alignSelf: 'center',
-    
-  },
-  checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp('5%'),
-  },
 });
 
 export default styles;
