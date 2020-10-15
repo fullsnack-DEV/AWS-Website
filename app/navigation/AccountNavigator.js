@@ -14,6 +14,7 @@ import GameRecording from '../screens/account/schedule/GameRecording';
 import GameDetailRecord from '../screens/account/schedule/GameDetailRecord';
 import GameRecordList from '../screens/account/schedule/GameRecordList';
 import RegisterPlayer from '../screens/account/registerPlayer';
+import RegisterPlayerForm2 from '../screens/account/registerPlayer/registerPlayerForm2';
 import RegisterReferee from '../screens/account/registerReferee';
 import CreateTeamForm1 from '../screens/account/createGroup/createTeam/createTeamForm1';
 import CreateTeamForm2 from '../screens/account/createGroup/createTeam/createTeamForm2';
@@ -38,7 +39,7 @@ const Stack = createStackNavigator();
 
 const AccountNavigator = () => {
   return (
-    <Stack.Navigator
+    <Stack.Navigator mode="modal"
       screenOptions={{
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
@@ -146,6 +147,22 @@ const AccountNavigator = () => {
       <Stack.Screen
         name="RegisterPlayer"
         component={RegisterPlayer}
+        options={{
+          title: 'Register as a personal player',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="RegisterPlayerForm2"
+        component={RegisterPlayerForm2}
         options={{
           title: 'Register as a personal player',
           headerTintColor: colors.blackColor,

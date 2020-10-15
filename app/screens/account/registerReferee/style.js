@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     //paddingLeft: wp('25%'),
     resizeMode: 'contain',
     alignSelf: 'center',
-    tintColor: colors.themeColor,
+    //tintColor: colors.grayColor,
   },
   checkbox: {
     alignSelf: 'center',

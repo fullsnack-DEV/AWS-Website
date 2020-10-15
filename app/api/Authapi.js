@@ -7,7 +7,7 @@ export const getuserDetail = async (uid) => {
     url: api.baseURL + api.auth.userDetail + uid,
   })
     .then((response) => {
-      
+      console.log('Get Client Details Response ::', response);
       return Promise.resolve(response.data);
     })
     .catch((error) => {

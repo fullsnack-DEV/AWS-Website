@@ -27,6 +27,7 @@ getTabBarVisibility = (route) => {
     routeName === 'GameRecordList' ||
     routeName === 'NewsFeedVideoPlayer' ||
     routeName === 'RegisterPlayer' ||
+    routeName === 'RegisterPlayerForm2' ||
     routeName === 'RegisterReferee' ||
     routeName === 'CreateTeamForm1' ||
     routeName === 'CreateTeamForm2' ||

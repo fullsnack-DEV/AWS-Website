@@ -21,6 +21,7 @@ import strings from '../../../Constants/String';
 import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
 import AuthContext from '../../../auth/context';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Loader from '../../../components/loader/Loader';
 import * as Utility from '../../../utility/index';
@@ -29,11 +30,15 @@ import styles from './style';
 function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [selected, setSelected] = useState([]);
+   // For activity indigator
+ const [loading, setloading] = useState(true);
+
   const authContext = useContext(AuthContext);
   var selectedSports = [];
 
   useEffect(() => {
     getSportsList().then((response) => {
+      setloading(true);
       if (response.status == true) {
         console.log('response', response.payload);
 
@@ -46,6 +51,7 @@ function ChooseSportsScreen({navigation, route}) {
       } else {
         alert(response.messages);
       }
+      setloading(false);
     });
   }, []);
 
@@ -75,6 +81,8 @@ function ChooseSportsScreen({navigation, route}) {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
+      birthday:user.birthday,
+      gender:user.gender,
       thumbnail: '',
       full_image: '',
       sports: selected,
@@ -84,15 +92,18 @@ function ChooseSportsScreen({navigation, route}) {
     };
 
     createUser(data).then((response) => {
+      setloading(true);
       if (response.status == true) {
         console.log('PAYLOAD::', JSON.stringify(response));
         getUserInfo();
       } else {
         alert(response.messages);
       }
+      setloading(false);
     });
   };
   const getUserInfo = async () => {
+    setloading(true);
     var uid =  await Utility.getStorage('UID');
     getuserDetail(uid).then(async(response) => {
       if (response.status == true) {
@@ -104,6 +115,7 @@ function ChooseSportsScreen({navigation, route}) {
         console.log(response);
         alert('Something went wrong..!!');
       }
+      setloading(false);
     });
   };
 
@@ -146,6 +158,7 @@ function ChooseSportsScreen({navigation, route}) {
   return (
     <>
       <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
         {/* <Loader visible={getSportsList.loading} /> */}
         <Image style={styles.background} source={PATH.orangeLayer} />
         <Image style={styles.background} source={PATH.bgImage} />

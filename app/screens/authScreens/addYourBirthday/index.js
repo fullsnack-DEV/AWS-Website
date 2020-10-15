@@ -56,7 +56,16 @@ export default function AddBirthdayScreen({navigation}) {
        
       <TCButton
         title={strings.continueCapTitle}
-        onPress={() => {
+        onPress={async() => {
+        
+          let user = await Utility.getStorage('userInfo');
+
+          let userBirthday={
+            ...user,
+            birthday:dateValue,
+          }
+          
+          await Utility.setStorage('userInfo', userBirthday);
           navigation.navigate('ChooseGenderScreen');
         }}
         extraStyle={{marginTop:50,}}

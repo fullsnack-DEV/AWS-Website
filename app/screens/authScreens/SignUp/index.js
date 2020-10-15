@@ -28,7 +28,7 @@ import {create} from 'apisauce';
 import {getuserDetail} from '../../../api/Authapi';
 import AuthContext from '../../../auth/context';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import Loader from '../../../components/loader/Loader';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import styles from './style';
 import * as Utility from '../../../utility/index';
 import PATH from '../../../Constants/ImagePath';
@@ -59,7 +59,8 @@ function SignupScreen({navigation, route}) {
   const [cPassword, setCPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
-
+  // For activity indigator
+  const [loading, setloading] = useState(true);
   useEffect(() => {
     firebase.initializeApp(config);
   },[]);
@@ -127,7 +128,22 @@ function SignupScreen({navigation, route}) {
             };
             await Utility.setStorage('userInfo', userDetail);
             
-            navigation.navigate('EmailVerification',{email:email,password:password});
+           
+            getuserDetail(user.uid).then((response) => {
+              setloading(true);
+              console.log('PAYLOAD::', JSON.stringify(response));
+              if (response.status == true) {
+                alert('This user is already registered!');
+                navigation.navigate('LoginScreen');
+              } else {
+                console.log(response);
+                navigation.navigate('EmailVerification',{email:email,password:password});
+              }
+              setloading(false);
+            });
+
+
+            
             //getUserInfo();
          
           //console.log('TokenID', idToken);
@@ -169,6 +185,7 @@ function SignupScreen({navigation, route}) {
     getuserDetail(uid).then((response) => {
       console.log('PAYLOAD::', JSON.stringify(response));
       if (response.status == true) {
+        alert('This user is already registered!');
         navigation.navigate('LoginScreen');
       } else {
         console.log(response);
@@ -181,6 +198,7 @@ function SignupScreen({navigation, route}) {
   }
   return (
     <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
       {/* <Loader visible={true} /> */}
       <Image style={styles.background} source={PATH.orangeLayer} />
       <Image style={styles.background} source={PATH.bgImage} />
