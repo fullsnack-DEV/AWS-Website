@@ -311,14 +311,14 @@ const styles = StyleSheet.create({
     marginLeft: wp('4%'),
   },
   userNameTxt: {
-    fontSize: hp('2%'),
+    fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   activeTimeAgoTxt: {
     color: colors.userPostTimeColor,
     top: 2,
-    fontSize: hp('1.7%'),
+    fontSize: 14,
     fontFamily: fonts.RRegular,
   },
   margin: {
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     tintColor: colors.reactionCountColor,
   },
   commentlengthStyle: {
-    fontSize: hp('1.8%'),
+    fontSize: 14,
     marginHorizontal: 5,
     alignSelf: 'center',
     color: colors.reactionCountColor,
