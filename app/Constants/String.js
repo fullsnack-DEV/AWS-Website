@@ -22,6 +22,7 @@ const strings = {
   applyTitle: 'APPLY',
   cancelTitle: 'CANCEL',
   doneTitle: 'DONE',
+  saveTitle: 'SAVE',
   loginCapTitle: 'LOGIN',
   continueCapTitle: 'CONTINUE',
   signUpCapitalText: 'SIGN UP',
@@ -63,6 +64,7 @@ otherRadioText: 'Other',
   searchHereText: 'Search here',
   genderTitle: "Member's Gender",
   feeCyclePlaceholder: 'Fees cycle',
+  selectCode: 'Country Code',
   selectGenderPlaceholder: 'Select Gender',
   membersAgeTitle: "Member's Age",
   maxPlaceholder: 'Max',
@@ -189,5 +191,11 @@ otherRadioText: 'Other',
   followersRadio: 'Followers',
   clubMembersRadio: 'Club Members',
   adminsRadio: 'Only Club & Team Admins',
+
+  //Change password
+  oldPassword: 'Current Password',
+  newPassword: 'New Password',
+  confirmPassword:'Confirm Password',
+  atLeastText:'(At least 8 characters)'
 };
 export default strings;

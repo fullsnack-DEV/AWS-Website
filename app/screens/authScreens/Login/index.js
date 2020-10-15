@@ -106,6 +106,7 @@ function LoginScreen({navigation}) {
     
               await Utility.setStorage(token_details,JSON.stringify(tokenDetail));
               await Utility.setStorage('UID', JSON.stringify(user.uid));
+              await Utility.setStorage('switchBy', 'user');
               getUser(JSON.stringify(user.uid));
             
             });
@@ -154,6 +155,7 @@ function LoginScreen({navigation}) {
   
             await Utility.setStorage(token_details,JSON.stringify(tokenDetail));
             await Utility.setStorage('UID', JSON.stringify(user.uid));
+            await Utility.setStorage('switchBy', 'user');
             getUser(JSON.stringify(user.uid));
           
           });
@@ -162,7 +164,7 @@ function LoginScreen({navigation}) {
     })
     .catch((error) => {
       if (error.code === 'auth/user-not-found') {
-        alert('This email address is not registerd');
+         alert('This email address is not registerd');
       }
       if (error.code === 'auth/email-already-in-use') {
         alert('That email address is already in use!');
@@ -170,7 +172,7 @@ function LoginScreen({navigation}) {
       if (error.code === 'auth/invalid-email') {
         alert('That email address is invalid!');
       }
-    });;  
+    });
   }
 
   // Login With Google manage function
@@ -190,6 +192,7 @@ function LoginScreen({navigation}) {
   
             await Utility.setStorage(token_details,JSON.stringify(tokenDetail));
             await Utility.setStorage('UID', JSON.stringify(user.uid));
+            await Utility.setStorage('switchBy', 'user');
             getUser(JSON.stringify(user.uid));
           
           });

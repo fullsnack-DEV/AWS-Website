@@ -41,7 +41,9 @@ getTabBarVisibility = (route) => {
     routeName === 'WriteCommentScreen' ||
     routeName === 'SearchLocationScreen' ||
     routeName === 'SearchPlayerScreen' ||
-    routeName === 'ClubCreatedScreen'
+    routeName === 'ClubCreatedScreen' ||
+    routeName === 'ChangePasswordScreen' ||
+    routeName === 'PersonalInformationScreen'
   ) {
     return false;
   }
