@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
     marginLeft: wp('4%'),
   },
   userNameTxt: {
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   commentTextStyle: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },

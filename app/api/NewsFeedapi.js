@@ -29,3 +29,51 @@ export const getPostDetails = async () => {
       return Promise.reject(error);
     });
 };
+
+export const getReactions = async (params) => {
+  return makeAPIRequest({
+    method: 'get',
+    url: api.baseURL + api.newsFeed.getReaction,
+    params: params
+  })
+    .then((response) => {
+      console.log('Get Reactions Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      console.log('Get Reactions Error ::', error.response);
+      return Promise.reject(error);
+    });
+};
+
+export const createReaction = async (bodyParams) => {
+  return makeAPIRequest({
+    method: 'post',
+    url: api.baseURL + api.newsFeed.reaction,
+    data: bodyParams
+  })
+    .then((response) => {
+      console.log('Create Reaction Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      console.log('Create Reaction Error ::', error.response);
+      return Promise.reject(error);
+    });
+};
+
+export const createPost = async (bodyParams) => {
+  return makeAPIRequest({
+    method: 'post',
+    url: api.baseURL + api.newsFeed.createPostEndPoint,
+    data: bodyParams
+  })
+    .then((response) => {
+      console.log('Create Post Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      console.log('Create Post Error ::', error.response);
+      return Promise.reject(error);
+    });
+};

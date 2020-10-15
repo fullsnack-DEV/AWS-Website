@@ -37,6 +37,7 @@ import {getuserDetail} from '../../../api/Authapi';
 import {token_details} from '../../../utils/constant';
 import TCButton from '../../../components/TCButton';
 import TCTextField from '../../../components/TCTextField';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -95,9 +96,10 @@ function LoginScreen({navigation}) {
       .signInWithEmailAndPassword(email, password)
       .then(async (response) => {
         console.log('FIREBASE RESPONSE:', JSON.stringify(response));
-        auth().onAuthStateChanged((user) => {
+        auth().onAuthStateChanged(async(user) => {
           console.log('User :-', user);
           if (user) {
+            await AsyncStorage.setItem('CurrentUserId', JSON.stringify(user.uid));
             user.getIdTokenResult().then(async (idTokenResult) => {
               let tokenDetail = {
                 token: idTokenResult.token,
