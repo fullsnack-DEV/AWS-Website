@@ -14,6 +14,9 @@ export const api = {
   newsFeed: {
     newsFeedDetail: 'newsfeeds',
     postDetail: 'posts',
+    getReaction: 'reactions',
+    reaction: 'reactions',
+    createPostEndPoint: 'posts'
   },
   // Search Constants
   search: {},

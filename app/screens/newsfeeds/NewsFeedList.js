@@ -1,10 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
-  Text,
-  Image,
-  TouchableOpacity,
   FlatList,
 } from 'react-native';
 import {
@@ -13,23 +10,33 @@ import {
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 const {colors, fonts} = constants;
-import PATH from '../../Constants/ImagePath';
-import Carousel from 'react-native-snap-carousel';
-import moment from 'moment';
-import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
-import PostImageSet from '../../components/newsFeed/PostImageSet';
-import SingleImage from '../../components/newsFeed/SingleImage';
-import VideoPost from '../../components/newsFeed/VideoPost';
-import MultiPostVideo from '../../components/newsFeed/MultiPostVideo';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+import { createReaction, getPostDetails, getReactions } from '../../api/NewsFeedapi';
+import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default function NewsFeedList({navigation, postData}) {
-  const [like, setLike] = useState(false);
-  const [id, setId] = useState();
+  const [loading, setloading] = useState(false);
+  const [pullRefresh, setPullRefresh] = useState(false);
+  const [data, setData] = useState(postData);
+  const [userID, setUserID] = useState('');
+
+  async function setCustomerId() {
+    let currentUserID = await AsyncStorage.getItem('CurrentUserId');
+    if (currentUserID) {
+      setUserID(currentUserID);
+    }
+  }
+  useEffect(() => {
+    setCustomerId()
+}, []);
+
 
   return (
     <View>
+      <ActivityLoader visible={loading} />
       <FlatList
-        data={postData}
+        data={data.length > 0 ? data : postData}
         ItemSeparatorComponent={() => (
           <View
             style={{
@@ -48,234 +55,48 @@ export default function NewsFeedList({navigation, postData}) {
         )}
         showsVerticalScrollIndicator={false}
         renderItem={({item, key}) => {
-          let fullName = '',
-            userImage = '';
-          if (item.actor && item.actor.data) {
-            fullName = item.actor.data.full_name;
-            userImage = item.actor.data.full_image;
-          }
-          let attachedImages = [],
-            descriptions =
-              'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
-          if (item.object) {
-            attachedImages = JSON.parse(item.object).attachments;
-            // descriptions = JSON.parse(item.object).text;
-          }
           return (
-            <View key={key}>
-              <View style={styles.mainContainer}>
-                <Image
-                  style={styles.background}
-                  source={
-                    !userImage ? PATH.profilePlaceHolder : {uri: userImage}
-                  }
-                  resizeMode={'cover'}
-                />
-                <View style={styles.userNameView}>
-                  <Text style={styles.userNameTxt}>
-                    {item.actor.data.full_name}
-                  </Text>
-                  <Text style={styles.activeTimeAgoTxt}>
-                    {moment(item.time).startOf('hour').fromNow()}
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.dotImageTouchStyle}
-                  onPress={() => {}}>
-                  <Image
-                    style={styles.dotImageStyle}
-                    source={PATH.dotImage}
-                    resizeMode={'contain'}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View>
-                {attachedImages.length > 0 ? (
-                  attachedImages.length === 1 ? (
-                    <FlatList
-                      data={attachedImages}
-                      horizontal={true}
-                      bounces={false}
-                      showsHorizontalScrollIndicator={false}
-                      ListHeaderComponent={() => {
-                        return <View style={{width: wp('2%')}} />;
-                      }}
-                      ListFooterComponent={() => {
-                        return <View style={{width: wp('2%')}} />;
-                      }}
-                      ItemSeparatorComponent={() => {
-                        return <View style={{width: wp('2%')}} />;
-                      }}
-                      renderItem={({item, index}) => {
-                        if (item.type === 'image') {
-                          return (
-                            <SingleImage
-                              data={item}
-                              itemNumber={index + 1}
-                              totalItemNumber={attachedImages.length}
-                            />
-                          );
+            <NewsFeedPostItems 
+              key={key}
+              item={item}
+              currentUserID={userID}
+              navigation={navigation}
+              onLikePress={() => {
+                setloading(true);
+                let bodyParams = {
+                    "reaction_type": "clap",
+                    "activity_id": item.id,
+                }
+                createReaction(bodyParams).then((res) => {
+                    if (res.status == true) {
+                    getPostDetails().then((response) => {
+                        if (response.status == true) {
+                        setData(response.payload.results);
+                        } else {
+                        alert(response.messages);
                         }
-                        if (item.type === 'video') {
-                          return (
-                            <VideoPost
-                              data={item}
-                              itemNumber={index + 1}
-                              totalItemNumber={attachedImages.length}
-                            />
-                          );
-                        }
-                      }}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-                  ) : (
-                    <Carousel
-                      data={attachedImages}
-                      renderItem={({item, index}) => {
-                        if (item.type === 'image') {
-                          return (
-                            <PostImageSet
-                              data={item}
-                              itemNumber={index + 1}
-                              totalItemNumber={attachedImages.length}
-                            />
-                          );
-                        }
-                        if (item.type === 'video') {
-                          return (
-                            <MultiPostVideo
-                              data={item}
-                              itemNumber={index + 1}
-                              totalItemNumber={attachedImages.length}
-                            />
-                          );
-                        }
-                      }}
-                      inactiveSlideScale={1}
-                      inactiveSlideOpacity={1}
-                      sliderWidth={wp(100)}
-                      itemWidth={wp(94)}
-                    />
-                  )
-                ) : (
-                  <View />
-                )}
-                {attachedImages.length > 0 ? (
-                  <NewsFeedDescription
-                    descriptions={descriptions}
-                    character={120}
-                  />
-                ) : (
-                  <NewsFeedDescription
-                    descriptions={descriptions}
-                    character={430}
-                  />
-                )}
-
-                <View style={{marginTop: 10, marginLeft: 10}}></View>
-
-                <View style={styles.commentShareLikeView}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      width: wp('60%'),
-                    }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                      }}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigation.navigate('WriteCommentScreen', {
-                            data: item,
-                          });
-                        }}
-                        style={styles.imageTouchStyle}>
-                        <Image
-                          style={styles.commentImage}
-                          source={PATH.comment}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                      {item.reaction_counts &&
-                        item.reaction_counts.comment !== undefined && (
-                          <Text style={styles.commentlengthStyle}>
-                            {item.reaction_counts.comment > 0
-                              ? item.reaction_counts.comment
-                              : ''}
-                          </Text>
-                        )}
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginLeft: 10,
-                      }}>
-                      <TouchableOpacity
-                        onPress={() => {}}
-                        style={styles.imageTouchStyle}>
-                        <Image
-                          style={styles.commentImage}
-                          source={PATH.share}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.commentlengthStyle}>99,999</Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      width: wp('32%'),
-                      justifyContent: 'flex-end',
-                      alignItems: 'center',
-                    }}>
-                    {item.reaction_counts &&
-                      item.reaction_counts.clap !== undefined && (
-                        <Text
-                          style={[
-                            styles.commentlengthStyle,
-                            {
-                              color:
-                                like == true && id == item.id
-                                  ? '#FF8A01'
-                                  : colors.reactionCountColor,
-                            },
-                          ]}>
-                          {item.reaction_counts.clap > 0
-                            ? item.reaction_counts.clap
-                            : ''}
-                        </Text>
-                      )}
-                    <TouchableOpacity
-                      onPress={() => {
-                        setId(item.id);
-                        setLike(!like);
-                      }}
-                      style={styles.imageTouchStyle}>
-                      {like == true && id == item.id ? (
-                        <Image
-                          style={[styles.commentImage, {tintColor: '#FF8A01'}]}
-                          source={PATH.feedLike}
-                          resizeMode={'contain'}
-                        />
-                      ) : (
-                        <Image
-                          style={styles.commentImage}
-                          source={PATH.feedLike}
-                          resizeMode={'contain'}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </View>
+                        setloading(false);
+                    });
+                    } else {
+                    setloading(false);
+                    alert(res.messages);
+                    }
+                }, (error) => setloading(false))
+                }}
+            />
           );
+        }}
+        refreshing={pullRefresh}
+        onRefresh={() => {
+          setPullRefresh(true);
+          getPostDetails().then((response) => {
+            if (response.status == true) {
+              setData(response.payload.results);
+            } else {
+              alert(response.messages);
+            }
+            setPullRefresh(false)
+          }, (error) => setPullRefresh(false));
         }}
         keyExtractor={(item, index) => index.toString()}
       />

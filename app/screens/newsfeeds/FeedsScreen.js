@@ -16,6 +16,24 @@ export default function FeedsScreen({navigation}) {
   const [postData, setPostData] = useState([]);
   const [newsFeedData, setNewsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getPostDetails().then((response) => {
+        console.log('Feed Screen Response :-', response);
+        if (response.status == true) {
+          setPostData(response.payload.results);
+        } else {
+          alert(response.messages);
+        }
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  },[]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       
@@ -43,14 +61,12 @@ export default function FeedsScreen({navigation}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <ScrollView>
         <WritePost navigation={navigation} />
         <NewsFeedList
           navigation={navigation}
           newsFeedData={newsFeedData}
           postData={postData}
         />
-      </ScrollView>
     </View>
   );
 }

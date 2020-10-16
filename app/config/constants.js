@@ -127,6 +127,7 @@ const PATH = {
   feedLike: require('../assets/images/feed_like.png'),
   lock: require('../assets/images/lock.png'),
   pickImage: require('../assets/images/pick_image.png'),
+  commentReport: require('../assets/images/comment_report.png'),
   tagImage: require('../assets/images/tag.png'),
   cancelImage: require('../assets/images/cancel.png'),
   videoPlayerHandle: require('../assets/images/oval.png'),
