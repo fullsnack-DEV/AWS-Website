@@ -16,6 +16,8 @@ import PostImageSet from './PostImageSet';
 import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
 
+const {fonts} = constants;
+
 function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) {
   let like = false, filterLike = [];
   if(item.own_reactions && item.own_reactions.clap) {
