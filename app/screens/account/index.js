@@ -306,7 +306,13 @@ export default function AccountScreen({navigation, route}) {
     } else if (section == 'Reservations') {
     } else if (section == 'Setting & Privacy') {
       const switchEntity = await Utility.getStorage('switchBy');
-      navigation.navigate('GroupSettingPrivacyScreen',{switchBy: switchEntity});
+      if(switchEntity == 'user'){
+        navigation.navigate('UserSettingPrivacyScreen');
+      }
+      else{
+
+        navigation.navigate('GroupSettingPrivacyScreen',{switchBy: switchEntity});
+      }
     }
   };
 
