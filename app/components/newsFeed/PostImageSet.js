@@ -1,18 +1,29 @@
-import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import React, { useState } from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
-const {fonts} = constants;
+import { loaderImage } from '../../Constants/LoaderImages';
+const {fonts, colors} = constants;
 
 function PostImageSet({data, itemNumber, totalItemNumber}) {
+  const randomImage = Math.floor(Math.random() * loaderImage.length);
+
   return (
     <View style={styles.uploadedImage}>
-      <FastImage
-        style={styles.uploadedImage}
+      <View style={[styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor}]}>
+        <FastImage
+          style={styles.imageStyle}
+          source={loaderImage[randomImage].image}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
+      </View>
+      <Image
+        style={[styles.uploadedImage, {position: 'absolute'}]}
         source={{
           uri: data.thumbnail,
         }}
@@ -36,6 +47,8 @@ const styles = StyleSheet.create({
     marginVertical: '1%',
     borderRadius: wp('4%'),
     alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   lengthViewStyle: {
     position: 'absolute',
@@ -55,6 +68,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('1.5%'),
     fontFamily: fonts.RRegular,
   },
+  imageStyle: {
+    height: 50,
+    width: 50,
+  },
+  loadingTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RBold,
+    color: colors.googleColor,
+    marginTop: 25
+}
 });
 
 export default PostImageSet;

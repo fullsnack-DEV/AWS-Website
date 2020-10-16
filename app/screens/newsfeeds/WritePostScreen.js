@@ -26,7 +26,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {createPost, getPostDetails} from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-export default function WritePostScreen({navigation}) {
+export default function WritePostScreen({navigation, route: { params: {postDataItem}}}) {
   // const ImagesSelection = [
   //   {id: 0, image: PATH.club_ph},
   //   {id: 1, image: PATH.club_ph},
@@ -38,6 +38,12 @@ export default function WritePostScreen({navigation}) {
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState([]);
   const [loading, setloading] = useState(false);
+
+  let userImage = '', userName = '';
+  if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
+    userName = postDataItem.actor.data.full_name;
+    userImage = postDataItem.actor.data.thumbnail;
+  }
   
   return (
     <KeyboardAvoidingView
@@ -100,9 +106,9 @@ export default function WritePostScreen({navigation}) {
       </SafeAreaView>
       <View style={styles.sperateLine} />
       <View style={styles.userDetailView}>
-        <Image style={styles.background} source={PATH.profilePlaceHolder} />
+        <Image style={styles.background} source={userImage ? {uri: userImage} : PATH.profilePlaceHolder} />
         <View style={styles.userTxtView}>
-          <Text style={styles.userTxt}>{authContext.user.full_name}</Text>
+          <Text style={styles.userTxt}>{userName}</Text>
         </View>
       </View>
 
@@ -121,14 +127,21 @@ export default function WritePostScreen({navigation}) {
           // scrollEnabled={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({item, index}) => {
-            return <SelectedImageList data={item} onItemPress={() => {
-              let images = [...selectImage];
-              const index = images.indexOf(item);
-              if (index > -1) {
-                images.splice(index, 1);
-              }
-              setSelectImage(images);
-            }} />;
+            return (
+              <SelectedImageList 
+                data={item} 
+                itemNumber={index + 1}
+                totalItemNumber={selectImage.length} 
+                onItemPress={() => {
+                  let images = [...selectImage];
+                  const index = images.indexOf(item);
+                  if (index > -1) {
+                    images.splice(index, 1);
+                  }
+                  setSelectImage(images);
+                }} 
+              />
+            );
           }}
           ItemSeparatorComponent={() => {
             return(
@@ -191,6 +204,7 @@ const styles = StyleSheet.create({
   background: {
     height: hp('6%'),
     width: hp('6%'),
+    borderRadius: hp('3%'),
     resizeMode: 'stretch',
   },
   backIconViewStyle: {

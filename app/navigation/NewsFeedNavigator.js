@@ -12,6 +12,7 @@ import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
 import Feed from '../components/newsFeed/Feed';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
+import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
 
 const Stack = createStackNavigator();
 
@@ -89,6 +90,23 @@ const NewsFeedNavigator = () => {
           },
         }}
         //options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="FullVideoScreen"
+        component={FullVideoScreen}
+        options={{
+          title: '',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
       />
     </Stack.Navigator>
   );

@@ -11,16 +11,27 @@ import constants from '../../config/constants';
 const {colors} = constants;
 import PATH from '../../Constants/ImagePath';
 import {getNewsFeedDetails, getPostDetails} from '../../api/NewsFeedapi';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default function FeedsScreen({navigation}) {
   const [postData, setPostData] = useState([]);
   const [newsFeedData, setNewsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
+  const [userID, setUserID] = useState('');
+
+  async function setCustomerId() {
+    let currentUserID = await AsyncStorage.getItem('CurrentUserId');
+    if (currentUserID) {
+      setUserID(currentUserID);
+    }
+  }
+  useEffect(() => {
+    setCustomerId()
+}, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       getPostDetails().then((response) => {
-        console.log('Feed Screen Response :-', response);
         if (response.status == true) {
           setPostData(response.payload.results);
         } else {
@@ -61,11 +72,12 @@ export default function FeedsScreen({navigation}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-        <WritePost navigation={navigation} />
+        <WritePost navigation={navigation} postDataItem={postData ? postData[0] : {}} />
         <NewsFeedList
           navigation={navigation}
           newsFeedData={newsFeedData}
           postData={postData}
+          userID={userID}
         />
     </View>
   );

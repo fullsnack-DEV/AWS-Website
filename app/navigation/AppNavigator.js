@@ -43,7 +43,8 @@ getTabBarVisibility = (route) => {
     routeName === 'SearchPlayerScreen' ||
     routeName === 'ClubCreatedScreen' ||
     routeName === 'ChangePasswordScreen' ||
-    routeName === 'PersonalInformationScreen'
+    routeName === 'PersonalInformationScreen' ||
+    routeName === 'FullVideoScreen'
   ) {
     return false;
   }
