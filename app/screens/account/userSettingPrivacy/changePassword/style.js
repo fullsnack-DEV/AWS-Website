@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 12,
     fontSize: wp('3.8%'),
+    fontFamily: fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   textInput: {
       
     borderRadius: 5,
-    fontSize: wp('4%'),
+    fontSize: wp('3.8%'),
     color: colors.blackColor,
     fontFamily: fonts.RRegular,
     paddingLeft: 17,
