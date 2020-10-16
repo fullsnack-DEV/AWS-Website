@@ -10,6 +10,7 @@ import constants from '../../config/constants';
 const {colors, fonts} = constants;
 
 function WriteCommentItems({data}) {
+  console.log('Data :-', data);
   let commentText = '';
   if (data && data.data && data.data.text) {
     commentText = data.data.text;
@@ -37,7 +38,7 @@ function WriteCommentItems({data}) {
           </Text>
         </View>
         <Text style={styles.activeTimeAgoTxt}>
-          {moment(data.created_at).startOf('hour').fromNow()}
+          {moment(data.created_at).fromNow()}
         </Text>
       </View>
     </View>

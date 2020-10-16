@@ -77,3 +77,20 @@ export const createPost = async (bodyParams) => {
       return Promise.reject(error);
     });
 };
+
+export const deletePost = async (params) => {
+  console.log('Params :-', params);
+  return makeAPIRequest({
+    method: 'delete',
+    url: api.baseURL + api.newsFeed.createPostEndPoint,
+    params: params
+  })
+    .then((response) => {
+      console.log('Delete Post Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      console.log('Delete Post Error ::', error);
+      return Promise.reject(error);
+    });
+};

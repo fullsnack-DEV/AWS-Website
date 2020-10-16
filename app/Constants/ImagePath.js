@@ -133,6 +133,15 @@ const PATH = {
   teamSqure: require('../assets/images/team_squre.png'),
 
   logoutIcon: require('../assets/images/logout_icon.png'),
+
+  allSportLoader: require('../assets/images/all_sport_loader.png'),
+  basketballLoader: require('../assets/images/basketball_loader.png'),
+  soccerLoader: require('../assets/images/soccer_loader.png'),
+  volleyballLoader: require('../assets/images/volleyball_loader.png'),
+  baseballLoader: require('../assets/images/baseball_loader.png'),
+  badmintonLoader: require('../assets/images/badminton_loader.png'),
+  footballLoader: require('../assets/images/football_loader.png'),
+  football2Loader: require('../assets/images/football2_loader.png'),
 };
 
 export default PATH;

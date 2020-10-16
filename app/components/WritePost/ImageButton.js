@@ -9,10 +9,10 @@ import PATH from '../../Constants/ImagePath';
 import constants from '../../config/constants';
 const {fonts} = constants;
 
-function ImageButton({source, onImagePress, imageStyle}) {
+function ImageButton({source, onImagePress, imageStyle, resizeMode}) {
   return (
     <TouchableOpacity onPress={onImagePress}>
-      <Image source={source} style={[styles.imageStyle, imageStyle]} resizeMode={'contain'}/>
+      <Image source={source} style={[styles.imageStyle, imageStyle]} resizeMode={'contain' || resizeMode}/>
     </TouchableOpacity>
   );
 }

@@ -8,14 +8,20 @@ import {
 const {colors} = constants;
 import PATH from '../../Constants/ImagePath';
 
-function WritePost({navigation}) {
+function WritePost({navigation, postDataItem}) {
+
+  let userImage = '';
+  if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
+    userImage = postDataItem.actor.data.thumbnail;
+  }
+
   return (
     <View style={styles.mainContainer}>
-      <Image style={styles.profileImg} source={PATH.profilePlaceHolder} />
+      <Image style={styles.profileImg} source={userImage ? {uri: userImage} : PATH.profilePlaceHolder} />
 
       <Text
         style={styles.writePostText}
-        onPress={() => navigation.navigate('WritePostScreen')}>
+        onPress={() => navigation.navigate('WritePostScreen', { postDataItem: postDataItem })}>
         Write a post...
       </Text>
 

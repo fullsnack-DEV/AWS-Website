@@ -31,7 +31,6 @@ export default function WriteCommentScreen({
   const [commentTxt, setCommentText] = useState('');
   const [commentData, setCommentData] = useState([]);
   const [loading, setloading] = useState(true);
-  console.log('commentData :-', commentData);
 
   useEffect(() => {
     let params = {
@@ -41,13 +40,17 @@ export default function WriteCommentScreen({
     getReactions(params).then((response) => {
       if (response.status == true) {
         setCommentData(response.payload);
-        console.log('response :-', response.payload);
       } else {
         alert(response.messages);
       }
       setloading(false);
     }, (error) => setloading(false));
   }, []);
+
+  let userImage = '';
+  if (data && data.actor && data.actor.data) {
+    userImage = data.actor.data.thumbnail;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -90,12 +93,10 @@ export default function WriteCommentScreen({
         {/* <View style={styles.bottomSperateLine} /> */}
         <View style={styles.bottomImgView}>
           <View style={styles.commentReportView}>
-            <ImageButton 
-              source={PATH.commentReport}
-              imageStyle={{width: 22, height: 28}}
-              onImagePress={() => {
-                
-              }}
+            <Image 
+              source={userImage ? {uri: userImage} : PATH.profilePlaceHolder}
+              resizeMode={'cover'}
+              style={{width: 40, height: 40, borderRadius: 40/2}}
             />
           </View>
           <View style={styles.onlyMeViewStyle}>
@@ -119,7 +120,7 @@ export default function WriteCommentScreen({
               }}
             />
             {commentTxt.trim().length > 0 &&<TouchableOpacity onPress={() => {
-              setloading(true);
+              // setloading(true);
               console.log('On Send Pressed!');
               let bodyParams = {
                 "reaction_type": "comment",
@@ -128,25 +129,14 @@ export default function WriteCommentScreen({
                   "text": commentTxt
                 }
               }
-              let params = {
-                "activity_id": data.id,
-                "reaction_type": "comment"
-              };
-              createReaction(bodyParams).then((response) => {
-                if (response.status == true) {
-                  setCommentData(response.payload);
-                  getReactions(params).then((response) => {
-                    if (response.status == true) {
-                      setCommentText('');
-                      setCommentData(response.payload);
-                    } else {
-                      setloading(false);
-                      alert(response.messages);
-                    }
-                    setloading(false);
-                  }, (error) => setloading(false));
+              createReaction(bodyParams).then((res) => {
+                console.log('Create Reaction :-', res);
+                if (res.status == true) {
+                  let data = [...commentData];
+                  data.push(res.payload);
+                  setCommentData(data);
+                  setCommentText('');
                 } else {
-                  setloading(false);
                   alert(response.messages);
                 }
               }, (error) => setloading(false))
@@ -228,10 +218,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
   },
   commentReportView: {
-    height: 40,
-    width: 40,
-    borderRadius: 6,
-    backgroundColor: colors.grayBackgroundColor,
+    // height: 40,
+    // width: 40,
+    // borderRadius: 6,
+    // backgroundColor: colors.grayBackgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',

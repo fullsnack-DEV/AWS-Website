@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {StyleSheet, View,Image, TouchableOpacity, FlatList} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
-const {colors} = constants;
+const {colors, fonts} = constants;
 import PATH from '../../Constants/ImagePath';
 import { Text } from 'react-native-elements';
+import ActionSheet from 'react-native-actionsheet';
 import SingleImage from './SingleImage';
 import VideoPost from './VideoPost';
 import moment from 'moment';
@@ -15,8 +16,11 @@ import Carousel from 'react-native-snap-carousel';
 import PostImageSet from './PostImageSet';
 import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
+import { loaderImage } from '../../Constants/LoaderImages';
+import { deletePost, getPostDetails } from '../../api/NewsFeedapi';
 
 function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) {
+    let actionSheet = useRef();
   let like = false, filterLike = [];
   if(item.own_reactions && item.own_reactions.clap) {
       filterLike = item.own_reactions.clap.map((clapItem) => {
@@ -30,10 +34,11 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
   }
 
   let fullName = '',
-  userImage = '';
+  userImage = '', entityType = '';
     if (item.actor && item.actor.data) {
     fullName = item.actor.data.full_name;
     userImage = item.actor.data.full_image;
+    entityType = item.actor.data.entity_type;
     }
     let attachedImages = [],
     descriptions =
@@ -63,7 +68,9 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
         </View>
         <TouchableOpacity
             style={styles.dotImageTouchStyle}
-            onPress={() => {}}>
+            onPress={() => {
+                actionSheet.current.show();
+            }}>
             <Image
             style={styles.dotImageStyle}
             source={PATH.dotImage}
@@ -104,6 +111,9 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
                         data={item}
                         itemNumber={index + 1}
                         totalItemNumber={attachedImages.length}
+                        onVideoItemPress={() => {
+                            navigation.navigate('FullVideoScreen', {url: item.url});
+                        }}
                     />
                     );
                 }
@@ -252,6 +262,39 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
             </TouchableOpacity>
             </View>
         </View>
+        <ActionSheet
+          ref={actionSheet}
+          title={'News Feed Post'}
+          options={['Edit Post', 'Delete Post', 'Cancel']}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={1}
+          onPress={(index) => { 
+            if (index === 0) {
+                console.log('Edit Post Pressed');
+            } else if (index === 1) {
+                let params = {
+                    "activity_id": item.id,
+                };
+                deletePost(params).then((res) => {
+                    console.log('Res :-', res);
+                  if (res.status == true) {
+                  getPostDetails().then((response) => {
+                      console.log('get Res :-', response);
+                      if (response.status == true) {
+                        // navigation.goBack();
+                      } else {
+                      alert(response.messages);
+                      }
+                    //   setloading(false);
+                  });
+                  } else {
+                //   setloading(false);
+                  alert(res.messages);
+                  }
+                }, (error) => {})
+            }
+          }}
+        />
         </View>
     </View>
   );

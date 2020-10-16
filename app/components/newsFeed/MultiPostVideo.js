@@ -7,19 +7,36 @@ import {
 } from 'react-native-responsive-screen';
 import PATH from '../../Constants/ImagePath';
 import constants from '../../config/constants';
-const {fonts} = constants;
+import { loaderImage } from '../../Constants/LoaderImages';
+import FastImage from 'react-native-fast-image';
+const {fonts, colors} = constants;
 
 function MultiPostVideo({data, itemNumber, totalItemNumber}) {
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
+  const [videoLoad, setVideoLoad] = useState(false);
+
+  const randomImage = Math.floor(Math.random() * loaderImage.length);
+
   return (
     <View style={styles.singleImageDisplayStyle}>
+      <View style={[styles.singleImageDisplayStyle, { borderWidth: 1, borderColor: colors.lightgrayColor}]}>
+        <FastImage
+          style={styles.loadimageStyle}
+          source={loaderImage[randomImage].image}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
+      </View>
       <Video
         paused={play ? false : true}
         muted={mute ? true : false}
         source={{uri: data.url}}
-        style={styles.singleImageDisplayStyle}
+        style={[styles.singleImageDisplayStyle, { position: 'absolute'}]}
         resizeMode={'cover'}
+        onVideoLoad={() => {
+          setVideoLoad(true);
+        }}
       />
       <View style={styles.lengthViewStyle}>
         <Text style={styles.lengthTextStyle}>
@@ -28,25 +45,27 @@ function MultiPostVideo({data, itemNumber, totalItemNumber}) {
           {totalItemNumber}
         </Text>
       </View>
-      <View style={styles.pauseMuteStyle}>
-        <TouchableOpacity
-          onPress={() => {
-            setMute(!mute);
-          }}>
-          <Image
-            style={styles.imageStyle}
-            source={mute ? PATH.mute : PATH.unmute}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={[styles.pauseMuteStyle, {right: wp('13.5%')}]}>
-        <TouchableOpacity
-          onPress={() => {
-            setPlay(!play);
-          }}>
-          <Image style={styles.playPauseImageStyle} source={PATH.playPause} />
-        </TouchableOpacity>
-      </View>
+      {videoLoad &&<>
+        <View style={styles.pauseMuteStyle}>
+          <TouchableOpacity
+            onPress={() => {
+              setMute(!mute);
+            }}>
+            <Image
+              style={styles.imageStyle}
+              source={mute ? PATH.mute : PATH.unmute}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.pauseMuteStyle, {right: wp('13.5%')}]}>
+          <TouchableOpacity
+            onPress={() => {
+              setPlay(!play);
+            }}>
+            <Image style={styles.playPauseImageStyle} source={PATH.playPause} />
+          </TouchableOpacity>
+        </View>
+      </>}
     </View>
   );
 }
@@ -58,6 +77,8 @@ const styles = StyleSheet.create({
     marginVertical: wp('1%'),
     borderRadius: wp('4%'),
     alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   pauseMuteStyle: {
     position: 'absolute',
@@ -100,6 +121,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  loadimageStyle: {
+    height: 50,
+    width: 50,
+  },
+  loadingTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RBold,
+    color: colors.googleColor,
+    marginTop: 25
+}
 });
 
 export default MultiPostVideo;

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image, TouchableWithoutFeedback} from 'react-native';
 import Video from 'react-native-video';
 import {
   widthPercentageToDP as wp,
@@ -7,11 +7,17 @@ import {
 } from 'react-native-responsive-screen';
 import PATH from '../../Constants/ImagePath';
 import constants from '../../config/constants';
-const {fonts} = constants;
+import { loaderImage } from '../../Constants/LoaderImages';
+import FastImage from 'react-native-fast-image';
+const {fonts, colors} = constants;
 
-function VideoPost({data, itemNumber, totalItemNumber}) {
+function VideoPost({data, itemNumber, totalItemNumber, onVideoItemPress}) {
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
+  const [videoLoad, setVideoLoad] = useState(false);
+
+  const randomImage = Math.floor(Math.random() * loaderImage.length);
+  
   return (
     <View
       style={[
@@ -25,6 +31,23 @@ function VideoPost({data, itemNumber, totalItemNumber}) {
               : wp('94%'),
         },
       ]}>
+      <View style={[styles.singleImageDisplayStyle, { 
+        borderWidth: 1, borderColor: colors.lightgrayColor,
+        height:
+            data.media_height > data.media_width
+              ? wp('114%')
+              : data.media_height < data.media_width
+              ? wp('74%')
+              : wp('94%'),
+        }]}>
+        <FastImage
+          style={styles.loadimageStyle}
+          source={loaderImage[randomImage].image}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
+      </View>
+      <TouchableWithoutFeedback onPress={onVideoItemPress}>
       <Video
         paused={play ? false : true}
         muted={mute ? true : false}
@@ -38,10 +61,15 @@ function VideoPost({data, itemNumber, totalItemNumber}) {
                 : data.media_height < data.media_width
                 ? wp('74%')
                 : wp('94%'),
+            position: 'absolute'
           },
         ]}
         resizeMode={'cover'}
+        onVideoLoad={() => {
+          setVideoLoad(true);
+        }}
       />
+      </TouchableWithoutFeedback>
       <View style={styles.lengthViewStyle}>
         <Text style={styles.lengthTextStyle}>
           {itemNumber}
@@ -49,25 +77,28 @@ function VideoPost({data, itemNumber, totalItemNumber}) {
           {totalItemNumber}
         </Text>
       </View>
-      <View style={styles.pauseMuteStyle}>
-        <TouchableOpacity
-          onPress={() => {
-            setMute(!mute);
-          }}>
-          <Image
-            style={styles.imageStyle}
-            source={mute ? PATH.mute : PATH.unmute}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={[styles.pauseMuteStyle, {right: wp('13.5%')}]}>
-        <TouchableOpacity
-          onPress={() => {
-            setPlay(!play);
-          }}>
-          <Image style={styles.playPauseImageStyle} source={PATH.playPause} />
-        </TouchableOpacity>
-      </View>
+        {videoLoad &&
+        <>
+          <View style={styles.pauseMuteStyle}>
+          <TouchableOpacity
+            onPress={() => {
+              setMute(!mute);
+            }}>
+            <Image
+              style={styles.imageStyle}
+              source={mute ? PATH.mute : PATH.unmute}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.pauseMuteStyle, {right: wp('13.5%')}]}>
+          <TouchableOpacity
+            onPress={() => {
+              setPlay(!play);
+            }}>
+            <Image style={styles.playPauseImageStyle} source={PATH.playPause} />
+          </TouchableOpacity>
+        </View>
+        </>}
     </View>
   );
 }
@@ -78,6 +109,9 @@ const styles = StyleSheet.create({
     width: wp('94%'),
     marginVertical: wp('1%'),
     borderRadius: wp('4%'),
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   pauseMuteStyle: {
     position: 'absolute',
@@ -120,6 +154,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  loadimageStyle: {
+    height: 50,
+    width: 50,
+  },
+  loadingTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RBold,
+    color: colors.googleColor,
+    marginTop: 25
+}
 });
 
 export default VideoPost;

@@ -15,22 +15,10 @@ import { createReaction, getPostDetails, getReactions } from '../../api/NewsFeed
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import AsyncStorage from '@react-native-community/async-storage';
 
-export default function NewsFeedList({navigation, postData}) {
+export default function NewsFeedList({navigation, postData, userID}) {
   const [loading, setloading] = useState(false);
   const [pullRefresh, setPullRefresh] = useState(false);
   const [data, setData] = useState(postData);
-  const [userID, setUserID] = useState('');
-
-  async function setCustomerId() {
-    let currentUserID = await AsyncStorage.getItem('CurrentUserId');
-    if (currentUserID) {
-      setUserID(currentUserID);
-    }
-  }
-  useEffect(() => {
-    setCustomerId()
-}, []);
-
 
   return (
     <View>
