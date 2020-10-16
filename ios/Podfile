@@ -8,6 +8,7 @@ target 'townscup_reactnative' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+
   pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
 
   target 'townscup_reactnativeTests' do

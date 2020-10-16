@@ -14,7 +14,7 @@ function SelectedImageList({data, onItemPress}) {
     <View style={styles.uploadedImage}>
       <FastImage
         style={styles.uploadedImage}
-        source={data.image}
+        source={{uri: data.path}}
         resizeMode={FastImage.resizeMode.cover}
       />
       <TouchableOpacity style={styles.lengthViewStyle} onPress={onItemPress}>

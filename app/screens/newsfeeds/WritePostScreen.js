@@ -16,26 +16,34 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import _ from 'lodash';
 import constants from '../../config/constants';
 const {PATH, colors, fonts} = constants;
 import AuthContext from '../../auth/context';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
+import ImagePicker from 'react-native-image-crop-picker';
+import {createPost, getPostDetails} from '../../api/NewsFeedapi';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function WritePostScreen({navigation}) {
-  const ImagesSelection = [
-    {id: 0, image: PATH.club_ph},
-    {id: 1, image: PATH.club_ph},
-    {id: 2, image: PATH.club_ph},
-    {id: 3, image: PATH.club_ph},
-    {id: 4, image: PATH.club_ph},
-  ];
+  // const ImagesSelection = [
+  //   {id: 0, image: PATH.club_ph},
+  //   {id: 1, image: PATH.club_ph},
+  //   {id: 2, image: PATH.club_ph},
+  //   {id: 3, image: PATH.club_ph},
+  //   {id: 4, image: PATH.club_ph},
+  // ];
   const authContext = useContext(AuthContext);
   const [searchText, setSearchText] = useState('');
+  const [selectImage, setSelectImage] = useState([]);
+  const [loading, setloading] = useState(false);
+  
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      <ActivityLoader visible={loading} />
       <SafeAreaView>
         <View style={styles.containerStyle}>
           <View style={styles.backIconViewStyle}>
@@ -49,17 +57,48 @@ export default function WritePostScreen({navigation}) {
           <View style={styles.doneViewStyle}>
             <Text
               style={styles.doneTextStyle}
-              onPress={() =>
-                searchText.length == 0
-                  ? console.log('disble')
-                  : navigation.navigate('FeedsScreen')
-              }>
+              onPress={() => {
+                if (searchText.trim().length === 0 && selectImage.length === 0) {
+                  alert('Please write some text or select any image.');
+                } else {
+                  setloading(true);
+                let attachments = [];
+                selectImage.map((imageItem) => {
+                  let obj = {
+                    type: 'image',
+                    url: imageItem.path,
+                    thumbnail: imageItem.path
+                  };
+                  attachments.push(obj);
+                })
+
+                let params = {
+                  "text": searchText,
+                  "attachments": attachments,
+                };
+                createPost(params).then((res) => {
+                  if (res.status == true) {
+                  getPostDetails().then((response) => {
+                      if (response.status == true) {
+                        navigation.goBack();
+                      } else {
+                      alert(response.messages);
+                      }
+                      setloading(false);
+                  });
+                  } else {
+                  setloading(false);
+                  alert(res.messages);
+                  }
+                }, (error) => setloading(false))
+                }
+              }}>
               Done
             </Text>
           </View>
         </View>
       </SafeAreaView>
-      <View style={styles.sperateLine}></View>
+      <View style={styles.sperateLine} />
       <View style={styles.userDetailView}>
         <Image style={styles.background} source={PATH.profilePlaceHolder} />
         <View style={styles.userTxtView}>
@@ -70,19 +109,25 @@ export default function WritePostScreen({navigation}) {
       <ScrollView bounces={false}>
         <TextInput
           placeholder="What's going on?"
+          value={searchText}
           placeholderTextColor={colors.userPostTimeColor}
           onChangeText={(text) => setSearchText(text)}
           style={styles.textInputField}
           multiline={true}
         />
-        <FlatList
-          data={ImagesSelection}
+        {selectImage.length > 0 &&<FlatList
+          data={selectImage}
           horizontal={true}
           // scrollEnabled={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({item, index}) => {
             return <SelectedImageList data={item} onItemPress={() => {
-              console.log('Item Cancel Pressed');
+              let images = [...selectImage];
+              const index = images.indexOf(item);
+              if (index > -1) {
+                images.splice(index, 1);
+              }
+              setSelectImage(images);
             }} />;
           }}
           ItemSeparatorComponent={() => {
@@ -92,18 +137,16 @@ export default function WritePostScreen({navigation}) {
           }}
           style={{paddingTop: 10, marginHorizontal: wp('3%') }}
           keyExtractor={(item, index) => index.toString()}
-        />
+        />}
       </ScrollView>
 
       <SafeAreaView style={styles.bottomSafeAreaStyle}>
-        {/* <View style={styles.bottomSperateLine} /> */}
         <View style={styles.bottomImgView}>
           <View style={styles.onlyMeViewStyle}>
             <ImageButton
               source={PATH.lock}
               imageStyle={{width: 18, height: 21}}
               onImagePress={() => {
-                console.log('Image Pressed!');
               }}
             />
             <Text style={styles.onlyMeTextStyle}>Only me</Text>
@@ -113,14 +156,21 @@ export default function WritePostScreen({navigation}) {
               source={PATH.pickImage}
               imageStyle={{width: 19, height: 19, marginHorizontal: wp('2%')}}
               onImagePress={() => {
-                console.log('Image Pressed!');
+                ImagePicker.openPicker({
+                  width: 300,
+                  height: 400,
+                  cropping: true,
+                  multiple: true,
+                  maxFiles: 10
+                }).then((image) => {
+                  setSelectImage(image);
+                });
               }}
             />
             <ImageButton
               source={PATH.tagImage}
               imageStyle={{width: 22, height: 22, marginLeft: wp('2%')}}
               onImagePress={() => {
-                console.log('Image Pressed!');
               }}
             />
           </View>
