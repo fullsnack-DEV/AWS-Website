@@ -19,6 +19,8 @@ import NewsFeedDescription from './NewsFeedDescription';
 import { loaderImage } from '../../Constants/LoaderImages';
 import { deletePost, getPostDetails } from '../../api/NewsFeedapi';
 
+const {fonts} = constants;
+
 function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) {
     let actionSheet = useRef();
   let like = false, filterLike = [];
