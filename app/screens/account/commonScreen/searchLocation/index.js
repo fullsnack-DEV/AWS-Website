@@ -115,11 +115,18 @@ function SearchLocationScreen({navigation, route}) {
           country: item.terms[2].value,
         });
       }
+      else if (route.params.comeFrom == 'PersonalInformationScreen') {
+        navigation.navigate('PersonalInformationScreen', {
+          city: item.terms[0].value,
+          state: item.terms[1].value,
+          country: item.terms[2].value,
+        });
+      }
     } catch (error) {
       // alert('Error:', error);
     }
   };
-
+  
   renderItem = ({item, index}) => {
     return (
       <TouchableWithoutFeedback
@@ -134,7 +141,7 @@ function SearchLocationScreen({navigation, route}) {
 
   return (
     <View style={styles.mainContainer}>
-      <Loader visible={getTeamListing.loading} />
+      {/* <Loader visible={getTeamListing.loading} /> */}
       <Image style={styles.background} source={PATH.orangeLayer} />
       <Image style={styles.background} source={PATH.bgImage} />
       <Text style={styles.LocationText}>{strings.locationText}</Text>

@@ -34,12 +34,15 @@ import JoinedTeamsScreen from '../screens/account/teams';
 import JoinedClubsScreen from '../screens/account/clubs';
 
 import GroupSettingPrivacyScreen from '../screens/account/groupSettingPrivacy';
+import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy';
+import ChangePasswordScreen from '../screens/account/userSettingPrivacy/changePassword'
+import PersonalInformationScreen from '../screens/account/userSettingPrivacy/personalInformation'
 
 const Stack = createStackNavigator();
 
 const AccountNavigator = () => {
   return (
-    <Stack.Navigator mode="modal"
+    <Stack.Navigator
       screenOptions={{
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
@@ -386,6 +389,54 @@ const AccountNavigator = () => {
         component={GroupSettingPrivacyScreen}
         options={{
           title: 'Setting & Privacy',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="UserSettingPrivacyScreen"
+        component={UserSettingPrivacyScreen}
+        options={{
+          title: 'Setting & Privacy',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ChangePasswordScreen"
+        component={ChangePasswordScreen}
+        options={{
+          title: 'Change Password',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="PersonalInformationScreen"
+        component={PersonalInformationScreen}
+        options={{
+          title: 'Personal Information',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
