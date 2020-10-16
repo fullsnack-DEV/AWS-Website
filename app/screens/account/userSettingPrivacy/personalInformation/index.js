@@ -110,7 +110,6 @@ const authContext = useContext(AuthContext);
           route.params.country,
       );
         setCity(route.params.city);
-        console.log('USER LOCATION ',city);
         setState(route.params.state);
         setCountry(route.params.country);
         
@@ -147,8 +146,6 @@ const checkValidation = () => {
 const getUserInformation=async()=>{
 
    var userDetails = await Utility.getStorage('user')
-
-        console.log('USER DETAIL FROM ASYNC STORE',userDetails);
         setFName(userDetails.first_name);
         setLName(userDetails.last_name);
         setFullName(userDetails.full_name);
@@ -182,18 +179,14 @@ const getUserInformation=async()=>{
           if(match){
             temp['isChecked'] = true;
             arr.push(temp);
-            tempArr.push(temp.language);
-            console.log('LANGUAGE MATCH:',temp);
-            
+            tempArr.push(temp.language);  
           }else{
             temp['isChecked'] = false;
-            arr.push(temp);
-            console.log('LANGUAGE NOT MATCH:',temp); 
+            arr.push(temp); 
           }  
       }
       setLanguages(arr);
-      setSelectedLanguages(tempArr);
-     
+      setSelectedLanguages(tempArr);   
 }
 
     // Change Edit mode states

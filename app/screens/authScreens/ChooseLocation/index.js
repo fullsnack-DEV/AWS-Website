@@ -8,6 +8,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
+//import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
