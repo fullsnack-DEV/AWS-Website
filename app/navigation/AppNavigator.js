@@ -13,6 +13,7 @@ import constants from '../config/constants';
 const {urls, colors, fonts, endPoints} = constants;
 import PATH from '../Constants/ImagePath';
 import strings from '../Constants/String';
+import ReservationNavigator from './ReservationNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -98,7 +99,7 @@ function AppNavigator() {
       />
       <Tab.Screen
         name="Reservation"
-        component={HomeScreen}
+        component={ReservationNavigator}
         options={({route}) => ({
           tabBarVisible: this.getTabBarVisibility(route),
           tabBarIcon: ({focused}) => (

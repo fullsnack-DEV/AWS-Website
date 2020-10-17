@@ -22,6 +22,7 @@ import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin } from '@react-native-community/google-signin';
 
 
+
 import FacebookButton from '../../../components/FacebookButton';
 import GoogleButton from '../../../components/GoogleButton';
 import AuthContext from '../../../auth/context';
@@ -38,6 +39,7 @@ import {token_details} from '../../../utils/constant';
 import TCButton from '../../../components/TCButton';
 import TCTextField from '../../../components/TCTextField';
 import AsyncStorage from '@react-native-community/async-storage';
+import { bounce } from 'react-native/Libraries/Animated/src/Easing';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -65,7 +67,10 @@ function LoginScreen({navigation}) {
   });
 
   useEffect(() => {
-    firebase.initializeApp(config);
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(config);
+   }
+    
   },[]);
   const checkValidation = () => {
      if (email == '') {
@@ -221,7 +226,10 @@ function LoginScreen({navigation}) {
   }
 
   return (
-    <View style={styles.mainContainer}>
+  <View style={styles.mainContainer} >
+     
+  
+     
       <ActivityLoader visible={loading} />
       {/* <Loader visible={getUserData.loading} /> */}
       <Image style={styles.background} source={PATH.orangeLayer} />
@@ -239,7 +247,7 @@ function LoginScreen({navigation}) {
           onChangeText={(text) => setEmail(text)} 
           value={email}
         />
-       
+     
       <View style={styles.passwordView}>
         <TextInput
           style={styles.textInput}
@@ -266,27 +274,28 @@ function LoginScreen({navigation}) {
             }
           }}
         />
-        
-      
-      <TouchableOpacity
+        <TouchableOpacity
         onPress={() => navigation.navigate('ForgotPasswordScreen')}>
         <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
       </TouchableOpacity>
-      <Text style={styles.bottomText}>
-        <Text>By continuing you agree to Towny's </Text>
-        {/* <TouchableOpacity onPress={() => alert('Terms and services..')}> */}
-          <Text style={styles.hyperlinkText}>Terms of Service</Text>
-        {/* </TouchableOpacity> */}
-        <Text>, We will manage information about you as described in our </Text>
-        <TouchableOpacity onPress={() => alert('Privacy policy..')}>
-          <Text style={styles.hyperlinkText}>Privacy Policy</Text>
-        </TouchableOpacity>
-        <Text> and </Text>
-        <TouchableOpacity onPress={() => alert('cookie policy..')}>
-          <Text style={styles.hyperlinkText}>Cookie Policy.</Text>
-        </TouchableOpacity>
-      </Text>
-    </View>
+      
+
+     
+        <Text style={styles.bottomText}>
+          <Text>By continuing you agree to Towny's </Text>
+          <TouchableOpacity onPress={() => alert('Terms and services..')}>
+            <Text style={styles.hyperlinkText}>Terms of Service</Text>
+          </TouchableOpacity>
+          <Text>, We will manage information about you as described in our </Text>
+          <TouchableOpacity onPress={() => alert('Privacy policy..')}>
+            <Text style={styles.hyperlinkText}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <Text> and </Text>
+          <TouchableOpacity onPress={() => alert('cookie policy..')}>
+            <Text style={styles.hyperlinkText}>Cookie Policy.</Text>
+          </TouchableOpacity>
+        </Text>
+      </View>
   );
 }
 

@@ -62,7 +62,9 @@ function SignupScreen({navigation, route}) {
   // For activity indigator
   const [loading, setloading] = useState(true);
   useEffect(() => {
-    firebase.initializeApp(config);
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(config);
+   }
   },[]);
 
   const checkValidation = () => {

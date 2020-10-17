@@ -12,9 +12,11 @@ const styles = StyleSheet.create({
     mainContainer: {
       flex: 1,
       flexDirection: 'column',
+      
     },
     background: {
       position: 'absolute',
+      
       height: '100%',
       width: '100%',
       resizeMode: 'stretch',
@@ -49,7 +51,8 @@ const styles = StyleSheet.create({
       position: 'absolute',
       fontFamily: fonts.RLight,
       fontSize: wp('3%'),
-      bottom: hp('3%'),
+     bottom: hp('3%'),
+      
       color: colors.whiteColor,
     },
     hyperlinkText: {
@@ -93,6 +96,9 @@ const styles = StyleSheet.create({
       
       backgroundColor: colors.whiteColor,
     },
+    contentContainer: {
+      flex: 1, 
+  },
   });
   export default styles;
   

@@ -35,7 +35,9 @@ function WelcomeScreen({navigation}) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    firebase.initializeApp(config);
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(config);
+   }
   },[]);
 //Google sign-in configuration initialization
 GoogleSignin.configure({
