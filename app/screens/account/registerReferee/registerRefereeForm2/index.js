@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Component,useContext} from 'react';
+import React, {useState, useEffect, Component} from 'react';
 import {
   View,
   Text,
@@ -17,45 +17,36 @@ import styles from './style';
 import constants from '../../../../config/constants';
 const {colors, fonts, urls} = constants;
 import PATH from '../../../../Constants/ImagePath';
-import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import strings from '../../../../Constants/String';
 import * as Utility from '../../../../utility/index';
 
-import {patchRegisterPlayerDetails} from '.././../../../api/Accountapi';
+import {patchRegisterRefereeDetails} from '.././../../../api/Accountapi';
 
-export default function RegisterPlayerForm2({navigation, route}) {
+export default function RegisterRefereeForm2({navigation, route}) {
      // For activity indigator
  const [loading, setloading] = useState(false);
- const authContext = useContext(AuthContext);
+
   const [matchFee, onMatchFeeChanged] = React.useState('');
   const [selected, setSelected] = useState(0);
 
-  registerPlayerCall = () => {
+  registerRefereeCall = () => {
       setloading(true);
     if (route.params && route.params.bodyParams) {
-      
       let bodyParams = {...route.params.bodyParams};
-      bodyParams.fee = matchFee;
+      bodyParams.referee_data[0].fee = matchFee;
       if (selected == 0) {
-        bodyParams.cancellation_policy = 'strict';
+        bodyParams.referee_data[0].cancellation_policy = 'strict';
       } else if (selected == 1) {
-        bodyParams.cancellation_policy = 'moderate';
+        bodyParams.referee_data[0].cancellation_policy = 'moderate';
       } else {
-        bodyParams.cancellation_policy = 'flexible';
+        bodyParams.referee_data[0].cancellation_policy = 'flexible';
       }
       console.log('bodyPARAMS:: ', bodyParams);
-      let registerdPlayerData = authContext.user.registered_sports
-      registerdPlayerData.push(bodyParams);
-      let body = {
-        registered_sports: registerdPlayerData,
-      }
-      patchRegisterPlayerDetails(body).then(async(response) => {
+      patchRegisterRefereeDetails(bodyParams).then((response) => {
         if (response.status == true) {
-          await Utility.setStorage('user',response.payload);
-          authContext.setUser(response.payload)
-          Alert.alert('Towns Cup', 'Player sucessfully registered');
           navigation.navigate('AccountScreen');
+          Alert.alert('Towns Cup', 'Referee sucessfully registered');
         } else {
           Alert.alert('Towns Cup', response.messages);
         }
@@ -76,8 +67,6 @@ export default function RegisterPlayerForm2({navigation, route}) {
         
         <Text style={styles.LocationText}>
           {strings.matchFeesTitle}
-          
-          <Text style={styles.smallTxt}> {strings.perHourText} </Text>
         </Text>
 
         <View style={styles.matchFeeView}>
@@ -87,7 +76,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
             onChangeText={(text) => onMatchFeeChanged(text)}
             value={(matchFee)}
             keyboardType={'decimal-pad'}></TextInput>
-          <Text style={styles.curruency}>CAD/match</Text>
+          <Text style={styles.curruency}>CAD/hour</Text>
         </View>
         <View>
           <Text style={styles.LocationText}>
@@ -196,7 +185,7 @@ export default function RegisterPlayerForm2({navigation, route}) {
             </Text>
           </View>
         )}
-        <TouchableOpacity onPress={() => registerPlayerCall()}>
+        <TouchableOpacity onPress={() => registerRefereeCall()}>
           <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.nextButton}>

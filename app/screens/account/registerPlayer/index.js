@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Component} from 'react';
+import React, {useState, useEffect, Component,useContext} from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import RNPickerSelect, {defaultStyles} from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
+import AuthContext from '../../../auth/context';
 import styles from './style';
 import constants from '../../../config/constants';
 const {colors, fonts, urls} = constants;
@@ -25,6 +26,7 @@ import * as Utility from '../../../utility/index';
 
 
 function RegisterPlayer({navigation, route}) {
+  const authContext = useContext(AuthContext);
   const [sports, setSports] = useState('');
   const [description, setDescription] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
@@ -58,7 +60,7 @@ function RegisterPlayer({navigation, route}) {
   };
 
 
-  checkValidation = () => {
+  const checkValidation = () => {
     if (sports == '') {
       Alert.alert('Towns Cup', 'Sports cannot be blank');
       return false
@@ -261,8 +263,8 @@ function RegisterPlayer({navigation, route}) {
             bodyParams.descriptions = description;
             bodyParams.language=selectedLanguages;
 
-            registered_sports[0]=bodyParams;
-            bodyParams={registered_sports};
+            // registered_sports[0]=bodyParams;
+            // bodyParams={registered_sports};
             console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
       
 
