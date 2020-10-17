@@ -163,19 +163,18 @@ otherRadioText: 'Other',
   inviteUserText: 'Invite user to club',
   goToClubText: 'Go to club home',
   //Register Player Screen
-  sportsEventsTitle: 'Sport',
+  sportsEventsTitle: 'Sports Events',
   descriptionText: 'Description',
   opetionalText: '(Optional)',
-  descriptionPlaceholder: 'Describe yourself as a personal player',
+  descriptionPlaceholder: 'Describe your self as a personal player',
   matchFeesTitle: 'Match Fee',
   perHourText: '(per hour)',
 
   //Register Referee Screen
   certificateTitle: 'Certificates',
-  descriptionRefereePlaceholder: 'Describe yourself as a referee',
   certificateSubTitle:
     'Please add the certificates or documents showing your professional experience.',
-  addCertificateTitle: ' + Add a Certificate',
+  addCertificateTitle: 'Add a Certificate',
   languageTitle: 'Language',
   languagePlaceholder: 'Select Language',
   refereeFeesTitle: 'Referee Fee',

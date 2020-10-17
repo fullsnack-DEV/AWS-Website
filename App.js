@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useContext} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
-
+// import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 // import {checkNotifications} from 'react-native-permissions';
 // import firebase from '@react-native-firebase/app';
 import QB from 'quickblox-react-native-sdk';
@@ -15,7 +15,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as Utility from './app/utility/index';
 import TeamCreatedScreen from './app/screens/account/createGroup/createTeam/teamCreated';
 import SearchPlayerScreen from './app/screens/account/createGroup/createTeam/searchPlayer';
-import AccountDrawerNavigator from './app/navigation/AccountDrawerNavigator';
 // import ActivityLoader from './app/components/loader/ActivityLoader';
 // import ChooseSportsScreen from './app/screens/authScreens/ChooseSportsScreen';
 // import NewsFeedVideoPlayer from './app/screens/newsfeeds/NewsFeedVideoPlayer';
@@ -88,9 +87,11 @@ export default function App() {
   return (
     <AuthContext.Provider value={authValue}>
       <NavigationContainer theme={navigationTheme}>
+        {/* <ActivityLoader visible={loading} /> */}
         {user ? <AppNavigator /> : <AuthNavigator />}
         {/* <AppNavigator /> */}
-        
+        {/* <NewsFeedVideoPlayer /> */}
+        {/* {<SearchPlayerScreen />} */}
       </NavigationContainer>
     </AuthContext.Provider>
   );

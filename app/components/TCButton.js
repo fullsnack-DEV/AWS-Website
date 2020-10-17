@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
   signUpText: {
     fontSize: 17,
-    fontFamily: fonts.RBold,
+    // fontFamily: fonts.RBold,
     height: 50,
     padding: 12,
     textAlign: 'center',

@@ -29,7 +29,6 @@ getTabBarVisibility = (route) => {
     routeName === 'RegisterPlayer' ||
     routeName === 'RegisterPlayerForm2' ||
     routeName === 'RegisterReferee' ||
-    routeName === 'RegisterRefereeForm2' ||
     routeName === 'CreateTeamForm1' ||
     routeName === 'CreateTeamForm2' ||
     routeName === 'CreateTeamForm3' ||

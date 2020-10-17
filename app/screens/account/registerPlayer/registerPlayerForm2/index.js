@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Component,useContext} from 'react';
+import React, {useState, useEffect, Component} from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import styles from './style';
 import constants from '../../../../config/constants';
 const {colors, fonts, urls} = constants;
 import PATH from '../../../../Constants/ImagePath';
-import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import strings from '../../../../Constants/String';
 import * as Utility from '../../../../utility/index';
@@ -27,33 +26,28 @@ import {patchRegisterPlayerDetails} from '.././../../../api/Accountapi';
 export default function RegisterPlayerForm2({navigation, route}) {
      // For activity indigator
  const [loading, setloading] = useState(false);
- const authContext = useContext(AuthContext);
+
   const [matchFee, onMatchFeeChanged] = React.useState('');
   const [selected, setSelected] = useState(0);
 
   registerPlayerCall = () => {
       setloading(true);
+
+   
+
     if (route.params && route.params.bodyParams) {
-      
       let bodyParams = {...route.params.bodyParams};
-      bodyParams.fee = matchFee;
+      bodyParams.registered_sports[0].fee = matchFee;
       if (selected == 0) {
-        bodyParams.cancellation_policy = 'strict';
+        bodyParams.registered_sports[0].cancellation_policy = 'strict';
       } else if (selected == 1) {
-        bodyParams.cancellation_policy = 'moderate';
+        bodyParams.registered_sports[0].cancellation_policy = 'moderate';
       } else {
-        bodyParams.cancellation_policy = 'flexible';
+        bodyParams.registered_sports[0].cancellation_policy = 'flexible';
       }
       console.log('bodyPARAMS:: ', bodyParams);
-      let registerdPlayerData = authContext.user.registered_sports
-      registerdPlayerData.push(bodyParams);
-      let body = {
-        registered_sports: registerdPlayerData,
-      }
-      patchRegisterPlayerDetails(body).then(async(response) => {
+      patchRegisterPlayerDetails(bodyParams).then((response) => {
         if (response.status == true) {
-          await Utility.setStorage('user',response.payload);
-          authContext.setUser(response.payload)
           Alert.alert('Towns Cup', 'Player sucessfully registered');
           navigation.navigate('AccountScreen');
         } else {

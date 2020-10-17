@@ -16,21 +16,6 @@ export const patchRegisterPlayerDetails = async (params) => {
     });
 };
 
-export const patchRegisterRefereeDetails = async (params) => {
-  return makeAPIRequest({
-    method: 'patch',
-    url: api.baseURL + api.account.registerPlayer,
-    data: params,
-  })
-    .then((response) => {
-      console.log('Get Client Details Response ::', response);
-      return Promise.resolve(response.data);
-    })
-    .catch((error) => {
-      alert('Get Client Details Error ::', error.response);
-    });
-};
-
 export const getParentClubDetail = async (groupID) => {
   return makeAPIRequest({
     method: 'get',
