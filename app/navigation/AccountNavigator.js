@@ -16,7 +16,6 @@ import GameRecordList from '../screens/account/schedule/GameRecordList';
 import RegisterPlayer from '../screens/account/registerPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/registerPlayerForm2';
 import RegisterReferee from '../screens/account/registerReferee';
-import RegisterRefereeForm2 from '../screens/account/registerReferee/registerRefereeForm2';
 import CreateTeamForm1 from '../screens/account/createGroup/createTeam/createTeamForm1';
 import CreateTeamForm2 from '../screens/account/createGroup/createTeam/createTeamForm2';
 import CreateTeamForm3 from '../screens/account/createGroup/createTeam/createTeamForm3';
@@ -183,22 +182,6 @@ const AccountNavigator = () => {
       <Stack.Screen
         name="RegisterReferee"
         component={RegisterReferee}
-        options={{
-          title: 'Register as a referee',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        }}
-      />
-      <Stack.Screen
-        name="RegisterRefereeForm2"
-        component={RegisterRefereeForm2}
         options={{
           title: 'Register as a referee',
           headerTintColor: colors.blackColor,

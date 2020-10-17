@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
-import {StyleSheet, View, Text, Image, FlatList,ScrollView, Platform,ImageBackground, SafeAreaView} from 'react-native';
+import {StyleSheet, View, Text, Image, FlatList,ScrollView, Platform,ImageBackground} from 'react-native';
 
 import QB from 'quickblox-react-native-sdk';
 
@@ -44,7 +44,7 @@ export default function AccountScreen({navigation, route}) {
     {key: 'My Refereeing',member:[{opetions: 'Register as a referee'}]},
     {key: 'My Teams', member:[{opetions: 'Create a Team'}]},
     {key: 'My Clubs', member:[{opetions: 'Create a Club'}]},
-    //{key: 'My Leagues', member:[{opetions: 'Create a League'}]},
+    {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
     //{key: 'Register as a Referee'},
     //{key: 'Register as a personal player'},
     //{key: 'Create Group'},
@@ -55,7 +55,7 @@ export default function AccountScreen({navigation, route}) {
   const teamMenu = [
     {key: 'My Schedule'},
     {key: 'Members'},
-    //{key: 'My Leagues'},
+    {key: 'My Leagues'},
     {key: 'My Clubs', member:[{opetions: 'Create a Club'}]},
     {key: 'Payment & Payout', member:[{opetions: 'Payment Method'},{opetions: 'Payout Method'},{opetions: 'Invoicing'},{opetions: 'Transactions'}]},
     {key: 'Setting & Privacy'},
@@ -64,7 +64,7 @@ export default function AccountScreen({navigation, route}) {
     {key: 'My Schedule'},
     {key: 'Members'},
     {key: 'My Teams', member:[{opetions: 'Create a Team'}]},
-    //{key: 'My Leagues'},
+    {key: 'My Leagues'},
     //{key: 'Invite Teams'},
     {key: 'Payment & Payout', member:[{opetions: 'Payment Method'},{opetions: 'Payout Method'},{opetions: 'Transactions'}]},
     {key: 'Setting & Privacy'},
@@ -116,6 +116,7 @@ export default function AccountScreen({navigation, route}) {
         } else {
           setParentGroup(null);
         }
+        console.log('GROUP API RESPONSE::', JSON.stringify(response.payload));
       } else {
         alert(response.messages);
       }
@@ -126,6 +127,7 @@ export default function AccountScreen({navigation, route}) {
 
     try {
       setloading(true);
+      console.log('AUTHCONTEXT::', authContext.user);
       const switchByGroup = await Utility.getStorage('switchBy');
       setSwitchBy(switchByGroup);
       getUnreadCount().then((response) => {
@@ -149,6 +151,7 @@ export default function AccountScreen({navigation, route}) {
       let clubObject = await Utility.getStorage('club');
       getTeamsByClub(clubObject.group_id).then((response) => {
         if (response.status == true) {
+          console.log('RESPONSE OF TEAM LIST BY CLUB::', response.payload);
           setTeamList(response.payload);
         } else {
           alert(response.messages);
@@ -157,6 +160,7 @@ export default function AccountScreen({navigation, route}) {
     } else {
       getJoinedTeams().then((response) => {
         if (response.status == true) {
+          console.log('RESPONSE OF TEAM LIST::', response.payload);
           setTeamList(response.payload.teams);
         } else {
           alert(response.messages);
@@ -327,7 +331,6 @@ export default function AccountScreen({navigation, route}) {
     }  
   };
   return (
-    <SafeAreaView style={styles.mainContainer}>
     <ScrollView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
@@ -524,7 +527,7 @@ export default function AccountScreen({navigation, route}) {
                   style={styles.smallProfileImg}
                 />
               ) : (
-                <Image source={PATH.clubPlaceholder} style={styles.smallProfileImg} />
+                <Image source={PATH.teamPlaceholder} style={styles.smallProfileImg} />
               )}
               <Text style={styles.entityName}>{item.group_name}</Text>
               <Text style={styles.clubSportView}> {item.sport}</Text>
@@ -730,6 +733,5 @@ export default function AccountScreen({navigation, route}) {
       
       
     </ScrollView>
-    </SafeAreaView>
   );
 }

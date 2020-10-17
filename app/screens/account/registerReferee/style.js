@@ -19,36 +19,8 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontSize: wp('3.8%'),
     textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    // fontFamily: fonts.RBold,
     paddingLeft: 15,
-  },
-  certificateSubText:{
-    marginTop: 8,
-    color: colors.googleColor,
-    fontSize: 14,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    paddingLeft: 15,
-  },
-  formSteps: {
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    marginRight: 15,
-    marginTop: 15,
-  },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    width: 10,
-    marginLeft: 2,
-    marginRight: 2,
-  },
-  form2: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    width: 10,
-    marginLeft: 2,
-    marginRight: 2,
   },
   smallTxt: {
     color: colors.grayColor,
@@ -63,7 +35,7 @@ const styles = StyleSheet.create({
     // alignSelf: 'center',
     width: wp('92%'),
     fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
+
     marginTop: 12,
 
     width: wp('92%'),
@@ -124,7 +96,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 12,
     fontSize: wp('3.5%'),
-    fontFamily:fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -145,7 +116,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 12,
     fontSize: wp('4%'),
-    fontFamily:fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -221,7 +191,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: colors.userPostTimeColor,
+    borderColor: colors.blackColor,
     height: 30,
     alignSelf: 'center',
     width: '35%',
@@ -230,9 +200,9 @@ const styles = StyleSheet.create({
   },
   addCertificateText: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
+    // fontFamily: fonts.RBold,
 
-    color: colors.userPostTimeColor,
+    color: colors.blackColor,
   },
   delete: {
     alignSelf: 'flex-end',
@@ -285,30 +255,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   certificateDescription: {
-    // height: 40,
-    // alignSelf: 'center',
-    // width: wp('76%'),
-    // backgroundColor: colors.textFieldColor,
-    // paddingLeft: 10,
     height: 40,
-    width: wp('78%'),
     alignSelf: 'center',
-    
-    fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: colors.lightBlackColor,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    elevation: 3,
+    width: wp('76%'),
+    backgroundColor: colors.textFieldColor,
+    paddingLeft: 10,
   },
   nextButton: {
     width: '90%',
@@ -388,9 +339,8 @@ const styles = StyleSheet.create({
   },
   searchTextField: {
     flex: 1,
-    color: colors.lightBlackColor,
+    color: colors.blackColor,
     fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
     height: 40,
     width: wp('80%'),
     alignSelf: 'center',

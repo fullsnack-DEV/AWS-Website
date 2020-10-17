@@ -48,13 +48,13 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       position: 'absolute',
       fontFamily: fonts.RLight,
-      fontSize: wp('3%'),
+      fontSize: wp('4%'),
       bottom: hp('3%'),
       color: colors.whiteColor,
     },
     hyperlinkText: {
       fontFamily: fonts.RLight,
-      fontSize: wp('3%'),
+      fontSize: wp('4%'),
       textDecorationLine: 'underline',
     },
     passwordEyes: {

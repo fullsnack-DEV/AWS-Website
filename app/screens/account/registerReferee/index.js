@@ -125,24 +125,10 @@ function RegisterReferee({navigation, route}) {
     );
   };
 
-  const checkValidation = () => {
-    if (sports == '') {
-      Alert.alert('Towns Cup', 'Sports cannot be blank');
-      return false
-    }
-    else{
-      return true
-    }
-  };
-
   return (
     <ScrollView style={styles.mainContainer}>
-      <View style={styles.formSteps}>
-          <View style={styles.form1}></View>
-          <View style={styles.form2}></View>
-        </View>
       <Text style={styles.LocationText}>
-        {strings.sportsEventsTitle}<Text style={styles.mendatory}> {strings.star}</Text>
+        Sports Events<Text style={styles.mendatory}> {strings.star}</Text>
       </Text>
       <RNPickerSelect
         placeholder={{
@@ -171,7 +157,7 @@ function RegisterReferee({navigation, route}) {
           alignItems: 'center',
         }}>
         <Text style={styles.LocationText}>{strings.descriptionText}</Text>
-        
+        <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
       </View>
       <TextInput
         style={styles.descriptionTxt}
@@ -179,14 +165,14 @@ function RegisterReferee({navigation, route}) {
         value={description}
         multiline
         numberOfLines={4}
-        placeholder={strings.descriptionRefereePlaceholder}
+        placeholder={strings.descriptionPlaceholder}
       />
 
       <Text style={styles.LocationText}>
         {strings.certificateTitle}
-        
+        <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
       </Text>
-      <Text style={styles.certificateSubText}>{strings.certificateSubTitle}</Text>
+      <Text style={styles.LocationText}>{strings.certificateSubTitle}</Text>
 
       <FlatList
         scrollEnabled={false}
@@ -201,7 +187,7 @@ function RegisterReferee({navigation, route}) {
       </TouchableOpacity>
       <Text style={styles.LocationText}>
         {strings.languageTitle}
-        
+        <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
       </Text>
       <View style={styles.searchView}>
         <TouchableOpacity onPress={toggleModal}>
@@ -214,7 +200,20 @@ function RegisterReferee({navigation, route}) {
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
       </View>
-      
+      <Text style={styles.LocationText}>
+        {strings.refereeFeesTitle}
+        <Text style={styles.smallTxt}> {strings.perHourText} </Text>
+      </Text>
+
+      <View style={styles.matchFeeView}>
+        <TextInput
+          placeholder={strings.enterFeePlaceholder}
+          style={styles.feeText}
+          onChangeText={(text) => onMatchFeeChanged(text)}
+          value={matchFee}
+          keyboardType={'decimal-pad'}></TextInput>
+        <Text style={styles.curruency}>CAD</Text>
+      </View>
       <Modal
         isVisible={isModalVisible}
         backdropColor="black"
@@ -282,26 +281,12 @@ function RegisterReferee({navigation, route}) {
       </Modal>
       <TouchableOpacity
         onPress={() => {
-          if (checkValidation()) {
-            let bodyParams = {};
-            let referee_data= [];
-
-            bodyParams.sport_name = sports;
-            bodyParams.descriptions = description;
-            bodyParams.language=selectedLanguages;
-
-            referee_data[0]=bodyParams;
-            bodyParams={referee_data};
-            console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
-      
-
-            navigation.navigate('RegisterRefereeForm2',{bodyParams: bodyParams});
-          }
+          toggleModal();
         }}>
         <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
           style={styles.nextButton}>
-          <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
+          <Text style={styles.nextButtonText}>{strings.doneTitle}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </ScrollView>

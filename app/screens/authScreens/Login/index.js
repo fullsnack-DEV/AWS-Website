@@ -70,19 +70,15 @@ function LoginScreen({navigation}) {
   const checkValidation = () => {
      if (email == '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');
-      return false
      
     }else if (password == '') {
       Alert.alert('Towns Cup', 'Password cannot be blank');
-     return false
-    }
-    else{
-      return true
+     
     }
   };
   
   const getUser = async (uid) => {
-    
+    setloading(true);
     getuserDetail(JSON.parse(uid)).then(async(response) => {
       if (response.status == true) {
         await Utility.setStorage('user',response.payload);
@@ -91,11 +87,11 @@ function LoginScreen({navigation}) {
         alert(response.messages);
       }
     });
-    
+    setloading(false);
   };
   const loginUsers = async (email, password) => {
-    setloading(true);
     firebase
+
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(async (response) => {
@@ -130,8 +126,6 @@ function LoginScreen({navigation}) {
           alert('That email address is invalid!');
         }
       });
-
-      setloading(false);
   };
 
   //Psaaword Hide/Show function for setState
@@ -256,16 +250,16 @@ function LoginScreen({navigation}) {
         
       </View>
         
-      <TCButton
-          title={strings.loginCapTitle}
-          extraStyle={{marginTop: hp('10%'), marginTop: hp('3%')}}
-          onPress={()=>{
-            
-            if(checkValidation()){
-              loginUsers(email, password);
-            }
-          }}
-        />
+            <TCButton
+            title={strings.loginCapTitle}
+            extraStyle={{marginTop: hp('10%'), marginTop: hp('3%')}}
+            onPress={()=>{
+              checkValidation();
+              if(email != '' && password != ''){
+                loginUsers(email, password)
+              }
+            }}
+          />
         
       
       <TouchableOpacity
@@ -274,9 +268,9 @@ function LoginScreen({navigation}) {
       </TouchableOpacity>
       <Text style={styles.bottomText}>
         <Text>By continuing you agree to Towny's </Text>
-        {/* <TouchableOpacity onPress={() => alert('Terms and services..')}> */}
+        <TouchableOpacity onPress={() => alert('Terms and services..')}>
           <Text style={styles.hyperlinkText}>Terms of Service</Text>
-        {/* </TouchableOpacity> */}
+        </TouchableOpacity>
         <Text>, We will manage information about you as described in our </Text>
         <TouchableOpacity onPress={() => alert('Privacy policy..')}>
           <Text style={styles.hyperlinkText}>Privacy Policy</Text>

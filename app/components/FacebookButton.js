@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   fbText: {
     fontSize: 17,
-    fontFamily: fonts.RRegular,
+    // fontFamily: fonts.RRegular,
     color: colors.fbTextColor,
     height: 50,
     padding: 12,
