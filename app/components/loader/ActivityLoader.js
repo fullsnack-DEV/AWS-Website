@@ -4,6 +4,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import constants from '../../config/constants';
+const {PATH, colors, fonts} = constants;
 
 function ActivityLoader({visible = false}) {
   if (!visible) return null;
@@ -11,7 +13,7 @@ function ActivityLoader({visible = false}) {
     <Modal visible={true} transparent={true} style={{backgroundColor: '#fff'}}>
       <View style={styles.containerStyle}>
         <View style={styles.indicatorViewStyle}>
-          <ActivityIndicator size={'large'} />
+          <ActivityIndicator size={'large'} color={colors.blackColor} />
         </View>
       </View>
     </Modal>

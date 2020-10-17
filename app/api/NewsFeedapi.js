@@ -79,7 +79,6 @@ export const createPost = async (bodyParams) => {
 };
 
 export const deletePost = async (params) => {
-  console.log('Params :-', params);
   return makeAPIRequest({
     method: 'delete',
     url: api.baseURL + api.newsFeed.createPostEndPoint,
@@ -91,6 +90,23 @@ export const deletePost = async (params) => {
     })
     .catch((error) => {
       console.log('Delete Post Error ::', error);
+      return Promise.reject(error);
+    });
+};
+
+export const updatePost = async (params) => {
+  console.log('Params :-', params);
+  return makeAPIRequest({
+    method: 'put',
+    url: api.baseURL + api.newsFeed.postDetail,
+    params: params
+  })
+    .then((response) => {
+      console.log('Update Post Response ::', response);
+      return Promise.resolve(response.data);
+    })
+    .catch((error) => {
+      console.log('Update Post Error ::', error);
       return Promise.reject(error);
     });
 };

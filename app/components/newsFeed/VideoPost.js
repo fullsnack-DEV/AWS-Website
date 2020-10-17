@@ -11,7 +11,7 @@ import { loaderImage } from '../../Constants/LoaderImages';
 import FastImage from 'react-native-fast-image';
 const {fonts, colors} = constants;
 
-function VideoPost({data, itemNumber, totalItemNumber, onVideoItemPress}) {
+function VideoPost({data, onVideoItemPress}) {
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
@@ -70,14 +70,7 @@ function VideoPost({data, itemNumber, totalItemNumber, onVideoItemPress}) {
         }}
       />
       </TouchableWithoutFeedback>
-      <View style={styles.lengthViewStyle}>
-        <Text style={styles.lengthTextStyle}>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
-      </View>
-        {videoLoad &&
+      {videoLoad &&
         <>
           <View style={styles.pauseMuteStyle}>
           <TouchableOpacity
@@ -98,7 +91,8 @@ function VideoPost({data, itemNumber, totalItemNumber, onVideoItemPress}) {
             <Image style={styles.playPauseImageStyle} source={PATH.playPause} />
           </TouchableOpacity>
         </View>
-        </>}
+        </>
+      }
     </View>
   );
 }
@@ -126,12 +120,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  lengthTextStyle: {
-    fontSize: 15,
-    color: '#fff',
-    paddingHorizontal: wp('1.5%'),
-    fontFamily: fonts.RRegular,
-  },
   imageStyle: {
     width: wp('5%'),
     height: wp('5%'),
@@ -141,18 +129,6 @@ const styles = StyleSheet.create({
     width: wp('4%'),
     height: wp('4%'),
     tintColor: '#fff',
-  },
-  lengthViewStyle: {
-    position: 'absolute',
-    backgroundColor: 'red',
-    alignSelf: 'flex-end',
-    top: wp('5%'),
-    right: wp('3%'),
-    padding: wp('1.5%'),
-    borderRadius: wp('5%'),
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   loadimageStyle: {
     height: 50,

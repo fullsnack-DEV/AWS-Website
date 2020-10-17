@@ -11,7 +11,8 @@ const {fonts, colors} = constants;
 
 function PostImageSet({data, itemNumber, totalItemNumber}) {
   const randomImage = Math.floor(Math.random() * loaderImage.length);
-
+  let uploadImageURL = data && typeof data.thumbnail === "string" && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+  
   return (
     <View style={styles.uploadedImage}>
       <View style={[styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor}]}>
@@ -25,7 +26,7 @@ function PostImageSet({data, itemNumber, totalItemNumber}) {
       <Image
         style={[styles.uploadedImage, {position: 'absolute'}]}
         source={{
-          uri: data.thumbnail,
+          uri: uploadImageURL,
         }}
         resizeMode={FastImage.resizeMode.cover}
       />
