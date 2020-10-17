@@ -142,6 +142,10 @@ const PATH = {
   badmintonLoader: require('../assets/images/badminton_loader.png'),
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
+
+  // Reservation Component
+  requestIn: require('../assets/images/request_in.png'),
+  requestOut: require('../assets/images/request_out.png'),
 };
 
 export default PATH;

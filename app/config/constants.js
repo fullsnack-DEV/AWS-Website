@@ -48,7 +48,12 @@ const colors = {
   disableColor: '#cccccc',
   postSeprator: '#e1e1e1',
   greeColor: '#45C188',
-  writePostSepratorColor: '#E0E0E0'
+  writePostSepratorColor: '#E0E0E0',
+  reservationAmountColor: '#FF8A01',
+  yellowEventColor: '#ffd780',
+  grayEventColor:'#AAAAAA',
+  orangeEventColor:'#FFAE01',
+  veryLightGray:'#C4C4C4',
 };
 
 const fonts = {
@@ -144,6 +149,8 @@ const PATH = {
   badmintonLoader: require('../assets/images/badminton_loader.png'),
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
+
+  
 };
 
 const endPoints = {
