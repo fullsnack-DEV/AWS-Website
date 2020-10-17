@@ -23,19 +23,28 @@ import AuthContext from '../../auth/context';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import ImagePicker from 'react-native-image-crop-picker';
-import {createPost, getPostDetails} from '../../api/NewsFeedapi';
+import {updatePost, getPostDetails} from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 
-export default function WritePostScreen({navigation, route: { params: {postDataItem}}}) {
+export default function EditPostScreen({navigation, route: { params: {data}}}) {
+    
+    let postText = '', postAttachments = [];
+    if (data && data.object) {
+        // console.log('data Object :-', JSON.parse(data.object));
+        postText = JSON.parse(data.object).text;
+        postAttachments = JSON.parse(data.object).attachments;
+    }
+
   const authContext = useContext(AuthContext);
-  const [searchText, setSearchText] = useState('');
-  const [selectImage, setSelectImage] = useState([]);
+  const [searchText, setSearchText] = useState(postText);
+  const [selectImage, setSelectImage] = useState(postAttachments);
   const [loading, setloading] = useState(false);
 
   let userImage = '', userName = '';
-  if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
-    userName = postDataItem.actor.data.full_name;
-    userImage = postDataItem.actor.data.thumbnail;
+  if (data && data.actor && data.actor.data) {
+    userName = data.actor.data.full_name;
+    userImage = data.actor.data.thumbnail;
   }
   
   return (
@@ -51,7 +60,7 @@ export default function WritePostScreen({navigation, route: { params: {postDataI
             </TouchableOpacity>
           </View>
           <View style={styles.writePostViewStyle}>
-            <Text style={styles.writePostTextStyle}>Write Post</Text>
+            <Text style={styles.writePostTextStyle}>Edit Post</Text>
           </View>
           <View style={styles.doneViewStyle}>
             <Text
@@ -60,24 +69,29 @@ export default function WritePostScreen({navigation, route: { params: {postDataI
                 if (searchText.trim().length === 0 && selectImage.length === 0) {
                   alert('Please write some text or select any image.');
                 } else {
-                  setloading(true);
+                //   setloading(true);
                 let attachments = [];
                 selectImage.map((imageItem) => {
+                    console.log('Image Item :-', imageItem);
                   let obj = {
                     type: 'image',
-                    url: imageItem.path,
-                    thumbnail: imageItem.path
+                    url: imageItem.url ? imageItem.url : imageItem.path,
+                    thumbnail: imageItem.thumbnail ? imageItem.thumbnail : imageItem.path
                   };
                   attachments.push(obj);
                 })
 
                 let params = {
+                  "activity_id": data.id, 
                   "text": searchText,
                   "attachments": attachments,
                 };
-                createPost(params).then((res) => {
+                console.log('Params :-', params);
+                updatePost(params).then((res) => {
+                    console.log('Update Post :-', res);
                   if (res.status == true) {
                   getPostDetails().then((response) => {
+                    console.log('Get Post :-', response);
                       if (response.status == true) {
                         navigation.goBack();
                       } else {
@@ -120,8 +134,9 @@ export default function WritePostScreen({navigation, route: { params: {postDataI
           // scrollEnabled={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({item, index}) => {
+            //   console.log('Selected Image Items :-', item);
             return (
-              <SelectedImageList 
+              <EditSelectedImages 
                 data={item} 
                 itemNumber={index + 1}
                 totalItemNumber={selectImage.length} 

@@ -13,6 +13,7 @@ import Feed from '../components/newsFeed/Feed';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
+import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,23 @@ const NewsFeedNavigator = () => {
         component={WritePostScreen}
         options={{
           title: 'Write Post',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="EditPostScreen"
+        component={EditPostScreen}
+        options={{
+          title: 'Edit Post',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

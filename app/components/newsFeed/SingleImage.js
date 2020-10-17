@@ -9,7 +9,9 @@ import constants from '../../config/constants';
 import { loaderImage } from '../../Constants/LoaderImages';
 const { fonts, colors } = constants;
 
-function SingleImage({ data, itemNumber, totalItemNumber }) {
+function SingleImage({ data }) {
+  let uploadImageURL = data && typeof data.thumbnail === "string" && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+
   const randomImage = Math.floor(Math.random() * loaderImage.length);
   return (
     <View
@@ -53,17 +55,10 @@ function SingleImage({ data, itemNumber, totalItemNumber }) {
           },
         ]}
         source={{
-          uri: data.thumbnail,
+          uri: uploadImageURL,
         }}
         resizeMode={FastImage.resizeMode.cover}
       />
-      <View style={styles.lengthViewStyle}>
-        <Text style={styles.lengthTextStyle}>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
-      </View>
     </View>
   );
 }
@@ -77,23 +72,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  lengthViewStyle: {
-    position: 'absolute',
-    alignSelf: 'flex-end',
-    top: wp('5%'),
-    right: wp('3%'),
-    padding: wp('1.5%'),
-    borderRadius: wp('5%'),
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lengthTextStyle: {
-    fontSize: 15,
-    color: '#fff',
-    paddingHorizontal: wp('1.5%'),
-    fontFamily: fonts.RRegular,
   },
   imageStyle: {
     height: 50,
