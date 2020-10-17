@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   googleText: {
     fontSize: 17,
-    // fontFamily: fonts.RRegular,
+    fontFamily: fonts.RRegular,
     color: colors.googleColor,
     height: 50,
     padding: 12,

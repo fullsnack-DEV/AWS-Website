@@ -5,30 +5,14 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import constants from '../../../config/constants';
+import constants from '../../../../config/constants';
 const {strings, colors, fonts, urls, PATH} = constants;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
-  },
-
-  LocationText: {
-    marginTop: hp('2%'),
-    color: colors.lightBlackColor,
-    fontSize: wp('3.8%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    paddingLeft: 15,
-  },
-  certificateSubText:{
-    marginTop: 8,
-    color: colors.googleColor,
-    fontSize: 14,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-    paddingLeft: 15,
+    marginBottom: '22%',
   },
   formSteps: {
     flexDirection: 'row',
@@ -44,11 +28,19 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   form2: {
-    backgroundColor: colors.lightgrayColor,
+    backgroundColor: colors.themeColor,
     height: 5,
     width: 10,
     marginLeft: 2,
     marginRight: 2,
+  },
+  LocationText: {
+    marginTop: hp('2%'),
+    color: colors.lightBlackColor,
+    fontSize: wp('3.8%'),
+    textAlign: 'left',
+    // fontFamily: fonts.RBold,
+    paddingLeft: 15,
   },
   smallTxt: {
     color: colors.grayColor,
@@ -63,7 +55,7 @@ const styles = StyleSheet.create({
     // alignSelf: 'center',
     width: wp('92%'),
     fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
+
     marginTop: 12,
 
     width: wp('92%'),
@@ -84,7 +76,34 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 3,
   },
+  // curruency: {
+  //   height: 40,
+  //   width: 50,
+  //   marginTop: 12,
+  //   backgroundColor: colors.textFieldColor,
+  //   textAlign: 'center',
+  //   lineHeight: 37,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   fontSize: wp('4%'),
+  // },
+  curruency: {
+    fontSize: 15,
+    fontFamily:fonts.RRegular,
+    alignSelf: 'center',
+    color:colors.lightBlackColor,
+    textAlign:'center',
+  },
+  feeText: {
+    width: '84%',
+    fontSize: wp('3.8%'),
+  },
+  // matchFeeView: {
+  //   flexDirection: 'row',
+  //   height: 40,
 
+  //   marginBottom: 14,
+  // },
   matchFeeView: {
     flexDirection: 'row',
     height: 40,
@@ -124,7 +143,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 12,
     fontSize: wp('3.5%'),
-    fontFamily:fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -145,7 +163,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 12,
     fontSize: wp('4%'),
-    fontFamily:fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -157,7 +174,13 @@ const styles = StyleSheet.create({
 
     elevation: 3,
   },
-
+  separatorLine: {
+    backgroundColor: colors.grayColor,
+    width: wp('92%'),
+    height: 0.5,
+    alignSelf: 'center',
+    marginTop: 14,
+  },
   doneButton: {
     position: 'absolute',
     bottom: 30,
@@ -203,7 +226,7 @@ const styles = StyleSheet.create({
   chooseImage: {
     position: 'absolute',
     right: 8,
-    bottom: 0,
+    bottom: -8,
     height: 20,
     width: 20,
     resizeMode: 'contain',
@@ -221,7 +244,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: colors.userPostTimeColor,
+    borderColor: colors.blackColor,
     height: 30,
     alignSelf: 'center',
     width: '35%',
@@ -230,86 +253,12 @@ const styles = StyleSheet.create({
   },
   addCertificateText: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
+    // fontFamily: fonts.RBold,
 
-    color: colors.userPostTimeColor,
+    color: colors.blackColor,
   },
-  delete: {
-    alignSelf: 'flex-end',
-    marginRight: 15,
-    color: colors.fbTextColor,
-  },
-  curruency: {
-    fontSize: wp('4%'),
-    alignSelf: 'flex-end',
-  },
-  // matchFeeView: {
-  //   flexDirection: 'row',
-  //   height: 40,
-  //   alignSelf: 'center',
-  //   marginBottom: 14,
-  // },
-  matchFeeView: {
-    flexDirection: 'row',
-    height: 40,
+  delete: {alignSelf: 'flex-end', marginRight: 15, color: colors.fbTextColor},
 
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('3.5%'),
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-  feeText: {
-    width: '96%',
-    fontSize: wp('3.8%'),
-  },
-  matchFeeTxt: {
-    height: 40,
-    //alignSelf: 'center',
-    width: wp('80%'),
-    backgroundColor: colors.textFieldColor,
-
-    paddingLeft: 10,
-    marginTop: 12,
-  },
-  certificateDescription: {
-    // height: 40,
-    // alignSelf: 'center',
-    // width: wp('76%'),
-    // backgroundColor: colors.textFieldColor,
-    // paddingLeft: 10,
-    height: 40,
-    width: wp('78%'),
-    alignSelf: 'center',
-    
-    fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: colors.lightBlackColor,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    elevation: 3,
-  },
   nextButton: {
     width: '90%',
     height: 45,
@@ -325,76 +274,61 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     marginVertical: 10,
   },
+  radioButtonView: {
+    flexDirection: 'row',
+    marginTop: 15,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  radioText: {
+    fontSize: wp('3.8%'),
+    marginLeft: 15,
+    alignSelf: 'center',
+    marginRight: 15,
+    color: colors.lightBlackColor,
+  },
+  radioImage: {
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
+    //tintColor: colors.radioButtonColor,
+    alignSelf: 'center',
+  },
+  unSelectRadioImage: {
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
+    alignSelf: 'center',
+  },
+  membershipText: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginTop: 20,
+    color: colors.veryLightBlack,
+    fontFamily:fonts.RBold,
+  },
   mendatory: {
     color: 'red',
   },
-  separatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('100%'),
-    height: 0.5,
-    alignSelf: 'center',
-  },
-  languageApplyButton: {
-    width: '90%',
-    height: 45,
-    alignSelf: 'center',
-    marginTop: wp('5%'),
-    borderRadius: 30,
-    marginBottom: 40,
-  },
-  shortSeparatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('90%'),
-    height: 0.5,
-    alignSelf: 'center',
-  },
-  languageList: {
-    marginLeft: 20,
-    marginBottom: 20,
-    marginTop: 20,
-    color: colors.lightBlackColor,
-    fontSize: wp('4%'),
-    fontFamily: fonts.RRegular,
-  },
-  checkboxImg: {
-    width: wp('5.5%'),
-
-    //paddingLeft: wp('25%'),
-    resizeMode: 'contain',
-    alignSelf: 'center',
-    //tintColor: colors.grayColor,
-  },
-  checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp('5%'),
-  },
-  searchView: {
-    height: 40,
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    paddingLeft: 15,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    flexDirection: 'row',
-
-    elevation: 3,
-  },
-  searchTextField: {
-    flex: 1,
-    color: colors.lightBlackColor,
-    fontSize: wp('3.8%'),
+  membershipSubText: {
+    fontSize: 16,
     fontFamily:fonts.RRegular,
-    height: 40,
-    width: wp('80%'),
-    alignSelf: 'center',
+    marginLeft: 15,
+    marginTop: 20,
+    color: colors.veryLightBlack,
+    fontWeight: 'bold',
+    lineHeight: 20,
   },
+  whoJoinText: {
+    fontSize: 16,
+    fontFamily:fonts.RMedium,
+    marginLeft: 15,
+    marginTop: 10,
+    marginBottom: 20,
+    color: colors.veryLightBlack,
+  },
+
 });
 
 export default styles;
