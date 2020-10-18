@@ -16,12 +16,12 @@ import Carousel from 'react-native-snap-carousel';
 import PostImageSet from './PostImageSet';
 import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
-import { loaderImage } from '../../Constants/LoaderImages';
+import { commentPostTimeCalculate, loaderImage } from '../../Constants/LoaderImages';
 import { deletePost, getPostDetails } from '../../api/NewsFeedapi';
 
 
 function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) {
-    let actionSheet = useRef();
+  let actionSheet = useRef();
   let like = false, filterLike = [];
   if(item.own_reactions && item.own_reactions.clap) {
       filterLike = item.own_reactions.clap.map((clapItem) => {
@@ -64,7 +64,8 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
             {item.actor.data.full_name}
             </Text>
             <Text style={styles.activeTimeAgoTxt}>
-            {moment(item.time).startOf('hour').fromNow()}
+            {/* {moment(item.time).startOf('hour').fromNow()} */}
+            {commentPostTimeCalculate(item.time)}
             </Text>
         </View>
         <TouchableOpacity
@@ -101,8 +102,6 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
                     return (
                     <SingleImage
                         data={item}
-                        itemNumber={index + 1}
-                        totalItemNumber={attachedImages.length}
                     />
                     );
                 }
@@ -110,10 +109,8 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
                     return (
                     <VideoPost
                         data={item}
-                        itemNumber={index + 1}
-                        totalItemNumber={attachedImages.length}
                         onVideoItemPress={() => {
-                            navigation.navigate('FullVideoScreen', {url: item.url});
+                            // navigation.navigate('FullVideoScreen', {url: item.url});
                         }}
                     />
                     );
@@ -271,7 +268,7 @@ function NewsFeedPostItems({navigation, key, item, onLikePress, currentUserID}) 
           destructiveButtonIndex={1}
           onPress={(index) => { 
             if (index === 0) {
-                console.log('Edit Post Pressed');
+                navigation.navigate('EditPostScreen', { data: item})
             } else if (index === 1) {
                 let params = {
                     "activity_id": item.id,
