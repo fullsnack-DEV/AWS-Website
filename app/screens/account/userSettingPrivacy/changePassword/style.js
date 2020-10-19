@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -6,42 +6,14 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../../../../config/constants';
-const {colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    
-  },
-  matchFeeTxt: {
-    height: 40,
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('3.8%'),
-    fontFamily: fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-
-    elevation: 3,
-  },
-  fieldView: {
-    marginTop: 15,
-  },
   fieldTitle: {
     marginTop: hp('2%'),
-    color: colors.blackColor,
     fontSize: wp('3.8%'),
     textAlign: 'left',
     // fontFamily: fonts.RBold,
@@ -49,65 +21,95 @@ const styles = StyleSheet.create({
 
     color: colors.lightBlackColor,
   },
-  separatorLine: {
-      marginTop:40,
-      marginBottom:25,
-    backgroundColor: colors.lightgrayColor,
-    width: wp('92%'),
-    height: 0.5,
+  fieldView: {
+    marginTop: 15,
+  },
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+
+  },
+  matchFeeTxt: {
     alignSelf: 'center',
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    color: 'black',
+    elevation: 3,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('3.8%'),
+    height: 40,
+
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+
+    paddingVertical: 12,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+
+    width: wp('92%'),
+  },
+  nextButton: {
+    alignSelf: 'center',
+    borderRadius: 30,
+    height: 45,
+    marginBottom: 40,
+    marginTop: wp('12%'),
+    width: '92%',
   },
   nextButtonText: {
     alignSelf: 'center',
     color: colors.whiteColor,
-    fontSize: wp('4%'),
     fontFamily: fonts.RBold,
+    fontSize: wp('4%'),
     marginVertical: 10,
   },
-  nextButton: {
-    width: '92%',
-    height: 45,
-    alignSelf: 'center',
-    marginTop: wp('12%'),
-    borderRadius: 30,
-    marginBottom: 40,
-  },
-  passwordView: {
-    flexDirection: 'row',
-    height: 40,
-    width:wp('92%'),
-   
-    alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('4%'),
-    color: 'black',
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-    
-  },
-  textInput: {
-      
-    borderRadius: 5,
-    fontSize: wp('3.8%'),
-    color: colors.blackColor,
-    fontFamily: fonts.RRegular,
-    paddingLeft: 17,
-    height: 40,
-    width:wp('85%'),
-    
-    backgroundColor: colors.whiteColor,
-  },
   passwordEyes: {
-    width: 22,
+    alignSelf: 'center',
     height: 22,
     resizeMode: 'contain',
+    width: 22,
+  },
+  passwordView: {
     alignSelf: 'center',
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+
+    color: 'black',
+    elevation: 3,
+    flexDirection: 'row',
+    fontSize: wp('4%'),
+    height: 40,
+
+    marginTop: 12,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    width: wp('92%'),
+
+  },
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.lightgrayColor,
+    height: 0.5,
+    marginBottom: 25,
+    marginTop: 40,
+    width: wp('92%'),
+  },
+  textInput: {
+
+    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    color: colors.blackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('3.8%'),
+    height: 40,
+    paddingLeft: 17,
+
+    width: wp('85%'),
   },
 });
 

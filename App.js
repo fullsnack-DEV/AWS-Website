@@ -1,29 +1,16 @@
-import React, {useState, useEffect, useMemo, useContext} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 
-// import {checkNotifications} from 'react-native-permissions';
-// import firebase from '@react-native-firebase/app';
 import QB from 'quickblox-react-native-sdk';
 
 import AuthContext from './app/auth/context';
-// import {AppContext} from './app/context/index';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
-import AsyncStorage from '@react-native-community/async-storage';
 import * as Utility from './app/utility/index';
-import TeamCreatedScreen from './app/screens/account/createGroup/createTeam/teamCreated';
-import SearchPlayerScreen from './app/screens/account/createGroup/createTeam/searchPlayer';
-import AccountDrawerNavigator from './app/navigation/AccountDrawerNavigator';
-// import ActivityLoader from './app/components/loader/ActivityLoader';
-// import ChooseSportsScreen from './app/screens/authScreens/ChooseSportsScreen';
-// import NewsFeedVideoPlayer from './app/screens/newsfeeds/NewsFeedVideoPlayer';
 
 export default function App() {
-  // const {loading, updateLoadingState} = useContext(AppContext);
-  // console.log('loading :: ', loading);
-  // updateLoadingState();
   const [user, setUser] = useState(null);
   const [switchBy, setSwitchBy] = useState('user');
   const [team, setTeam] = useState(null);
@@ -44,9 +31,9 @@ export default function App() {
 
   const getLoginUserDetail = async () => {
     const loginUserObject = await Utility.getStorage('user');
-    console.log('USER OBJECT EXISTS:', JSON.stringify(loginUserObject));
-    if (loginUserObject != null || loginUserObject != undefined)
+    if (loginUserObject !== null || loginUserObject !== undefined) {
       setUser(loginUserObject);
+    }
   };
 
   const appSettings = {
@@ -55,43 +42,26 @@ export default function App() {
     authSecret: 'bpm8-gfaay9DWWv',
     accountKey: 'idPrZuxa3UseWLaRFRQU',
   };
-  // const requestPermission = () => {
-  //   request(PERMISSIONS.IOS.PHOTO_LIBRARY).then((result) => {
-  //     if (result) {
-  //       console.log('Thank you , you granted Photo library permission');
-  //     }
-  //   });
-  //   checkNotifications().then(({status, settings}) => {
-  //     if (status) {
-  //       console.log('Thank you , you granted Notification permission');
-  //     }
-  //   });
-  // };
 
   useEffect(() => {
-   
     // requestPermission();
 
     getLoginUserDetail();
   }, []);
   QB.settings
     .init(appSettings)
-    .then(function () {
-      // SDK initialized successfully
-      console.log('SDK initialized successfully');
-    })
-    .catch(function (e) {
+    .then(() => {})
+    .catch(() => {
       // Some error occured, look at the exception message for more details
     });
-  QB.settings.enableAutoReconnect({enable: true});
+  QB.settings.enableAutoReconnect({ enable: true });
 
   return (
-    <AuthContext.Provider value={authValue}>
-      <NavigationContainer theme={navigationTheme}>
-        {user ? <AppNavigator /> : <AuthNavigator />}
-        {/* <AppNavigator /> */}
-        
-      </NavigationContainer>
-    </AuthContext.Provider>
+      <AuthContext.Provider value={authValue}>
+          <NavigationContainer theme={navigationTheme}>
+              {user ? <AppNavigator /> : <AuthNavigator />}
+              {/* <AppNavigator /> */}
+          </NavigationContainer>
+      </AuthContext.Provider>
   );
 }

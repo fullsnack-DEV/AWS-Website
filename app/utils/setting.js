@@ -1,6 +1,6 @@
-import {development, production, staging} from '../config/constants';
+import { development, production, staging } from '../config/constants';
 
-const {Config} = require('../config/config');
+const { Config } = require('../config/config');
 
 const setAPIBaseURL = () => {
   switch (Config.env) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import 'react-native-gesture-handler';
 
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import WelcomeScreen from '../screens/authScreens/Welcome';
 import ChooseSportsScreen from '../screens/authScreens/ChooseSports';
@@ -17,78 +17,78 @@ import ForgotPasswordLinkSentScreen from '../screens/authScreens/forgotPasswordL
 import AddBirthdayScreen from '../screens/authScreens/addYourBirthday';
 import ChooseGenderScreen from '../screens/authScreens/chooseGender';
 
-
 import BottomTab from '../components/BottomTab';
 import constants from '../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+
+const {
+  colors,
+} = constants;
 
 const Stack = createStackNavigator();
 
-const AuthNavigator = () => {
-  return (
+const AuthNavigator = () => (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={ {
         headerTintColor: colors.whiteColor,
         headerTransparent: true,
         headerTitle: false,
         headerBackTitleVisible: false,
-      }}>
-      <Stack.Screen
+      } }>
+        <Stack.Screen
         name="WelcomeScreen"
-        component={WelcomeScreen}
-        options={{headerShown: false}}
+        component={ WelcomeScreen }
+        options={ { headerShown: false } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="ForgotPasswordScreen"
-        component={ForgotPasswordScreen}
-        options={{}}
+        component={ ForgotPasswordScreen }
+        options={ {} }
       />
-       <Stack.Screen
+        <Stack.Screen
         name="ForgotPasswordLinkSentScreen"
-        component={ForgotPasswordLinkSentScreen}
-        options={{}}
+        component={ ForgotPasswordLinkSentScreen }
+        options={ {} }
       />
-      <Stack.Screen name="SignupScreen" component={SignupScreen} options={{}} />
-      <Stack.Screen name="LoginScreen" component={LoginScreen} options={{}} />
-      <Stack.Screen
+        <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {} } />
+        <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {} } />
+        <Stack.Screen
         name="ChooseLocationScreen"
-        component={ChooseLocationScreen}
-        options={{}}
+        component={ ChooseLocationScreen }
+        options={ {} }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="ChooseSportsScreen"
-        component={ChooseSportsScreen}
-        options={{}}
+        component={ ChooseSportsScreen }
+        options={ {} }
       />
-      <Stack.Screen name="FollowTeams" component={FollowTeams} options={{}} />
-      <Stack.Screen name="HomeScreen" component={HomeScreen} options={{}} />
-      <Stack.Screen
+        <Stack.Screen name="FollowTeams" component={ FollowTeams } options={ {} } />
+        <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
+        <Stack.Screen
         name="EmailVerification"
-        component={EmailVerification}
-        options={{}}
+        component={ EmailVerification }
+        options={ {} }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="BottomTab"
-        component={BottomTab}
-        options={{headerShown: false}}
+        component={ BottomTab }
+        options={ { headerShown: false } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="TotalTeamsScreen"
-        component={TotalTeamsScreen}
-        options={{}}
+        component={ TotalTeamsScreen }
+        options={ {} }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="AddBirthdayScreen"
-        component={AddBirthdayScreen}
-        options={{}}
+        component={ AddBirthdayScreen }
+        options={ {} }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="ChooseGenderScreen"
-        component={ChooseGenderScreen}
-        options={{}}
+        component={ ChooseGenderScreen }
+        options={ {} }
       />
     </Stack.Navigator>
-  );
-};
+);
 
 export default AuthNavigator;

@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
-function NewsFeedDescription({descriptions, character}) {
+function NewsFeedDescription({ descriptions, character }) {
   const [readMore, setReadMore] = useState();
 
   function toggleNumberOfLines() {
@@ -9,30 +9,30 @@ function NewsFeedDescription({descriptions, character}) {
   }
 
   return (
-    <View>
-      {descriptions.length > 0 && (
-        <Text style={styles.descriptionTxt}>
-          {readMore ? descriptions : descriptions.substring(0, character)}
-          {descriptions.length > character && !readMore ? '... ' : ' '}
-          {descriptions.length > character && (
-            <Text onPress={() => toggleNumberOfLines()} style={styles.descText}>
-              {readMore ? 'less' : 'more'}
-            </Text>
+      <View>
+          {descriptions.length > 0 && (
+          <Text style={ styles.descriptionTxt }>
+              {readMore ? descriptions : descriptions.substring(0, character)}
+              {descriptions.length > character && !readMore ? '... ' : ' '}
+              {descriptions.length > character && (
+              <Text onPress={ () => toggleNumberOfLines() } style={ styles.descText }>
+                  {readMore ? 'less' : 'more'}
+              </Text>
+              )}
+          </Text>
           )}
-        </Text>
-      )}
-    </View>
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
-  descriptionTxt: {
-    padding: '2%',
-    fontSize: 16,
-  },
   descText: {
     color: 'gray',
     fontSize: 12,
+  },
+  descriptionTxt: {
+    fontSize: 16,
+    padding: '2%',
   },
 });
 

@@ -1,10 +1,12 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import React, {
+  useEffect, useState, useLayoutEffect,
+} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
-  TouchableOpacity,
+
   SectionList,
   Dimensions,
 } from 'react-native';
@@ -17,27 +19,20 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import constants from '../../../config/constants';
-const {colors, fonts, urls} = constants;
-import PATH from '../../../Constants/ImagePath';
-import strings from '../../../Constants/String';
-
-import AsyncStorage from '@react-native-community/async-storage';
-import ActionSheet from 'react-native-actionsheet';
-
 import {
   TouchableWithoutFeedback,
-  FlatList,
-  ScrollView,
 } from 'react-native-gesture-handler';
-import AuthContext from '../../../auth/context';
+import constants from '../../../config/constants';
+import PATH from '../../../Constants/ImagePath';
+
 import TCEventView from '../../../components/TCEventView';
 
-export default function ScheduleScreen({navigation, route}) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const authContext = useContext(AuthContext);
+const { colors } = constants;
 
-  let {width} = Dimensions.get('window');
+export default function ScheduleScreen({ navigation }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const { width } = Dimensions.get('window');
   const events = [
     {
       start: '2017-09-07 00:30:00',
@@ -122,10 +117,10 @@ export default function ScheduleScreen({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback
-          onPress={() => alert('This is a 3 dot button!')}>
-          <Image source={PATH.vertical3Dot} style={styles.headerRightImg} />
-        </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+          onPress={ () => alert('This is a 3 dot button!') }>
+              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+          </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
@@ -135,93 +130,74 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
   return (
-    <View style={styles.mainContainer}>
-      <SegmentedControlTab
-        values={['Events', 'Calendar']}
-        selectedIndex={selectedIndex}
-        onTabPress={handleIndexChange}
-        borderRadius={20}
-        tabsContainerStyle={styles.segmentContainer}
-        tabStyle={styles.tab}
-        activeTabStyle={styles.activeTab}
-        tabTextStyle={styles.tabTextStyle}
-        activeTabTextStyle={styles.activeTabTextStyle}
+      <View style={ styles.mainContainer }>
+          <SegmentedControlTab
+        values={ ['Events', 'Calendar'] }
+        selectedIndex={ selectedIndex }
+        onTabPress={ handleIndexChange }
+        borderRadius={ 20 }
+        tabsContainerStyle={ styles.segmentContainer }
+        tabStyle={ styles.tab }
+        activeTabStyle={ styles.activeTab }
+        tabTextStyle={ styles.tabTextStyle }
+        activeTabTextStyle={ styles.activeTabTextStyle }
       />
-      {selectedIndex == 0 ? (
-        <SectionList
-          renderItem={({item, index, section}) => (
+          {selectedIndex === 0 ? (
+              <SectionList
+          renderItem={ () => (
             // <Text key={index}>.{item}</Text>
-            <TCEventView onPress={() => navigation.navigate('GameDetail')} />
-          )}
-          renderSectionHeader={({section: {title}}) => (
-            <Text style={styles.sectionHeader}>{title}</Text>
-          )}
-          sections={[
-            {title: 'TODAY', data: ['item1', 'item2', 'item7', 'item8']},
+              <TCEventView onPress={ () => navigation.navigate('GameDetail') } />
+          ) }
+          renderSectionHeader={ ({ section: { title } }) => (
+              <Text style={ styles.sectionHeader }>{title}</Text>
+          ) }
+          sections={ [
+            { title: 'TODAY', data: ['item1', 'item2', 'item7', 'item8'] },
             {
               title: 'TOMORROW',
               data: ['item3', 'item4', 'item9', 'item10', 'item11'],
             },
-            {title: 'FUTURE', data: ['item5', 'item6', 'item12']},
-          ]}
-          keyExtractor={(item, index) => item + index}
+            { title: 'FUTURE', data: ['item5', 'item6', 'item12'] },
+          ] }
+          keyExtractor={ (item, index) => item + index }
         />
-      ) : (
-        <EventCalendar
-          eventTapped={() => alert('Event tapped..')}
+          ) : (
+              <EventCalendar
+          eventTapped={ () => alert('Event tapped..') }
           // eventTapped={this._eventTapped.bind(this)}
-          events={events}
-          width={width}
-          initDate={'2017-09-08'}
+          events={ events }
+          width={ width }
+          initDate={ '2017-09-08' }
         />
-      )}
-    </View>
+          )}
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    width: '100%',
-    height: '100%',
-  },
-  headerRightImg: {
-    height: 15,
-    width: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    marginRight: 20,
-  },
-  segmentContainer: {
-    alignSelf: 'center',
-    marginTop: hp('3%'),
-    borderWidth: 1,
-    borderColor: colors.lightBlueColor,
-    borderRadius: 19,
-    height: 38,
-    width: wp('50%'),
-    padding: 1,
-  },
-  tab: {
-    borderColor: colors.whiteColor,
-    height: 32,
-  },
   activeTab: {
-    backgroundColor: colors.blueColor,
-    borderRadius: 20,
-    borderColor: colors.blueColor,
     alignSelf: 'center',
-  },
-  tabTextStyle: {
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RBold,
-    color: colors.blueColor,
+    backgroundColor: colors.blueColor,
+    borderColor: colors.blueColor,
+    borderRadius: 20,
   },
   activeTabTextStyle: {
     fontSize: wp('3%'),
     // fontFamily: fonts.RBold,
     color: colors.whiteColor,
+  },
+  headerRightImg: {
+    height: 15,
+    marginRight: 20,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
+    width: 15,
+  },
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    width: '100%',
+    height: '100%',
   },
   sectionHeader: {
     fontSize: wp('3.5%'),
@@ -231,5 +207,24 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     paddingLeft: 10,
     backgroundColor: colors.whiteColor,
+  },
+  segmentContainer: {
+    alignSelf: 'center',
+    borderColor: colors.lightBlueColor,
+    borderRadius: 19,
+    borderWidth: 1,
+    height: 38,
+    marginTop: hp('3%'),
+    padding: 1,
+    width: wp('50%'),
+  },
+  tab: {
+    borderColor: colors.whiteColor,
+    height: 32,
+  },
+  tabTextStyle: {
+    fontSize: wp('3%'),
+    // fontFamily: fonts.RBold,
+    color: colors.blueColor,
   },
 });

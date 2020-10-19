@@ -1,42 +1,29 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet,
   View,
   Image,
   TouchableOpacity,
   ScrollView,
   Alert,
   TextInput,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import * as Yup from 'yup';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
-
-import AsyncStorage from '@react-native-community/async-storage';
-import {create} from 'apisauce';
-
-// import constants from '../../../config/constants';
-// const {strings, urls, PATH, endPoints} = constants;
-
-import {getuserDetail} from '../../../api/Authapi';
-import AuthContext from '../../../auth/context';
+import { getuserDetail } from '../../../api/Authapi';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import styles from './style';
 import * as Utility from '../../../utility/index';
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import {token_details} from '../../../utils/constant';
+import { token_details } from '../../../utils/constant';
+import colors from '../../../Constants/Colors';
 import TCButton from '../../../components/TCButton';
 import TCTextField from '../../../components/TCTextField';
-import   colors from "../../../Constants/Colors";
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -49,215 +36,179 @@ const config = {
   measurementId: 'G-N44NC0Z1Q7',
 };
 
-
-
-function SignupScreen({navigation, route}) {
+const SignupScreen = ({ navigation }) => {
   const [fName, setFName] = useState('');
   const [lName, setLName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
-  const authContext = useContext(AuthContext);
   // For activity indigator
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
   useEffect(() => {
     if (firebase.apps.length === 0) {
       firebase.initializeApp(config);
-   }
-  },[]);
+    }
+  }, []);
 
-  const checkValidation = () => {
-    if (fName == '') {
+  const validate = () => {
+    if (fName === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
-      return false
-    } else if (lName == '') {
+      return false;
+    } if (lName === '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
-      return false
-    } else if (email == '') {
+      return false;
+    } if (email === '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');
-      return false
-    }else if(ValidateEmail(email) == false){
+      return false;
+    } if (validateEmail(email) === false) {
       Alert.alert('Towns Cup', 'You have entered an invalid email address!');
-      return false
-    }else if (password == '') {
+      return false;
+    } if (password === '') {
       Alert.alert('Towns Cup', 'Password cannot be blank');
-      return false
-    } else if (cPassword == '') {
+      return false;
+    } if (cPassword === '') {
       Alert.alert('Towns Cup', 'Conform password cannot be blank');
-      return false
-    }  else if (password != cPassword) {
+      return false;
+    } if (password !== cPassword) {
       Alert.alert('Towns Cup', 'Both password should be same');
-      return false
-    }else{
-      return true
+      return false;
     }
+    return true;
   };
-  const ValidateEmail = (email) =>
-  {
-   if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email))
-    {
-      return (true)
+  const validateEmail = (emailText) => {
+    if (
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+        emailText,
+      )
+    ) {
+      return true;
     }
-      
-      return (false)
-  }
-  const authToken = () => {
-    auth().onAuthStateChanged((user) => {
-      if (user) {
-        user.getIdTokenResult().then(async (idTokenResult) => {
-         
-            console.log('User JWT: ', idTokenResult.token);
-            let tokenDetail = {
-              token: idTokenResult.token,
-              expirationTime: idTokenResult.expirationTime,
-            };
 
-            // await AsyncStorage.setItem(
-            //   token_details,
-            //   JSON.stringify(tokenDetail),
-            // );
-
-            await Utility.setStorage(token_details, JSON.stringify(tokenDetail));
-
-            await Utility.setStorage('token', idTokenResult.token);
-            await Utility.setStorage('expiryTime', idTokenResult.expirationTime);
-            await Utility.setStorage('UID', user.uid);
-            let userDetail={
-              first_name: fName,
-              last_name:lName,
-              email:email
-            };
-            await Utility.setStorage('userInfo', userDetail);
-            
-           
-            getuserDetail(user.uid).then((response) => {
-              setloading(true);
-              console.log('PAYLOAD::', JSON.stringify(response));
-              if (response.status == true) {
-                alert('This user is already registered!');
-                navigation.navigate('LoginScreen');
-              } else {
-                console.log(response);
-                navigation.navigate('EmailVerification',{email:email,password:password});
-              }
-              setloading(false);
-            });
-
-
-            
-            //getUserInfo();
-         
-          //console.log('TokenID', idToken);
-        });
-      }
-    });
+    return false;
   };
+  const setAuthToken = async () => auth().onAuthStateChanged((user) => {
+    if (user) {
+      user.getIdTokenResult().then((idTokenResult) => {
+        const tokenDetail = {
+          token: idTokenResult.token,
+          expirationTime: idTokenResult.expirationTime,
+        };
+        const userDetail = {
+          first_name: fName,
+          last_name: lName,
+          email,
+        };
+        Utility.setStorage(token_details, JSON.stringify(tokenDetail));
+        Utility.setStorage('token', idTokenResult.token);
+        Utility.setStorage('expiryTime', idTokenResult.expirationTime);
+        Utility.setStorage('UID', user.uid);
+        Utility.setStorage('userInfo', userDetail);
+        return user;
+      });
+    }
+  });
 
-  const signUpUser = async (fname, lname, email, password) => {
-    console.log('Welcome to signupuser function..');
+  const signupUser = (fname, lname, emailAddress, passwordInput) => {
     auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        console.log('User account created & signed in!', JSON.stringify(response));
-
-
-        firebase.auth().onAuthStateChanged(function (user) {
+      .createUserWithEmailAndPassword(emailAddress, passwordInput)
+      .then(async () => {
+        firebase.auth().onAuthStateChanged((user) => {
           user.sendEmailVerification();
         });
-        
-          //AsyncStorage.setItem('userInfo', JSON.stringify(user));
-          //console.log('DATA STORED... ');
-          authToken();
+        return setAuthToken().then((user) => {
+          getuserDetail(user.uid)
+            .then(() => {
+              Alert.alert('This user is already registered!');
+              navigation.navigate('LoginScreen');
+            })
+            .catch(() => {
+              navigation.navigate('EmailVerification', {
+                emailAddress,
+                password,
+              });
+            });
+        });
       })
-      .catch((error) => {
-        if (error.code === 'auth/email-already-in-use') {
-          alert('That email address is already in use!');
-          
-        }
-        if (error.code === 'auth/invalid-email') {
-          alert('That email address is invalid!');
-        }
-      });
+      .catch((error) => Alert.alert(error.messages || error.code || JSON.stringify(error)));
   };
-  
- const getUserInfo = async () => {
-    console.log('get user detail called... ');
-    var uid = await Utility.getStorage('UID');
-    getuserDetail(uid).then((response) => {
-      console.log('PAYLOAD::', JSON.stringify(response));
-      if (response.status == true) {
-        alert('This user is already registered!');
-        navigation.navigate('LoginScreen');
-      } else {
-        console.log(response);
-        navigation.navigate('EmailVerification');
-      }
-    });
-  };
-  const hideShowPassword = () =>{
+
+  const hideShowPassword = () => {
     setHidePassword(!hidePassword);
-  }
+  };
   return (
-    <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      {/* <Loader visible={true} /> */}
-      <Image style={styles.background} source={PATH.orangeLayer} />
-      <Image style={styles.background} source={PATH.bgImage} />
-      <ScrollView>
-        <TouchableOpacity
+      <View style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
+          {/* <Loader visible={true} /> */}
+          <Image style={styles.background} source={PATH.orangeLayer} />
+          <Image style={styles.background} source={PATH.bgImage} />
+          <ScrollView>
+              <TouchableOpacity
           onPress={() => alert('image picked')}
           style={styles.profile}>
-          <Image style={styles.profile} source={PATH.profilePlaceHolder} />
-        </TouchableOpacity>
-          <TCKeyboardView>
-            <TCTextField placeholder={strings.fnameText}  onChangeText={(text) => setFName(text)} value={fName}/>
-            <TCTextField placeholder={strings.lnameText} onChangeText={(text) => setLName(text)} value={lName} />
-            <TCTextField
-              placeholder={strings.emailPlaceHolder}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onChangeText={(text) => setEmail(text)} value={email}
-            />
-
-           <View style={styles.passwordView}>
-            <TextInput
-                style={styles.textInput}
-                placeholder={strings.passwordText}
-                onChangeText={(text) => setPassword(text)} 
-                value={password}
-                placeholderTextColor={colors.themeColor}
-                secureTextEntry={hidePassword}
-                keyboardType={'default'}
-              />
-              <TouchableWithoutFeedback onPress={()=>hideShowPassword()}>
-              {hidePassword ? <Image source={PATH.showPassword} style={styles.passwordEyes} /> : <Image source={PATH.hidePassword} style={styles.passwordEyes} />}
-              </TouchableWithoutFeedback> 
-            </View>
-            
-            <TCTextField
-              placeholder={strings.confirmPasswordText}
-              autoCapitalize="none"
-              secureText={true}
-              onChangeText={(text) => setCPassword(text)} value={cPassword}
-            />
-          </TCKeyboardView>
-
-          <TCButton
-            title={strings.signUpCapitalText}
-            extraStyle={{marginTop: hp('10%'), marginBottom: hp('4%')}}
-            onPress={()=>{
-              
-              if(checkValidation()){
-                signUpUser(fName,lName,email,password);
-              }
-            }}
-            //() => navigation.navigate('ChooseLocationScreen')
+                  <Image style={styles.profile} source={PATH.profilePlaceHolder} />
+              </TouchableOpacity>
+              <TCKeyboardView>
+                  <TCTextField
+            placeholder={strings.fnameText}
+            onChangeText={(text) => setFName(text)}
+            value={fName}
           />
-       
-      </ScrollView>
-    </View>
+                  <TCTextField
+            placeholder={strings.lnameText}
+            onChangeText={(text) => setLName(text)}
+            value={lName}
+          />
+                  <TCTextField
+            placeholder={strings.emailPlaceHolder}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+          />
+                  <View style={styles.passwordView}>
+                      <TextInput
+              style={styles.textInput}
+              placeholder={strings.passwordText}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              placeholderTextColor={colors.themeColor}
+              secureTextEntry={hidePassword}
+              keyboardType={'default'}
+            />
+                      <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
+                          {hidePassword ? (
+                              <Image source={PATH.showPassword} style={styles.passwordEyes} />
+                          ) : (
+                              <Image source={PATH.hidePassword} style={styles.passwordEyes} />
+                          )}
+                      </TouchableWithoutFeedback>
+                  </View>
+
+                  <TCTextField
+            placeholder={strings.confirmPasswordText}
+            autoCapitalize="none"
+            secureText={true}
+            onChangeText={(text) => setCPassword(text)}
+            value={cPassword}
+          />
+              </TCKeyboardView>
+
+              <TCButton
+          title={strings.signUpCapitalText}
+          extraStyle={{ marginTop: hp('10%'), marginBottom: hp('4%') }}
+          onPress={() => {
+            setloading(true);
+            if (validate()) {
+              signupUser(fName, lName, email, password);
+            }
+            setloading(false);
+          }}
+          // () => navigation.navigate('ChooseLocationScreen')
+        />
+          </ScrollView>
+      </View>
   );
-}
+};
 
 export default SignupScreen;

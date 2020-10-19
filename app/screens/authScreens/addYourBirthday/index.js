@@ -1,5 +1,7 @@
-import React,{useEffect, useState,useContext} from 'react';
-import {StyleSheet, View, Text, Image, Alert, TouchableOpacity, TextInput, TouchableWithoutFeedback} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View, Text, Image,
+} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -12,75 +14,77 @@ import constants from '../../../config/constants';
 import TCButton from '../../../components/TCButton';
 
 import strings from '../../../Constants/String';
-import styles from "./style"
-const { colors, fonts, urls, PATH} = constants;
+import styles from './style'
 
-export default function AddBirthdayScreen({navigation}) {
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-    const [dateValue, setDateValue] = useState(new Date());
-   
+const {
+  colors, PATH,
+} = constants;
 
-    useEffect(()=>{
-       
-    },[])
+export default function AddBirthdayScreen({ navigation }) {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  const [dateValue, setDateValue] = useState(new Date());
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setDateValue(currentDate);
-      };
+  useEffect(() => {
+
+  }, [])
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDateValue(currentDate);
+  };
 
   return (
-    <View style={styles.mainContainer}>
-      <Image style={styles.background} source={PATH.orangeLayer} />
-      <Image style={styles.background} source={PATH.bgImage} />
-      
-      <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
-      <Text style={styles.resetText}>{strings.notDisplayText}</Text>
+      <View style={ styles.mainContainer }>
+          <Image style={ styles.background } source={ PATH.orangeLayer } />
+          <Image style={ styles.background } source={ PATH.bgImage } />
 
-      <Tooltip popover={<Text style={{color: colors.themeColor,fontSize:14}}>{strings.birthdatText}</Text>} 
-            backgroundColor={colors.parrotColor}
-            height={hp('25%')}
-            width={wp('75%')}
-            overlayColor={'transparent'}>
-            <Text style={styles.whyAskingText} >{strings.whyAskingText}</Text>
-      </Tooltip>
-      
-       
-    {/* Date.parse(dateValue) */}
+          <Text style={ styles.checkEmailText }>{strings.addBirthdayText}</Text>
+          <Text style={ styles.resetText }>{strings.notDisplayText}</Text>
 
-           <View style={styles.matchFeeTxt}>
-            <Text style={styles.dateText}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
-           </View>
-       
-      <TCButton
-        title={strings.continueCapTitle}
-        onPress={async() => {
-        
-          let user = await Utility.getStorage('userInfo');
+          <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
+            backgroundColor={ colors.parrotColor }
+            height={ hp('25%') }
+            width={ wp('75%') }
+            overlayColor={ 'transparent' }>
+              <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
+          </Tooltip>
 
-          let userBirthday={
+          {/* Date.parse(dateValue) */}
+
+          <View style={ styles.matchFeeTxt }>
+              <Text style={ styles.dateText }>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+          </View>
+
+          <TCButton
+        title={ strings.continueCapTitle }
+        onPress={ async () => {
+          const user = await Utility.getStorage('userInfo');
+
+          const userBirthday = {
             ...user,
-            birthday:dateValue,
+            birthday: dateValue,
           }
-          
+
           await Utility.setStorage('userInfo', userBirthday);
           navigation.navigate('ChooseGenderScreen');
-        }}
-        extraStyle={{marginTop:50,}}
+        } }
+        extraStyle={ { marginTop: 50 } }
       />
-        
-        <DateTimePicker
+
+          <DateTimePicker
           testID="dateTimePicker"
-          value={dateValue}
-          is24Hour={true}
+          value={ dateValue }
+          is24Hour={ true }
           display="default"
-          onChange={onChange}
+          onChange={ onChange }
           textColor="white"
-          style={{position:'absolute',left:0,right:0,bottom:10}}
+          style={ {
+            position: 'absolute', left: 0, right: 0, bottom: 10,
+          } }
         />
-          
-    </View>
+
+      </View>
   );
 }

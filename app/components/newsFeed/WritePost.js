@@ -1,32 +1,34 @@
 import React from 'react';
-import {StyleSheet, View, Image, Text} from 'react-native';
-import constants from '../../config/constants';
+import {
+  StyleSheet, View, Image, Text,
+} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-const {colors} = constants;
+import constants from '../../config/constants';
 import PATH from '../../Constants/ImagePath';
 
-function WritePost({navigation, postDataItem}) {
+const { colors } = constants;
 
+function WritePost({ navigation, postDataItem }) {
   let userImage = '';
   if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
     userImage = postDataItem.actor.data.thumbnail;
   }
 
   return (
-    <View style={styles.mainContainer}>
-      <Image style={styles.profileImg} source={userImage ? {uri: userImage} : PATH.profilePlaceHolder} />
+      <View style={ styles.mainContainer }>
+          <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : PATH.profilePlaceHolder } />
 
-      <Text
-        style={styles.writePostText}
-        onPress={() => navigation.navigate('WritePostScreen', { postDataItem: postDataItem })}>
-        Write a post...
-      </Text>
+          <Text
+        style={ styles.writePostText }
+        onPress={ () => navigation.navigate('WritePostScreen', { postDataItem }) }>
+              Write a post...
+          </Text>
 
-      <View style={styles.separatorLine}></View>
-    </View>
+          <View style={ styles.separatorLine }></View>
+      </View>
   );
 }
 
@@ -37,47 +39,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('4%'),
   },
   profileImg: {
-    height: hp('5%'),
-    width: hp('5%'),
-    resizeMode: 'cover',
-    backgroundColor: colors.themeColor,
     alignSelf: 'center',
+    backgroundColor: colors.themeColor,
+    borderColor: colors.whiteColor,
     borderRadius: 35,
     borderWidth: 1,
-    borderColor: colors.whiteColor,
+    height: hp('5%'),
+    resizeMode: 'cover',
+    width: hp('5%'),
   },
 
   separatorLine: {
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: colors.grayColor,
-    justifyContent: 'center',
     alignItems: 'center',
-    width: wp('100%'),
+    backgroundColor: colors.grayColor,
+    bottom: 0,
     height: 0.5,
+    justifyContent: 'center',
+    position: 'absolute',
+    width: wp('100%'),
   },
 
   writePostText: {
-    marginLeft: wp('4%'),
-
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: colors.whiteColor,
-
-    shadowRadius: 0.5,
-    shadowOffset: {width: 0, height: 1},
-    shadowColor: colors.googleColor,
-    shadowOpacity: 0.5,
-
-    fontSize: wp('3.6%'),
-    color: colors.grayColor,
-    backgroundColor: colors.whiteColor,
-
-    padding: 8,
-    paddingLeft: 12,
     alignSelf: 'center',
 
+    backgroundColor: colors.whiteColor,
+    borderColor: colors.whiteColor,
+    borderRadius: 5,
+
+    borderWidth: 1,
+    color: colors.grayColor,
+    fontSize: wp('3.6%'),
     height: 40,
+
+    marginLeft: wp('4%'),
+    padding: 8,
+    paddingLeft: 12,
+
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+
+    shadowRadius: 0.5,
     width: wp('75%'),
   },
 });

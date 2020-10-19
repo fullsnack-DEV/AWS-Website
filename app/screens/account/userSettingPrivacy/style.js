@@ -1,19 +1,16 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
 import constants from '../../../config/constants';
-const {colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    
-  },
   listContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -25,25 +22,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.blackColor,
-    alignSelf:'center',
-    
+    alignSelf: 'center',
+
+  },
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+
   },
   nextArrow: {
+    alignSelf: 'center',
     flex: 0.1,
     height: 15,
-    width: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    alignSelf: 'center',
-    tintColor: colors.grayColor,
-
     marginRight: 10,
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
+    width: 15,
   },
   separatorLine: {
-    backgroundColor: colors.lightgrayColor,
-    width: wp('90%'),
-    height: 0.5,
     alignSelf: 'center',
+    backgroundColor: colors.lightgrayColor,
+    height: 0.5,
+    width: wp('90%'),
   },
 });
 

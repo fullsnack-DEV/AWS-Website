@@ -1,27 +1,26 @@
-import {useState} from 'react';
-
-import storage from '../auth/storage';
+import { useState } from 'react';
 
 import auth from '@react-native-firebase/auth';
+import storage from '../auth/storage';
 
 export default useTokenizer = async () => {
   const [token, setToken] = useState('');
 
   //  const getToken = async () => {
   const expiryTime = await storage.retriveData('expiryTime');
-  var expiryDate = new Date(JSON.parse(expiryTime));
+  const expiryDate = new Date(JSON.parse(expiryTime));
   const authToken = await storage.retriveData('token');
-  var expiryTimestamp = expiryDate.getTime();
+  const expiryTimestamp = expiryDate.getTime();
 
-  var date = new Date();
-  var curruentTimestamp = date.getTime();
+  const date = new Date();
+  const curruentTimestamp = date.getTime();
   console.log('TIME: ', expiryTimestamp, ':::', curruentTimestamp);
   console.log('RETRIVE TOKEN FROM STORAGE: ', authToken);
 
   if (expiryTimestamp >= curruentTimestamp) {
     auth().onAuthStateChanged((user) => {
       if (user) {
-        user.getIdTokenResult().then(function (idTokenResult) {
+        user.getIdTokenResult().then((idTokenResult) => {
           try {
             console.log('User JWT Expiry time: ', idTokenResult.expirationTime);
             setToken(idTokenResult.token);
@@ -49,5 +48,5 @@ export default useTokenizer = async () => {
   //   setData(response.data);
   //   setError(false);
   // };
-  return {token};
+  return { token };
 };

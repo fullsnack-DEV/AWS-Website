@@ -1,26 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet,
+
   View,
   Text,
   Image,
   TextInput,
   FlatList,
   Alert,
-} from 'react-native';
-//import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
+} from 'react-native';
+// import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import Loader from '../../../components/loader/Loader';
+
 import styles from './style';
 import colors from '../../../Constants/Colors';
-import * as Utility from '../../../utility/index';
-import {searchLocationList, searchGroupList} from '../../../api/Authapi';
 
-function ChooseLocationScreen({navigation, route}) {
+import { searchLocationList, searchGroupList } from '../../../api/Authapi';
+
+function ChooseLocationScreen({ navigation }) {
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -29,11 +30,9 @@ function ChooseLocationScreen({navigation, route}) {
     this.getLocationData(searchText);
   }, [searchText]);
 
-  getLocationData = async (searchText) => {
-    console.log('search Text', searchText);
-
-    if (searchText.length >= 3) {
-      searchLocationList(searchText).then((response) => {
+  getLocationData = async (searchLocationText) => {
+    if (searchLocationText.length >= 3) {
+      searchLocationList(searchLocationText).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -50,7 +49,7 @@ function ChooseLocationScreen({navigation, route}) {
     };
 
     searchGroupList(queryParams).then((response) => {
-      if (response.status == true) {
+      if (response.status === true) {
         if (response.payload.length > 0) {
           navigation.navigate('TotalTeamsScreen', {
             city: item.terms[0].value,
@@ -61,58 +60,56 @@ function ChooseLocationScreen({navigation, route}) {
           });
         } else {
           navigation.navigate('ChooseSportsScreen', {
-            
+
             city: item.terms[0].value,
             state: item.terms[1].value,
             country: item.terms[2].value,
           });
         }
       } else {
-        alert('Towns Cup', response.messages);
+        Alert.alert('Towns Cup', response.messages);
       }
     });
   };
 
-  renderItem = ({item, index}) => {
-    return (
+  renderItem = ({ item, index }) => (
       <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => this.getTeamsData(item)}>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
+        style={ styles.listItem }
+        onPress={ () => this.getTeamsData(item) }>
+          <Text style={ styles.cityList }>{cityData[index].description}</Text>
 
-        <Separator />
+          <Separator />
       </TouchableWithoutFeedback>
-    );
-  };
+  );
 
   return (
-    <View style={styles.mainContainer}>
-      {/* <Loader visible={getTeamListing.loading} /> */}
-      <Image style={styles.background} source={PATH.orangeLayer} />
-      <Image style={styles.background} source={PATH.bgImage} />
-      <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <View style={ styles.mainContainer }>
+          {/* <Loader visible={getTeamListing.loading} /> */}
+          <Image style={ styles.background } source={ PATH.orangeLayer } />
+          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
-      <View style={styles.sectionStyle}>
-        <Image source={PATH.searchLocation} style={styles.searchImg} />
-        <TextInput
-          style={styles.textInput}
-          placeholder={strings.locationPlaceholderText}
+          <View style={ styles.sectionStyle }>
+              <Image source={ PATH.searchLocation } style={ styles.searchImg } />
+              <TextInput
+          style={ styles.textInput }
+          placeholder={ strings.locationPlaceholderText }
           clearButtonMode="always"
-          placeholderTextColor={colors.themeColor}
-          onChangeText={(text) => setSearchText(text)}
+          placeholderTextColor={ colors.themeColor }
+          onChangeText={ (text) => setSearchText(text) }
         />
-      </View>
-      {noData && (
-        <Text style={styles.noDataText}>
-          Please enter 3 characters to see cities
-        </Text>
-      )}
-      <FlatList
-        data={cityData}
-        renderItem={this.renderItem}
-        keyExtractor={(cityData) => cityData.id}
+          </View>
+          {noData && (
+          <Text style={ styles.noDataText }>
+              Please enter 3 characters to see cities
+          </Text>
+          )}
+          <FlatList
+        data={ cityData }
+        renderItem={ this.renderItem }
+        keyExtractor={ (item) => item.id }
       />
-    </View>
+      </View>
   );
 }
 

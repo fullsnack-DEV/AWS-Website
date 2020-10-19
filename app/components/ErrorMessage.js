@@ -15,18 +15,22 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
 
-function ErrorMessage({error, visible}) {
+const {
+  strings, colors, fonts, urls, PATH,
+} = constants;
+
+function ErrorMessage({ error, visible }) {
   if (!visible || !error) return null;
-  return <Text style={styles.errorText}>{error}</Text>;
+  return <Text style={ styles.errorText }>{error}</Text>;
 }
 
 const styles = StyleSheet.create({
   errorText: {
     color: colors.whiteColor,
-    marginLeft: wp('8%'),
+
     marginBottom: hp('1.5%'),
+    marginLeft: wp('8%'),
   },
 });
 

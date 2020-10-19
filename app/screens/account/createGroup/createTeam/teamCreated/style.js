@@ -1,67 +1,69 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
+
 } from 'react-native-responsive-screen';
 
 import constants from '../../../../../config/constants';
 
-const {strings, colors, fonts, urls, PATH} = constants;
+const {
+  colors, fonts,
+} = constants;
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  background: {
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
-    resizeMode: 'stretch',
-  },
   LocationText: {
     color: colors.whiteColor,
-    fontSize: wp('6.5%'),
     fontFamily: fonts.RBold,
+    fontSize: wp('6.5%'),
 
     marginTop: 20,
     textAlign: 'center',
   },
+  background: {
+    height: '100%',
+    position: 'absolute',
+    resizeMode: 'stretch',
+    width: '100%',
+  },
   foundText: {
     color: colors.whiteColor,
-    fontSize: wp('6.5%'),
     fontFamily: fonts.RRegular,
+    fontSize: wp('6.5%'),
     width: wp('70%'),
   },
-
-  groupsImg: {
-    width: 60,
-    height: 60,
-
-    resizeMode: 'contain',
-  },
-  sectionStyle: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
     borderRadius: 40,
     borderWidth: 1,
-    borderColor: colors.whiteColor,
     height: 50,
-    alignSelf: 'center',
-    width: '86%',
     marginTop: wp('20%'),
+    width: '86%',
   },
 
   goToProfileTitle: {
-    fontSize: 17,
+    color: colors.whiteColor,
     fontFamily: fonts.RBold,
+    fontSize: 17,
     height: 50,
     padding: 12,
-    color: colors.whiteColor,
     textAlign: 'center',
+  },
+  groupsImg: {
+    height: 60,
+    resizeMode: 'contain',
+
+    width: 60,
+  },
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+
+  sectionStyle: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
 });
 export default styles;
