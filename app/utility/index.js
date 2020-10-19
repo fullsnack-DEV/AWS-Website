@@ -26,6 +26,7 @@ export const passwordPattern = (password) => {
 
 export const isValidEmail = (email) => {
   // var reg = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  // eslint-disable-next-line no-useless-escape
   const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   if (reg.test(email) !== true) {
     return true;
@@ -88,26 +89,24 @@ export const showAlertWithCallBack = (msg, onOkClick) => {
   );
 };
 
-export const removeAuthKey = async () => {
-
-};
+export const removeAuthKey = async () => {};
 // New Utility Method for set any kind of value
 export const setStorage = async (key, value) => {
-  const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString()
-  console.log('valueString', valueString)
+  const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString();
+  console.log('valueString', valueString);
   await AsyncStorage.setItem(key, valueString);
-  console.log('valueString', valueString)
+  console.log('valueString', valueString);
 };
 
 export const getStorage = async (key) => {
   let value = await AsyncStorage.getItem(key);
   try {
-    value = JSON.parse(value)
-    return value
+    value = JSON.parse(value);
+    return value;
   } catch (e) {
     // Do nothing. Its null or or plain string
   }
-  return value
+  return value;
 };
 
 export const widthPercentageToDP = (widthPercent) => {
@@ -120,12 +119,4 @@ export const heightPercentageToDP = (heightPercent) => {
   // Convert string input to decimal number
   const elemHeight = parseFloat(heightPercent);
   return PixelRatio.roundToNearestPixel((screenHeight * elemHeight) / 100);
-};
-export const AuthToken = async (key) => {
-  try {
-    const token = await AsyncStorage.getItem(key);
-    return token ? JSON.parse(token) : null;
-  } catch (err) {
-    console.log('authToken Error', err);
-  }
 };

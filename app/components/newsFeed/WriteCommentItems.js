@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
@@ -6,7 +6,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import moment from 'moment';
 import PATH from '../../Constants/ImagePath';
 import constants from '../../config/constants';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
@@ -30,18 +29,6 @@ function WriteCommentItems({ data }) {
     userProfile = data.user.data.full_image;
   }
 
-  // let minutes = moment(new Date()).diff(commentPostTime, 'minute');
-  // let hours = moment(new Date()).diff(commentPostTime, 'hour');
-  const month = moment(new Date()).diff('2020-09-10T05:26:07.423048Z', 'week');
-  console.log('Month :-', data.created_at);
-  // console.log('hour :-', hours);
-  // console.log('Minute :-', minutes);
-  // if (hours > 1 && hours < 24) {
-  //     return hours + 'h ago';
-  // } else if (minutes < 60) {
-  //     return minutes + ' min ago';
-  // }
-
   return (
       <View style={ styles.mainContainer }>
           <Image
@@ -53,13 +40,11 @@ function WriteCommentItems({ data }) {
               <View style={ styles.userCommentTextStyle }>
                   <Text style={ styles.userNameTxt }>
                       {userName}
-                      {'  '}
                       <Text style={ styles.commentTextStyle }>{commentText}</Text>
                   </Text>
               </View>
               <Text style={ styles.activeTimeAgoTxt }>
-                  {/* {moment(data.created_at).fromNow()} */}
-                  {commentPostTimeCalculate(data.created_at)}
+                  {commentPostTimeCalculate(commentTime)}
               </Text>
           </View>
       </View>

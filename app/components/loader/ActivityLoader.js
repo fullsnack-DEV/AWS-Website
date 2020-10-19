@@ -4,11 +4,10 @@ import {
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 
-const { PATH, colors, fonts } = constants;
+const { colors } = constants;
 
 function ActivityLoader({ visible = false }) {
   if (!visible) return null;

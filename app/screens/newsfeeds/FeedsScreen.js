@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
-  StyleSheet, View, TouchableWithoutFeedback, Image,
+  StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import WritePost from '../../components/newsFeed/WritePost';
@@ -30,13 +30,9 @@ export default function FeedsScreen({ navigation }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      getPostDetails().then((response) => {
-        if (response.status) {
-          setPostData(response.payload.results);
-        } else {
-          alert(response.messages);
-        }
-      });
+      getPostDetails()
+        .then((response) => setPostData(response.payload.results))
+        .catch((e) => Alert.alert('', e.messages));
     });
 
     return () => {
@@ -55,17 +51,15 @@ export default function FeedsScreen({ navigation }) {
     });
   }, [navigation]);
   useEffect(() => {
-    getPostDetails().then(
-      (response) => {
-        if (response.status === true) {
-          setPostData(response.payload.results);
-        } else {
-          alert(response.messages);
-        }
+    getPostDetails()
+      .then((response) => {
+        setPostData(response.payload.results);
         setloading(false);
-      },
-      (error) => setloading(false),
-    );
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+        setloading(false);
+      });
   }, []);
 
   return (

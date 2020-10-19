@@ -2,9 +2,7 @@ import React from 'react';
 import {
   StyleSheet, TouchableOpacity, Image,
 } from 'react-native';
-
 import {
-
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 

@@ -15,8 +15,6 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import PATH from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import Separator from '../../../../components/Separator';
-import useApi from '../../../../hooks/useApi';
-import listing from '../../../../api/listing';
 
 import styles from './style';
 import colors from '../../../../Constants/Colors';
@@ -25,14 +23,14 @@ import * as Url from '../../../../api/Url';
 
 function SearchLocationScreen({ navigation, route }) {
   const [cityData, setCityData] = useState([]);
-  const [noData, setNoData] = useState(false);
+  const [noData] = useState(false);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     this.getLocationData(searchText);
   }, [searchText]);
 
-  getLocationData = async (searchText, token) => {
+  getLocationData = async (location, token) => {
     // if (searchText.length >= 3) {
     //   getCityList.request(searchText);
     //   setNoData(false);
@@ -42,7 +40,7 @@ function SearchLocationScreen({ navigation, route }) {
     //   setCityData([]);
     // }
 
-    console.log('search Text', searchText);
+    console.log('search Text', location);
     let headers;
 
     if (token === '' || token === null || token === undefined) {
@@ -57,7 +55,7 @@ function SearchLocationScreen({ navigation, route }) {
         'x-access-token': token,
       };
     }
-    const completeUrl = Url.GET_LOCATION + searchText;
+    const completeUrl = Url.GET_LOCATION + location;
     console.log('completeUrl.........', completeUrl);
 
     const response = await fetch(completeUrl, {
@@ -69,9 +67,7 @@ function SearchLocationScreen({ navigation, route }) {
     console.log('ressssssponsse.................', res);
     setCityData(res.predictions);
 
-    if (res !== null) {
-      return res;
-    }
+    return res;
   };
 
   getTeamsData = async (item) => {
@@ -90,7 +86,7 @@ function SearchLocationScreen({ navigation, route }) {
     console.log('CITY::', item.terms[0].value);
     console.log('STATE::', item.terms[1].value);
     try {
-      const res = await Service.get(
+      await Service.get(
         `${Url.GROUP_SEARCH}state=${state}&city=${city}`,
       );
 
@@ -153,7 +149,7 @@ function SearchLocationScreen({ navigation, route }) {
           <FlatList
         data={ cityData }
         renderItem={ this.renderItem }
-        keyExtractor={ (cityData) => cityData.id }
+        keyExtractor={ cityData.id }
       />
       </View>
   );

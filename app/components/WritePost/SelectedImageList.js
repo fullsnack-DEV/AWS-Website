@@ -5,7 +5,6 @@ import {
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 

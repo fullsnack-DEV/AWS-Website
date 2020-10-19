@@ -1,4 +1,3 @@
-import React from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const storeData = async (key, value) => {
@@ -15,15 +14,15 @@ const storeData = async (key, value) => {
 };
 
 const retriveData = async (key) => {
+  let value
   try {
-    if (typeof value === 'object') {
-      const jsonValue = await AsyncStorage.getItem(key);
-      return jsonValue !== null ? JSON.parse(jsonValue) : null;
-    }
-    return await AsyncStorage.getItem(key);
-  } catch (error) {
-    console.log(error.message);
+    value = await AsyncStorage.getItem(key);
+    value = JSON.parse(value)
+  } catch (e) {
+    console.log(e)
   }
+  value = await AsyncStorage.getItem(key);
+  return value
 };
 
 const removeData = async (key) => {

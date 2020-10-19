@@ -8,14 +8,13 @@ import constants from '../config/constants';
 
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
-import Feed from '../components/newsFeed/Feed';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
 import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 
 const {
-  strings, colors, fonts, urls, PATH,
+  colors,
 } = constants;
 
 const Stack = createStackNavigator();

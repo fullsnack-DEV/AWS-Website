@@ -5,7 +5,6 @@ import {
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 
@@ -40,7 +39,6 @@ const styles = StyleSheet.create({
   cancelBtnView: {
     position: 'absolute',
     backgroundColor: 'rgba(0,0,0,0.3)',
-    // alignSelf: 'flex-end',
     top: wp('1%'),
     left: wp('1%'),
     height: wp('6%'),

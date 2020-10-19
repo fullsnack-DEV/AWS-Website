@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Alert } from 'react-native';
 import constants from '../../config/constants';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { createReaction, getPostDetails } from '../../api/NewsFeedapi';
@@ -46,41 +46,31 @@ export default function NewsFeedList({ navigation, postData, userID }) {
                 reaction_type: 'clap',
                 activity_id: item.id,
               };
-              createReaction(bodyParams).then(
-                (res) => {
-                  if (res.status) {
-                    getPostDetails().then((response) => {
-                      if (response.status) {
-                        setData(response.payload.results);
-                      } else {
-                        alert(response.messages);
-                      }
-                      setloading(false);
-                    });
-                  } else {
-                    setloading(false);
-                    alert(res.messages);
-                  }
-                },
-                setloading(false),
-              );
+              createReaction(bodyParams)
+                .then(() => getPostDetails())
+                .then((response) => {
+                  setData(response.payload.results);
+                  setloading(false);
+                })
+                .catch((e) => {
+                  Alert.alert('', e.messages)
+                  setloading(false);
+                });
             }}
           />
         )}
         refreshing={pullRefresh}
         onRefresh={() => {
           setPullRefresh(true);
-          getPostDetails().then(
-            (response) => {
-              if (response.status) {
-                setData(response.payload.results);
-              } else {
-                alert(response.messages);
-              }
+          getPostDetails()
+            .then((response) => {
+              setData(response.payload.results);
               setPullRefresh(false);
-            },
-            setPullRefresh(false),
-          );
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages)
+              setPullRefresh(false);
+            });
         }}
         keyExtractor={(item, index) => index.toString()}
       />

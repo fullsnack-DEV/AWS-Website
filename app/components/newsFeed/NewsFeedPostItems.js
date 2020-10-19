@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -23,7 +24,6 @@ import MultiPostVideo from './MultiPostVideo';
 import NewsFeedDescription from './NewsFeedDescription';
 import {
   commentPostTimeCalculate,
-  loaderImage,
 } from '../../Constants/LoaderImages';
 import { deletePost, getPostDetails } from '../../api/NewsFeedapi';
 
@@ -40,23 +40,15 @@ function NewsFeedPostItems({
   let like = false;
   let filterLike = [];
   if (item.own_reactions && item.own_reactions.clap) {
-    filterLike = item.own_reactions.clap.map((clapItem) => {
-      if (clapItem.user_id === currentUserID) {
-
-      }
-    });
+    filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === currentUserID);
     if (filterLike.length > 0) {
       like = true;
     }
   }
 
-  let fullName = '';
   let userImage = '';
-  let entityType = '';
   if (item.actor && item.actor.data) {
-    fullName = item.actor.data.full_name;
     userImage = item.actor.data.full_image;
-    entityType = item.actor.data.entity_type;
   }
   let attachedImages = [];
   const descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
@@ -93,7 +85,7 @@ function NewsFeedPostItems({
               </TouchableOpacity>
           </View>
           <View>
-              {attachedImages.length > 0 ? (
+              {attachedImages.length > 0 && (
                 attachedImages.length === 1 ? (
                     <FlatList
               data={attachedImages}
@@ -103,45 +95,47 @@ function NewsFeedPostItems({
               ListHeaderComponent={() => <View style={{ width: wp('2%') }} />}
               ListFooterComponent={() => <View style={{ width: wp('2%') }} />}
               ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
-              renderItem={({ item, index }) => {
-                if (item.type === 'image') {
-                  return <SingleImage data={item} />;
+              renderItem={({ attachItem }) => {
+                if (attachItem.type === 'image') {
+                  return <SingleImage data={attachItem} />;
                 }
-                if (item.type === 'video') {
+                if (attachItem.type === 'video') {
                   return (
                       <VideoPost
-                      data={item}
+                      data={attachItem}
                       onVideoItemPress={() => {
-                        // navigation.navigate('FullVideoScreen', {url: item.url});
+                        // navigation.navigate('FullVideoScreen', {url: attachItem.url});
                       }}
                     />
                   );
                 }
+                return <View />;
               }}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(index) => index.toString()}
             />
                 ) : (
                     <Carousel
               data={attachedImages}
-              renderItem={({ item, index }) => {
-                if (item.type === 'image') {
+              renderItem={({ multiAttachItem, index }) => {
+                if (multiAttachItem.type === 'image') {
                   return (
                       <PostImageSet
-                      data={item}
+                      data={multiAttachItem}
                       itemNumber={index + 1}
                       totalItemNumber={attachedImages.length}
                     />
                   );
                 }
-                if (item.type === 'video') {
+                if (multiAttachItem.type === 'video') {
                   return (
                       <MultiPostVideo
-                      data={item}
+                      data={multiAttachItem}
                       itemNumber={index + 1}
                       totalItemNumber={attachedImages.length}
                     />
                   );
                 }
+                return <View />;
               }}
               inactiveSlideScale={1}
               inactiveSlideOpacity={1}
@@ -149,8 +143,6 @@ function NewsFeedPostItems({
               itemWidth={wp(94)}
             />
                 )
-              ) : (
-                  <View />
               )}
               {attachedImages.length > 0 ? (
                   <NewsFeedDescription descriptions={descriptions} character={150} />
@@ -251,41 +243,25 @@ function NewsFeedPostItems({
                   </View>
               </View>
               <ActionSheet
-          ref={actionSheet}
-          title={'News Feed Post'}
-          options={['Edit Post', 'Delete Post', 'Cancel']}
-          cancelButtonIndex={2}
-          destructiveButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              navigation.navigate('EditPostScreen', { data: item });
-            } else if (index === 1) {
-              const params = {
-                activity_id: item.id,
-              };
-              deletePost(params).then(
-                (res) => {
-                  console.log('Res :-', res);
-                  if (res.status === true) {
-                    getPostDetails().then((response) => {
-                      console.log('get Res :-', response);
-                      if (response.status === true) {
-                        // navigation.goBack();
-                      } else {
-                        alert(response.messages);
-                      }
-                      //   setloading(false);
-                    });
-                  } else {
-                    //   setloading(false);
-                    alert(res.messages);
+                ref={actionSheet}
+                title={'News Feed Post'}
+                options={['Edit Post', 'Delete Post', 'Cancel']}
+                cancelButtonIndex={2}
+                destructiveButtonIndex={1}
+                onPress={(index) => {
+                  if (index === 0) {
+                    navigation.navigate('EditPostScreen', { data: item });
+                  } else if (index === 1) {
+                    const params = {
+                      activity_id: item.id,
+                    };
+                    deletePost(params)
+                      .then(() => getPostDetails())
+                      .then(() => navigation.goBack())
+                      .catch((e) => Alert.alert('', e.messages));
                   }
-                },
-                (error) => {},
-              );
-            }
-          }}
-        />
+                }}
+              />
           </View>
       </View>
   );
@@ -341,9 +317,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: wp('3%'),
     marginHorizontal: wp('4%'),
-  },
-  margin: {
-    marginLeft: 10,
   },
   userNameTxt: {
     color: colors.lightBlackColor,

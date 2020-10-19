@@ -12,7 +12,6 @@ import {
 import Moment from 'moment';
 import {
   widthPercentageToDP as wp,
-
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 import PATH from '../../Constants/ImagePath';
@@ -133,6 +132,7 @@ function Feed({ data, navigation }) {
           </TouchableWithoutFeedback>
       );
     }
+    return <View />
   };
   pushToPostDetail = (type, url) => {
     if (type === 'video') {
@@ -370,9 +370,10 @@ const styles = StyleSheet.create({
   },
 
   separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    width: 3,
+    height: 10,
+    justifyContent: 'center',
+    position: 'absolute',
+    width: wp('100%'),
   },
   shareImage: {
     height: 23,

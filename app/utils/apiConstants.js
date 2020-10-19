@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './setting';
+import API_BASE_URL from './setting';
 
 const api = {
   baseURL: API_BASE_URL,

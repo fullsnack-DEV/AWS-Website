@@ -52,6 +52,7 @@ export const get = async (url, token, caller_id, caller) => {
     // console.log('res', res)
     // Alert.alert('', res.error)
   }
+  return res
 };
 export const upLoad = async (url, token, body) => {
   let headers;
@@ -94,6 +95,7 @@ export const upLoad = async (url, token, body) => {
     Alert.alert('', ' Somthing Went Wrong');
     console.log('err', err.message);
   }
+  return res
 };
 
 export const post = async (url, token, body, caller_id, caller) => {
@@ -140,6 +142,7 @@ export const post = async (url, token, body, caller_id, caller) => {
     return res;
     // throw new Error(res.error)
   }
+  return res
 };
 
 export const patch = async (url, token, body, caller_id, caller) => {
@@ -190,6 +193,7 @@ export const patch = async (url, token, body, caller_id, caller) => {
   } catch (error) {
     console.log('patch::error', error.message);
   }
+  return res
 };
 
 export const put = async (url, token, body) => {
@@ -235,6 +239,7 @@ export const put = async (url, token, body) => {
   } catch (err) {
     console.log('put::err', err.message);
   }
+  return res
 };
 
 export const deleteApi = async (url, token) => {
@@ -280,6 +285,7 @@ export const deleteApi = async (url, token) => {
   } catch (err) {
     console.log('put::err', err.message);
   }
+  return res
 };
 
 export const getLocation = async (url, token) => {
@@ -307,15 +313,5 @@ export const getLocation = async (url, token) => {
 
   const res = await response.json();
   console.log('ressssssponsse.................locatiionnnn', res);
-  if (res !== null) {
-    return res;
-
-    // if (res !== null && Object.keys(res).length !== 0) {
-    //     if (res.statusCode === 200 || res.statusCode === 303) {
-
-    //     }
-    // }
-    // console.log('res', res)
-    // Alert.alert('', res.error)
-  }
+  return res
 };

@@ -10,6 +10,7 @@ import {
   Platform,
   FlatList,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -38,14 +39,15 @@ export default function WriteCommentScreen({
       activity_id: data.id,
       reaction_type: 'comment',
     };
-    getReactions(params).then((response) => {
-      if (response.status === true) {
+    getReactions(params)
+      .then((response) => {
         setCommentData(response.payload);
-      } else {
-        alert(response.messages);
-      }
-      setloading(false);
-    }, (error) => setloading(false));
+        setloading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+        setloading(false);
+      });
   }, []);
 
   let userImage = '';
@@ -62,7 +64,7 @@ export default function WriteCommentScreen({
               <View style={ styles.containerStyle }>
                   <View style={ styles.backIconViewStyle } />
                   <View style={ styles.writePostViewStyle }>
-                      <Text style={ styles.writePostTextStyle }>{commentData.length > 0 ? (commentData.length === 1 ? `${commentData.length} Comment` : `${commentData.length} Comments`) : 'Write Comments'}</Text>
+                      <Text style={ styles.writePostTextStyle }>{commentData.length > 0 ? ((commentData.length === 1 && `${commentData.length} Comment`) || (commentData.length > 1 && `${commentData.length} Comments`)) : 'Write Comments'}</Text>
                   </View>
                   <View style={ styles.doneViewStyle }>
                       <Text
@@ -81,7 +83,7 @@ export default function WriteCommentScreen({
           {commentData ? (
               <FlatList
           data={ commentData }
-          renderItem={ ({ item, index }) => <WriteCommentItems data={ item } /> }
+          renderItem={ ({ item }) => <WriteCommentItems data={ item } /> }
           keyExtractor={ (item, index) => index.toString() }
         />
           ) : (
@@ -100,27 +102,25 @@ export default function WriteCommentScreen({
                   </View>
                   <View style={ styles.onlyMeViewStyle }>
                       <TextInput
-              placeholder={ 'Write a comment' }
-              placeholderTextColor={ colors.userPostTimeColor }
-              multiline={ true }
-              value={ commentTxt }
-              onChangeText={ (text) => setCommentText(text) }
-              style={ {
-                width: wp('66%'),
-                marginHorizontal: '2%',
-                fontSize: 14,
-                color: colors.lightBlackColor,
-                fontFamily: fonts.RRegular,
-                padding: 0,
-                paddingVertical: hp(1.5),
-                paddingLeft: 8,
-                alignSelf: 'center',
-                maxHeight: hp(20),
-              } }
-            />
-                      {commentTxt.trim().length > 0 && <TouchableOpacity onPress={ () => {
-                        // setloading(true);
-                        console.log('On Send Pressed!');
+                        placeholder={ 'Write a comment' }
+                        placeholderTextColor={ colors.userPostTimeColor }
+                        multiline={ true }
+                        value={ commentTxt }
+                        onChangeText={ (text) => setCommentText(text) }
+                        style={ {
+                          width: wp('66%'),
+                          marginHorizontal: '2%',
+                          fontSize: 14,
+                          color: colors.lightBlackColor,
+                          fontFamily: fonts.RRegular,
+                          padding: 0,
+                          paddingVertical: hp(1.5),
+                          paddingLeft: 8,
+                          alignSelf: 'center',
+                          maxHeight: hp(20),
+                        } }
+                      />
+                      {commentTxt.trim().length > 0 && <TouchableOpacity onPress={() => {
                         const bodyParams = {
                           reaction_type: 'comment',
                           activity_id: data.id,
@@ -128,18 +128,15 @@ export default function WriteCommentScreen({
                             text: commentTxt,
                           },
                         }
-                        createReaction(bodyParams).then((res) => {
-                          console.log('Create Reaction :-', res);
-                          if (res.status === true) {
-                            const data = [...commentData];
-                            data.push(res.payload);
-                            setCommentData(data);
+                        createReaction(bodyParams)
+                          .then((response) => {
+                            const dataOfComment = [...commentData];
+                            dataOfComment.push(response.payload);
+                            setCommentData(dataOfComment);
                             setCommentText('');
-                          } else {
-                            alert(response.messages);
-                          }
-                        }, (error) => setloading(false))
-                      } }>
+                          })
+                          .catch((e) => Alert.alert('', e.messages));
+                      }}>
                           <Text style={ styles.sendTextStyle }>SEND</Text>
                       </TouchableOpacity>}
                   </View>

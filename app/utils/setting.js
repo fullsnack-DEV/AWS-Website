@@ -1,6 +1,6 @@
 import { development, production, staging } from '../config/constants';
 
-const { Config } = require('../config/config');
+const Config = require('../config/config');
 
 const setAPIBaseURL = () => {
   switch (Config.env) {
@@ -10,7 +10,11 @@ const setAPIBaseURL = () => {
       return Config.stagingUrl;
     case production:
       return Config.productionUrl;
+    default:
+      return null;
   }
 };
 
-export const API_BASE_URL = setAPIBaseURL();
+const API_BASE_URL = setAPIBaseURL();
+
+export default { API_BASE_URL, setAPIBaseURL };

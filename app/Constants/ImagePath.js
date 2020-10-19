@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 const PATH = {
   orangeLayer: require('../assets/images/orange_layer.png'),
   signUpBg1: require('../assets/images/ic_signup_bg_1.png'),

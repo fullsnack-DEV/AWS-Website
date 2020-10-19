@@ -1,12 +1,7 @@
 import React from 'react';
 import {
   StyleSheet,
-  View,
   Text,
-  TouchableOpacity,
-  TouchableWithoutFeedbackComponent,
-  SafeAreaView,
-  TextInput,
 } from 'react-native';
 
 import {
@@ -16,13 +11,11 @@ import {
 
 import constants from '../config/constants';
 
-const {
-  strings, colors, fonts, urls, PATH,
-} = constants;
+const { colors } = constants;
 
 function ErrorMessage({ error, visible }) {
   if (!visible || !error) return null;
-  return <Text style={ styles.errorText }>{error}</Text>;
+  return <Text style={styles.errorText}>{error}</Text>;
 }
 
 const styles = StyleSheet.create({
