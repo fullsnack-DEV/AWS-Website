@@ -23,29 +23,27 @@
 
 // export default {getListing, getCityList, getTeamList, getUserDetail};
 
-//****************Fetch api call */
+//* ***************Fetch api call */
 
 import apiClient from './client';
 
 import constants from '../config/constants';
-const {endPoints} = constants;
 
-//Get all sports list of TC
+const { endPoints } = constants;
+
+// Get all sports list of TC
 const getListing = () => apiClient.apiGetClient(endPoints.sportsList);
 
 // Google api for search of city, state, country
 const getCityList = (searchText) => apiClient.apiGetGoogleClient(searchText);
 
 // Get all teams of TC
-const getTeamList = (queryParams) =>
-  apiClient.apiGetClientQuery(endPoints.groupSearch, queryParams);
+const getTeamList = (queryParams) => apiClient.apiGetClientQuery(endPoints.groupSearch, queryParams);
 
 // Get user detail by UID
-const getUserDetail = (uid) =>
-  apiClient.apiGetClient(endPoints.getUserDetail + uid);
+const getUserDetail = (uid) => apiClient.apiGetClient(endPoints.getUserDetail + uid);
 
-const getUserFeedDetail = (uid) =>
-  apiClient.apiGetClient(endPoints.getUserFeed + '?uid=' + uid);
+const getUserFeedDetail = (uid) => apiClient.apiGetClient(`${endPoints.getUserFeed}?uid=${uid}`);
 const getFeedDetail = () => apiClient.apiGetClient(endPoints.getNewsFeeds);
 
 export default {

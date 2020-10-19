@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import {
+  StyleSheet, View, Text, Image,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
@@ -7,78 +9,79 @@ import {
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 import { loaderImage } from '../../Constants/LoaderImages';
-const {fonts, colors} = constants;
 
-function PostImageSet({data, itemNumber, totalItemNumber}) {
+const { fonts, colors } = constants;
+
+function PostImageSet({ data, itemNumber, totalItemNumber }) {
   const randomImage = Math.floor(Math.random() * loaderImage.length);
-  let uploadImageURL = data && typeof data.thumbnail === "string" && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
-  
+  const uploadImageURL = data && typeof data.thumbnail === 'string' && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+
   return (
-    <View style={styles.uploadedImage}>
-      <View style={[styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor}]}>
-        <FastImage
-          style={styles.imageStyle}
-          source={loaderImage[randomImage].image}
-          resizeMode={FastImage.resizeMode.contain}
+      <View style={ styles.uploadedImage }>
+          <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
+              <FastImage
+          style={ styles.imageStyle }
+          source={ loaderImage[randomImage].image }
+          resizeMode={ FastImage.resizeMode.contain }
         />
-        <Text style={styles.loadingTextStyle}>Loading...</Text>
-      </View>
-      <Image
-        style={[styles.uploadedImage, {position: 'absolute'}]}
-        source={{
+              <Text style={ styles.loadingTextStyle }>Loading...</Text>
+          </View>
+          <Image
+        style={ [styles.uploadedImage, { position: 'absolute' }] }
+        source={ {
           uri: uploadImageURL,
-        }}
-        resizeMode={FastImage.resizeMode.cover}
+        } }
+        resizeMode={ FastImage.resizeMode.cover }
       />
-      <View style={styles.lengthViewStyle}>
-        <Text style={styles.lengthTextStyle}>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
+          <View style={ styles.lengthViewStyle }>
+              <Text style={ styles.lengthTextStyle }>
+                  {itemNumber}
+                  {'/'}
+                  {totalItemNumber}
+              </Text>
+          </View>
       </View>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  uploadedImage: {
-    height: wp('91%'),
-    width: wp('91%'),
-    marginVertical: '1%',
-    borderRadius: wp('4%'),
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  lengthViewStyle: {
-    position: 'absolute',
-    backgroundColor: 'red',
-    alignSelf: 'flex-end',
-    top: wp('5%'),
-    right: wp('3%'),
-    padding: wp('1.5%'),
-    borderRadius: wp('5%'),
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lengthTextStyle: {
-    fontSize: 15,
-    color: '#fff',
-    paddingHorizontal: wp('1.5%'),
-    fontFamily: fonts.RRegular,
-  },
   imageStyle: {
     height: 50,
     width: 50,
   },
+  lengthTextStyle: {
+    color: '#fff',
+    fontFamily: fonts.RRegular,
+    fontSize: 15,
+    paddingHorizontal: wp('1.5%'),
+  },
+  lengthViewStyle: {
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    backgroundColor: 'red',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: wp('5%'),
+    justifyContent: 'center',
+    padding: wp('1.5%'),
+    position: 'absolute',
+    right: wp('3%'),
+    top: wp('5%'),
+  },
   loadingTextStyle: {
-    fontSize: 14,
-    fontFamily: fonts.RBold,
     color: colors.googleColor,
-    marginTop: 25
-}
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    marginTop: 25,
+  },
+  uploadedImage: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: wp('4%'),
+    height: wp('91%'),
+    justifyContent: 'center',
+    marginVertical: '1%',
+    width: wp('91%'),
+  },
 });
 
 export default PostImageSet;

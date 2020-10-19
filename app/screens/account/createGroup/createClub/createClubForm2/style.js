@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -6,14 +6,152 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../../../../../config/constants';
-const {colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 
 const styles = StyleSheet.create({
+  curruency: {
+    alignSelf: 'flex-end',
+    fontSize: wp('4%'),
+  },
+
+  feeText: {
+    alignSelf: 'center',
+    fontSize: wp('3.8%'),
+    height: 40,
+    width: '96%',
+  },
+
+  fieldTitle: {
+    marginTop: hp('2%'),
+
+    fontSize: wp('3.8%'),
+    textAlign: 'left',
+    // fontFamily: fonts.RBold,
+    paddingLeft: 15,
+
+    color: colors.lightBlackColor,
+  },
+
+  form1: {
+    backgroundColor: colors.themeColor,
+    height: 5,
+    marginLeft: 2,
+    marginRight: 2,
+    width: 10,
+  },
+  form2: {
+    backgroundColor: colors.themeColor,
+    height: 5,
+    marginLeft: 2,
+    marginRight: 2,
+    width: 10,
+  },
+  form3: {
+    backgroundColor: colors.lightgrayColor,
+    height: 5,
+    marginLeft: 2,
+    marginRight: 2,
+    width: 10,
+  },
+  form4: {
+    backgroundColor: colors.lightgrayColor,
+    height: 5,
+    marginLeft: 2,
+    marginRight: 2,
+    width: 10,
+  },
+  formSteps: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    marginRight: 15,
+    marginTop: 15,
+  },
+
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
+  matchFeeView: {
+    alignSelf: 'center',
+    backgroundColor: colors.offwhite,
 
+    borderRadius: 5,
+    color: 'black',
+    elevation: 3,
+    flexDirection: 'row',
+    fontSize: wp('3.5%'),
+    height: 40,
+
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+
+    paddingVertical: 12,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    width: wp('92%'),
+  },
+  membershipText: {
+    color: colors.lightBlackColor,
+    fontSize: wp('5%'),
+    marginLeft: 15,
+    marginTop: 20,
+  },
+  nextButton: {
+    alignSelf: 'center',
+    borderRadius: 30,
+    height: 45,
+    marginBottom: 40,
+    marginTop: wp('12%'),
+    width: '90%',
+  },
+  nextButtonText: {
+    alignSelf: 'center',
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: wp('4%'),
+    marginVertical: 10,
+  },
+  radioButtonView: {
+    flexDirection: 'row',
+    marginLeft: 20,
+    marginRight: 15,
+    marginTop: 10,
+  },
+  radioImage: {
+    alignSelf: 'center',
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: colors.radioButtonColor,
+    width: 22,
+  },
+  radioText: {
+    alignSelf: 'center',
+    color: colors.lightBlackColor,
+    fontSize: wp('4%'),
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+
+    marginTop: 20,
+    width: wp('90%'),
+  },
+  smallText: {
+    color: colors.lightBlackColor,
+    fontSize: wp('3%'),
+    marginLeft: 20,
+
+    marginTop: 10,
+  },
   smallTxt: {
     color: colors.grayColor,
     fontSize: wp('2.8%'),
@@ -21,156 +159,21 @@ const styles = StyleSheet.create({
 
     textAlign: 'left',
   },
-
-  nextButton: {
-    width: '90%',
-    height: 45,
+  unSelectRadioImage: {
     alignSelf: 'center',
-    marginTop: wp('12%'),
-    borderRadius: 30,
-    marginBottom: 40,
-  },
-
-  formSteps: {
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    marginRight: 15,
-    marginTop: 15,
-  },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    width: 10,
-    marginLeft: 2,
-    marginRight: 2,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    width: 10,
-    marginLeft: 2,
-    marginRight: 2,
-  },
-  form3: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    width: 10,
-    marginLeft: 2,
-    marginRight: 2,
-  },
-  form4: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    width: 10,
-    marginLeft: 2,
-    marginRight: 2,
-  },
-
-  nextButtonText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontSize: wp('4%'),
-    fontFamily: fonts.RBold,
-    marginVertical: 10,
-  },
-  membershipText: {
-    fontSize: wp('5%'),
-    marginLeft: 15,
-    marginTop: 20,
-    color: colors.lightBlackColor,
-  },
-  smallText: {
-    fontSize: wp('3%'),
-    marginLeft: 20,
-    marginTop: 10,
-
-    color: colors.lightBlackColor,
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
+    width: 22,
   },
   whoJoinText: {
-    fontSize: wp('4%'),
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+    marginBottom: 20,
     marginLeft: 20,
     marginRight: 20,
     marginTop: 15,
-    marginBottom: 20,
-    color: colors.lightBlackColor,
-  },
-  radioImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    tintColor: colors.radioButtonColor,
-    alignSelf: 'center',
-  },
-  unSelectRadioImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    alignSelf: 'center',
-  },
-  radioButtonView: {
-    flexDirection: 'row',
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 15,
-  },
-  radioText: {
-    fontSize: wp('4%'),
-    marginLeft: 15,
-    alignSelf: 'center',
-    marginRight: 15,
-    color: colors.lightBlackColor,
-  },
-  separatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('90%'),
-    marginTop: 20,
-
-    height: 0.5,
-    alignSelf: 'center',
-  },
-  curruency: {
-    fontSize: wp('4%'),
-    alignSelf: 'flex-end',
-  },
-  matchFeeView: {
-    flexDirection: 'row',
-    height: 40,
-
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('3.5%'),
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-  feeText: {
-    width: '96%',
-    fontSize: wp('3.8%'),
-    height: 40,
-    alignSelf: 'center',
-  },
-  fieldTitle: {
-    marginTop: hp('2%'),
-    color: colors.blackColor,
-    fontSize: wp('3.8%'),
-    textAlign: 'left',
-    // fontFamily: fonts.RBold,
-    paddingLeft: 15,
-
-    color: colors.lightBlackColor,
   },
 });
 

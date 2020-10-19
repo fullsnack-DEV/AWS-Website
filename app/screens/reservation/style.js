@@ -1,27 +1,33 @@
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
-
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+  StyleSheet,
+} from 'react-native';
 
 import constants from '../../config/constants';
-const {strings, colors, fonts} = constants;
+
+const { colors, fonts } = constants;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
-  tabContainer:{width:'100%',height:50,flexDirection:'row'},
-  upcomingTab:{flex:0.5,height:50,justifyContent:'center',alignItems:'center'},
-  upcomingText:{alignSelf:'center',fontSize:16,fontFamily:fonts.RBold,color:colors.lightBlackColor},
-  selectedLine:{alignSelf:'center',position:'absolute',bottom:-15,height:2,width:'100%',backgroundColor:colors.themeColor},
-  pastTab:{flex:0.5,height:50,justifyContent:'center',alignItems:'center'},
-  pastText:{alignSelf:'center',fontSize:16,fontFamily:fonts.RBold,color:colors.lightBlackColor},
+  pastTab: {
+    alignItems: 'center', flex: 0.5, height: 50, justifyContent: 'center',
+  },
+  pastText: {
+    alignSelf: 'center', color: colors.lightBlackColor, fontFamily: fonts.RBold, fontSize: 16,
+  },
+  selectedLine: {
+    alignSelf: 'center', backgroundColor: colors.themeColor, bottom: -15, height: 2, position: 'absolute', width: '100%',
+  },
+  tabContainer: { flexDirection: 'row', height: 50, width: '100%' },
+  upcomingTab: {
+    alignItems: 'center', flex: 0.5, height: 50, justifyContent: 'center',
+  },
+  upcomingText: {
+    alignSelf: 'center', color: colors.lightBlackColor, fontFamily: fonts.RBold, fontSize: 16,
+  },
 
-  
 });
 
 export default styles;
-        

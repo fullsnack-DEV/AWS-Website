@@ -1,23 +1,25 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import constants from '../config/constants';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-const {colors} = constants;
+
+const { colors } = constants;
 
 function Separator() {
-  return <View style={styles.separatorLine}></View>;
+  return <View style={ styles.separatorLine }></View>;
 }
 
 const styles = StyleSheet.create({
   separatorLine: {
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: colors.whiteColor,
-
-    justifyContent: 'center',
     alignItems: 'center',
-    width: wp('80%'),
+
+    backgroundColor: colors.whiteColor,
+    bottom: 0,
+
     height: 1,
+    justifyContent: 'center',
+    position: 'absolute',
+    width: wp('80%'),
   },
 });
 

@@ -1,6 +1,6 @@
-import {API_BASE_URL} from './setting';
+import { API_BASE_URL } from './setting';
 
-export const api = {
+const api = {
   baseURL: API_BASE_URL,
   auth: {
     userDetail: 'users/',
@@ -16,7 +16,7 @@ export const api = {
     postDetail: 'posts',
     getReaction: 'reactions',
     reaction: 'reactions',
-    createPostEndPoint: 'posts'
+    createPostEndPoint: 'posts',
   },
   // Search Constants
   search: {},
@@ -34,3 +34,5 @@ export const api = {
     teamsByClub: '/teams',
   },
 };
+
+export default api;

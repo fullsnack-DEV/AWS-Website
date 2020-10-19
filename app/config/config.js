@@ -1,4 +1,4 @@
-import {development, staging, production} from './constants';
+import { development } from './constants';
 
 export const Config = {
   env: development,

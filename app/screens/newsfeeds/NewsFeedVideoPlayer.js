@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useLayoutEffect} from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -17,22 +17,18 @@ import {
 import Geolocation from '@react-native-community/geolocation';
 
 import Video from 'react-native-video';
-import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
-//import VideoPlayer from 'react-native-video-controls';
-
-import WritePost from '../../components/newsFeed/WritePost';
+import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
+// import VideoPlayer from 'react-native-video-controls';
 
 import constants from '../../config/constants';
-const {colors, fonts, urls} = constants;
 import PATH from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
 
-const url =
-  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-export default function NewsFeedVideoPlayer({navigation, route}) {
+const { colors } = constants;
+
+export default function NewsFeedVideoPlayer({ navigation, route }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
@@ -44,9 +40,9 @@ export default function NewsFeedVideoPlayer({navigation, route}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback onPress={() => alert('This is a button!')}>
-          <Image source={PATH.vertical3Dot} style={styles.headerRightImg} />
-        </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={ () => alert('This is a button!') }>
+              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+          </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
@@ -56,7 +52,7 @@ export default function NewsFeedVideoPlayer({navigation, route}) {
   };
   onPaused = (playerState) => {
     console.log('STATE::', playerState);
-    if (paused == true) {
+    if (paused === true) {
       setPlayerState(PLAYER_STATES.PLAYING);
       setPaused(!paused);
       playerState;
@@ -106,77 +102,50 @@ export default function NewsFeedVideoPlayer({navigation, route}) {
   onSeeking = (currentTime) => setCurrentTime(currentTime);
 
   return (
-    <View style={styles.container}>
-      <Video
-        source={{uri: route.params.url}} // Can be a URL or a local file.
-        ref={(videoPlayer) => (this.videoPlayer = videoPlayer)}
-        volume={mute}
-        //resizeMode="cover"
-        onEnd={this.onEnd}
-        onLoad={this.onLoad}
-        paused={paused}
-        style={styles.mediaPlayer}
-        onProgress={this.onProgress}
-        onLoadStart={this.onLoadStart}
+      <View style={ styles.container }>
+          <Video
+        source={ { uri: route.params.url } } // Can be a URL or a local file.
+        ref={ (videoPlayer) => (this.videoPlayer = videoPlayer) }
+        volume={ mute }
+        // resizeMode="cover"
+        onEnd={ this.onEnd }
+        onLoad={ this.onLoad }
+        paused={ paused }
+        style={ styles.mediaPlayer }
+        onProgress={ this.onProgress }
+        onLoadStart={ this.onLoadStart }
       />
 
-      <MediaControls
+          <MediaControls
         mainColor="white"
-        onSeek={this.onSeek}
-        onReplay={this.onReplay}
-        onPaused={this.onPaused}
-        onSeeking={this.onSeeking}
-        duration={duration}
-        isLoading={isLoading}
-        onFullScreen={this.onFullScreen}
-        progress={currentTime}
-        playerState={playerState}>
-        <MediaControls.Toolbar>
-          <View style={styles.toolbar}>
-            <Text style={{color: 'red'}}>I'm a custom toolbar </Text>
-          </View>
-        </MediaControls.Toolbar>
-      </MediaControls>
-      {/* <View style={styles.toolbar}>
+        onSeek={ this.onSeek }
+        onReplay={ this.onReplay }
+        onPaused={ this.onPaused }
+        onSeeking={ this.onSeeking }
+        duration={ duration }
+        isLoading={ isLoading }
+        onFullScreen={ this.onFullScreen }
+        progress={ currentTime }
+        playerState={ playerState }>
+              <MediaControls.Toolbar>
+                  <View style={ styles.toolbar }>
+                      <Text style={ { color: colors.red } }>I'm a custom toolbar </Text>
+                  </View>
+              </MediaControls.Toolbar>
+          </MediaControls>
+          {/* <View style={styles.toolbar}>
         <Text style={{color: 'red'}}>I'm a custom toolbar </Text>
       </View> */}
-    </View>
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
-  toolbar: {
-    color: 'white',
-    width: '100%',
-    position: 'absolute',
-    bottom: wp('30%'),
-    backgroundColor: 'black',
-  },
-  mediaPlayer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-
-    backgroundColor: 'black',
-  },
   headerRightImg: {
     height: 20,
-    width: 20,
+    marginRight: 20,
     resizeMode: 'contain',
     tintColor: colors.whiteColor,
-    marginRight: 20,
+    width: 20,
   },
 });

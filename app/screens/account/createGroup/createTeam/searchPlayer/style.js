@@ -1,4 +1,6 @@
-import {StyleSheet, View, Text, Image, TextInput, FlatList} from 'react-native';
+import {
+  StyleSheet,
+} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -6,56 +8,59 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../../../../../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
   background: {
-    position: 'absolute',
     height: '100%',
-    width: '100%',
+    position: 'absolute',
     resizeMode: 'stretch',
+    width: '100%',
   },
   LocationText: {
-    marginTop: hp('0%'),
     color: colors.whiteColor,
-    fontSize: wp('6%'),
-    textAlign: 'left',
     fontFamily: fonts.RBold,
+    fontSize: wp('6%'),
+    marginTop: hp('0%'),
     paddingLeft: 30,
+    textAlign: 'left',
   },
   textInput: {
+    color: colors.blackColor,
     flex: 1,
     fontFamily: fonts.RRegular,
     fontSize: wp('4%'),
-    color: colors.blackColor,
     paddingLeft: 10,
   },
   searchImg: {
-    width: wp('4%'),
-    height: hp('4%'),
-    tintColor: colors.grayColor,
-    resizeMode: 'contain',
     alignSelf: 'center',
+    height: hp('4%'),
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
+    width: wp('4%'),
   },
   sectionStyle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-
-    margin: wp('8%'),
+    backgroundColor: colors.whiteColor,
     borderRadius: 25,
-    shadowRadius: 4,
-    shadowOffset: {width: 0, height: 4},
-    shadowColor: colors.googleColor,
-    shadowOpacity: 0.5,
 
+    flexDirection: 'row',
+    height: 50,
+    justifyContent: 'center',
+    margin: wp('8%'),
     paddingLeft: 17,
     paddingRight: 5,
-    height: 50,
-    backgroundColor: colors.whiteColor,
+
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   cityList: {
     color: colors.whiteColor,
@@ -63,72 +68,64 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: fonts.RRegular,
 
-    //paddingLeft: wp('1%'),
+    // paddingLeft: wp('1%'),
     width: wp('70%'),
     margin: wp('4%'),
     textAlignVertical: 'center',
   },
 
   noDataText: {
-    marginTop: hp('1%'),
-    color: colors.whiteColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
-    width: wp('55%'),
-    textAlign: 'center',
     alignSelf: 'center',
+    color: colors.whiteColor,
     fontFamily: fonts.RRegular,
-  },
-  ////////
-  background: {
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
-    resizeMode: 'stretch',
+    fontSize: wp('4%'),
+    marginTop: hp('1%'),
+    textAlign: 'center',
+    width: wp('55%'),
   },
   sportText: {
-    marginTop: hp('12%'),
-    marginBottom: hp('4%'),
     color: colors.whiteColor,
-    fontSize: wp('6%'),
-    textAlign: 'left',
     fontFamily: fonts.RBold,
+    fontSize: wp('6%'),
+    marginBottom: hp('4%'),
+    marginTop: hp('12%'),
     paddingLeft: 30,
+    textAlign: 'left',
     width: wp('70%'),
   },
   teamNameText: {
     color: colors.lightBlackColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
     fontFamily: fonts.RBlack,
-
+    fontSize: wp('4%'),
     marginLeft: wp('4%'),
-    width: wp('80%'),
 
+    textAlign: 'left',
     textAlignVertical: 'center',
+
+    width: wp('80%'),
   },
   cityText: {
     color: colors.lightBlackColor,
-    fontSize: wp('3.5%'),
-    textAlign: 'left',
     fontFamily: fonts.RRegular,
-
+    fontSize: wp('3.5%'),
     marginLeft: wp('4%'),
-    width: wp('70%'),
 
+    textAlign: 'left',
     textAlignVertical: 'center',
+
+    width: wp('70%'),
   },
   sportImg: {
     width: wp('5%'),
     height: hp('4%'),
-    //paddingLeft: wp('25%'),
+    // paddingLeft: wp('25%'),
     resizeMode: 'contain',
     alignSelf: 'center',
   },
   checkboxImg: {
     width: wp('5.5%'),
 
-    //paddingLeft: wp('25%'),
+    // paddingLeft: wp('25%'),
     resizeMode: 'contain',
     alignSelf: 'center',
   },
@@ -143,96 +140,86 @@ const styles = StyleSheet.create({
     right: wp('2%'),
   },
   listItemContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
+    marginLeft: 20,
     paddingBottom: 15,
     paddingTop: 15,
-    marginLeft: 20,
-    alignItems: 'center',
   },
   teamImg: {
-    resizeMode: 'stretch',
     alignSelf: 'center',
-
-    width: 50,
-    height: 50,
     borderRadius: 25,
-  },
-  followBtn: {
-    width: 70,
-    height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: colors.lightBlackColor,
+
+    height: 50,
+    resizeMode: 'stretch',
+    width: 50,
   },
   followingBtn: {
-    width: 70,
-    height: 25,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: colors.lightBlackColor,
+    borderColor: colors.lightBlackColor,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: colors.lightBlackColor,
+    height: 25,
+    justifyContent: 'center',
+    width: 70,
   },
   followBtn: {
-    width: 70,
-    height: 25,
     alignItems: 'center',
-    justifyContent: 'center',
-
+    backgroundColor: 'transparent',
+    borderColor: colors.lightBlackColor,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: colors.lightBlackColor,
+    height: 25,
+    justifyContent: 'center',
+    width: 70,
   },
   followingText: {
     color: colors.themeColor,
-    fontSize: wp('3%'),
     fontFamily: fonts.RBlack,
+    fontSize: wp('3%'),
   },
   followText: {
     color: colors.lightBlackColor,
-    fontSize: wp('3%'),
     fontFamily: fonts.RBlack,
+    fontSize: wp('3%'),
   },
   separatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('90%'),
-    height: 0.5,
     alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    width: wp('90%'),
   },
   radioImage: {
+    alignSelf: 'center',
     height: 22,
-    width: 22,
     resizeMode: 'contain',
     tintColor: colors.radioButtonColor,
-    alignSelf: 'center',
+    width: 22,
   },
   unSelectRadioImage: {
+    alignSelf: 'center',
     height: 22,
-    width: 22,
     resizeMode: 'contain',
     tintColor: colors.grayColor,
-    alignSelf: 'center',
+    width: 22,
   },
   radioButtonView: {
     flexDirection: 'row',
   },
   nextButton: {
-    width: '90%',
-    height: 45,
     alignSelf: 'center',
-    marginTop: wp('5%'),
     borderRadius: 30,
+    height: 45,
     marginBottom: 30,
+    marginTop: wp('5%'),
+    width: '90%',
   },
   nextButtonText: {
     alignSelf: 'center',
     color: colors.whiteColor,
-    fontSize: wp('4%'),
     fontFamily: fonts.RBold,
+    fontSize: wp('4%'),
     marginVertical: 10,
   },
 });

@@ -1,37 +1,35 @@
+import { Alert } from 'react-native';
 import * as Url from './Url';
-import {alert, Alert} from 'react-native';
 
 export const get = async (url, token, caller_id, caller) => {
-  var headers;
+  let headers;
 
-  if (token == '' || token == null || token == undefined) {
+  if (token === '' || token === null || token === undefined) {
     headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
+  } else if (caller_id === null && caller === null) {
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+  } else if (caller === null) {
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      caller_id: `${caller_id}`,
+    };
   } else {
-    if (caller_id == null && caller == null) {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-      };
-    } else if (caller == null) {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        caller_id: '' + caller_id,
-      };
-    } else {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        caller_id: '' + caller_id,
-        caller: '' + caller,
-      };
-    }
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      caller_id: `${caller_id}`,
+      caller: `${caller}`,
+    };
   }
   const completeUrl = Url.BASE_URL + url;
   console.log('completeUrl', completeUrl);
@@ -41,7 +39,7 @@ export const get = async (url, token, caller_id, caller) => {
     headers,
   });
   console.log('HEADER IS: ', headers);
-  let res = await response.json();
+  const res = await response.json();
   console.log('ressssssponsse', JSON.stringify(res));
   if (res !== null) {
     return res;
@@ -56,9 +54,9 @@ export const get = async (url, token, caller_id, caller) => {
   }
 };
 export const upLoad = async (url, token, body) => {
-  var headers;
+  let headers;
 
-  if (token == '' || token == null || token == undefined) {
+  if (token === '' || token === null || token === undefined) {
     headers = {
       'Content-Type': 'multipart/form-data',
       Accept: 'application/json',
@@ -77,10 +75,10 @@ export const upLoad = async (url, token, body) => {
     const response = await fetch(completeUrl, {
       method: 'PUT',
       headers,
-      body: body,
+      body,
     });
 
-    let res = await response.json();
+    const res = await response.json();
 
     if (res !== null) {
       if (res !== null && Object.keys(res).length !== 0) {
@@ -99,38 +97,36 @@ export const upLoad = async (url, token, body) => {
 };
 
 export const post = async (url, token, body, caller_id, caller) => {
-  var headers;
-  if (token == '' || token == null || token == undefined) {
+  let headers;
+  if (token === '' || token === null || token === undefined) {
     headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
+  } else if (caller_id === null && caller === null) {
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+  } else if (caller === null) {
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      caller_id: `${caller_id}`,
+    };
   } else {
-    if (caller_id == null && caller == null) {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-      };
-    } else if (caller == null) {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        caller_id: '' + caller_id,
-      };
-    } else {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        caller_id: '' + caller_id,
-        caller: '' + caller,
-      };
-    }
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      caller_id: `${caller_id}`,
+      caller: `${caller}`,
+    };
   }
 
-  let data = JSON.stringify(body);
+  const data = JSON.stringify(body);
   const completeUrl = Url.BASE_URL + url;
   console.log('completeUrl', completeUrl);
   const response = await fetch(completeUrl, {
@@ -138,7 +134,7 @@ export const post = async (url, token, body, caller_id, caller) => {
     headers,
     body: data,
   });
-  let res = await response.json();
+  const res = await response.json();
   console.log('ressssssponsse', JSON.stringify(res));
   if (res !== null) {
     return res;
@@ -147,39 +143,37 @@ export const post = async (url, token, body, caller_id, caller) => {
 };
 
 export const patch = async (url, token, body, caller_id, caller) => {
-  var headers;
-  if (token == '' || token == null || token == undefined) {
+  let headers;
+  if (token === '' || token === null || token === undefined) {
     headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
+  } else if (caller_id === null && caller === null) {
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+  } else if (caller === null) {
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      caller_id: `${caller_id}`,
+    };
   } else {
-    if (caller_id == null && caller == null) {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-      };
-    } else if (caller == null) {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        caller_id: '' + caller_id,
-      };
-    } else {
-      headers = {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        caller_id: '' + caller_id,
-        caller: '' + caller,
-      };
-    }
+    headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      caller_id: `${caller_id}`,
+      caller: `${caller}`,
+    };
   }
   const completeUrl = Url.BASE_URL + url;
   console.log('completeUrl', completeUrl);
-  let data = JSON.stringify(body);
+  const data = JSON.stringify(body);
   try {
     const response = await fetch(completeUrl, {
       method: 'PATCH',
@@ -187,7 +181,7 @@ export const patch = async (url, token, body, caller_id, caller) => {
       body: data,
     });
 
-    let res = await response.json();
+    const res = await response.json();
     console.log('API Response: ', JSON.stringify(res));
     if (res !== null) {
       return res;
@@ -195,14 +189,13 @@ export const patch = async (url, token, body, caller_id, caller) => {
     }
   } catch (error) {
     console.log('patch::error', error.message);
-    return;
   }
 };
 
 export const put = async (url, token, body) => {
-  var headers;
+  let headers;
 
-  if (token == '' || token == null || token == undefined) {
+  if (token === '' || token === null || token === undefined) {
     headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -216,7 +209,7 @@ export const put = async (url, token, body) => {
   }
   const completeUrl = Url.BASE_URL + url;
   console.log('completeUrl', completeUrl);
-  let data = JSON.stringify(body);
+  const data = JSON.stringify(body);
   try {
     const response = await fetch(completeUrl, {
       method: 'PUT',
@@ -224,14 +217,14 @@ export const put = async (url, token, body) => {
       body: data,
     });
 
-    let res = await response.json();
+    const res = await response.json();
 
     if (res !== null) {
       if (res !== null && Object.keys(res).length !== 0) {
         if (res.statusCode === 200 || res.statusCode === 303) {
           console.log('res', res);
           return res;
-        } else if (res.statusCode === 400) {
+        } if (res.statusCode === 400) {
           console.log('else::res', res);
           return res;
         }
@@ -241,14 +234,13 @@ export const put = async (url, token, body) => {
     }
   } catch (err) {
     console.log('put::err', err.message);
-    return;
   }
 };
 
 export const deleteApi = async (url, token) => {
-  var headers;
+  let headers;
 
-  if (token == '' || token == null || token == undefined) {
+  if (token === '' || token === null || token === undefined) {
     headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -270,14 +262,14 @@ export const deleteApi = async (url, token) => {
       // body: data
     });
 
-    let res = await response.json();
+    const res = await response.json();
 
     if (res !== null) {
       if (res !== null && Object.keys(res).length !== 0) {
         if (res.statusCode === 200 || res.statusCode === 303) {
           console.log('res', res);
           return res;
-        } else if (res.statusCode === 400) {
+        } if (res.statusCode === 400) {
           console.log('else::res', res);
           return res;
         }
@@ -287,14 +279,13 @@ export const deleteApi = async (url, token) => {
     }
   } catch (err) {
     console.log('put::err', err.message);
-    return;
   }
 };
 
 export const getLocation = async (url, token) => {
-  var headers;
+  let headers;
 
-  if (token == '' || token == null || token == undefined) {
+  if (token === '' || token === null || token === undefined) {
     headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -306,7 +297,7 @@ export const getLocation = async (url, token) => {
       'x-access-token': token,
     };
   }
-  const completeUrl = Url.GET_LOCATION + 'mohali';
+  const completeUrl = `${Url.GET_LOCATION}mohali`;
   console.log('completeUrl.........', completeUrl);
 
   const response = await fetch(completeUrl, {
@@ -314,7 +305,7 @@ export const getLocation = async (url, token) => {
     headers,
   });
 
-  let res = await response.json();
+  const res = await response.json();
   console.log('ressssssponsse.................locatiionnnn', res);
   if (res !== null) {
     return res;

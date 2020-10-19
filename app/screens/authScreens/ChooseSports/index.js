@@ -1,20 +1,18 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   Image,
   FlatList,
-  ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import {
-  widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-
-import {getSportsList, createUser, getuserDetail} from '../../../api/Authapi';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { getSportsList, createUser, getuserDetail } from '../../../api/Authapi';
 
 import PATH from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
@@ -22,67 +20,64 @@ import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import Loader from '../../../components/loader/Loader';
 import * as Utility from '../../../utility/index';
 import styles from './style';
 
-function ChooseSportsScreen({navigation, route}) {
+function ChooseSportsScreen({ navigation, route }) {
   const [sports, setSports] = useState([]);
   const [selected, setSelected] = useState([]);
-   // For activity indigator
- const [loading, setloading] = useState(true);
+  // For activity indigator
+  const [loading, setloading] = useState(true);
 
   const authContext = useContext(AuthContext);
-  var selectedSports = [];
+  const selectedSports = [];
 
   useEffect(() => {
     getSportsList().then((response) => {
       setloading(true);
-      if (response.status == true) {
+      if (response.status === true) {
         console.log('response', response.payload);
 
-        var arr = [];
-        for (var tempData of response.payload) {
-          tempData['isChecked'] = false;
+        const arr = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const tempData of response.payload) {
+          tempData.isChecked = false;
           arr.push(tempData);
         }
         setSports(arr);
       } else {
-        alert(response.messages);
+        Alert.alert(response.messages);
       }
       setloading(false);
     });
   }, []);
 
-  const isIconCheckedOrNot = ({item, index}) => {
+  const isIconCheckedOrNot = ({ item, index }) => {
     console.log('SELECTED:::', index);
 
     sports[index].isChecked = !item.isChecked;
 
-    setSports((sports) => [...sports]);
+    setSports([...sports]);
 
-    for (let temp of sports) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const temp of sports) {
       if (temp.isChecked) {
         selectedSports.push(temp.sport_name);
       }
     }
 
     setSelected(selectedSports);
-    console.log('sports Checked ?:::', selectedSports);
   };
 
   const signUpWithTC = async () => {
-     
-      let user = await Utility.getStorage('userInfo');
-      console.log('DATA RETRIVED USER INFO... ', JSON.stringify(user));
-     
-    let data = {
+    const user = await Utility.getStorage('userInfo');
+
+    const data = {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      birthday:user.birthday,
-      gender:user.gender,
+      birthday: user.birthday,
+      gender: user.gender,
       thumbnail: '',
       full_image: '',
       sports: selected,
@@ -93,7 +88,7 @@ function ChooseSportsScreen({navigation, route}) {
 
     createUser(data).then((response) => {
       setloading(true);
-      if (response.status == true) {
+      if (response.status === true) {
         console.log('PAYLOAD::', JSON.stringify(response));
         getUserInfo();
       } else {
@@ -104,13 +99,11 @@ function ChooseSportsScreen({navigation, route}) {
   };
   const getUserInfo = async () => {
     setloading(true);
-    var uid =  await Utility.getStorage('UID');
-    getuserDetail(uid).then(async(response) => {
-      if (response.status == true) {
-       
+    const uid = await Utility.getStorage('UID');
+    getuserDetail(uid).then(async (response) => {
+      if (response.status === true) {
         await Utility.setStorage('user', response.payload);
-        authContext.setUser(response.payload); 
-       
+        authContext.setUser(response.payload);
       } else {
         console.log(response);
         alert('Something went wrong..!!');
@@ -119,62 +112,60 @@ function ChooseSportsScreen({navigation, route}) {
     });
   };
 
-  renderItem = ({item, index}) => {
-    return (
+  renderItem = ({ item, index }) => (
       <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => {
-          isIconCheckedOrNot({item, index});
-        }}>
-        {item.sport_name == 'Soccer' && (
-          <Image source={PATH.footballSport} style={styles.sportImg} />
-        )}
-        {item.sport_name == 'Tennis' && (
-          <Image source={PATH.bandySport} style={styles.sportImg} />
-        )}
-        {item.sport_name == 'Football' && (
-          <Image source={PATH.footballSport} style={styles.sportImg} />
-        )}
-        {item.sport_name == 'Baseball' && (
-          <Image source={PATH.baseballSport} style={styles.sportImg} />
-        )}
-        {item.sport_name == 'Volleyball' && (
-          <Image source={PATH.archerySport} style={styles.sportImg} />
-        )}
-
-        <Text style={styles.sportList}>{item.sport_name}</Text>
-        <View style={styles.checkbox}>
-          {sports[index].isChecked ? (
-            <Image source={PATH.checkWhite} style={styles.checkboxImg} />
-          ) : (
-            <Image source={PATH.uncheckWhite} style={styles.checkboxImg} />
+        style={ styles.listItem }
+        onPress={ () => {
+          isIconCheckedOrNot({ item, index });
+        } }>
+          {item.sport_name === 'Soccer' && (
+          <Image source={ PATH.footballSport } style={ styles.sportImg } />
           )}
-        </View>
-        <Separator />
+          {item.sport_name === 'Tennis' && (
+          <Image source={ PATH.bandySport } style={ styles.sportImg } />
+          )}
+          {item.sport_name === 'Football' && (
+          <Image source={ PATH.footballSport } style={ styles.sportImg } />
+          )}
+          {item.sport_name === 'Baseball' && (
+          <Image source={ PATH.baseballSport } style={ styles.sportImg } />
+          )}
+          {item.sport_name === 'Volleyball' && (
+          <Image source={ PATH.archerySport } style={ styles.sportImg } />
+          )}
+
+          <Text style={ styles.sportList }>{item.sport_name}</Text>
+          <View style={ styles.checkbox }>
+              {sports[index].isChecked ? (
+                  <Image source={ PATH.checkWhite } style={ styles.checkboxImg } />
+              ) : (
+                  <Image source={ PATH.uncheckWhite } style={ styles.checkboxImg } />
+              )}
+          </View>
+          <Separator />
       </TouchableWithoutFeedback>
-    );
-  };
+  );
 
   return (
-    <>
-      <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-        {/* <Loader visible={getSportsList.loading} /> */}
-        <Image style={styles.background} source={PATH.orangeLayer} />
-        <Image style={styles.background} source={PATH.bgImage} />
+      <>
+          <View style={ styles.mainContainer }>
+              <ActivityLoader visible={ loading } />
+              {/* <Loader visible={getSportsList.loading} /> */}
+              <Image style={ styles.background } source={ PATH.orangeLayer } />
+              <Image style={ styles.background } source={ PATH.bgImage } />
 
-        <Text style={styles.sportText}>{strings.sportText}</Text>
-        {/* <ActivityIndicator animating={loading} size="large" /> */}
-        <FlatList
-          data={sports}
-          keyExtractor={(sports) => sports.sport_name}
-          renderItem={this.renderItem}
+              <Text style={ styles.sportText }>{strings.sportText}</Text>
+              {/* <ActivityIndicator animating={loading} size="large" /> */}
+              <FlatList
+          data={ sports }
+          keyExtractor={ (item) => item.sport_name }
+          renderItem={ this.renderItem }
         />
 
-        <TCButton
-          title={strings.applyTitle}
-          extraStyle={{position: 'absolute', bottom: hp('7%')}}
-          onPress={() => {
+              <TCButton
+          title={ strings.applyTitle }
+          extraStyle={ { position: 'absolute', bottom: hp('7%') } }
+          onPress={ () => {
             if (route.params && route.params.teamData) {
               navigation.navigate('FollowTeams', {
                 teamData: route.params.teamData,
@@ -186,10 +177,10 @@ function ChooseSportsScreen({navigation, route}) {
             } else {
               signUpWithTC();
             }
-          }}
+          } }
         />
-      </View>
-    </>
+          </View>
+      </>
   );
 }
 

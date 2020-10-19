@@ -1,15 +1,11 @@
-import React,{Component}  from 'react';
+import React, { Component } from 'react';
 
 // const {strings, urls, PATH, endPoints} = constants;
-import AppNavigator from "../navigation/AppNavigator";
+import AppNavigator from '../navigation/AppNavigator';
 
-  function BottomTab({navigation}) {
-
-
-
- 
+function BottomTab({ navigation }) {
   return (
-   <AppNavigator></AppNavigator>
+      <AppNavigator></AppNavigator>
   );
-  }
+}
 export default BottomTab;

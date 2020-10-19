@@ -1,44 +1,43 @@
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
-
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+  StyleSheet,
+} from 'react-native';
 
 import constants from '../../../config/constants';
-const {colors, fonts} = constants;
+
+const { colors, fonts } = constants;
 const styles = StyleSheet.create({
-    mainContainer: {
-      flex: 1,
-      flexDirection: 'column',
-    },
-    background: {
-      position: 'absolute',
-      height: '100%',
-      width: '100%',
-      resizeMode: 'stretch',
-    },
-    checkEmailText: {
-      
-      color: colors.whiteColor,
-      fontSize: 28,
-      textAlign: 'left',
-      fontFamily: fonts.RBold,
-     
-    },
-    resetText: {
-     marginLeft:20,
-     marginRight:20,
-     marginTop:10,
-      color: colors.whiteColor,
-      fontSize: 16,
-      textAlign: 'center',
-      fontFamily: fonts.RRegular,
-      
-    },
-    textContainer:{
-      flex:1,
-      justifyContent: 'center',
-      alignItems: 'center'}
-  });
-  export default styles
+  background: {
+    height: '100%',
+    position: 'absolute',
+    resizeMode: 'stretch',
+    width: '100%',
+  },
+  checkEmailText: {
+
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 28,
+    textAlign: 'left',
+
+  },
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  resetText: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 10,
+    textAlign: 'center',
+
+  },
+  textContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
+export default styles

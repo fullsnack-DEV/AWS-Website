@@ -18,10 +18,9 @@ const retriveData = async (key) => {
   try {
     if (typeof value === 'object') {
       const jsonValue = await AsyncStorage.getItem(key);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } else {
-      return await AsyncStorage.getItem(key);
+      return jsonValue !== null ? JSON.parse(jsonValue) : null;
     }
+    return await AsyncStorage.getItem(key);
   } catch (error) {
     console.log(error.message);
   }
@@ -35,4 +34,4 @@ const removeData = async (key) => {
   }
 };
 
-export default {storeData, retriveData, removeData};
+export default { storeData, retriveData, removeData };

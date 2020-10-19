@@ -2,10 +2,9 @@ import React from 'react';
 
 import 'react-native-gesture-handler';
 
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import constants from '../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
 
 import AccountScreen from '../screens/account/index';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
@@ -39,21 +38,22 @@ import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy';
 import ChangePasswordScreen from '../screens/account/userSettingPrivacy/changePassword'
 import PersonalInformationScreen from '../screens/account/userSettingPrivacy/personalInformation'
 
+const { colors } = constants;
+
 const Stack = createStackNavigator();
 
-const AccountNavigator = () => {
-  return (
+const AccountNavigator = () => (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={ {
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
         // headerTitle: true,
         headerBackTitleVisible: false,
-      }}>
-      <Stack.Screen
+      } }>
+        <Stack.Screen
         name="AccountScreen"
-        component={AccountScreen}
-        options={{
+        component={ AccountScreen }
+        options={ {
           // title: 'Account',
           // headerTintColor: colors.blackColor,
           // headerTitleStyle: {
@@ -65,12 +65,12 @@ const AccountNavigator = () => {
           //   borderBottomWidth: 0.3,
           // },
           headerShown: false,
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="ScheduleScreen"
-        component={ScheduleScreen}
-        options={{
+        component={ ScheduleScreen }
+        options={ {
           title: 'Schedule',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -81,12 +81,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="GameDetail"
-        component={GameDetail}
-        options={{
+        component={ GameDetail }
+        options={ {
           title: 'Game',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -97,12 +97,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="GameRecording"
-        component={GameRecording}
-        options={{
+        component={ GameRecording }
+        options={ {
           title: 'Match Record',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -113,12 +113,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="GameDetailRecord"
-        component={GameDetailRecord}
-        options={{
+        component={ GameDetailRecord }
+        options={ {
           title: 'Match Record',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -129,13 +129,13 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
 
-      <Stack.Screen
+        <Stack.Screen
         name="GameRecordList"
-        component={GameRecordList}
-        options={{
+        component={ GameRecordList }
+        options={ {
           title: 'Match Record',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -146,12 +146,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="RegisterPlayer"
-        component={RegisterPlayer}
-        options={{
+        component={ RegisterPlayer }
+        options={ {
           title: 'Register as a personal player',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -162,12 +162,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="RegisterPlayerForm2"
-        component={RegisterPlayerForm2}
-        options={{
+        component={ RegisterPlayerForm2 }
+        options={ {
           title: 'Register as a personal player',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -178,12 +178,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="RegisterReferee"
-        component={RegisterReferee}
-        options={{
+        component={ RegisterReferee }
+        options={ {
           title: 'Register as a referee',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -194,12 +194,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="RegisterRefereeForm2"
-        component={RegisterRefereeForm2}
-        options={{
+        component={ RegisterRefereeForm2 }
+        options={ {
           title: 'Register as a referee',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -210,12 +210,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateTeamForm1"
-        component={CreateTeamForm1}
-        options={{
+        component={ CreateTeamForm1 }
+        options={ {
           title: 'Create a Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -226,12 +226,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateTeamForm2"
-        component={CreateTeamForm2}
-        options={{
+        component={ CreateTeamForm2 }
+        options={ {
           title: 'Create a Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -242,12 +242,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateTeamForm3"
-        component={CreateTeamForm3}
-        options={{
+        component={ CreateTeamForm3 }
+        options={ {
           title: 'Create a Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -258,12 +258,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateTeamForm4"
-        component={CreateTeamForm4}
-        options={{
+        component={ CreateTeamForm4 }
+        options={ {
           title: 'Create a Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -274,12 +274,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateClubForm1"
-        component={CreateClubForm1}
-        options={{
+        component={ CreateClubForm1 }
+        options={ {
           title: 'Create a Club',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -290,12 +290,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateClubForm2"
-        component={CreateClubForm2}
-        options={{
+        component={ CreateClubForm2 }
+        options={ {
           title: 'Create a Club',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -306,12 +306,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="CreateClubForm3"
-        component={CreateClubForm3}
-        options={{
+        component={ CreateClubForm3 }
+        options={ {
           title: 'Create a Club',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -322,41 +322,41 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="TeamCreatedScreen"
-        component={TeamCreatedScreen}
-        options={{
+        component={ TeamCreatedScreen }
+        options={ {
           // headerTransparent: true,
           // title: ' ',
           // headerTintColor: colors.whiteColor,
           headerShown: false,
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="ClubCreatedScreen"
-        component={ClubCreatedScreen}
-        options={{
+        component={ ClubCreatedScreen }
+        options={ {
           // headerTransparent: true,
           // title: ' ',
           // headerTintColor: colors.whiteColor,
           headerShown: false,
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="SearchLocationScreen"
-        component={SearchLocationScreen}
-        options={{
+        component={ SearchLocationScreen }
+        options={ {
           headerTransparent: true,
           title: ' ',
           headerTintColor: colors.whiteColor,
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="SearchPlayerScreen"
-        component={SearchPlayerScreen}
-        options={{
+        component={ SearchPlayerScreen }
+        options={ {
           title: 'Choose a Player',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -367,12 +367,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="JoinedTeamsScreen"
-        component={JoinedTeamsScreen}
-        options={{
+        component={ JoinedTeamsScreen }
+        options={ {
           title: 'Teams',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -383,12 +383,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="JoinedClubsScreen"
-        component={JoinedClubsScreen}
-        options={{
+        component={ JoinedClubsScreen }
+        options={ {
           title: 'Clubs',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -399,12 +399,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-       <Stack.Screen
+        <Stack.Screen
         name="GroupSettingPrivacyScreen"
-        component={GroupSettingPrivacyScreen}
-        options={{
+        component={ GroupSettingPrivacyScreen }
+        options={ {
           title: 'Setting & Privacy',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -415,12 +415,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="UserSettingPrivacyScreen"
-        component={UserSettingPrivacyScreen}
-        options={{
+        component={ UserSettingPrivacyScreen }
+        options={ {
           title: 'Setting & Privacy',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -431,12 +431,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="ChangePasswordScreen"
-        component={ChangePasswordScreen}
-        options={{
+        component={ ChangePasswordScreen }
+        options={ {
           title: 'Change Password',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -447,12 +447,12 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="PersonalInformationScreen"
-        component={PersonalInformationScreen}
-        options={{
+        component={ PersonalInformationScreen }
+        options={ {
           title: 'Personal Information',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -463,10 +463,9 @@ const AccountNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
     </Stack.Navigator>
-  );
-};
+);
 
 export default AccountNavigator;

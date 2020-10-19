@@ -1,27 +1,28 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
-import Video from 'react-native-video';
+import React from 'react';
 import {
-  widthPercentageToDP as wp,
+  StyleSheet, TouchableOpacity, Image,
+} from 'react-native';
+
+import {
+
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import PATH from '../../Constants/ImagePath';
-import constants from '../../config/constants';
-const {fonts} = constants;
 
-function ImageButton({source, onImagePress, imageStyle, resizeMode}) {
+function ImageButton({
+  source, onImagePress, imageStyle, resizeMode,
+}) {
   return (
-    <TouchableOpacity onPress={onImagePress}>
-      <Image source={source} style={[styles.imageStyle, imageStyle]} resizeMode={'contain' || resizeMode}/>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={ onImagePress }>
+          <Image source={ source } style={ [styles.imageStyle, imageStyle] } resizeMode={ 'contain' || resizeMode }/>
+      </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   imageStyle: {
     height: hp('2.5%'),
+    marginVertical: hp('0.5%'),
     width: hp('2.5%'),
-    marginVertical: hp('0.5%')
   },
 });
 

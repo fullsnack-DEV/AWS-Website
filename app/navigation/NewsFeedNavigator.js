@@ -2,10 +2,9 @@ import React from 'react';
 
 import 'react-native-gesture-handler';
 
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import constants from '../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
 
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
@@ -15,21 +14,24 @@ import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
 import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 
+const {
+  strings, colors, fonts, urls, PATH,
+} = constants;
+
 const Stack = createStackNavigator();
 
-const NewsFeedNavigator = () => {
-  return (
+const NewsFeedNavigator = () => (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={ {
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
         // headerTitle: true,
         headerBackTitleVisible: false,
-      }}>
-      <Stack.Screen
+      } }>
+        <Stack.Screen
         name="FeedsScreen"
-        component={FeedsScreen}
-        options={{
+        component={ FeedsScreen }
+        options={ {
           title: 'Newsfeed',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -40,12 +42,12 @@ const NewsFeedNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="WritePostScreen"
-        component={WritePostScreen}
-        options={{
+        component={ WritePostScreen }
+        options={ {
           title: 'Write Post',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -57,12 +59,12 @@ const NewsFeedNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="EditPostScreen"
-        component={EditPostScreen}
-        options={{
+        component={ EditPostScreen }
+        options={ {
           title: 'Edit Post',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -74,12 +76,12 @@ const NewsFeedNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="WriteCommentScreen"
-        component={WriteCommentScreen}
-        options={{
+        component={ WriteCommentScreen }
+        options={ {
           title: 'Write Comment',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -91,12 +93,12 @@ const NewsFeedNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
-      <Stack.Screen
+        <Stack.Screen
         name="NewsFeedVideoPlayer"
-        component={NewsFeedVideoPlayer}
-        options={{
+        component={ NewsFeedVideoPlayer }
+        options={ {
           title: '',
           headerTintColor: colors.whiteColor,
           borderBottomWidth: 0,
@@ -106,13 +108,13 @@ const NewsFeedNavigator = () => {
               height: 0,
             },
           },
-        }}
-        //options={{headerShown: false}}
+        } }
+        // options={{headerShown: false}}
       />
-      <Stack.Screen
+        <Stack.Screen
         name="FullVideoScreen"
-        component={FullVideoScreen}
-        options={{
+        component={ FullVideoScreen }
+        options={ {
           title: '',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
@@ -124,10 +126,9 @@ const NewsFeedNavigator = () => {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
-        }}
+        } }
       />
     </Stack.Navigator>
-  );
-};
+);
 
 export default NewsFeedNavigator;

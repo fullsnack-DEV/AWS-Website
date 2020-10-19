@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -6,7 +6,10 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../../../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -15,40 +18,40 @@ const styles = StyleSheet.create({
   },
 
   LocationText: {
-    marginTop: hp('2%'),
     color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
     fontSize: wp('3.8%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    marginTop: hp('2%'),
     paddingLeft: 15,
+    textAlign: 'left',
   },
-  certificateSubText:{
-    marginTop: 8,
+  certificateSubText: {
     color: colors.googleColor,
-    fontSize: 14,
-    textAlign: 'left',
     fontFamily: fonts.RRegular,
+    fontSize: 14,
+    marginTop: 8,
     paddingLeft: 15,
+    textAlign: 'left',
   },
   formSteps: {
-    flexDirection: 'row',
     alignSelf: 'flex-end',
+    flexDirection: 'row',
     marginRight: 15,
     marginTop: 15,
   },
   form1: {
     backgroundColor: colors.themeColor,
     height: 5,
-    width: 10,
     marginLeft: 2,
     marginRight: 2,
+    width: 10,
   },
   form2: {
     backgroundColor: colors.lightgrayColor,
     height: 5,
-    width: 10,
     marginLeft: 2,
     marginRight: 2,
+    width: 10,
   },
   smallTxt: {
     color: colors.grayColor,
@@ -63,13 +66,9 @@ const styles = StyleSheet.create({
     // alignSelf: 'center',
     width: wp('92%'),
     fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
+    fontFamily: fonts.RRegular,
     marginTop: 12,
-
-    width: wp('92%'),
     alignSelf: 'center',
-    marginTop: 12,
-
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -79,96 +78,63 @@ const styles = StyleSheet.create({
 
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
-  },
-
-  matchFeeView: {
-    flexDirection: 'row',
-    height: 40,
-
-    width: wp('92%'),
-    alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('3.5%'),
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-  matchFeeTxt: {
-    height: 40,
-    alignSelf: 'center',
-    width: wp('77%'),
-    fontSize: wp('4%'),
-    backgroundColor: colors.textFieldColor,
-
-    paddingLeft: 10,
-    //marginTop: 12,
   },
 
   inputIOS: {
-    height: 40,
-    width: wp('92%'),
     alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('3.5%'),
-    fontFamily:fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
+    color: 'black',
+    elevation: 3,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('3.5%'),
+    height: 40,
+
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+
+    paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-    elevation: 3,
+    width: wp('92%'),
   },
   inputAndroid: {
-    height: 40,
-    width: wp('92%'),
     alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('4%'),
-    fontFamily:fonts.RRegular,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
-
+    color: 'black',
     elevation: 3,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+    height: 40,
+
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+
+    paddingVertical: 12,
+
+    width: wp('92%'),
   },
 
   doneButton: {
-    position: 'absolute',
-    bottom: 30,
+    alignSelf: 'center',
     backgroundColor: colors.doneButtonColor,
+    borderRadius: 8,
+    bottom: 30,
+    height: 45,
+
     marginLeft: '7%',
     marginRight: '5%',
-
     marginTop: hp('2%'),
-    borderRadius: 8,
-    height: 45,
-    alignSelf: 'center',
+    position: 'absolute',
     width: '75%',
   },
   signUpText: {
@@ -180,68 +146,68 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
   },
   downArrow: {
+    alignSelf: 'center',
     height: 18,
-    width: 18,
     resizeMode: 'contain',
 
-    alignSelf: 'center',
+    right: 25,
     tintColor: colors.grayColor,
     top: 22,
-    right: 25,
+    width: 18,
   },
   certificateImg: {
-    height: 45,
-    width: 45,
-    resizeMode: 'contain',
-
     alignSelf: 'center',
-
-    marginRight: 15,
     backgroundColor: colors.textFieldColor,
     borderRadius: 10,
+
+    height: 45,
+
+    marginRight: 15,
+    resizeMode: 'contain',
+    width: 45,
   },
   chooseImage: {
-    position: 'absolute',
-    right: 8,
     bottom: 0,
     height: 20,
-    width: 20,
+    position: 'absolute',
     resizeMode: 'contain',
+    right: 8,
+    width: 20,
   },
   addCertificateView: {
     flexDirection: 'row',
-    //backgroundColor: 'red',
+    // backgroundColor: 'red',
     marginTop: 12,
     marginBottom: 12,
     width: wp('92%'),
     alignSelf: 'center',
   },
   addCertificateButton: {
-    marginTop: '5%',
+    alignItems: 'center',
 
+    alignSelf: 'center',
+    borderColor: colors.userPostTimeColor,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: colors.userPostTimeColor,
     height: 30,
-    alignSelf: 'center',
-    width: '35%',
     justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: '5%',
+    width: '35%',
   },
   addCertificateText: {
-    fontSize: 12,
+    color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
 
-    color: colors.userPostTimeColor,
+    fontSize: 12,
   },
   delete: {
     alignSelf: 'flex-end',
-    marginRight: 15,
     color: colors.fbTextColor,
+    marginRight: 15,
   },
   curruency: {
-    fontSize: wp('4%'),
     alignSelf: 'flex-end',
+    fontSize: wp('4%'),
   },
   // matchFeeView: {
   //   flexDirection: 'row',
@@ -250,34 +216,34 @@ const styles = StyleSheet.create({
   //   marginBottom: 14,
   // },
   matchFeeView: {
-    flexDirection: 'row',
-    height: 40,
-
-    width: wp('92%'),
     alignSelf: 'center',
-    marginTop: 12,
-    fontSize: wp('3.5%'),
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-
-    color: 'black',
-    paddingRight: 30,
     backgroundColor: colors.offwhite,
 
     borderRadius: 5,
+    color: 'black',
+    elevation: 3,
+    flexDirection: 'row',
+    fontSize: wp('3.5%'),
+    height: 40,
+
+    marginTop: 12,
+    paddingHorizontal: 15,
+    paddingRight: 30,
+
+    paddingVertical: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-    elevation: 3,
+    width: wp('92%'),
   },
   feeText: {
-    width: '96%',
     fontSize: wp('3.8%'),
+    width: '96%',
   },
   matchFeeTxt: {
     height: 40,
-    //alignSelf: 'center',
+    // alignSelf: 'center',
     width: wp('80%'),
     backgroundColor: colors.textFieldColor,
 
@@ -293,9 +259,9 @@ const styles = StyleSheet.create({
     height: 40,
     width: wp('78%'),
     alignSelf: 'center',
-    
+
     fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
+    fontFamily: fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
 
@@ -304,65 +270,65 @@ const styles = StyleSheet.create({
 
     borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
 
     elevation: 3,
   },
   nextButton: {
-    width: '90%',
-    height: 45,
     alignSelf: 'center',
-    marginTop: wp('12%'),
     borderRadius: 30,
+    height: 45,
     marginBottom: 40,
+    marginTop: wp('12%'),
+    width: '90%',
   },
   nextButtonText: {
     alignSelf: 'center',
     color: colors.whiteColor,
-    fontSize: wp('4%'),
     fontFamily: fonts.RBold,
+    fontSize: wp('4%'),
     marginVertical: 10,
   },
   mendatory: {
     color: 'red',
   },
   separatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('100%'),
-    height: 0.5,
     alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    width: wp('100%'),
   },
   languageApplyButton: {
-    width: '90%',
-    height: 45,
     alignSelf: 'center',
-    marginTop: wp('5%'),
     borderRadius: 30,
+    height: 45,
     marginBottom: 40,
+    marginTop: wp('5%'),
+    width: '90%',
   },
   shortSeparatorLine: {
-    backgroundColor: colors.grayColor,
-    width: wp('90%'),
-    height: 0.5,
     alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    width: wp('90%'),
   },
   languageList: {
-    marginLeft: 20,
-    marginBottom: 20,
-    marginTop: 20,
     color: colors.lightBlackColor,
-    fontSize: wp('4%'),
     fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+    marginBottom: 20,
+    marginLeft: 20,
+    marginTop: 20,
   },
   checkboxImg: {
     width: wp('5.5%'),
 
-    //paddingLeft: wp('25%'),
+    // paddingLeft: wp('25%'),
     resizeMode: 'contain',
     alignSelf: 'center',
-    //tintColor: colors.grayColor,
+    // tintColor: colors.grayColor,
   },
   checkbox: {
     alignSelf: 'center',
@@ -370,30 +336,30 @@ const styles = StyleSheet.create({
     right: wp('5%'),
   },
   searchView: {
-    height: 40,
-    width: wp('92%'),
     alignSelf: 'center',
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    elevation: 3,
+    flexDirection: 'row',
+    height: 40,
+
     marginTop: 12,
     paddingLeft: 15,
-    backgroundColor: colors.offwhite,
-
-    borderRadius: 5,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-    flexDirection: 'row',
 
-    elevation: 3,
+    width: wp('92%'),
   },
   searchTextField: {
-    flex: 1,
+    alignSelf: 'center',
     color: colors.lightBlackColor,
+    flex: 1,
+    fontFamily: fonts.RRegular,
     fontSize: wp('3.8%'),
-    fontFamily:fonts.RRegular,
     height: 40,
     width: wp('80%'),
-    alignSelf: 'center',
   },
 });
 

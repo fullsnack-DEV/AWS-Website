@@ -1,11 +1,7 @@
 import React from 'react';
 import {
   StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedbackComponent,
-  SafeAreaView,
+
   TextInput,
 } from 'react-native';
 
@@ -15,7 +11,10 @@ import {
 } from 'react-native-responsive-screen';
 
 import constants from '../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 
 function TCTextField({
   placeholder,
@@ -24,33 +23,33 @@ function TCTextField({
   ...otherProps
 }) {
   return (
-    <TextInput
-      style={styles.textInput}
-      placeholder={placeholder}
-      placeholderTextColor={colors.themeColor}
-      secureTextEntry={secureText}
-      keyboardType={keyboardType}
-      {...otherProps}
+      <TextInput
+      style={ styles.textInput }
+      placeholder={ placeholder }
+      placeholderTextColor={ colors.themeColor }
+      secureTextEntry={ secureText }
+      keyboardType={ keyboardType }
+      { ...otherProps }
     />
   );
 }
 
 const styles = StyleSheet.create({
   textInput: {
-    marginLeft: wp('8%'),
-    marginRight: wp('8%'),
-    marginBottom: hp('1.5%'),
+    backgroundColor: colors.whiteColor,
     borderRadius: 5,
-    shadowRadius: 4,
-    shadowOffset: {width: 0, height: 4},
-    shadowColor: colors.googleColor,
-    shadowOpacity: 0.5,
+    color: colors.blackColor,
     fontFamily: fonts.RRegular,
     fontSize: wp('4%'),
-    color: colors.blackColor,
-    paddingLeft: 17,
     height: 40,
-    backgroundColor: colors.whiteColor,
+    marginBottom: hp('1.5%'),
+    marginLeft: wp('8%'),
+    marginRight: wp('8%'),
+    paddingLeft: 17,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
 });
 

@@ -1,11 +1,11 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import React from 'react';
 import TCButton from '../../../components/TCButton';
 
-export default function GameDetail({navigation}) {
+export default function GameDetail({ navigation }) {
   return (
-    <TCButton
+      <TCButton
       title="NEXT"
-      onPress={() => navigation.navigate('GameRecording')}
+      onPress={ () => navigation.navigate('GameRecording') }
     />
   );
 }

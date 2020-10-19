@@ -1,74 +1,77 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
+
 } from 'react-native-responsive-screen';
 
 import constants from '../../../config/constants';
-const {colors, fonts, urls, PATH} = constants;
+
+const {
+  colors, fonts,
+} = constants;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
+  membershipText: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('5%'),
+    marginLeft: 15,
+    marginTop: 20,
+  },
   nextButton: {
-    width: '90%',
-    height: 45,
     alignSelf: 'center',
-    marginTop: wp('12%'),
     borderRadius: 30,
+    height: 45,
     marginBottom: 40,
+    marginTop: wp('12%'),
+    width: '90%',
   },
   nextButtonText: {
     alignSelf: 'center',
     color: colors.whiteColor,
-    fontSize: wp('4%'),
     fontFamily: fonts.RBold,
+    fontSize: wp('4%'),
     marginVertical: 10,
   },
-  membershipText: {
-    fontSize: wp('5%'),
-    fontFamily: fonts.RRegular,
+  radioButtonView: {
+    flexDirection: 'row',
     marginLeft: 15,
-    marginTop: 20,
-    color: colors.lightBlackColor,
-  },
-  whoJoinText: {
-    fontSize: wp('4%'),
-    fontFamily: fonts.RRegular,
-    marginLeft: 15,
-    marginTop: 10,
-    marginBottom: 10,
-    color: colors.lightBlackColor,
+    marginRight: 15,
+    marginTop: 15,
   },
   radioImage: {
     height: 22,
     width: 22,
     resizeMode: 'contain',
-    //tintColor: colors.radioButtonColor,
+    // tintColor: colors.radioButtonColor,
     alignSelf: 'center',
+  },
+  radioText: {
+    alignSelf: 'center',
+    color: colors.lightBlackColor,
+    fontSize: wp('4%'),
+    marginLeft: 15,
+    marginRight: 15,
   },
   unSelectRadioImage: {
     height: 22,
     width: 22,
     resizeMode: 'contain',
-    //tintColor: colors.grayColor,
+    // tintColor: colors.grayColor,
     alignSelf: 'center',
   },
-  radioButtonView: {
-    flexDirection: 'row',
-    marginTop: 15,
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  radioText: {
-    fontSize: wp('4%'),
-    marginLeft: 15,
-    alignSelf: 'center',
-    marginRight: 15,
+  whoJoinText: {
     color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: wp('4%'),
+    marginBottom: 10,
+    marginLeft: 15,
+    marginTop: 10,
   },
 });
 

@@ -1,39 +1,33 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import React from 'react';
 
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
 import Dash from 'react-native-dash';
 
 import constants from '../../config/constants';
-const {colors, fonts, urls} = constants;
-import PATH from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
+
+const { colors, fonts } = constants;
 
 export default function TCGameState() {
   return (
-    <View
-      style={{
+      <View
+      style={ {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 5,
         marginBottom: 5,
-      }}>
-      <Dash
-        style={{
+      } }>
+          <Dash
+        style={ {
           width: 1,
           height: 20,
           flexDirection: 'column',
-        }}
-        dashColor={colors.lightgrayColor}
+        } }
+        dashColor={ colors.lightgrayColor }
       />
-      <Text
-        style={{
+          <Text
+        style={ {
           textAlign: 'center',
 
           color: colors.darkGrayColor,
@@ -41,27 +35,25 @@ export default function TCGameState() {
           position: 'absolute',
 
           bottom: 0,
-        }}>
-        <Text
-          style={{
+        } }>
+              <Text
+          style={ {
             fontFamily: fonts.RRegular,
             fontSize: 12,
             color: colors.blackColor,
-          }}>
-          0m
-        </Text>{' '}
-        (11:10 AM){' '}
-        <Text
-          style={{
+          } }>
+                  0m
+              </Text>{' '}
+              (11:10 AM){' '}
+              <Text
+          style={ {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.blackColor,
-          }}>
-          Match paused
-        </Text>
-      </Text>
-    </View>
+          } }>
+                  Match paused
+              </Text>
+          </Text>
+      </View>
   );
 }
-
-const styles = StyleSheet.create({});

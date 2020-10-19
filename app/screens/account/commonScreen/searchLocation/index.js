@@ -1,37 +1,29 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet,
+
   View,
   Text,
   Image,
   TextInput,
   FlatList,
-  Alert,
-} from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {create} from 'apisauce';
+} from 'react-native';
 
 // import constants from '../../../config/constants';
 // const {strings, colors, fonts, urls, PATH} = constants;
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import PATH from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import Separator from '../../../../components/Separator';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import useApi from '../../../../hooks/useApi';
 import listing from '../../../../api/listing';
-import Loader from '../../../../components/loader/Loader';
+
 import styles from './style';
 import colors from '../../../../Constants/Colors';
 import * as Service from '../../../../api/services';
 import * as Url from '../../../../api/Url';
 
-function SearchLocationScreen({navigation, route}) {
-  const getCityList = useApi(listing.getCityList);
-  const getTeamListing = useApi(listing.getTeamList);
+function SearchLocationScreen({ navigation, route }) {
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -51,9 +43,9 @@ function SearchLocationScreen({navigation, route}) {
     // }
 
     console.log('search Text', searchText);
-    var headers;
+    let headers;
 
-    if (token == '' || token == null || token == undefined) {
+    if (token === '' || token === null || token === undefined) {
       headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -73,7 +65,7 @@ function SearchLocationScreen({navigation, route}) {
       headers,
     });
 
-    let res = await response.json();
+    const res = await response.json();
     console.log('ressssssponsse.................', res);
     setCityData(res.predictions);
 
@@ -87,9 +79,9 @@ function SearchLocationScreen({navigation, route}) {
     //   state: item.terms[1].value,
     //   city: item.terms[0].value,
     // };
-    let state = item.terms[1].value;
+    const state = item.terms[1].value;
     console.log('state', state);
-    let city = item.terms[0].value;
+    const city = item.terms[0].value;
     console.log('city', city);
     // let stringData = JSON.stringify(getTeamListing.data);
     // let teamList = await JSON.parse(stringData);
@@ -98,24 +90,23 @@ function SearchLocationScreen({navigation, route}) {
     console.log('CITY::', item.terms[0].value);
     console.log('STATE::', item.terms[1].value);
     try {
-      let res = await Service.get(
-        Url.GROUP_SEARCH + `state=${state}&city=${city}`,
+      const res = await Service.get(
+        `${Url.GROUP_SEARCH}state=${state}&city=${city}`,
       );
 
-      if (route.params.comeFrom == 'CreateTeamForm1') {
+      if (route.params.comeFrom === 'CreateTeamForm1') {
         navigation.navigate('CreateTeamForm1', {
           city: item.terms[0].value,
           state: item.terms[1].value,
           country: item.terms[2].value,
         });
-      } else if (route.params.comeFrom == 'CreateClubForm1') {
+      } else if (route.params.comeFrom === 'CreateClubForm1') {
         navigation.navigate('CreateClubForm1', {
           city: item.terms[0].value,
           state: item.terms[1].value,
           country: item.terms[2].value,
         });
-      }
-      else if (route.params.comeFrom == 'PersonalInformationScreen') {
+      } else if (route.params.comeFrom === 'PersonalInformationScreen') {
         navigation.navigate('PersonalInformationScreen', {
           city: item.terms[0].value,
           state: item.terms[1].value,
@@ -126,47 +117,45 @@ function SearchLocationScreen({navigation, route}) {
       // alert('Error:', error);
     }
   };
-  
-  renderItem = ({item, index}) => {
-    return (
-      <TouchableWithoutFeedback
-        style={styles.listItem}
-        onPress={() => this.getTeamsData(item)}>
-        <Text style={styles.cityList}>{cityData[index].description}</Text>
 
-        <Separator />
+  renderItem = ({ item, index }) => (
+      <TouchableWithoutFeedback
+        style={ styles.listItem }
+        onPress={ () => this.getTeamsData(item) }>
+          <Text style={ styles.cityList }>{cityData[index].description}</Text>
+
+          <Separator />
       </TouchableWithoutFeedback>
-    );
-  };
+  );
 
   return (
-    <View style={styles.mainContainer}>
-      {/* <Loader visible={getTeamListing.loading} /> */}
-      <Image style={styles.background} source={PATH.orangeLayer} />
-      <Image style={styles.background} source={PATH.bgImage} />
-      <Text style={styles.LocationText}>{strings.locationText}</Text>
+      <View style={ styles.mainContainer }>
+          {/* <Loader visible={getTeamListing.loading} /> */}
+          <Image style={ styles.background } source={ PATH.orangeLayer } />
+          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
-      <View style={styles.sectionStyle}>
-        <Image source={PATH.searchLocation} style={styles.searchImg} />
-        <TextInput
-          style={styles.textInput}
-          placeholder={strings.locationPlaceholderText}
+          <View style={ styles.sectionStyle }>
+              <Image source={ PATH.searchLocation } style={ styles.searchImg } />
+              <TextInput
+          style={ styles.textInput }
+          placeholder={ strings.locationPlaceholderText }
           clearButtonMode="always"
-          placeholderTextColor={colors.themeColor}
-          onChangeText={(text) => setSearchText(text)}
+          placeholderTextColor={ colors.themeColor }
+          onChangeText={ (text) => setSearchText(text) }
         />
-      </View>
-      {noData && (
-        <Text style={styles.noDataText}>
-          Please enter 3 characters to see cities
-        </Text>
-      )}
-      <FlatList
-        data={cityData}
-        renderItem={this.renderItem}
-        keyExtractor={(cityData) => cityData.id}
+          </View>
+          {noData && (
+          <Text style={ styles.noDataText }>
+              Please enter 3 characters to see cities
+          </Text>
+          )}
+          <FlatList
+        data={ cityData }
+        renderItem={ this.renderItem }
+        keyExtractor={ (cityData) => cityData.id }
       />
-    </View>
+      </View>
   );
 }
 

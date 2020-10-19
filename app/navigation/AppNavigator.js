@@ -1,53 +1,55 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {Image, StyleSheet} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 
 import AccountNavigator from './AccountNavigator';
 import NewsFeedNavigator from './NewsFeedNavigator';
+import * as Utility from '../utility/index';
 
-import AuthContext from '../auth/context';
 import constants from '../config/constants';
-const {urls, colors, fonts, endPoints} = constants;
 import PATH from '../Constants/ImagePath';
-import strings from '../Constants/String';
+
 import ReservationNavigator from './ReservationNavigator';
+
+const {
+  colors,
+} = constants;
 
 const Tab = createBottomTabNavigator();
 
-getTabBarVisibility = (route) => {
+const getTabBarVisibility = (route) => {
   const routeName = route.state
     ? route.state.routes[route.state.index].name
     : '';
 
   if (
-    routeName === 'GameRecording' ||
-    routeName === 'GameDetailRecord' ||
-    routeName === 'GameRecordList' ||
-    routeName === 'NewsFeedVideoPlayer' ||
-    routeName === 'RegisterPlayer' ||
-    routeName === 'RegisterPlayerForm2' ||
-    routeName === 'RegisterReferee' ||
-    routeName === 'RegisterRefereeForm2' ||
-    routeName === 'CreateTeamForm1' ||
-    routeName === 'CreateTeamForm2' ||
-    routeName === 'CreateTeamForm3' ||
-    routeName === 'CreateTeamForm4' ||
-    routeName === 'CreateClubForm1' ||
-    routeName === 'CreateClubForm2' ||
-    routeName === 'CreateClubForm3' ||
-    routeName === 'TeamCreatedScreen' ||
-    routeName === 'WritePostScreen' ||
-    routeName === 'EditPostScreen' ||
-    routeName === 'WriteCommentScreen' ||
-    routeName === 'SearchLocationScreen' ||
-    routeName === 'SearchPlayerScreen' ||
-    routeName === 'ClubCreatedScreen' ||
-    routeName === 'ChangePasswordScreen' ||
-    routeName === 'PersonalInformationScreen' ||
-    routeName === 'FullVideoScreen'
+    routeName === 'GameRecording'
+    || routeName === 'GameDetailRecord'
+    || routeName === 'GameRecordList'
+    || routeName === 'NewsFeedVideoPlayer'
+    || routeName === 'RegisterPlayer'
+    || routeName === 'RegisterPlayerForm2'
+    || routeName === 'RegisterReferee'
+    || routeName === 'RegisterRefereeForm2'
+    || routeName === 'CreateTeamForm1'
+    || routeName === 'CreateTeamForm2'
+    || routeName === 'CreateTeamForm3'
+    || routeName === 'CreateTeamForm4'
+    || routeName === 'CreateClubForm1'
+    || routeName === 'CreateClubForm2'
+    || routeName === 'CreateClubForm3'
+    || routeName === 'TeamCreatedScreen'
+    || routeName === 'WritePostScreen'
+    || routeName === 'EditPostScreen'
+    || routeName === 'WriteCommentScreen'
+    || routeName === 'SearchLocationScreen'
+    || routeName === 'SearchPlayerScreen'
+    || routeName === 'ClubCreatedScreen'
+    || routeName === 'ChangePasswordScreen'
+    || routeName === 'PersonalInformationScreen'
+    || routeName === 'FullVideoScreen'
   ) {
     return false;
   }
@@ -56,18 +58,19 @@ getTabBarVisibility = (route) => {
 };
 
 function AppNavigator() {
-  const authContext = useContext(AuthContext);
   const [switchBy, setSwitchBy] = useState('user');
   useEffect(() => {
     switchByEntity();
   });
-  switchByEntity = async () => {
+
+  const switchByEntity = async () => {
     const switchEntities = await Utility.getStorage('switchBy');
     setSwitchBy(switchEntities);
   };
+
   return (
-    <Tab.Navigator
-      tabBarOptions={{
+      <Tab.Navigator
+      tabBarOptions={ {
         activeTintColor: colors.themeColor,
         inactiveTintColor: colors.grayColor,
         labelStyle: {
@@ -79,152 +82,152 @@ function AppNavigator() {
           height: 85,
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
-          shadowOffset: {width: 0, height: 1},
+          shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.4,
           shadowRadius: 15,
           elevation: 5,
         },
-      }}>
-      <Tab.Screen
+      } }>
+          <Tab.Screen
         name="Home"
-        component={NewsFeedNavigator}
-        options={({route}) => ({
-          tabBarVisible: this.getTabBarVisibility(route),
-          tabBarIcon: ({focused}) => (
-            <Image
-              source={focused ? PATH.tab_home_selected : PATH.tab_home}
-              style={styles.tabImg}
+        component={ NewsFeedNavigator }
+        options={ ({ route }) => ({
+          tabBarVisible: getTabBarVisibility(route),
+          tabBarIcon: ({ focused }) => (
+              <Image
+              source={ focused ? PATH.tab_home_selected : PATH.tab_home }
+              style={ styles.tabImg }
             />
           ),
-        })}
+        }) }
       />
-      <Tab.Screen
+          <Tab.Screen
         name="Reservation"
-        component={ReservationNavigator}
-        options={({route}) => ({
-          tabBarVisible: this.getTabBarVisibility(route),
-          tabBarIcon: ({focused}) => (
-            <Image
+        component={ ReservationNavigator }
+        options={ ({ route }) => ({
+          tabBarVisible: getTabBarVisibility(route),
+          tabBarIcon: ({ focused }) => (
+              <Image
               source={
                 focused ? PATH.tab_reservation_selected : PATH.tab_reservation
               }
-              style={styles.tabImg}
+              style={ styles.tabImg }
             />
           ),
-        })}
+        }) }
       />
-      <Tab.Screen
+          <Tab.Screen
         name="Notification"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <Image
+        component={ HomeScreen }
+        options={ {
+          tabBarIcon: ({ focused }) => (
+              <Image
               source={
                 focused ? PATH.tab_notification_selected : PATH.tab_notification
               }
-              style={focused ? styles.selectedTabImg : styles.tabImg}
+              style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
           ),
-        }}
+        } }
       />
-      <Tab.Screen
+          <Tab.Screen
         name="Message"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <Image
-              source={focused ? PATH.tab_message_selected : PATH.tab_message}
-              style={focused ? styles.selectedTabImg : styles.tabImg}
+        component={ HomeScreen }
+        options={ {
+          tabBarIcon: ({ focused }) => (
+              <Image
+              source={ focused ? PATH.tab_message_selected : PATH.tab_message }
+              style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
           ),
-        }}
+        } }
       />
 
-      {authContext.switchBy == 'team' && (
-        <Tab.Screen
+          {switchBy === 'team' && (
+          <Tab.Screen
           name="Account"
-          component={AccountNavigator}
-          options={({route}) => ({
-            tabBarVisible: this.getTabBarVisibility(route),
-            tabBarIcon: ({focused}) => (
-              <Image
+          component={ AccountNavigator }
+          options={ ({ route }) => ({
+            tabBarVisible: getTabBarVisibility(route),
+            tabBarIcon: ({ focused }) => (
+                <Image
                 source={
                   focused
                     ? PATH.tab_account_group_selected
                     : PATH.tab_account_group
                 }
-                style={focused ? styles.selectedEntity : styles.tabEntity}
+                style={ focused ? styles.selectedEntity : styles.tabEntity }
               />
             ),
-          })}
+          }) }
         />
-      )}
-      {authContext.switchBy == 'user' && (
-        <Tab.Screen
+          )}
+          {switchBy === 'user' && (
+          <Tab.Screen
           name="Account"
-          component={AccountNavigator}
-          options={({route}) => ({
-            tabBarVisible: this.getTabBarVisibility(route),
-            tabBarIcon: ({focused}) => (
-              <Image
-                source={focused ? PATH.tab_account_selected : PATH.tab_account}
-                style={styles.tabImg}
+          component={ AccountNavigator }
+          options={ ({ route }) => ({
+            tabBarVisible: getTabBarVisibility(route),
+            tabBarIcon: ({ focused }) => (
+                <Image
+                source={ focused ? PATH.tab_account_selected : PATH.tab_account }
+                style={ styles.tabImg }
               />
             ),
-          })}
+          }) }
         />
-      )}
-      {authContext.switchBy == 'club' && (
-        <Tab.Screen
+          )}
+          {switchBy === 'club' && (
+          <Tab.Screen
           name="Account"
-          component={AccountNavigator}
-          options={({route}) => ({
-            tabBarVisible: this.getTabBarVisibility(route),
-            tabBarIcon: ({focused}) => (
-              <Image
+          component={ AccountNavigator }
+          options={ ({ route }) => ({
+            tabBarVisible: getTabBarVisibility(route),
+            tabBarIcon: ({ focused }) => (
+                <Image
                 source={
                   focused
                     ? PATH.tab_account_group_selected
                     : PATH.tab_account_group
                 }
-                style={styles.tabEntity}
+                style={ styles.tabEntity }
               />
             ),
-          })}
+          }) }
         />
-      )}
-    </Tab.Navigator>
+          )}
+      </Tab.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
-  tabImg: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
+  selectedEntity: {
     alignSelf: 'center',
     borderRadius: 5,
+    height: 40,
+    resizeMode: 'contain',
+    width: 40,
   },
   selectedTabImg: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
     alignSelf: 'center',
     borderRadius: 5,
+    height: 40,
+    resizeMode: 'contain',
+    width: 40,
   },
   tabEntity: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
     alignSelf: 'center',
     borderRadius: 5,
+    height: 40,
+    resizeMode: 'contain',
+    width: 40,
   },
-  selectedEntity: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
+  tabImg: {
     alignSelf: 'center',
     borderRadius: 5,
+    height: 40,
+    resizeMode: 'contain',
+    width: 40,
   },
 });
 export default AppNavigator;

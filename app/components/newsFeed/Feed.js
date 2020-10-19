@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -9,39 +9,34 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 
-import constants from '../../config/constants';
-const {colors, fonts} = constants;
-import PATH from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
-
-import NewsFeedVideoPlayer from '../../screens/newsfeeds/NewsFeedVideoPlayer';
 import Moment from 'moment';
-
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
+
 } from 'react-native-responsive-screen';
+import constants from '../../config/constants';
+import PATH from '../../Constants/ImagePath';
 
-let {width} = Dimensions.get('window');
+const { colors, fonts } = constants;
 
-function Feed({data, navigation, route}) {
-  const {navigate} = navigation;
-  const [attchments, setAttachments] = useState([]);
-  const [tagged, setTagged] = useState([]);
+const { width } = Dimensions.get('window');
 
-  var json = JSON.parse(data.object);
+function Feed({ data, navigation }) {
+  const { navigate } = navigation;
 
-  renderItem = ({item, index}) => {
+  const json = JSON.parse(data.object);
+
+  renderItem = ({ index }) => {
     if (json.attachments.length >= 3) {
       return (
-        <TouchableWithoutFeedback>
-          <View>
-            <Image
-              source={{uri: json.attachments[index].thumbnail}}
-              style={styles.multipleMedia}
+          <TouchableWithoutFeedback>
+              <View>
+                  <Image
+              source={ { uri: json.attachments[index].thumbnail } }
+              style={ styles.multipleMedia }
             />
-            <View
-              style={{
+                  <View
+              style={ {
                 backgroundColor: colors.blackColor,
                 height: 20,
                 width: 30,
@@ -52,33 +47,32 @@ function Feed({data, navigation, route}) {
                 opacity: 0.5,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}>
-              <Text
-                style={{
+              } }>
+                      <Text
+                style={ {
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
-                }}>
-                {index + 1}/{json.attachments.length}
-              </Text>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
+                } }>
+                          {index + 1}/{json.attachments.length}
+                      </Text>
+                  </View>
+              </View>
+          </TouchableWithoutFeedback>
       );
-    } else if (json.attachments.length == 2) {
+    } if (json.attachments.length === 2) {
       return (
-        <TouchableWithoutFeedback
-          style={styles.listItem}
-          onPress={() =>
-            console.log('Image pressed..', json.attachments[index].thumbnail)
+          <TouchableWithoutFeedback
+          style={ styles.listItem }
+          onPress={ () => console.log('Image pressed..', json.attachments[index].thumbnail)
           }>
-          <View>
-            <Image
-              source={{uri: json.attachments[index].thumbnail}}
-              style={styles.twoMedia}
+              <View>
+                  <Image
+              source={ { uri: json.attachments[index].thumbnail } }
+              style={ styles.twoMedia }
             />
-            <View
-              style={{
+                  <View
+              style={ {
                 backgroundColor: colors.blackColor,
                 height: 20,
                 width: 30,
@@ -89,207 +83,185 @@ function Feed({data, navigation, route}) {
                 opacity: 0.5,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}>
-              <Text
-                style={{
+              } }>
+                      <Text
+                style={ {
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
-                }}>
-                {index + 1}/{json.attachments.length}
-              </Text>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
+                } }>
+                          {index + 1}/{json.attachments.length}
+                      </Text>
+                  </View>
+              </View>
+          </TouchableWithoutFeedback>
       );
-    } else if (
-      json.attachments.length == 1 &&
-      json.attachments[index].media_width > json.attachments[index].media_height
+    } if (
+      json.attachments.length === 1
+      && json.attachments[index].media_width > json.attachments[index].media_height
     ) {
       return (
-        <TouchableWithoutFeedback
-          style={styles.listItem}
-          onPress={() =>
-            this.pushToPostDetail(
-              json.attachments[index].type,
-              json.attachments[index].url,
-            )
+          <TouchableWithoutFeedback
+          style={ styles.listItem }
+          onPress={ () => this.pushToPostDetail(
+            json.attachments[index].type,
+            json.attachments[index].url,
+          )
           }>
-          <Image
-            source={{uri: json.attachments[index].thumbnail}}
-            style={styles.singleMediaLandscap}
+              <Image
+            source={ { uri: json.attachments[index].thumbnail } }
+            style={ styles.singleMediaLandscap }
           />
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
       );
-    } else if (
-      json.attachments.length == 1 &&
-      json.attachments[index].media_width < json.attachments[index].media_height
+    } if (
+      json.attachments.length === 1
+      && json.attachments[index].media_width < json.attachments[index].media_height
     ) {
       return (
-        <TouchableWithoutFeedback
-          style={styles.listItem}
-          onPress={() =>
-            this.pushToPostDetail(
-              json.attachments[index].type,
-              json.attachments[index].url,
-            )
+          <TouchableWithoutFeedback
+          style={ styles.listItem }
+          onPress={ () => this.pushToPostDetail(
+            json.attachments[index].type,
+            json.attachments[index].url,
+          )
           }>
-          <Image
-            source={{uri: json.attachments[index].thumbnail}}
-            style={styles.singleMediaPortrait}
+              <Image
+            source={ { uri: json.attachments[index].thumbnail } }
+            style={ styles.singleMediaPortrait }
           />
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
       );
     }
   };
   pushToPostDetail = (type, url) => {
-    if (type == 'video') {
-      navigate('NewsFeedVideoPlayer', {url: url});
+    if (type === 'video') {
+      navigate('NewsFeedVideoPlayer', { url });
     } else {
       navigate('NewsFeedVideoPlayer');
     }
   };
   return (
-    <View style={styles.mainContainer}>
-      <View style={styles.feedheader}>
-        {data.actor.data.entity_type == 'club' ? (
-          <Image
-            style={styles.clubProfileImg}
-            source={{uri: data.actor.data.thumbnail}}
+      <View style={ styles.mainContainer }>
+          <View style={ styles.feedheader }>
+              {data.actor.data.entity_type === 'club' ? (
+                  <Image
+            style={ styles.clubProfileImg }
+            source={ { uri: data.actor.data.thumbnail } }
           />
-        ) : null}
-        {data.actor.data.entity_type == 'team' ? (
-          <Image
-            style={styles.profileImg}
-            source={{uri: data.actor.data.thumbnail}}
+              ) : null}
+              {data.actor.data.entity_type === 'team' ? (
+                  <Image
+            style={ styles.profileImg }
+            source={ { uri: data.actor.data.thumbnail } }
           />
-        ) : null}
-        {data.actor.data.entity_type == 'player' ? (
-          <Image
-            style={styles.profileImg}
-            source={{uri: data.actor.data.thumbnail}}
+              ) : null}
+              {data.actor.data.entity_type === 'player' ? (
+                  <Image
+            style={ styles.profileImg }
+            source={ { uri: data.actor.data.thumbnail } }
           />
-        ) : null}
-        <View style={styles.entityheader}>
-          <Text style={styles.entityName}>{data.actor.data.full_name}</Text>
-          <Text style={styles.date}>{Moment(data.time).format('MMM d')}</Text>
-        </View>
-      </View>
-      <FlatList
-        data={json.attachments}
-        keyExtractor={() => json.attachments.url}
-        renderItem={this.renderItem}
-        horizontal={true}
-        scrollEnabled={true}
-        showsHorizontalScrollIndicator={false}
-        ItemSeparatorComponent={() => (
-          <View style={styles.separatorLine}></View>
-        )}
-        style={{marginTop: 10}}
+              ) : null}
+              <View style={ styles.entityheader }>
+                  <Text style={ styles.entityName }>{data.actor.data.full_name}</Text>
+                  <Text style={ styles.date }>{Moment(data.time).format('MMM d')}</Text>
+              </View>
+          </View>
+          <FlatList
+        data={ json.attachments }
+        keyExtractor={ () => json.attachments.url }
+        renderItem={ this.renderItem }
+        horizontal={ true }
+        scrollEnabled={ true }
+        showsHorizontalScrollIndicator={ false }
+        ItemSeparatorComponent={ () => (
+            <View style={ styles.separatorLine }></View>
+        ) }
+        style={ { marginTop: 10 } }
       />
-      <Text style={styles.feedDescription}>{json.text}</Text>
+          <Text style={ styles.feedDescription }>{json.text}</Text>
 
-      <View style={styles.feedBottomView}>
-        <Image style={styles.commentImage} source={PATH.feedComment} />
-        <Image style={styles.shareImage} source={PATH.feedShare} />
+          <View style={ styles.feedBottomView }>
+              <Image style={ styles.commentImage } source={ PATH.feedComment } />
+              <Image style={ styles.shareImage } source={ PATH.feedShare } />
 
-        <Image style={styles.likeImage} source={PATH.feedLike} />
+              <Image style={ styles.likeImage } source={ PATH.feedLike } />
+          </View>
+          {data.reaction_counts.clap === 0 ? (
+              <View style={ styles.deviderLineWithoutMargin } />
+          ) : (
+              <View style={ styles.deviderLine } />
+          )}
+
+          {data.reaction_counts.clap > 0 || data.reaction_counts.comment > 0 ? (
+              <View style={ styles.feedBottomView }>
+                  {data.reaction_counts.comment > 0 && (
+                  <Text style={ styles.noOfComment }>
+                      {data.reaction_counts.comment} Comments
+                  </Text>
+                  )}
+                  {data.reaction_counts.clap > 0 && (
+                  <Text style={ styles.noOfLike }>
+                      {data.reaction_counts.clap} Likes
+                  </Text>
+                  )}
+              </View>
+          ) : null}
+          {data.reaction_counts.comment > 0 ? (
+              <View style={ styles.feedBottomView }>
+                  <Text style={ styles.comment }>Hi</Text>
+
+                  <Text style={ styles.commentTime }>Just now</Text>
+              </View>
+          ) : null}
+          {data.reaction_counts.comment >= 2 ? (
+              <View style={ styles.viewMore }>
+                  <Text style={ styles.moreComment }>
+                      view {data.reaction_counts.comment - 1} more comments
+                  </Text>
+              </View>
+          ) : null}
+
+          <View style={ styles.feedSeparatorLine } />
       </View>
-      {data.reaction_counts.clap == 0 ? (
-        <View style={styles.deviderLineWithoutMargin} />
-      ) : (
-        <View style={styles.deviderLine} />
-      )}
-
-      {data.reaction_counts.clap > 0 || data.reaction_counts.comment > 0 ? (
-        <View style={styles.feedBottomView}>
-          {data.reaction_counts.comment > 0 && (
-            <Text style={styles.noOfComment}>
-              {data.reaction_counts.comment} Comments
-            </Text>
-          )}
-          {data.reaction_counts.clap > 0 && (
-            <Text style={styles.noOfLike}>
-              {data.reaction_counts.clap} Likes
-            </Text>
-          )}
-        </View>
-      ) : null}
-      {data.reaction_counts.comment > 0 ? (
-        <View style={styles.feedBottomView}>
-          <Text style={styles.comment}>Hi</Text>
-
-          <Text style={styles.commentTime}>Just now</Text>
-        </View>
-      ) : null}
-      {data.reaction_counts.comment >= 2 ? (
-        <View style={styles.viewMore}>
-          <Text style={styles.moreComment}>
-            view {data.reaction_counts.comment - 1} more comments
-          </Text>
-        </View>
-      ) : null}
-
-      <View style={styles.feedSeparatorLine} />
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flexDirection: 'column',
-  },
-  feedheader: {
-    flexDirection: 'row',
-    marginTop: 10,
-    //marginBottom: 10,
-    //backgroundColor: 'red',
-    //height: 70,
-  },
-  profileImg: {
-    height: 50,
-    width: 50,
-    resizeMode: 'cover',
-    marginLeft: 10,
-    alignSelf: 'center',
-    borderRadius: 35,
-    borderWidth: 1,
-    borderColor: colors.whiteColor,
-  },
   clubProfileImg: {
-    height: 50,
-    width: 50,
-    resizeMode: 'cover',
-    marginLeft: 10,
     alignSelf: 'center',
+    borderColor: colors.whiteColor,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.whiteColor,
+    height: 50,
+    marginLeft: 10,
+    resizeMode: 'cover',
+    width: 50,
   },
+  comment: {
+    marginLeft: 15,
 
-  separatorLine: {
-    position: 'absolute',
-    bottom: -20,
-    backgroundColor: colors.graySeparater,
-
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: wp('100%'),
-    height: 10,
-  },
-
-  entityName: {
-    marginLeft: wp('2.5%'),
-
-    // fontFamily: fonts.RBold,
+    // fontFamily: fonts.RRegular
     fontSize: wp('4%'),
     color: colors.blackColor,
-
-    paddingLeft: 8,
-    alignSelf: 'center',
-
-    width: wp('80%'),
   },
+  commentImage: {
+    height: 25,
+    marginLeft: 15,
+    resizeMode: 'contain',
+    tintColor: colors.googleColor,
+
+    width: 25,
+  },
+  commentTime: {
+    position: 'absolute',
+    right: 20,
+
+    // fontFamily: fonts.RRegular,
+    fontSize: wp('3%'),
+    color: colors.grayColor,
+  },
+
   date: {
     marginLeft: wp('2.5%'),
 
@@ -302,8 +274,36 @@ const styles = StyleSheet.create({
 
     width: wp('80%'),
   },
+
+  deviderLine: {
+    backgroundColor: colors.grayBackgroundColor,
+    height: 1,
+    marginTop: 10,
+    width: wp('100%'),
+  },
+  deviderLineWithoutMargin: {
+    backgroundColor: colors.whiteColor,
+    height: 1,
+    width: wp('100%'),
+  },
+  entityName: {
+    marginLeft: wp('2.5%'),
+
+    // fontFamily: fonts.RBold,
+    fontSize: wp('4%'),
+    color: colors.blackColor,
+
+    paddingLeft: 8,
+    alignSelf: 'center',
+
+    width: wp('80%'),
+  },
   entityheader: {
     alignSelf: 'center',
+  },
+  feedBottomView: {
+    flexDirection: 'row',
+    marginTop: 10,
   },
   feedDescription: {
     marginLeft: 15,
@@ -313,111 +313,94 @@ const styles = StyleSheet.create({
     // fontFamily: fonts.RRegular,
     fontSize: wp('4%'),
   },
-  feedBottomView: {
+  feedSeparatorLine: {
+    backgroundColor: colors.grayBackgroundColor,
+    height: 10,
+    marginTop: 20,
+    width: wp('100%'),
+  },
+  feedheader: {
     flexDirection: 'row',
     marginTop: 10,
-  },
-  viewMore: {
-    flexDirection: 'row',
-  },
-  commentImage: {
-    height: 25,
-    width: 25,
-    resizeMode: 'contain',
-    tintColor: colors.googleColor,
-
-    marginLeft: 15,
-  },
-  shareImage: {
-    height: 23,
-    width: 23,
-    resizeMode: 'contain',
-    tintColor: colors.googleColor,
-
-    marginLeft: 30,
+    // marginBottom: 10,
+    // backgroundColor: 'red',
+    // height: 70,
   },
   likeImage: {
     height: 25,
-    width: 25,
+    position: 'absolute',
     resizeMode: 'contain',
 
-    position: 'absolute',
     right: 20,
+    width: 25,
   },
-  separatorLine: {
-    backgroundColor: colors.whiteColor,
-    width: 3,
-    alignSelf: 'center',
+  mainContainer: {
+    flexDirection: 'column',
   },
-  feedSeparatorLine: {
-    backgroundColor: colors.grayBackgroundColor,
-    width: wp('100%'),
-    height: 10,
-    marginTop: 20,
-  },
-  deviderLine: {
-    backgroundColor: colors.grayBackgroundColor,
-    width: wp('100%'),
-    height: 1,
-    marginTop: 10,
-  },
-  deviderLineWithoutMargin: {
-    backgroundColor: colors.whiteColor,
-    width: wp('100%'),
-    height: 1,
-  },
-  singleMediaPortrait: {
-    height: (width * 450.0) / 375.0,
-    width: width,
+  moreComment: {
+    color: colors.grayColor,
 
-    resizeMode: 'cover',
-  },
-  singleMediaLandscap: {
-    height: (width * 207.0) / 414.0,
-    width: width,
-    resizeMode: 'cover',
-  },
-  twoMedia: {
-    height: (186.0 * width) / 375.0,
-    width: (186.0 * width) / 375.0,
-
-    resizeMode: 'cover',
+    fontFamily: fonts.RRegular,
+    fontSize: wp('3.7%'),
+    marginLeft: 15,
   },
   multipleMedia: {
     height: (166.0 * width) / 375.0,
-    width: (166.0 * width) / 375.0,
-
     resizeMode: 'cover',
+
+    width: (166.0 * width) / 375.0,
   },
   noOfComment: {
     marginLeft: 15,
   },
   noOfLike: {
-    position: 'absolute',
-    right: 20,
     marginBottom: 10,
-  },
-  comment: {
-    marginLeft: 15,
-
-    // fontFamily: fonts.RRegular
-    fontSize: wp('4%'),
-    color: colors.blackColor,
-  },
-  commentTime: {
     position: 'absolute',
     right: 20,
-
-    // fontFamily: fonts.RRegular,
-    fontSize: wp('3%'),
-    color: colors.grayColor,
   },
-  moreComment: {
-    marginLeft: 15,
+  profileImg: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 35,
+    borderWidth: 1,
+    height: 50,
+    marginLeft: 10,
+    resizeMode: 'cover',
+    width: 50,
+  },
 
-    fontFamily: fonts.RRegular,
-    fontSize: wp('3.7%'),
-    color: colors.grayColor,
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    width: 3,
+  },
+  shareImage: {
+    height: 23,
+    marginLeft: 30,
+    resizeMode: 'contain',
+    tintColor: colors.googleColor,
+
+    width: 23,
+  },
+  singleMediaLandscap: {
+    height: (width * 207.0) / 414.0,
+    resizeMode: 'cover',
+    width,
+  },
+  singleMediaPortrait: {
+    height: (width * 450.0) / 375.0,
+    resizeMode: 'cover',
+
+    width,
+  },
+  twoMedia: {
+    height: (186.0 * width) / 375.0,
+    resizeMode: 'cover',
+
+    width: (186.0 * width) / 375.0,
+  },
+  viewMore: {
+    flexDirection: 'row',
   },
 });
 export default Feed;

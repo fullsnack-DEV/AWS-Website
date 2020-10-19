@@ -4,12 +4,14 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedbackComponent,
-  SafeAreaView,
+
   Image,
 } from 'react-native';
 import constants from '../config/constants';
-const {strings, colors, fonts, urls, PATH} = constants;
+
+const {
+  colors,
+} = constants;
 
 export default function TCGameButton({
   title,
@@ -18,31 +20,31 @@ export default function TCGameButton({
   imageName,
   buttonTitle,
   extraImageStyle,
-  textColor = {color: colors.themeColor},
+  textColor = { color: colors.themeColor },
   imageSize,
 }) {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={[styles.gameRecordButton, {backgroundColor: buttonColor}]}>
-        {imageName && (
-          <Image
-            source={imageName}
-            style={[
+      <TouchableOpacity onPress={ onPress }>
+          <View style={ [styles.gameRecordButton, { backgroundColor: buttonColor }] }>
+              {imageName && (
+              <Image
+            source={ imageName }
+            style={ [
               styles.gameRecordImg,
               extraImageStyle,
-              {height: imageSize, width: imageSize},
-            ]}
+              { height: imageSize, width: imageSize },
+            ] }
           />
-        )}
-        {buttonTitle && (
-          <Text style={[styles.gameRecordButtonTitle, {color: textColor}]}>
-            {buttonTitle}
-          </Text>
-        )}
-      </View>
+              )}
+              {buttonTitle && (
+              <Text style={ [styles.gameRecordButtonTitle, { color: textColor }] }>
+                  {buttonTitle}
+              </Text>
+              )}
+          </View>
 
-      <Text style={[styles.gameRecordTitle, {color: textColor}]}>{title}</Text>
-    </TouchableOpacity>
+          <Text style={ [styles.gameRecordTitle, { color: textColor }] }>{title}</Text>
+      </TouchableOpacity>
   );
 }
 
@@ -54,9 +56,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 18,
     marginRight: 18,
-    //margin: 18,
+    // margin: 18,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3,
     elevation: 10,
@@ -64,17 +66,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  gameRecordButtonTitle: {
+    textAlign: 'center',
+  },
+  gameRecordImg: {
+    resizeMode: 'contain',
+  },
   gameRecordTitle: {
     textAlign: 'center',
     marginTop: 5,
 
     // fontFamily: fonts.RRegular,
     fontSize: 11,
-  },
-  gameRecordImg: {
-    resizeMode: 'contain',
-  },
-  gameRecordButtonTitle: {
-    textAlign: 'center',
   },
 });

@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 const urls = {
   // Dev configuration
   BASEURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
@@ -19,7 +20,7 @@ const colors = {
   kHexColor35B9A8: '#35B9A8',
   themeColor: '#FF8A01',
   whiteColor: '#FFFFFF',
-  parrotColor:'#E8FFB4',
+  parrotColor: '#E8FFB4',
   fbTextColor: '#4574DB',
   googleColor: '#616161',
   blackColor: '#000000',
@@ -40,7 +41,7 @@ const colors = {
   offwhite: '#fcfcfc',
   radioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
-  veryLightBlack:'#616161',
+  veryLightBlack: '#616161',
   userPostTimeColor: '#999999',
   reactionCountColor: '#5c5c5c',
   purpleColor: '#c08bd1',
@@ -51,9 +52,9 @@ const colors = {
   writePostSepratorColor: '#E0E0E0',
   reservationAmountColor: '#FF8A01',
   yellowEventColor: '#ffd780',
-  grayEventColor:'#AAAAAA',
-  orangeEventColor:'#FFAE01',
-  veryLightGray:'#C4C4C4',
+  grayEventColor: '#AAAAAA',
+  orangeEventColor: '#FFAE01',
+  veryLightGray: '#C4C4C4',
 };
 
 const fonts = {
@@ -150,7 +151,6 @@ const PATH = {
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
 
-  
 };
 
 const endPoints = {
@@ -169,4 +169,6 @@ export const staging = 'STAGING';
 
 export const production = 'PRODUCTION';
 
-export default {urls, fonts, endPoints, colors, PATH};
+export default {
+  urls, fonts, endPoints, colors, PATH,
+};

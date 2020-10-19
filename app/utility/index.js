@@ -1,16 +1,17 @@
-import {Platform, Alert} from 'react-native';
-import {Dimensions, PixelRatio} from 'react-native';
-export var deviceHeight = Dimensions.get('window').height;
-export var deviceWidth = Dimensions.get('window').width;
+import {
+  Platform, Alert, Dimensions, PixelRatio,
+} from 'react-native';
+
 import AsyncStorage from '@react-native-community/async-storage';
 
-export const getPageLimit = () => {
-  return 10;
-};
+export const deviceHeight = Dimensions.get('window').height;
+export const deviceWidth = Dimensions.get('window').width;
+
+export const getPageLimit = () => 10;
 
 export const isFieldEmpty = (text) => {
   console.log('text', text);
-  if (text == '') {
+  if (text === '') {
     return true;
   }
   return false;
@@ -25,14 +26,14 @@ export const passwordPattern = (password) => {
 
 export const isValidEmail = (email) => {
   // var reg = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  var reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  if (reg.test(email) != true) {
+  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  if (reg.test(email) !== true) {
     return true;
   }
   return false;
 };
 
-export let isValidOtp = (otp) => {
+export const isValidOtp = (otp) => {
   if (otp.length < 4) {
     return false;
   }
@@ -47,7 +48,7 @@ export const isValidPhoneNumber = (phone) => {
 };
 
 export const isValidComparedPassword = (newpassword, confirmPassword) => {
-  if (newpassword != confirmPassword) {
+  if (newpassword !== confirmPassword) {
     return true;
   }
   return false;
@@ -63,8 +64,8 @@ export const showAlert = (message) => {
   Alert.alert(
     titles.APP_NAME,
     message,
-    [{text: 'OK', onPress: () => console.log('OK Pressed')}],
-    {cancelable: false},
+    [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+    { cancelable: false },
   );
 };
 
@@ -87,66 +88,26 @@ export const showAlertWithCallBack = (msg, onOkClick) => {
   );
 };
 
-export const setInLocalStorge = async (key, token) => {
-  try {
-    await AsyncStorage.setItem(key, JSON.stringify(token));
-    console.log('setInLocalStorge');
-  } catch (err) {
-    console.log('setInLocalStorge Error', err);
-  }
-  console.log('setInLocalStorge Done.');
-};
+export const removeAuthKey = async () => {
 
-export const getFromLocalStorge = async (key) => {
-  try {
-    const token = await AsyncStorage.getItem(key);
-    return token ? JSON.parse(token) : null;
-    // console.log("console chal nahi",);
-  } catch (err) {
-    console.log('getFromLocalStorge Error', err);
-  }
-};
-
-export const removeAuthKey = async (key) => {
-  try {
-    let res = await AsyncStorage.removeItem(key);
-  } catch (err) {
-    console.log('removeToken Error', err);
-  }
 };
 // New Utility Method for set any kind of value
 export const setStorage = async (key, value) => {
-  if (typeof value === 'Object') {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {
-      console.log('setObjectInLocalStorge Error', err);
-    }
-  } else {
-    try {
-      await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (err) {
-      console.log('setInLocalStorge Error', err);
-    }
-  }
-  console.log('setObjectInLocalStorge Done.');
+  const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString()
+  console.log('valueString', valueString)
+  await AsyncStorage.setItem(key, valueString);
+  console.log('valueString', valueString)
 };
 
-//New Utility Method for get any kind of value
 export const getStorage = async (key) => {
+  let value = await AsyncStorage.getItem(key);
   try {
-    const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue ? JSON.parse(jsonValue) : null;
-    // console.log("console chal nahi",);
-  } catch (err) {
-    console.log('getFromLocalStorge Error', err);
+    value = JSON.parse(value)
+    return value
+  } catch (e) {
+    // Do nothing. Its null or or plain string
   }
-  if (typeof jsonValue === 'Object') {
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } else {
-    return jsonValue;
-  }
+  return value
 };
 
 export const widthPercentageToDP = (widthPercent) => {
