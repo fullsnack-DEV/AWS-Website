@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 import { loaderImage } from '../../Constants/LoaderImages';
@@ -58,7 +57,6 @@ const styles = StyleSheet.create({
   lengthViewStyle: {
     alignItems: 'center',
     alignSelf: 'flex-end',
-    backgroundColor: 'red',
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: wp('5%'),
     justifyContent: 'center',

@@ -5,7 +5,6 @@ import {
 import Video from 'react-native-video';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import PATH from '../../Constants/ImagePath';
@@ -20,29 +19,21 @@ function VideoPost({ data, onVideoItemPress }) {
   const [videoLoad, setVideoLoad] = useState(false);
 
   const randomImage = Math.floor(Math.random() * loaderImage.length);
+  let height = wp('94%');
+  height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
 
   return (
       <View
       style={ [
         styles.singleImageDisplayStyle,
         {
-          height:
-            data.media_height > data.media_width
-              ? wp('114%')
-              : data.media_height < data.media_width
-                ? wp('74%')
-                : wp('94%'),
+          height,
         },
       ] }>
           <View style={ [styles.singleImageDisplayStyle, {
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
-            height:
-            data.media_height > data.media_width
-              ? wp('114%')
-              : data.media_height < data.media_width
-                ? wp('74%')
-                : wp('94%'),
+            height,
           }] }>
               <FastImage
           style={ styles.loadimageStyle }
@@ -59,12 +50,7 @@ function VideoPost({ data, onVideoItemPress }) {
         style={ [
           styles.singleImageDisplayStyle,
           {
-            height:
-              data.media_height > data.media_width
-                ? wp('114%')
-                : data.media_height < data.media_width
-                  ? wp('74%')
-                  : wp('94%'),
+            height,
             position: 'absolute',
           },
         ] }
@@ -107,12 +93,6 @@ const styles = StyleSheet.create({
     tintColor: '#fff',
     width: wp('5%'),
   },
-  lengthTextStyle: {
-    color: '#fff',
-    fontFamily: fonts.RRegular,
-    fontSize: 15,
-    paddingHorizontal: wp('1.5%'),
-  },
   loadimageStyle: {
     height: 50,
     width: 50,
@@ -136,32 +116,10 @@ const styles = StyleSheet.create({
     right: wp('2%'),
     width: wp('10%'),
   },
-  pauseMuteStyle: {
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: wp('5%'),
-    bottom: wp('2%'),
-    height: wp('10%'),
-    justifyContent: 'center',
-    padding: wp('2%'),
-    position: 'absolute',
-    right: wp('2%'),
-    width: wp('10%'),
-  },
   playPauseImageStyle: {
     height: wp('4%'),
     tintColor: '#fff',
     width: wp('4%'),
-  },
-  singleImageDisplayStyle: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: wp('4%'),
-    height: wp('94%'),
-    justifyContent: 'center',
-    marginVertical: wp('1%'),
-    width: wp('94%'),
   },
   singleImageDisplayStyle: {
     alignItems: 'center',

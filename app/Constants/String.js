@@ -33,7 +33,6 @@ const strings = {
   confirmPasswordText: 'Confirm Password',
 
   locationText: 'Your Location',
-  searchHereText: 'Search here',
   locationPlaceholderText: 'Search cities or postal codes',
   sportText: 'Select your favourite sport event.',
 
@@ -79,7 +78,6 @@ const strings = {
 
   membershipTitle: 'Membership',
   whoJoinTitle: 'Who can join the team?',
-  everyoneText: 'Everyone',
   membershipRequestText:
     'A person whose membership request has been accepted by a team admin',
   inviteText: 'Invite only',

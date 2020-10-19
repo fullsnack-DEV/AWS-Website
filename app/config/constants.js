@@ -28,7 +28,6 @@ const colors = {
   tabBackgroundColor: '#F6F6F6',
   lightgrayColor: '#E1E1E1',
   blueColor: '#3166d1',
-  lightBlueColor: '#c1d2f2',
   pinkColor: '#FF658E',
   yellowColor: '#FFAE01',
   darkGrayColor: '#565656',

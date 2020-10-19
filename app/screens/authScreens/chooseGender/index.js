@@ -21,9 +21,6 @@ const { colors } = constants;
 
 export default function ChooseGenderScreen({ navigation }) {
   const [selected, setSelected] = useState(0);
-  const [male, setMale] = useState(true);
-  const [female, setFemale] = useState(false);
-  const [other, setOther] = useState(false);
   return (
       <View style={ styles.mainContainer }>
           <Image style={ styles.background } source={ PATH.orangeLayer } />

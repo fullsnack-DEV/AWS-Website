@@ -2,24 +2,14 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
-  FlatList,
   Text,
-  Button,
   TouchableWithoutFeedback,
   Image,
 } from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import Geolocation from '@react-native-community/geolocation';
 
 import Video from 'react-native-video';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
-// import VideoPlayer from 'react-native-video-controls';
-
 import constants from '../../config/constants';
 import PATH from '../../Constants/ImagePath';
 
@@ -28,11 +18,10 @@ const { colors } = constants;
 export default function NewsFeedVideoPlayer({ navigation, route }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-
   const [isLoading, setIsLoading] = useState(true);
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
-  const [mute, setMute] = useState(1.0);
+  const [mute] = useState(1.0);
   useEffect(() => {
     Geolocation.getCurrentPosition((info) => console.log(info));
   });
@@ -50,16 +39,14 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
   onSeek = (seek) => {
     this.videoPlayer.seek(seek);
   };
-  onPaused = (playerState) => {
+  onPaused = () => {
     console.log('STATE::', playerState);
     if (paused === true) {
       setPlayerState(PLAYER_STATES.PLAYING);
       setPaused(!paused);
-      playerState;
     } else {
       setPlayerState(PLAYER_STATES.PAUSED);
       setPaused(!paused);
-      playerState;
     }
   };
   onReplay = () => {
@@ -79,7 +66,7 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
     setIsLoading(false);
   };
 
-  onLoadStart = (data) => {
+  onLoadStart = () => {
     setIsLoading(true);
   };
 
@@ -99,13 +86,17 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
   //     <Text>I'm a custom toolbar </Text>
   //   </View>
   // );
-  onSeeking = (currentTime) => setCurrentTime(currentTime);
+  onSeeking = (curntTime) => setCurrentTime(curntTime);
+
+  onRefs = (videoPlayer) => {
+    this.videoPlayer = videoPlayer
+  };
 
   return (
       <View style={ styles.container }>
           <Video
         source={ { uri: route.params.url } } // Can be a URL or a local file.
-        ref={ (videoPlayer) => (this.videoPlayer = videoPlayer) }
+        ref={this.onRefs}
         volume={ mute }
         // resizeMode="cover"
         onEnd={ this.onEnd }
@@ -129,7 +120,7 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
         playerState={ playerState }>
               <MediaControls.Toolbar>
                   <View style={ styles.toolbar }>
-                      <Text style={ { color: colors.red } }>I'm a custom toolbar </Text>
+                      <Text style={ { color: colors.red } }>Im a custom toolbar </Text>
                   </View>
               </MediaControls.Toolbar>
           </MediaControls>

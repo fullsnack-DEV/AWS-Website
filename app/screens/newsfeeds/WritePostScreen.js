@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -17,10 +17,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import _ from 'lodash';
 import ImagePicker from 'react-native-image-crop-picker';
 import constants from '../../config/constants';
-import AuthContext from '../../auth/context';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import { createPost, getPostDetails } from '../../api/NewsFeedapi';
@@ -29,7 +27,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 const { PATH, colors, fonts } = constants;
 
 export default function WritePostScreen({ navigation, route: { params: { postDataItem } } }) {
-  const authContext = useContext(AuthContext);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState([]);
   const [loading, setloading] = useState(false);
@@ -71,28 +68,23 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                       url: imageItem.path,
                       thumbnail: imageItem.path,
                     };
-                    attachments.push(obj);
+                    return attachments.push(obj);
                   })
 
                   const params = {
                     text: searchText,
                     attachments,
                   };
-                  createPost(params).then((res) => {
-                    if (res.status === true) {
-                      getPostDetails().then((response) => {
-                        if (response.status === true) {
-                          navigation.goBack();
-                        } else {
-                          alert(response.messages);
-                        }
-                        setloading(false);
-                      });
-                    } else {
+                  createPost(params)
+                    .then(() => getPostDetails())
+                    .then(() => {
+                      navigation.goBack()
                       setloading(false);
-                      alert(res.messages);
-                    }
-                  }, () => setloading(false))
+                    })
+                    .catch((e) => {
+                      Alert.alert('', e.messages)
+                      setloading(false);
+                    });
                 }
               } }>
                           Done
@@ -129,9 +121,9 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                 totalItemNumber={ selectImage.length }
                 onItemPress={ () => {
                   const images = [...selectImage];
-                  const index = images.indexOf(item);
-                  if (index > -1) {
-                    images.splice(index, 1);
+                  const idx = images.indexOf(item);
+                  if (idx > -1) {
+                    images.splice(idx, 1);
                   }
                   setSelectImage(images);
                 } }

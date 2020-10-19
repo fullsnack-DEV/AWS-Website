@@ -32,4 +32,5 @@ export const commentPostTimeCalculate = (commentPostTime) => {
   } if (minute < 60) {
     return `${minute}min ago`;
   }
+  return '';
 }

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,17 +11,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
 import ImagePicker from 'react-native-image-crop-picker';
 import constants from '../../config/constants';
-import AuthContext from '../../auth/context';
 import ImageButton from '../../components/WritePost/ImageButton';
-
 import { updatePost, getPostDetails } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
@@ -37,12 +35,10 @@ export default function EditPostScreen({
   let postText = '';
   let postAttachments = [];
   if (data && data.object) {
-    // console.log('data Object :-', JSON.parse(data.object));
     postText = JSON.parse(data.object).text;
     postAttachments = JSON.parse(data.object).attachments;
   }
 
-  const authContext = useContext(AuthContext);
   const [searchText, setSearchText] = useState(postText);
   const [selectImage, setSelectImage] = useState(postAttachments);
   const [loading, setloading] = useState(false);
@@ -71,56 +67,44 @@ export default function EditPostScreen({
                   </View>
                   <View style={styles.doneViewStyle}>
                       <Text
-              style={styles.doneTextStyle}
-              onPress={() => {
-                if (
-                  searchText.trim().length === 0
-                  && selectImage.length === 0
-                ) {
-                  alert('Please write some text or select any image.');
-                } else {
-                  //   setloading(true);
-                  const attachments = [];
-                  selectImage.map((imageItem) => {
-                    console.log('Image Item :-', imageItem);
-                    const obj = {
-                      type: 'image',
-                      url: imageItem.url ? imageItem.url : imageItem.path,
-                      thumbnail: imageItem.thumbnail
-                        ? imageItem.thumbnail
-                        : imageItem.path,
-                    };
-                    attachments.push(obj);
-                  });
-
-                  const params = {
-                    activity_id: data.id,
-                    text: searchText,
-                    attachments,
-                  };
-                  console.log('Params :-', params);
-                  updatePost(params).then(
-                    (res) => {
-                      console.log('Update Post :-', res);
-                      if (res.status) {
-                        getPostDetails().then((response) => {
-                          console.log('Get Post :-', response);
-                          if (response.status) {
-                            navigation.goBack();
+                        style={styles.doneTextStyle}
+                        onPress={() => {
+                          if (
+                            searchText.trim().length === 0
+                            && selectImage.length === 0
+                          ) {
+                            Alert.alert('', 'Please write some text or select any image.');
                           } else {
-                            alert(response.messages);
+                            //   setloading(true);
+                            const attachments = [];
+                            selectImage.forEach((imageItem) => {
+                              const obj = {
+                                type: 'image',
+                                url: imageItem.url ? imageItem.url : imageItem.path,
+                                thumbnail: imageItem.thumbnail
+                                  ? imageItem.thumbnail
+                                  : imageItem.path,
+                              };
+                              attachments.push(obj);
+                            });
+
+                            const params = {
+                              activity_id: data.id,
+                              text: searchText,
+                              attachments,
+                            };
+                            updatePost(params)
+                              .then(() => getPostDetails())
+                              .then(() => {
+                                navigation.goBack()
+                                setloading(false);
+                              })
+                              .catch((e) => {
+                                Alert.alert('', e.messages)
+                                setloading(false);
+                              });
                           }
-                          setloading(false);
-                        });
-                      } else {
-                        setloading(false);
-                        alert(res.messages);
-                      }
-                    },
-                    (error) => setloading(false),
-                  );
-                }
-              }}>
+                        }}>
                           Done
                       </Text>
                   </View>
@@ -152,12 +136,10 @@ export default function EditPostScreen({
             horizontal={true}
             // scrollEnabled={true}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) =>
-              //   console.log('Selected Image Items :-', item);
-              (
-                  <EditSelectedImages
+            renderItem={({ item, key }) => (
+                <EditSelectedImages
                   data={item}
-                  itemNumber={index + 1}
+                  itemNumber={key + 1}
                   totalItemNumber={selectImage.length}
                   onItemPress={() => {
                     const images = [...selectImage];
@@ -168,8 +150,7 @@ export default function EditPostScreen({
                     setSelectImage(images);
                   }}
                 />
-              )
-            }
+            )}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
             style={{ paddingTop: 10, marginHorizontal: wp('3%') }}
             keyExtractor={(item, index) => index.toString()}

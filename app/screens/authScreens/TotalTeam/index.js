@@ -29,9 +29,9 @@ function TotalTeamsScreen({ navigation, route }) {
                   <Text style={ styles.foundText }> We found </Text>
                   <Text style={ styles.LocationText }>
                       {route.params.totalTeams}
-                  </Text>{' '}
+                  </Text>
                   <Text style={ styles.foundText }>teams in </Text>
-                  {route.params.city}, {route.params.state}
+                  <Text style={ styles.LocationText }>{route.params.city}, {route.params.state}</Text>
               </Text>
           </View>
           <TCButton

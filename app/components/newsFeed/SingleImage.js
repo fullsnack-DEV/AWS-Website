@@ -3,7 +3,6 @@ import { StyleSheet, View, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import constants from '../../config/constants';
 import { loaderImage } from '../../Constants/LoaderImages';
@@ -14,29 +13,21 @@ function SingleImage({ data }) {
   const uploadImageURL = data && typeof data.thumbnail === 'string' && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
   const randomImage = Math.floor(Math.random() * loaderImage.length);
+  let height = wp('94%');
+  height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
   return (
       <View
       style={ [
         styles.uploadedImage,
         {
-          height:
-            data.media_height > data.media_width
-              ? wp('114%')
-              : data.media_height < data.media_width
-                ? wp('74%')
-                : wp('94%'),
+          height,
         },
       ] }>
           <View style={ [styles.uploadedImage, {
             borderWidth: 1,
             borderColor: colors.lightgrayColor,
-            height:
-        data.media_height > data.media_width
-          ? wp('114%')
-          : data.media_height < data.media_width
-            ? wp('74%')
-            : wp('94%'),
-          }] }>
+            height,
+          }]}>
               <FastImage
           style={ styles.imageStyle }
           source={ loaderImage[randomImage].image }
@@ -48,12 +39,7 @@ function SingleImage({ data }) {
         style={ [
           styles.uploadedImage,
           {
-            height:
-              data.media_height > data.media_width
-                ? wp('114%')
-                : data.media_height < data.media_width
-                  ? wp('74%')
-                  : wp('94%'),
+            height,
             position: 'absolute',
           },
         ] }

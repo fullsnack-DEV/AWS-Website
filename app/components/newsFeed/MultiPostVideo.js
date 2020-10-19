@@ -5,7 +5,6 @@ import {
 import Video from 'react-native-video';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import PATH from '../../Constants/ImagePath';
@@ -88,7 +87,6 @@ const styles = StyleSheet.create({
   lengthViewStyle: {
     alignItems: 'center',
     alignSelf: 'flex-end',
-    backgroundColor: 'red',
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: wp('5%'),
     justifyContent: 'center',

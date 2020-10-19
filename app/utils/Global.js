@@ -4,7 +4,7 @@ import firebase from '@react-native-firebase/app';
 import { token_details } from './constant';
 import * as Utility from '../utility/index';
 
-const prepareHeader = function (headers, authToken, caller_id, caller) {
+const prepareHeader = (headers, authToken, caller_id, caller) => {
   let apiHeaders = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ const prepareHeader = function (headers, authToken, caller_id, caller) {
   return apiHeaders;
 };
 
-export const makeAPIRequest = async function ({
+const makeAPIRequest = async ({
   method,
   url,
   data,
@@ -34,7 +34,7 @@ export const makeAPIRequest = async function ({
   responseType,
   caller_id,
   caller,
-}) {
+}) => {
   const tokenDetails = await Utility.getStorage(token_details);
   console.log('tokenDetails', tokenDetails)
   let authToken = tokenDetails.token;
@@ -54,12 +54,12 @@ export const makeAPIRequest = async function ({
       }
     });
   }
-  headers = prepareHeader(headers, authToken, caller_id, caller);
+  const headersParams = prepareHeader(headers, authToken, caller_id, caller);
   const options = {
     method,
     url,
     data,
-    headers,
+    headersParams,
     params,
     responseType,
   };
@@ -70,3 +70,5 @@ export const makeAPIRequest = async function ({
   }
   throw new Error(response.data || response);
 };
+
+export default makeAPIRequest;

@@ -1,5 +1,5 @@
-import { api } from '../utils/apiConstants';
-import { makeAPIRequest } from '../utils/Global';
+import api from '../utils/apiConstants';
+import makeAPIRequest from '../utils/Global';
 
 export const getuserDetail = function (uid) {
   return makeAPIRequest({

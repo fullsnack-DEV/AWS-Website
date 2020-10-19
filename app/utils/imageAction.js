@@ -1,8 +1,8 @@
 import { RNS3 } from 'react-native-s3-upload';
 
-const uploadImage = ({ image }) => () => {
-  const str = image.uri.split('/');
-  image.name = `${new Date().getTime()}-${str[str.length - 1]}`;
+const uploadImage = ({ image }) => {
+  // const str = image.uri.split('/');
+  // image.name = `${new Date().getTime()}-${str[str.length - 1]}`;
   const options = {
     keyPrefix: 'uploads/',
     bucket: '',
@@ -17,7 +17,8 @@ const uploadImage = ({ image }) => () => {
       return Promise.resolve(image.name);
     });
   } catch (error) {
-    console.log({ file, error });
+    console.log({ error });
+    return Promise.reject();
   }
 };
 
