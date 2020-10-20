@@ -177,6 +177,7 @@ export default function AccountScreen({ navigation }) {
       });
     } else {
       getJoinedTeams().then((response) => {
+        console.log('response1111', response)
         if (response.status === true) {
           setTeamList(response.payload.teams);
         } else {

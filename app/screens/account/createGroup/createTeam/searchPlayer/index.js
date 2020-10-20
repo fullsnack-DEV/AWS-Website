@@ -26,8 +26,6 @@ import strings from '../../../../../Constants/String';
 import styles from './style';
 import colors from '../../../../../Constants/Colors';
 import * as Utility from '../../../../../utility/index';
-import { get } from '../../../../../api/services';
-import { GET_USERS } from '../../../../../api/Url';
 
 function SearchPlayerScreen({ navigation, route }) {
   const [players, setPlayers] = useState([]);

@@ -77,6 +77,7 @@ function LoginScreen({ navigation }) {
 
   const getUser = async (uid) => {
     getuserDetail(uid).then(async (response) => {
+      console.log('response', response)
       if (response.status) {
         await Utility.setStorage('user', response.payload);
         authContext.setUser(response.payload);
