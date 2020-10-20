@@ -1,5 +1,4 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 import firebase from '@react-native-firebase/app';
 import { token_details } from './constant';
 import * as Utility from '../utility/index';
@@ -36,7 +35,6 @@ const makeAPIRequest = async ({
   caller,
 }) => {
   const tokenDetails = await Utility.getStorage(token_details);
-  console.log('tokenDetails', tokenDetails)
   let authToken = tokenDetails.token;
   const currentDate = new Date();
   const expiryDate = new Date(tokenDetails.expirationTime);
@@ -49,7 +47,7 @@ const makeAPIRequest = async ({
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
-          AsyncStorage.setItem(token_details, JSON.stringify(tokenDetail));
+          Utility.setStorage(token_details, tokenDetail);
         });
       }
     });
@@ -59,16 +57,19 @@ const makeAPIRequest = async ({
     method,
     url,
     data,
-    headersParams,
+    headers: headersParams,
     params,
     responseType,
   };
-  console.log('options', options)
-  const response = await axios(options);
-  if (response.data.status) {
-    return response.data;
+  try {
+    const response = await axios(options);
+    if (response.data.status) {
+      return response.data;
+    }
+    throw new Error(response.data);
+  } catch (e) {
+    throw new Error(e);
   }
-  throw new Error(response.data || response);
 };
 
 export default makeAPIRequest;

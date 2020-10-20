@@ -11,6 +11,8 @@ target 'townscup_reactnative' do
 
   pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
 
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   target 'townscup_reactnativeTests' do
     inherit! :complete
     # Pods for testing
