@@ -39,7 +39,7 @@ function WriteCommentItems({ data }) {
           <View style={ styles.userNameView }>
               <View style={ styles.userCommentTextStyle }>
                   <Text style={ styles.userNameTxt }>
-                      {userName}
+                      {userName}{' '}
                       <Text style={ styles.commentTextStyle }>{commentText}</Text>
                   </Text>
               </View>

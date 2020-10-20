@@ -51,10 +51,12 @@ function NewsFeedPostItems({
     userImage = item.actor.data.full_image;
   }
   let attachedImages = [];
-  const descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
+  let descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
   if (item.object) {
-    attachedImages = JSON.parse(item.object).attachments;
-    // descriptions = JSON.parse(item.object).text;
+    if (JSON.parse(item.object).attachments.length > 0) {
+      attachedImages = JSON.parse(item.object).attachments;
+    }
+    descriptions = JSON.parse(item.object).text;
   }
 
   return (
@@ -85,8 +87,8 @@ function NewsFeedPostItems({
               </TouchableOpacity>
           </View>
           <View>
-              {attachedImages.length > 0 && (
-                attachedImages.length === 1 ? (
+              {
+                attachedImages && attachedImages.length === 1 ? (
                     <FlatList
               data={attachedImages}
               horizontal={true}
@@ -95,7 +97,7 @@ function NewsFeedPostItems({
               ListHeaderComponent={() => <View style={{ width: wp('2%') }} />}
               ListFooterComponent={() => <View style={{ width: wp('2%') }} />}
               ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
-              renderItem={({ attachItem }) => {
+              renderItem={({ item: attachItem }) => {
                 if (attachItem.type === 'image') {
                   return <SingleImage data={attachItem} />;
                 }
@@ -116,7 +118,7 @@ function NewsFeedPostItems({
                 ) : (
                     <Carousel
               data={attachedImages}
-              renderItem={({ multiAttachItem, index }) => {
+              renderItem={({ item: multiAttachItem, index }) => {
                 if (multiAttachItem.type === 'image') {
                   return (
                       <PostImageSet
@@ -143,11 +145,11 @@ function NewsFeedPostItems({
               itemWidth={wp(94)}
             />
                 )
-              )}
+              }
               {attachedImages.length > 0 ? (
-                  <NewsFeedDescription descriptions={descriptions} character={150} />
+                  <NewsFeedDescription descriptions={descriptions} character={140} />
               ) : (
-                  <NewsFeedDescription descriptions={descriptions} character={450} />
+                  <NewsFeedDescription descriptions={descriptions} character={650} />
               )}
 
               <View style={{ marginTop: 10, marginLeft: 10 }}></View>

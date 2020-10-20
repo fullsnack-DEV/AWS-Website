@@ -85,6 +85,7 @@ const PATH = {
   signUpFb: require('../assets/images/signup_fb.png'),
   signUpGoogle: require('../assets/images/signup_google.png'),
   bgImage: require('../assets/images/ic_bg.png'),
+  searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
   archerySport: require('../assets/images/ic_archery.png'),
