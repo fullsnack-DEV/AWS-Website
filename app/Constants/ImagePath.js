@@ -102,6 +102,7 @@ const PATH = {
   likeOrange: require('../assets/images/orangeLike.png'),
 
   backArrow: require('../assets/images/back_arrow.png'),
+  searchUser: require('../assets/images/searchUser.png'),
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
   mySports: require('../assets/images/My_Sports.png'),

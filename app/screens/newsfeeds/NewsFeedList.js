@@ -29,7 +29,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
         ListFooterComponent={() => (
             <View
             style={{
-              height: 70,
+              height: 20,
             }}
           />
         )}

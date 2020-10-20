@@ -1,7 +1,5 @@
-import API_BASE_URL from './setting';
-
 const api = {
-  baseURL: API_BASE_URL,
+  baseURL: 'https://90gtjgmtoe.execute-api.us-east-1.amazonaws.com/dev/',
   auth: {
     userDetail: 'users/',
     addUser: 'users',
@@ -17,6 +15,10 @@ const api = {
     getReaction: 'reactions',
     reaction: 'reactions',
     createPostEndPoint: 'posts',
+    player: 'players/',
+    presignedurl: '/presignedurl',
+    getUser: 'users',
+    getGroup: 'groups',
   },
   // Search Constants
   search: {},

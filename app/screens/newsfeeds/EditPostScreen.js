@@ -13,6 +13,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -23,6 +24,7 @@ import ImageButton from '../../components/WritePost/ImageButton';
 import { updatePost, getPostDetails } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
+import TagUserScreen from './TagUserScreen';
 
 const { PATH, colors, fonts } = constants;
 
@@ -42,6 +44,8 @@ export default function EditPostScreen({
   const [searchText, setSearchText] = useState(postText);
   const [selectImage, setSelectImage] = useState(postAttachments);
   const [loading, setloading] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [letModalVisible, setLetModalVisible] = useState(true);
 
   let userImage = '';
   let userName = '';
@@ -49,6 +53,10 @@ export default function EditPostScreen({
     userName = data.actor.data.full_name;
     userImage = data.actor.data.thumbnail;
   }
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   return (
       <KeyboardAvoidingView
@@ -121,12 +129,41 @@ export default function EditPostScreen({
               </View>
           </View>
 
+          <Modal
+        isVisible={ isModalVisible }
+        backdropColor="black"
+        style={{ margin: 0 }}
+        backdropOpacity={ 0 }>
+              <TagUserScreen
+                backBtnPress={() => setModalVisible(false)}
+                onItemPress={(name) => {
+                  if (name) {
+                    setSearchText(searchText + name);
+                    setModalVisible(false);
+                  }
+                }}
+              />
+          </Modal>
+
           <ScrollView bounces={false}>
               <TextInput
           placeholder="What's going on?"
           value={searchText}
           placeholderTextColor={colors.userPostTimeColor}
-          onChangeText={(text) => setSearchText(text)}
+          onKeyPress={({ nativeEvent }) => {
+            if (nativeEvent.key === 'Backspace') {
+              setLetModalVisible(false);
+            } else {
+              setLetModalVisible(true);
+            }
+          }}
+          onChangeText={ (text) => {
+            setSearchText(text);
+            const lastChar = text.slice(text.length - 1, text.length);
+            if (lastChar === '@' && letModalVisible) {
+              toggleModal()
+            }
+          }}
           style={styles.textInputField}
           multiline={true}
         />
@@ -136,16 +173,16 @@ export default function EditPostScreen({
             horizontal={true}
             // scrollEnabled={true}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item, key }) => (
+            renderItem={({ item, index }) => (
                 <EditSelectedImages
                   data={item}
-                  itemNumber={key + 1}
+                  itemNumber={index + 1}
                   totalItemNumber={selectImage.length}
                   onItemPress={() => {
                     const images = [...selectImage];
-                    const index = images.indexOf(item);
-                    if (index > -1) {
-                      images.splice(index, 1);
+                    const idx = images.indexOf(item);
+                    if (idx > -1) {
+                      images.splice(idx, 1);
                     }
                     setSelectImage(images);
                   }}
@@ -280,5 +317,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: wp('58%'),
+  },
+  bottomSafeAreaStyle: {
+    backgroundColor: colors.whiteColor,
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
   },
 });

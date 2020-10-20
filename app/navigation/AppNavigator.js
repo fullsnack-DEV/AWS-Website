@@ -50,6 +50,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ChangePasswordScreen'
     || routeName === 'PersonalInformationScreen'
     || routeName === 'FullVideoScreen'
+    || routeName === 'TagUserScreen'
   ) {
     return false;
   }
