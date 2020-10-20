@@ -18,8 +18,6 @@ import Separator from '../../../../components/Separator';
 
 import styles from './style';
 import colors from '../../../../Constants/Colors';
-import * as Service from '../../../../api/services';
-import * as Url from '../../../../api/Url';
 
 function SearchLocationScreen({ navigation, route }) {
   const [cityData, setCityData] = useState([]);
