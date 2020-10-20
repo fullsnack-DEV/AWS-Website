@@ -17,6 +17,10 @@ const api = {
     getReaction: 'reactions',
     reaction: 'reactions',
     createPostEndPoint: 'posts',
+    player: 'players/',
+    presignedurl: '/presignedurl',
+    getUser: 'users',
+    getGroup: 'groups',
   },
   // Search Constants
   search: {},

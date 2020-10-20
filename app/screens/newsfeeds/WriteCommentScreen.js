@@ -210,4 +210,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: wp('58%'),
   },
+  bottomSafeAreaStyle: {
+    backgroundColor: colors.whiteColor,
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
+  },
 });

@@ -13,6 +13,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -23,20 +24,32 @@ import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import { createPost, getPostDetails } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import TagUserScreen from './TagUserScreen';
 
 const { PATH, colors, fonts } = constants;
 
 export default function WritePostScreen({ navigation, route: { params: { postDataItem } } }) {
+  const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState([]);
   const [loading, setloading] = useState(false);
+  const [letModalVisible, setLetModalVisible] = useState(true);
 
-  let userImage = ''; let
-    userName = '';
+  let userImage = '';
+  let userName = '';
   if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
     userName = postDataItem.actor.data.full_name;
     userImage = postDataItem.actor.data.thumbnail;
   }
+
+  // let playerID = '';
+  // if (postDataItem) {
+  //   playerID = postDataItem.id;
+  // }
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   return (
       <KeyboardAvoidingView
@@ -100,12 +113,41 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
               </View>
           </View>
 
+          <Modal
+        isVisible={ isModalVisible }
+        backdropColor="black"
+        style={{ margin: 0 }}
+        backdropOpacity={ 0 }>
+              <TagUserScreen
+                backBtnPress={() => setModalVisible(false)}
+                onItemPress={(name) => {
+                  if (name) {
+                    setSearchText(searchText + name);
+                    setModalVisible(false);
+                  }
+                }}
+              />
+          </Modal>
+
           <ScrollView bounces={ false }>
               <TextInput
           placeholder="What's going on?"
           value={ searchText }
           placeholderTextColor={ colors.userPostTimeColor }
-          onChangeText={ (text) => setSearchText(text) }
+          onKeyPress={({ nativeEvent }) => {
+            if (nativeEvent.key === 'Backspace') {
+              setLetModalVisible(false);
+            } else {
+              setLetModalVisible(true);
+            }
+          }}
+          onChangeText={ (text) => {
+            setSearchText(text);
+            const lastChar = text.slice(text.length - 1, text.length);
+            if (lastChar === '@' && letModalVisible) {
+              toggleModal()
+            }
+          }}
           style={ styles.textInputField }
           multiline={ true }
         />
@@ -161,6 +203,18 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                   maxFiles: 10,
                 }).then((image) => {
                   setSelectImage(image);
+                  // const imageCount = image.length;
+                  // const params = {
+                  //   count: imageCount,
+                  // }
+                  // getImagePreSignedURL(playerID, params)
+                  //   .then((response) => {
+                  //     console.log('Response of Signed URL :-', response);
+                  //   })
+                  //   .catch((e) => {
+                  //     Alert.alert('', e.messages)
+                  //     console.log('Error :-', e.response);
+                  //   });
                 });
               } }
             />
@@ -261,5 +315,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: wp('58%'),
+  },
+  bottomSafeAreaStyle: {
+    backgroundColor: colors.whiteColor,
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
   },
 });
