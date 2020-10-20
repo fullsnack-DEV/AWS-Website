@@ -1,6 +1,4 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import constants from '../../config/constants';
 
@@ -11,23 +9,55 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  pastTab: {
-    alignItems: 'center', flex: 0.5, height: 50, justifyContent: 'center',
+  tabContainer: {
+    width: '100%',
+    height: 50,
+    flexDirection: 'row',
+    marginBottom: 5,
   },
-  pastText: {
-    alignSelf: 'center', color: colors.lightBlackColor, fontFamily: fonts.RBold, fontSize: 16,
-  },
-  selectedLine: {
-    alignSelf: 'center', backgroundColor: colors.themeColor, bottom: -15, height: 2, position: 'absolute', width: '100%',
-  },
-  tabContainer: { flexDirection: 'row', height: 50, width: '100%' },
   upcomingTab: {
-    alignItems: 'center', flex: 0.5, height: 50, justifyContent: 'center',
+    flex: 0.5,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   upcomingText: {
-    alignSelf: 'center', color: colors.lightBlackColor, fontFamily: fonts.RBold, fontSize: 16,
+    alignSelf: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
   },
-
+  selectedLine: {
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: -15,
+    height: 2,
+    width: '100%',
+    backgroundColor: colors.themeColor,
+  },
+  pastTab: {
+    flex: 0.5,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pastText: {
+    alignSelf: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+  noDataPlaceholderView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  noDataPlaceholder: {
+    alignSelf: 'center',
+    color: colors.veryLightGray,
+    fontSize: 20,
+    fontFamily: fonts.RRegular,
+  },
 });
 
 export default styles;

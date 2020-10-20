@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, Platform, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import HomeScreen from '../screens/home/HomeScreen';
@@ -50,6 +50,8 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ChangePasswordScreen'
     || routeName === 'PersonalInformationScreen'
     || routeName === 'FullVideoScreen'
+    || routeName === 'ReservationDetailScreen'
+
     || routeName === 'TagUserScreen'
   ) {
     return false;
@@ -76,17 +78,15 @@ function AppNavigator() {
         inactiveTintColor: colors.grayColor,
         labelStyle: {
           fontSize: 11,
-          marginTop: -8,
-          paddingTop: 5,
         },
         style: {
-          height: 85,
+          height: Platform.OS === 'ios' ? 85 : 55,
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.4,
           shadowRadius: 15,
-          elevation: 5,
+          elevation: 1,
         },
       } }>
           <Tab.Screen

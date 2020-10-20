@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 22,
     resizeMode: 'contain',
-    tintColor: colors.whiteColor,
     width: 22,
 
   },

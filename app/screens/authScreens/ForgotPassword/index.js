@@ -3,10 +3,6 @@ import {
   View, Text, Image, Alert,
 } from 'react-native';
 
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
 import firebase from '@react-native-firebase/app';
 
 import constants from '../../../config/constants';
@@ -53,6 +49,7 @@ function ForgotPasswordScreen({ navigation }) {
       })
   }
   return (
+
       <View style={ styles.mainContainer }>
           <Image style={ styles.background } source={ PATH.orangeLayer } />
           <Image style={ styles.background } source={ PATH.bgImage } />
@@ -65,29 +62,34 @@ function ForgotPasswordScreen({ navigation }) {
         keyboardType="email-address"
         onChangeText={ (text) => setEmail(text) } value={ email }
       />
-          <TCButton
+          <View style={{ flex: 1 }}/>
+
+          <View style={{ marginBottom: 20 }}>
+              <TCButton
         title={ strings.nextTitle }
         onPress={ () => {
           if (checkValidation()) {
             forgotPassword(email);
           }
         } }
-        extraStyle={ { bottom: hp('11%'), position: 'absolute' } }
+extraStyle={{ marginBottom: 10 }}
       />
-          <TCButton
-        title={ strings.cancelTitle }
-        onPress={ () => navigation.goBack() }
-        textColor={ { color: colors.whiteColor } }
-        extraStyle={ {
-          bottom: hp('4%'),
-          position: 'absolute',
-          borderColor: colors.whiteColor,
-          borderWidth: 1,
+              <TCButton
+              title={ strings.cancelTitle }
+              onPress={ () => navigation.goBack() }
+              textColor={ { color: colors.whiteColor } }
+              extraStyle={ {
 
-          backgroundColor: 'transparent',
-        } }
-      />
+                borderColor: colors.whiteColor,
+                borderWidth: 1,
+
+                backgroundColor: 'transparent',
+              } }
+              />
+          </View>
+
       </View>
+
   );
 }
 

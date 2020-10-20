@@ -37,6 +37,9 @@ const api = {
     joinedTeams: 'groups/joined',
     teamsByClub: '/teams',
   },
+  reservation: {
+    reservationList: 'reservations?referenceObject=true',
+  },
 };
 
 export default api;

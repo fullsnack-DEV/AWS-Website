@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, Image,
+  View, Text, Image, Platform,
 } from 'react-native';
 
 import {
@@ -8,10 +8,11 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { Tooltip } from 'react-native-elements';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 import constants from '../../../config/constants';
 import TCButton from '../../../components/TCButton';
+import * as Utility from '../../../utility/index';
 
 import strings from '../../../Constants/String';
 import styles from './style'
@@ -25,6 +26,8 @@ export default function AddBirthdayScreen({ navigation }) {
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
   const [dateValue, setDateValue] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
 
@@ -33,6 +36,17 @@ export default function AddBirthdayScreen({ navigation }) {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setDateValue(currentDate);
+    if (Platform.OS === 'android') {
+      setShow(false);
+    }
+  };
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
   };
 
   return (
@@ -45,16 +59,17 @@ export default function AddBirthdayScreen({ navigation }) {
 
           <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
             backgroundColor={ colors.parrotColor }
-            height={ hp('25%') }
+            height={ hp('30%') }
             width={ wp('75%') }
-            overlayColor={ 'transparent' }>
+            overlayColor={ 'transparent' }
+            skipAndroidStatusBar= {true}>
               <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
           </Tooltip>
 
           {/* Date.parse(dateValue) */}
 
           <View style={ styles.matchFeeTxt }>
-              <Text style={ styles.dateText }>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+              <Text style={ styles.dateText } onPress={showDatepicker}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
           </View>
 
           <TCButton
@@ -72,18 +87,19 @@ export default function AddBirthdayScreen({ navigation }) {
         } }
         extraStyle={ { marginTop: 50 } }
       />
-
-          <DateTimePicker
+          {show && <RNDateTimePicker
           testID="dateTimePicker"
-          value={ dateValue }
           is24Hour={ true }
           display="default"
           onChange={ onChange }
           textColor="white"
+          value={dateValue}
+          mode={mode}
+          maximumDate={new Date()}
           style={ {
             position: 'absolute', left: 0, right: 0, bottom: 10,
           } }
-        />
+        />}
 
       </View>
   );

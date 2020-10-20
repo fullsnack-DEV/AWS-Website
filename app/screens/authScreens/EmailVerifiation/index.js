@@ -10,11 +10,8 @@ function EmailVerification({ navigation, route }) {
   const verifyUserEmail = () => {
     firebase
       .auth()
-      .signInWithEmailAndPassword(route.params.email, route.params.password)
+      .signInWithEmailAndPassword(route.params.emailAddress, route.params.password)
       .then((res) => {
-        console.log(res);
-        console.log(res.user.email);
-        console.log(res.user.emailVerified);
         if (res.user.emailVerified) {
           navigation.navigate('AddBirthdayScreen');
         } else {

@@ -27,10 +27,10 @@ function ChooseLocationScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    this.getLocationData(searchText);
+    getLocationData(searchText);
   }, [searchText]);
 
-  getLocationData = async (searchLocationText) => {
+  const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
       searchLocationList(searchLocationText).then((response) => {
         setNoData(false);
@@ -42,7 +42,7 @@ function ChooseLocationScreen({ navigation }) {
     }
   };
 
-  getTeamsData = async (item) => {
+  const getTeamsData = async (item) => {
     const queryParams = {
       state: item.terms[1].value,
       city: item.terms[0].value,
@@ -72,10 +72,10 @@ function ChooseLocationScreen({ navigation }) {
     });
   };
 
-  renderItem = ({ item, index }) => (
+  const renderItem = ({ item, index }) => (
       <TouchableWithoutFeedback
         style={ styles.listItem }
-        onPress={ () => this.getTeamsData(item) }>
+        onPress={ () => getTeamsData(item) }>
           <Text style={ styles.cityList }>{cityData[index].description}</Text>
 
           <Separator />
@@ -106,7 +106,7 @@ function ChooseLocationScreen({ navigation }) {
           )}
           <FlatList
         data={ cityData }
-        renderItem={ this.renderItem }
+        renderItem={ renderItem }
         keyExtractor={ (item) => item.id }
       />
       </View>

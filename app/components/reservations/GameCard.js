@@ -1,49 +1,147 @@
 import React from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
+  View, Text, TouchableOpacity, StyleSheet, Image,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import constants from '../../config/constants';
 import PATH from '../../Constants/ImagePath';
 
-const { colors, fonts } = constants;
+const {
+  colors, fonts,
+} = constants;
 
-export default function GameCard({ onPress }) {
+export default function GameCard({ data, onPress }) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const formatAMPM = (date) => {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours %= 12;
+    hours = hours || 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    const time = `${hours}:${minutes} ${ampm}`;
+    return time;
+  };
+
   return (
-      <TouchableOpacity onPress={ onPress }>
-          <View style={ styles.backgroundView }>
-              <View style={ [styles.colorView, { backgroundColor: colors.yellowEventColor }] }>
-                  <View style={ styles.dateView }>
-                      <Text style={ styles.dateMonthText }>Aug </Text>
-                      <Text style={ styles.dateText }>13 </Text>
+      <TouchableOpacity onPress={onPress}>
+          <View style={styles.backgroundView}>
+              <View
+          style={[
+            styles.colorView,
+            { backgroundColor: colors.yellowEventColor },
+          ]}>
+                  <View style={styles.dateView}>
+                      <Text style={styles.dateMonthText}>
+                          {months[new Date(data.start_datetime).getMonth()]}
+                      </Text>
+                      <Text style={styles.dateText}>
+                          {new Date(data.start_datetime).getDate()}
+                      </Text>
                   </View>
               </View>
-              <View style={ styles.eventText }>
-                  <Text style={ styles.eventTitle }>Soccer</Text>
-                  <View style={ styles.bottomView }>
-                      <Text style={ styles.eventTimeLocation }>12:00 PM - 11:00 AM</Text>
-                      <Text style={ styles.textSaperator }> | </Text>
-                      <Text style={ styles.eventTimeLocation }>Vancouver, BC, Canada</Text>
+              <View style={styles.eventText}>
+                  <Text style={styles.eventTitle}>{data.sport}</Text>
+                  <View style={styles.bottomView}>
+                      <Text style={styles.eventTimeLocation}>
+                          {formatAMPM(new Date(data.start_datetime))} -{' '}
+                          {formatAMPM(new Date(data.end_datetime))}
+                      </Text>
+                      <Text style={styles.textSaperator}> | </Text>
+                      <Text style={styles.addressView} numberOfLines={1}>
+                          {data.venue.address}
+                      </Text>
                   </View>
-                  <View style={ styles.gameVSView }>
-                      <View style={ styles.leftGameView }>
-                          <Image source={ PATH.teamPlaceholder } style={ styles.profileImage } />
-                          <Text style={ styles.leftEntityText } numberOfLines={ 2 }>New york Football Team</Text>
-                      </View>
-                      <Text style={ styles.eventTimeLocation }>VS</Text>
-                      <View style={ styles.rightGameView }>
-                          <Text style={ styles.rightEntityText } numberOfLines={ 2 }>Vancuver New City Team</Text>
-                          <Image source={ PATH.teamPlaceholder } style={ styles.profileImage } />
-                      </View>
+                  <View style={styles.gameVSView}>
+                      {data.userChallenge || data.singlePlayerGame ? (
+                          <View style={styles.leftGameView}>
+                              {data.home_team.thumbnail ? (
+                                  <Image
+                    source={{ uri: data.home_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                              ) : (
+                                  <Image
+                    source={PATH.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                              )}
+                              <Text style={styles.leftEntityText} numberOfLines={2}>
+                                  {data.home_team.full_name}
+                              </Text>
+                          </View>
+                      ) : (
+                          <View style={styles.leftGameView}>
+                              {data.home_team.thumbnail ? (
+                                  <Image
+                    source={{ uri: data.home_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                              ) : (
+                                  <Image
+                    source={PATH.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                              )}
+                              <Text style={styles.leftEntityText} numberOfLines={2}>
+                                  {data.home_team.group_name}
+                              </Text>
+                          </View>
+                      )}
+
+                      <Text style={styles.vsView}>VS</Text>
+
+                      {data.userChallenge || data.singlePlayerGame ? (
+                          <View style={styles.rightGameView}>
+                              <Text style={styles.rightEntityText} numberOfLines={2}>
+                                  {data.away_team.full_name}
+                              </Text>
+                              {data.away_team.thumbnail ? (
+                                  <Image
+                    source={{ uri: data.away_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                              ) : (
+                                  <Image
+                    source={PATH.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                              )}
+                          </View>
+                      ) : (
+                          <View style={styles.rightGameView}>
+                              <Text style={styles.rightEntityText} numberOfLines={2}>
+                                  {data.away_team.group_name}
+                              </Text>
+                              {data.away_team.thumbnail ? (
+                                  <Image
+                    source={{ uri: data.away_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                              ) : (
+                                  <Image
+                    source={PATH.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                              )}
+                          </View>
+                      )}
                   </View>
               </View>
           </View>
@@ -65,7 +163,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: wp('86%'),
-
   },
   bottomView: {
     flexDirection: 'row',
@@ -116,26 +213,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 5,
   },
-  leftEntityText: {
-    color: colors.lightBlackColor,
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: 11,
-    marginLeft: 5,
-    textAlign: 'left',
-  },
-  leftGameView: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flex: 0.4,
 
-    justifyContent: 'flex-start',
+  addressView: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.googleColor,
+
+    flex: 1,
   },
+  vsView: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.googleColor,
+  },
+
   profileImage: {
-    alignSelf: 'center',
-    height: 35,
+    height: 30,
+    width: 30,
     resizeMode: 'cover',
-    width: 35,
+    alignSelf: 'center',
+    borderRadius: 15,
+  },
+
+  leftGameView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+
+    flex: 0.4,
+  },
+  leftEntityText: {
+    fontSize: 11,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    textAlign: 'left',
+    marginLeft: 5,
+    flex: 1,
   },
   rightEntityText: {
     color: colors.lightBlackColor,
@@ -150,7 +263,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 0.4,
     justifyContent: 'flex-end',
-
   },
   textSaperator: {
     color: colors.userPostTimeColor,
@@ -158,5 +270,4 @@ const styles = StyleSheet.create({
     marginRight: 5,
     opacity: 0.4,
   },
-
 });
