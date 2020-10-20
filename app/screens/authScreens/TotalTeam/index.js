@@ -30,7 +30,7 @@ function TotalTeamsScreen({ navigation, route }) {
                   <Text style={ styles.LocationText }>
                       {route.params.totalTeams}
                   </Text>
-                  <Text style={ styles.foundText }>teams in </Text>
+                  <Text style={ styles.foundText }> teams in </Text>
                   <Text style={ styles.LocationText }>{route.params.city}, {route.params.state}</Text>
               </Text>
           </View>

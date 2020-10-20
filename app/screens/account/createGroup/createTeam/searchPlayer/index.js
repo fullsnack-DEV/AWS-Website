@@ -6,7 +6,6 @@ import {
   Image,
   TextInput,
   FlatList,
-
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -16,8 +15,6 @@ import {
 
 } from 'react-native-responsive-screen';
 
-// import constants from '../../../config/constants';
-// const {strings, colors, fonts, urls, PATH} = constants;
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import PATH from '../../../../../Constants/ImagePath';
@@ -25,13 +22,13 @@ import strings from '../../../../../Constants/String';
 
 import styles from './style';
 import colors from '../../../../../Constants/Colors';
-import * as Utility from '../../../../../utility/index';
+
+import { getUsersList } from '../../../../../api/Accountapi';
 
 function SearchPlayerScreen({ navigation, route }) {
   const [players, setPlayers] = useState([]);
   const [searchPlayers, setSearchPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState({});
-  // const [searchText, searchFilterFunction] = useState('');
 
   useEffect(() => {
     getPlayerList();
@@ -41,11 +38,8 @@ function SearchPlayerScreen({ navigation, route }) {
       title: `Player ${route.params.player}`,
     });
   }, [navigation]);
-  getPlayerList = async () => {
-    const token = await Utility.getStorage('token');
-    console.log('TOKEN IS:: ', token);
-    const endPoint = GET_USERS;
-    get(endPoint, JSON.parse(token)).then((response) => {
+  const getPlayerList = async () => {
+    getUsersList().then((response) => {
       if (response.status === true) {
         const arr = [];
         // eslint-disable-next-line no-restricted-syntax
@@ -59,8 +53,7 @@ function SearchPlayerScreen({ navigation, route }) {
       }
     });
   };
-  selectPlayer = (item) => {
-    console.log('SELECTED ITEM RADIO ::', JSON.stringify(item));
+  const selectPlayer = (item) => {
     const arr = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const tempData of players) {
@@ -76,13 +69,13 @@ function SearchPlayerScreen({ navigation, route }) {
 
     setPlayers(arr);
   };
-  searchFilterFunction = (text) => {
+  const searchFilterFunction = (text) => {
     const results = searchPlayers.filter(
       (x) => x.first_name.includes(text) || x.last_name.includes(text),
     );
     setPlayers(results);
   };
-  renderItem = ({ item }) => (
+  const renderItem = ({ item }) => (
       <View>
           <View style={ styles.listItemContainer }>
               {item.thumbnail === '' && (
@@ -138,7 +131,7 @@ function SearchPlayerScreen({ navigation, route }) {
               <FlatList
           data={ players }
           keyExtractor={ (item) => item.user_id }
-          renderItem={ this.renderItem }
+          renderItem={ renderItem }
         />
           </ScrollView>
           <TouchableOpacity

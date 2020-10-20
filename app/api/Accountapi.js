@@ -53,3 +53,10 @@ export const updateUserProfile = async (params) => makeAPIRequest({
       + api.account.registerPlayer,
   data: params,
 })
+
+export const getUsersList = async () => makeAPIRequest({
+  method: 'get',
+  url:
+      Config.BASE_URL
+      + api.account.registerPlayer,
+})

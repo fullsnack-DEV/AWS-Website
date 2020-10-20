@@ -82,7 +82,7 @@ function LoginScreen({ navigation }) {
         await Utility.setStorage('user', response.payload);
         authContext.setUser(response.payload);
       } else {
-        alert(response.messages);
+        Alert.alert(response.messages);
       }
     });
   };
@@ -270,21 +270,24 @@ function LoginScreen({ navigation }) {
         onPress={() => navigation.navigate('ForgotPasswordScreen')}>
               <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
           </TouchableOpacity>
+          <View style={{ flex: 1 }}/>
+          <View style={{ marginBottom: 20 }}>
+              <Text style={styles.bottomText}>
+                  <Text>By continuing you agree to Towny`s </Text>
 
-          <Text style={styles.bottomText}>
-              <Text>By continuing you agree to Towny`s </Text>
-              <TouchableOpacity onPress={() => alert('Terms and services..')}>
-                  <Text style={styles.hyperlinkText}>Terms of Service</Text>
-              </TouchableOpacity>
-              <Text>, We will manage information about you as described in our </Text>
-              <TouchableOpacity onPress={() => alert('Privacy policy..')}>
-                  <Text style={styles.hyperlinkText}>Privacy Policy</Text>
-              </TouchableOpacity>
-              <Text> and </Text>
-              <TouchableOpacity onPress={() => alert('cookie policy..')}>
-                  <Text style={styles.hyperlinkText}>Cookie Policy.</Text>
-              </TouchableOpacity>
-          </Text>
+                  <Text style={styles.hyperlinkText} onPress={() => alert('Terms and services..')}>Terms of Service</Text>
+
+                  <Text>, We will manage information about you as described in our </Text>
+
+                  <Text style={styles.hyperlinkText} onPress={() => alert('Privacy policy..')}>Privacy Policy</Text>
+
+                  <Text> and </Text>
+
+                  <Text style={styles.hyperlinkText} onPress={() => alert('cookie policy..')}>Cookie Policy.</Text>
+
+              </Text>
+          </View>
+
       </View>
   );
 }

@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import constants from '../config/constants';
 
 import ReservationScreen from '../screens/reservation';
+import ReservationDetailScreen from '../screens/reservation/reservationDetail'
 
 const {
   colors,
@@ -27,6 +28,22 @@ const ReservationNavigator = () => (
         component={ ReservationScreen }
         options={ {
           title: 'Reservations',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+        <Stack.Screen
+        name="ReservationDetailScreen"
+        component={ ReservationDetailScreen }
+        options={ {
+          title: 'Reservation Detail',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

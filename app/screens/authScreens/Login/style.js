@@ -14,17 +14,14 @@ const { fonts } = constants;
 const styles = StyleSheet.create({
   background: {
     height: '100%',
-
     position: 'absolute',
     resizeMode: 'stretch',
     width: '100%',
   },
   bottomText: {
-    bottom: hp('3%'),
     color: colors.whiteColor,
     fontFamily: fonts.RLight,
-    fontSize: wp('3%'),
-    position: 'absolute',
+    fontSize: 12,
     textAlign: 'center',
     width: '100%',
   },
@@ -32,12 +29,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   forgotPasswordText: {
-    bottom: hp('3%'),
     color: colors.whiteColor,
-    fontFamily: fonts.RLight,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginTop: hp('3%'),
-    position: 'absolute',
     textAlign: 'center',
   },
   hyperlinkText: {

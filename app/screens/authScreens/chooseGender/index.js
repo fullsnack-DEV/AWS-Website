@@ -11,7 +11,7 @@ import { Tooltip } from 'react-native-elements';
 
 import constants from '../../../config/constants';
 import PATH from '../../../Constants/ImagePath';
-
+import * as Utility from '../../../utility/index';
 import TCButton from '../../../components/TCButton';
 
 import strings from '../../../Constants/String';
@@ -33,7 +33,8 @@ export default function ChooseGenderScreen({ navigation }) {
             backgroundColor={ colors.parrotColor }
             height={ hp('20%') }
             width={ wp('75%') }
-            overlayColor={ 'transparent' }>
+            overlayColor={ 'transparent' }
+            skipAndroidStatusBar={true}>
               <Text style={ styles.whyAskingText } >{strings.whyAskingGenderText}</Text>
           </Tooltip>
 
@@ -42,9 +43,6 @@ export default function ChooseGenderScreen({ navigation }) {
                   <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(0);
-            setMale(true);
-            setFemale(false);
-            setOther(false);
           } }>
                       {selected === 0 ? (
                           <Image source={ PATH.radioSelect } style={ styles.radioImage } />
@@ -61,9 +59,6 @@ export default function ChooseGenderScreen({ navigation }) {
                   <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(1);
-            setMale(false);
-            setFemale(true);
-            setOther(false);
           } }>
                       {selected === 1 ? (
                           <Image source={ PATH.radioSelect } style={ styles.radioImage } />
@@ -80,9 +75,6 @@ export default function ChooseGenderScreen({ navigation }) {
                   <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(2);
-            setMale(false);
-            setFemale(false);
-            setOther(true);
           } }>
                       {selected === 2 ? (
                           <Image source={ PATH.radioSelect } style={ styles.radioImage } />
