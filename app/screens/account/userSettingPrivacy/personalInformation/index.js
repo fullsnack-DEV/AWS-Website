@@ -71,16 +71,16 @@ export default function PersonalInformationScreen({ navigation, route }) {
       navigation.setOptions({
         title: 'Edit Personal Information',
         headerRight: () => (
-            <Text></Text>
+          <Text></Text>
         ),
       });
     } else {
       navigation.setOptions({
         title: 'Personal Information',
         headerRight: () => (
-            <Text style={ styles.headerRightButton } onPress={ () => {
-              changeEditMode();
-            } }>Edit</Text>
+          <Text style={ styles.headerRightButton } onPress={ () => {
+            changeEditMode();
+          } }>Edit</Text>
         ),
       });
     }
@@ -202,31 +202,31 @@ export default function PersonalInformationScreen({ navigation, route }) {
     console.log('language Checked ?:::', selectedLanguage);
   };
   const renderLanguage = ({ item, index }) => (
-      <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
         style={ styles.listItem }
         onPress={ () => {
           isIconCheckedOrNot({ item, index });
         } }>
-          <View>
-              <Text style={ styles.languageList }>{item.language}</Text>
-              <View style={ styles.checkbox }>
-                  {languages[index].isChecked ? (
-                      <Image
+      <View>
+        <Text style={ styles.languageList }>{item.language}</Text>
+        <View style={ styles.checkbox }>
+          {languages[index].isChecked ? (
+            <Image
                 source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
               />
-                  ) : (
-                      <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
-                  )}
-              </View>
-              <View style={ styles.shortSeparatorLine }></View>
-          </View>
-      </TouchableWithoutFeedback>
+          ) : (
+            <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+          )}
+        </View>
+        <View style={ styles.shortSeparatorLine }></View>
+      </View>
+    </TouchableWithoutFeedback>
   );
   const renderPhoneNumber = ({ item, index }) => (
-      <View style={ styles.fieldView }>
+    <View style={ styles.fieldView }>
 
-          <View
+      <View
           style={ {
             flexDirection: 'row',
 
@@ -237,7 +237,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             marginRight: 15,
             justifyContent: 'space-between',
           } }>
-              <RNPickerSelect
+        <RNPickerSelect
             placeholder={ {
               label: strings.selectCode,
               value: null,
@@ -292,14 +292,14 @@ export default function PersonalInformationScreen({ navigation, route }) {
               },
             } }
             Icon={ () => (
-                <Image
+              <Image
                   source={ images.dropDownArrow }
                   style={ styles.miniDownArrow }
                 />
             ) }
           />
-              <View style={ styles.halfMatchFeeView }>
-                  <TextInput
+        <View style={ styles.halfMatchFeeView }>
+          <TextInput
               placeholder={ 'Phone number' }
               style={ styles.halffeeText }
               keyboardType={ 'phone-pad' }
@@ -314,31 +314,31 @@ export default function PersonalInformationScreen({ navigation, route }) {
               editable={ editMode }
               value={ item.phone_number }></TextInput>
 
-              </View>
-          </View>
+        </View>
       </View>
+    </View>
   )
   return (
-      <>
-          <ScrollView style={ styles.mainContainer }>
-              <ActivityLoader visible={ loading } />
-              <Text style={ styles.LocationText }>
-                  Name
-              </Text>
-              {editMode && <View><TextInput
+    <>
+      <ScrollView style={ styles.mainContainer }>
+        <ActivityLoader visible={ loading } />
+        <Text style={ styles.LocationText }>
+          Name
+        </Text>
+        {editMode && <View><TextInput
             placeholder={ strings.fnameText }
             style={ styles.matchFeeTxt }
             onChangeText={ (text) => setFName(text) }
             editable={ editMode }
             value={ fName }></TextInput>
-                  <TextInput
+          <TextInput
             placeholder={ strings.lnameText }
             style={ styles.matchFeeTxt }
             onChangeText={ (text) => setLName(text) }
             editable={ editMode }
             value={ lName }></TextInput></View>}
 
-              {!editMode && <TextInput
+        {!editMode && <TextInput
             placeholder={ 'Name' }
             style={ styles.matchFeeTxt }
             onChangeText={ (text) => setFullName(text) }
@@ -346,29 +346,29 @@ export default function PersonalInformationScreen({ navigation, route }) {
             value={ fullName }></TextInput>
         }
 
-              <Text style={ styles.LocationText }>
-                  E-mail
-              </Text>
-              <TextInput
+        <Text style={ styles.LocationText }>
+          E-mail
+        </Text>
+        <TextInput
             placeholder={ strings.emailPlaceHolder }
             style={ styles.matchFeeTxt }
             onChangeText={ (text) => setEmail(text) }
             editable={ false }
             value={ email }></TextInput>
 
-              <Text style={ styles.LocationText }>Phone</Text>
-              <FlatList
+        <Text style={ styles.LocationText }>Phone</Text>
+        <FlatList
             data={ phoneNumbers }
             keyExtractor={ (item) => item.phone_number }
             renderItem={ renderPhoneNumber }
         />
 
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.LocationText }>
-                      {strings.locationTitle}
+        <View style={ styles.fieldView }>
+          <Text style={ styles.LocationText }>
+            {strings.locationTitle}
 
-                  </Text>
-                  <TouchableOpacity
+          </Text>
+          <TouchableOpacity
               onPress={ () => {
                 // eslint-disable-next-line no-unused-expressions
                 editMode && navigation.navigate('SearchLocationScreen', {
@@ -376,41 +376,41 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 })
               }
               }>
-                      <TextInput
+            <TextInput
                 placeholder={ strings.searchCityPlaceholder }
                 style={ styles.matchFeeTxt }
                 value={ location }
                 editable={ false }
                 pointerEvents="none"
                 ></TextInput>
-                  </TouchableOpacity>
-              </View>
+          </TouchableOpacity>
+        </View>
 
-              <Text style={ styles.LocationText }>
-                  {strings.languageTitle}
+        <Text style={ styles.LocationText }>
+          {strings.languageTitle}
 
-              </Text>
-              <View style={ styles.searchView }>
-                  <TouchableOpacity
+        </Text>
+        <View style={ styles.searchView }>
+          <TouchableOpacity
            onPress={ () => {
              // eslint-disable-next-line no-unused-expressions
              editMode && toggleModal();
            } }>
-                      <TextInput
+            <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
             value={ selectedLanguages.toString() }
             editable={ false }
             pointerEvents="none"></TextInput>
-                  </TouchableOpacity>
-              </View>
+          </TouchableOpacity>
+        </View>
 
-              <Modal
+        <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
         backdropOpacity={ 0 }
         style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
-                  <View
+          <View
           style={ {
             width: '100%',
             height: Dimensions.get('window').height / 2,
@@ -425,7 +425,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
           } }>
-                      <Text
+            <Text
             style={ {
               alignSelf: 'center',
               marginTop: 20,
@@ -434,16 +434,16 @@ export default function PersonalInformationScreen({ navigation, route }) {
               fontFamily: fonts.RBold,
               color: colors.lightBlackColor,
             } }>
-                          Languages
-                      </Text>
-                      <View style={ styles.separatorLine }></View>
-                      <FlatList
+              Languages
+            </Text>
+            <View style={ styles.separatorLine }></View>
+            <FlatList
             data={ languages }
             keyExtractor={ (item) => item.id }
             renderItem={ renderLanguage }
             style={ { marginBottom: '25%' } }
           />
-                      <View
+            <View
             style={ {
               width: '100%',
               height: '25%',
@@ -457,64 +457,64 @@ export default function PersonalInformationScreen({ navigation, route }) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
             } }>
-                          <TouchableOpacity
+              <TouchableOpacity
               onPress={ () => {
                 toggleModal();
               } }>
-                              <LinearGradient
+                <LinearGradient
                 colors={ [colors.yellowColor, colors.themeColor] }
                 style={ styles.languageApplyButton }>
-                                  <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
-                              </LinearGradient>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
-              </Modal>
+                  <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
-              {editMode && <TouchableOpacity onPress={ () => {
-                if (checkValidation()) {
-                  const bodyParams = {};
-                  // let registered_sports= [];
+        {editMode && <TouchableOpacity onPress={ () => {
+          if (checkValidation()) {
+            const bodyParams = {};
+            // let registered_sports= [];
 
-                  // bodyParams.sport_name = sports;
-                  // bodyParams.Tennis = 'single-multiplayer';
-                  // bodyParams.descriptions = description;
-                  // bodyParams.language=selectedLanguages;
+            // bodyParams.sport_name = sports;
+            // bodyParams.Tennis = 'single-multiplayer';
+            // bodyParams.descriptions = description;
+            // bodyParams.language=selectedLanguages;
 
-                  // registered_sports[0]=bodyParams;
-                  // bodyParams={registered_sports};
-                  // console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
+            // registered_sports[0]=bodyParams;
+            // bodyParams={registered_sports};
+            // console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
 
-                  // navigation.navigate('RegisterPlayerForm2',{bodyParams: bodyParams})
-                  bodyParams.first_name = fName;
-                  bodyParams.last_name = lName;
-                  bodyParams.full_name = `${fName} ${lName}`;
-                  bodyParams.city = city;
-                  bodyParams.state_abbr = state;
-                  bodyParams.country = country;
-                  bodyParams.language = selectedLanguages;
-                  bodyParams.phone_numbers = phoneNumbers;
-                  setloading(true);
-                  updateUserProfile(bodyParams).then(async (response) => {
-                    if (response.status === true) {
-                      Alert.alert('Towns Cup', 'Profile changed sucessfully');
-                      await Utility.setStorage('user', response.payload);
-                      setEditMode(false);
-                      authContext.setUser(response.payload);
-                    } else {
-                      Alert.alert('Towns Cup', 'Something went wrong');
-                    }
-                    setloading(false);
-                  })
-                }
-              } }>
-                  <LinearGradient
+            // navigation.navigate('RegisterPlayerForm2',{bodyParams: bodyParams})
+            bodyParams.first_name = fName;
+            bodyParams.last_name = lName;
+            bodyParams.full_name = `${fName} ${lName}`;
+            bodyParams.city = city;
+            bodyParams.state_abbr = state;
+            bodyParams.country = country;
+            bodyParams.language = selectedLanguages;
+            bodyParams.phone_numbers = phoneNumbers;
+            setloading(true);
+            updateUserProfile(bodyParams).then(async (response) => {
+              if (response.status === true) {
+                Alert.alert('Towns Cup', 'Profile changed sucessfully');
+                await Utility.setStorage('user', response.payload);
+                setEditMode(false);
+                authContext.setUser(response.payload);
+              } else {
+                Alert.alert('Towns Cup', 'Something went wrong');
+              }
+              setloading(false);
+            })
+          }
+        } }>
+          <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-                      <Text style={ styles.nextButtonText }>{strings.saveTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>}
-          </ScrollView>
-      </>
+            <Text style={ styles.nextButtonText }>{strings.saveTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>}
+      </ScrollView>
+    </>
   );
 }

@@ -9,13 +9,13 @@ export default function FullVideoScreen({
   route: { params: { url } },
 }) {
   return (
-      <View style={ styles.mainContainerStyle }>
-          <Video
+    <View style={ styles.mainContainerStyle }>
+      <Video
             source={ { uri: url } }
             style={ styles.singleImageDisplayStyle }
             resizeMode={ 'cover' }
         />
-      </View>
+    </View>
   );
 }
 

@@ -61,42 +61,42 @@ export default function SearchLocationScreen({ navigation, route }) {
   };
 
   const renderItem = ({ item, index }) => (
-      <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
         style={ styles.listItem }
         onPress={ () => getTeamsData(item) }>
-          <Text style={ styles.cityList }>{cityData[index].description}</Text>
+      <Text style={ styles.cityList }>{cityData[index].description}</Text>
 
-          <Separator />
-      </TouchableWithoutFeedback>
+      <Separator />
+    </TouchableWithoutFeedback>
   );
 
   return (
-      <View style={ styles.mainContainer }>
+    <View style={ styles.mainContainer }>
 
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.bgImage } />
-          <Text style={ styles.LocationText }>{strings.locationText}</Text>
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.bgImage } />
+      <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
-          <View style={ styles.sectionStyle }>
-              <Image source={ images.searchLocation } style={ styles.searchImg } />
-              <TextInput
+      <View style={ styles.sectionStyle }>
+        <Image source={ images.searchLocation } style={ styles.searchImg } />
+        <TextInput
           style={ styles.textInput }
           placeholder={ strings.locationPlaceholderText }
           clearButtonMode="always"
           placeholderTextColor={ colors.themeColor }
           onChangeText={ (text) => setSearchText(text) }
         />
-          </View>
-          {noData && (
-          <Text style={ styles.noDataText }>
-              Please enter 3 characters to see cities
-          </Text>
-          )}
-          <FlatList
+      </View>
+      {noData && (
+        <Text style={ styles.noDataText }>
+          Please enter 3 characters to see cities
+        </Text>
+      )}
+      <FlatList
         data={ cityData }
         renderItem={ renderItem }
         keyExtractor={ cityData.id }
       />
-      </View>
+    </View>
   );
 }

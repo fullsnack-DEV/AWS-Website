@@ -26,8 +26,8 @@ import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import TagUserScreen from './TagUserScreen';
 
 import fonts from '../../Constants/Fonts';
-import colors from '../../Constants/Colors'
-import images from '../../Constants/ImagePath'
+import colors from '../../Constants/Colors';
+import images from '../../Constants/ImagePath';
 
 export default function EditPostScreen({
   navigation,
@@ -60,94 +60,97 @@ export default function EditPostScreen({
   };
 
   return (
-      <KeyboardAvoidingView
+    <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : null}>
-          <ActivityLoader visible={loading} />
-          <SafeAreaView>
-              <View style={styles.containerStyle}>
-                  <View style={styles.backIconViewStyle}>
-                      <TouchableOpacity onPress={() => navigation.goBack()}>
-                          <Image source={images.backArrow} style={styles.backImage} />
-                      </TouchableOpacity>
-                  </View>
-                  <View style={styles.writePostViewStyle}>
-                      <Text style={styles.writePostTextStyle}>Edit Post</Text>
-                  </View>
-                  <View style={styles.doneViewStyle}>
-                      <Text
-                        style={styles.doneTextStyle}
-                        onPress={() => {
-                          if (
-                            searchText.trim().length === 0
-                            && selectImage.length === 0
-                          ) {
-                            Alert.alert('', 'Please write some text or select any image.');
-                          } else {
-                            //   setloading(true);
-                            const attachments = [];
-                            selectImage.forEach((imageItem) => {
-                              const obj = {
-                                type: 'image',
-                                url: imageItem.url ? imageItem.url : imageItem.path,
-                                thumbnail: imageItem.thumbnail
-                                  ? imageItem.thumbnail
-                                  : imageItem.path,
-                              };
-                              attachments.push(obj);
-                            });
+      <ActivityLoader visible={loading} />
+      <SafeAreaView>
+        <View style={styles.containerStyle}>
+          <View style={styles.backIconViewStyle}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image source={images.backArrow} style={styles.backImage} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.writePostViewStyle}>
+            <Text style={styles.writePostTextStyle}>Edit Post</Text>
+          </View>
+          <View style={styles.doneViewStyle}>
+            <Text
+              style={styles.doneTextStyle}
+              onPress={() => {
+                if (
+                  searchText.trim().length === 0
+                  && selectImage.length === 0
+                ) {
+                  Alert.alert(
+                    '',
+                    'Please write some text or select any image.',
+                  );
+                } else {
+                  //   setloading(true);
+                  const attachments = [];
+                  selectImage.forEach((imageItem) => {
+                    const obj = {
+                      type: 'image',
+                      url: imageItem.url ? imageItem.url : imageItem.path,
+                      thumbnail: imageItem.thumbnail
+                        ? imageItem.thumbnail
+                        : imageItem.path,
+                    };
+                    attachments.push(obj);
+                  });
 
-                            const params = {
-                              activity_id: data.id,
-                              text: searchText,
-                              attachments,
-                            };
-                            updatePost(params)
-                              .then(() => getPostDetails())
-                              .then(() => {
-                                navigation.goBack()
-                                setloading(false);
-                              })
-                              .catch((e) => {
-                                Alert.alert('', e.messages)
-                                setloading(false);
-                              });
-                          }
-                        }}>
-                          Done
-                      </Text>
-                  </View>
-              </View>
-          </SafeAreaView>
-          <View style={styles.sperateLine} />
-          <View style={styles.userDetailView}>
-              <Image
+                  const params = {
+                    activity_id: data.id,
+                    text: searchText,
+                    attachments,
+                  };
+                  updatePost(params)
+                    .then(() => getPostDetails())
+                    .then(() => {
+                      navigation.goBack();
+                      setloading(false);
+                    })
+                    .catch((e) => {
+                      Alert.alert('', e.messages);
+                      setloading(false);
+                    });
+                }
+              }}>
+              Done
+            </Text>
+          </View>
+        </View>
+      </SafeAreaView>
+      <View style={styles.sperateLine} />
+      <View style={styles.userDetailView}>
+        <Image
           style={styles.background}
           source={userImage ? { uri: userImage } : images.profilePlaceHolder}
         />
-              <View style={styles.userTxtView}>
-                  <Text style={styles.userTxt}>{userName}</Text>
-              </View>
-          </View>
+        <View style={styles.userTxtView}>
+          <Text style={styles.userTxt}>{userName}</Text>
+        </View>
+      </View>
 
-          <Modal
-        isVisible={ isModalVisible }
+      <Modal
+        isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
-        backdropOpacity={ 0 }>
-              <TagUserScreen
-                backBtnPress={() => setModalVisible(false)}
-                onItemPress={(name) => {
-                  if (name) {
-                    setSearchText(searchText + name);
-                    setModalVisible(false);
-                  }
-                }}
-              />
-          </Modal>
+        backdropOpacity={0}>
+        <TagUserScreen
+          backBtnPress={() => setModalVisible(false)}
+          onItemPress={(name) => {
+            if (name) {
+              setSearchText(searchText + name);
+              setModalVisible(false);
+            }
+          }}
+        />
+      </Modal>
 
-          <ScrollView bounces={false}>
-              <TextInput
+      <ScrollView bounces={false}>
+        <TextInput
           placeholder="What's going on?"
           value={searchText}
           placeholderTextColor={colors.userPostTimeColor}
@@ -158,56 +161,56 @@ export default function EditPostScreen({
               setLetModalVisible(true);
             }
           }}
-          onChangeText={ (text) => {
+          onChangeText={(text) => {
             setSearchText(text);
             const lastChar = text.slice(text.length - 1, text.length);
             if (lastChar === '@' && letModalVisible) {
-              toggleModal()
+              toggleModal();
             }
           }}
           style={styles.textInputField}
           multiline={true}
         />
-              {selectImage.length > 0 && (
-              <FlatList
+        {selectImage.length > 0 && (
+          <FlatList
             data={selectImage}
             horizontal={true}
             // scrollEnabled={true}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => (
-                <EditSelectedImages
-                  data={item}
-                  itemNumber={index + 1}
-                  totalItemNumber={selectImage.length}
-                  onItemPress={() => {
-                    const imgs = [...selectImage];
-                    const idx = imgs.indexOf(item);
-                    if (idx > -1) {
-                      imgs.splice(idx, 1);
-                    }
-                    setSelectImage(imgs);
-                  }}
-                />
+              <EditSelectedImages
+                data={item}
+                itemNumber={index + 1}
+                totalItemNumber={selectImage.length}
+                onItemPress={() => {
+                  const imgs = [...selectImage];
+                  const idx = imgs.indexOf(item);
+                  if (idx > -1) {
+                    imgs.splice(idx, 1);
+                  }
+                  setSelectImage(imgs);
+                }}
+              />
             )}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
             style={{ paddingTop: 10, marginHorizontal: wp('3%') }}
             keyExtractor={(item, index) => index.toString()}
           />
-              )}
-          </ScrollView>
+        )}
+      </ScrollView>
 
-          <SafeAreaView style={styles.bottomSafeAreaStyle}>
-              <View style={styles.bottomImgView}>
-                  <View style={styles.onlyMeViewStyle}>
-                      <ImageButton
+      <SafeAreaView style={styles.bottomSafeAreaStyle}>
+        <View style={styles.bottomImgView}>
+          <View style={styles.onlyMeViewStyle}>
+            <ImageButton
               source={images.lock}
               imageStyle={{ width: 18, height: 21 }}
               onImagePress={() => {}}
             />
-                      <Text style={styles.onlyMeTextStyle}>Only me</Text>
-                  </View>
-                  <View style={[styles.onlyMeViewStyle, { justifyContent: 'flex-end' }]}>
-                      <ImageButton
+            <Text style={styles.onlyMeTextStyle}>Only me</Text>
+          </View>
+          <View style={[styles.onlyMeViewStyle, { justifyContent: 'flex-end' }]}>
+            <ImageButton
               source={images.pickImage}
               imageStyle={{ width: 19, height: 19, marginHorizontal: wp('2%') }}
               onImagePress={() => {
@@ -222,15 +225,15 @@ export default function EditPostScreen({
                 });
               }}
             />
-                      <ImageButton
+            <ImageButton
               source={images.tagImage}
               imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
               onImagePress={() => {}}
             />
-                  </View>
-              </View>
-          </SafeAreaView>
-      </KeyboardAvoidingView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

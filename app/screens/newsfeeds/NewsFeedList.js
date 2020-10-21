@@ -11,12 +11,12 @@ export default function NewsFeedList({ navigation, postData, userID }) {
   const [data, setData] = useState(postData);
 
   return (
-      <View>
-          <ActivityLoader visible={loading} />
-          <FlatList
+    <View>
+      <ActivityLoader visible={loading} />
+      <FlatList
         data={data.length > 0 ? data : postData}
         ItemSeparatorComponent={() => (
-            <View
+          <View
             style={{
               marginTop: 10,
               height: 8,
@@ -25,7 +25,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
           />
         )}
         ListFooterComponent={() => (
-            <View
+          <View
             style={{
               height: 20,
             }}
@@ -33,7 +33,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
         )}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, key }) => (
-            <NewsFeedPostItems
+          <NewsFeedPostItems
             key={key}
             item={item}
             currentUserID={userID}
@@ -72,6 +72,6 @@ export default function NewsFeedList({ navigation, postData, userID }) {
         }}
         keyExtractor={(item, index) => index.toString()}
       />
-      </View>
+    </View>
   );
 }

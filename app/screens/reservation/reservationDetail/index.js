@@ -13,14 +13,14 @@ import ReservationDetailStatusView from '../../../components/reservations/Reserv
 import images from '../../../Constants/ImagePath';
 
 export default ReservationDetailScreen = () => (
-    <SafeAreaView style={styles.mainContainer}>
-        <Image style={styles.dottedLine} source={images.dottedLine} />
-        <ReservationNumber/>
-        <ChallengerInOutView/>
-        <ReservationDetailStatusView/>
-        <ReservationDetailStatusView/>
-        <ReservationDetailStatusView/>
-        <ReservationDetailStatusView/>
+  <SafeAreaView style={styles.mainContainer}>
+    <Image style={styles.dottedLine} source={images.dottedLine} />
+    <ReservationNumber/>
+    <ChallengerInOutView/>
+    <ReservationDetailStatusView/>
+    <ReservationDetailStatusView/>
+    <ReservationDetailStatusView/>
+    <ReservationDetailStatusView/>
 
-    </SafeAreaView>
+  </SafeAreaView>
 )

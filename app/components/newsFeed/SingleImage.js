@@ -15,26 +15,26 @@ function SingleImage({ data }) {
   let height = wp('94%');
   height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
   return (
-      <View
+    <View
       style={ [
         styles.uploadedImage,
         {
           height,
         },
       ] }>
-          <View style={ [styles.uploadedImage, {
-            borderWidth: 1,
-            borderColor: colors.lightgrayColor,
-            height,
-          }]}>
-              <FastImage
+      <View style={ [styles.uploadedImage, {
+        borderWidth: 1,
+        borderColor: colors.lightgrayColor,
+        height,
+      }]}>
+        <FastImage
           style={ styles.imageStyle }
           source={ loaderImage[randomImage].image }
           resizeMode={ FastImage.resizeMode.contain }
         />
-              <Text style={ styles.loadingTextStyle }>Loading...</Text>
-          </View>
-          <FastImage
+        <Text style={ styles.loadingTextStyle }>Loading...</Text>
+      </View>
+      <FastImage
         style={ [
           styles.uploadedImage,
           {
@@ -47,7 +47,7 @@ function SingleImage({ data }) {
         } }
         resizeMode={ FastImage.resizeMode.cover }
       />
-      </View>
+    </View>
   );
 }
 

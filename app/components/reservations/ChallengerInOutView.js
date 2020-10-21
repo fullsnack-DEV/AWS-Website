@@ -28,50 +28,50 @@ export default function ChallengerInOutView({ data }) {
     }
   };
   return (
-      <>
-          {data.responsible_to_secure_venue
+    <>
+      {data.responsible_to_secure_venue
       && data.invited_by === myID
       && data.invited_to === data.home_team.user_id ? (
-          <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-              <Image source={images.requestOut} style={styles.inOutImageView} />
-              <View style={styles.entityView}>
-                  {data.home_team.thumbnail && (
-                  <Image
+        <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
+          <Image source={images.requestOut} style={styles.inOutImageView} />
+          <View style={styles.entityView}>
+            {data.home_team.thumbnail && (
+              <Image
                 source={{ uri: data.home_team.thumbnail }}
                 style={styles.profileImage}
               />
-                  )}
-                  {data.home_team && (
-                  <Text style={styles.entityName}>
-                      {data.home_team.full_name}
-                      <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                          {' '}
-                          (challenger){' '}
-                      </Text>
-                  </Text>
-                  )}
-              </View>
-          </View>
-            ) : (
-                <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-                    <Image source={images.requestIn} style={styles.inOutImageView} />
-                    <View style={styles.entityView}>
-                        <Image source={images.teamPlaceholder} style={styles.profileImage} />
-                        {/* {data.away_team.thumbnail && <Image source={{uri: data.away_team.thumbnail}} style={styles.profileImage} />} */}
-                        {data.away_team && (
-                        <Text style={styles.entityName}>
-                            {data.away_team.full_name}
-                            <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                                {' '}
-                                (challengee){' '}
-                            </Text>
-                        </Text>
-                        )}
-                    </View>
-                </View>
             )}
+            {data.home_team && (
+              <Text style={styles.entityName}>
+                {data.home_team.full_name}
+                <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+                  {' '}
+                  (challenger){' '}
+                </Text>
+              </Text>
+            )}
+          </View>
+        </View>
+        ) : (
+          <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
+            <Image source={images.requestIn} style={styles.inOutImageView} />
+            <View style={styles.entityView}>
+              <Image source={images.teamPlaceholder} style={styles.profileImage} />
+              {/* {data.away_team.thumbnail && <Image source={{uri: data.away_team.thumbnail}} style={styles.profileImage} />} */}
+              {data.away_team && (
+                <Text style={styles.entityName}>
+                  {data.away_team.full_name}
+                  <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+                    {' '}
+                    (challengee){' '}
+                  </Text>
+                </Text>
+              )}
+            </View>
+          </View>
+        )}
 
-      </>
+    </>
   );
 }
 

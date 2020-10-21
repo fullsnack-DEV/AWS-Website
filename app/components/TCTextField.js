@@ -20,7 +20,7 @@ function TCTextField({
   ...otherProps
 }) {
   return (
-      <TextInput
+    <TextInput
       style={ styles.textInput }
       placeholder={ placeholder }
       placeholderTextColor={ colors.themeColor }

@@ -31,7 +31,7 @@ module.exports = {
     'max-len': ['warn', {code: 132}],
     'no-undef': [1],
     'react/jsx-curly-spacing': [0, 'always'],
-    'react/jsx-indent': [2, 4],
+    "react/jsx-indent": [2, 2, {checkAttributes: true, indentLogicalExpressions: true }],
     semi: [0, 'never'],
     camelcase: [0],
   },

@@ -20,10 +20,10 @@ export default function TCGameButton({
   imageSize,
 }) {
   return (
-      <TouchableOpacity onPress={ onPress }>
-          <View style={ [styles.gameRecordButton, { backgroundColor: buttonColor }] }>
-              {imageName && (
-              <Image
+    <TouchableOpacity onPress={ onPress }>
+      <View style={ [styles.gameRecordButton, { backgroundColor: buttonColor }] }>
+        {imageName && (
+          <Image
             source={ imageName }
             style={ [
               styles.gameRecordImg,
@@ -31,16 +31,16 @@ export default function TCGameButton({
               { height: imageSize, width: imageSize },
             ] }
           />
-              )}
-              {buttonTitle && (
-              <Text style={ [styles.gameRecordButtonTitle, { color: textColor }] }>
-                  {buttonTitle}
-              </Text>
-              )}
-          </View>
+        )}
+        {buttonTitle && (
+          <Text style={ [styles.gameRecordButtonTitle, { color: textColor }] }>
+            {buttonTitle}
+          </Text>
+        )}
+      </View>
 
-          <Text style={ [styles.gameRecordTitle, { color: textColor }] }>{title}</Text>
-      </TouchableOpacity>
+      <Text style={ [styles.gameRecordTitle, { color: textColor }] }>{title}</Text>
+    </TouchableOpacity>
   );
 }
 

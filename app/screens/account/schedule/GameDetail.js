@@ -3,7 +3,7 @@ import TCButton from '../../../components/TCButton';
 
 export default function GameDetail({ navigation }) {
   return (
-      <TCButton
+    <TCButton
       title="NEXT"
       onPress={ () => navigation.navigate('GameRecording') }
     />

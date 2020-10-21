@@ -18,33 +18,33 @@ import colors from '../Constants/Colors'
 
 export default function TCEventView({ onPress }) {
   return (
-      <TouchableWithoutFeedback style={ styles.backgroundView } onPress={ onPress }>
-          <View style={ styles.backgroundView } onPress={ onPress }>
-              <View style={ styles.colorView }>
-                  <Text style={ styles.dateMonthText }>Aug </Text>
-                  <Text style={ styles.dateText }>13 </Text>
-              </View>
-              <View style={ styles.eventText }>
-                  <View style={ styles.eventTitlewithDot }>
-                      <Text style={ styles.eventTitle } numberOfLines={ 1 }>
-                          Event 1 will come in Vancuver on special day dsfdsf dsf df adsfds
-                          fsadfadsf
-                      </Text>
-                      <Image source={ images.vertical3Dot } style={ styles.threedot } />
-                  </View>
-                  <View style={ styles.descriptionView }>
-                      <Text style={ styles.eventDescription } numberOfLines={ 2 }>
-                          Event description for special event.
-                      </Text>
-                  </View>
-                  <View style={ styles.bottomView }>
-                      <Text style={ styles.eventTime }>12:00 PM - 11:00 AM</Text>
-                      <Text> | </Text>
-                      <Text style={ styles.eventLocation }>Vancouver, BC, Canada</Text>
-                  </View>
-              </View>
+    <TouchableWithoutFeedback style={ styles.backgroundView } onPress={ onPress }>
+      <View style={ styles.backgroundView } onPress={ onPress }>
+        <View style={ styles.colorView }>
+          <Text style={ styles.dateMonthText }>Aug </Text>
+          <Text style={ styles.dateText }>13 </Text>
+        </View>
+        <View style={ styles.eventText }>
+          <View style={ styles.eventTitlewithDot }>
+            <Text style={ styles.eventTitle } numberOfLines={ 1 }>
+              Event 1 will come in Vancuver on special day dsfdsf dsf df adsfds
+              fsadfadsf
+            </Text>
+            <Image source={ images.vertical3Dot } style={ styles.threedot } />
           </View>
-      </TouchableWithoutFeedback>
+          <View style={ styles.descriptionView }>
+            <Text style={ styles.eventDescription } numberOfLines={ 2 }>
+              Event description for special event.
+            </Text>
+          </View>
+          <View style={ styles.bottomView }>
+            <Text style={ styles.eventTime }>12:00 PM - 11:00 AM</Text>
+            <Text> | </Text>
+            <Text style={ styles.eventLocation }>Vancouver, BC, Canada</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

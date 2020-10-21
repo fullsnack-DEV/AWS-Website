@@ -13,15 +13,15 @@ import fonts from '../../Constants/Fonts'
 export default function ReservationDetailButton({ onPressButon }) {
   return (
 
-      <TouchableOpacity onPress={onPressButon}>
-          <LinearGradient
+    <TouchableOpacity onPress={onPressButon}>
+      <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.borderButtonView}>
-              <View style={styles.borderButtonWhiteView}>
-                  <Text style={styles.detailButtonText}>{strings.detailText}</Text>
-              </View>
-          </LinearGradient>
-      </TouchableOpacity>
+        <View style={styles.borderButtonWhiteView}>
+          <Text style={styles.detailButtonText}>{strings.detailText}</Text>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
 
   );
 }

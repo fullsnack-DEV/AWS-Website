@@ -7,13 +7,13 @@ import fonts from '../../Constants/Fonts'
 
 export default function ReservationNumber({ reservationNumber = '12345678D-12' }) {
   return (
-      <View>
+    <View>
 
-          <Text style={styles.reservationNumberText}>
-              Reservation No: {reservationNumber}
-          </Text>
+      <Text style={styles.reservationNumberText}>
+        Reservation No: {reservationNumber}
+      </Text>
 
-      </View>
+    </View>
   );
 }
 

@@ -113,56 +113,56 @@ function ChooseSportsScreen({ navigation, route }) {
   };
 
   const renderItem = ({ item, index }) => (
-      <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
         style={ styles.listItem }
         onPress={ () => {
           isIconCheckedOrNot({ item, index });
         } }>
-          {item.sport_name === 'Soccer' && (
-          <Image source={ images.footballSport } style={ styles.sportImg } />
-          )}
-          {item.sport_name === 'Tennis' && (
-          <Image source={ images.bandySport } style={ styles.sportImg } />
-          )}
-          {item.sport_name === 'Football' && (
-          <Image source={ images.footballSport } style={ styles.sportImg } />
-          )}
-          {item.sport_name === 'Baseball' && (
-          <Image source={ images.baseballSport } style={ styles.sportImg } />
-          )}
-          {item.sport_name === 'Volleyball' && (
-          <Image source={ images.archerySport } style={ styles.sportImg } />
-          )}
+      {item.sport_name === 'Soccer' && (
+        <Image source={ images.footballSport } style={ styles.sportImg } />
+      )}
+      {item.sport_name === 'Tennis' && (
+        <Image source={ images.bandySport } style={ styles.sportImg } />
+      )}
+      {item.sport_name === 'Football' && (
+        <Image source={ images.footballSport } style={ styles.sportImg } />
+      )}
+      {item.sport_name === 'Baseball' && (
+        <Image source={ images.baseballSport } style={ styles.sportImg } />
+      )}
+      {item.sport_name === 'Volleyball' && (
+        <Image source={ images.archerySport } style={ styles.sportImg } />
+      )}
 
-          <Text style={ styles.sportList }>{item.sport_name}</Text>
-          <View style={ styles.checkbox }>
-              {sports[index].isChecked ? (
-                  <Image source={ images.checkWhite } style={ styles.checkboxImg } />
-              ) : (
-                  <Image source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
-              )}
-          </View>
-          <Separator />
-      </TouchableWithoutFeedback>
+      <Text style={ styles.sportList }>{item.sport_name}</Text>
+      <View style={ styles.checkbox }>
+        {sports[index].isChecked ? (
+          <Image source={ images.checkWhite } style={ styles.checkboxImg } />
+        ) : (
+          <Image source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+        )}
+      </View>
+      <Separator />
+    </TouchableWithoutFeedback>
   );
 
   return (
-      <>
-          <View style={ styles.mainContainer }>
-              <ActivityLoader visible={ loading } />
-              {/* <Loader visible={getSportsList.loading} /> */}
-              <Image style={ styles.background } source={ images.orangeLayer } />
-              <Image style={ styles.background } source={ images.bgImage } />
+    <>
+      <View style={ styles.mainContainer }>
+        <ActivityLoader visible={ loading } />
+        {/* <Loader visible={getSportsList.loading} /> */}
+        <Image style={ styles.background } source={ images.orangeLayer } />
+        <Image style={ styles.background } source={ images.bgImage } />
 
-              <Text style={ styles.sportText }>{strings.sportText}</Text>
-              {/* <ActivityIndicator animating={loading} size="large" /> */}
-              <FlatList
+        <Text style={ styles.sportText }>{strings.sportText}</Text>
+        {/* <ActivityIndicator animating={loading} size="large" /> */}
+        <FlatList
           data={ sports }
           keyExtractor={ (item) => item.sport_name }
           renderItem={ renderItem }
         />
 
-              <TCButton
+        <TCButton
           title={ strings.applyTitle }
           extraStyle={ { position: 'absolute', bottom: hp('7%') } }
           onPress={ () => {
@@ -179,8 +179,8 @@ function ChooseSportsScreen({ navigation, route }) {
             }
           } }
         />
-          </View>
-      </>
+      </View>
+    </>
   );
 }
 

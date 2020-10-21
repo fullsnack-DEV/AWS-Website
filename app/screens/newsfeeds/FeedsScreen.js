@@ -42,10 +42,10 @@ export default function FeedsScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           onPress={() => navigation.navigate('AccountScreen')}>
-              <Image source={images.vertical3Dot} style={styles.headerRightImg} />
-          </TouchableWithoutFeedback>
+          <Image source={images.vertical3Dot} style={styles.headerRightImg} />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
@@ -62,19 +62,19 @@ export default function FeedsScreen({ navigation }) {
   }, []);
 
   return (
-      <View style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
-          <WritePost
+    <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <WritePost
         navigation={navigation}
         postDataItem={postData ? postData[0] : {}}
       />
-          <NewsFeedList
+      <NewsFeedList
         navigation={navigation}
         newsFeedData={newsFeedData}
         postData={postData}
         userID={userID}
       />
-      </View>
+    </View>
   );
 }
 

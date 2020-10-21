@@ -115,10 +115,10 @@ export default function ScheduleScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
-          </TouchableWithoutFeedback>
+          <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
@@ -128,8 +128,8 @@ export default function ScheduleScreen({ navigation }) {
   };
 
   return (
-      <View style={ styles.mainContainer }>
-          <SegmentedControlTab
+    <View style={ styles.mainContainer }>
+      <SegmentedControlTab
         values={ ['Events', 'Calendar'] }
         selectedIndex={ selectedIndex }
         onTabPress={ handleIndexChange }
@@ -140,14 +140,14 @@ export default function ScheduleScreen({ navigation }) {
         tabTextStyle={ styles.tabTextStyle }
         activeTabTextStyle={ styles.activeTabTextStyle }
       />
-          {selectedIndex === 0 ? (
-              <SectionList
+      {selectedIndex === 0 ? (
+        <SectionList
           renderItem={ () => (
             // <Text key={index}>.{item}</Text>
-              <TCEventView onPress={ () => navigation.navigate('GameDetail') } />
+            <TCEventView onPress={ () => navigation.navigate('GameDetail') } />
           ) }
           renderSectionHeader={ ({ section: { title } }) => (
-              <Text style={ styles.sectionHeader }>{title}</Text>
+            <Text style={ styles.sectionHeader }>{title}</Text>
           ) }
           sections={ [
             { title: 'TODAY', data: ['item1', 'item2', 'item7', 'item8'] },
@@ -159,16 +159,16 @@ export default function ScheduleScreen({ navigation }) {
           ] }
           keyExtractor={ (item, index) => item + index }
         />
-          ) : (
-              <EventCalendar
+      ) : (
+        <EventCalendar
           eventTapped={ () => alert('Event tapped..') }
           // eventTapped={this._eventTapped.bind(this)}
           events={ events }
           width={ width }
           initDate={ '2017-09-08' }
         />
-          )}
-      </View>
+      )}
+    </View>
   );
 }
 

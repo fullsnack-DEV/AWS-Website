@@ -80,17 +80,17 @@ export default function ReservationScreen({ navigation }) {
   };
 
   return (
-      <View style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
+    <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
 
-          <TCScrollableTabs>
-              <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0
-                ? <TCNoDataView title={strings.noReservationFountText}/>
-                : <FlatList
+      <TCScrollableTabs>
+        <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0
+          ? <TCNoDataView title={strings.noReservationFountText}/>
+          : <FlatList
                     data={upcoming }
                     keyExtractor={(item) => item.activity_id}
                     renderItem={({ item }) => (
-                        <MatchReservation
+                      <MatchReservation
                             data={item}
                             onPressButon={() => {
                               navigation.navigate('ReservationDetailScreen');
@@ -99,14 +99,14 @@ export default function ReservationScreen({ navigation }) {
                     )}
                 />
                 }</View>
-              <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 ? (
-                  <TCNoDataView title={strings.noReservationFountText}/>
-              ) : (
-                  <FlatList
+        <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 ? (
+          <TCNoDataView title={strings.noReservationFountText}/>
+        ) : (
+          <FlatList
                       data={past}
                       keyExtractor={(item) => item.activity_id}
                       renderItem={({ item }) => (
-                          <MatchReservation
+                        <MatchReservation
                             data={item}
                             onPressButon={() => {
                               navigation.navigate('ReservationDetailScreen');
@@ -114,8 +114,8 @@ export default function ReservationScreen({ navigation }) {
                           />
                       )}
                    />
-              )}</View>
-          </TCScrollableTabs>
-      </View>
+        )}</View>
+      </TCScrollableTabs>
+    </View>
   );
 }

@@ -27,9 +27,9 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <TouchableWithoutFeedback onPress={ () => alert('This is a button!') }>
-              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
-          </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={ () => alert('This is a button!') }>
+          <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
@@ -91,8 +91,8 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
   };
 
   return (
-      <View style={ styles.container }>
-          <Video
+    <View style={ styles.container }>
+      <Video
         source={ { uri: route.params.url } } // Can be a URL or a local file.
         ref={this.onRefs}
         volume={ mute }
@@ -105,7 +105,7 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
         onLoadStart={ this.onLoadStart }
       />
 
-          <MediaControls
+      <MediaControls
         mainColor="white"
         onSeek={ this.onSeek }
         onReplay={ this.onReplay }
@@ -116,16 +116,16 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
         onFullScreen={ this.onFullScreen }
         progress={ currentTime }
         playerState={ playerState }>
-              <MediaControls.Toolbar>
-                  <View style={ styles.toolbar }>
-                      <Text style={ { color: colors.red } }>Im a custom toolbar </Text>
-                  </View>
-              </MediaControls.Toolbar>
-          </MediaControls>
-          {/* <View style={styles.toolbar}>
+        <MediaControls.Toolbar>
+          <View style={ styles.toolbar }>
+            <Text style={ { color: colors.red } }>Im a custom toolbar </Text>
+          </View>
+        </MediaControls.Toolbar>
+      </MediaControls>
+      {/* <View style={styles.toolbar}>
         <Text style={{color: 'red'}}>I'm a custom toolbar </Text>
       </View> */}
-      </View>
+    </View>
   );
 }
 

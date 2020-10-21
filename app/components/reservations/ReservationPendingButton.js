@@ -13,13 +13,13 @@ import fonts from '../../Constants/Fonts'
 export default function ReservationPendingButton({ onPressButon }) {
   return (
 
-      <TouchableOpacity onPress={onPressButon}>
-          <LinearGradient
+    <TouchableOpacity onPress={onPressButon}>
+      <LinearGradient
                     colors={[colors.yellowColor, colors.themeColor]}
                     style={styles.pendingButton}>
-              <Text style={styles.pendingTimerText}>{strings.respondWithinText} 1d 23h 59m</Text>
-          </LinearGradient>
-      </TouchableOpacity>
+        <Text style={styles.pendingTimerText}>{strings.respondWithinText} 1d 23h 59m</Text>
+      </LinearGradient>
+    </TouchableOpacity>
 
   );
 }

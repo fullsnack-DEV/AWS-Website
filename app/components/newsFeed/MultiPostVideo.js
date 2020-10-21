@@ -21,16 +21,16 @@ function MultiPostVideo({ data, itemNumber, totalItemNumber }) {
   const randomImage = Math.floor(Math.random() * loaderImage.length);
 
   return (
-      <View style={ styles.singleImageDisplayStyle }>
-          <View style={ [styles.singleImageDisplayStyle, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
-              <FastImage
+    <View style={ styles.singleImageDisplayStyle }>
+      <View style={ [styles.singleImageDisplayStyle, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
+        <FastImage
           style={ styles.loadimageStyle }
           source={ loaderImage[randomImage].image }
           resizeMode={ FastImage.resizeMode.contain }
         />
-              <Text style={ styles.loadingTextStyle }>Loading...</Text>
-          </View>
-          <Video
+        <Text style={ styles.loadingTextStyle }>Loading...</Text>
+      </View>
+      <Video
         paused={ !play }
         muted={ !!mute }
         source={ { uri: data.url } }
@@ -40,35 +40,35 @@ function MultiPostVideo({ data, itemNumber, totalItemNumber }) {
           setVideoLoad(true);
         } }
       />
-          <View style={ styles.lengthViewStyle }>
-              <Text style={ styles.lengthTextStyle }>
-                  {itemNumber}
-                  {'/'}
-                  {totalItemNumber}
-              </Text>
-          </View>
-          {videoLoad && <>
-              <View style={ styles.pauseMuteStyle }>
-                  <TouchableOpacity
+      <View style={ styles.lengthViewStyle }>
+        <Text style={ styles.lengthTextStyle }>
+          {itemNumber}
+          {'/'}
+          {totalItemNumber}
+        </Text>
+      </View>
+      {videoLoad && <>
+        <View style={ styles.pauseMuteStyle }>
+          <TouchableOpacity
             onPress={ () => {
               setMute(!mute);
             } }>
-                      <Image
+            <Image
               style={ styles.imageStyle }
               source={ mute ? images.mute : images.unmute }
             />
-                  </TouchableOpacity>
-              </View>
-              <View style={ [styles.pauseMuteStyle, { right: wp('13.5%') }] }>
-                  <TouchableOpacity
+          </TouchableOpacity>
+        </View>
+        <View style={ [styles.pauseMuteStyle, { right: wp('13.5%') }] }>
+          <TouchableOpacity
             onPress={ () => {
               setPlay(!play);
             } }>
-                      <Image style={ styles.playPauseImageStyle } source={ images.playPause } />
-                  </TouchableOpacity>
-              </View>
-          </>}
-      </View>
+            <Image style={ styles.playPauseImageStyle } source={ images.playPause } />
+          </TouchableOpacity>
+        </View>
+      </>}
+    </View>
   );
 }
 

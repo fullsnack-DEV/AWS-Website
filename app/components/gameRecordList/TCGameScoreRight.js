@@ -19,24 +19,24 @@ import fonts from '../../Constants/Fonts'
 
 export default function TCGameScoreRight({ editor }) {
   return (
-      <View>
-          <View style={ styles.headerView }>
-              <View style={ styles.leftBlankView }>
-                  <Text
+    <View>
+      <View style={ styles.headerView }>
+        <View style={ styles.leftBlankView }>
+          <Text
             style={ { fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right' } }>
-                      4m
-                  </Text>
-                  <Text
+            4m
+          </Text>
+          <Text
             style={ {
               fontFamily: fonts.RRegular,
               fontSize: 13,
               color: colors.darkGrayColor,
             } }>
-                      10:45 AM
-                  </Text>
-              </View>
-              <View style={ styles.centerView }>
-                  <Dash
+            10:45 AM
+          </Text>
+        </View>
+        <View style={ styles.centerView }>
+          <Dash
             style={ {
               width: 1,
               height: 70,
@@ -44,28 +44,28 @@ export default function TCGameScoreRight({ editor }) {
             } }
             dashColor={ colors.lightgrayColor }
           />
-              </View>
-              <View style={ styles.rightView }>
-                  <View style={ styles.gameRecordButton }>
-                      <Image
+        </View>
+        <View style={ styles.rightView }>
+          <View style={ styles.gameRecordButton }>
+            <Image
               source={ images.gameOwnGoal }
               style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
             />
-                  </View>
-                  <Text style={ styles.rightPlayerText } numberOfLines={ 3 }>
-                      Kishan Makani () received a yellow card
-                  </Text>
-                  <View>
-                      <Image
+          </View>
+          <Text style={ styles.rightPlayerText } numberOfLines={ 3 }>
+            Kishan Makani () received a yellow card
+          </Text>
+          <View>
+            <Image
               source={ images.profilePlaceHolder }
               style={ styles.rightProfileImg }
             />
-                  </View>
-              </View>
           </View>
-          {editor && (
-          <View style={ styles.editorView }>
-              <Dash
+        </View>
+      </View>
+      {editor && (
+        <View style={ styles.editorView }>
+          <Dash
             style={ {
               width: 1,
               height: 30,
@@ -73,20 +73,20 @@ export default function TCGameScoreRight({ editor }) {
             } }
             dashColor={ colors.lightgrayColor }
           />
-              <View
+          <View
             style={ {
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
               position: 'absolute',
             } }>
-                  <Text style={ styles.recordedBy }>
-                      Recorded by Kishan Makani makani (50s ago)
-                  </Text>
-              </View>
+            <Text style={ styles.recordedBy }>
+              Recorded by Kishan Makani makani (50s ago)
+            </Text>
           </View>
-          )}
-      </View>
+        </View>
+      )}
+    </View>
   );
 }
 

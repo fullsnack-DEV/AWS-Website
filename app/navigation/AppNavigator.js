@@ -68,7 +68,7 @@ function AppNavigator() {
   };
 
   return (
-      <Tab.Navigator
+    <Tab.Navigator
       tabBarOptions={ {
         activeTintColor: colors.themeColor,
         inactiveTintColor: colors.grayColor,
@@ -85,26 +85,26 @@ function AppNavigator() {
           elevation: 1,
         },
       } }>
-          <Tab.Screen
+      <Tab.Screen
         name="Home"
         component={ NewsFeedNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
-              <Image
+            <Image
               source={ focused ? images.tab_home_selected : images.tab_home }
               style={ styles.tabImg }
             />
           ),
         }) }
       />
-          <Tab.Screen
+      <Tab.Screen
         name="Reservation"
         component={ ReservationNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
-              <Image
+            <Image
               source={
                 focused ? images.tab_reservation_selected : images.tab_reservation
               }
@@ -113,12 +113,12 @@ function AppNavigator() {
           ),
         }) }
       />
-          <Tab.Screen
+      <Tab.Screen
         name="Notification"
         component={ HomeScreen }
         options={ {
           tabBarIcon: ({ focused }) => (
-              <Image
+            <Image
               source={
                 focused ? images.tab_notification_selected : images.tab_notification
               }
@@ -127,12 +127,12 @@ function AppNavigator() {
           ),
         } }
       />
-          <Tab.Screen
+      <Tab.Screen
         name="Message"
         component={ HomeScreen }
         options={ {
           tabBarIcon: ({ focused }) => (
-              <Image
+            <Image
               source={ focused ? images.tab_message_selected : images.tab_message }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
@@ -140,14 +140,14 @@ function AppNavigator() {
         } }
       />
 
-          {switchBy === 'team' && (
-          <Tab.Screen
+      {switchBy === 'team' && (
+        <Tab.Screen
           name="Account"
           component={ AccountNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
-                <Image
+              <Image
                 source={
                   focused
                     ? images.tab_account_group_selected
@@ -158,30 +158,30 @@ function AppNavigator() {
             ),
           }) }
         />
-          )}
-          {switchBy === 'user' && (
-          <Tab.Screen
+      )}
+      {switchBy === 'user' && (
+        <Tab.Screen
           name="Account"
           component={ AccountNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
-                <Image
+              <Image
                 source={ focused ? images.tab_account_selected : images.tab_account }
                 style={ styles.tabImg }
               />
             ),
           }) }
         />
-          )}
-          {switchBy === 'club' && (
-          <Tab.Screen
+      )}
+      {switchBy === 'club' && (
+        <Tab.Screen
           name="Account"
           component={ AccountNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
-                <Image
+              <Image
                 source={
                   focused
                     ? images.tab_account_group_selected
@@ -192,8 +192,8 @@ function AppNavigator() {
             ),
           }) }
         />
-          )}
-      </Tab.Navigator>
+      )}
+    </Tab.Navigator>
   );
 }
 

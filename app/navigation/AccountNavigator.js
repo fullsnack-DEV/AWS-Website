@@ -41,14 +41,14 @@ import colors from '../Constants/Colors'
 const Stack = createStackNavigator();
 
 const AccountNavigator = () => (
-    <Stack.Navigator
+  <Stack.Navigator
       screenOptions={ {
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
         // headerTitle: true,
         headerBackTitleVisible: false,
       } }>
-        <Stack.Screen
+    <Stack.Screen
         name="AccountScreen"
         component={ AccountScreen }
         options={ {
@@ -65,7 +65,7 @@ const AccountNavigator = () => (
           headerShown: false,
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ScheduleScreen"
         component={ ScheduleScreen }
         options={ {
@@ -81,7 +81,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="GameDetail"
         component={ GameDetail }
         options={ {
@@ -97,7 +97,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="GameRecording"
         component={ GameRecording }
         options={ {
@@ -113,7 +113,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="GameDetailRecord"
         component={ GameDetailRecord }
         options={ {
@@ -130,7 +130,7 @@ const AccountNavigator = () => (
         } }
       />
 
-        <Stack.Screen
+    <Stack.Screen
         name="GameRecordList"
         component={ GameRecordList }
         options={ {
@@ -146,7 +146,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="RegisterPlayer"
         component={ RegisterPlayer }
         options={ {
@@ -162,7 +162,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="RegisterPlayerForm2"
         component={ RegisterPlayerForm2 }
         options={ {
@@ -178,7 +178,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="RegisterReferee"
         component={ RegisterReferee }
         options={ {
@@ -194,7 +194,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="RegisterRefereeForm2"
         component={ RegisterRefereeForm2 }
         options={ {
@@ -210,7 +210,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateTeamForm1"
         component={ CreateTeamForm1 }
         options={ {
@@ -226,7 +226,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateTeamForm2"
         component={ CreateTeamForm2 }
         options={ {
@@ -242,7 +242,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateTeamForm3"
         component={ CreateTeamForm3 }
         options={ {
@@ -258,7 +258,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateTeamForm4"
         component={ CreateTeamForm4 }
         options={ {
@@ -274,7 +274,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateClubForm1"
         component={ CreateClubForm1 }
         options={ {
@@ -290,7 +290,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateClubForm2"
         component={ CreateClubForm2 }
         options={ {
@@ -306,7 +306,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="CreateClubForm3"
         component={ CreateClubForm3 }
         options={ {
@@ -322,7 +322,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="TeamCreatedScreen"
         component={ TeamCreatedScreen }
         options={ {
@@ -332,7 +332,7 @@ const AccountNavigator = () => (
           headerShown: false,
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ClubCreatedScreen"
         component={ ClubCreatedScreen }
         options={ {
@@ -342,7 +342,7 @@ const AccountNavigator = () => (
           headerShown: false,
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="SearchLocationScreen"
         component={ SearchLocationScreen }
         options={ {
@@ -351,7 +351,7 @@ const AccountNavigator = () => (
           headerTintColor: colors.whiteColor,
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="SearchPlayerScreen"
         component={ SearchPlayerScreen }
         options={ {
@@ -367,7 +367,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="JoinedTeamsScreen"
         component={ JoinedTeamsScreen }
         options={ {
@@ -383,7 +383,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="JoinedClubsScreen"
         component={ JoinedClubsScreen }
         options={ {
@@ -399,7 +399,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="GroupSettingPrivacyScreen"
         component={ GroupSettingPrivacyScreen }
         options={ {
@@ -415,7 +415,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="UserSettingPrivacyScreen"
         component={ UserSettingPrivacyScreen }
         options={ {
@@ -431,7 +431,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ChangePasswordScreen"
         component={ ChangePasswordScreen }
         options={ {
@@ -447,7 +447,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="PersonalInformationScreen"
         component={ PersonalInformationScreen }
         options={ {
@@ -463,7 +463,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="GroupMembers"
         component={ GroupMembers }
         options={ {
@@ -479,7 +479,7 @@ const AccountNavigator = () => (
           },
         } }
       />
-    </Stack.Navigator>
+  </Stack.Navigator>
 );
 
 export default AccountNavigator;

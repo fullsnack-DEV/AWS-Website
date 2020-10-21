@@ -16,30 +16,30 @@ function PostImageSet({ data, itemNumber, totalItemNumber }) {
   const uploadImageURL = data && typeof data.thumbnail === 'string' && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
   return (
-      <View style={ styles.uploadedImage }>
-          <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
-              <FastImage
+    <View style={ styles.uploadedImage }>
+      <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
+        <FastImage
           style={ styles.imageStyle }
           source={ loaderImage[randomImage].image }
           resizeMode={ FastImage.resizeMode.contain }
         />
-              <Text style={ styles.loadingTextStyle }>Loading...</Text>
-          </View>
-          <Image
+        <Text style={ styles.loadingTextStyle }>Loading...</Text>
+      </View>
+      <Image
         style={ [styles.uploadedImage, { position: 'absolute' }] }
         source={ {
           uri: uploadImageURL,
         } }
         resizeMode={ FastImage.resizeMode.cover }
       />
-          <View style={ styles.lengthViewStyle }>
-              <Text style={ styles.lengthTextStyle }>
-                  {itemNumber}
-                  {'/'}
-                  {totalItemNumber}
-              </Text>
-          </View>
+      <View style={ styles.lengthViewStyle }>
+        <Text style={ styles.lengthTextStyle }>
+          {itemNumber}
+          {'/'}
+          {totalItemNumber}
+        </Text>
       </View>
+    </View>
   );
 }
 

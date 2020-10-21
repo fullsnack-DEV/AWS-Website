@@ -75,66 +75,66 @@ export default function ChangePasswordScreen() {
   // }
 
   return (
-      <ScrollView style={ styles.mainContainer }>
-          <ActivityLoader visible={ loading } />
+    <ScrollView style={ styles.mainContainer }>
+      <ActivityLoader visible={ loading } />
 
-          <TextInput
+      <TextInput
             placeholder={ strings.oldPassword }
             secureTextEntry={ true }
             style={ styles.matchFeeTxt }
             onChangeText={ (text) => setOldPassword(text) }
             value={ oldPassword }></TextInput>
 
-          <View style={ styles.separatorLine }></View>
-          <View style={ styles.passwordView }>
-              <TextInput
+      <View style={ styles.separatorLine }></View>
+      <View style={ styles.passwordView }>
+        <TextInput
             placeholder={ strings.newPassword + strings.atLeastText }
             secureTextEntry={ hideNewPassword }
             style={ styles.textInput }
             onChangeText={ (text) => setNewPassword(text) }
             value={ newPassword }></TextInput>
-              <TouchableWithoutFeedback onPress={ () => hideShowNewPassword() }>
-                  {hideNewPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
-              </TouchableWithoutFeedback>
-          </View>
+        <TouchableWithoutFeedback onPress={ () => hideShowNewPassword() }>
+          {hideNewPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
+        </TouchableWithoutFeedback>
+      </View>
 
-          <View style={ styles.passwordView }>
-              <TextInput
+      <View style={ styles.passwordView }>
+        <TextInput
             placeholder={ strings.confirmPassword }
             secureTextEntry={ hideConfirmPassword }
             style={ styles.textInput }
             onChangeText={ (text) => setConfirmPassword(text) }
             value={ confirmPassword }></TextInput>
-              <TouchableWithoutFeedback onPress={ () => hideShowConfirmPassword() }>
-                  {hideConfirmPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
-              </TouchableWithoutFeedback>
-          </View>
-          <TouchableWithoutFeedback onPress={ () => {
-            setloading(true);
-            if (checkValidation()) {
-              const credential = firebase.auth.EmailAuthProvider.credential(authContext.user.email, oldPassword);
-              firebase.auth().currentUser.reauthenticateWithCredential(credential).then(() => {
-                firebase.auth().currentUser.updatePassword(newPassword).then(() => {
-                  setNewPassword('');
-                  setOldPassword('');
-                  setConfirmPassword('');
-                  setloading(false);
-                  Alert.alert('Towns Cup', 'Your new password has beed set succesfully');
-                })
-              }).catch((error) => {
-                if (error.code === 'auth/wrong-password') {
-                  Alert.alert('Towns Cup', 'The password is invalid or the user does not have a password.');
-                }
-              });
+        <TouchableWithoutFeedback onPress={ () => hideShowConfirmPassword() }>
+          {hideConfirmPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
+        </TouchableWithoutFeedback>
+      </View>
+      <TouchableWithoutFeedback onPress={ () => {
+        setloading(true);
+        if (checkValidation()) {
+          const credential = firebase.auth.EmailAuthProvider.credential(authContext.user.email, oldPassword);
+          firebase.auth().currentUser.reauthenticateWithCredential(credential).then(() => {
+            firebase.auth().currentUser.updatePassword(newPassword).then(() => {
+              setNewPassword('');
+              setOldPassword('');
+              setConfirmPassword('');
               setloading(false);
+              Alert.alert('Towns Cup', 'Your new password has beed set succesfully');
+            })
+          }).catch((error) => {
+            if (error.code === 'auth/wrong-password') {
+              Alert.alert('Towns Cup', 'The password is invalid or the user does not have a password.');
             }
-          } }>
-              <LinearGradient
+          });
+          setloading(false);
+        }
+      } }>
+        <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-                  <Text style={ styles.nextButtonText }>{strings.saveTitle}</Text>
-              </LinearGradient>
-          </TouchableWithoutFeedback>
-      </ScrollView>
+          <Text style={ styles.nextButtonText }>{strings.saveTitle}</Text>
+        </LinearGradient>
+      </TouchableWithoutFeedback>
+    </ScrollView>
   );
 }

@@ -1,5 +1,5 @@
 import Config from 'react-native-config';
-import api from '../utils/apiConstants';
+import api from '../utils/endPoints';
 import makeAPIRequest from '../utils/Global';
 
 export const getuserDetail = function (uid) {

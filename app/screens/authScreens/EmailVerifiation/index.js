@@ -33,19 +33,19 @@ function EmailVerification({ navigation, route }) {
   };
 
   return (
-      <View style={styles.mainContainer}>
-          <Image style={styles.background} source={images.orangeLayer} />
-          <Image style={styles.background} source={images.bgImage} />
-          <View style={{ marginTop: '80%', alignSelf: 'center', width: '80%' }}>
-              <Text style={{ fontSize: 17, color: 'white' }}>
-                  We have sent you have a verification link to
-              </Text>
-              <Text style={{ fontSize: 17, color: 'white' }}>
-                  Your email please verify and proceed
-              </Text>
-          </View>
-          <TouchableOpacity onPress={() => verifyUserEmail()}>
-              <View
+    <View style={styles.mainContainer}>
+      <Image style={styles.background} source={images.orangeLayer} />
+      <Image style={styles.background} source={images.bgImage} />
+      <View style={{ marginTop: '80%', alignSelf: 'center', width: '80%' }}>
+        <Text style={{ fontSize: 17, color: 'white' }}>
+          We have sent you have a verification link to
+        </Text>
+        <Text style={{ fontSize: 17, color: 'white' }}>
+          Your email please verify and proceed
+        </Text>
+      </View>
+      <TouchableOpacity onPress={() => verifyUserEmail()}>
+        <View
           style={{
             borderRadius: 40,
             backgroundColor: 'white',
@@ -58,15 +58,15 @@ function EmailVerification({ navigation, route }) {
             marginTop: '10%',
             height: 50,
           }}>
-                  <Text style={{ fontSize: 15, color: 'blue' }}>
-                      {' '}
-                      I Verified My Email
-                  </Text>
-              </View>
-          </TouchableOpacity>
-          <View>
-              <TouchableOpacity onPress={() => resend()}>
-                  <View
+          <Text style={{ fontSize: 15, color: 'blue' }}>
+            {' '}
+            I Verified My Email
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <View>
+        <TouchableOpacity onPress={() => resend()}>
+          <View
             style={{
               borderRadius: 40,
               backgroundColor: 'white',
@@ -77,13 +77,13 @@ function EmailVerification({ navigation, route }) {
               marginTop: '4%',
               height: 50,
             }}>
-                      <Text style={{ color: 'orange', fontSize: 15, fontWeight: '700' }}>
-                          Resend Verification Link{' '}
-                      </Text>
-                  </View>
-              </TouchableOpacity>
+            <Text style={{ color: 'orange', fontSize: 15, fontWeight: '700' }}>
+              Resend Verification Link{' '}
+            </Text>
           </View>
+        </TouchableOpacity>
       </View>
+    </View>
   );
 }
 export default EmailVerification;

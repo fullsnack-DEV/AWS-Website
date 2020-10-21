@@ -26,75 +26,75 @@ function CreateTeamForm2({ navigation, route }) {
   ] = useState(false);
   const [canJoinInvitedPerson, setCanJoinInvitedPerson] = useState(false);
   return (
-      <ScrollView style={ styles.mainContainer }>
-          <View style={ styles.formSteps }>
-              <View style={ styles.form1 }></View>
-              <View style={ styles.form2 }></View>
-              <View style={ styles.form3 }></View>
-              <View style={ styles.form4 }></View>
-          </View>
-          <Text style={ styles.membershipText }>{strings.membershipTitle}</Text>
-          <Text style={ styles.whoJoinText }>{strings.whoJoinTitle}</Text>
+    <ScrollView style={ styles.mainContainer }>
+      <View style={ styles.formSteps }>
+        <View style={ styles.form1 }></View>
+        <View style={ styles.form2 }></View>
+        <View style={ styles.form3 }></View>
+        <View style={ styles.form4 }></View>
+      </View>
+      <Text style={ styles.membershipText }>{strings.membershipTitle}</Text>
+      <Text style={ styles.whoJoinText }>{strings.whoJoinTitle}</Text>
 
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
+      <View style={ styles.radioButtonView }>
+        <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(0);
             setCanJoinEveryone(true);
             setJoinMembershipAcceptedadmin(false);
             setCanJoinInvitedPerson(false);
           } }>
-                  {selected === 0 ? (
-                      <Image source={ images.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
+          {selected === 0 ? (
+            <Image source={ images.radioSelect } style={ styles.radioImage } />
+          ) : (
+            <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.everyoneText}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
+          )}
+        </TouchableWithoutFeedback>
+        <Text style={ styles.radioText }>{strings.everyoneText}</Text>
+      </View>
+      <View style={ styles.radioButtonView }>
+        <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(1);
             setCanJoinEveryone(false);
             setJoinMembershipAcceptedadmin(true);
             setCanJoinInvitedPerson(false);
           } }>
-                  {selected === 1 ? (
-                      <Image source={ images.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
+          {selected === 1 ? (
+            <Image source={ images.radioSelect } style={ styles.radioImage } />
+          ) : (
+            <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.membershipRequestText}</Text>
-          </View>
-          <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback
+          )}
+        </TouchableWithoutFeedback>
+        <Text style={ styles.radioText }>{strings.membershipRequestText}</Text>
+      </View>
+      <View style={ styles.radioButtonView }>
+        <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(2);
             setCanJoinEveryone(false);
             setJoinMembershipAcceptedadmin(false);
             setCanJoinInvitedPerson(true);
           } }>
-                  {selected === 2 ? (
-                      <Image source={ images.radioSelect } style={ styles.radioImage } />
-                  ) : (
-                      <Image
+          {selected === 2 ? (
+            <Image source={ images.radioSelect } style={ styles.radioImage } />
+          ) : (
+            <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-                  )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.inviteText}</Text>
-          </View>
+          )}
+        </TouchableWithoutFeedback>
+        <Text style={ styles.radioText }>{strings.inviteText}</Text>
+      </View>
 
-          <TouchableOpacity
+      <TouchableOpacity
         onPress={ () => navigation.navigate('CreateTeamForm3', {
           createTeamForm2: {
             ...route.params.createTeamForm1,
@@ -104,13 +104,13 @@ function CreateTeamForm2({ navigation, route }) {
           },
         })
         }>
-              <LinearGradient
+        <LinearGradient
           colors={ [colors.yellowColor, colors.themeColor] }
           style={ styles.nextButton }>
-                  <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-              </LinearGradient>
-          </TouchableOpacity>
-      </ScrollView>
+          <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 

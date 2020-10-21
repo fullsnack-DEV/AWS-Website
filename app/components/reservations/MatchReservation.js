@@ -50,14 +50,14 @@ export default function MatchReservation({ data, onPressButon }) {
   // };
 
   return (
-      <View>
+    <View>
 
-          <ReservationNumber reservationNumber={data.reservation_id || data.challenge_id}/>
-          <ReservationStatusView data={data}/>
-          <ChallengerInOutView data={data}/>
-          <TCGameCard data={data.game || data} />
-          {data.status === 'pending' ? <ReservationPendingButton onPressButon={onPressButon}/> : <ReservationDetailButton onPressButon={onPressButon}/>}
-          <TCThickDivider height={7}/>
-      </View>
+      <ReservationNumber reservationNumber={data.reservation_id || data.challenge_id}/>
+      <ReservationStatusView data={data}/>
+      <ChallengerInOutView data={data}/>
+      <TCGameCard data={data.game || data} />
+      {data.status === 'pending' ? <ReservationPendingButton onPressButon={onPressButon}/> : <ReservationDetailButton onPressButon={onPressButon}/>}
+      <TCThickDivider height={7}/>
+    </View>
   );
 }

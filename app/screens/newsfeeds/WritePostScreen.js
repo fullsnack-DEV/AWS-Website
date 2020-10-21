@@ -53,22 +53,22 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
   };
 
   return (
-      <KeyboardAvoidingView
+    <KeyboardAvoidingView
       style={ { flex: 1 } }
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-          <ActivityLoader visible={ loading } />
-          <SafeAreaView>
-              <View style={ styles.containerStyle }>
-                  <View style={ styles.backIconViewStyle }>
-                      <TouchableOpacity onPress={ () => navigation.goBack() }>
-                          <Image source={ images.backArrow } style={ styles.backImage } />
-                      </TouchableOpacity>
-                  </View>
-                  <View style={ styles.writePostViewStyle }>
-                      <Text style={ styles.writePostTextStyle }>Write Post</Text>
-                  </View>
-                  <View style={ styles.doneViewStyle }>
-                      <Text
+      <ActivityLoader visible={ loading } />
+      <SafeAreaView>
+        <View style={ styles.containerStyle }>
+          <View style={ styles.backIconViewStyle }>
+            <TouchableOpacity onPress={ () => navigation.goBack() }>
+              <Image source={ images.backArrow } style={ styles.backImage } />
+            </TouchableOpacity>
+          </View>
+          <View style={ styles.writePostViewStyle }>
+            <Text style={ styles.writePostTextStyle }>Write Post</Text>
+          </View>
+          <View style={ styles.doneViewStyle }>
+            <Text
               style={ styles.doneTextStyle }
               onPress={ () => {
                 if (searchText.trim().length === 0 && selectImage.length === 0) {
@@ -101,25 +101,25 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                     });
                 }
               } }>
-                          Done
-                      </Text>
-                  </View>
-              </View>
-          </SafeAreaView>
-          <View style={ styles.sperateLine } />
-          <View style={ styles.userDetailView }>
-              <Image style={ styles.background } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
-              <View style={ styles.userTxtView }>
-                  <Text style={ styles.userTxt }>{userName}</Text>
-              </View>
+              Done
+            </Text>
           </View>
+        </View>
+      </SafeAreaView>
+      <View style={ styles.sperateLine } />
+      <View style={ styles.userDetailView }>
+        <Image style={ styles.background } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
+        <View style={ styles.userTxtView }>
+          <Text style={ styles.userTxt }>{userName}</Text>
+        </View>
+      </View>
 
-          <Modal
+      <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
         style={{ margin: 0 }}
         backdropOpacity={ 0 }>
-              <TagUserScreen
+        <TagUserScreen
                 backBtnPress={() => setModalVisible(false)}
                 onItemPress={(name) => {
                   if (name) {
@@ -128,10 +128,10 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                   }
                 }}
               />
-          </Modal>
+      </Modal>
 
-          <ScrollView bounces={ false }>
-              <TextInput
+      <ScrollView bounces={ false }>
+        <TextInput
           placeholder="What's going on?"
           value={ searchText }
           placeholderTextColor={ colors.userPostTimeColor }
@@ -152,13 +152,13 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
           style={ styles.textInputField }
           multiline={ true }
         />
-              {selectImage.length > 0 && <FlatList
+        {selectImage.length > 0 && <FlatList
           data={ selectImage }
           horizontal={ true }
           // scrollEnabled={true}
           showsHorizontalScrollIndicator={ false }
           renderItem={ ({ item, index }) => (
-              <SelectedImageList
+            <SelectedImageList
                 data={ item }
                 itemNumber={ index + 1 }
                 totalItemNumber={ selectImage.length }
@@ -173,26 +173,26 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
               />
           ) }
           ItemSeparatorComponent={ () => (
-              <View style={ { width: wp('1%') } } />
+            <View style={ { width: wp('1%') } } />
           ) }
           style={ { paddingTop: 10, marginHorizontal: wp('3%') } }
           keyExtractor={ (item, index) => index.toString() }
         />}
-          </ScrollView>
+      </ScrollView>
 
-          <SafeAreaView style={ styles.bottomSafeAreaStyle }>
-              <View style={ styles.bottomImgView }>
-                  <View style={ styles.onlyMeViewStyle }>
-                      <ImageButton
+      <SafeAreaView style={ styles.bottomSafeAreaStyle }>
+        <View style={ styles.bottomImgView }>
+          <View style={ styles.onlyMeViewStyle }>
+            <ImageButton
               source={ images.lock }
               imageStyle={ { width: 18, height: 21 } }
               onImagePress={ () => {
               } }
             />
-                      <Text style={ styles.onlyMeTextStyle }>Only me</Text>
-                  </View>
-                  <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
-                      <ImageButton
+            <Text style={ styles.onlyMeTextStyle }>Only me</Text>
+          </View>
+          <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
+            <ImageButton
               source={ images.pickImage }
               imageStyle={ { width: 19, height: 19, marginHorizontal: wp('2%') } }
               onImagePress={ () => {
@@ -219,16 +219,16 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                 });
               } }
             />
-                      <ImageButton
+            <ImageButton
               source={ images.tagImage }
               imageStyle={ { width: 22, height: 22, marginLeft: wp('2%') } }
               onImagePress={ () => {
               } }
             />
-                  </View>
-              </View>
-          </SafeAreaView>
-      </KeyboardAvoidingView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -23,68 +23,68 @@ import colors from '../Constants/Colors'
 const Stack = createStackNavigator();
 
 const AuthNavigator = () => (
-    <Stack.Navigator
+  <Stack.Navigator
       screenOptions={ {
         headerTintColor: colors.whiteColor,
         headerTransparent: true,
         headerTitle: false,
         headerBackTitleVisible: false,
       } }>
-        <Stack.Screen
+    <Stack.Screen
         name="WelcomeScreen"
         component={ WelcomeScreen }
         options={ { headerShown: false } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ForgotPasswordScreen"
         component={ ForgotPasswordScreen }
         options={ {} }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ForgotPasswordLinkSentScreen"
         component={ ForgotPasswordLinkSentScreen }
         options={ {} }
       />
-        <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {} } />
-        <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {} } />
-        <Stack.Screen
+    <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {} } />
+    <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {} } />
+    <Stack.Screen
         name="ChooseLocationScreen"
         component={ ChooseLocationScreen }
         options={ {} }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ChooseSportsScreen"
         component={ ChooseSportsScreen }
         options={ {} }
       />
-        <Stack.Screen name="FollowTeams" component={ FollowTeams } options={ {} } />
-        <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
-        <Stack.Screen
+    <Stack.Screen name="FollowTeams" component={ FollowTeams } options={ {} } />
+    <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
+    <Stack.Screen
         name="EmailVerification"
         component={ EmailVerification }
         options={ {} }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="BottomTab"
         component={ BottomTab }
         options={ { headerShown: false } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="TotalTeamsScreen"
         component={ TotalTeamsScreen }
         options={ {} }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="AddBirthdayScreen"
         component={ AddBirthdayScreen }
         options={ {} }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ChooseGenderScreen"
         component={ ChooseGenderScreen }
         options={ {} }
       />
-    </Stack.Navigator>
+  </Stack.Navigator>
 );
 
 export default AuthNavigator;

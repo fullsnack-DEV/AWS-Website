@@ -4,13 +4,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 function TCKeyboardView({ children }) {
   return (
-      <KeyboardAvoidingView
+    <KeyboardAvoidingView
       style={ { flex: 1 } }
       behavior={ Platform.OS === 'ios' ? 'padding' : null }
       keyboardVerticalOffset={ Platform.OS === 'ios' ? 10 : 0 }
       enabled={ Platform.OS === 'ios' }>
-          <ScrollView>{children}</ScrollView>
-      </KeyboardAvoidingView>
+      <ScrollView>{children}</ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
