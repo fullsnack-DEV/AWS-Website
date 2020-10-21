@@ -16,11 +16,10 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
+import images from '../../Constants/ImagePath';
 import { getGroupsUser, getUsers } from '../../api/NewsFeedapi';
-
-const { colors, fonts } = constants;
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
 export default function TagUserScreen({ backBtnPress, onItemPress }) {
   const [searchUser, setSearchUser] = useState('');
@@ -76,7 +75,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
               <View style={ styles.containerStyle }>
                   <View style={ styles.backIconViewStyle }>
                       <TouchableOpacity onPress={backBtnPress}>
-                          <Image source={ PATH.backArrow } style={ styles.backImage } />
+                          <Image source={ images.backArrow } style={ styles.backImage } />
                       </TouchableOpacity>
                   </View>
                   <View style={ styles.writePostViewStyle }>
@@ -95,7 +94,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
           <View style={styles.searchViewStyle}>
               <View style={styles.searchImageViewStyle}>
                   <Image
-                  source={PATH.searchUser}
+                  source={images.searchUser}
                   style={styles.searchImageStyle}
                 />
               </View>

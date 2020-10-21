@@ -5,9 +5,7 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
-
-const { colors } = constants;
+import colors from '../../Constants/Colors'
 
 function ActivityLoader({ visible = false }) {
   if (!visible) return null;

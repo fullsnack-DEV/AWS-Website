@@ -3,10 +3,9 @@ import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
 
-import PATH from '../../Constants/ImagePath';
-import constants from '../../config/constants';
-
-const { colors, fonts } = constants;
+import images from '../../Constants/ImagePath';
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 export default function ChallengerInOutView({
   requestType = 'in',
@@ -15,9 +14,9 @@ export default function ChallengerInOutView({
   return (
 
       <View style={{ flexDirection: 'row', marginLeft: 15, marginTop: 20 }}>
-          <Image source={PATH.requestOut} style={styles.inOutImageView} />
+          <Image source={images.requestOut} style={styles.inOutImageView} />
           <View style={styles.entityView}>
-              <Image source={PATH.teamPlaceholder} style={styles.profileImage} />
+              <Image source={images.teamPlaceholder} style={styles.profileImage} />
 
               <Text style={styles.entityName}>
                   {entityName}

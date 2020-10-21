@@ -22,12 +22,10 @@ import {
 import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 
 import TCEventView from '../../../components/TCEventView';
-
-const { colors } = constants;
+import colors from '../../../Constants/Colors'
 
 export default function ScheduleScreen({ navigation }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -119,7 +117,7 @@ export default function ScheduleScreen({ navigation }) {
       headerRight: () => (
           <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
           </TouchableWithoutFeedback>
       ),
     });

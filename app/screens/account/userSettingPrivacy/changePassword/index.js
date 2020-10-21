@@ -19,11 +19,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import styles from './style';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import constants from '../../../../config/constants';
-import PATH from '../../../../Constants/ImagePath';
+import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
-
-const { colors } = constants;
+import colors from '../../../../Constants/Colors'
 
 export default function ChangePasswordScreen() {
   // For activity indigator
@@ -96,7 +94,7 @@ export default function ChangePasswordScreen() {
             onChangeText={ (text) => setNewPassword(text) }
             value={ newPassword }></TextInput>
               <TouchableWithoutFeedback onPress={ () => hideShowNewPassword() }>
-                  {hideNewPassword ? <Image source={ PATH.showPassword } style={ styles.passwordEyes } /> : <Image source={ PATH.hidePassword } style={ styles.passwordEyes } />}
+                  {hideNewPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
               </TouchableWithoutFeedback>
           </View>
 
@@ -108,7 +106,7 @@ export default function ChangePasswordScreen() {
             onChangeText={ (text) => setConfirmPassword(text) }
             value={ confirmPassword }></TextInput>
               <TouchableWithoutFeedback onPress={ () => hideShowConfirmPassword() }>
-                  {hideConfirmPassword ? <Image source={ PATH.showPassword } style={ styles.passwordEyes } /> : <Image source={ PATH.hidePassword } style={ styles.passwordEyes } />}
+                  {hideConfirmPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
               </TouchableWithoutFeedback>
           </View>
           <TouchableWithoutFeedback onPress={ () => {

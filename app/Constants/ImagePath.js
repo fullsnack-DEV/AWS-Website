@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-const PATH = {
+const images = {
   orangeLayer: require('../assets/images/orange_layer.png'),
   signUpBg1: require('../assets/images/ic_signup_bg_1.png'),
   signUpBg2: require('../assets/images/ic_signup_bg_2.png'),
@@ -13,6 +13,7 @@ const PATH = {
   signUpFb: require('../assets/images/signup_fb.png'),
   signUpGoogle: require('../assets/images/signup_google.png'),
   bgImage: require('../assets/images/ic_bg.png'),
+  searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
   archerySport: require('../assets/images/ic_archery.png'),
@@ -26,6 +27,17 @@ const PATH = {
   checkEditor: require('../assets/images/ic_check_editor.png'),
   uncheckEditor: require('../assets/images/ic_uncheck_editor.png'),
 
+  groupIcon: require('../assets/images/ic_group.png'),
+  club_ph: require('../assets/images/club_profile_placeholder.png'),
+  team_ph: require('../assets/images/team_profile_placeholder.png'),
+  tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
+  tab_search: require('../assets/images/tab_search.png'),
+  tab_home: require('../assets/images/tab_home.png'),
+  tab_notification: require('../assets/images/tab_notification.png'),
+  tab_account: require('../assets/images/tab_account.png'),
+  messageBox_account: require('../assets/images/ic_message_box.png'),
+  nextArrow: require('../assets/images/ic_next_arrow.png'),
+  backArrow: require('../assets/images/ic_back_arrow.png'),
   vertical3Dot: require('../assets/images/ic_dot.png'),
   downArrow: require('../assets/images/ic_down_arrow.png'),
   upArrow: require('../assets/images/ic_up_arrow.png'),
@@ -53,33 +65,20 @@ const PATH = {
   tagImage: require('../assets/images/tag.png'),
   cancelImage: require('../assets/images/cancel.png'),
   videoPlayerHandle: require('../assets/images/oval.png'),
-
-  groupIcon: require('../assets/images/ic_group.png'),
-  club_ph: require('../assets/images/club_profile_placeholder.png'),
-  team_ph: require('../assets/images/team_profile_placeholder.png'),
-  tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
-  tab_search: require('../assets/images/tab_search.png'),
-
-  tab_home: require('../assets/images/tab_home.png'),
   tab_home_selected: require('../assets/images/tab_home_selected.png'),
 
   tab_reservation: require('../assets/images/tab_reservation.png'),
   tab_reservation_selected: require('../assets/images/tab_reservation_selected.png'),
 
-  tab_notification: require('../assets/images/tab_notification.png'),
   tab_notification_selected: require('../assets/images/tab_notification_selected.png'),
 
   tab_message: require('../assets/images/tab_messages.png'),
   tab_message_selected: require('../assets/images/tab_messages_selected.png'),
 
-  tab_account: require('../assets/images/tab_account.png'),
   tab_account_selected: require('../assets/images/tab_account_selected.png'),
 
   tab_account_group: require('../assets/images/tab_account_group.png'),
   tab_account_group_selected: require('../assets/images/tab_account_group_selected.png'),
-
-  messageBox_account: require('../assets/images/ic_message_box.png'),
-  nextArrow: require('../assets/images/ic_next_arrow.png'),
 
   certificateUpload: require('../assets/images/ic_img_upload.png'),
   noImagePH: require('../assets/images/no_image.png'),
@@ -101,8 +100,6 @@ const PATH = {
   attatchmentGrey: require('../assets/images/attachmentGrey.png'),
   likeOrange: require('../assets/images/orangeLike.png'),
 
-  backArrow: require('../assets/images/back_arrow.png'),
-  searchUser: require('../assets/images/searchUser.png'),
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
   mySports: require('../assets/images/My_Sports.png'),
@@ -151,4 +148,4 @@ const PATH = {
   dottedLine: require('../assets/images/dotLine.png'),
 };
 
-export default PATH;
+export default images;

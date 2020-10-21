@@ -4,9 +4,8 @@ import { View, Text } from 'react-native';
 
 import Dash from 'react-native-dash';
 
-import constants from '../../config/constants';
-
-const { colors, fonts } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 export default function TCGameState() {
   return (

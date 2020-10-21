@@ -5,16 +5,12 @@ import {
 
 import firebase from '@react-native-firebase/app';
 
-import constants from '../../../config/constants';
 import TCButton from '../../../components/TCButton';
 import TCTextField from '../../../components/TCTextField';
 import strings from '../../../Constants/String';
 import styles from './style'
-import PATH from '../../../Constants/ImagePath'
-
-const {
-  colors,
-} = constants;
+import images from '../../../Constants/ImagePath'
+import colors from '../../../Constants/Colors'
 
 function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -51,8 +47,8 @@ function ForgotPasswordScreen({ navigation }) {
   return (
 
       <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
           <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
           <Text style={ styles.resetText }>{strings.resetText}</Text>
           <TCTextField

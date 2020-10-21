@@ -23,15 +23,14 @@ import Modal from 'react-native-modal';
 
 import { useIsFocused } from '@react-navigation/native';
 import styles from './style';
-import constants from '../../../../config/constants';
 import { updateUserProfile } from '../../../../api/Accountapi';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import PATH from '../../../../Constants/ImagePath';
+import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
-import * as Utility from '../../../../utility/index';
-
-const { colors, fonts } = constants;
+import * as Utility from '../../../../utils/index';
+import colors from '../../../../Constants/Colors';
+import fonts from '../../../../Constants/Fonts';
 
 export default function PersonalInformationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -213,11 +212,11 @@ export default function PersonalInformationScreen({ navigation, route }) {
               <View style={ styles.checkbox }>
                   {languages[index].isChecked ? (
                       <Image
-                source={ PATH.checkWhiteLanguage }
+                source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
               />
                   ) : (
-                      <Image source={ PATH.uncheckWhite } style={ styles.checkboxImg } />
+                      <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
                   )}
               </View>
               <View style={ styles.shortSeparatorLine }></View>
@@ -294,7 +293,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             } }
             Icon={ () => (
                 <Image
-                  source={ PATH.dropDownArrow }
+                  source={ images.dropDownArrow }
                   style={ styles.miniDownArrow }
                 />
             ) }

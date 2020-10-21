@@ -9,22 +9,20 @@ import {
 } from 'react-native-responsive-screen';
 import { Tooltip } from 'react-native-elements';
 
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
-import * as Utility from '../../../utility/index';
+import images from '../../../Constants/ImagePath';
+import * as Utility from '../../../utils/index';
 import TCButton from '../../../components/TCButton';
 
 import strings from '../../../Constants/String';
 import styles from './style'
-
-const { colors } = constants;
+import colors from '../../../Constants/Colors'
 
 export default function ChooseGenderScreen({ navigation }) {
   const [selected, setSelected] = useState(0);
   return (
       <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
 
           <Text style={ styles.checkEmailText }>{strings.addGenderText}</Text>
           <Text style={ styles.resetText }>{strings.notDisplayGenderText}</Text>
@@ -45,10 +43,10 @@ export default function ChooseGenderScreen({ navigation }) {
             setSelected(0);
           } }>
                       {selected === 0 ? (
-                          <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                          <Image source={ images.radioSelect } style={ styles.radioImage } />
                       ) : (
                           <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                       )}
@@ -61,10 +59,10 @@ export default function ChooseGenderScreen({ navigation }) {
             setSelected(1);
           } }>
                       {selected === 1 ? (
-                          <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                          <Image source={ images.radioSelect } style={ styles.radioImage } />
                       ) : (
                           <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                       )}
@@ -77,10 +75,10 @@ export default function ChooseGenderScreen({ navigation }) {
             setSelected(2);
           } }>
                       {selected === 2 ? (
-                          <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                          <Image source={ images.radioSelect } style={ styles.radioImage } />
                       ) : (
                           <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                       )}

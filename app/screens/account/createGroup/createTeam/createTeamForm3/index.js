@@ -17,11 +17,10 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
 
-import constants from '../../../../../config/constants';
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
-const { colors } = constants;
+import colors from '../../../../../Constants/Colors'
 
 function CreateTeamForm3({ navigation, route }) {
   const [basicFee, setBasicFee] = useState(0.0);
@@ -142,7 +141,7 @@ function CreateTeamForm3({ navigation, route }) {
               } }
               Icon={ () => (
                   <Image
-                    source={ PATH.dropDownArrow }
+                    source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }

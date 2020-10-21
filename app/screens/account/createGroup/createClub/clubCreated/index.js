@@ -3,7 +3,7 @@ import {
   View, Text, Image, TouchableOpacity,
 } from 'react-native';
 
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
 import styles from './style';
@@ -11,11 +11,11 @@ import styles from './style';
 function ClubCreatedScreen({ navigation, route }) {
   return (
       <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
           <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
               <Image
-          source={ PATH.backArrow }
+          source={ images.backArrow }
           style={ {
             marginTop: 45,
             marginLeft: 20,
@@ -26,7 +26,7 @@ function ClubCreatedScreen({ navigation, route }) {
         />
           </TouchableOpacity>
           <View style={ styles.sectionStyle }>
-              <Image source={ PATH.group_ph } style={ styles.groupsImg } />
+              <Image source={ images.group_ph } style={ styles.groupsImg } />
 
               <Text style={ styles.LocationText }>
                   <Text style={ styles.foundText }>

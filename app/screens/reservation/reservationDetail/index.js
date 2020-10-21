@@ -10,11 +10,11 @@ import styles from './style';
 import ReservationNumber from '../../../components/reservations/ReservationNumber';
 import ChallengerInOutView from '../../../components/reservations/ChallengerInOutView';
 import ReservationDetailStatusView from '../../../components/reservations/ReservationDetailStatusView';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 
 export default ReservationDetailScreen = () => (
     <SafeAreaView style={styles.mainContainer}>
-        <Image style={styles.dottedLine} source={PATH.dottedLine} />
+        <Image style={styles.dottedLine} source={images.dottedLine} />
         <ReservationNumber/>
         <ChallengerInOutView/>
         <ReservationDetailStatusView/>

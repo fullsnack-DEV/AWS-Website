@@ -17,7 +17,7 @@ import {
 
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
 import styles from './style';
@@ -79,7 +79,7 @@ function SearchPlayerScreen({ navigation, route }) {
       <View>
           <View style={ styles.listItemContainer }>
               {item.thumbnail === '' && (
-              <Image style={ styles.teamImg } source={ PATH.profilePlaceHolder } />
+              <Image style={ styles.teamImg } source={ images.profilePlaceHolder } />
               )}
               {item.thumbnail !== '' && (
               <Image style={ styles.teamImg } source={ { uri: item.thumbnail } } />
@@ -99,11 +99,11 @@ function SearchPlayerScreen({ navigation, route }) {
               <View style={ styles.radioButtonView }>
                   <TouchableWithoutFeedback onPress={ () => selectPlayer(item) }>
                       {item.isChecked && (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                       )}
                       {!item.isChecked && (
                       <Image
-                  source={ PATH.radioUnselect }
+                  source={ images.radioUnselect }
                   style={ styles.unSelectRadioImage }
                 />
                       )}
@@ -119,7 +119,7 @@ function SearchPlayerScreen({ navigation, route }) {
       <View style={ styles.mainContainer }>
           <ScrollView>
               <View style={ styles.sectionStyle }>
-                  <Image source={ PATH.searchLocation } style={ styles.searchImg } />
+                  <Image source={ images.searchLocation } style={ styles.searchImg } />
                   <TextInput
             style={ styles.textInput }
             placeholder={ strings.searchHereText }

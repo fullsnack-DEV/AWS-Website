@@ -6,10 +6,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../../Constants/ImagePath';
+import colors from '../../Constants/Colors'
 
 function WritePost({ navigation, postDataItem }) {
   let userImage = '';
@@ -19,7 +17,7 @@ function WritePost({ navigation, postDataItem }) {
 
   return (
       <View style={ styles.mainContainer }>
-          <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : PATH.profilePlaceHolder } />
+          <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
 
           <Text
         style={ styles.writePostText }

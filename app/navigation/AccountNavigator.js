@@ -4,8 +4,6 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import constants from '../config/constants';
-
 import AccountScreen from '../screens/account/index';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import GameDetail from '../screens/account/schedule/GameDetail';
@@ -38,7 +36,7 @@ import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy';
 import ChangePasswordScreen from '../screens/account/userSettingPrivacy/changePassword'
 import PersonalInformationScreen from '../screens/account/userSettingPrivacy/personalInformation'
 
-const { colors } = constants;
+import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
 

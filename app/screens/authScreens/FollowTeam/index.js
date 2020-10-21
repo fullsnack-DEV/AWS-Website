@@ -14,12 +14,12 @@ import {
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getuserDetail, createUser } from '../../../api/Authapi';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
 import AuthContext from '../../../auth/context';
-import * as Utility from '../../../utility/index';
+import * as Utility from '../../../utils/index';
 import styles from './style';
 // const {strings, colors, fonts, urls, PATH} = constants;
 
@@ -121,7 +121,7 @@ export default function FollowTeams({ route }) {
               source={ { uri: teams[index].thumbnail } }
             />
               ) : (
-                  <Image style={ styles.teamImg } source={ PATH.team_ph } />
+                  <Image style={ styles.teamImg } source={ images.team_ph } />
               )}
               <View
             style={ {
@@ -155,8 +155,8 @@ export default function FollowTeams({ route }) {
 
   return (
       <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
 
           <Text style={ styles.sportText }>Follow sport teams.</Text>
           <FlatList

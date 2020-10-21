@@ -7,11 +7,11 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
-import PATH from '../../Constants/ImagePath';
-import constants from '../../config/constants';
+import images from '../../Constants/ImagePath';
 import { loaderImage } from '../../Constants/LoaderImages';
 
-const { fonts, colors } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 function MultiPostVideo({ data, itemNumber, totalItemNumber }) {
   const [mute, setMute] = useState(true);
@@ -55,7 +55,7 @@ function MultiPostVideo({ data, itemNumber, totalItemNumber }) {
             } }>
                       <Image
               style={ styles.imageStyle }
-              source={ mute ? PATH.mute : PATH.unmute }
+              source={ mute ? images.mute : images.unmute }
             />
                   </TouchableOpacity>
               </View>
@@ -64,7 +64,7 @@ function MultiPostVideo({ data, itemNumber, totalItemNumber }) {
             onPress={ () => {
               setPlay(!play);
             } }>
-                      <Image style={ styles.playPauseImageStyle } source={ PATH.playPause } />
+                      <Image style={ styles.playPauseImageStyle } source={ images.playPause } />
                   </TouchableOpacity>
               </View>
           </>}

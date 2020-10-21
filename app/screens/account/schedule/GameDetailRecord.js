@@ -17,10 +17,8 @@ import {
 
 import TCGameButton from '../../../components/TCGameButton';
 
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors'
 
 export default function GameDetailRecord({ navigation }) {
   useLayoutEffect(() => {
@@ -28,7 +26,7 @@ export default function GameDetailRecord({ navigation }) {
       headerRight: () => (
           <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
           </TouchableWithoutFeedback>
       ),
     });
@@ -39,7 +37,7 @@ export default function GameDetailRecord({ navigation }) {
           <View style={ styles.headerView }>
               <View style={ styles.leftView }>
                   <View style={ styles.profileShadow }>
-                      <Image source={ PATH.team_ph } style={ styles.profileImg } />
+                      <Image source={ images.team_ph } style={ styles.profileImg } />
                   </View>
                   <Text style={ styles.leftText } numberOfLines={ 2 }>
                       Kishan Makani
@@ -53,7 +51,7 @@ export default function GameDetailRecord({ navigation }) {
                       Kishan Makani
                   </Text>
                   <View style={ styles.profileShadow }>
-                      <Image source={ PATH.team_ph } style={ styles.profileImg } />
+                      <Image source={ images.team_ph } style={ styles.profileImg } />
                   </View>
               </View>
           </View>
@@ -72,7 +70,7 @@ export default function GameDetailRecord({ navigation }) {
                 alignItems: 'center',
               } }>
                   <Image
-                source={ PATH.deleteRecentGoal }
+                source={ images.deleteRecentGoal }
                 style={ styles.playerImage }
               />
                   <Text key={ index }>.{item}</Text>
@@ -80,7 +78,7 @@ export default function GameDetailRecord({ navigation }) {
           ) }
           renderSectionHeader={ ({ section: { title } }) => (
               <View style={ styles.sectionHeader }>
-                  <Image source={ PATH.team_ph } style={ styles.TeamImage } />
+                  <Image source={ images.team_ph } style={ styles.TeamImage } />
                   <Text style={ styles.sectionText }>{title}</Text>
               </View>
           ) }
@@ -124,7 +122,7 @@ export default function GameDetailRecord({ navigation }) {
                 alignItems: 'center',
               } }>
                   <Image
-                source={ PATH.deleteRecentGoal }
+                source={ images.deleteRecentGoal }
                 style={ styles.playerImage }
               />
                   <Text key={ index }>.{item}</Text>
@@ -132,7 +130,7 @@ export default function GameDetailRecord({ navigation }) {
           ) }
           renderSectionHeader={ ({ section: { title } }) => (
               <View style={ styles.sectionHeader }>
-                  <Image source={ PATH.team_ph } style={ styles.TeamImage } />
+                  <Image source={ images.team_ph } style={ styles.TeamImage } />
                   <Text style={ styles.sectionText }>{title}</Text>
               </View>
           ) }
@@ -153,10 +151,10 @@ export default function GameDetailRecord({ navigation }) {
               <View style={ styles.timeView }>
                   <Text style={ styles.timer }>90 : 00 : 00</Text>
                   <View style={ styles.curruentTimeView }>
-                      <Image source={ PATH.curruentTime } style={ styles.curruentTimeImg } />
+                      <Image source={ images.curruentTime } style={ styles.curruentTimeImg } />
                   </View>
                   <Text style={ styles.startTime }>Game start at now</Text>
-                  <Image source={ PATH.dropDownArrow } style={ styles.downArrow } />
+                  <Image source={ images.dropDownArrow } style={ styles.downArrow } />
                   <View style={ styles.separatorLine }></View>
               </View>
 
@@ -165,7 +163,7 @@ export default function GameDetailRecord({ navigation }) {
             title="Goal"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
-            imageName={ PATH.gameGoal }
+            imageName={ images.gameGoal }
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
@@ -173,7 +171,7 @@ export default function GameDetailRecord({ navigation }) {
             title="Own Goal"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
-            imageName={ PATH.gameOwnGoal }
+            imageName={ images.gameOwnGoal }
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
@@ -181,7 +179,7 @@ export default function GameDetailRecord({ navigation }) {
             title="YC"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
-            imageName={ PATH.gameYC }
+            imageName={ images.gameYC }
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
@@ -189,7 +187,7 @@ export default function GameDetailRecord({ navigation }) {
             title="RC"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
-            imageName={ PATH.gameRC }
+            imageName={ images.gameRC }
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
@@ -201,7 +199,7 @@ export default function GameDetailRecord({ navigation }) {
             title="Game Start"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.themeColor }
-            imageName={ PATH.gameStart }
+            imageName={ images.gameStart }
             textColor={ colors.themeColor }
             imageSize={ 15 }
           />
@@ -209,7 +207,7 @@ export default function GameDetailRecord({ navigation }) {
             title="Records"
             onPress={ () => navigation.navigate('GameRecordList') }
             buttonColor={ colors.darkGrayColor }
-            imageName={ PATH.gameRecord }
+            imageName={ images.gameRecord }
             textColor={ colors.darkGrayColor }
             imageSize={ 25 }
           />
@@ -217,7 +215,7 @@ export default function GameDetailRecord({ navigation }) {
             title="Simple"
             onPress={ () => alert('Game Details Presses..') }
             buttonColor={ colors.gameDetailColor }
-            imageName={ PATH.gameDetail }
+            imageName={ images.gameDetail }
             textColor={ colors.gameDetailColor }
             imageSize={ 25 }
             // extraImageStyle={{tintColor: colors.whiteColor}}

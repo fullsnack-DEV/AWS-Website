@@ -13,10 +13,9 @@ import {
 } from 'react-native-responsive-screen';
 import Dash from 'react-native-dash';
 
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
-
-const { colors, fonts } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
+import images from '../../Constants/ImagePath';
 
 export default function TCGameScoreLeft({ editor }) {
   return (
@@ -33,7 +32,7 @@ export default function TCGameScoreLeft({ editor }) {
                   <View style={ styles.leftView }>
                       <View>
                           <Image
-                source={ PATH.profilePlaceHolder }
+                source={ images.profilePlaceHolder }
                 style={ styles.leftProfileImg }
               />
                       </View>
@@ -42,7 +41,7 @@ export default function TCGameScoreLeft({ editor }) {
                       </Text>
                       <View style={ styles.gameRecordButton }>
                           <Image
-                source={ PATH.gameOwnGoal }
+                source={ images.gameOwnGoal }
                 style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
               />
                       </View>

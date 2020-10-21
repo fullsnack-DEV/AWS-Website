@@ -18,11 +18,7 @@ import AddBirthdayScreen from '../screens/authScreens/addYourBirthday';
 import ChooseGenderScreen from '../screens/authScreens/chooseGender';
 
 import BottomTab from '../components/BottomTab';
-import constants from '../config/constants';
-
-const {
-  colors,
-} = constants;
+import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
 

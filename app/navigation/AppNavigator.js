@@ -6,16 +6,12 @@ import HomeScreen from '../screens/home/HomeScreen';
 
 import AccountNavigator from './AccountNavigator';
 import NewsFeedNavigator from './NewsFeedNavigator';
-import * as Utility from '../utility/index';
+import * as Utility from '../utils/index';
 
-import constants from '../config/constants';
-import PATH from '../Constants/ImagePath';
+import colors from '../Constants/Colors'
+import images from '../Constants/ImagePath'
 
 import ReservationNavigator from './ReservationNavigator';
-
-const {
-  colors,
-} = constants;
 
 const Tab = createBottomTabNavigator();
 
@@ -96,7 +92,7 @@ function AppNavigator() {
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
               <Image
-              source={ focused ? PATH.tab_home_selected : PATH.tab_home }
+              source={ focused ? images.tab_home_selected : images.tab_home }
               style={ styles.tabImg }
             />
           ),
@@ -110,7 +106,7 @@ function AppNavigator() {
           tabBarIcon: ({ focused }) => (
               <Image
               source={
-                focused ? PATH.tab_reservation_selected : PATH.tab_reservation
+                focused ? images.tab_reservation_selected : images.tab_reservation
               }
               style={ styles.tabImg }
             />
@@ -124,7 +120,7 @@ function AppNavigator() {
           tabBarIcon: ({ focused }) => (
               <Image
               source={
-                focused ? PATH.tab_notification_selected : PATH.tab_notification
+                focused ? images.tab_notification_selected : images.tab_notification
               }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
@@ -137,7 +133,7 @@ function AppNavigator() {
         options={ {
           tabBarIcon: ({ focused }) => (
               <Image
-              source={ focused ? PATH.tab_message_selected : PATH.tab_message }
+              source={ focused ? images.tab_message_selected : images.tab_message }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
           ),
@@ -154,8 +150,8 @@ function AppNavigator() {
                 <Image
                 source={
                   focused
-                    ? PATH.tab_account_group_selected
-                    : PATH.tab_account_group
+                    ? images.tab_account_group_selected
+                    : images.tab_account_group
                 }
                 style={ focused ? styles.selectedEntity : styles.tabEntity }
               />
@@ -171,7 +167,7 @@ function AppNavigator() {
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
                 <Image
-                source={ focused ? PATH.tab_account_selected : PATH.tab_account }
+                source={ focused ? images.tab_account_selected : images.tab_account }
                 style={ styles.tabImg }
               />
             ),
@@ -188,8 +184,8 @@ function AppNavigator() {
                 <Image
                 source={
                   focused
-                    ? PATH.tab_account_group_selected
-                    : PATH.tab_account_group
+                    ? images.tab_account_group_selected
+                    : images.tab_account_group
                 }
                 style={ styles.tabEntity }
               />

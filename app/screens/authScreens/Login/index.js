@@ -23,9 +23,9 @@ import GoogleButton from '../../../components/GoogleButton';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import styles from './style';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import * as Utility from '../../../utility/index';
+import * as Utility from '../../../utils/index';
 import colors from '../../../Constants/Colors';
 
 import { getuserDetail } from '../../../api/Authapi';
@@ -220,8 +220,8 @@ function LoginScreen({ navigation }) {
       <View style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
           {/* <Loader visible={getUserData.loading} /> */}
-          <Image style={styles.background} source={PATH.orangeLayer} />
-          <Image style={styles.background} source={PATH.bgImage} />
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.bgImage} />
 
           <Text style={styles.loginText}>{strings.loginText}</Text>
           <FacebookButton onPress={() => onFacebookButtonPress()} />
@@ -248,9 +248,9 @@ function LoginScreen({ navigation }) {
         />
               <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
                   {hidePassword ? (
-                      <Image source={PATH.showPassword} style={styles.passwordEyes} />
+                      <Image source={images.showPassword} style={styles.passwordEyes} />
                   ) : (
-                      <Image source={PATH.hidePassword} style={styles.passwordEyes} />
+                      <Image source={images.hidePassword} style={styles.passwordEyes} />
                   )}
               </TouchableWithoutFeedback>
           </View>

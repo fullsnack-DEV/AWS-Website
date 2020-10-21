@@ -19,11 +19,9 @@ import { useIsFocused } from '@react-navigation/native';
 
 import styles from './style';
 
-import constants from '../../../../../config/constants';
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
-
-const { colors } = constants;
+import colors from '../../../../../Constants/Colors';
 
 function CreateClubForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -162,7 +160,7 @@ function CreateClubForm1({ navigation, route }) {
             } }
             value={ sports }
             Icon={ () => (
-                <Image source={ PATH.dropDownArrow } style={ styles.downArrow } />
+                <Image source={ images.dropDownArrow } style={ styles.downArrow } />
             ) }
           />
               </View>
@@ -234,7 +232,7 @@ function CreateClubForm1({ navigation, route }) {
             } }
             value={ gender }
             Icon={ () => (
-                <Image source={ PATH.dropDownArrow } style={ styles.downArrow } />
+                <Image source={ images.dropDownArrow } style={ styles.downArrow } />
             ) }
           />
               </View>
@@ -302,7 +300,7 @@ function CreateClubForm1({ navigation, route }) {
               value={ minAge }
               Icon={ () => (
                   <Image
-                    source={ PATH.dropDownArrow }
+                    source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }
@@ -355,7 +353,7 @@ function CreateClubForm1({ navigation, route }) {
               value={ maxAge }
               Icon={ () => (
                   <Image
-                    source={ PATH.dropDownArrow }
+                    source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }

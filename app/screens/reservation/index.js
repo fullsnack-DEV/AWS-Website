@@ -8,15 +8,13 @@ import {
 } from 'react-native';
 
 import styles from './style';
-import constants from '../../config/constants';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { getReservationList } from '../../api/Reservationapi';
-import * as Utility from '../../utility/index';
+import * as Utility from '../../utils/index';
 
 import MatchReservation from '../../components/reservations/MatchReservation';
-
-const { colors } = constants;
+import colors from '../../Constants/Colors'
 
 export default function ReservationScreen({ navigation }) {
   const [loading, setloading] = useState(true);

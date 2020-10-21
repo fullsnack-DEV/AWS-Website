@@ -6,11 +6,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
+import images from '../../Constants/ImagePath';
 import { getPostDetails } from '../../api/NewsFeedapi';
 
-const { colors } = constants;
+import colors from '../../Constants/Colors'
 
 export default function FeedsScreen({ navigation }) {
   const [postData, setPostData] = useState([]);
@@ -45,7 +44,7 @@ export default function FeedsScreen({ navigation }) {
       headerRight: () => (
           <TouchableWithoutFeedback
           onPress={() => navigation.navigate('AccountScreen')}>
-              <Image source={PATH.vertical3Dot} style={styles.headerRightImg} />
+              <Image source={images.vertical3Dot} style={styles.headerRightImg} />
           </TouchableWithoutFeedback>
       ),
     });

@@ -4,14 +4,10 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import constants from '../config/constants';
-
 import ReservationScreen from '../screens/reservation';
 import ReservationDetailScreen from '../screens/reservation/reservationDetail'
 
-const {
-  colors,
-} = constants;
+import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
 

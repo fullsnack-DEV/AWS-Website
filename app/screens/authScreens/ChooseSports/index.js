@@ -14,13 +14,13 @@ import {
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { getSportsList, createUser, getuserDetail } from '../../../api/Authapi';
 
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import TCButton from '../../../components/TCButton';
 import Separator from '../../../components/Separator';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import * as Utility from '../../../utility/index';
+import * as Utility from '../../../utils/index';
 import styles from './style';
 
 function ChooseSportsScreen({ navigation, route }) {
@@ -119,27 +119,27 @@ function ChooseSportsScreen({ navigation, route }) {
           isIconCheckedOrNot({ item, index });
         } }>
           {item.sport_name === 'Soccer' && (
-          <Image source={ PATH.footballSport } style={ styles.sportImg } />
+          <Image source={ images.footballSport } style={ styles.sportImg } />
           )}
           {item.sport_name === 'Tennis' && (
-          <Image source={ PATH.bandySport } style={ styles.sportImg } />
+          <Image source={ images.bandySport } style={ styles.sportImg } />
           )}
           {item.sport_name === 'Football' && (
-          <Image source={ PATH.footballSport } style={ styles.sportImg } />
+          <Image source={ images.footballSport } style={ styles.sportImg } />
           )}
           {item.sport_name === 'Baseball' && (
-          <Image source={ PATH.baseballSport } style={ styles.sportImg } />
+          <Image source={ images.baseballSport } style={ styles.sportImg } />
           )}
           {item.sport_name === 'Volleyball' && (
-          <Image source={ PATH.archerySport } style={ styles.sportImg } />
+          <Image source={ images.archerySport } style={ styles.sportImg } />
           )}
 
           <Text style={ styles.sportList }>{item.sport_name}</Text>
           <View style={ styles.checkbox }>
               {sports[index].isChecked ? (
-                  <Image source={ PATH.checkWhite } style={ styles.checkboxImg } />
+                  <Image source={ images.checkWhite } style={ styles.checkboxImg } />
               ) : (
-                  <Image source={ PATH.uncheckWhite } style={ styles.checkboxImg } />
+                  <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
               )}
           </View>
           <Separator />
@@ -151,8 +151,8 @@ function ChooseSportsScreen({ navigation, route }) {
           <View style={ styles.mainContainer }>
               <ActivityLoader visible={ loading } />
               {/* <Loader visible={getSportsList.loading} /> */}
-              <Image style={ styles.background } source={ PATH.orangeLayer } />
-              <Image style={ styles.background } source={ PATH.bgImage } />
+              <Image style={ styles.background } source={ images.orangeLayer } />
+              <Image style={ styles.background } source={ images.bgImage } />
 
               <Text style={ styles.sportText }>{strings.sportText}</Text>
               {/* <ActivityIndicator animating={loading} size="large" /> */}

@@ -8,11 +8,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import colors from '../../../Constants/Colors'
-import constants from '../../../config/constants';
+import fonts from '../../../Constants/Fonts'
 
-const {
-  fonts,
-} = constants;
 const styles = StyleSheet.create({
   background: {
     height: '100%',

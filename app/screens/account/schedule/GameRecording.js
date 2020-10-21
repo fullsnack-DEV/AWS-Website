@@ -15,10 +15,8 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import TCGameButton from '../../../components/TCGameButton';
 
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors'
 
 export default function GameRecording({ navigation }) {
   useLayoutEffect(() => {
@@ -26,7 +24,7 @@ export default function GameRecording({ navigation }) {
       headerRight: () => (
           <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
           </TouchableWithoutFeedback>
       ),
     });
@@ -37,7 +35,7 @@ export default function GameRecording({ navigation }) {
           <View style={ styles.headerView }>
               <View style={ styles.leftView }>
                   <View style={ styles.profileShadow }>
-                      <Image source={ PATH.team_ph } style={ styles.profileImg } />
+                      <Image source={ images.team_ph } style={ styles.profileImg } />
                   </View>
                   <Text style={ styles.leftText } numberOfLines={ 2 }>
                       Kishan Makani
@@ -51,7 +49,7 @@ export default function GameRecording({ navigation }) {
                       Kishan Makani
                   </Text>
                   <View style={ styles.profileShadow }>
-                      <Image source={ PATH.team_ph } style={ styles.profileImg } />
+                      <Image source={ images.team_ph } style={ styles.profileImg } />
                   </View>
               </View>
           </View>
@@ -59,10 +57,10 @@ export default function GameRecording({ navigation }) {
           <View style={ styles.timeView }>
               <Text style={ styles.timer }>90 : 00 : 00</Text>
               <View style={ styles.curruentTimeView }>
-                  <Image source={ PATH.curruentTime } style={ styles.curruentTimeImg } />
+                  <Image source={ images.curruentTime } style={ styles.curruentTimeImg } />
               </View>
               <Text style={ styles.startTime }>Game start at now</Text>
-              <Image source={ PATH.dropDownArrow } style={ styles.downArrow } />
+              <Image source={ images.dropDownArrow } style={ styles.downArrow } />
               <View style={ styles.separatorLine }></View>
           </View>
 
@@ -81,9 +79,9 @@ export default function GameRecording({ navigation }) {
               <LinearGradient
           colors={ [colors.yellowColor, colors.themeColor] }
           style={ styles.plusButton }>
-                  <Image source={ PATH.gamePlus } style={ styles.gamePlus } />
+                  <Image source={ images.gamePlus } style={ styles.gamePlus } />
               </LinearGradient>
-              <Image source={ PATH.deleteRecentGoal } style={ styles.gameMinus } />
+              <Image source={ images.deleteRecentGoal } style={ styles.gameMinus } />
           </View>
 
           <View style={ styles.bottomView }>
@@ -93,7 +91,7 @@ export default function GameRecording({ navigation }) {
             title="Start"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.themeColor }
-            imageName={ PATH.gameStart }
+            imageName={ images.gameStart }
             textColor={ colors.themeColor }
             imageSize={ 15 }
           />
@@ -101,7 +99,7 @@ export default function GameRecording({ navigation }) {
             title="Records"
             onPress={ () => navigation.navigate('GameRecordList') }
             buttonColor={ colors.darkGrayColor }
-            imageName={ PATH.gameRecord }
+            imageName={ images.gameRecord }
             textColor={ colors.darkGrayColor }
             imageSize={ 25 }
           />
@@ -109,7 +107,7 @@ export default function GameRecording({ navigation }) {
             title="Details"
             onPress={ () => navigation.navigate('GameDetailRecord') }
             buttonColor={ colors.gameDetailColor }
-            imageName={ PATH.gameDetail }
+            imageName={ images.gameDetail }
             textColor={ colors.gameDetailColor }
             imageSize={ 25 }
             // extraImageStyle={{tintColor: colors.whiteColor}}

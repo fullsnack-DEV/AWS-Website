@@ -5,10 +5,9 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient';
 
-import constants from '../../config/constants';
 import strings from '../../Constants/String';
-
-const { colors, fonts } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 export default function ReservationDetailStatusView({
 

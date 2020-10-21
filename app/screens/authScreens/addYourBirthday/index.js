@@ -10,16 +10,13 @@ import {
 import { Tooltip } from 'react-native-elements';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
-import constants from '../../../config/constants';
+import colors from '../../../Constants/Colors';
+import images from '../../../Constants/ImagePath';
 import TCButton from '../../../components/TCButton';
-import * as Utility from '../../../utility/index';
+import * as Utility from '../../../utils/index';
 
 import strings from '../../../Constants/String';
 import styles from './style'
-
-const {
-  colors, PATH,
-} = constants;
 
 export default function AddBirthdayScreen({ navigation }) {
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -51,8 +48,8 @@ export default function AddBirthdayScreen({ navigation }) {
 
   return (
       <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
 
           <Text style={ styles.checkEmailText }>{strings.addBirthdayText}</Text>
           <Text style={ styles.resetText }>{strings.notDisplayText}</Text>

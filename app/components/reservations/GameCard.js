@@ -5,12 +5,9 @@ import {
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
-
-const {
-  colors, fonts,
-} = constants;
+import images from '../../Constants/ImagePath';
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 export default function GameCard({ data, onPress }) {
   const months = [
@@ -78,7 +75,7 @@ export default function GameCard({ data, onPress }) {
                   />
                               ) : (
                                   <Image
-                    source={PATH.teamPlaceholder}
+                    source={images.teamPlaceholder}
                     style={styles.profileImage}
                   />
                               )}
@@ -95,7 +92,7 @@ export default function GameCard({ data, onPress }) {
                   />
                               ) : (
                                   <Image
-                    source={PATH.teamPlaceholder}
+                    source={images.teamPlaceholder}
                     style={styles.profileImage}
                   />
                               )}
@@ -119,7 +116,7 @@ export default function GameCard({ data, onPress }) {
                   />
                               ) : (
                                   <Image
-                    source={PATH.teamPlaceholder}
+                    source={images.teamPlaceholder}
                     style={styles.profileImage}
                   />
                               )}
@@ -136,7 +133,7 @@ export default function GameCard({ data, onPress }) {
                   />
                               ) : (
                                   <Image
-                    source={PATH.teamPlaceholder}
+                    source={images.teamPlaceholder}
                     style={styles.profileImage}
                   />
                               )}

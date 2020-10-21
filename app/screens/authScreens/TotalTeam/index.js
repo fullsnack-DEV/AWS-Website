@@ -12,7 +12,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import TCButton from '../../../components/TCButton';
 import styles from './style';
@@ -20,11 +20,11 @@ import styles from './style';
 function TotalTeamsScreen({ navigation, route }) {
   return (
       <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
 
           <View style={ styles.sectionStyle }>
-              <Image source={ PATH.groupIcon } style={ styles.groupsImg } />
+              <Image source={ images.groupIcon } style={ styles.groupsImg } />
               <Text style={ styles.LocationText }>
                   <Text style={ styles.foundText }> We found </Text>
                   <Text style={ styles.LocationText }>
