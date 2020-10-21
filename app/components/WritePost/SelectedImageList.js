@@ -6,9 +6,10 @@ import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
 
-const { fonts, colors, PATH } = constants;
+import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors'
+import images from '../../Constants/ImagePath'
 
 function SelectedImageList({
   data, onItemPress, itemNumber, totalItemNumber,
@@ -21,7 +22,7 @@ function SelectedImageList({
         resizeMode={ FastImage.resizeMode.cover }
       />
           <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
-              <Image source={ PATH.cancelImage } style={ styles.cancelImageStyle } />
+              <Image source={ images.cancelImage } style={ styles.cancelImageStyle } />
           </TouchableOpacity>
           <View style={ styles.lengthViewStyle }>
               <Text style={ styles.lengthTextStyle }>

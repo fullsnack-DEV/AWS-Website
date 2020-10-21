@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import styles from './style';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 
 function EmailVerification({ navigation, route }) {
   const verifyUserEmail = () => {
@@ -34,8 +34,8 @@ function EmailVerification({ navigation, route }) {
 
   return (
       <View style={styles.mainContainer}>
-          <Image style={styles.background} source={PATH.orangeLayer} />
-          <Image style={styles.background} source={PATH.bgImage} />
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.bgImage} />
           <View style={{ marginTop: '80%', alignSelf: 'center', width: '80%' }}>
               <Text style={{ fontSize: 17, color: 'white' }}>
                   We have sent you have a verification link to

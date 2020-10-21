@@ -4,10 +4,9 @@ import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
 import { loaderImage } from '../../Constants/LoaderImages';
-
-const { fonts, colors } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 function SingleImage({ data }) {
   const uploadImageURL = data && typeof data.thumbnail === 'string' && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;

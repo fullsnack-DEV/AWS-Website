@@ -7,11 +7,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import constants from '../../../config/constants';
-
-const {
-  colors, fonts,
-} = constants;
+import fonts from '../../../Constants/Fonts'
+import colors from '../../../Constants/Colors'
 
 const styles = StyleSheet.create({
   clubNameText: {

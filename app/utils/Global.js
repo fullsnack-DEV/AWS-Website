@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from '@react-native-firebase/app';
 import { token_details } from './constant';
-import * as Utility from '../utility/index';
+import * as Utility from './index';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
   let apiHeaders = {

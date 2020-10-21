@@ -10,7 +10,7 @@ import {
 
 import styles from './style';
 
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 
 export default function UserSettingPrivacyScreen({ navigation }) {
   const userSettingMenu = [
@@ -36,7 +36,7 @@ export default function UserSettingPrivacyScreen({ navigation }) {
         } }>
           <View style={ { flexDirection: 'row' } }>
               <Text style={ styles.listItems }>{item.key}</Text>
-              <Image source={ PATH.nextArrow } style={ styles.nextArrow } />
+              <Image source={ images.nextArrow } style={ styles.nextArrow } />
           </View>
       </TouchableWithoutFeedback>
   );

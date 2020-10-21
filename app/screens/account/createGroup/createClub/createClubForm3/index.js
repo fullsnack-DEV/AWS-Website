@@ -17,14 +17,12 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
 
-import * as Utility from '../../../../../utility/index';
+import * as Utility from '../../../../../utils/index';
 
 import { postGroups } from '../../../../../api/Accountapi';
-import constants from '../../../../../config/constants';
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
-
-const { colors } = constants;
+import colors from '../../../../../Constants/Colors';
 
 function CreateClubForm3({ navigation, route }) {
   const [membershipFee, setMembershipFee] = useState(0);
@@ -157,7 +155,7 @@ function CreateClubForm3({ navigation, route }) {
               } }
               Icon={ () => (
                   <Image
-                    source={ PATH.dropDownArrow }
+                    source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }

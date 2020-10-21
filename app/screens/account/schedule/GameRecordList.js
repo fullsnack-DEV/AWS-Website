@@ -22,10 +22,8 @@ import TCGameScoreLeft from '../../../components/gameRecordList/TCGameScoreLeft'
 import TCGameScoreRight from '../../../components/gameRecordList/TCGameScoreRight';
 import TCGameState from '../../../components/gameRecordList/TCGameState';
 
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors'
 
 export default function GameRecordList({ navigation }) {
   const [editorChecked, setEditorChecked] = useState(false);
@@ -34,7 +32,7 @@ export default function GameRecordList({ navigation }) {
       headerRight: () => (
           <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
           </TouchableWithoutFeedback>
       ),
     });
@@ -67,9 +65,9 @@ export default function GameRecordList({ navigation }) {
               setEditorChecked(!editorChecked);
             } }>
                       {editorChecked === true ? (
-                          <Image source={ PATH.checkEditor } style={ styles.checkboxImg } />
+                          <Image source={ images.checkEditor } style={ styles.checkboxImg } />
                       ) : (
-                          <Image source={ PATH.uncheckEditor } style={ styles.checkboxImg } />
+                          <Image source={ images.uncheckEditor } style={ styles.checkboxImg } />
                       )}
                   </TouchableWithoutFeedback>
               </View>
@@ -78,7 +76,7 @@ export default function GameRecordList({ navigation }) {
           <View style={ styles.headerView }>
               <View style={ styles.leftView }>
                   <View style={ styles.profileShadow }>
-                      <Image source={ PATH.team_ph } style={ styles.profileImg } />
+                      <Image source={ images.team_ph } style={ styles.profileImg } />
                   </View>
                   <Text style={ styles.leftText } numberOfLines={ 2 }>
                       Kishan Makani
@@ -103,7 +101,7 @@ export default function GameRecordList({ navigation }) {
                       Kishan Makani
                   </Text>
                   <View style={ styles.profileShadow }>
-                      <Image source={ PATH.team_ph } style={ styles.profileImg } />
+                      <Image source={ images.team_ph } style={ styles.profileImg } />
                   </View>
               </View>
           </View>

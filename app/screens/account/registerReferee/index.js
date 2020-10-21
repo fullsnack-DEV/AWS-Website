@@ -19,11 +19,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
 import styles from './style';
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-
-const { colors, fonts } = constants;
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 
 function RegisterReferee({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -73,7 +72,7 @@ function RegisterReferee({ navigation }) {
           <View style={ styles.addCertificateView }>
               <TouchableOpacity>
                   <Image style={ styles.certificateImg } />
-                  <Image source={ PATH.certificateUpload } style={ styles.chooseImage } />
+                  <Image source={ images.certificateUpload } style={ styles.chooseImage } />
               </TouchableOpacity>
               <TextInput
             placeholder={ strings.titleOrDescriptionText }
@@ -110,11 +109,11 @@ function RegisterReferee({ navigation }) {
               <View style={ styles.checkbox }>
                   {languages[index].isChecked ? (
                       <Image
-                source={ PATH.checkWhiteLanguage }
+                source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
               />
                   ) : (
-                      <Image source={ PATH.uncheckWhite } style={ styles.checkboxImg } />
+                      <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
                   )}
               </View>
               <View style={ styles.shortSeparatorLine }></View>
@@ -156,7 +155,7 @@ function RegisterReferee({ navigation }) {
         useNativeAndroidPickerStyle={ false }
         style={ { ...styles } }
         value={ sports }
-        Icon={ () => <Image source={ PATH.dropDownArrow } style={ styles.downArrow } /> }
+        Icon={ () => <Image source={ images.dropDownArrow } style={ styles.downArrow } /> }
       />
 
           <View

@@ -6,9 +6,9 @@ import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
-
-const { fonts, colors, PATH } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
+import images from '../../Constants/ImagePath'
 
 function EditSelectedImages({
   data, onItemPress, itemNumber, totalItemNumber,
@@ -22,7 +22,7 @@ function EditSelectedImages({
         resizeMode={ FastImage.resizeMode.cover }
       />
           <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
-              <Image source={ PATH.cancelImage } style={ styles.cancelImageStyle } />
+              <Image source={ images.cancelImage } style={ styles.cancelImageStyle } />
           </TouchableOpacity>
           <View style={ styles.lengthViewStyle }>
               <Text style={ styles.lengthTextStyle }>

@@ -10,10 +10,8 @@ import Geolocation from '@react-native-community/geolocation';
 
 import Video from 'react-native-video';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../../Constants/ImagePath';
+import colors from '../../Constants/Colors'
 
 export default function NewsFeedVideoPlayer({ navigation, route }) {
   const [currentTime, setCurrentTime] = useState(0);
@@ -30,7 +28,7 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
     navigation.setOptions({
       headerRight: () => (
           <TouchableWithoutFeedback onPress={ () => alert('This is a button!') }>
-              <Image source={ PATH.vertical3Dot } style={ styles.headerRightImg } />
+              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
           </TouchableWithoutFeedback>
       ),
     });

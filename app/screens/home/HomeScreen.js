@@ -9,10 +9,8 @@ import {
 } from 'react-native-responsive-screen';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../../Constants/ImagePath';
+import colors from '../../Constants/Colors'
 
 export default function HomeScreen() {
   const [token, setToken] = useState('');
@@ -39,8 +37,8 @@ export default function HomeScreen() {
       <>
           <View style={ styles.mainContainer }>
               {/* <Loader visible={true} /> */}
-              <Image style={ styles.background } source={ PATH.orangeLayer } />
-              <Image style={ styles.background } source={ PATH.signUpBg1 } />
+              <Image style={ styles.background } source={ images.orangeLayer } />
+              <Image style={ styles.background } source={ images.signUpBg1 } />
               <Text>{token}</Text>
           </View>
       </>

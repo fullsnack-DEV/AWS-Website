@@ -12,7 +12,7 @@ import {
 // import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
 
@@ -85,12 +85,12 @@ function ChooseLocationScreen({ navigation }) {
   return (
       <View style={ styles.mainContainer }>
           {/* <Loader visible={getTeamListing.loading} /> */}
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.bgImage } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.bgImage } />
           <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
           <View style={ styles.sectionStyle }>
-              <Image source={ PATH.searchLocation } style={ styles.searchImg } />
+              <Image source={ images.searchLocation } style={ styles.searchImg } />
               <TextInput
           style={ styles.textInput }
           placeholder={ strings.locationPlaceholderText }

@@ -6,11 +6,11 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import PATH from '../../Constants/ImagePath';
-import constants from '../../config/constants';
+import images from '../../Constants/ImagePath';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 
-const { colors, fonts } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 function WriteCommentItems({ data }) {
   let commentTime = '';
@@ -33,7 +33,7 @@ function WriteCommentItems({ data }) {
       <View style={ styles.mainContainer }>
           <Image
         style={ styles.background }
-        source={ !userProfile ? PATH.profilePlaceHolder : { uri: userProfile } }
+        source={ !userProfile ? images.profilePlaceHolder : { uri: userProfile } }
         resizeMode={ 'cover' }
       />
           <View style={ styles.userNameView }>

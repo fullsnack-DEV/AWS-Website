@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import constants from '../../config/constants';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { createReaction, getPostDetails } from '../../api/NewsFeedapi';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
-
-const { colors } = constants;
+import colors from '../../Constants/Colors'
 
 export default function NewsFeedList({ navigation, postData, userID }) {
   const [loading, setloading] = useState(false);

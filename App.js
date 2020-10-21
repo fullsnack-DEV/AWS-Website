@@ -8,7 +8,7 @@ import AuthContext from './app/auth/context';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
-import * as Utility from './app/utility/index';
+import * as Utility from './app/utils/index';
 
 export default function App() {
   const [user, setUser] = useState(null);

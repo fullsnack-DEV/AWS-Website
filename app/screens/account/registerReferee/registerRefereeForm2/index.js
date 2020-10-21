@@ -13,14 +13,12 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
-import constants from '../../../../config/constants';
-import PATH from '../../../../Constants/ImagePath';
+import images from '../../../../Constants/ImagePath';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import strings from '../../../../Constants/String';
 
 import { patchRegisterRefereeDetails } from '../../../../api/Accountapi';
-
-const { colors } = constants;
+import colors from '../../../../Constants/Colors'
 
 export default function RegisterRefereeForm2({ navigation, route }) {
   // For activity indigator
@@ -85,10 +83,10 @@ export default function RegisterRefereeForm2({ navigation, route }) {
               <View style={ styles.radioButtonView }>
                   <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
                       {selected === 0 ? (
-                          <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                          <Image source={ images.radioSelect } style={ styles.radioImage } />
                       ) : (
                           <Image
-                source={ PATH.radioUnselect }
+                source={ images.radioUnselect }
                 style={ styles.unSelectRadioImage }
               />
                       )}
@@ -98,10 +96,10 @@ export default function RegisterRefereeForm2({ navigation, route }) {
               <View style={ styles.radioButtonView }>
                   <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
                       {selected === 1 ? (
-                          <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                          <Image source={ images.radioSelect } style={ styles.radioImage } />
                       ) : (
                           <Image
-                source={ PATH.radioUnselect }
+                source={ images.radioUnselect }
                 style={ styles.unSelectRadioImage }
               />
                       )}
@@ -111,10 +109,10 @@ export default function RegisterRefereeForm2({ navigation, route }) {
               <View style={ styles.radioButtonView }>
                   <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
                       {selected === 2 ? (
-                          <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                          <Image source={ images.radioSelect } style={ styles.radioImage } />
                       ) : (
                           <Image
-                source={ PATH.radioUnselect }
+                source={ images.radioUnselect }
                 style={ styles.unSelectRadioImage }
               />
                       )}

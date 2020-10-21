@@ -19,14 +19,15 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
-import constants from '../../config/constants';
 import ImageButton from '../../components/WritePost/ImageButton';
 import { updatePost, getPostDetails } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import TagUserScreen from './TagUserScreen';
 
-const { PATH, colors, fonts } = constants;
+import fonts from '../../Constants/Fonts';
+import colors from '../../Constants/Colors'
+import images from '../../Constants/ImagePath'
 
 export default function EditPostScreen({
   navigation,
@@ -67,7 +68,7 @@ export default function EditPostScreen({
               <View style={styles.containerStyle}>
                   <View style={styles.backIconViewStyle}>
                       <TouchableOpacity onPress={() => navigation.goBack()}>
-                          <Image source={PATH.backArrow} style={styles.backImage} />
+                          <Image source={images.backArrow} style={styles.backImage} />
                       </TouchableOpacity>
                   </View>
                   <View style={styles.writePostViewStyle}>
@@ -122,7 +123,7 @@ export default function EditPostScreen({
           <View style={styles.userDetailView}>
               <Image
           style={styles.background}
-          source={userImage ? { uri: userImage } : PATH.profilePlaceHolder}
+          source={userImage ? { uri: userImage } : images.profilePlaceHolder}
         />
               <View style={styles.userTxtView}>
                   <Text style={styles.userTxt}>{userName}</Text>
@@ -179,12 +180,12 @@ export default function EditPostScreen({
                   itemNumber={index + 1}
                   totalItemNumber={selectImage.length}
                   onItemPress={() => {
-                    const images = [...selectImage];
-                    const idx = images.indexOf(item);
+                    const imgs = [...selectImage];
+                    const idx = imgs.indexOf(item);
                     if (idx > -1) {
-                      images.splice(idx, 1);
+                      imgs.splice(idx, 1);
                     }
-                    setSelectImage(images);
+                    setSelectImage(imgs);
                   }}
                 />
             )}
@@ -199,7 +200,7 @@ export default function EditPostScreen({
               <View style={styles.bottomImgView}>
                   <View style={styles.onlyMeViewStyle}>
                       <ImageButton
-              source={PATH.lock}
+              source={images.lock}
               imageStyle={{ width: 18, height: 21 }}
               onImagePress={() => {}}
             />
@@ -207,7 +208,7 @@ export default function EditPostScreen({
                   </View>
                   <View style={[styles.onlyMeViewStyle, { justifyContent: 'flex-end' }]}>
                       <ImageButton
-              source={PATH.pickImage}
+              source={images.pickImage}
               imageStyle={{ width: 19, height: 19, marginHorizontal: wp('2%') }}
               onImagePress={() => {
                 ImagePicker.openPicker({
@@ -222,7 +223,7 @@ export default function EditPostScreen({
               }}
             />
                       <ImageButton
-              source={PATH.tagImage}
+              source={images.tagImage}
               imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
               onImagePress={() => {}}
             />

@@ -15,8 +15,7 @@ import { Text } from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
 
 import Carousel from 'react-native-snap-carousel';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
+import images from '../../Constants/ImagePath';
 import SingleImage from './SingleImage';
 import VideoPost from './VideoPost';
 import PostImageSet from './PostImageSet';
@@ -27,7 +26,8 @@ import {
 } from '../../Constants/LoaderImages';
 import { deletePost, getPostDetails } from '../../api/NewsFeedapi';
 
-const { colors, fonts } = constants;
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 function NewsFeedPostItems({
   navigation,
@@ -64,7 +64,7 @@ function NewsFeedPostItems({
           <View style={styles.mainContainer}>
               <Image
           style={styles.background}
-          source={!userImage ? PATH.profilePlaceHolder : { uri: userImage }}
+          source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
           resizeMode={'cover'}
         />
               <View style={styles.userNameView}>
@@ -81,7 +81,7 @@ function NewsFeedPostItems({
           }}>
                   <Image
             style={styles.dotImageStyle}
-            source={PATH.dotImage}
+            source={images.dotImage}
             resizeMode={'contain'}
           />
               </TouchableOpacity>
@@ -173,7 +173,7 @@ function NewsFeedPostItems({
                 style={styles.imageTouchStyle}>
                               <Image
                   style={styles.commentImage}
-                  source={PATH.comment}
+                  source={images.comment}
                   resizeMode={'contain'}
                 />
                           </TouchableOpacity>
@@ -199,7 +199,7 @@ function NewsFeedPostItems({
                 style={styles.imageTouchStyle}>
                               <Image
                   style={styles.commentImage}
-                  source={PATH.share}
+                  source={images.share}
                   resizeMode={'contain'}
                 />
                           </TouchableOpacity>
@@ -231,13 +231,13 @@ function NewsFeedPostItems({
                           {like === true ? (
                               <Image
                   style={[styles.commentImage, { tintColor: '#FF8A01' }]}
-                  source={PATH.feedLike}
+                  source={images.feedLike}
                   resizeMode={'contain'}
                 />
                           ) : (
                               <Image
                   style={styles.commentImage}
-                  source={PATH.feedLike}
+                  source={images.feedLike}
                   resizeMode={'contain'}
                 />
                           )}

@@ -12,21 +12,17 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import constants from '../config/constants';
-
-const {
-  PATH,
-} = constants;
+import images from '../Constants/ImagePath'
 
 function TCCheckbox() {
   const [checkbox, setCheckbox] = useState(false);
   return (
       <TouchableOpacity onPress={ () => setCheckbox(checkbox) }>
           {checkbox === true && (
-          <Image source={ PATH.checkWhite } style={ styles.sportImg } />
+          <Image source={ images.checkWhite } style={ styles.sportImg } />
           )}
           {checkbox === false && (
-          <Image source={ PATH.uncheckWhite } style={ styles.sportImg } />
+          <Image source={ images.uncheckWhite } style={ styles.sportImg } />
           )}
       </TouchableOpacity>
   );

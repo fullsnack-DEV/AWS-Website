@@ -2,9 +2,9 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import constants from '../../../config/constants';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 
-const { colors, fonts } = constants;
 const styles = StyleSheet.create({
   background: {
     height: '100%',

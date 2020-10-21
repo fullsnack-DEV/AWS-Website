@@ -10,11 +10,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import constants from '../config/constants';
-
-const {
-  colors, fonts,
-} = constants;
+import colors from '../Constants/Colors'
+import fonts from '../Constants/Fonts'
 
 function TCTextField({
   placeholder,

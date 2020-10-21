@@ -14,7 +14,7 @@ import styles from './style';
 
 import { getJoinedTeams } from '../../../api/Accountapi';
 
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 
 export default function JoinedClubsScreen() {
   const [clubList, setClubList] = useState([]);
@@ -46,7 +46,7 @@ export default function JoinedClubsScreen() {
                   style={ styles.entityImg }
                 />
                     ) : (
-                        <Image source={ PATH.club_ph } style={ styles.entityImg } />
+                        <Image source={ images.club_ph } style={ styles.entityImg } />
                     )}
                 </View>
 

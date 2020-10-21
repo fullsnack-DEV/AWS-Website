@@ -17,8 +17,8 @@ import { getuserDetail } from '../../../api/Authapi';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import styles from './style';
-import * as Utility from '../../../utility/index';
-import PATH from '../../../Constants/ImagePath';
+import * as Utility from '../../../utils/index';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import { token_details } from '../../../utils/constant';
 import colors from '../../../Constants/Colors';
@@ -140,13 +140,13 @@ const SignupScreen = ({ navigation }) => {
       <View style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
           {/* <Loader visible={true} /> */}
-          <Image style={styles.background} source={PATH.orangeLayer} />
-          <Image style={styles.background} source={PATH.bgImage} />
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.bgImage} />
           <ScrollView>
               <TouchableOpacity
           onPress={() => alert('image picked')}
           style={styles.profile}>
-                  <Image style={styles.profile} source={PATH.profilePlaceHolder} />
+                  <Image style={styles.profile} source={images.profilePlaceHolder} />
               </TouchableOpacity>
               <TCKeyboardView>
                   <TCTextField
@@ -178,9 +178,9 @@ const SignupScreen = ({ navigation }) => {
             />
                       <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
                           {hidePassword ? (
-                              <Image source={PATH.showPassword} style={styles.passwordEyes} />
+                              <Image source={images.showPassword} style={styles.passwordEyes} />
                           ) : (
-                              <Image source={PATH.hidePassword} style={styles.passwordEyes} />
+                              <Image source={images.hidePassword} style={styles.passwordEyes} />
                           )}
                       </TouchableWithoutFeedback>
                   </View>

@@ -13,10 +13,8 @@ import {
 
 } from 'react-native-responsive-screen';
 
-import constants from '../config/constants';
-import PATH from '../Constants/ImagePath';
-
-const { colors } = constants;
+import images from '../Constants/ImagePath';
+import colors from '../Constants/Colors'
 
 export default function TCEventView({ onPress }) {
   return (
@@ -32,7 +30,7 @@ export default function TCEventView({ onPress }) {
                           Event 1 will come in Vancuver on special day dsfdsf dsf df adsfds
                           fsadfadsf
                       </Text>
-                      <Image source={ PATH.vertical3Dot } style={ styles.threedot } />
+                      <Image source={ images.vertical3Dot } style={ styles.threedot } />
                   </View>
                   <View style={ styles.descriptionView }>
                       <Text style={ styles.eventDescription } numberOfLines={ 2 }>

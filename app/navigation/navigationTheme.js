@@ -1,8 +1,5 @@
 import { DefaultTheme } from '@react-navigation/native';
-
-import constants from '../config/constants';
-
-const { colors } = constants;
+import colors from '../Constants/Colors'
 
 export default {
   ...DefaultTheme,

@@ -13,11 +13,9 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
 
-import constants from '../../../../../config/constants';
-import PATH from '../../../../../Constants/ImagePath';
+import colors from '../../../../../Constants/Colors';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
-
-const { colors } = constants;
 
 function CreateClubForm2({ navigation, route }) {
   const [registrationFee, setRegistrationFee] = useState('');
@@ -179,10 +177,10 @@ function CreateClubForm2({ navigation, route }) {
           <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setMembershipUserSelected(0) }>
                   {membershipUserSelected === 0 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}
@@ -192,10 +190,10 @@ function CreateClubForm2({ navigation, route }) {
           <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setMembershipUserSelected(1) }>
                   {membershipUserSelected === 1 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}
@@ -208,10 +206,10 @@ function CreateClubForm2({ navigation, route }) {
           <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setMembershipTeamSelected(0) }>
                   {membershipTeamSelected === 0 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}
@@ -221,10 +219,10 @@ function CreateClubForm2({ navigation, route }) {
           <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setMembershipTeamSelected(1) }>
                   {membershipTeamSelected === 1 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}

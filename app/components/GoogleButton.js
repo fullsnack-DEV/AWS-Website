@@ -7,11 +7,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import constants from '../config/constants';
-import PATH from '../Constants/ImagePath'
+import colors from '../Constants/Colors'
+import fonts from '../Constants/Fonts'
+import images from '../Constants/ImagePath'
 import strings from '../Constants/String'
-
-const { colors, fonts } = constants;
 
 function GoogleButton({ onPress }) {
   return (
@@ -19,7 +18,7 @@ function GoogleButton({ onPress }) {
           <TouchableOpacity
         style={ [styles.imgWithText, styles.allButton] }
         onPress={ onPress }>
-              <Image source={ PATH.signUpGoogle } style={ styles.googleImg } />
+              <Image source={ images.signUpGoogle } style={ styles.googleImg } />
               <Text style={ styles.googleText }>{strings.googleText}</Text>
           </TouchableOpacity>
       </SafeAreaView>

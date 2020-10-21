@@ -16,13 +16,14 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
 import WriteCommentItems from '../../components/newsFeed/WriteCommentItems';
 
 import { createReaction, getReactions } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
-const { PATH, colors, fonts } = constants;
+import images from '../../Constants/ImagePath';
+import fonts from '../../Constants/Fonts';
+import colors from '../../Constants/Colors';
 
 export default function WriteCommentScreen({
   navigation,
@@ -95,7 +96,7 @@ export default function WriteCommentScreen({
               <View style={ styles.bottomImgView }>
                   <View style={ styles.commentReportView }>
                       <Image
-              source={ userImage ? { uri: userImage } : PATH.profilePlaceHolder }
+              source={ userImage ? { uri: userImage } : images.profilePlaceHolder }
               resizeMode={ 'cover' }
               style={ { width: 40, height: 40, borderRadius: 40 / 2 } }
             />

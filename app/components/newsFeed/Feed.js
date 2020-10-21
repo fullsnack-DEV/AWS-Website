@@ -13,10 +13,11 @@ import Moment from 'moment';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import constants from '../../config/constants';
-import PATH from '../../Constants/ImagePath';
 
-const { colors, fonts } = constants;
+import images from '../../Constants/ImagePath';
+
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
 const { width } = Dimensions.get('window');
 
@@ -182,10 +183,10 @@ function Feed({ data, navigation }) {
           <Text style={ styles.feedDescription }>{json.text}</Text>
 
           <View style={ styles.feedBottomView }>
-              <Image style={ styles.commentImage } source={ PATH.feedComment } />
-              <Image style={ styles.shareImage } source={ PATH.feedShare } />
+              <Image style={ styles.commentImage } source={ images.feedComment } />
+              <Image style={ styles.shareImage } source={ images.feedShare } />
 
-              <Image style={ styles.likeImage } source={ PATH.feedLike } />
+              <Image style={ styles.likeImage } source={ images.feedLike } />
           </View>
           {data.reaction_counts.clap === 0 ? (
               <View style={ styles.deviderLineWithoutMargin } />

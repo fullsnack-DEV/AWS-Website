@@ -19,11 +19,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
 import styles from './style';
-import constants from '../../../config/constants';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-
-const { colors, fonts } = constants;
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 
 function RegisterPlayer({ navigation }) {
   const [sports, setSports] = useState('');
@@ -91,11 +90,11 @@ function RegisterPlayer({ navigation }) {
               <View style={ styles.checkbox }>
                   {languages[index].isChecked ? (
                       <Image
-                source={ PATH.checkWhiteLanguage }
+                source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
               />
                   ) : (
-                      <Image source={ PATH.uncheckWhite } style={ styles.checkboxImg } />
+                      <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
                   )}
               </View>
               <View style={ styles.shortSeparatorLine }></View>
@@ -126,7 +125,7 @@ function RegisterPlayer({ navigation }) {
           style={ { ...styles } }
           value={ sports }
           Icon={ () => (
-              <Image source={ PATH.dropDownArrow } style={ styles.downArrow } />
+              <Image source={ images.dropDownArrow } style={ styles.downArrow } />
           ) }
         />
 

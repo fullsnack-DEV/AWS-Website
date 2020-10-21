@@ -6,11 +6,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import constants from '../config/constants';
-import PATH from '../Constants/ImagePath'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts'
+import images from '../Constants/ImagePath'
 import strings from '../Constants/String'
-
-const { colors, fonts } = constants;
 
 function FacebookButton({ onPress }) {
   return (
@@ -18,7 +17,7 @@ function FacebookButton({ onPress }) {
           <TouchableOpacity
         style={ [styles.imgWithText, styles.allButton] }
         onPress={ onPress }>
-              <Image source={ PATH.signUpFb } style={ styles.fbImg } />
+              <Image source={ images.signUpFb } style={ styles.fbImg } />
               <Text style={ styles.fbText }>{strings.fbText}</Text>
           </TouchableOpacity>
       </SafeAreaView>

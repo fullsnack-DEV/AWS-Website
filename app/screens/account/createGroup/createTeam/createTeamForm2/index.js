@@ -13,11 +13,9 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
 
-import constants from '../../../../../config/constants';
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
-
-const { colors } = constants;
+import colors from '../../../../../Constants/Colors'
 
 function CreateTeamForm2({ navigation, route }) {
   const [selected, setSelected] = useState(0);
@@ -47,10 +45,10 @@ function CreateTeamForm2({ navigation, route }) {
             setCanJoinInvitedPerson(false);
           } }>
                   {selected === 0 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}
@@ -66,10 +64,10 @@ function CreateTeamForm2({ navigation, route }) {
             setCanJoinInvitedPerson(false);
           } }>
                   {selected === 1 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}
@@ -85,10 +83,10 @@ function CreateTeamForm2({ navigation, route }) {
             setCanJoinInvitedPerson(true);
           } }>
                   {selected === 2 ? (
-                      <Image source={ PATH.radioSelect } style={ styles.radioImage } />
+                      <Image source={ images.radioSelect } style={ styles.radioImage } />
                   ) : (
                       <Image
-              source={ PATH.radioUnselect }
+              source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
                   )}

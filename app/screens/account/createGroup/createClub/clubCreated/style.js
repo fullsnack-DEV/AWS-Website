@@ -5,11 +5,9 @@ import {
 
 } from 'react-native-responsive-screen';
 
-import constants from '../../../../../config/constants';
+import fonts from '../../../../../Constants/Fonts'
+import colors from '../../../../../Constants/Colors'
 
-const {
-  colors, fonts,
-} = constants;
 const styles = StyleSheet.create({
   LocationText: {
     color: colors.whiteColor,

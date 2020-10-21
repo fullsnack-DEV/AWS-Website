@@ -3,19 +3,13 @@ import React from 'react';
 import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
-
-import constants from '../config/constants';
-
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
 import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
-
-const {
-  colors,
-} = constants;
+import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
 

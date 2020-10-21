@@ -6,12 +6,12 @@ import {
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 
-import PATH from '../../Constants/ImagePath';
-import constants from '../../config/constants';
-import * as Utility from '../../utility/index';
+import images from '../../Constants/ImagePath';
+import * as Utility from '../../utils/index';
 import GameCard from './GameCard';
+import colors from '../../Constants/Colors'
+import fonts from '../../Constants/Fonts'
 
-const { colors, fonts } = constants;
 let switchEntity = '';
 let myID = '';
 let user = {};
@@ -116,7 +116,7 @@ export default function MatchReservation({ data, onPressButon }) {
       && data.invited_by === myID
       && data.invited_to === data.home_team.user_id ? (
           <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-              <Image source={PATH.requestOut} style={styles.inOutImageView} />
+              <Image source={images.requestOut} style={styles.inOutImageView} />
               <View style={styles.entityView}>
                   {data.home_team.thumbnail && (
                   <Image
@@ -137,9 +137,9 @@ export default function MatchReservation({ data, onPressButon }) {
           </View>
             ) : (
                 <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-                    <Image source={PATH.requestIn} style={styles.inOutImageView} />
+                    <Image source={images.requestIn} style={styles.inOutImageView} />
                     <View style={styles.entityView}>
-                        <Image source={PATH.teamPlaceholder} style={styles.profileImage} />
+                        <Image source={images.teamPlaceholder} style={styles.profileImage} />
                         {/* {data.away_team.thumbnail && <Image source={{uri: data.away_team.thumbnail}} style={styles.profileImage} />} */}
                         {data.away_team && (
                         <Text style={styles.entityName}>

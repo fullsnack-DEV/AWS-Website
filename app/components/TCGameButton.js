@@ -7,11 +7,7 @@ import {
 
   Image,
 } from 'react-native';
-import constants from '../config/constants';
-
-const {
-  colors,
-} = constants;
+import colors from '../Constants/Colors'
 
 export default function TCGameButton({
   title,

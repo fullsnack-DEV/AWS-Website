@@ -13,9 +13,9 @@ import GoogleButton from '../../../components/GoogleButton';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import styles from './style';
-import PATH from '../../../Constants/ImagePath';
+import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
-import * as Utility from '../../../utility/index';
+import * as Utility from '../../../utils/index';
 import { getuserDetail } from '../../../api/Authapi';
 import { token_details } from '../../../utils/constant';
 
@@ -168,11 +168,11 @@ function WelcomeScreen({ navigation }) {
   return (
       <View style={ styles.mainContainer }>
           <ActivityLoader visible={ loading } />
-          <Image style={ styles.background } source={ PATH.orangeLayer } />
-          <Image style={ styles.background } source={ PATH.signUpBg1 } />
+          <Image style={ styles.background } source={ images.orangeLayer } />
+          <Image style={ styles.background } source={ images.signUpBg1 } />
 
           <View style={ styles.logoContainer }>
-              <Image style={ styles.logo } source={ PATH.townsCupLogo } />
+              <Image style={ styles.logo } source={ images.townsCupLogo } />
               <Text style={ styles.logoTitle }>{strings.townsCupTitle}</Text>
               <Text style={ styles.logoTagLine }>{strings.townsCupTagLine}</Text>
           </View>
@@ -187,7 +187,7 @@ function WelcomeScreen({ navigation }) {
         style={ [styles.imgWithText, styles.allButton] }
         onPress={ () => navigation.navigate('SignupScreen')
         }>
-              <Image source={ PATH.email } style={ styles.signUpImg } />
+              <Image source={ images.email } style={ styles.signUpImg } />
               <Text style={ styles.signUpText }>{strings.signUpText}</Text>
           </TouchableOpacity>
 

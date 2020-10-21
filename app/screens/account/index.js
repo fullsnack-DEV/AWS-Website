@@ -30,9 +30,9 @@ import {
   getTeamsByClub,
 } from '../../api/Accountapi';
 
-import * as Utility from '../../utility/index';
+import * as Utility from '../../utils/index';
 
-import PATH from '../../Constants/ImagePath';
+import images from '../../Constants/ImagePath';
 import { token_details } from '../../utils/constant';
 
 export default function AccountScreen({ navigation }) {
@@ -359,9 +359,9 @@ export default function AccountScreen({ navigation }) {
                   alignItems: 'center',
                   alignContent: 'center',
                 }}>
-                          <Image source={PATH.clubLable} style={styles.clubLableView} />
+                          <Image source={images.clubLable} style={styles.clubLableView} />
                           {!parentGroup.thumbnail && (
-                          <Image source={PATH.club_ph} style={styles.clubLable} />
+                          <Image source={images.club_ph} style={styles.clubLable} />
                           )}
 
                           {parentGroup.thumbnail && (
@@ -381,7 +381,7 @@ export default function AccountScreen({ navigation }) {
 
                               <View style={styles.identityViewTop}>
                                   <ImageBackground
-                      source={PATH.clubSqure}
+                      source={images.clubSqure}
                       style={styles.badgeCounter}
                     />
                                   <Text style={styles.badgeCounter}>C</Text>
@@ -396,7 +396,7 @@ export default function AccountScreen({ navigation }) {
               <View style={styles.profileView}>
                   {authContext.user.full_image === '' && (
                   <Image
-                source={PATH.profilePlaceHolder}
+                source={images.profilePlaceHolder}
                 style={styles.entityImg}
               />
                   )}
@@ -416,7 +416,7 @@ export default function AccountScreen({ navigation }) {
               {switchBy === 'team' && (
               <View style={styles.profileView}>
                   {!group.thumbnail && (
-                  <Image source={PATH.team_ph} style={styles.profileImgGroup} />
+                  <Image source={images.team_ph} style={styles.profileImgGroup} />
                   )}
 
                   {group.thumbnail && (
@@ -434,7 +434,7 @@ export default function AccountScreen({ navigation }) {
                       <Text style={styles.nameText}>{group.group_name}</Text>
                       <View style={styles.identityView}>
                           <ImageBackground
-                  source={PATH.teamSqure}
+                  source={images.teamSqure}
                   style={styles.badgeCounter}
                 />
                           <Text style={styles.badgeCounter}>T</Text>
@@ -449,7 +449,7 @@ export default function AccountScreen({ navigation }) {
               {switchBy === 'club' && (
               <View style={styles.profileView}>
                   {!group.thumbnail && (
-                  <Image source={PATH.club_ph} style={styles.profileImgGroup} />
+                  <Image source={images.club_ph} style={styles.profileImgGroup} />
                   )}
 
                   {group.thumbnail && (
@@ -468,7 +468,7 @@ export default function AccountScreen({ navigation }) {
 
                       <View style={styles.identityView}>
                           <ImageBackground
-                  source={PATH.clubSqure}
+                  source={images.clubSqure}
                   style={styles.badgeCounter}
                 />
                           <Text style={styles.badgeCounter}>C</Text>
@@ -510,7 +510,7 @@ export default function AccountScreen({ navigation }) {
                           />
                               ) : (
                                   <Image
-                            source={PATH.teamPlaceholder}
+                            source={images.teamPlaceholder}
                             style={styles.smallProfileImg}
                           />
                               )}
@@ -547,7 +547,7 @@ export default function AccountScreen({ navigation }) {
                           />
                               ) : (
                                   <Image
-                            source={PATH.clubPlaceholder}
+                            source={images.clubPlaceholder}
                             style={styles.smallProfileImg}
                           />
                               )}
@@ -585,7 +585,7 @@ export default function AccountScreen({ navigation }) {
                           />
                               ) : (
                                   <Image
-                            source={PATH.teamPlaceholder}
+                            source={images.teamPlaceholder}
                             style={styles.smallProfileImg}
                           />
                               )}
@@ -613,47 +613,47 @@ export default function AccountScreen({ navigation }) {
                   handleOpetions(rowItem.opetions);
                 }}>
                       {rowItem.opetions === 'Add a sport' && (
-                      <Image source={PATH.addSport} style={styles.subMenuItem} />
+                      <Image source={images.addSport} style={styles.subMenuItem} />
                       )}
                       {rowItem.opetions === 'Register as a referee' && (
                       <Image
-                    source={PATH.registerReferee}
+                    source={images.registerReferee}
                     style={styles.subMenuItem}
                   />
                       )}
                       {rowItem.opetions === 'Create a Team' && (
-                      <Image source={PATH.createTeam} style={styles.subMenuItem} />
+                      <Image source={images.createTeam} style={styles.subMenuItem} />
                       )}
                       {rowItem.opetions === 'Create a Club' && (
-                      <Image source={PATH.createClub} style={styles.subMenuItem} />
+                      <Image source={images.createClub} style={styles.subMenuItem} />
                       )}
                       {rowItem.opetions === 'Create a League' && (
                       <Image
-                    source={PATH.createLeague}
+                    source={images.createLeague}
                     style={styles.subMenuItem}
                   />
                       )}
                       {rowItem.opetions === 'Payment Method' && (
                       <Image
-                    source={PATH.Payment_method}
+                    source={images.Payment_method}
                     style={styles.subMenuItem}
                   />
                       )}
                       {rowItem.opetions === 'Payout Method' && (
                       <Image
-                    source={PATH.Payout_method}
+                    source={images.Payout_method}
                     style={styles.subMenuItem}
                   />
                       )}
                       {rowItem.opetions === 'Invoicing' && (
-                      <Image source={PATH.Invoicing} style={styles.subMenuItem} />
+                      <Image source={images.Invoicing} style={styles.subMenuItem} />
                       )}
                       {rowItem.opetions === 'Transactions' && (
-                      <Image source={PATH.Transations} style={styles.subMenuItem} />
+                      <Image source={images.Transations} style={styles.subMenuItem} />
                       )}
 
                       <Text style={styles.listItems}>{rowItem.opetions}</Text>
-                      <Image source={PATH.nextArrow} style={styles.nextArrow} />
+                      <Image source={images.nextArrow} style={styles.nextArrow} />
                   </TouchableWithoutFeedback>
                   <View style={styles.halfSeparatorLine} />
               </>
@@ -666,35 +666,35 @@ export default function AccountScreen({ navigation }) {
                   handleSections(section);
                 }}>
                       {section === 'My Schedule' && (
-                      <Image source={PATH.mySchedule} style={styles.menuItem} />
+                      <Image source={images.mySchedule} style={styles.menuItem} />
                       )}
                       {section === 'My Sports' && (
-                      <Image source={PATH.mySports} style={styles.menuItem} />
+                      <Image source={images.mySports} style={styles.menuItem} />
                       )}
                       {section === 'My Refereeing' && (
-                      <Image source={PATH.myRefereeing} style={styles.menuItem} />
+                      <Image source={images.myRefereeing} style={styles.menuItem} />
                       )}
                       {section === 'My Teams' && (
-                      <Image source={PATH.myTeams} style={styles.menuItem} />
+                      <Image source={images.myTeams} style={styles.menuItem} />
                       )}
                       {section === 'My Clubs' && (
-                      <Image source={PATH.myClubs} style={styles.menuItem} />
+                      <Image source={images.myClubs} style={styles.menuItem} />
                       )}
                       {section === 'My Leagues' && (
-                      <Image source={PATH.myLeagues} style={styles.menuItem} />
+                      <Image source={images.myLeagues} style={styles.menuItem} />
                       )}
                       {section === 'Payment & Payout' && (
-                      <Image source={PATH.paymentPayout} style={styles.menuItem} />
+                      <Image source={images.paymentPayout} style={styles.menuItem} />
                       )}
                       {section === 'Setting & Privacy' && (
-                      <Image source={PATH.SettingPrivacy} style={styles.menuItem} />
+                      <Image source={images.SettingPrivacy} style={styles.menuItem} />
                       )}
                       {section === 'Members' && (
-                      <Image source={PATH.Members} style={styles.menuItem} />
+                      <Image source={images.Members} style={styles.menuItem} />
                       )}
 
                       <Text style={styles.listItems}>{section}</Text>
-                      <Image source={PATH.nextArrow} style={styles.nextArrow} />
+                      <Image source={images.nextArrow} style={styles.nextArrow} />
                   </TouchableWithoutFeedback>
                   <View style={styles.separatorLine} />
               </>
@@ -706,7 +706,7 @@ export default function AccountScreen({ navigation }) {
                   <View style={styles.separatorView}></View>
                   <View style={{ flexDirection: 'row' }}>
                       <Image
-                source={PATH.switchAccount}
+                source={images.switchAccount}
                 style={styles.switchAccountIcon}
               />
                       <Text style={styles.switchAccount}>Switch Account</Text>
@@ -733,7 +733,7 @@ export default function AccountScreen({ navigation }) {
                       </View>
                   ) : (
                       <Image
-                      source={PATH.profilePlaceHolder}
+                      source={images.profilePlaceHolder}
                       style={styles.entityImg}
                     />
                   ))}
@@ -746,7 +746,7 @@ export default function AccountScreen({ navigation }) {
                   ) : (
                       <View style={styles.placeholderView}>
                           <Image
-                        source={PATH.clubPlaceholder}
+                        source={images.clubPlaceholder}
                         style={styles.entityImg}
                       />
                           <Text style={styles.oneCharacterText}>
@@ -763,7 +763,7 @@ export default function AccountScreen({ navigation }) {
                   ) : (
                       <View style={styles.placeholderView}>
                           <Image
-                        source={PATH.teamPlaceholder}
+                        source={images.teamPlaceholder}
                         style={styles.entityImg}
                       />
                           <Text style={styles.oneCharacterText}>
@@ -804,9 +804,9 @@ export default function AccountScreen({ navigation }) {
               <TouchableWithoutFeedback
           style={styles.listContainer}
           onPress={handleLogOut}>
-                  <Image source={PATH.logoutIcon} style={styles.switchAccountIcon} />
+                  <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
                   <Text style={styles.listItems}>Log out</Text>
-                  <Image source={PATH.nextArrow} style={styles.nextArrow} />
+                  <Image source={images.nextArrow} style={styles.nextArrow} />
               </TouchableWithoutFeedback>
           </ScrollView>
       </SafeAreaView>

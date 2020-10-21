@@ -15,11 +15,10 @@ import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './style';
-import constants from '../../../../../config/constants';
-import PATH from '../../../../../Constants/ImagePath';
+import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
 
-const { colors } = constants;
+import colors from '../../../../../Constants/Colors';
 
 function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -144,7 +143,7 @@ function CreateTeamForm1({ navigation, route }) {
                     style={styles.profileImgGroup}
                   />
                           ) : (
-                              <Image source={PATH.club_ph} style={styles.profileImgGroup} />
+                              <Image source={images.club_ph} style={styles.profileImgGroup} />
                           )}
                           <View
                   style={{
@@ -196,7 +195,7 @@ function CreateTeamForm1({ navigation, route }) {
             style={{ ...styles }}
             value={sports}
             Icon={() => (
-                <Image source={PATH.dropDownArrow} style={styles.downArrow} />
+                <Image source={images.dropDownArrow} style={styles.downArrow} />
             )}
           />
               </View>
@@ -218,7 +217,7 @@ function CreateTeamForm1({ navigation, route }) {
                   <View style={styles.fieldView}>
                       <Text style={styles.playerTitle}>{strings.player1Title}</Text>
                       <View style={styles.searchView}>
-                          <Image source={PATH.searchLocation} style={styles.searchImg} />
+                          <Image source={images.searchLocation} style={styles.searchImg} />
                           <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('SearchPlayerScreen', { player: 1 });
@@ -237,7 +236,7 @@ function CreateTeamForm1({ navigation, route }) {
                       <Text style={styles.playerTitle}>{strings.player2Title}</Text>
 
                       <View style={styles.searchView}>
-                          <Image source={PATH.searchLocation} style={styles.searchImg} />
+                          <Image source={images.searchLocation} style={styles.searchImg} />
                           <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('SearchPlayerScreen', { player: 2 });
@@ -275,7 +274,7 @@ function CreateTeamForm1({ navigation, route }) {
               }}
               value={gender}
               Icon={() => (
-                  <Image source={PATH.dropDownArrow} style={styles.downArrow} />
+                  <Image source={images.dropDownArrow} style={styles.downArrow} />
               )}
             />
               </View>
@@ -349,7 +348,7 @@ function CreateTeamForm1({ navigation, route }) {
                 value={minAge}
                 Icon={() => (
                     <Image
-                    source={PATH.dropDownArrow}
+                    source={images.dropDownArrow}
                     style={styles.miniDownArrow}
                   />
                 )}
@@ -397,7 +396,7 @@ function CreateTeamForm1({ navigation, route }) {
                 value={maxAge}
                 Icon={() => (
                     <Image
-                    source={PATH.dropDownArrow}
+                    source={images.dropDownArrow}
                     style={styles.miniDownArrow}
                   />
                 )}
