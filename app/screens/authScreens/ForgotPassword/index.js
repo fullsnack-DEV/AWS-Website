@@ -46,22 +46,22 @@ function ForgotPasswordScreen({ navigation }) {
   }
   return (
 
-      <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.bgImage } />
-          <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
-          <Text style={ styles.resetText }>{strings.resetText}</Text>
-          <TCTextField
+    <View style={ styles.mainContainer }>
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.bgImage } />
+      <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
+      <Text style={ styles.resetText }>{strings.resetText}</Text>
+      <TCTextField
         placeholder={ strings.enterEmailPlaceholder }
         secureText={ false }
         autoCapitalize="none"
         keyboardType="email-address"
         onChangeText={ (text) => setEmail(text) } value={ email }
       />
-          <View style={{ flex: 1 }}/>
+      <View style={{ flex: 1 }}/>
 
-          <View style={{ marginBottom: 20 }}>
-              <TCButton
+      <View style={{ marginBottom: 20 }}>
+        <TCButton
         title={ strings.nextTitle }
         onPress={ () => {
           if (checkValidation()) {
@@ -70,7 +70,7 @@ function ForgotPasswordScreen({ navigation }) {
         } }
 extraStyle={{ marginBottom: 10 }}
       />
-              <TCButton
+        <TCButton
               title={ strings.cancelTitle }
               onPress={ () => navigation.goBack() }
               textColor={ { color: colors.whiteColor } }
@@ -82,9 +82,9 @@ extraStyle={{ marginBottom: 10 }}
                 backgroundColor: 'transparent',
               } }
               />
-          </View>
-
       </View>
+
+    </View>
 
   );
 }

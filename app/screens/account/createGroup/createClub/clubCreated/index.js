@@ -10,11 +10,11 @@ import styles from './style';
 
 function ClubCreatedScreen({ navigation, route }) {
   return (
-      <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.bgImage } />
-          <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
-              <Image
+    <View style={ styles.mainContainer }>
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.bgImage } />
+      <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
+        <Image
           source={ images.backArrow }
           style={ {
             marginTop: 45,
@@ -24,23 +24,23 @@ function ClubCreatedScreen({ navigation, route }) {
             resizeMode: 'contain',
           } }
         />
-          </TouchableOpacity>
-          <View style={ styles.sectionStyle }>
-              <Image source={ images.group_ph } style={ styles.groupsImg } />
+      </TouchableOpacity>
+      <View style={ styles.sectionStyle }>
+        <Image source={ images.group_ph } style={ styles.groupsImg } />
 
-              <Text style={ styles.LocationText }>
-                  <Text style={ styles.foundText }>
-                      {route.params.groupName} has been created.
-                  </Text>
-              </Text>
-              <TouchableOpacity style={ styles.goToProfileButton }>
-                  <Text style={ styles.goToProfileTitle }>{strings.goToClubText}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={ styles.inviteUserButton }>
-                  <Text style={ styles.goToProfileTitle }>{strings.inviteUserText}</Text>
-              </TouchableOpacity>
-          </View>
+        <Text style={ styles.LocationText }>
+          <Text style={ styles.foundText }>
+            {route.params.groupName} has been created.
+          </Text>
+        </Text>
+        <TouchableOpacity style={ styles.goToProfileButton }>
+          <Text style={ styles.goToProfileTitle }>{strings.goToClubText}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={ styles.inviteUserButton }>
+          <Text style={ styles.goToProfileTitle }>{strings.inviteUserText}</Text>
+        </TouchableOpacity>
       </View>
+    </View>
   );
 }
 

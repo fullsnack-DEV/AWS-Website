@@ -24,41 +24,41 @@ export default function GameDetailRecord({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
-          </TouchableWithoutFeedback>
+          <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
 
   return (
-      <View style={ styles.mainContainer }>
-          <View style={ styles.headerView }>
-              <View style={ styles.leftView }>
-                  <View style={ styles.profileShadow }>
-                      <Image source={ images.team_ph } style={ styles.profileImg } />
-                  </View>
-                  <Text style={ styles.leftText } numberOfLines={ 2 }>
-                      Kishan Makani
-                  </Text>
-              </View>
-              <View style={ styles.centerView }>
-                  <Text style={ styles.centerText }>0 : 0</Text>
-              </View>
-              <View style={ styles.rightView }>
-                  <Text style={ styles.rightText } numberOfLines={ 2 }>
-                      Kishan Makani
-                  </Text>
-                  <View style={ styles.profileShadow }>
-                      <Image source={ images.team_ph } style={ styles.profileImg } />
-                  </View>
-              </View>
+    <View style={ styles.mainContainer }>
+      <View style={ styles.headerView }>
+        <View style={ styles.leftView }>
+          <View style={ styles.profileShadow }>
+            <Image source={ images.team_ph } style={ styles.profileImg } />
           </View>
-          <ScrollView horizontal={ true }>
-              <SectionList
+          <Text style={ styles.leftText } numberOfLines={ 2 }>
+            Kishan Makani
+          </Text>
+        </View>
+        <View style={ styles.centerView }>
+          <Text style={ styles.centerText }>0 : 0</Text>
+        </View>
+        <View style={ styles.rightView }>
+          <Text style={ styles.rightText } numberOfLines={ 2 }>
+            Kishan Makani
+          </Text>
+          <View style={ styles.profileShadow }>
+            <Image source={ images.team_ph } style={ styles.profileImg } />
+          </View>
+        </View>
+      </View>
+      <ScrollView horizontal={ true }>
+        <SectionList
           renderItem={ ({ item, index }) => (
-              <View
+            <View
               style={ {
                 backgroundColor: colors.grayBackgroundColor,
                 marginBottom: 8,
@@ -69,18 +69,18 @@ export default function GameDetailRecord({ navigation }) {
                 flexDirection: 'row',
                 alignItems: 'center',
               } }>
-                  <Image
+              <Image
                 source={ images.deleteRecentGoal }
                 style={ styles.playerImage }
               />
-                  <Text key={ index }>.{item}</Text>
-              </View>
+              <Text key={ index }>.{item}</Text>
+            </View>
           ) }
           renderSectionHeader={ ({ section: { title } }) => (
-              <View style={ styles.sectionHeader }>
-                  <Image source={ images.team_ph } style={ styles.TeamImage } />
-                  <Text style={ styles.sectionText }>{title}</Text>
-              </View>
+            <View style={ styles.sectionHeader }>
+              <Image source={ images.team_ph } style={ styles.TeamImage } />
+              <Text style={ styles.sectionText }>{title}</Text>
+            </View>
           ) }
           sections={ [
             { title: 'ON FIELD', data: ['item1', 'item2', 'item7', 'item8'] },
@@ -101,16 +101,16 @@ export default function GameDetailRecord({ navigation }) {
           style={ { width: wp('72%'), height: hp('46%') } }
           showsVerticalScrollIndicator={ false }
         />
-              <View
+        <View
           style={ {
             height: hp('80%'),
             width: 1,
             backgroundColor: colors.lightgrayColor,
           } }
         />
-              <SectionList
+        <SectionList
           renderItem={ ({ item, index }) => (
-              <View
+            <View
               style={ {
                 backgroundColor: colors.grayBackgroundColor,
                 marginBottom: 8,
@@ -121,18 +121,18 @@ export default function GameDetailRecord({ navigation }) {
                 flexDirection: 'row',
                 alignItems: 'center',
               } }>
-                  <Image
+              <Image
                 source={ images.deleteRecentGoal }
                 style={ styles.playerImage }
               />
-                  <Text key={ index }>.{item}</Text>
-              </View>
+              <Text key={ index }>.{item}</Text>
+            </View>
           ) }
           renderSectionHeader={ ({ section: { title } }) => (
-              <View style={ styles.sectionHeader }>
-                  <Image source={ images.team_ph } style={ styles.TeamImage } />
-                  <Text style={ styles.sectionText }>{title}</Text>
-              </View>
+            <View style={ styles.sectionHeader }>
+              <Image source={ images.team_ph } style={ styles.TeamImage } />
+              <Text style={ styles.sectionText }>{title}</Text>
+            </View>
           ) }
           sections={ [
             { title: 'ON FIELD', data: ['item1', 'item2', 'item7', 'item8'] },
@@ -145,21 +145,21 @@ export default function GameDetailRecord({ navigation }) {
           style={ { width: wp('72%'), height: hp('46%') } }
           showsVerticalScrollIndicator={ false }
         />
-          </ScrollView>
+      </ScrollView>
 
-          <View style={ styles.bottomView }>
-              <View style={ styles.timeView }>
-                  <Text style={ styles.timer }>90 : 00 : 00</Text>
-                  <View style={ styles.curruentTimeView }>
-                      <Image source={ images.curruentTime } style={ styles.curruentTimeImg } />
-                  </View>
-                  <Text style={ styles.startTime }>Game start at now</Text>
-                  <Image source={ images.dropDownArrow } style={ styles.downArrow } />
-                  <View style={ styles.separatorLine }></View>
-              </View>
+      <View style={ styles.bottomView }>
+        <View style={ styles.timeView }>
+          <Text style={ styles.timer }>90 : 00 : 00</Text>
+          <View style={ styles.curruentTimeView }>
+            <Image source={ images.curruentTime } style={ styles.curruentTimeImg } />
+          </View>
+          <Text style={ styles.startTime }>Game start at now</Text>
+          <Image source={ images.dropDownArrow } style={ styles.downArrow } />
+          <View style={ styles.separatorLine }></View>
+        </View>
 
-              <View style={ styles.buttonsView }>
-                  <TCGameButton
+        <View style={ styles.buttonsView }>
+          <TCGameButton
             title="Goal"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
@@ -167,7 +167,7 @@ export default function GameDetailRecord({ navigation }) {
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
-                  <TCGameButton
+          <TCGameButton
             title="Own Goal"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
@@ -175,7 +175,7 @@ export default function GameDetailRecord({ navigation }) {
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
-                  <TCGameButton
+          <TCGameButton
             title="YC"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
@@ -183,7 +183,7 @@ export default function GameDetailRecord({ navigation }) {
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
-                  <TCGameButton
+          <TCGameButton
             title="RC"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.whiteColor }
@@ -191,11 +191,11 @@ export default function GameDetailRecord({ navigation }) {
             textColor={ colors.googleColor }
             imageSize={ 32 }
           />
-              </View>
+        </View>
 
-              <View style={ styles.bottomLine }></View>
-              <View style={ styles.gameRecordButtonView }>
-                  <TCGameButton
+        <View style={ styles.bottomLine }></View>
+        <View style={ styles.gameRecordButtonView }>
+          <TCGameButton
             title="Game Start"
             onPress={ () => alert('Game Start Presses..') }
             buttonColor={ colors.themeColor }
@@ -203,7 +203,7 @@ export default function GameDetailRecord({ navigation }) {
             textColor={ colors.themeColor }
             imageSize={ 15 }
           />
-                  <TCGameButton
+          <TCGameButton
             title="Records"
             onPress={ () => navigation.navigate('GameRecordList') }
             buttonColor={ colors.darkGrayColor }
@@ -211,7 +211,7 @@ export default function GameDetailRecord({ navigation }) {
             textColor={ colors.darkGrayColor }
             imageSize={ 25 }
           />
-                  <TCGameButton
+          <TCGameButton
             title="Simple"
             onPress={ () => alert('Game Details Presses..') }
             buttonColor={ colors.gameDetailColor }
@@ -220,9 +220,9 @@ export default function GameDetailRecord({ navigation }) {
             imageSize={ 25 }
             // extraImageStyle={{tintColor: colors.whiteColor}}
           />
-              </View>
-          </View>
+        </View>
       </View>
+    </View>
   );
 }
 

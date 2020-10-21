@@ -15,23 +15,23 @@ function EditSelectedImages({
 }) {
   // console.log('Data :-', data.url);
   return (
-      <View style={ styles.uploadedImage }>
-          <FastImage
+    <View style={ styles.uploadedImage }>
+      <FastImage
         style={ styles.uploadedImage }
         source={ { uri: data.thumbnail ? data.thumbnail : data.path } }
         resizeMode={ FastImage.resizeMode.cover }
       />
-          <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
-              <Image source={ images.cancelImage } style={ styles.cancelImageStyle } />
-          </TouchableOpacity>
-          <View style={ styles.lengthViewStyle }>
-              <Text style={ styles.lengthTextStyle }>
-                  {itemNumber}
-                  {'/'}
-                  {totalItemNumber}
-              </Text>
-          </View>
+      <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
+        <Image source={ images.cancelImage } style={ styles.cancelImageStyle } />
+      </TouchableOpacity>
+      <View style={ styles.lengthViewStyle }>
+        <Text style={ styles.lengthTextStyle }>
+          {itemNumber}
+          {'/'}
+          {totalItemNumber}
+        </Text>
       </View>
+    </View>
   );
 }
 

@@ -30,24 +30,24 @@ function WriteCommentItems({ data }) {
   }
 
   return (
-      <View style={ styles.mainContainer }>
-          <Image
+    <View style={ styles.mainContainer }>
+      <Image
         style={ styles.background }
         source={ !userProfile ? images.profilePlaceHolder : { uri: userProfile } }
         resizeMode={ 'cover' }
       />
-          <View style={ styles.userNameView }>
-              <View style={ styles.userCommentTextStyle }>
-                  <Text style={ styles.userNameTxt }>
-                      {userName}{' '}
-                      <Text style={ styles.commentTextStyle }>{commentText}</Text>
-                  </Text>
-              </View>
-              <Text style={ styles.activeTimeAgoTxt }>
-                  {commentPostTimeCalculate(commentTime)}
-              </Text>
-          </View>
+      <View style={ styles.userNameView }>
+        <View style={ styles.userCommentTextStyle }>
+          <Text style={ styles.userNameTxt }>
+            {userName}{' '}
+            <Text style={ styles.commentTextStyle }>{commentText}</Text>
+          </Text>
+        </View>
+        <Text style={ styles.activeTimeAgoTxt }>
+          {commentPostTimeCalculate(commentTime)}
+        </Text>
       </View>
+    </View>
   );
 }
 

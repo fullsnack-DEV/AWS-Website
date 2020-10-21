@@ -78,62 +78,62 @@ export default function ReservationScreen({ navigation }) {
   };
 
   return (
-      <View style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
-          <View style={styles.tabContainer}>
-              <TouchableWithoutFeedback
+    <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      <View style={styles.tabContainer}>
+        <TouchableWithoutFeedback
           style={styles.upcomingTab}
           onPress={() => {
             setSelectedTab(0);
           }}>
-                  <View style={styles.upcomingTab}>
-                      {selectedTab === 0 ? (
-                          <View>
-                              <Text style={[styles.upcomingText, { color: colors.themeColor }]}>
-                                  Upcoming
-                              </Text>
-                              <View style={styles.selectedLine} />
-                          </View>
-                      ) : (
-                          <View>
-                              <Text style={styles.upcomingText}>Upcoming</Text>
-                          </View>
-                      )}
-                  </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
+          <View style={styles.upcomingTab}>
+            {selectedTab === 0 ? (
+              <View>
+                <Text style={[styles.upcomingText, { color: colors.themeColor }]}>
+                  Upcoming
+                </Text>
+                <View style={styles.selectedLine} />
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.upcomingText}>Upcoming</Text>
+              </View>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
           style={styles.pastTab}
           onPress={() => {
             setSelectedTab(1);
           }}>
-                  <View style={styles.pastTab}>
-                      {selectedTab === 1 ? (
-                          <View>
-                              <Text style={[styles.pastText, { color: colors.themeColor }]}>
-                                  Past
-                              </Text>
-                              <View style={styles.selectedLine} />
-                          </View>
-                      ) : (
-                          <View>
-                              <Text style={styles.pastText}>Past</Text>
-                          </View>
-                      )}
-                  </View>
-              </TouchableWithoutFeedback>
-          </View>
-
-          {(upcoming.length === 0 && selectedTab === 0)
-      || (past.length === 0 && selectedTab === 1) ? (
-          <View style={styles.noDataPlaceholderView}>
-              <Text style={styles.noDataPlaceholder}>No Reservations Found</Text>
-          </View>
+          <View style={styles.pastTab}>
+            {selectedTab === 1 ? (
+              <View>
+                <Text style={[styles.pastText, { color: colors.themeColor }]}>
+                  Past
+                </Text>
+                <View style={styles.selectedLine} />
+              </View>
             ) : (
-                <FlatList
+              <View>
+                <Text style={styles.pastText}>Past</Text>
+              </View>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+
+      {(upcoming.length === 0 && selectedTab === 0)
+      || (past.length === 0 && selectedTab === 1) ? (
+        <View style={styles.noDataPlaceholderView}>
+          <Text style={styles.noDataPlaceholder}>No Reservations Found</Text>
+        </View>
+        ) : (
+          <FlatList
           data={selectedTab === 0 ? upcoming : past}
           keyExtractor={(item) => item.activity_id}
           renderItem={({ item }) => (
-              <MatchReservation
+            <MatchReservation
               data={item}
               onPressButon={() => {
                 navigation.navigate('ReservationDetailScreen');
@@ -141,7 +141,7 @@ export default function ReservationScreen({ navigation }) {
             />
           )}
         />
-            )}
-      </View>
+        )}
+    </View>
   );
 }

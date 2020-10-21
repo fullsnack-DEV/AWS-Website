@@ -30,34 +30,34 @@ function CreateTeamForm3({ navigation, route }) {
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
 
   return (
-      <>
-          <ScrollView style={ styles.mainContainer }>
-              <View style={ styles.formSteps }>
-                  <View style={ styles.form1 }></View>
-                  <View style={ styles.form2 }></View>
-                  <View style={ styles.form3 }></View>
-                  <View style={ styles.form4 }></View>
-              </View>
-              <Text style={ styles.registrationText }>{strings.registerTitle}</Text>
-              <Text style={ styles.registrationDescText }>
-                  {strings.registerSubTitle}
-              </Text>
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
-              </View>
-              <View style={ styles.matchFeeView }>
-                  <TextInput
+    <>
+      <ScrollView style={ styles.mainContainer }>
+        <View style={ styles.formSteps }>
+          <View style={ styles.form1 }></View>
+          <View style={ styles.form2 }></View>
+          <View style={ styles.form3 }></View>
+          <View style={ styles.form4 }></View>
+        </View>
+        <Text style={ styles.registrationText }>{strings.registerTitle}</Text>
+        <Text style={ styles.registrationDescText }>
+          {strings.registerSubTitle}
+        </Text>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
+        </View>
+        <View style={ styles.matchFeeView }>
+          <TextInput
             placeholder={ strings.enterFeePlaceholder }
             style={ styles.feeText }
             onChangeText={ (text) => setBasicFee(text) }
             value={ basicFee }
             keyboardType={ 'decimal-pad' }></TextInput>
-                  <Text style={ styles.curruency }>CAD</Text>
-              </View>
+          <Text style={ styles.curruency }>CAD</Text>
+        </View>
 
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
-                  <TextInput
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
+          <TextInput
             style={ styles.descriptionTxt }
             onChangeText={ (text) => setBasicFeeDetail(text) }
             value={ basicFeeDetail }
@@ -65,17 +65,17 @@ function CreateTeamForm3({ navigation, route }) {
             numberOfLines={ 4 }
             placeholder={ strings.feeDetailsPlaceholder }
           />
-              </View>
-              <Text style={ styles.registrationText }>
-                  {strings.membershipFeeTitle}
-              </Text>
-              <Text style={ styles.registrationDescText }>
-                  {strings.membershipSubTitle}
-              </Text>
+        </View>
+        <Text style={ styles.registrationText }>
+          {strings.membershipFeeTitle}
+        </Text>
+        <Text style={ styles.registrationDescText }>
+          {strings.membershipSubTitle}
+        </Text>
 
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
-                  <View
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
+          <View
             style={ {
               flexDirection: 'row',
 
@@ -86,7 +86,7 @@ function CreateTeamForm3({ navigation, route }) {
               marginRight: 15,
               justifyContent: 'space-between',
             } }>
-                      <RNPickerSelect
+            <RNPickerSelect
               placeholder={ {
                 label: strings.feeCyclePlaceholder,
                 value: null,
@@ -140,26 +140,26 @@ function CreateTeamForm3({ navigation, route }) {
                 },
               } }
               Icon={ () => (
-                  <Image
+                <Image
                     source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }
             />
-                      <View style={ styles.halfMatchFeeView }>
-                          <TextInput
+            <View style={ styles.halfMatchFeeView }>
+              <TextInput
                 placeholder={ strings.enterFeePlaceholder }
                 style={ styles.halffeeText }
                 keyboardType={ 'decimal-pad' }
                 onChangeText={ (text) => setMembershipFee(text) }
                 value={ membershipFee }></TextInput>
-                          <Text style={ styles.curruency }>CAD</Text>
-                      </View>
-                  </View>
-              </View>
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
-                  <TextInput
+              <Text style={ styles.curruency }>CAD</Text>
+            </View>
+          </View>
+        </View>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
+          <TextInput
             style={ styles.descriptionTxt }
             onChangeText={ (text) => setMembershipFeeDetail(text) }
             value={ membershipFeeDetail }
@@ -167,8 +167,8 @@ function CreateTeamForm3({ navigation, route }) {
             numberOfLines={ 4 }
             placeholder={ strings.membershipPlaceholder }
           />
-              </View>
-              <TouchableOpacity
+        </View>
+        <TouchableOpacity
           onPress={ () => navigation.navigate('CreateTeamForm4', {
             createTeamForm3: {
               ...route.params.createTeamForm2,
@@ -180,14 +180,14 @@ function CreateTeamForm3({ navigation, route }) {
             },
           })
           }>
-                  <LinearGradient
+          <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-                      <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>
-          </ScrollView>
-      </>
+            <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    </>
   );
 }
 

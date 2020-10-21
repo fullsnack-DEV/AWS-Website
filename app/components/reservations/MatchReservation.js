@@ -68,112 +68,112 @@ export default function MatchReservation({ data, onPressButon }) {
     }
   };
   return (
-      <View>
-          {data.reservation_id ? (
-              <Text style={styles.reservationNumberText}>
-                  Reservation No: {data.reservation_id}
-              </Text>
-          ) : (
-              <Text style={styles.reservationNumberText}>
-                  Reservation No: {data.challenge_id}
-              </Text>
-          )}
+    <View>
+      {data.reservation_id ? (
+        <Text style={styles.reservationNumberText}>
+          Reservation No: {data.reservation_id}
+        </Text>
+      ) : (
+        <Text style={styles.reservationNumberText}>
+          Reservation No: {data.challenge_id}
+        </Text>
+      )}
 
-          <View style={styles.reservationTitleView}>
-              <TouchableOpacity>
-                  <LinearGradient
+      <View style={styles.reservationTitleView}>
+        <TouchableOpacity>
+          <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.borderView}>
-                      <View style={styles.dateView}>
-                          <Text style={styles.dateText}>Feb{'\n'}15</Text>
-                      </View>
-                  </LinearGradient>
-              </TouchableOpacity>
-              <View style={styles.reservationTypeView}>
-                  <Text style={[styles.reservationText, { color: '#FF4E00' }]}>
-                      RESERVATION REQUEST SENT
-                  </Text>
+            <View style={styles.dateView}>
+              <Text style={styles.dateText}>Feb{'\n'}15</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+        <View style={styles.reservationTypeView}>
+          <Text style={[styles.reservationText, { color: '#FF4E00' }]}>
+            RESERVATION REQUEST SENT
+          </Text>
 
-                  {data.responsible_to_secure_venue && (
-                  <Text style={styles.matchText}>Match · {data.sport}</Text>
-                  )}
-                  {data.referee && data.game && (
-                  <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
-                  )}
-                  {data.scorekeeper && data.game && (
-                  <Text style={styles.matchText}>
-                      Scorekeeper · {data.game.sport}
-                  </Text>
-                  )}
-              </View>
-              <View style={styles.amountView}>
-                  <Text style={styles.amountText}>${data.amount} CAD</Text>
-                  <Text style={styles.cancelAmountText}>$35 CAD</Text>
-              </View>
-          </View>
+          {data.responsible_to_secure_venue && (
+            <Text style={styles.matchText}>Match · {data.sport}</Text>
+          )}
+          {data.referee && data.game && (
+            <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
+          )}
+          {data.scorekeeper && data.game && (
+            <Text style={styles.matchText}>
+              Scorekeeper · {data.game.sport}
+            </Text>
+          )}
+        </View>
+        <View style={styles.amountView}>
+          <Text style={styles.amountText}>${data.amount} CAD</Text>
+          <Text style={styles.cancelAmountText}>$35 CAD</Text>
+        </View>
+      </View>
 
-          {data.responsible_to_secure_venue
+      {data.responsible_to_secure_venue
       && data.invited_by === myID
       && data.invited_to === data.home_team.user_id ? (
-          <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-              <Image source={images.requestOut} style={styles.inOutImageView} />
-              <View style={styles.entityView}>
-                  {data.home_team.thumbnail && (
-                  <Image
+        <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
+          <Image source={images.requestOut} style={styles.inOutImageView} />
+          <View style={styles.entityView}>
+            {data.home_team.thumbnail && (
+              <Image
                 source={{ uri: data.home_team.thumbnail }}
                 style={styles.profileImage}
               />
-                  )}
-                  {data.home_team && (
-                  <Text style={styles.entityName}>
-                      {data.home_team.full_name}
-                      <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                          {' '}
-                          (challenger){' '}
-                      </Text>
-                  </Text>
-                  )}
-              </View>
-          </View>
-            ) : (
-                <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-                    <Image source={images.requestIn} style={styles.inOutImageView} />
-                    <View style={styles.entityView}>
-                        <Image source={images.teamPlaceholder} style={styles.profileImage} />
-                        {/* {data.away_team.thumbnail && <Image source={{uri: data.away_team.thumbnail}} style={styles.profileImage} />} */}
-                        {data.away_team && (
-                        <Text style={styles.entityName}>
-                            {data.away_team.full_name}
-                            <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                                {' '}
-                                (challengee){' '}
-                            </Text>
-                        </Text>
-                        )}
-                    </View>
-                </View>
             )}
+            {data.home_team && (
+              <Text style={styles.entityName}>
+                {data.home_team.full_name}
+                <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+                  {' '}
+                  (challenger){' '}
+                </Text>
+              </Text>
+            )}
+          </View>
+        </View>
+        ) : (
+          <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
+            <Image source={images.requestIn} style={styles.inOutImageView} />
+            <View style={styles.entityView}>
+              <Image source={images.teamPlaceholder} style={styles.profileImage} />
+              {/* {data.away_team.thumbnail && <Image source={{uri: data.away_team.thumbnail}} style={styles.profileImage} />} */}
+              {data.away_team && (
+                <Text style={styles.entityName}>
+                  {data.away_team.full_name}
+                  <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+                    {' '}
+                    (challengee){' '}
+                  </Text>
+                </Text>
+              )}
+            </View>
+          </View>
+        )}
 
-          {data.game ? <GameCard data={data.game} /> : <GameCard data={data} />}
+      {data.game ? <GameCard data={data.game} /> : <GameCard data={data} />}
 
-          {data.status === 'pending' ? <TouchableOpacity>
-              <LinearGradient
+      {data.status === 'pending' ? <TouchableOpacity>
+        <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
           style={styles.pendingButton}>
-                  <Text style={styles.pendingTimerText}>Respond within 1d 23h 59m</Text>
-              </LinearGradient>
-          </TouchableOpacity> : <TouchableOpacity onPress={onPressButon}>
-              <LinearGradient
+          <Text style={styles.pendingTimerText}>Respond within 1d 23h 59m</Text>
+        </LinearGradient>
+      </TouchableOpacity> : <TouchableOpacity onPress={onPressButon}>
+        <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.borderButtonView}>
-                  <View style={styles.borderButtonWhiteView}>
-                      <Text style={styles.detailButtonText}>DETAILS</Text>
-                  </View>
-              </LinearGradient>
-          </TouchableOpacity>}
+          <View style={styles.borderButtonWhiteView}>
+            <Text style={styles.detailButtonText}>DETAILS</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>}
 
-          <View style={styles.bigDivider}></View>
-      </View>
+      <View style={styles.bigDivider}></View>
+    </View>
   );
 }
 

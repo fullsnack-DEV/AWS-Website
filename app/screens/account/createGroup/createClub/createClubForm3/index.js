@@ -75,21 +75,21 @@ function CreateClubForm3({ navigation, route }) {
   };
 
   return (
-      <>
-          <ScrollView style={ styles.mainContainer }>
-              <View style={ styles.formSteps }>
-                  <View style={ styles.form1 }></View>
-                  <View style={ styles.form2 }></View>
-                  <View style={ styles.form3 }></View>
-              </View>
+    <>
+      <ScrollView style={ styles.mainContainer }>
+        <View style={ styles.formSteps }>
+          <View style={ styles.form1 }></View>
+          <View style={ styles.form2 }></View>
+          <View style={ styles.form3 }></View>
+        </View>
 
-              <Text style={ styles.registrationText }>
-                  {strings.membershipFeeTitle}
-              </Text>
+        <Text style={ styles.registrationText }>
+          {strings.membershipFeeTitle}
+        </Text>
 
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
-                  <View
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
+          <View
             style={ {
               flexDirection: 'row',
 
@@ -100,7 +100,7 @@ function CreateClubForm3({ navigation, route }) {
               marginRight: 15,
               justifyContent: 'space-between',
             } }>
-                      <RNPickerSelect
+            <RNPickerSelect
               placeholder={ {
                 label: strings.feeCyclePlaceholder,
                 value: null,
@@ -154,26 +154,26 @@ function CreateClubForm3({ navigation, route }) {
                 },
               } }
               Icon={ () => (
-                  <Image
+                <Image
                     source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }
             />
-                      <View style={ styles.halfMatchFeeView }>
-                          <TextInput
+            <View style={ styles.halfMatchFeeView }>
+              <TextInput
                 placeholder={ strings.enterFeePlaceholder }
                 style={ styles.halffeeText }
                 keyboardType={ 'decimal-pad' }
                 onChangeText={ (text) => setMembershipFee(text) }
                 value={ membershipFee }></TextInput>
-                          <Text style={ styles.curruency }>CAD</Text>
-                      </View>
-                  </View>
-              </View>
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
-                  <TextInput
+              <Text style={ styles.curruency }>CAD</Text>
+            </View>
+          </View>
+        </View>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
+          <TextInput
             style={ styles.descriptionTxt }
             onChangeText={ (text) => setMembershipFeeDetail(text) }
             value={ membershipFeeDetail }
@@ -181,20 +181,20 @@ function CreateClubForm3({ navigation, route }) {
             numberOfLines={ 4 }
             placeholder={ strings.membershipPlaceholder }
           />
-              </View>
-              <TouchableOpacity
+        </View>
+        <TouchableOpacity
           onPress={ () => {
             console.log('filling ended..');
             creatClubCall();
           } }>
-                  <LinearGradient
+          <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-                      <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>
-          </ScrollView>
-      </>
+            <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    </>
   );
 }
 

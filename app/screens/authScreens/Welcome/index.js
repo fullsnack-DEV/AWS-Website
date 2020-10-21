@@ -166,37 +166,37 @@ function WelcomeScreen({ navigation }) {
       });
   }
   return (
-      <View style={ styles.mainContainer }>
-          <ActivityLoader visible={ loading } />
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.signUpBg1 } />
+    <View style={ styles.mainContainer }>
+      <ActivityLoader visible={ loading } />
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.signUpBg1 } />
 
-          <View style={ styles.logoContainer }>
-              <Image style={ styles.logo } source={ images.townsCupLogo } />
-              <Text style={ styles.logoTitle }>{strings.townsCupTitle}</Text>
-              <Text style={ styles.logoTagLine }>{strings.townsCupTagLine}</Text>
-          </View>
+      <View style={ styles.logoContainer }>
+        <Image style={ styles.logo } source={ images.townsCupLogo } />
+        <Text style={ styles.logoTitle }>{strings.townsCupTitle}</Text>
+        <Text style={ styles.logoTagLine }>{strings.townsCupTagLine}</Text>
+      </View>
 
-          <Text style={ styles.welcome }>{strings.welCome}</Text>
-          <Text style={ styles.welcomeText }>{strings.welcomeText}</Text>
+      <Text style={ styles.welcome }>{strings.welCome}</Text>
+      <Text style={ styles.welcomeText }>{strings.welcomeText}</Text>
 
-          <FacebookButton onPress={ () => onFacebookButtonPress() }/>
-          <GoogleButton onPress={ () => onGoogleButtonPress() }/>
+      <FacebookButton onPress={ () => onFacebookButtonPress() }/>
+      <GoogleButton onPress={ () => onGoogleButtonPress() }/>
 
-          <TouchableOpacity
+      <TouchableOpacity
         style={ [styles.imgWithText, styles.allButton] }
         onPress={ () => navigation.navigate('SignupScreen')
         }>
-              <Image source={ images.email } style={ styles.signUpImg } />
-              <Text style={ styles.signUpText }>{strings.signUpText}</Text>
-          </TouchableOpacity>
+        <Image source={ images.email } style={ styles.signUpImg } />
+        <Text style={ styles.signUpText }>{strings.signUpText}</Text>
+      </TouchableOpacity>
 
-          <TouchableOpacity
+      <TouchableOpacity
         onPress={ () => navigation.navigate('LoginScreen') }
         style={ styles.alreadyView }>
-              <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
-          </TouchableOpacity>
-      </View>
+        <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 

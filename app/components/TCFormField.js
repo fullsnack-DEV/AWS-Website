@@ -15,16 +15,16 @@ function TCFormField({ name, ...otherProps }) {
     values,
   } = useFormikContext();
   return (
-      <>
-          <TCTextField
+    <>
+      <TCTextField
         onChangeText={ handleChange(name) }
         onBlur={ () => setFieldTouched(name) }
         value={ values[name] }
         // onBlur={handleBlur(name)}
         { ...otherProps }
       />
-          <ErrorMessage error={ errors[name] } visible={ touched[name] } />
-      </>
+      <ErrorMessage error={ errors[name] } visible={ touched[name] } />
+    </>
   );
 }
 

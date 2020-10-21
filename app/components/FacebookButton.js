@@ -13,14 +13,14 @@ import strings from '../Constants/String'
 
 function FacebookButton({ onPress }) {
   return (
-      <SafeAreaView>
-          <TouchableOpacity
+    <SafeAreaView>
+      <TouchableOpacity
         style={ [styles.imgWithText, styles.allButton] }
         onPress={ onPress }>
-              <Image source={ images.signUpFb } style={ styles.fbImg } />
-              <Text style={ styles.fbText }>{strings.fbText}</Text>
-          </TouchableOpacity>
-      </SafeAreaView>
+        <Image source={ images.signUpFb } style={ styles.fbImg } />
+        <Text style={ styles.fbText }>{strings.fbText}</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 

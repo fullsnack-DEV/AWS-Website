@@ -57,11 +57,11 @@ export default function App() {
   QB.settings.enableAutoReconnect({ enable: true });
 
   return (
-      <AuthContext.Provider value={authValue}>
-          <NavigationContainer theme={navigationTheme}>
-              {user ? <AppNavigator /> : <AuthNavigator />}
-              {/* <AppNavigator /> */}
-          </NavigationContainer>
-      </AuthContext.Provider>
+    <AuthContext.Provider value={authValue}>
+      <NavigationContainer theme={navigationTheme}>
+        {user ? <AppNavigator /> : <AuthNavigator />}
+        {/* <AppNavigator /> */}
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }

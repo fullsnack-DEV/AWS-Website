@@ -37,112 +37,112 @@ export default function GameCard({ data, onPress }) {
   };
 
   return (
-      <TouchableOpacity onPress={onPress}>
-          <View style={styles.backgroundView}>
-              <View
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.backgroundView}>
+        <View
           style={[
             styles.colorView,
             { backgroundColor: colors.yellowEventColor },
           ]}>
-                  <View style={styles.dateView}>
-                      <Text style={styles.dateMonthText}>
-                          {months[new Date(data.start_datetime).getMonth()]}
-                      </Text>
-                      <Text style={styles.dateText}>
-                          {new Date(data.start_datetime).getDate()}
-                      </Text>
-                  </View>
-              </View>
-              <View style={styles.eventText}>
-                  <Text style={styles.eventTitle}>{data.sport}</Text>
-                  <View style={styles.bottomView}>
-                      <Text style={styles.eventTimeLocation}>
-                          {formatAMPM(new Date(data.start_datetime))} -{' '}
-                          {formatAMPM(new Date(data.end_datetime))}
-                      </Text>
-                      <Text style={styles.textSaperator}> | </Text>
-                      <Text style={styles.addressView} numberOfLines={1}>
-                          {data.venue.address}
-                      </Text>
-                  </View>
-                  <View style={styles.gameVSView}>
-                      {data.userChallenge || data.singlePlayerGame ? (
-                          <View style={styles.leftGameView}>
-                              {data.home_team.thumbnail ? (
-                                  <Image
-                    source={{ uri: data.home_team.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                              ) : (
-                                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                              )}
-                              <Text style={styles.leftEntityText} numberOfLines={2}>
-                                  {data.home_team.full_name}
-                              </Text>
-                          </View>
-                      ) : (
-                          <View style={styles.leftGameView}>
-                              {data.home_team.thumbnail ? (
-                                  <Image
-                    source={{ uri: data.home_team.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                              ) : (
-                                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                              )}
-                              <Text style={styles.leftEntityText} numberOfLines={2}>
-                                  {data.home_team.group_name}
-                              </Text>
-                          </View>
-                      )}
-
-                      <Text style={styles.vsView}>VS</Text>
-
-                      {data.userChallenge || data.singlePlayerGame ? (
-                          <View style={styles.rightGameView}>
-                              <Text style={styles.rightEntityText} numberOfLines={2}>
-                                  {data.away_team.full_name}
-                              </Text>
-                              {data.away_team.thumbnail ? (
-                                  <Image
-                    source={{ uri: data.away_team.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                              ) : (
-                                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                              )}
-                          </View>
-                      ) : (
-                          <View style={styles.rightGameView}>
-                              <Text style={styles.rightEntityText} numberOfLines={2}>
-                                  {data.away_team.group_name}
-                              </Text>
-                              {data.away_team.thumbnail ? (
-                                  <Image
-                    source={{ uri: data.away_team.thumbnail }}
-                    style={styles.profileImage}
-                  />
-                              ) : (
-                                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                              )}
-                          </View>
-                      )}
-                  </View>
-              </View>
+          <View style={styles.dateView}>
+            <Text style={styles.dateMonthText}>
+              {months[new Date(data.start_datetime).getMonth()]}
+            </Text>
+            <Text style={styles.dateText}>
+              {new Date(data.start_datetime).getDate()}
+            </Text>
           </View>
-      </TouchableOpacity>
+        </View>
+        <View style={styles.eventText}>
+          <Text style={styles.eventTitle}>{data.sport}</Text>
+          <View style={styles.bottomView}>
+            <Text style={styles.eventTimeLocation}>
+              {formatAMPM(new Date(data.start_datetime))} -{' '}
+              {formatAMPM(new Date(data.end_datetime))}
+            </Text>
+            <Text style={styles.textSaperator}> | </Text>
+            <Text style={styles.addressView} numberOfLines={1}>
+              {data.venue.address}
+            </Text>
+          </View>
+          <View style={styles.gameVSView}>
+            {data.userChallenge || data.singlePlayerGame ? (
+              <View style={styles.leftGameView}>
+                {data.home_team.thumbnail ? (
+                  <Image
+                    source={{ uri: data.home_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                )}
+                <Text style={styles.leftEntityText} numberOfLines={2}>
+                  {data.home_team.full_name}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.leftGameView}>
+                {data.home_team.thumbnail ? (
+                  <Image
+                    source={{ uri: data.home_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                )}
+                <Text style={styles.leftEntityText} numberOfLines={2}>
+                  {data.home_team.group_name}
+                </Text>
+              </View>
+            )}
+
+            <Text style={styles.vsView}>VS</Text>
+
+            {data.userChallenge || data.singlePlayerGame ? (
+              <View style={styles.rightGameView}>
+                <Text style={styles.rightEntityText} numberOfLines={2}>
+                  {data.away_team.full_name}
+                </Text>
+                {data.away_team.thumbnail ? (
+                  <Image
+                    source={{ uri: data.away_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                )}
+              </View>
+            ) : (
+              <View style={styles.rightGameView}>
+                <Text style={styles.rightEntityText} numberOfLines={2}>
+                  {data.away_team.group_name}
+                </Text>
+                {data.away_team.thumbnail ? (
+                  <Image
+                    source={{ uri: data.away_team.thumbnail }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                )}
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 

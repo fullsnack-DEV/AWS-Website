@@ -47,29 +47,29 @@ export default function AddBirthdayScreen({ navigation }) {
   };
 
   return (
-      <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.bgImage } />
+    <View style={ styles.mainContainer }>
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.bgImage } />
 
-          <Text style={ styles.checkEmailText }>{strings.addBirthdayText}</Text>
-          <Text style={ styles.resetText }>{strings.notDisplayText}</Text>
+      <Text style={ styles.checkEmailText }>{strings.addBirthdayText}</Text>
+      <Text style={ styles.resetText }>{strings.notDisplayText}</Text>
 
-          <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
+      <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
             backgroundColor={ colors.parrotColor }
             height={ hp('30%') }
             width={ wp('75%') }
             overlayColor={ 'transparent' }
             skipAndroidStatusBar= {true}>
-              <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
-          </Tooltip>
+        <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
+      </Tooltip>
 
-          {/* Date.parse(dateValue) */}
+      {/* Date.parse(dateValue) */}
 
-          <View style={ styles.matchFeeTxt }>
-              <Text style={ styles.dateText } onPress={showDatepicker}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
-          </View>
+      <View style={ styles.matchFeeTxt }>
+        <Text style={ styles.dateText } onPress={showDatepicker}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+      </View>
 
-          <TCButton
+      <TCButton
         title={ strings.continueCapTitle }
         onPress={ async () => {
           const user = await Utility.getStorage('userInfo');
@@ -84,7 +84,7 @@ export default function AddBirthdayScreen({ navigation }) {
         } }
         extraStyle={ { marginTop: 50 } }
       />
-          {show && <RNDateTimePicker
+      {show && <RNDateTimePicker
           testID="dateTimePicker"
           is24Hour={ true }
           display="default"
@@ -98,6 +98,6 @@ export default function AddBirthdayScreen({ navigation }) {
           } }
         />}
 
-      </View>
+    </View>
   );
 }

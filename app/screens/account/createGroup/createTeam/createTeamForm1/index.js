@@ -120,62 +120,62 @@ function CreateTeamForm1({ navigation, route }) {
   };
 
   return (
-      <>
-          <ScrollView style={styles.mainContainer}>
-              <View style={styles.formSteps}>
-                  <View style={styles.form1}></View>
-                  <View style={styles.form2}></View>
-                  <View style={styles.form3}></View>
-                  <View style={styles.form4}></View>
-              </View>
-              {parentGroupID !== '' && (
-              <View>
-                  <View>
-                      <View
+    <>
+      <ScrollView style={styles.mainContainer}>
+        <View style={styles.formSteps}>
+          <View style={styles.form1}></View>
+          <View style={styles.form2}></View>
+          <View style={styles.form3}></View>
+          <View style={styles.form4}></View>
+        </View>
+        {parentGroupID !== '' && (
+          <View>
+            <View>
+              <View
                 style={{
                   flexDirection: 'row',
                   marginLeft: 15,
                   marginTop: 15,
                 }}>
-                          {route.params.clubObject.full_image ? (
-                              <Image
+                {route.params.clubObject.full_image ? (
+                  <Image
                     source={{ uri: route.params.clubObject.full_image }}
                     style={styles.profileImgGroup}
                   />
-                          ) : (
-                              <Image source={images.club_ph} style={styles.profileImgGroup} />
-                          )}
-                          <View
+                ) : (
+                  <Image source={images.club_ph} style={styles.profileImgGroup} />
+                )}
+                <View
                   style={{
                     flexDirection: 'row',
                     alignSelf: 'center',
                     height: 20,
                   }}>
-                              <Text style={styles.nameText}>
-                                  {route.params.clubObject.group_name}
-                              </Text>
-                              <View style={styles.identityViewClub}>
-                                  <Text style={styles.badgeCounter}>C</Text>
-                              </View>
-                          </View>
-                      </View>
-                  </View>
-                  <View>
-                      <View style={styles.separatorLine}></View>
-                      <Text style={styles.clubBelongText}>
-                          {strings.clubBelongText} {route.params.clubObject.group_name}{' '}
-                          {strings.clubText}.
-                      </Text>
-                  </View>
-              </View>
-              )}
-
-              <View>
-                  <Text style={styles.fieldTitle}>
-                      {strings.SportsTextFieldTitle}
-                      <Text style={styles.mendatory}> {strings.star}</Text>
+                  <Text style={styles.nameText}>
+                    {route.params.clubObject.group_name}
                   </Text>
-                  <RNPickerSelect
+                  <View style={styles.identityViewClub}>
+                    <Text style={styles.badgeCounter}>C</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View>
+              <View style={styles.separatorLine}></View>
+              <Text style={styles.clubBelongText}>
+                {strings.clubBelongText} {route.params.clubObject.group_name}{' '}
+                {strings.clubText}.
+              </Text>
+            </View>
+          </View>
+        )}
+
+        <View>
+          <Text style={styles.fieldTitle}>
+            {strings.SportsTextFieldTitle}
+            <Text style={styles.mendatory}> {strings.star}</Text>
+          </Text>
+          <RNPickerSelect
             placeholder={{
               label: strings.selectSportPlaceholder,
               value: '',
@@ -195,68 +195,68 @@ function CreateTeamForm1({ navigation, route }) {
             style={{ ...styles }}
             value={sports}
             Icon={() => (
-                <Image source={images.dropDownArrow} style={styles.downArrow} />
+              <Image source={images.dropDownArrow} style={styles.downArrow} />
             )}
           />
-              </View>
-              <View style={styles.fieldView}>
-                  <Text style={styles.fieldTitle}>
-                      {strings.teamNameTitle}
-                      <Text style={styles.mendatory}> *</Text>
-                  </Text>
+        </View>
+        <View style={styles.fieldView}>
+          <Text style={styles.fieldTitle}>
+            {strings.teamNameTitle}
+            <Text style={styles.mendatory}> *</Text>
+          </Text>
 
-                  <TextInput
+          <TextInput
             placeholder={strings.teamNamePlaceholder}
             style={styles.matchFeeTxt}
             onChangeText={(text) => setTeamName(text)}
             value={teamName}></TextInput>
-              </View>
-              {sports === 'tennis' && (
-              <View>
-                  <Text style={styles.fieldTitle}>{strings.playerTitle}</Text>
-                  <View style={styles.fieldView}>
-                      <Text style={styles.playerTitle}>{strings.player1Title}</Text>
-                      <View style={styles.searchView}>
-                          <Image source={images.searchLocation} style={styles.searchImg} />
-                          <TouchableOpacity
+        </View>
+        {sports === 'tennis' && (
+          <View>
+            <Text style={styles.fieldTitle}>{strings.playerTitle}</Text>
+            <View style={styles.fieldView}>
+              <Text style={styles.playerTitle}>{strings.player1Title}</Text>
+              <View style={styles.searchView}>
+                <Image source={images.searchLocation} style={styles.searchImg} />
+                <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('SearchPlayerScreen', { player: 1 });
                   }}>
-                              <TextInput
+                  <TextInput
                     style={styles.searchTextField}
                     placeholder={strings.searchHereText}
                     onChangeText={(text) => setPlayer1(text)}
                     value={player1}
                     editable={false}
                     pointerEvents="none"></TextInput>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
-                  <View style={styles.fieldView}>
-                      <Text style={styles.playerTitle}>{strings.player2Title}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.fieldView}>
+              <Text style={styles.playerTitle}>{strings.player2Title}</Text>
 
-                      <View style={styles.searchView}>
-                          <Image source={images.searchLocation} style={styles.searchImg} />
-                          <TouchableOpacity
+              <View style={styles.searchView}>
+                <Image source={images.searchLocation} style={styles.searchImg} />
+                <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('SearchPlayerScreen', { player: 2 });
                   }}>
-                              <TextInput
+                  <TextInput
                     style={styles.searchTextField}
                     placeholder={strings.searchHereText}
                     onChangeText={(text) => setPlayer2(text)}
                     value={player2}
                     editable={false}
                     pointerEvents="none"></TextInput>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
+                </TouchableOpacity>
               </View>
-              )}
-              {sports !== 'tennis' && (
-              <View style={styles.fieldView}>
-                  <Text style={styles.fieldTitle}>{strings.genderTitle}</Text>
-                  <RNPickerSelect
+            </View>
+          </View>
+        )}
+        {sports !== 'tennis' && (
+          <View style={styles.fieldView}>
+            <Text style={styles.fieldTitle}>{strings.genderTitle}</Text>
+            <RNPickerSelect
               placeholder={{
                 label: strings.selectGenderPlaceholder,
                 value: '',
@@ -274,18 +274,18 @@ function CreateTeamForm1({ navigation, route }) {
               }}
               value={gender}
               Icon={() => (
-                  <Image source={images.dropDownArrow} style={styles.downArrow} />
+                <Image source={images.dropDownArrow} style={styles.downArrow} />
               )}
             />
-              </View>
-              )}
+          </View>
+        )}
 
-              <View style={styles.fieldView}>
-                  {sports !== 'tennis' && (
-                  <Text style={styles.fieldTitle}>{strings.membersAgeTitle}</Text>
-                  )}
-                  {sports !== 'tennis' && (
-                  <View
+        <View style={styles.fieldView}>
+          {sports !== 'tennis' && (
+            <Text style={styles.fieldTitle}>{strings.membersAgeTitle}</Text>
+          )}
+          {sports !== 'tennis' && (
+            <View
               style={{
                 flexDirection: 'row',
 
@@ -296,7 +296,7 @@ function CreateTeamForm1({ navigation, route }) {
                 marginRight: 15,
                 justifyContent: 'space-between',
               }}>
-                      <RNPickerSelect
+              <RNPickerSelect
                 placeholder={{
                   label: strings.minPlaceholder,
                   value: 0,
@@ -347,13 +347,13 @@ function CreateTeamForm1({ navigation, route }) {
                 }}
                 value={minAge}
                 Icon={() => (
-                    <Image
+                  <Image
                     source={images.dropDownArrow}
                     style={styles.miniDownArrow}
                   />
                 )}
               />
-                      <RNPickerSelect
+              <RNPickerSelect
                 placeholder={{
                   label: strings.maxPlaceholder,
                   value: 0,
@@ -395,42 +395,42 @@ function CreateTeamForm1({ navigation, route }) {
                 }}
                 value={maxAge}
                 Icon={() => (
-                    <Image
+                  <Image
                     source={images.dropDownArrow}
                     style={styles.miniDownArrow}
                   />
                 )}
               />
-                  </View>
-                  )}
+            </View>
+          )}
 
-                  <View style={styles.fieldView}>
-                      <Text style={styles.fieldTitle}>
-                          {strings.locationTitle}
-                          <Text style={styles.mendatory}> {strings.star}</Text>
-                      </Text>
-                      <TouchableOpacity
+          <View style={styles.fieldView}>
+            <Text style={styles.fieldTitle}>
+              {strings.locationTitle}
+              <Text style={styles.mendatory}> {strings.star}</Text>
+            </Text>
+            <TouchableOpacity
               onPress={() => navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'CreateTeamForm1',
               })
               }>
-                          <TextInput
+              <TextInput
                 placeholder={strings.searchCityPlaceholder}
                 style={styles.matchFeeTxt}
                 value={location}
                 editable={false}
                 pointerEvents="none"></TextInput>
-                      </TouchableOpacity>
-                  </View>
-                  <View style={{ marginLeft: 15 }}>
-                      <Text style={styles.smallTxt}>
-                          (<Text style={styles.mendatory}>{strings.star} </Text>
-                          {strings.requiredText})
-                      </Text>
-                  </View>
-              </View>
-              {parentGroupID !== '' && (
-              <TouchableOpacity
+            </TouchableOpacity>
+          </View>
+          <View style={{ marginLeft: 15 }}>
+            <Text style={styles.smallTxt}>
+              (<Text style={styles.mendatory}>{strings.star} </Text>
+              {strings.requiredText})
+            </Text>
+          </View>
+        </View>
+        {parentGroupID !== '' && (
+          <TouchableOpacity
             onPress={() => {
               checkValidation();
 
@@ -468,15 +468,15 @@ function CreateTeamForm1({ navigation, route }) {
                 }
               }
             }}>
-                  <LinearGradient
+            <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
               style={styles.nextButton}>
-                      <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>
-              )}
-              {parentGroupID === '' && (
-              <TouchableOpacity
+              <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+        {parentGroupID === '' && (
+          <TouchableOpacity
             onPress={() => {
               checkValidation();
 
@@ -514,15 +514,15 @@ function CreateTeamForm1({ navigation, route }) {
                 }
               }
             }}>
-                  <LinearGradient
+            <LinearGradient
               colors={[colors.yellowColor, colors.themeColor]}
               style={styles.nextButton}>
-                      <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>
-              )}
-          </ScrollView>
-      </>
+              <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+    </>
   );
 }
 

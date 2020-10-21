@@ -30,18 +30,18 @@ export default function GameRecordList({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
-              <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
-          </TouchableWithoutFeedback>
+          <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
+        </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
 
   return (
-      <View style={ styles.mainContainer }>
-          <View style={ { flexDirection: 'row' } }>
-              <View
+    <View style={ styles.mainContainer }>
+      <View style={ { flexDirection: 'row' } }>
+        <View
           style={ {
             alignSelf: 'center',
             justifyContent: 'flex-end',
@@ -49,7 +49,7 @@ export default function GameRecordList({ navigation }) {
             flexDirection: 'row',
             flex: 1,
           } }>
-                  <Dash
+          <Dash
             style={ {
               width: 1,
               height: 36,
@@ -57,34 +57,34 @@ export default function GameRecordList({ navigation }) {
             } }
             dashColor={ colors.lightgrayColor }
           />
-              </View>
-              <View style={ styles.editorView }>
-                  <Text>Show editors</Text>
-                  <TouchableWithoutFeedback
+        </View>
+        <View style={ styles.editorView }>
+          <Text>Show editors</Text>
+          <TouchableWithoutFeedback
             onPress={ () => {
               setEditorChecked(!editorChecked);
             } }>
-                      {editorChecked === true ? (
-                          <Image source={ images.checkEditor } style={ styles.checkboxImg } />
-                      ) : (
-                          <Image source={ images.uncheckEditor } style={ styles.checkboxImg } />
-                      )}
-                  </TouchableWithoutFeedback>
-              </View>
-          </View>
+            {editorChecked === true ? (
+              <Image source={ images.checkEditor } style={ styles.checkboxImg } />
+            ) : (
+              <Image source={ images.uncheckEditor } style={ styles.checkboxImg } />
+            )}
+          </TouchableWithoutFeedback>
+        </View>
+      </View>
 
-          <View style={ styles.headerView }>
-              <View style={ styles.leftView }>
-                  <View style={ styles.profileShadow }>
-                      <Image source={ images.team_ph } style={ styles.profileImg } />
-                  </View>
-                  <Text style={ styles.leftText } numberOfLines={ 2 }>
-                      Kishan Makani
-                  </Text>
-              </View>
-              <View style={ styles.centerView }>
-                  <Text style={ styles.centerText }>0</Text>
-                  <Dash
+      <View style={ styles.headerView }>
+        <View style={ styles.leftView }>
+          <View style={ styles.profileShadow }>
+            <Image source={ images.team_ph } style={ styles.profileImg } />
+          </View>
+          <Text style={ styles.leftText } numberOfLines={ 2 }>
+            Kishan Makani
+          </Text>
+        </View>
+        <View style={ styles.centerView }>
+          <Text style={ styles.centerText }>0</Text>
+          <Dash
             style={ {
               width: 1,
               height: 70,
@@ -94,19 +94,19 @@ export default function GameRecordList({ navigation }) {
             } }
             dashColor={ colors.lightgrayColor }
           />
-                  <Text style={ styles.centerText }>0</Text>
-              </View>
-              <View style={ styles.rightView }>
-                  <Text style={ styles.rightText } numberOfLines={ 2 }>
-                      Kishan Makani
-                  </Text>
-                  <View style={ styles.profileShadow }>
-                      <Image source={ images.team_ph } style={ styles.profileImg } />
-                  </View>
-              </View>
+          <Text style={ styles.centerText }>0</Text>
+        </View>
+        <View style={ styles.rightView }>
+          <Text style={ styles.rightText } numberOfLines={ 2 }>
+            Kishan Makani
+          </Text>
+          <View style={ styles.profileShadow }>
+            <Image source={ images.team_ph } style={ styles.profileImg } />
           </View>
+        </View>
+      </View>
 
-          <FlatList
+      <FlatList
         data={ [
           { key: 'Schedule' },
           { key: 'Referee' },
@@ -115,25 +115,25 @@ export default function GameRecordList({ navigation }) {
           { key: 'Leagues' },
         ] }
         renderItem={ () => (
-            <>
-                <TCGameScoreLeft editor={ editorChecked } />
-                <TCGameScoreRight editor={ editorChecked } />
-                <TCGameState />
-            </>
+          <>
+            <TCGameScoreLeft editor={ editorChecked } />
+            <TCGameScoreRight editor={ editorChecked } />
+            <TCGameState />
+          </>
         ) }
         scrollEnabled={ true }
       />
-          <View style={ styles.updatedByView }>
-              <Text
+      <View style={ styles.updatedByView }>
+        <Text
           style={ {
             color: colors.grayColor,
             // fontFamily: fonts.RLight,
             fontSize: 14,
             marginLeft: 10,
           } }>
-                  Last updated by{'\n'}(Kishan Makani Team)
-              </Text>
-              <Text
+          Last updated by{'\n'}(Kishan Makani Team)
+        </Text>
+        <Text
           style={ {
             color: colors.themeColor,
             // fontFamily: fonts.RLight,
@@ -141,9 +141,9 @@ export default function GameRecordList({ navigation }) {
             marginLeft: 10,
           } }>
 
-              </Text>
-          </View>
+        </Text>
       </View>
+    </View>
   );
 }
 

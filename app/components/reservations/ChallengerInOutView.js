@@ -13,20 +13,20 @@ export default function ChallengerInOutView({
 }) {
   return (
 
-      <View style={{ flexDirection: 'row', marginLeft: 15, marginTop: 20 }}>
-          <Image source={images.requestOut} style={styles.inOutImageView} />
-          <View style={styles.entityView}>
-              <Image source={images.teamPlaceholder} style={styles.profileImage} />
+    <View style={{ flexDirection: 'row', marginLeft: 15, marginTop: 20 }}>
+      <Image source={images.requestOut} style={styles.inOutImageView} />
+      <View style={styles.entityView}>
+        <Image source={images.teamPlaceholder} style={styles.profileImage} />
 
-              <Text style={styles.entityName}>
-                  {entityName}
-                  <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                      {' '}
-                      {requestType === 'in' ? '(challenger)' : '(challengee)'}{' '}
-                  </Text>
-              </Text>
-          </View>
+        <Text style={styles.entityName}>
+          {entityName}
+          <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+            {' '}
+            {requestType === 'in' ? '(challenger)' : '(challengee)'}{' '}
+          </Text>
+        </Text>
       </View>
+    </View>
 
   );
 }

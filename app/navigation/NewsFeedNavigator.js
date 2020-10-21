@@ -14,14 +14,14 @@ import colors from '../Constants/Colors'
 const Stack = createStackNavigator();
 
 const NewsFeedNavigator = () => (
-    <Stack.Navigator
+  <Stack.Navigator
       screenOptions={ {
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
         // headerTitle: true,
         headerBackTitleVisible: false,
       } }>
-        <Stack.Screen
+    <Stack.Screen
         name="FeedsScreen"
         component={ FeedsScreen }
         options={ {
@@ -37,7 +37,7 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="WritePostScreen"
         component={ WritePostScreen }
         options={ {
@@ -54,7 +54,7 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="EditPostScreen"
         component={ EditPostScreen }
         options={ {
@@ -71,7 +71,7 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="WriteCommentScreen"
         component={ WriteCommentScreen }
         options={ {
@@ -88,7 +88,7 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="NewsFeedVideoPlayer"
         component={ NewsFeedVideoPlayer }
         options={ {
@@ -104,7 +104,7 @@ const NewsFeedNavigator = () => (
         } }
         // options={{headerShown: false}}
       />
-        <Stack.Screen
+    <Stack.Screen
         name="FullVideoScreen"
         component={ FullVideoScreen }
         options={ {
@@ -121,7 +121,7 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
-    </Stack.Navigator>
+  </Stack.Navigator>
 );
 
 export default NewsFeedNavigator;

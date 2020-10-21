@@ -6,12 +6,12 @@ function TCForm({
   initialValues, onSubmit, validationSchema, children,
 }) {
   return (
-      <Formik
+    <Formik
       initialValues={ initialValues }
       onSubmit={ onSubmit }
       validationSchema={ validationSchema }>
-          {() => <>{children}</>}
-      </Formik>
+      {() => <>{children}</>}
+    </Formik>
   );
 }
 

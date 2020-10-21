@@ -14,14 +14,14 @@ import strings from '../Constants/String'
 
 function GoogleButton({ onPress }) {
   return (
-      <SafeAreaView>
-          <TouchableOpacity
+    <SafeAreaView>
+      <TouchableOpacity
         style={ [styles.imgWithText, styles.allButton] }
         onPress={ onPress }>
-              <Image source={ images.signUpGoogle } style={ styles.googleImg } />
-              <Text style={ styles.googleText }>{strings.googleText}</Text>
-          </TouchableOpacity>
-      </SafeAreaView>
+        <Image source={ images.signUpGoogle } style={ styles.googleImg } />
+        <Text style={ styles.googleText }>{strings.googleText}</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
