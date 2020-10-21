@@ -35,7 +35,7 @@ import GroupSettingPrivacyScreen from '../screens/account/groupSettingPrivacy';
 import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy';
 import ChangePasswordScreen from '../screens/account/userSettingPrivacy/changePassword'
 import PersonalInformationScreen from '../screens/account/userSettingPrivacy/personalInformation'
-
+import GroupMembers from '../screens/account/groupConnections/GroupMembers';
 import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
@@ -452,6 +452,22 @@ const AccountNavigator = () => (
         component={ PersonalInformationScreen }
         options={ {
           title: 'Personal Information',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+        <Stack.Screen
+        name="GroupMembers"
+        component={ GroupMembers }
+        options={ {
+          title: 'Connection',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

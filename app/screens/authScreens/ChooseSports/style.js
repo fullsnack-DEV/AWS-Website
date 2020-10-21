@@ -23,6 +23,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: wp('2%'),
   },
+  unCheckboxImg: {
+    width: wp('5.5%'),
+
+    tintColor: colors.whiteColor,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
   checkboxImg: {
     width: wp('5.5%'),
 

@@ -41,5 +41,6 @@ const colors = {
   grayEventColor: '#AAAAAA',
   orangeEventColor: '#FFAE01',
   veryLightGray: '#C4C4C4',
+  magnifyIconColor: '#B2B2B2',
 };
 export default colors;

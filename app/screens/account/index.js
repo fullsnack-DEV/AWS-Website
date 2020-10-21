@@ -33,7 +33,6 @@ import {
 import * as Utility from '../../utils/index';
 
 import images from '../../Constants/ImagePath';
-import { token_details } from '../../utils/constant';
 
 export default function AccountScreen({ navigation }) {
   const [switchBy, setSwitchBy] = useState('user');
@@ -88,7 +87,7 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
-    { key: 'Setting & Privacy' },
+
   ];
   const clubMenu = [
     { key: 'My Schedule' },
@@ -104,7 +103,6 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
-    { key: 'Setting & Privacy' },
   ];
 
   useLayoutEffect(() => {
@@ -120,15 +118,16 @@ export default function AccountScreen({ navigation }) {
     });
   }, [navigation]);
   useEffect(() => {
-    setloading(true);
-    getToken();
-    getTeamsList();
-    getClubList();
-    setloading(false);
+    Promise.all([
+      getOwnGroupList(),
+      getTeamsList(),
+      getClubList(),
+    ]).then(() => {
+      setloading(false);
+    });
   }, []);
 
-  const getParentClub = async (item) => {
-    setloading(true);
+  const getParentClub = (item) => {
     getParentClubDetail(item.group_id).then((response) => {
       if (response.status === true) {
         if (response.payload.club !== undefined) {
@@ -137,14 +136,12 @@ export default function AccountScreen({ navigation }) {
           setParentGroup(null);
         }
       } else {
-        alert(response.messages);
+        Alert.alert(response.messages);
       }
     });
-    setloading(false);
   };
-  const getToken = async () => {
+  const getOwnGroupList = async () => {
     try {
-      setloading(true);
       const switchByGroup = await Utility.getStorage('switchBy');
       setSwitchBy(switchByGroup);
       getUnreadCount().then((response) => {
@@ -155,16 +152,14 @@ export default function AccountScreen({ navigation }) {
           setSwitchBy('user');
           setGroupList([...clubs, ...teams]);
         } else {
-          alert(response.messages);
+          Alert.alert(response.messages);
         }
       });
     } catch (e) {
       Alert.alert('Towns Cup', e.messages)
     }
-    setloading(false);
   };
   const getTeamsList = async () => {
-    setloading(true);
     const switchByEntity = await Utility.getStorage('switchBy');
     if (switchByEntity === 'club') {
       const clubObject = await Utility.getStorage('club');
@@ -177,7 +172,7 @@ export default function AccountScreen({ navigation }) {
       });
     } else {
       getJoinedTeams().then((response) => {
-        console.log('response1111', response)
+        console.log('response::', response)
         if (response.status === true) {
           setTeamList(response.payload.teams);
         } else {
@@ -185,20 +180,16 @@ export default function AccountScreen({ navigation }) {
         }
       });
     }
-    setloading(false);
   };
 
   const getClubList = async () => {
-    setloading(true);
     getJoinedTeams().then((response) => {
       if (response.status === true) {
-        console.log('RESPONSE OF CLUB LIST::', response.payload);
         setClubList(response.payload.clubs);
       } else {
-        alert(response.messages);
+        Alert.alert(response.messages);
       }
     });
-    setloading(false);
   };
   const switchProfile = async ({ item }) => {
     setloading(true);
@@ -207,9 +198,7 @@ export default function AccountScreen({ navigation }) {
         const i = entities.indexOf(authContext.user);
         if (i === -1) {
           entities.unshift(authContext.user);
-          // setPlayerAdd(true);
           setGroupList(entities);
-          // setGroupList(entities);
         }
       }
       const index = entities.indexOf(item);
@@ -284,27 +273,26 @@ export default function AccountScreen({ navigation }) {
     setloading(false);
   };
   const handleLogOut = async () => {
-    await Utility.removeAuthKey('token');
+    Alert.alert(
+      'Towns Cup',
+      'Are you sure want to logout?',
+      [{
+        text: 'OK',
+        onPress: async () => {
+          await Utility.clearStorage();
+          QB.auth
+            .logout()
+          authContext.setUser(null);
+        },
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
 
-    const tokeen = await Utility.getStorage('token');
-    console.log('tokeeennn', tokeen);
-    if (tokeen === null) {
-      navigation.navigate('WelcomeScreen');
-    }
-    authContext.setUser(null);
-    await Utility.removeAuthKey('user');
-    await Utility.removeAuthKey('team');
-    await Utility.removeAuthKey('club');
-    await Utility.removeAuthKey('switchBy');
-    await Utility.removeAuthKey(token_details);
-    QB.auth
-      .logout()
-      .then(() => {
-        Alert.alert('signed out successfully');
-      })
-      .catch((e) => {
-        Alert.alert('Towns Cup', e.messages);
-      });
+      ],
+      { cancelable: false },
+    );
   };
   const handleSections = async (section) => {
     if (section === 'My Schedule') {
@@ -326,6 +314,8 @@ export default function AccountScreen({ navigation }) {
           switchBy: switchEntity,
         });
       }
+    } else if (section === 'Members') {
+      navigation.navigate('GroupMembers');
     }
   };
 
@@ -342,8 +332,8 @@ export default function AccountScreen({ navigation }) {
   };
   return (
       <SafeAreaView style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
           <ScrollView style={styles.mainContainer}>
-              <ActivityLoader visible={loading} />
 
               {parentGroup !== null && (
               <>
@@ -492,7 +482,7 @@ export default function AccountScreen({ navigation }) {
           memberKey="member"
           renderRow={(rowItem, rowId, sectionId) => (
               <>
-                  {switchBy === 'user' && sectionId === 3 && teamList.length > 0 && (
+                  {switchBy === 'user' && sectionId === 3 && (
                   <FlatList
                   data={teamList}
                   keyExtractor={(item) => item.group_id}
@@ -529,7 +519,7 @@ export default function AccountScreen({ navigation }) {
                   scrollEnabled={false}
                 />
                   )}
-                  {switchBy === 'user' && sectionId === 4 && clubList.length > 0 && (
+                  {switchBy === 'user' && sectionId === 4 && (
                   <FlatList
                   data={clubList}
                   keyExtractor={(item) => item.group_id}
@@ -567,7 +557,7 @@ export default function AccountScreen({ navigation }) {
                 />
                   )}
 
-                  {switchBy === 'club' && sectionId === 2 && teamList.length > 0 && (
+                  {switchBy === 'club' && sectionId === 2 && (
                   <FlatList
                   data={teamList}
                   keyExtractor={(item) => item.group_id}

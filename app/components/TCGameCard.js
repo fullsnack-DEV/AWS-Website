@@ -5,9 +5,9 @@ import {
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import images from '../Constants/ImagePath';
+import colors from '../Constants/Colors'
+import fonts from '../Constants/Fonts'
 
 export default function GameCard({ data, onPress }) {
   const months = [

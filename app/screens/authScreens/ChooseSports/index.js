@@ -92,7 +92,7 @@ function ChooseSportsScreen({ navigation, route }) {
         console.log('PAYLOAD::', JSON.stringify(response));
         getUserInfo();
       } else {
-        alert(response.messages);
+        Alert.alert(response.messages);
       }
       setloading(false);
     });
@@ -106,13 +106,13 @@ function ChooseSportsScreen({ navigation, route }) {
         authContext.setUser(response.payload);
       } else {
         console.log(response);
-        alert('Something went wrong..!!');
+        Alert.alert('Something went wrong..!!');
       }
       setloading(false);
     });
   };
 
-  renderItem = ({ item, index }) => (
+  const renderItem = ({ item, index }) => (
       <TouchableWithoutFeedback
         style={ styles.listItem }
         onPress={ () => {
@@ -139,7 +139,7 @@ function ChooseSportsScreen({ navigation, route }) {
               {sports[index].isChecked ? (
                   <Image source={ images.checkWhite } style={ styles.checkboxImg } />
               ) : (
-                  <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+                  <Image source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
               )}
           </View>
           <Separator />
@@ -159,7 +159,7 @@ function ChooseSportsScreen({ navigation, route }) {
               <FlatList
           data={ sports }
           keyExtractor={ (item) => item.sport_name }
-          renderItem={ this.renderItem }
+          renderItem={ renderItem }
         />
 
               <TCButton

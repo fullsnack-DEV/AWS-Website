@@ -108,6 +108,9 @@ export const getStorage = async (key) => {
   }
   return value;
 };
+export const clearStorage = async () => {
+  await AsyncStorage.clear();
+};
 
 export const widthPercentageToDP = (widthPercent) => {
   const screenWidth = Dimensions.get('window').width;

@@ -10,25 +10,25 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-export default function ReservationDetailButton({ ExpiryTime = '1d 23h 59m' }) {
+export default function ReservationDetailButton({ onPressButon }) {
   return (
-      <View>
 
-          <TouchableOpacity>
-              <LinearGradient
-                    colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.pendingButton}>
-                  <Text style={styles.pendingTimerText}>{strings.respondWithinText} {ExpiryTime}</Text>
-              </LinearGradient>
-          </TouchableOpacity>
+      <TouchableOpacity onPress={onPressButon}>
+          <LinearGradient
+            colors={[colors.yellowColor, colors.themeColor]}
+            style={styles.borderButtonView}>
+              <View style={styles.borderButtonWhiteView}>
+                  <Text style={styles.detailButtonText}>{strings.detailText}</Text>
+              </View>
+          </LinearGradient>
+      </TouchableOpacity>
 
-      </View>
   );
 }
 
 const styles = StyleSheet.create({
 
-  pendingButton: {
+  borderButtonView: {
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: 5,
@@ -38,12 +38,21 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: wp('86%'),
   },
-  pendingTimerText: {
+  detailButtonText: {
     alignSelf: 'center',
-    color: colors.whiteColor,
+    color: colors.themeColor,
     fontFamily: fonts.RBold,
     fontSize: 12,
     textAlign: 'center',
-  },
 
+  },
+  borderButtonWhiteView: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+    height: 27.5,
+    width: wp('85.5%'),
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

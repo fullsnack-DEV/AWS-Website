@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
-  TouchableWithoutFeedback,
+
   Alert,
   FlatList,
 } from 'react-native';
@@ -14,11 +13,14 @@ import { getReservationList } from '../../api/Reservationapi';
 import * as Utility from '../../utils/index';
 
 import MatchReservation from '../../components/reservations/MatchReservation';
-import colors from '../../Constants/Colors'
+
+import TCNoDataView from '../../components/TCNoDataView';
+import strings from '../../Constants/String';
+import TCScrollableTabs from '../../components/reservations/TCScrollableTabs';
 
 export default function ReservationScreen({ navigation }) {
   const [loading, setloading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState(0);
+
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
 
@@ -80,68 +82,40 @@ export default function ReservationScreen({ navigation }) {
   return (
       <View style={styles.mainContainer}>
           <ActivityLoader visible={loading} />
-          <View style={styles.tabContainer}>
-              <TouchableWithoutFeedback
-          style={styles.upcomingTab}
-          onPress={() => {
-            setSelectedTab(0);
-          }}>
-                  <View style={styles.upcomingTab}>
-                      {selectedTab === 0 ? (
-                          <View>
-                              <Text style={[styles.upcomingText, { color: colors.themeColor }]}>
-                                  Upcoming
-                              </Text>
-                              <View style={styles.selectedLine} />
-                          </View>
-                      ) : (
-                          <View>
-                              <Text style={styles.upcomingText}>Upcoming</Text>
-                          </View>
-                      )}
-                  </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
-          style={styles.pastTab}
-          onPress={() => {
-            setSelectedTab(1);
-          }}>
-                  <View style={styles.pastTab}>
-                      {selectedTab === 1 ? (
-                          <View>
-                              <Text style={[styles.pastText, { color: colors.themeColor }]}>
-                                  Past
-                              </Text>
-                              <View style={styles.selectedLine} />
-                          </View>
-                      ) : (
-                          <View>
-                              <Text style={styles.pastText}>Past</Text>
-                          </View>
-                      )}
-                  </View>
-              </TouchableWithoutFeedback>
-          </View>
 
-          {(upcoming.length === 0 && selectedTab === 0)
-      || (past.length === 0 && selectedTab === 1) ? (
-          <View style={styles.noDataPlaceholderView}>
-              <Text style={styles.noDataPlaceholder}>No Reservations Found</Text>
-          </View>
-            ) : (
-                <FlatList
-          data={selectedTab === 0 ? upcoming : past}
-          keyExtractor={(item) => item.activity_id}
-          renderItem={({ item }) => (
-              <MatchReservation
-              data={item}
-              onPressButon={() => {
-                navigation.navigate('ReservationDetailScreen');
-              }}
-            />
-          )}
-        />
-            )}
+          <TCScrollableTabs>
+              <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0
+                ? <TCNoDataView title={strings.noReservationFountText}/>
+                : <FlatList
+                    data={upcoming }
+                    keyExtractor={(item) => item.activity_id}
+                    renderItem={({ item }) => (
+                        <MatchReservation
+                            data={item}
+                            onPressButon={() => {
+                              navigation.navigate('ReservationDetailScreen');
+                            }}
+                       />
+                    )}
+                />
+                }</View>
+              <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 ? (
+                  <TCNoDataView title={strings.noReservationFountText}/>
+              ) : (
+                  <FlatList
+                      data={past}
+                      keyExtractor={(item) => item.activity_id}
+                      renderItem={({ item }) => (
+                          <MatchReservation
+                            data={item}
+                            onPressButon={() => {
+                              navigation.navigate('ReservationDetailScreen');
+                            }}
+                          />
+                      )}
+                   />
+              )}</View>
+          </TCScrollableTabs>
       </View>
   );
 }

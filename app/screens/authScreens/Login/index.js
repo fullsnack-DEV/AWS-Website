@@ -77,7 +77,6 @@ function LoginScreen({ navigation }) {
 
   const getUser = async (uid) => {
     getuserDetail(uid).then(async (response) => {
-      console.log('response', response)
       if (response.status) {
         await Utility.setStorage('user', response.payload);
         authContext.setUser(response.payload);
@@ -108,17 +107,19 @@ function LoginScreen({ navigation }) {
           throw new Error(response);
         }
       });
+      setloading(false);
     }
   };
 
   const login = (_email, _password) => {
+    setloading(true);
     firebase
       .auth()
       .signInWithEmailAndPassword(_email, _password)
       .then(() => {
         auth().onAuthStateChanged(onAuthStateChanged);
       })
-      .catch((error) => alert(error.messages || error.code || JSON.stringify(error)));
+      .catch((error) => Alert.alert(error.messages || error.code || JSON.stringify(error)));
   };
 
   // Psaaword Hide/Show function for setState
@@ -166,13 +167,13 @@ function LoginScreen({ navigation }) {
       })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
-          alert('This email address is not registerd');
+          Alert.alert('This email address is not registerd');
         }
         if (error.code === 'auth/email-already-in-use') {
-          alert('That email address is already in use!');
+          Alert.alert('That email address is already in use!');
         }
         if (error.code === 'auth/invalid-email') {
-          alert('That email address is invalid!');
+          Alert.alert('That email address is invalid!');
         }
       });
   };
@@ -205,13 +206,13 @@ function LoginScreen({ navigation }) {
       })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
-          alert('This email address is not registerd');
+          Alert.alert('This email address is not registerd');
         }
         if (error.code === 'auth/email-already-in-use') {
-          alert('That email address is already in use!');
+          Alert.alert('That email address is already in use!');
         }
         if (error.code === 'auth/invalid-email') {
-          alert('That email address is invalid!');
+          Alert.alert('That email address is invalid!');
         }
       });
   };
@@ -259,11 +260,9 @@ function LoginScreen({ navigation }) {
         title={strings.loginCapTitle}
         extraStyle={{ marginTop: hp('3%') }}
         onPress={() => {
-          setloading(true);
           if (validate()) {
             login(email, password);
           }
-          setloading(false);
         }}
       />
           <TouchableOpacity
@@ -275,15 +274,15 @@ function LoginScreen({ navigation }) {
               <Text style={styles.bottomText}>
                   <Text>By continuing you agree to Towny`s </Text>
 
-                  <Text style={styles.hyperlinkText} onPress={() => alert('Terms and services..')}>Terms of Service</Text>
+                  <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Terms and services..')}>Terms of Service</Text>
 
                   <Text>, We will manage information about you as described in our </Text>
 
-                  <Text style={styles.hyperlinkText} onPress={() => alert('Privacy policy..')}>Privacy Policy</Text>
+                  <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Privacy policy..')}>Privacy Policy</Text>
 
                   <Text> and </Text>
 
-                  <Text style={styles.hyperlinkText} onPress={() => alert('cookie policy..')}>Cookie Policy.</Text>
+                  <Text style={styles.hyperlinkText} onPress={() => Alert.alert('cookie policy..')}>Cookie Policy.</Text>
 
               </Text>
           </View>
