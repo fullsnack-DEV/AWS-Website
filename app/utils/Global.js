@@ -1,6 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from '@react-native-firebase/app';
+import NetInfo from '@react-native-community/netinfo'
+import { Alert } from 'react-native';
 import { token_details } from './constant';
 import * as Utility from './index';
 
@@ -35,11 +37,16 @@ const makeAPIRequest = async ({
   caller_id,
   caller,
 }) => {
+  const netStat = await NetInfo.fetch()
+  if (!netStat || !netStat.isConnected) {
+    Alert.alert('Error: Internet not available')
+    throw new Error('no-internet')
+  }
   const tokenDetails = await Utility.getStorage(token_details);
-  console.log('tokenDetails', tokenDetails)
   let authToken = tokenDetails.token;
   const currentDate = new Date();
   const expiryDate = new Date(tokenDetails.expirationTime);
+  // FIXME when token expire, wait for new token and then call api
   if (expiryDate.getTime() <= currentDate.getTime()) {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -63,12 +70,15 @@ const makeAPIRequest = async ({
     params,
     responseType,
   };
-  console.log('options', options)
-  const response = await axios(options);
-  if (response.data.status) {
-    return response.data;
+  try {
+    const response = await axios(options);
+    if (!response.data.status) {
+      throw new Error(response.data || response);
+    }
+    return response.data
+  } catch (e) {
+    throw new Error(e);
   }
-  throw new Error(response.data || response);
-};
+}
 
 export default makeAPIRequest;
