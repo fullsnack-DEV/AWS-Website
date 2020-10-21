@@ -16,17 +16,17 @@ function WritePost({ navigation, postDataItem }) {
   }
 
   return (
-      <View style={ styles.mainContainer }>
-          <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
+    <View style={ styles.mainContainer }>
+      <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
 
-          <Text
+      <Text
         style={ styles.writePostText }
         onPress={ () => navigation.navigate('WritePostScreen', { postDataItem }) }>
-              Write a post...
-          </Text>
+        Write a post...
+      </Text>
 
-          <View style={ styles.separatorLine }></View>
-      </View>
+      <View style={ styles.separatorLine }></View>
+    </View>
   );
 }
 

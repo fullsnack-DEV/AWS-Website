@@ -341,148 +341,148 @@ export default function AccountScreen({ navigation }) {
     }
   };
   return (
-      <SafeAreaView style={styles.mainContainer}>
-          <ScrollView style={styles.mainContainer}>
-              <ActivityLoader visible={loading} />
+    <SafeAreaView style={styles.mainContainer}>
+      <ScrollView style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
 
-              {parentGroup !== null && (
-              <>
-                  <TouchableWithoutFeedback
+        {parentGroup !== null && (
+          <>
+            <TouchableWithoutFeedback
               style={{
                 flexDirection: 'row',
                 padding: 15,
                 marginTop: Platform.OS === 'ios' ? 50 : 0,
               }}>
-                      <View
+              <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   alignContent: 'center',
                 }}>
-                          <Image source={images.clubLable} style={styles.clubLableView} />
-                          {!parentGroup.thumbnail && (
-                          <Image source={images.club_ph} style={styles.clubLable} />
-                          )}
+                <Image source={images.clubLable} style={styles.clubLableView} />
+                {!parentGroup.thumbnail && (
+                  <Image source={images.club_ph} style={styles.clubLable} />
+                )}
 
-                          {parentGroup.thumbnail && (
-                          <Image
+                {parentGroup.thumbnail && (
+                  <Image
                     source={{ uri: parentGroup.thumbnail }}
                     style={styles.clubLable}
                   />
-                          )}
-                          <View
+                )}
+                <View
                   style={{
                     flexDirection: 'row',
                     alignSelf: 'center',
                   }}>
-                              <Text style={styles.clubNameText}>
-                                  {parentGroup.group_name}
-                              </Text>
+                  <Text style={styles.clubNameText}>
+                    {parentGroup.group_name}
+                  </Text>
 
-                              <View style={styles.identityViewTop}>
-                                  <ImageBackground
+                  <View style={styles.identityViewTop}>
+                    <ImageBackground
                       source={images.clubSqure}
                       style={styles.badgeCounter}
                     />
-                                  <Text style={styles.badgeCounter}>C</Text>
-                              </View>
-                          </View>
-                      </View>
-                  </TouchableWithoutFeedback>
-              </>
-              )}
+                    <Text style={styles.badgeCounter}>C</Text>
+                  </View>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </>
+        )}
 
-              {switchBy === 'user' && (
-              <View style={styles.profileView}>
-                  {authContext.user.full_image === '' && (
-                  <Image
+        {switchBy === 'user' && (
+          <View style={styles.profileView}>
+            {authContext.user.full_image === '' && (
+              <Image
                 source={images.profilePlaceHolder}
                 style={styles.entityImg}
               />
-                  )}
-                  {authContext.user.full_image !== '' && (
-                  <Image
+            )}
+            {authContext.user.full_image !== '' && (
+              <Image
                 source={{ uri: authContext.user.thumbnail }}
                 style={styles.profileImg}
               />
-                  )}
+            )}
 
-                  <Text style={styles.nameText}>{authContext.user.full_name}</Text>
-                  <Text style={styles.locationText}>
-                      {authContext.user.city}, {authContext.user.state_abbr}
-                  </Text>
-              </View>
-              )}
-              {switchBy === 'team' && (
-              <View style={styles.profileView}>
-                  {!group.thumbnail && (
-                  <Image source={images.team_ph} style={styles.profileImgGroup} />
-                  )}
+            <Text style={styles.nameText}>{authContext.user.full_name}</Text>
+            <Text style={styles.locationText}>
+              {authContext.user.city}, {authContext.user.state_abbr}
+            </Text>
+          </View>
+        )}
+        {switchBy === 'team' && (
+          <View style={styles.profileView}>
+            {!group.thumbnail && (
+              <Image source={images.team_ph} style={styles.profileImgGroup} />
+            )}
 
-                  {group.thumbnail && (
-                  <Image
+            {group.thumbnail && (
+              <Image
                 source={{ uri: group.thumbnail }}
                 style={styles.profileImgGroup}
               />
-                  )}
-                  <View
+            )}
+            <View
               style={{
                 flexDirection: 'row',
                 alignSelf: 'center',
                 paddingLeft: 30,
               }}>
-                      <Text style={styles.nameText}>{group.group_name}</Text>
-                      <View style={styles.identityView}>
-                          <ImageBackground
+              <Text style={styles.nameText}>{group.group_name}</Text>
+              <View style={styles.identityView}>
+                <ImageBackground
                   source={images.teamSqure}
                   style={styles.badgeCounter}
                 />
-                          <Text style={styles.badgeCounter}>T</Text>
-                      </View>
-                  </View>
-
-                  <Text style={styles.locationText}>
-                      {group.city}, {group.state_abbr}
-                  </Text>
+                <Text style={styles.badgeCounter}>T</Text>
               </View>
-              )}
-              {switchBy === 'club' && (
-              <View style={styles.profileView}>
-                  {!group.thumbnail && (
-                  <Image source={images.club_ph} style={styles.profileImgGroup} />
-                  )}
+            </View>
 
-                  {group.thumbnail && (
-                  <Image
+            <Text style={styles.locationText}>
+              {group.city}, {group.state_abbr}
+            </Text>
+          </View>
+        )}
+        {switchBy === 'club' && (
+          <View style={styles.profileView}>
+            {!group.thumbnail && (
+              <Image source={images.club_ph} style={styles.profileImgGroup} />
+            )}
+
+            {group.thumbnail && (
+              <Image
                 source={{ uri: group.thumbnail }}
                 style={styles.profileImgGroup}
               />
-                  )}
-                  <View
+            )}
+            <View
               style={{
                 flexDirection: 'row',
                 alignSelf: 'center',
                 paddingLeft: 30,
               }}>
-                      <Text style={styles.nameText}>{group.group_name}</Text>
+              <Text style={styles.nameText}>{group.group_name}</Text>
 
-                      <View style={styles.identityView}>
-                          <ImageBackground
+              <View style={styles.identityView}>
+                <ImageBackground
                   source={images.clubSqure}
                   style={styles.badgeCounter}
                 />
-                          <Text style={styles.badgeCounter}>C</Text>
-                      </View>
-                  </View>
-
-                  <Text style={styles.locationText}>
-                      {group.city}, {group.state_abbr}
-                  </Text>
+                <Text style={styles.badgeCounter}>C</Text>
               </View>
-              )}
-              <View style={styles.separatorLine}></View>
+            </View>
 
-              <ExpanableList
+            <Text style={styles.locationText}>
+              {group.city}, {group.state_abbr}
+            </Text>
+          </View>
+        )}
+        <View style={styles.separatorLine}></View>
+
+        <ExpanableList
           dataSource={
             (switchBy === 'team' && teamMenu)
             || (switchBy === 'club' && clubMenu)
@@ -491,324 +491,324 @@ export default function AccountScreen({ navigation }) {
           headerKey={'key'}
           memberKey="member"
           renderRow={(rowItem, rowId, sectionId) => (
-              <>
-                  {switchBy === 'user' && sectionId === 3 && teamList.length > 0 && (
-                  <FlatList
+            <>
+              {switchBy === 'user' && sectionId === 3 && teamList.length > 0 && (
+                <FlatList
                   data={teamList}
                   keyExtractor={(item) => item.group_id}
                   renderItem={({ item }) => (
-                      <TouchableWithoutFeedback
+                    <TouchableWithoutFeedback
                       style={styles.listContainer}
                       onPress={() => {
                         console.log('Pressed Team..', rowItem.rowId.sectionId);
                       }}>
-                          <View style={styles.entityTextContainer}>
-                              {item.full_image ? (
-                                  <Image
+                      <View style={styles.entityTextContainer}>
+                        {item.full_image ? (
+                          <Image
                             source={{ uri: item.thumbnail }}
                             style={styles.smallProfileImg}
                           />
-                              ) : (
-                                  <Image
+                        ) : (
+                          <Image
                             source={images.teamPlaceholder}
                             style={styles.smallProfileImg}
                           />
-                              )}
-                              <Text style={styles.entityName}>{item.group_name}</Text>
-                              <Text style={styles.teamSportView}> {item.sport}</Text>
+                        )}
+                        <Text style={styles.entityName}>{item.group_name}</Text>
+                        <Text style={styles.teamSportView}> {item.sport}</Text>
 
-                              {/* <Text style={styles.entityLocationText}>
+                        {/* <Text style={styles.entityLocationText}>
                 {item.city}, {item.state_abbr}, {item.country}
               </Text> */}
-                          </View>
-                      </TouchableWithoutFeedback>
+                      </View>
+                    </TouchableWithoutFeedback>
                   )}
                   // ItemSeparatorComponent={() => (
                   //   <View style={styles.separatorLine}></View>
                   // )}
                   scrollEnabled={false}
                 />
-                  )}
-                  {switchBy === 'user' && sectionId === 4 && clubList.length > 0 && (
-                  <FlatList
+              )}
+              {switchBy === 'user' && sectionId === 4 && clubList.length > 0 && (
+                <FlatList
                   data={clubList}
                   keyExtractor={(item) => item.group_id}
                   renderItem={({ item }) => (
-                      <TouchableWithoutFeedback
+                    <TouchableWithoutFeedback
                       style={styles.listContainer}
                       onPress={() => {
                         console.log('Pressed Team..', rowItem.rowId.sectionId);
                       }}>
-                          <View style={styles.entityTextContainer}>
-                              {item.full_image ? (
-                                  <Image
+                      <View style={styles.entityTextContainer}>
+                        {item.full_image ? (
+                          <Image
                             source={{ uri: item.thumbnail }}
                             style={styles.smallProfileImg}
                           />
-                              ) : (
-                                  <Image
+                        ) : (
+                          <Image
                             source={images.clubPlaceholder}
                             style={styles.smallProfileImg}
                           />
-                              )}
-                              <Text style={styles.entityName}>{item.group_name}</Text>
-                              <Text style={styles.clubSportView}> {item.sport}</Text>
+                        )}
+                        <Text style={styles.entityName}>{item.group_name}</Text>
+                        <Text style={styles.clubSportView}> {item.sport}</Text>
 
-                              {/* <Text style={styles.entityLocationText}>
+                        {/* <Text style={styles.entityLocationText}>
                 {item.city}, {item.state_abbr}, {item.country}
               </Text> */}
-                          </View>
-                      </TouchableWithoutFeedback>
+                      </View>
+                    </TouchableWithoutFeedback>
                   )}
                   // ItemSeparatorComponent={() => (
                   //   <View style={styles.separatorLine}></View>
                   // )}
                   scrollEnabled={false}
                 />
-                  )}
+              )}
 
-                  {switchBy === 'club' && sectionId === 2 && teamList.length > 0 && (
-                  <FlatList
+              {switchBy === 'club' && sectionId === 2 && teamList.length > 0 && (
+                <FlatList
                   data={teamList}
                   keyExtractor={(item) => item.group_id}
                   renderItem={({ item }) => (
-                      <TouchableWithoutFeedback
+                    <TouchableWithoutFeedback
                       style={styles.listContainer}
                       onPress={() => {
                         console.log('Pressed Team..', rowItem.rowId.sectionId);
                       }}>
-                          <View style={styles.entityTextContainer}>
-                              {item.full_image ? (
-                                  <Image
+                      <View style={styles.entityTextContainer}>
+                        {item.full_image ? (
+                          <Image
                             source={{ uri: item.thumbnail }}
                             style={styles.smallProfileImg}
                           />
-                              ) : (
-                                  <Image
+                        ) : (
+                          <Image
                             source={images.teamPlaceholder}
                             style={styles.smallProfileImg}
                           />
-                              )}
-                              <Text style={styles.entityName}>{item.group_name}</Text>
-                              <Text style={styles.teamSportView}> {item.sport}</Text>
+                        )}
+                        <Text style={styles.entityName}>{item.group_name}</Text>
+                        <Text style={styles.teamSportView}> {item.sport}</Text>
 
-                              {/* <Text style={styles.entityLocationText}>
+                        {/* <Text style={styles.entityLocationText}>
                 {item.city}, {item.state_abbr}, {item.country}
               </Text> */}
-                          </View>
-                      </TouchableWithoutFeedback>
+                      </View>
+                    </TouchableWithoutFeedback>
                   )}
                   // ItemSeparatorComponent={() => (
                   //   <View style={styles.separatorLine}></View>
                   // )}
                   scrollEnabled={false}
                 />
-                  )}
+              )}
 
-                  <View style={styles.halfSeparatorLine} />
+              <View style={styles.halfSeparatorLine} />
 
-                  <TouchableWithoutFeedback
+              <TouchableWithoutFeedback
                 style={styles.listContainer}
                 onPress={() => {
                   handleOpetions(rowItem.opetions);
                 }}>
-                      {rowItem.opetions === 'Add a sport' && (
-                      <Image source={images.addSport} style={styles.subMenuItem} />
-                      )}
-                      {rowItem.opetions === 'Register as a referee' && (
-                      <Image
+                {rowItem.opetions === 'Add a sport' && (
+                  <Image source={images.addSport} style={styles.subMenuItem} />
+                )}
+                {rowItem.opetions === 'Register as a referee' && (
+                  <Image
                     source={images.registerReferee}
                     style={styles.subMenuItem}
                   />
-                      )}
-                      {rowItem.opetions === 'Create a Team' && (
-                      <Image source={images.createTeam} style={styles.subMenuItem} />
-                      )}
-                      {rowItem.opetions === 'Create a Club' && (
-                      <Image source={images.createClub} style={styles.subMenuItem} />
-                      )}
-                      {rowItem.opetions === 'Create a League' && (
-                      <Image
+                )}
+                {rowItem.opetions === 'Create a Team' && (
+                  <Image source={images.createTeam} style={styles.subMenuItem} />
+                )}
+                {rowItem.opetions === 'Create a Club' && (
+                  <Image source={images.createClub} style={styles.subMenuItem} />
+                )}
+                {rowItem.opetions === 'Create a League' && (
+                  <Image
                     source={images.createLeague}
                     style={styles.subMenuItem}
                   />
-                      )}
-                      {rowItem.opetions === 'Payment Method' && (
-                      <Image
+                )}
+                {rowItem.opetions === 'Payment Method' && (
+                  <Image
                     source={images.Payment_method}
                     style={styles.subMenuItem}
                   />
-                      )}
-                      {rowItem.opetions === 'Payout Method' && (
-                      <Image
+                )}
+                {rowItem.opetions === 'Payout Method' && (
+                  <Image
                     source={images.Payout_method}
                     style={styles.subMenuItem}
                   />
-                      )}
-                      {rowItem.opetions === 'Invoicing' && (
-                      <Image source={images.Invoicing} style={styles.subMenuItem} />
-                      )}
-                      {rowItem.opetions === 'Transactions' && (
-                      <Image source={images.Transations} style={styles.subMenuItem} />
-                      )}
+                )}
+                {rowItem.opetions === 'Invoicing' && (
+                  <Image source={images.Invoicing} style={styles.subMenuItem} />
+                )}
+                {rowItem.opetions === 'Transactions' && (
+                  <Image source={images.Transations} style={styles.subMenuItem} />
+                )}
 
-                      <Text style={styles.listItems}>{rowItem.opetions}</Text>
-                      <Image source={images.nextArrow} style={styles.nextArrow} />
-                  </TouchableWithoutFeedback>
-                  <View style={styles.halfSeparatorLine} />
-              </>
+                <Text style={styles.listItems}>{rowItem.opetions}</Text>
+                <Image source={images.nextArrow} style={styles.nextArrow} />
+              </TouchableWithoutFeedback>
+              <View style={styles.halfSeparatorLine} />
+            </>
           )}
           renderSectionHeaderX={(section) => (
-              <>
-                  <TouchableWithoutFeedback
+            <>
+              <TouchableWithoutFeedback
                 style={styles.listContainer}
                 onPress={() => {
                   handleSections(section);
                 }}>
-                      {section === 'My Schedule' && (
-                      <Image source={images.mySchedule} style={styles.menuItem} />
-                      )}
-                      {section === 'My Sports' && (
-                      <Image source={images.mySports} style={styles.menuItem} />
-                      )}
-                      {section === 'My Refereeing' && (
-                      <Image source={images.myRefereeing} style={styles.menuItem} />
-                      )}
-                      {section === 'My Teams' && (
-                      <Image source={images.myTeams} style={styles.menuItem} />
-                      )}
-                      {section === 'My Clubs' && (
-                      <Image source={images.myClubs} style={styles.menuItem} />
-                      )}
-                      {section === 'My Leagues' && (
-                      <Image source={images.myLeagues} style={styles.menuItem} />
-                      )}
-                      {section === 'Payment & Payout' && (
-                      <Image source={images.paymentPayout} style={styles.menuItem} />
-                      )}
-                      {section === 'Setting & Privacy' && (
-                      <Image source={images.SettingPrivacy} style={styles.menuItem} />
-                      )}
-                      {section === 'Members' && (
-                      <Image source={images.Members} style={styles.menuItem} />
-                      )}
+                {section === 'My Schedule' && (
+                  <Image source={images.mySchedule} style={styles.menuItem} />
+                )}
+                {section === 'My Sports' && (
+                  <Image source={images.mySports} style={styles.menuItem} />
+                )}
+                {section === 'My Refereeing' && (
+                  <Image source={images.myRefereeing} style={styles.menuItem} />
+                )}
+                {section === 'My Teams' && (
+                  <Image source={images.myTeams} style={styles.menuItem} />
+                )}
+                {section === 'My Clubs' && (
+                  <Image source={images.myClubs} style={styles.menuItem} />
+                )}
+                {section === 'My Leagues' && (
+                  <Image source={images.myLeagues} style={styles.menuItem} />
+                )}
+                {section === 'Payment & Payout' && (
+                  <Image source={images.paymentPayout} style={styles.menuItem} />
+                )}
+                {section === 'Setting & Privacy' && (
+                  <Image source={images.SettingPrivacy} style={styles.menuItem} />
+                )}
+                {section === 'Members' && (
+                  <Image source={images.Members} style={styles.menuItem} />
+                )}
 
-                      <Text style={styles.listItems}>{section}</Text>
-                      <Image source={images.nextArrow} style={styles.nextArrow} />
-                  </TouchableWithoutFeedback>
-                  <View style={styles.separatorLine} />
-              </>
+                <Text style={styles.listItems}>{section}</Text>
+                <Image source={images.nextArrow} style={styles.nextArrow} />
+              </TouchableWithoutFeedback>
+              <View style={styles.separatorLine} />
+            </>
           )}
         />
 
-              {groupList.length > 0 && (
-              <>
-                  <View style={styles.separatorView}></View>
-                  <View style={{ flexDirection: 'row' }}>
-                      <Image
+        {groupList.length > 0 && (
+          <>
+            <View style={styles.separatorView}></View>
+            <View style={{ flexDirection: 'row' }}>
+              <Image
                 source={images.switchAccount}
                 style={styles.switchAccountIcon}
               />
-                      <Text style={styles.switchAccount}>Switch Account</Text>
-                  </View>
-              </>
-              )}
+              <Text style={styles.switchAccount}>Switch Account</Text>
+            </View>
+          </>
+        )}
 
-              <FlatList
+        <FlatList
           data={groupList}
           renderItem={({ item }) => (
-              <TouchableWithoutFeedback
+            <TouchableWithoutFeedback
               style={styles.listContainer}
               onPress={() => {
                 switchProfile({ item });
               }}>
-                  <View>
-                      {item.entity_type === 'player'
+              <View>
+                {item.entity_type === 'player'
                   && (item.thumbnail ? (
-                      <View style={styles.imageContainer}>
-                          <Image
+                    <View style={styles.imageContainer}>
+                      <Image
                         source={{ uri: item.thumbnail }}
                         style={styles.playerImg}
                       />
-                      </View>
+                    </View>
                   ) : (
-                      <Image
+                    <Image
                       source={images.profilePlaceHolder}
                       style={styles.entityImg}
                     />
                   ))}
-                      {item.entity_type === 'club'
+                {item.entity_type === 'club'
                   && (item.thumbnail ? (
-                      <Image
+                    <Image
                       source={{ uri: item.thumbnail }}
                       style={styles.entityImg}
                     />
                   ) : (
-                      <View style={styles.placeholderView}>
-                          <Image
+                    <View style={styles.placeholderView}>
+                      <Image
                         source={images.clubPlaceholder}
                         style={styles.entityImg}
                       />
-                          <Text style={styles.oneCharacterText}>
-                              {item.group_name.charAt(0).toUpperCase()}
-                          </Text>
-                      </View>
+                      <Text style={styles.oneCharacterText}>
+                        {item.group_name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
                   ))}
-                      {item.entity_type === 'team'
+                {item.entity_type === 'team'
                   && (item.thumbnail ? (
-                      <Image
+                    <Image
                       source={{ uri: item.thumbnail }}
                       style={styles.entityImg}
                     />
                   ) : (
-                      <View style={styles.placeholderView}>
-                          <Image
+                    <View style={styles.placeholderView}>
+                      <Image
                         source={images.teamPlaceholder}
                         style={styles.entityImg}
                       />
-                          <Text style={styles.oneCharacterText}>
-                              {item.group_name.charAt(0).toUpperCase()}
-                          </Text>
-                      </View>
+                      <Text style={styles.oneCharacterText}>
+                        {item.group_name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
                   ))}
 
-                      {item.unread > 0 && (
-                      <View style={styles.badgeView}>
-                          <Text style={styles.badgeCounter}>{item.unread}</Text>
-                      </View>
-                      )}
+                {item.unread > 0 && (
+                  <View style={styles.badgeView}>
+                    <Text style={styles.badgeCounter}>{item.unread}</Text>
                   </View>
+                )}
+              </View>
 
-                  <View style={styles.textContainer}>
-                      {item.entity_type === 'player' && (
-                      <Text style={styles.entityNameText}>{item.full_name}</Text>
-                      )}
-                      {item.entity_type === 'team' && (
-                      <Text style={styles.entityNameText}>{item.group_name}</Text>
-                      )}
-                      {item.entity_type === 'club' && (
-                      <Text style={styles.entityNameText}>{item.group_name}</Text>
-                      )}
-                      <Text style={styles.entityLocationText}>
-                          {item.city},{item.state_abbr}
-                      </Text>
-                  </View>
-              </TouchableWithoutFeedback>
+              <View style={styles.textContainer}>
+                {item.entity_type === 'player' && (
+                  <Text style={styles.entityNameText}>{item.full_name}</Text>
+                )}
+                {item.entity_type === 'team' && (
+                  <Text style={styles.entityNameText}>{item.group_name}</Text>
+                )}
+                {item.entity_type === 'club' && (
+                  <Text style={styles.entityNameText}>{item.group_name}</Text>
+                )}
+                <Text style={styles.entityLocationText}>
+                  {item.city},{item.state_abbr}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
           )}
           // ItemSeparatorComponent={() => (
           //   <View style={styles.separatorLine}></View>
           // )}
           scrollEnabled={false}
         />
-              <View style={styles.separatorView}></View>
-              <TouchableWithoutFeedback
+        <View style={styles.separatorView}></View>
+        <TouchableWithoutFeedback
           style={styles.listContainer}
           onPress={handleLogOut}>
-                  <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
-                  <Text style={styles.listItems}>Log out</Text>
-                  <Image source={images.nextArrow} style={styles.nextArrow} />
-              </TouchableWithoutFeedback>
-          </ScrollView>
-      </SafeAreaView>
+          <Image source={images.logoutIcon} style={styles.switchAccountIcon} />
+          <Text style={styles.listItems}>Log out</Text>
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

@@ -12,14 +12,14 @@ import colors from '../Constants/Colors'
 const Stack = createStackNavigator();
 
 const ReservationNavigator = () => (
-    <Stack.Navigator
+  <Stack.Navigator
       screenOptions={ {
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
         // headerTitle: true,
         headerBackTitleVisible: false,
       } }>
-        <Stack.Screen
+    <Stack.Screen
         name="ReservationScreen"
         component={ ReservationScreen }
         options={ {
@@ -35,7 +35,7 @@ const ReservationNavigator = () => (
           },
         } }
       />
-        <Stack.Screen
+    <Stack.Screen
         name="ReservationDetailScreen"
         component={ ReservationDetailScreen }
         options={ {
@@ -51,7 +51,7 @@ const ReservationNavigator = () => (
           },
         } }
       />
-    </Stack.Navigator>
+  </Stack.Navigator>
 );
 
 export default ReservationNavigator;

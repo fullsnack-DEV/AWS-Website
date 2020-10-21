@@ -80,39 +80,39 @@ function RegisterPlayer({ navigation }) {
     setSelectedLanguages(selectedLanguage);
   };
   const renderLanguage = ({ item, index }) => (
-      <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
         style={ styles.listItem }
         onPress={ () => {
           isIconCheckedOrNot({ item, index });
         } }>
-          <View>
-              <Text style={ styles.languageList }>{item.language}</Text>
-              <View style={ styles.checkbox }>
-                  {languages[index].isChecked ? (
-                      <Image
+      <View>
+        <Text style={ styles.languageList }>{item.language}</Text>
+        <View style={ styles.checkbox }>
+          {languages[index].isChecked ? (
+            <Image
                 source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
               />
-                  ) : (
-                      <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
-                  )}
-              </View>
-              <View style={ styles.shortSeparatorLine }></View>
-          </View>
-      </TouchableWithoutFeedback>
+          ) : (
+            <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+          )}
+        </View>
+        <View style={ styles.shortSeparatorLine }></View>
+      </View>
+    </TouchableWithoutFeedback>
   );
   return (
-      <>
-          <ScrollView style={ styles.mainContainer }>
-              <View style={ styles.formSteps }>
-                  <View style={ styles.form1 }></View>
-                  <View style={ styles.form2 }></View>
-              </View>
-              <Text style={ styles.LocationText }>
-                  {strings.sportsEventsTitle}
-                  <Text style={ styles.mendatory }> {strings.star}</Text>
-              </Text>
-              <RNPickerSelect
+    <>
+      <ScrollView style={ styles.mainContainer }>
+        <View style={ styles.formSteps }>
+          <View style={ styles.form1 }></View>
+          <View style={ styles.form2 }></View>
+        </View>
+        <Text style={ styles.LocationText }>
+          {strings.sportsEventsTitle}
+          <Text style={ styles.mendatory }> {strings.star}</Text>
+        </Text>
+        <RNPickerSelect
           placeholder={ {
             label: strings.selectSportPlaceholder,
             value: '',
@@ -125,19 +125,19 @@ function RegisterPlayer({ navigation }) {
           style={ { ...styles } }
           value={ sports }
           Icon={ () => (
-              <Image source={ images.dropDownArrow } style={ styles.downArrow } />
+            <Image source={ images.dropDownArrow } style={ styles.downArrow } />
           ) }
         />
 
-              <View
+        <View
           style={ {
             flexDirection: 'row',
             alignItems: 'center',
           } }>
-                  <Text style={ styles.LocationText }>{strings.descriptionText}</Text>
-                  {/* <Text style={styles.smallTxt}> {strings.opetionalText} </Text> */}
-              </View>
-              <TextInput
+          <Text style={ styles.LocationText }>{strings.descriptionText}</Text>
+          {/* <Text style={styles.smallTxt}> {strings.opetionalText} </Text> */}
+        </View>
+        <TextInput
           style={ styles.descriptionTxt }
           onChangeText={ (text) => setDescription(text) }
           value={ description }
@@ -146,7 +146,7 @@ function RegisterPlayer({ navigation }) {
           placeholder={ strings.descriptionPlaceholder }
         />
 
-              {/* <Text style={styles.LocationText}>
+        {/* <Text style={styles.LocationText}>
           {strings.matchFeesTitle}
           <Text style={styles.mendatory}> {strings.star}</Text>
           <Text style={styles.smallTxt}> {strings.perHourText} </Text>
@@ -161,28 +161,28 @@ function RegisterPlayer({ navigation }) {
             keyboardType={'decimal-pad'}></TextInput>
           <Text style={styles.curruency}>CAD/match</Text>
         </View> */}
-              <Text style={ styles.LocationText }>
-                  {strings.languageTitle}
-                  <Text style={ styles.smallTxt }> {strings.opetionalText} </Text>
-              </Text>
-              <View style={ styles.searchView }>
-                  <TouchableOpacity onPress={ toggleModal }>
-                      <TextInput
+        <Text style={ styles.LocationText }>
+          {strings.languageTitle}
+          <Text style={ styles.smallTxt }> {strings.opetionalText} </Text>
+        </Text>
+        <View style={ styles.searchView }>
+          <TouchableOpacity onPress={ toggleModal }>
+            <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
             onChangeText={ (text) => setPlayer2(text) }
             value={ selectedLanguages.toString() }
             editable={ false }
             pointerEvents="none"></TextInput>
-                  </TouchableOpacity>
-              </View>
+          </TouchableOpacity>
+        </View>
 
-              <Modal
+        <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
         backdropOpacity={ 0 }
         style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
-                  <View
+          <View
           style={ {
             width: '100%',
             height: Dimensions.get('window').height / 2,
@@ -197,7 +197,7 @@ function RegisterPlayer({ navigation }) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
           } }>
-                      <Text
+            <Text
             style={ {
               alignSelf: 'center',
               marginTop: 20,
@@ -206,16 +206,16 @@ function RegisterPlayer({ navigation }) {
               fontFamily: fonts.RBold,
               color: colors.lightBlackColor,
             } }>
-                          Languages
-                      </Text>
-                      <View style={ styles.separatorLine }></View>
-                      <FlatList
+              Languages
+            </Text>
+            <View style={ styles.separatorLine }></View>
+            <FlatList
             data={ languages }
             keyExtractor={ (item) => item.id }
             renderItem={ renderLanguage }
             style={ { marginBottom: '25%' } }
           />
-                      <View
+            <View
             style={ {
               width: '100%',
               height: '25%',
@@ -229,43 +229,43 @@ function RegisterPlayer({ navigation }) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
             } }>
-                          <TouchableOpacity
+              <TouchableOpacity
               onPress={ () => {
                 toggleModal();
               } }>
-                              <LinearGradient
+                <LinearGradient
                 colors={ [colors.yellowColor, colors.themeColor] }
                 style={ styles.languageApplyButton }>
-                                  <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
-                              </LinearGradient>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
-              </Modal>
-              {/* registerPlayerCall() */}
-              <TouchableOpacity onPress={ () => {
-                if (checkValidation()) {
-                  const bodyParams = {};
+                  <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        {/* registerPlayerCall() */}
+        <TouchableOpacity onPress={ () => {
+          if (checkValidation()) {
+            const bodyParams = {};
 
-                  bodyParams.sport_name = sports;
-                  bodyParams.Tennis = 'single-multiplayer';
-                  bodyParams.descriptions = description;
-                  bodyParams.language = selectedLanguages;
+            bodyParams.sport_name = sports;
+            bodyParams.Tennis = 'single-multiplayer';
+            bodyParams.descriptions = description;
+            bodyParams.language = selectedLanguages;
 
-                  // registered_sports[0]=bodyParams;
-                  // bodyParams={registered_sports};
+            // registered_sports[0]=bodyParams;
+            // bodyParams={registered_sports};
 
-                  navigation.navigate('RegisterPlayerForm2', { bodyParams })
-                }
-              } }>
-                  <LinearGradient
+            navigation.navigate('RegisterPlayerForm2', { bodyParams })
+          }
+        } }>
+          <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-                      <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>
-          </ScrollView>
-      </>
+            <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    </>
   );
 }
 

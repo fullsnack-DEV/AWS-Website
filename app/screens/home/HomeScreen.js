@@ -34,14 +34,14 @@ export default function HomeScreen() {
   };
 
   return (
-      <>
-          <View style={ styles.mainContainer }>
-              {/* <Loader visible={true} /> */}
-              <Image style={ styles.background } source={ images.orangeLayer } />
-              <Image style={ styles.background } source={ images.signUpBg1 } />
-              <Text>{token}</Text>
-          </View>
-      </>
+    <>
+      <View style={ styles.mainContainer }>
+        {/* <Loader visible={true} /> */}
+        <Image style={ styles.background } source={ images.orangeLayer } />
+        <Image style={ styles.background } source={ images.signUpBg1 } />
+        <Text>{token}</Text>
+      </View>
+    </>
   );
 }
 

@@ -20,73 +20,73 @@ import colors from '../../../Constants/Colors'
 export default function ChooseGenderScreen({ navigation }) {
   const [selected, setSelected] = useState(0);
   return (
-      <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.bgImage } />
+    <View style={ styles.mainContainer }>
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.bgImage } />
 
-          <Text style={ styles.checkEmailText }>{strings.addGenderText}</Text>
-          <Text style={ styles.resetText }>{strings.notDisplayGenderText}</Text>
+      <Text style={ styles.checkEmailText }>{strings.addGenderText}</Text>
+      <Text style={ styles.resetText }>{strings.notDisplayGenderText}</Text>
 
-          <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.genderText}</Text> }
+      <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.genderText}</Text> }
             backgroundColor={ colors.parrotColor }
             height={ hp('20%') }
             width={ wp('75%') }
             overlayColor={ 'transparent' }
             skipAndroidStatusBar={true}>
-              <Text style={ styles.whyAskingText } >{strings.whyAskingGenderText}</Text>
-          </Tooltip>
+        <Text style={ styles.whyAskingText } >{strings.whyAskingGenderText}</Text>
+      </Tooltip>
 
-          <View style={ { marginTop: 40, marginLeft: 20 } }>
-              <View style={ styles.radioButtonView }>
-                  <TouchableWithoutFeedback
+      <View style={ { marginTop: 40, marginLeft: 20 } }>
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(0);
           } }>
-                      {selected === 0 ? (
-                          <Image source={ images.radioSelect } style={ styles.radioImage } />
-                      ) : (
-                          <Image
+            {selected === 0 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-                      )}
-                  </TouchableWithoutFeedback>
-                  <Text style={ styles.radioText }>{strings.maleRadioText}</Text>
-              </View>
-              <View style={ styles.radioButtonView }>
-                  <TouchableWithoutFeedback
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.maleRadioText}</Text>
+        </View>
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(1);
           } }>
-                      {selected === 1 ? (
-                          <Image source={ images.radioSelect } style={ styles.radioImage } />
-                      ) : (
-                          <Image
+            {selected === 1 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-                      )}
-                  </TouchableWithoutFeedback>
-                  <Text style={ styles.radioText }>{strings.femaleRadioText}</Text>
-              </View>
-              <View style={ styles.radioButtonView }>
-                  <TouchableWithoutFeedback
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.femaleRadioText}</Text>
+        </View>
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback
           onPress={ () => {
             setSelected(2);
           } }>
-                      {selected === 2 ? (
-                          <Image source={ images.radioSelect } style={ styles.radioImage } />
-                      ) : (
-                          <Image
+            {selected === 2 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-                      )}
-                  </TouchableWithoutFeedback>
-                  <Text style={ styles.radioText }>{strings.otherRadioText}</Text>
-              </View>
-          </View>
-          <TCButton
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.otherRadioText}</Text>
+        </View>
+      </View>
+      <TCButton
         title={ strings.continueCapTitle }
         onPress={ async () => {
           let userGender = {};
@@ -113,6 +113,6 @@ export default function ChooseGenderScreen({ navigation }) {
         } }
         extraStyle={ { bottom: hp('4%'), position: 'absolute' } }
       />
-      </View>
+    </View>
   );
 }

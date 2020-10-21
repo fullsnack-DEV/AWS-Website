@@ -113,62 +113,62 @@ export default function FollowTeams({ route }) {
   };
 
   renderItem = ({ item, index }) => (
-      <View style={ styles.listItem }>
-          <View style={ styles.listItemContainer }>
-              {teams[index].thumbnail ? (
-                  <Image
+    <View style={ styles.listItem }>
+      <View style={ styles.listItemContainer }>
+        {teams[index].thumbnail ? (
+          <Image
               style={ styles.teamImg }
               source={ { uri: teams[index].thumbnail } }
             />
-              ) : (
-                  <Image style={ styles.teamImg } source={ images.team_ph } />
-              )}
-              <View
+        ) : (
+          <Image style={ styles.teamImg } source={ images.team_ph } />
+        )}
+        <View
             style={ {
               width: wp('52%'),
             } }>
-                  <Text style={ styles.teamNameText }>{teams[index].group_name}</Text>
-                  <Text style={ styles.cityText }>
-                      {teams[index].city}, {teams[index].state_abbr},{' '}
-                      {teams[index].country}
-                  </Text>
-              </View>
-              <TouchableWithoutFeedback
+          <Text style={ styles.teamNameText }>{teams[index].group_name}</Text>
+          <Text style={ styles.cityText }>
+            {teams[index].city}, {teams[index].state_abbr},{' '}
+            {teams[index].country}
+          </Text>
+        </View>
+        <TouchableWithoutFeedback
             onPress={ () => {
               this.followUnfollowClicked({ item, index });
             } }>
-                  {teams[index].follow ? (
-                      <View style={ styles.followingBtn }>
-                          <Text style={ styles.followingText }>Following</Text>
-                      </View>
-                  ) : (
-                      <View style={ styles.followBtn }>
-                          <Text style={ styles.followText }>Follow</Text>
-                      </View>
-                  )}
-              </TouchableWithoutFeedback>
-          </View>
-
-          <Separator />
+          {teams[index].follow ? (
+            <View style={ styles.followingBtn }>
+              <Text style={ styles.followingText }>Following</Text>
+            </View>
+          ) : (
+            <View style={ styles.followBtn }>
+              <Text style={ styles.followText }>Follow</Text>
+            </View>
+          )}
+        </TouchableWithoutFeedback>
       </View>
+
+      <Separator />
+    </View>
   );
 
   return (
-      <View style={ styles.mainContainer }>
-          <Image style={ styles.background } source={ images.orangeLayer } />
-          <Image style={ styles.background } source={ images.bgImage } />
+    <View style={ styles.mainContainer }>
+      <Image style={ styles.background } source={ images.orangeLayer } />
+      <Image style={ styles.background } source={ images.bgImage } />
 
-          <Text style={ styles.sportText }>Follow sport teams.</Text>
-          <FlatList
+      <Text style={ styles.sportText }>Follow sport teams.</Text>
+      <FlatList
         data={ teams }
         keyExtractor={ (item) => item.group_id }
         renderItem={ this.renderItem }
       />
-          <TCButton
+      <TCButton
         title={ strings.applyTitle }
         extraStyle={ { marginBottom: hp('6.5%'), marginTop: hp('2%') } }
         onPress={ () => signUpWithTC() }
       />
-      </View>
+    </View>
   );
 }

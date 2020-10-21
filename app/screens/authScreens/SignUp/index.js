@@ -137,37 +137,37 @@ const SignupScreen = ({ navigation }) => {
     setHidePassword(!hidePassword);
   };
   return (
-      <View style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
-          {/* <Loader visible={true} /> */}
-          <Image style={styles.background} source={images.orangeLayer} />
-          <Image style={styles.background} source={images.bgImage} />
-          <ScrollView>
-              <TouchableOpacity
+    <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading} />
+      {/* <Loader visible={true} /> */}
+      <Image style={styles.background} source={images.orangeLayer} />
+      <Image style={styles.background} source={images.bgImage} />
+      <ScrollView>
+        <TouchableOpacity
           onPress={() => alert('image picked')}
           style={styles.profile}>
-                  <Image style={styles.profile} source={images.profilePlaceHolder} />
-              </TouchableOpacity>
-              <TCKeyboardView>
-                  <TCTextField
+          <Image style={styles.profile} source={images.profilePlaceHolder} />
+        </TouchableOpacity>
+        <TCKeyboardView>
+          <TCTextField
             placeholder={strings.fnameText}
             onChangeText={(text) => setFName(text)}
             value={fName}
           />
-                  <TCTextField
+          <TCTextField
             placeholder={strings.lnameText}
             onChangeText={(text) => setLName(text)}
             value={lName}
           />
-                  <TCTextField
+          <TCTextField
             placeholder={strings.emailPlaceHolder}
             autoCapitalize="none"
             keyboardType="email-address"
             onChangeText={(text) => setEmail(text)}
             value={email}
           />
-                  <View style={styles.passwordView}>
-                      <TextInput
+          <View style={styles.passwordView}>
+            <TextInput
               style={styles.textInput}
               placeholder={strings.passwordText}
               onChangeText={(text) => setPassword(text)}
@@ -176,25 +176,25 @@ const SignupScreen = ({ navigation }) => {
               secureTextEntry={hidePassword}
               keyboardType={'default'}
             />
-                      <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
-                          {hidePassword ? (
-                              <Image source={images.showPassword} style={styles.passwordEyes} />
-                          ) : (
-                              <Image source={images.hidePassword} style={styles.passwordEyes} />
-                          )}
-                      </TouchableWithoutFeedback>
-                  </View>
+            <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
+              {hidePassword ? (
+                <Image source={images.showPassword} style={styles.passwordEyes} />
+              ) : (
+                <Image source={images.hidePassword} style={styles.passwordEyes} />
+              )}
+            </TouchableWithoutFeedback>
+          </View>
 
-                  <TCTextField
+          <TCTextField
             placeholder={strings.confirmPasswordText}
             autoCapitalize="none"
             secureText={true}
             onChangeText={(text) => setCPassword(text)}
             value={cPassword}
           />
-              </TCKeyboardView>
+        </TCKeyboardView>
 
-              <TCButton
+        <TCButton
           title={strings.signUpCapitalText}
           extraStyle={{ marginTop: hp('10%'), marginBottom: hp('4%') }}
           onPress={() => {
@@ -206,8 +206,8 @@ const SignupScreen = ({ navigation }) => {
           }}
           // () => navigation.navigate('ChooseLocationScreen')
         />
-          </ScrollView>
-      </View>
+      </ScrollView>
+    </View>
   );
 };
 

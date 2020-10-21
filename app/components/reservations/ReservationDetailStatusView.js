@@ -15,28 +15,28 @@ export default function ReservationDetailStatusView({
 }) {
   return (
 
-      <View style={styles.reservationTitleView}>
-          <TouchableOpacity>
-              <LinearGradient
+    <View style={styles.reservationTitleView}>
+      <TouchableOpacity>
+        <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.borderView}>
-                  <View style={styles.dateView}>
-                      <Text style={styles.dateText}>Feb{'\n'}15</Text>
-                  </View>
-              </LinearGradient>
-          </TouchableOpacity>
-          <View style={styles.reservationTypeView}>
-              {status === 'pending' && <Text style={[styles.reservationText, { color: '#616161' }]}>
-                  ALTETATION REQUEST PENDING
-                  </Text>}
-
-              <Text style={styles.doneByText}>{strings.doneByText}<Text style={styles.doneByNameText}> {doneBy}</Text></Text>
-
+          <View style={styles.dateView}>
+            <Text style={styles.dateText}>Feb{'\n'}15</Text>
           </View>
-          <View style={styles.amountView}>
-              <Text style={styles.amountText}>${amount} {currencyType}</Text>
-          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+      <View style={styles.reservationTypeView}>
+        {status === 'pending' && <Text style={[styles.reservationText, { color: '#616161' }]}>
+          ALTETATION REQUEST PENDING
+        </Text>}
+
+        <Text style={styles.doneByText}>{strings.doneByText}<Text style={styles.doneByNameText}> {doneBy}</Text></Text>
+
       </View>
+      <View style={styles.amountView}>
+        <Text style={styles.amountText}>${amount} {currencyType}</Text>
+      </View>
+    </View>
 
   );
 }

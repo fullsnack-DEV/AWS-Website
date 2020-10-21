@@ -19,35 +19,35 @@ import images from '../../Constants/ImagePath';
 
 export default function TCGameScoreLeft({ editor }) {
   return (
-      <View>
-          <View
+    <View>
+      <View
         style={ {
           backgroundColor: colors.lightYellowColor,
         } }>
-              <View
+        <View
           style={ [
             styles.headerView,
             { backgroundColor: colors.lightYellowColor },
           ] }>
-                  <View style={ styles.leftView }>
-                      <View>
-                          <Image
+          <View style={ styles.leftView }>
+            <View>
+              <Image
                 source={ images.profilePlaceHolder }
                 style={ styles.leftProfileImg }
               />
-                      </View>
-                      <Text style={ styles.leftPlayerText } numberOfLines={ 3 }>
-                          Kishan Makani () received a yellow card
-                      </Text>
-                      <View style={ styles.gameRecordButton }>
-                          <Image
+            </View>
+            <Text style={ styles.leftPlayerText } numberOfLines={ 3 }>
+              Kishan Makani () received a yellow card
+            </Text>
+            <View style={ styles.gameRecordButton }>
+              <Image
                 source={ images.gameOwnGoal }
                 style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
               />
-                      </View>
-                  </View>
-                  <View style={ styles.centerView }>
-                      <Dash
+            </View>
+          </View>
+          <View style={ styles.centerView }>
+            <Dash
               style={ {
                 width: 1,
                 height: 70,
@@ -55,21 +55,21 @@ export default function TCGameScoreLeft({ editor }) {
               } }
               dashColor={ colors.lightgrayColor }
             />
-                  </View>
-                  <View style={ styles.rightBlankView }>
-                      <Text style={ { fontFamily: fonts.RBold, fontSize: 12 } }>4m</Text>
-                      <Text
+          </View>
+          <View style={ styles.rightBlankView }>
+            <Text style={ { fontFamily: fonts.RBold, fontSize: 12 } }>4m</Text>
+            <Text
               style={ {
                 fontFamily: fonts.RRegular,
                 fontSize: 13,
                 color: colors.darkGrayColor,
               } }>
-                          10:45 AM
-                      </Text>
-                  </View>
-              </View>
+              10:45 AM
+            </Text>
+          </View>
+        </View>
 
-              <Dash
+        <Dash
           style={ {
             width: 1,
             height: 20,
@@ -78,7 +78,7 @@ export default function TCGameScoreLeft({ editor }) {
           } }
           dashColor={ colors.lightgrayColor }
         />
-              <Text
+        <Text
           style={ {
             textAlign: 'center',
             fontFamily: fonts.RLight,
@@ -89,12 +89,12 @@ export default function TCGameScoreLeft({ editor }) {
             alignSelf: 'center',
             bottom: 0,
           } }>
-                  <Text>0</Text> : <Text>0</Text>
-              </Text>
-          </View>
-          {editor && (
-          <View style={ styles.editorView }>
-              <Dash
+          <Text>0</Text> : <Text>0</Text>
+        </Text>
+      </View>
+      {editor && (
+        <View style={ styles.editorView }>
+          <Dash
             style={ {
               width: 1,
               height: 30,
@@ -102,20 +102,20 @@ export default function TCGameScoreLeft({ editor }) {
             } }
             dashColor={ colors.lightgrayColor }
           />
-              <View
+          <View
             style={ {
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
               position: 'absolute',
             } }>
-                  <Text style={ styles.recordedBy }>
-                      Recorded by Kishan Makani makani (50s ago)
-                  </Text>
-              </View>
+            <Text style={ styles.recordedBy }>
+              Recorded by Kishan Makani makani (50s ago)
+            </Text>
           </View>
-          )}
-      </View>
+        </View>
+      )}
+    </View>
   );
 }
 

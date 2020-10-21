@@ -6,7 +6,7 @@ import LottieView from 'lottie-react-native';
 function Loader({ visible = false }) {
   if (!visible) return null;
   return (
-      <View
+    <View
       style={ {
         position: 'absolute',
         alignItems: 'center',
@@ -18,7 +18,7 @@ function Loader({ visible = false }) {
 
         zIndex: 1,
       } }>
-          <LottieView
+      <LottieView
         // eslint-disable-next-line global-require
         source={ require('../../assets/animation/loading.json') }
         autoPlay
@@ -26,7 +26,7 @@ function Loader({ visible = false }) {
         speed={ 1.5 }
         style={ { width: 160, height: 160 } }
       />
-      </View>
+    </View>
   );
 }
 

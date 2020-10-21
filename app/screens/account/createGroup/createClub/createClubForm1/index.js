@@ -92,19 +92,19 @@ function CreateClubForm1({ navigation, route }) {
     }
   };
   return (
-      <>
-          <ScrollView style={ styles.mainContainer }>
-              <View style={ styles.formSteps }>
-                  <View style={ styles.form1 }></View>
-                  <View style={ styles.form2 }></View>
-                  <View style={ styles.form3 }></View>
-              </View>
-              <View>
-                  <Text style={ styles.fieldTitle }>
-                      {strings.SportsTextFieldTitle}
-                      <Text style={ styles.mendatory }> {strings.star}</Text>
-                  </Text>
-                  <RNPickerSelect
+    <>
+      <ScrollView style={ styles.mainContainer }>
+        <View style={ styles.formSteps }>
+          <View style={ styles.form1 }></View>
+          <View style={ styles.form2 }></View>
+          <View style={ styles.form3 }></View>
+        </View>
+        <View>
+          <Text style={ styles.fieldTitle }>
+            {strings.SportsTextFieldTitle}
+            <Text style={ styles.mendatory }> {strings.star}</Text>
+          </Text>
+          <RNPickerSelect
             placeholder={ {
               label: strings.selectSportPlaceholder,
               value: '',
@@ -160,25 +160,25 @@ function CreateClubForm1({ navigation, route }) {
             } }
             value={ sports }
             Icon={ () => (
-                <Image source={ images.dropDownArrow } style={ styles.downArrow } />
+              <Image source={ images.dropDownArrow } style={ styles.downArrow } />
             ) }
           />
-              </View>
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>
-                      {strings.clubNameTitle}
-                      <Text style={ styles.mendatory }> {strings.star}</Text>
-                  </Text>
+        </View>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>
+            {strings.clubNameTitle}
+            <Text style={ styles.mendatory }> {strings.star}</Text>
+          </Text>
 
-                  <TextInput
+          <TextInput
             placeholder={ strings.clubNameplaceholder }
             style={ styles.matchFeeTxt }
             onChangeText={ (text) => setClubName(text) }
             value={ clubName }></TextInput>
-              </View>
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.genderTitle}</Text>
-                  <RNPickerSelect
+        </View>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.genderTitle}</Text>
+          <RNPickerSelect
             placeholder={ {
               label: strings.selectGenderPlaceholder,
               value: '',
@@ -232,13 +232,13 @@ function CreateClubForm1({ navigation, route }) {
             } }
             value={ gender }
             Icon={ () => (
-                <Image source={ images.dropDownArrow } style={ styles.downArrow } />
+              <Image source={ images.dropDownArrow } style={ styles.downArrow } />
             ) }
           />
-              </View>
-              <View style={ styles.fieldView }>
-                  <Text style={ styles.fieldTitle }>{strings.membersAgeTitle}</Text>
-                  <View
+        </View>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.membersAgeTitle}</Text>
+          <View
             style={ {
               flexDirection: 'row',
 
@@ -249,7 +249,7 @@ function CreateClubForm1({ navigation, route }) {
               marginRight: 15,
               justifyContent: 'space-between',
             } }>
-                      <RNPickerSelect
+            <RNPickerSelect
               placeholder={ {
                 label: strings.minPlaceholder,
                 value: 0,
@@ -299,13 +299,13 @@ function CreateClubForm1({ navigation, route }) {
               } }
               value={ minAge }
               Icon={ () => (
-                  <Image
+                <Image
                     source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }
             />
-                      <RNPickerSelect
+            <RNPickerSelect
               placeholder={ {
                 label: strings.maxPlaceholder,
                 value: 0,
@@ -352,39 +352,39 @@ function CreateClubForm1({ navigation, route }) {
               } }
               value={ maxAge }
               Icon={ () => (
-                  <Image
+                <Image
                     source={ images.dropDownArrow }
                     style={ styles.miniDownArrow }
                   />
               ) }
             />
-                  </View>
-                  <View style={ styles.fieldView }>
-                      <Text style={ styles.fieldTitle }>
-                          {strings.locationTitle}
-                          <Text style={ styles.mendatory }> {strings.star}</Text>
-                      </Text>
-                      <TouchableOpacity
+          </View>
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>
+              {strings.locationTitle}
+              <Text style={ styles.mendatory }> {strings.star}</Text>
+            </Text>
+            <TouchableOpacity
               onPress={ () => navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'CreateClubForm1',
               })
               }>
-                          <TextInput
+              <TextInput
                 placeholder={ strings.searchCityPlaceholder }
                 style={ styles.matchFeeTxt }
                 value={ location }
                 editable={ false }
                 pointerEvents="none"></TextInput>
-                      </TouchableOpacity>
-                  </View>
-                  <View style={ { marginLeft: 15 } }>
-                      <Text style={ styles.smallTxt }>
-                          (<Text style={ styles.mendatory }>{strings.star} </Text>
-                          {strings.requiredText})
-                      </Text>
-                  </View>
-              </View>
-              <TouchableOpacity
+            </TouchableOpacity>
+          </View>
+          <View style={ { marginLeft: 15 } }>
+            <Text style={ styles.smallTxt }>
+              (<Text style={ styles.mendatory }>{strings.star} </Text>
+              {strings.requiredText})
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
           onPress={ () => {
             const form1 = {};
             if (minAge !== 0) {
@@ -408,14 +408,14 @@ function CreateClubForm1({ navigation, route }) {
               });
             }
           } }>
-                  <LinearGradient
+          <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-                      <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-                  </LinearGradient>
-              </TouchableOpacity>
-          </ScrollView>
-      </>
+            <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    </>
   );
 }
 

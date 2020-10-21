@@ -57,52 +57,52 @@ export default function WriteCommentScreen({
   }
 
   return (
-      <KeyboardAvoidingView
+    <KeyboardAvoidingView
       style={ { flex: 1 } }
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-          <ActivityLoader visible={ loading } />
-          <SafeAreaView>
-              <View style={ styles.containerStyle }>
-                  <View style={ styles.backIconViewStyle } />
-                  <View style={ styles.writePostViewStyle }>
-                      <Text style={ styles.writePostTextStyle }>{commentData.length > 0 ? ((commentData.length === 1 && `${commentData.length} Comment`) || (commentData.length > 1 && `${commentData.length} Comments`)) : 'Write Comments'}</Text>
-                  </View>
-                  <View style={ styles.doneViewStyle }>
-                      <Text
+      <ActivityLoader visible={ loading } />
+      <SafeAreaView>
+        <View style={ styles.containerStyle }>
+          <View style={ styles.backIconViewStyle } />
+          <View style={ styles.writePostViewStyle }>
+            <Text style={ styles.writePostTextStyle }>{commentData.length > 0 ? ((commentData.length === 1 && `${commentData.length} Comment`) || (commentData.length > 1 && `${commentData.length} Comments`)) : 'Write Comments'}</Text>
+          </View>
+          <View style={ styles.doneViewStyle }>
+            <Text
               style={ styles.doneTextStyle }
               onPress={ () => {
                 console.log('Done Pressed');
                 navigation.goBack();
               } }>
-                          Done
-                      </Text>
-                  </View>
-              </View>
-          </SafeAreaView>
-          <View style={ styles.sperateLine } />
+              Done
+            </Text>
+          </View>
+        </View>
+      </SafeAreaView>
+      <View style={ styles.sperateLine } />
 
-          {commentData ? (
-              <FlatList
+      {commentData ? (
+        <FlatList
           data={ commentData }
           renderItem={ ({ item }) => <WriteCommentItems data={ item } /> }
           keyExtractor={ (item, index) => index.toString() }
         />
-          ) : (
-              <View style={ { flex: 1 } } />
-          )}
+      ) : (
+        <View style={ { flex: 1 } } />
+      )}
 
-          <SafeAreaView style={ styles.bottomSafeAreaStyle }>
-              {/* <View style={styles.bottomSperateLine} /> */}
-              <View style={ styles.bottomImgView }>
-                  <View style={ styles.commentReportView }>
-                      <Image
+      <SafeAreaView style={ styles.bottomSafeAreaStyle }>
+        {/* <View style={styles.bottomSperateLine} /> */}
+        <View style={ styles.bottomImgView }>
+          <View style={ styles.commentReportView }>
+            <Image
               source={ userImage ? { uri: userImage } : images.profilePlaceHolder }
               resizeMode={ 'cover' }
               style={ { width: 40, height: 40, borderRadius: 40 / 2 } }
             />
-                  </View>
-                  <View style={ styles.onlyMeViewStyle }>
-                      <TextInput
+          </View>
+          <View style={ styles.onlyMeViewStyle }>
+            <TextInput
                         placeholder={ 'Write a comment' }
                         placeholderTextColor={ colors.userPostTimeColor }
                         multiline={ true }
@@ -121,29 +121,29 @@ export default function WriteCommentScreen({
                           maxHeight: hp(20),
                         } }
                       />
-                      {commentTxt.trim().length > 0 && <TouchableOpacity onPress={() => {
-                        const bodyParams = {
-                          reaction_type: 'comment',
-                          activity_id: data.id,
-                          data: {
-                            text: commentTxt,
-                          },
-                        }
-                        createReaction(bodyParams)
-                          .then((response) => {
-                            const dataOfComment = [...commentData];
-                            dataOfComment.push(response.payload);
-                            setCommentData(dataOfComment);
-                            setCommentText('');
-                          })
-                          .catch((e) => Alert.alert('', e.messages));
-                      }}>
-                          <Text style={ styles.sendTextStyle }>SEND</Text>
-                      </TouchableOpacity>}
-                  </View>
-              </View>
-          </SafeAreaView>
-      </KeyboardAvoidingView>
+            {commentTxt.trim().length > 0 && <TouchableOpacity onPress={() => {
+              const bodyParams = {
+                reaction_type: 'comment',
+                activity_id: data.id,
+                data: {
+                  text: commentTxt,
+                },
+              }
+              createReaction(bodyParams)
+                .then((response) => {
+                  const dataOfComment = [...commentData];
+                  dataOfComment.push(response.payload);
+                  setCommentData(dataOfComment);
+                  setCommentText('');
+                })
+                .catch((e) => Alert.alert('', e.messages));
+            }}>
+              <Text style={ styles.sendTextStyle }>SEND</Text>
+            </TouchableOpacity>}
+          </View>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

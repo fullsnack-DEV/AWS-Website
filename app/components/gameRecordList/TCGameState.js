@@ -9,7 +9,7 @@ import fonts from '../../Constants/Fonts'
 
 export default function TCGameState() {
   return (
-      <View
+    <View
       style={ {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -17,7 +17,7 @@ export default function TCGameState() {
         marginTop: 5,
         marginBottom: 5,
       } }>
-          <Dash
+      <Dash
         style={ {
           width: 1,
           height: 20,
@@ -25,7 +25,7 @@ export default function TCGameState() {
         } }
         dashColor={ colors.lightgrayColor }
       />
-          <Text
+      <Text
         style={ {
           textAlign: 'center',
 
@@ -35,24 +35,24 @@ export default function TCGameState() {
 
           bottom: 0,
         } }>
-              <Text
+        <Text
           style={ {
             fontFamily: fonts.RRegular,
             fontSize: 12,
             color: colors.blackColor,
           } }>
-                  0m
-              </Text>{' '}
-              (11:10 AM){' '}
-              <Text
+          0m
+        </Text>{' '}
+        (11:10 AM){' '}
+        <Text
           style={ {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.blackColor,
           } }>
-                  Match paused
-              </Text>
-          </Text>
-      </View>
+          Match paused
+        </Text>
+      </Text>
+    </View>
   );
 }

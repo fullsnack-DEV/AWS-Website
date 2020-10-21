@@ -16,9 +16,9 @@ function TCButton({
   textColor = { color: colors.themeColor },
 }) {
   return (
-      <TouchableOpacity onPress={ onPress } style={ [styles.allButton, extraStyle] }>
-          <Text style={ [styles.signUpText, textColor] }>{title}</Text>
-      </TouchableOpacity>
+    <TouchableOpacity onPress={ onPress } style={ [styles.allButton, extraStyle] }>
+      <Text style={ [styles.signUpText, textColor] }>{title}</Text>
+    </TouchableOpacity>
   );
 }
 

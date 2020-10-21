@@ -29,13 +29,13 @@ function Feed({ data, navigation }) {
   renderItem = ({ index }) => {
     if (json.attachments.length >= 3) {
       return (
-          <TouchableWithoutFeedback>
-              <View>
-                  <Image
+        <TouchableWithoutFeedback>
+          <View>
+            <Image
               source={ { uri: json.attachments[index].thumbnail } }
               style={ styles.multipleMedia }
             />
-                  <View
+            <View
               style={ {
                 backgroundColor: colors.blackColor,
                 height: 20,
@@ -48,30 +48,30 @@ function Feed({ data, navigation }) {
                 justifyContent: 'center',
                 alignItems: 'center',
               } }>
-                      <Text
+              <Text
                 style={ {
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
                 } }>
-                          {index + 1}/{json.attachments.length}
-                      </Text>
-                  </View>
-              </View>
-          </TouchableWithoutFeedback>
+                {index + 1}/{json.attachments.length}
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
       );
     } if (json.attachments.length === 2) {
       return (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           style={ styles.listItem }
           onPress={ () => console.log('Image pressed..', json.attachments[index].thumbnail)
           }>
-              <View>
-                  <Image
+          <View>
+            <Image
               source={ { uri: json.attachments[index].thumbnail } }
               style={ styles.twoMedia }
             />
-                  <View
+            <View
               style={ {
                 backgroundColor: colors.blackColor,
                 height: 20,
@@ -84,53 +84,53 @@ function Feed({ data, navigation }) {
                 justifyContent: 'center',
                 alignItems: 'center',
               } }>
-                      <Text
+              <Text
                 style={ {
                   color: colors.whiteColor,
                   // fontFamily: fonts.RRegular,
                   fontSize: wp('2.8%'),
                 } }>
-                          {index + 1}/{json.attachments.length}
-                      </Text>
-                  </View>
-              </View>
-          </TouchableWithoutFeedback>
+                {index + 1}/{json.attachments.length}
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
       );
     } if (
       json.attachments.length === 1
       && json.attachments[index].media_width > json.attachments[index].media_height
     ) {
       return (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           style={ styles.listItem }
           onPress={ () => this.pushToPostDetail(
             json.attachments[index].type,
             json.attachments[index].url,
           )
           }>
-              <Image
+          <Image
             source={ { uri: json.attachments[index].thumbnail } }
             style={ styles.singleMediaLandscap }
           />
-          </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
       );
     } if (
       json.attachments.length === 1
       && json.attachments[index].media_width < json.attachments[index].media_height
     ) {
       return (
-          <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           style={ styles.listItem }
           onPress={ () => this.pushToPostDetail(
             json.attachments[index].type,
             json.attachments[index].url,
           )
           }>
-              <Image
+          <Image
             source={ { uri: json.attachments[index].thumbnail } }
             style={ styles.singleMediaPortrait }
           />
-          </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
       );
     }
     return <View />
@@ -143,32 +143,32 @@ function Feed({ data, navigation }) {
     }
   };
   return (
-      <View style={ styles.mainContainer }>
-          <View style={ styles.feedheader }>
-              {data.actor.data.entity_type === 'club' ? (
-                  <Image
+    <View style={ styles.mainContainer }>
+      <View style={ styles.feedheader }>
+        {data.actor.data.entity_type === 'club' ? (
+          <Image
             style={ styles.clubProfileImg }
             source={ { uri: data.actor.data.thumbnail } }
           />
-              ) : null}
-              {data.actor.data.entity_type === 'team' ? (
-                  <Image
+        ) : null}
+        {data.actor.data.entity_type === 'team' ? (
+          <Image
             style={ styles.profileImg }
             source={ { uri: data.actor.data.thumbnail } }
           />
-              ) : null}
-              {data.actor.data.entity_type === 'player' ? (
-                  <Image
+        ) : null}
+        {data.actor.data.entity_type === 'player' ? (
+          <Image
             style={ styles.profileImg }
             source={ { uri: data.actor.data.thumbnail } }
           />
-              ) : null}
-              <View style={ styles.entityheader }>
-                  <Text style={ styles.entityName }>{data.actor.data.full_name}</Text>
-                  <Text style={ styles.date }>{Moment(data.time).format('MMM d')}</Text>
-              </View>
-          </View>
-          <FlatList
+        ) : null}
+        <View style={ styles.entityheader }>
+          <Text style={ styles.entityName }>{data.actor.data.full_name}</Text>
+          <Text style={ styles.date }>{Moment(data.time).format('MMM d')}</Text>
+        </View>
+      </View>
+      <FlatList
         data={ json.attachments }
         keyExtractor={ () => json.attachments.url }
         renderItem={ this.renderItem }
@@ -176,55 +176,55 @@ function Feed({ data, navigation }) {
         scrollEnabled={ true }
         showsHorizontalScrollIndicator={ false }
         ItemSeparatorComponent={ () => (
-            <View style={ styles.separatorLine }></View>
+          <View style={ styles.separatorLine }></View>
         ) }
         style={ { marginTop: 10 } }
       />
-          <Text style={ styles.feedDescription }>{json.text}</Text>
+      <Text style={ styles.feedDescription }>{json.text}</Text>
 
-          <View style={ styles.feedBottomView }>
-              <Image style={ styles.commentImage } source={ images.feedComment } />
-              <Image style={ styles.shareImage } source={ images.feedShare } />
+      <View style={ styles.feedBottomView }>
+        <Image style={ styles.commentImage } source={ images.feedComment } />
+        <Image style={ styles.shareImage } source={ images.feedShare } />
 
-              <Image style={ styles.likeImage } source={ images.feedLike } />
-          </View>
-          {data.reaction_counts.clap === 0 ? (
-              <View style={ styles.deviderLineWithoutMargin } />
-          ) : (
-              <View style={ styles.deviderLine } />
-          )}
-
-          {data.reaction_counts.clap > 0 || data.reaction_counts.comment > 0 ? (
-              <View style={ styles.feedBottomView }>
-                  {data.reaction_counts.comment > 0 && (
-                  <Text style={ styles.noOfComment }>
-                      {data.reaction_counts.comment} Comments
-                  </Text>
-                  )}
-                  {data.reaction_counts.clap > 0 && (
-                  <Text style={ styles.noOfLike }>
-                      {data.reaction_counts.clap} Likes
-                  </Text>
-                  )}
-              </View>
-          ) : null}
-          {data.reaction_counts.comment > 0 ? (
-              <View style={ styles.feedBottomView }>
-                  <Text style={ styles.comment }>Hi</Text>
-
-                  <Text style={ styles.commentTime }>Just now</Text>
-              </View>
-          ) : null}
-          {data.reaction_counts.comment >= 2 ? (
-              <View style={ styles.viewMore }>
-                  <Text style={ styles.moreComment }>
-                      view {data.reaction_counts.comment - 1} more comments
-                  </Text>
-              </View>
-          ) : null}
-
-          <View style={ styles.feedSeparatorLine } />
+        <Image style={ styles.likeImage } source={ images.feedLike } />
       </View>
+      {data.reaction_counts.clap === 0 ? (
+        <View style={ styles.deviderLineWithoutMargin } />
+      ) : (
+        <View style={ styles.deviderLine } />
+      )}
+
+      {data.reaction_counts.clap > 0 || data.reaction_counts.comment > 0 ? (
+        <View style={ styles.feedBottomView }>
+          {data.reaction_counts.comment > 0 && (
+            <Text style={ styles.noOfComment }>
+              {data.reaction_counts.comment} Comments
+            </Text>
+          )}
+          {data.reaction_counts.clap > 0 && (
+            <Text style={ styles.noOfLike }>
+              {data.reaction_counts.clap} Likes
+            </Text>
+          )}
+        </View>
+      ) : null}
+      {data.reaction_counts.comment > 0 ? (
+        <View style={ styles.feedBottomView }>
+          <Text style={ styles.comment }>Hi</Text>
+
+          <Text style={ styles.commentTime }>Just now</Text>
+        </View>
+      ) : null}
+      {data.reaction_counts.comment >= 2 ? (
+        <View style={ styles.viewMore }>
+          <Text style={ styles.moreComment }>
+            view {data.reaction_counts.comment - 1} more comments
+          </Text>
+        </View>
+      ) : null}
+
+      <View style={ styles.feedSeparatorLine } />
+    </View>
   );
 }
 

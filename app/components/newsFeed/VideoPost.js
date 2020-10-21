@@ -23,27 +23,27 @@ function VideoPost({ data, onVideoItemPress }) {
   height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
 
   return (
-      <View
+    <View
       style={ [
         styles.singleImageDisplayStyle,
         {
           height,
         },
       ] }>
-          <View style={ [styles.singleImageDisplayStyle, {
-            borderWidth: 1,
-            borderColor: colors.lightgrayColor,
-            height,
-          }] }>
-              <FastImage
+      <View style={ [styles.singleImageDisplayStyle, {
+        borderWidth: 1,
+        borderColor: colors.lightgrayColor,
+        height,
+      }] }>
+        <FastImage
           style={ styles.loadimageStyle }
           source={ loaderImage[randomImage].image }
           resizeMode={ FastImage.resizeMode.contain }
         />
-              <Text style={ styles.loadingTextStyle }>Loading...</Text>
-          </View>
-          <TouchableWithoutFeedback onPress={ onVideoItemPress }>
-              <Video
+        <Text style={ styles.loadingTextStyle }>Loading...</Text>
+      </View>
+      <TouchableWithoutFeedback onPress={ onVideoItemPress }>
+        <Video
         paused={ !play }
         muted={ !!mute }
         source={ { uri: data.url } }
@@ -59,31 +59,31 @@ function VideoPost({ data, onVideoItemPress }) {
           setVideoLoad(true);
         } }
       />
-          </TouchableWithoutFeedback>
-          {videoLoad
+      </TouchableWithoutFeedback>
+      {videoLoad
           && <>
-              <View style={ styles.pauseMuteStyle }>
-                  <TouchableOpacity
+            <View style={ styles.pauseMuteStyle }>
+              <TouchableOpacity
             onPress={ () => {
               setMute(!mute);
             } }>
-                      <Image
+                <Image
               style={ styles.imageStyle }
               source={ mute ? images.mute : images.unmute }
             />
-                  </TouchableOpacity>
-              </View>
-              <View style={ [styles.pauseMuteStyle, { right: wp('13.5%') }] }>
-                  <TouchableOpacity
+              </TouchableOpacity>
+            </View>
+            <View style={ [styles.pauseMuteStyle, { right: wp('13.5%') }] }>
+              <TouchableOpacity
             onPress={ () => {
               setPlay(!play);
             } }>
-                      <Image style={ styles.playPauseImageStyle } source={ images.playPause } />
-                  </TouchableOpacity>
-              </View>
+                <Image style={ styles.playPauseImageStyle } source={ images.playPause } />
+              </TouchableOpacity>
+            </View>
           </>
       }
-      </View>
+    </View>
   );
 }
 

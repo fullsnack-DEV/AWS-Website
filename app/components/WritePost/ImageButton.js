@@ -10,9 +10,9 @@ function ImageButton({
   source, onImagePress, imageStyle, resizeMode,
 }) {
   return (
-      <TouchableOpacity onPress={ onImagePress }>
-          <Image source={ source } style={ [styles.imageStyle, imageStyle] } resizeMode={ 'contain' || resizeMode }/>
-      </TouchableOpacity>
+    <TouchableOpacity onPress={ onImagePress }>
+      <Image source={ source } style={ [styles.imageStyle, imageStyle] } resizeMode={ 'contain' || resizeMode }/>
+    </TouchableOpacity>
   );
 }
 

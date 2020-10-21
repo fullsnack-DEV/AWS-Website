@@ -9,19 +9,19 @@ function NewsFeedDescription({ descriptions, character }) {
   }
 
   return (
-      <View>
-          {descriptions.length > 0 && (
-          <Text style={ styles.descriptionTxt }>
-              {readMore ? descriptions : descriptions.substring(0, character)}
-              {descriptions.length > character && !readMore ? '... ' : ' '}
-              {descriptions.length > character && (
-              <Text onPress={ () => toggleNumberOfLines() } style={ styles.descText }>
-                  {readMore ? 'less' : 'more'}
-              </Text>
-              )}
-          </Text>
+    <View>
+      {descriptions.length > 0 && (
+        <Text style={ styles.descriptionTxt }>
+          {readMore ? descriptions : descriptions.substring(0, character)}
+          {descriptions.length > character && !readMore ? '... ' : ' '}
+          {descriptions.length > character && (
+            <Text onPress={ () => toggleNumberOfLines() } style={ styles.descText }>
+              {readMore ? 'less' : 'more'}
+            </Text>
           )}
-      </View>
+        </Text>
+      )}
+    </View>
   );
 }
 

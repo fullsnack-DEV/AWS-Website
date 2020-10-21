@@ -68,22 +68,22 @@ function RegisterReferee({ navigation }) {
   };
 
   const renderItem = () => (
-      <View style={ { flexDirection: 'column' } }>
-          <View style={ styles.addCertificateView }>
-              <TouchableOpacity>
-                  <Image style={ styles.certificateImg } />
-                  <Image source={ images.certificateUpload } style={ styles.chooseImage } />
-              </TouchableOpacity>
-              <TextInput
+    <View style={ { flexDirection: 'column' } }>
+      <View style={ styles.addCertificateView }>
+        <TouchableOpacity>
+          <Image style={ styles.certificateImg } />
+          <Image source={ images.certificateUpload } style={ styles.chooseImage } />
+        </TouchableOpacity>
+        <TextInput
             placeholder={ strings.titleOrDescriptionText }
             style={ styles.certificateDescription }
             onChangeText={ (text) => onMatchFeeChanged(text) }
             value={ matchFee }></TextInput>
-          </View>
-          <TouchableOpacity>
-              <Text style={ styles.delete }>{strings.deleteTitle}</Text>
-          </TouchableOpacity>
       </View>
+      <TouchableOpacity>
+        <Text style={ styles.delete }>{strings.deleteTitle}</Text>
+      </TouchableOpacity>
+    </View>
   );
   const isIconCheckedOrNot = ({ item, ind }) => {
     languages[ind].isChecked = !item.isChecked;
@@ -99,26 +99,26 @@ function RegisterReferee({ navigation }) {
     setSelectedLanguages(selectedLanguage);
   };
   const renderLanguage = ({ item, ind }) => (
-      <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
         style={ styles.listItem }
         onPress={ () => {
           isIconCheckedOrNot({ item, ind });
         } }>
-          <View>
-              <Text style={ styles.languageList }>{item.language}</Text>
-              <View style={ styles.checkbox }>
-                  {languages[index].isChecked ? (
-                      <Image
+      <View>
+        <Text style={ styles.languageList }>{item.language}</Text>
+        <View style={ styles.checkbox }>
+          {languages[index].isChecked ? (
+            <Image
                 source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
               />
-                  ) : (
-                      <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
-                  )}
-              </View>
-              <View style={ styles.shortSeparatorLine }></View>
-          </View>
-      </TouchableWithoutFeedback>
+          ) : (
+            <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+          )}
+        </View>
+        <View style={ styles.shortSeparatorLine }></View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 
   const checkValidation = () => {
@@ -131,15 +131,15 @@ function RegisterReferee({ navigation }) {
   };
 
   return (
-      <ScrollView style={ styles.mainContainer }>
-          <View style={ styles.formSteps }>
-              <View style={ styles.form1 }></View>
-              <View style={ styles.form2 }></View>
-          </View>
-          <Text style={ styles.LocationText }>
-              {strings.sportsEventsTitle}<Text style={ styles.mendatory }> {strings.star}</Text>
-          </Text>
-          <RNPickerSelect
+    <ScrollView style={ styles.mainContainer }>
+      <View style={ styles.formSteps }>
+        <View style={ styles.form1 }></View>
+        <View style={ styles.form2 }></View>
+      </View>
+      <Text style={ styles.LocationText }>
+        {strings.sportsEventsTitle}<Text style={ styles.mendatory }> {strings.star}</Text>
+      </Text>
+      <RNPickerSelect
         placeholder={ {
           label: strings.selectSportPlaceholder,
           value: null,
@@ -158,15 +158,15 @@ function RegisterReferee({ navigation }) {
         Icon={ () => <Image source={ images.dropDownArrow } style={ styles.downArrow } /> }
       />
 
-          <View
+      <View
         style={ {
           flexDirection: 'row',
           alignItems: 'center',
         } }>
-              <Text style={ styles.LocationText }>{strings.descriptionText}</Text>
+        <Text style={ styles.LocationText }>{strings.descriptionText}</Text>
 
-          </View>
-          <TextInput
+      </View>
+      <TextInput
         style={ styles.descriptionTxt }
         onChangeText={ (text) => onChangeText(text) }
         value={ description }
@@ -175,45 +175,45 @@ function RegisterReferee({ navigation }) {
         placeholder={ strings.descriptionRefereePlaceholder }
       />
 
-          <Text style={ styles.LocationText }>
-              {strings.certificateTitle}
+      <Text style={ styles.LocationText }>
+        {strings.certificateTitle}
 
-          </Text>
-          <Text style={ styles.certificateSubText }>{strings.certificateSubTitle}</Text>
+      </Text>
+      <Text style={ styles.certificateSubText }>{strings.certificateSubTitle}</Text>
 
-          <FlatList
+      <FlatList
         scrollEnabled={ false }
         data={ certificate }
         // keyExtractor={ ( index ) => index }
         renderItem={ renderItem }
       />
-          <TouchableOpacity onPress={ addMore } style={ styles.addCertificateButton }>
-              <Text style={ styles.addCertificateText }>
-                  {strings.addCertificateTitle}
-              </Text>
-          </TouchableOpacity>
-          <Text style={ styles.LocationText }>
-              {strings.languageTitle}
+      <TouchableOpacity onPress={ addMore } style={ styles.addCertificateButton }>
+        <Text style={ styles.addCertificateText }>
+          {strings.addCertificateTitle}
+        </Text>
+      </TouchableOpacity>
+      <Text style={ styles.LocationText }>
+        {strings.languageTitle}
 
-          </Text>
-          <View style={ styles.searchView }>
-              <TouchableOpacity onPress={ toggleModal }>
-                  <TextInput
+      </Text>
+      <View style={ styles.searchView }>
+        <TouchableOpacity onPress={ toggleModal }>
+          <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
             onChangeText={ (text) => setPlayer2(text) }
             value={ selectedLanguages.toString() }
             editable={ false }
             pointerEvents="none"></TextInput>
-              </TouchableOpacity>
-          </View>
+        </TouchableOpacity>
+      </View>
 
-          <Modal
+      <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
         backdropOpacity={ 0 }
         style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
-              <View
+        <View
           style={ {
             width: '100%',
             height: Dimensions.get('window').height / 2,
@@ -228,7 +228,7 @@ function RegisterReferee({ navigation }) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
           } }>
-                  <Text
+          <Text
             style={ {
               alignSelf: 'center',
               marginTop: 20,
@@ -237,16 +237,16 @@ function RegisterReferee({ navigation }) {
               fontFamily: fonts.RBold,
               color: colors.lightBlackColor,
             } }>
-                      Languages
-                  </Text>
-                  <View style={ styles.separatorLine }></View>
-                  <FlatList
+            Languages
+          </Text>
+          <View style={ styles.separatorLine }></View>
+          <FlatList
             data={ languages }
             keyExtractor={ (item) => item.id }
             renderItem={ renderLanguage }
             style={ { marginBottom: '25%' } }
           />
-                  <View
+          <View
             style={ {
               width: '100%',
               height: '25%',
@@ -260,20 +260,20 @@ function RegisterReferee({ navigation }) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
             } }>
-                      <TouchableOpacity
+            <TouchableOpacity
               onPress={ () => {
                 toggleModal();
               } }>
-                          <LinearGradient
+              <LinearGradient
                 colors={ [colors.yellowColor, colors.themeColor] }
                 style={ styles.languageApplyButton }>
-                              <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
-                          </LinearGradient>
-                      </TouchableOpacity>
-                  </View>
-              </View>
-          </Modal>
-          <TouchableOpacity
+                <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <TouchableOpacity
         onPress={ () => {
           if (checkValidation()) {
             let bodyParams = {};
@@ -290,13 +290,13 @@ function RegisterReferee({ navigation }) {
             navigation.navigate('RegisterRefereeForm2', { bodyParams });
           }
         } }>
-              <LinearGradient
+        <LinearGradient
           colors={ [colors.yellowColor, colors.themeColor] }
           style={ styles.nextButton }>
-                  <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-              </LinearGradient>
-          </TouchableOpacity>
-      </ScrollView>
+          <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 

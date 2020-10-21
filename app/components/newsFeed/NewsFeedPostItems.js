@@ -60,36 +60,36 @@ function NewsFeedPostItems({
   }
 
   return (
-      <View key={key}>
-          <View style={styles.mainContainer}>
-              <Image
+    <View key={key}>
+      <View style={styles.mainContainer}>
+        <Image
           style={styles.background}
           source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
           resizeMode={'cover'}
         />
-              <View style={styles.userNameView}>
-                  <Text style={styles.userNameTxt}>{item.actor.data.full_name}</Text>
-                  <Text style={styles.activeTimeAgoTxt}>
-                      {/* {moment(item.time).startOf('hour').fromNow()} */}
-                      {commentPostTimeCalculate(item.time)}
-                  </Text>
-              </View>
-              <TouchableOpacity
+        <View style={styles.userNameView}>
+          <Text style={styles.userNameTxt}>{item.actor.data.full_name}</Text>
+          <Text style={styles.activeTimeAgoTxt}>
+            {/* {moment(item.time).startOf('hour').fromNow()} */}
+            {commentPostTimeCalculate(item.time)}
+          </Text>
+        </View>
+        <TouchableOpacity
           style={styles.dotImageTouchStyle}
           onPress={() => {
             actionSheet.current.show();
           }}>
-                  <Image
+          <Image
             style={styles.dotImageStyle}
             source={images.dotImage}
             resizeMode={'contain'}
           />
-              </TouchableOpacity>
-          </View>
-          <View>
-              {
+        </TouchableOpacity>
+      </View>
+      <View>
+        {
                 attachedImages && attachedImages.length === 1 ? (
-                    <FlatList
+                  <FlatList
               data={attachedImages}
               horizontal={true}
               bounces={false}
@@ -103,7 +103,7 @@ function NewsFeedPostItems({
                 }
                 if (attachItem.type === 'video') {
                   return (
-                      <VideoPost
+                    <VideoPost
                       data={attachItem}
                       onVideoItemPress={() => {
                         // navigation.navigate('FullVideoScreen', {url: attachItem.url});
@@ -116,12 +116,12 @@ function NewsFeedPostItems({
               keyExtractor={(index) => index.toString()}
             />
                 ) : (
-                    <Carousel
+                  <Carousel
               data={attachedImages}
               renderItem={({ item: multiAttachItem, index }) => {
                 if (multiAttachItem.type === 'image') {
                   return (
-                      <PostImageSet
+                    <PostImageSet
                       data={multiAttachItem}
                       itemNumber={index + 1}
                       totalItemNumber={attachedImages.length}
@@ -130,7 +130,7 @@ function NewsFeedPostItems({
                 }
                 if (multiAttachItem.type === 'video') {
                   return (
-                      <MultiPostVideo
+                    <MultiPostVideo
                       data={multiAttachItem}
                       itemNumber={index + 1}
                       totalItemNumber={attachedImages.length}
@@ -146,105 +146,105 @@ function NewsFeedPostItems({
             />
                 )
               }
-              {attachedImages.length > 0 ? (
-                  <NewsFeedDescription descriptions={descriptions} character={140} />
-              ) : (
-                  <NewsFeedDescription descriptions={descriptions} character={650} />
-              )}
+        {attachedImages.length > 0 ? (
+          <NewsFeedDescription descriptions={descriptions} character={140} />
+        ) : (
+          <NewsFeedDescription descriptions={descriptions} character={650} />
+        )}
 
-              <View style={{ marginTop: 10, marginLeft: 10 }}></View>
+        <View style={{ marginTop: 10, marginLeft: 10 }}></View>
 
-              <View style={styles.commentShareLikeView}>
-                  <View
+        <View style={styles.commentShareLikeView}>
+          <View
             style={{
               flexDirection: 'row',
               width: wp('60%'),
             }}>
-                      <View
+            <View
               style={{
                 flexDirection: 'row',
               }}>
-                          <TouchableOpacity
+              <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('WriteCommentScreen', {
                     data: item,
                   });
                 }}
                 style={styles.imageTouchStyle}>
-                              <Image
+                <Image
                   style={styles.commentImage}
                   source={images.comment}
                   resizeMode={'contain'}
                 />
-                          </TouchableOpacity>
-                          {item.reaction_counts
+              </TouchableOpacity>
+              {item.reaction_counts
                 && item.reaction_counts.comment !== undefined && (
-                <Text style={styles.commentlengthStyle}>
+                  <Text style={styles.commentlengthStyle}>
                     {item.reaction_counts.comment > 0
                       ? item.reaction_counts.comment
                       : ''}
-                </Text>
-                          )}
-                      </View>
+                  </Text>
+              )}
+            </View>
 
-                      <View
+            <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginLeft: 10,
               }}>
-                          <TouchableOpacity
+              <TouchableOpacity
                 onPress={() => {}}
                 style={styles.imageTouchStyle}>
-                              <Image
+                <Image
                   style={styles.commentImage}
                   source={images.share}
                   resizeMode={'contain'}
                 />
-                          </TouchableOpacity>
-                          <Text style={styles.commentlengthStyle}>99,999</Text>
-                      </View>
-                  </View>
+              </TouchableOpacity>
+              <Text style={styles.commentlengthStyle}>99,999</Text>
+            </View>
+          </View>
 
-                  <View
+          <View
             style={{
               flexDirection: 'row',
               width: wp('32%'),
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-                      {item.reaction_counts && item.reaction_counts.clap !== undefined && (
-                      <Text
+            {item.reaction_counts && item.reaction_counts.clap !== undefined && (
+              <Text
                 style={[
                   styles.commentlengthStyle,
                   {
                     color: like === true ? '#FF8A01' : colors.reactionCountColor,
                   },
                 ]}>
-                          {item.reaction_counts.clap > 0 ? item.reaction_counts.clap : ''}
-                      </Text>
-                      )}
-                      <TouchableOpacity
+                {item.reaction_counts.clap > 0 ? item.reaction_counts.clap : ''}
+              </Text>
+            )}
+            <TouchableOpacity
               onPress={onLikePress}
               style={styles.imageTouchStyle}>
-                          {like === true ? (
-                              <Image
+              {like === true ? (
+                <Image
                   style={[styles.commentImage, { tintColor: '#FF8A01' }]}
                   source={images.feedLike}
                   resizeMode={'contain'}
                 />
-                          ) : (
-                              <Image
+              ) : (
+                <Image
                   style={styles.commentImage}
                   source={images.feedLike}
                   resizeMode={'contain'}
                 />
-                          )}
-                      </TouchableOpacity>
-                  </View>
-              </View>
-              <ActionSheet
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+        <ActionSheet
                 ref={actionSheet}
                 title={'News Feed Post'}
                 options={['Edit Post', 'Delete Post', 'Cancel']}
@@ -264,8 +264,8 @@ function NewsFeedPostItems({
                   }
                 }}
               />
-          </View>
       </View>
+    </View>
   );
 }
 

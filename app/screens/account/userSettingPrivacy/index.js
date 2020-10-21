@@ -29,29 +29,29 @@ export default function UserSettingPrivacyScreen({ navigation }) {
   };
   const renderMenu = ({ item }) => (
 
-      <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
         style={ styles.listContainer }
         onPress={ () => {
           handleOpetions(item.key);
         } }>
-          <View style={ { flexDirection: 'row' } }>
-              <Text style={ styles.listItems }>{item.key}</Text>
-              <Image source={ images.nextArrow } style={ styles.nextArrow } />
-          </View>
-      </TouchableWithoutFeedback>
+      <View style={ { flexDirection: 'row' } }>
+        <Text style={ styles.listItems }>{item.key}</Text>
+        <Image source={ images.nextArrow } style={ styles.nextArrow } />
+      </View>
+    </TouchableWithoutFeedback>
   );
   return (
-      <ScrollView style={ styles.mainContainer }>
-          <FlatList
+    <ScrollView style={ styles.mainContainer }>
+      <FlatList
             data={ userSettingMenu }
             keyExtractor={ (item) => item.id }
             renderItem={ renderMenu }
 
             ItemSeparatorComponent={ () => (
-                <View style={ styles.separatorLine }></View>
+              <View style={ styles.separatorLine }></View>
             ) }
           />
-          <View style={ styles.separatorLine }></View>
-      </ScrollView>
+      <View style={ styles.separatorLine }></View>
+    </ScrollView>
   );
 }

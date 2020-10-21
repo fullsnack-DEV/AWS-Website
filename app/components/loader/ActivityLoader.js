@@ -10,13 +10,13 @@ import colors from '../../Constants/Colors'
 function ActivityLoader({ visible = false }) {
   if (!visible) return null;
   return (
-      <Modal visible={ true } transparent={ true } style={ { backgroundColor: '#fff' } }>
-          <View style={ styles.containerStyle }>
-              <View style={ styles.indicatorViewStyle }>
-                  <ActivityIndicator size={ 'large' } color={ colors.blackColor } />
-              </View>
-          </View>
-      </Modal>
+    <Modal visible={ true } transparent={ true } style={ { backgroundColor: '#fff' } }>
+      <View style={ styles.containerStyle }>
+        <View style={ styles.indicatorViewStyle }>
+          <ActivityIndicator size={ 'large' } color={ colors.blackColor } />
+        </View>
+      </View>
+    </Modal>
   );
 }
 

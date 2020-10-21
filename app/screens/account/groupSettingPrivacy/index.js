@@ -20,9 +20,9 @@ function GroupSettingPrivacyScreen() {
   //   const [clubMembersFollowers, setclubMembersFollowers] = useState(false);
 
   return (
-      <ScrollView style={ styles.mainContainer }>
+    <ScrollView style={ styles.mainContainer }>
 
-          {/* <Text style={ styles.membershipText }>{strings.connectionTitle}</Text>
+      {/* <Text style={ styles.membershipText }>{strings.connectionTitle}</Text>
           {route.params.switchBy === 'team' ? <Text style={ styles.whoJoinText }>{strings.whoCanSeeTeam}</Text> : <Text style={ styles.whoJoinText }>{strings.whoCanSeeClub}</Text>}
 
           <View style={ styles.radioButtonView }>
@@ -175,7 +175,7 @@ function GroupSettingPrivacyScreen() {
                   <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
               </LinearGradient>
           </TouchableOpacity> */}
-      </ScrollView>
+    </ScrollView>
   );
 }
 

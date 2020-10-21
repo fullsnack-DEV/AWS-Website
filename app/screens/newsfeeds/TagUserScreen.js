@@ -68,37 +68,37 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
   }
 
   return (
-      <KeyboardAvoidingView
+    <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: 'white' }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-          <SafeAreaView>
-              <View style={ styles.containerStyle }>
-                  <View style={ styles.backIconViewStyle }>
-                      <TouchableOpacity onPress={backBtnPress}>
-                          <Image source={ images.backArrow } style={ styles.backImage } />
-                      </TouchableOpacity>
-                  </View>
-                  <View style={ styles.writePostViewStyle }>
-                      <Text style={ styles.writePostTextStyle }>{'Tag User'}</Text>
-                  </View>
-                  <View style={ styles.doneViewStyle }>
-                      {/* <Text
+      <SafeAreaView>
+        <View style={ styles.containerStyle }>
+          <View style={ styles.backIconViewStyle }>
+            <TouchableOpacity onPress={backBtnPress}>
+              <Image source={ images.backArrow } style={ styles.backImage } />
+            </TouchableOpacity>
+          </View>
+          <View style={ styles.writePostViewStyle }>
+            <Text style={ styles.writePostTextStyle }>{'Tag User'}</Text>
+          </View>
+          <View style={ styles.doneViewStyle }>
+            {/* <Text
                         style={ styles.doneTextStyle }
                         onPress={ () => { }}>
                           Done
                       </Text> */}
-                  </View>
-              </View>
-          </SafeAreaView>
-          <View style={ styles.sperateLine } />
-          <View style={styles.searchViewStyle}>
-              <View style={styles.searchImageViewStyle}>
-                  <Image
+          </View>
+        </View>
+      </SafeAreaView>
+      <View style={ styles.sperateLine } />
+      <View style={styles.searchViewStyle}>
+        <View style={styles.searchImageViewStyle}>
+          <Image
                   source={images.searchUser}
                   style={styles.searchImageStyle}
                 />
-              </View>
-              <TextInput
+        </View>
+        <TextInput
             placeholder={'Search User....'}
             placeholderTextColor={colors.disableColor}
             style={styles.searchUserTextStyle}
@@ -114,8 +114,8 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
               setSearchUser(text);
             } }
             value={searchUser} />
-          </View>
-          <FlatList
+      </View>
+      <FlatList
           data={searchUser.length > 0 ? filteredUserData : data}
           keyboardShouldPersistTaps={'always'}
           style={{ paddingTop: hp(1) }}
@@ -130,7 +130,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
           } }
           keyExtractor={ (item, index) => index.toString() }
         />
-      </KeyboardAvoidingView>
+    </KeyboardAvoidingView>
   );
 }
 

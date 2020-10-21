@@ -12,17 +12,17 @@ import fonts from '../../Constants/Fonts'
 
 export default function ReservationDetailButton({ ExpiryTime = '1d 23h 59m' }) {
   return (
-      <View>
+    <View>
 
-          <TouchableOpacity>
-              <LinearGradient
+      <TouchableOpacity>
+        <LinearGradient
                     colors={[colors.yellowColor, colors.themeColor]}
                     style={styles.pendingButton}>
-                  <Text style={styles.pendingTimerText}>{strings.respondWithinText} {ExpiryTime}</Text>
-              </LinearGradient>
-          </TouchableOpacity>
+          <Text style={styles.pendingTimerText}>{strings.respondWithinText} {ExpiryTime}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
 
-      </View>
+    </View>
   );
 }
 
