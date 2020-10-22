@@ -146,6 +146,9 @@ const images = {
   requestIn: require('../assets/images/request_in.png'),
   requestOut: require('../assets/images/request_out.png'),
   dottedLine: require('../assets/images/dotLine.png'),
+
+  // members
+  filterIcon: require('../assets/images/ic_filter.png'),
 };
 
 export default images;

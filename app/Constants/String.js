@@ -196,5 +196,13 @@ const strings = {
   newPassword: 'New Password',
   confirmPassword: 'Confirm Password',
   atLeastText: '(At least 8 characters)',
+
+  // reservation
+
+  doneByText: 'Done by',
+  detailText: 'DETAILS',
+  respondWithinText: 'RESPOND within',
+  noReservationFountText: 'No Reservations Found',
+
 };
 export default strings;

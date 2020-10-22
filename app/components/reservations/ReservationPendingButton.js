@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity,
+  StyleSheet, Text, TouchableOpacity,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -10,26 +10,17 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-export default function ReservationPendingButton({ ExpiryTime = '1d 23h 59m' }) {
+export default function ReservationPendingButton({ onPressButon }) {
   return (
-    <View>
 
-      {/* <TouchableOpacity>
-              <LinearGradient
+    <TouchableOpacity onPress={onPressButon}>
+      <LinearGradient
                     colors={[colors.yellowColor, colors.themeColor]}
                     style={styles.pendingButton}>
-                  <Text style={styles.pendingTimerText}>{strings.respondWithinText} {ExpiryTime}</Text>
-              </LinearGradient>
-          </TouchableOpacity> */}
-      <TouchableOpacity>
-        <LinearGradient
-                    colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.pendingButton}>
-          <Text style={styles.pendingTimerText}>{strings.respondWithinText} {ExpiryTime}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+        <Text style={styles.pendingTimerText}>{strings.respondWithinText} 1d 23h 59m</Text>
+      </LinearGradient>
+    </TouchableOpacity>
 
-    </View>
   );
 }
 
