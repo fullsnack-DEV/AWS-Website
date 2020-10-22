@@ -42,5 +42,9 @@ const colors = {
   orangeEventColor: '#FFAE01',
   veryLightGray: '#C4C4C4',
   magnifyIconColor: '#B2B2B2',
+  thinDividerColor: '#E5E5E5',
+  whiteGradientColor: '#FCFCFC',
+  blackGradientColor: '#EDEDED',
+  playerBadgeColor: '#50B5FF',
 };
 export default colors;

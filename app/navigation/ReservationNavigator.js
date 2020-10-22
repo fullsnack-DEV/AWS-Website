@@ -4,8 +4,8 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import ReservationScreen from '../screens/reservation';
-import ReservationDetailScreen from '../screens/reservation/reservationDetail'
+import ReservationScreen from '../screens/reservation/ReservationScreen';
+import ReservationDetailScreen from '../screens/reservation/ReservationDetailScreen'
 
 import colors from '../Constants/Colors'
 

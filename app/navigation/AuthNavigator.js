@@ -3,19 +3,19 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import WelcomeScreen from '../screens/authScreens/Welcome';
-import ChooseSportsScreen from '../screens/authScreens/ChooseSports';
-import LoginScreen from '../screens/authScreens/Login';
-import ForgotPasswordScreen from '../screens/authScreens/ForgotPassword';
-import ChooseLocationScreen from '../screens/authScreens/ChooseLocation';
-import SignupScreen from '../screens/authScreens/SignUp';
-import FollowTeams from '../screens/authScreens/FollowTeam';
+import WelcomeScreen from '../screens/authScreens/WelcomeScreen';
+import ChooseSportsScreen from '../screens/authScreens/ChooseSportsScreen';
+import LoginScreen from '../screens/authScreens/LoginScreen';
+import ForgotPasswordScreen from '../screens/authScreens/ForgotPasswordScreen';
+import ChooseLocationScreen from '../screens/authScreens/ChooseLocationScreen';
+import SignupScreen from '../screens/authScreens/SignupScreen';
+import FollowTeams from '../screens/authScreens/FollowTeams';
 import HomeScreen from '../screens/home/HomeScreen';
-import TotalTeamsScreen from '../screens/authScreens/TotalTeam';
-import EmailVerification from '../screens/authScreens/EmailVerifiation';
-import ForgotPasswordLinkSentScreen from '../screens/authScreens/forgotPasswordLinkSent';
-import AddBirthdayScreen from '../screens/authScreens/addYourBirthday';
-import ChooseGenderScreen from '../screens/authScreens/chooseGender';
+import TotalTeamsScreen from '../screens/authScreens/TotalTeamsScreen';
+import EmailVerificationScreen from '../screens/authScreens/EmailVerificationScreen';
+import ForgotPasswordLinkSentScreen from '../screens/authScreens/ForgotPasswordLinkSentScreen';
+import AddBirthdayScreen from '../screens/authScreens/AddBirthdayScreen';
+import ChooseGenderScreen from '../screens/authScreens/ChooseGenderScreen';
 
 import BottomTab from '../components/BottomTab';
 import colors from '../Constants/Colors'
@@ -60,8 +60,8 @@ const AuthNavigator = () => (
     <Stack.Screen name="FollowTeams" component={ FollowTeams } options={ {} } />
     <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
     <Stack.Screen
-        name="EmailVerification"
-        component={ EmailVerification }
+        name="EmailVerificationScreen"
+        component={ EmailVerificationScreen }
         options={ {} }
       />
     <Stack.Screen

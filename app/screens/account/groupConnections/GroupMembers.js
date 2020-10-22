@@ -5,8 +5,8 @@ import {
   View,
   StyleSheet,
   Image,
-
 } from 'react-native';
+import UserRoleView from '../../../components/groupConnections/UserRoleView';
 
 import TCScrollableTabs from '../../../components/reservations/TCScrollableTabs';
 import TCSearchBox from '../../../components/reservations/TCSearchBox';
@@ -24,6 +24,12 @@ export default function GroupMembers() {
             <TCSearchBox value={searchText} onChangeText={(text) => setSearchText(text)}/>
             <Image source={ images.filterIcon } style={ styles.filterImage } />
           </View>
+
+          <UserRoleView/>
+          <UserRoleView/>
+          <UserRoleView/>
+          <UserRoleView/>
+
         </View>
         <View tabLabel='Followers' style={{ flex: 1 }}></View>
       </TCScrollableTabs>
