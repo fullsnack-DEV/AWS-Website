@@ -9,7 +9,7 @@ import colors from '../Constants/Colors';
 export default function TCThickDivider({ height = 7 }) {
   return (
 
-      <View style={[styles.bigDivider, { height }]}></View>
+    <View style={[styles.bigDivider, { height }]}></View>
 
   );
 }

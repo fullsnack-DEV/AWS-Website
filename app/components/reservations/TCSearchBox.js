@@ -18,15 +18,15 @@ import fonts from '../../Constants/Fonts';
 
 export default function TCSearchBox({ ...props }) {
   return (
-      <View style={ styles.sectionStyle }>
-          <Image source={ images.searchLocation } style={ styles.searchImg } />
-          <TextInput
+    <View style={ styles.sectionStyle }>
+      <Image source={ images.searchLocation } style={ styles.searchImg } />
+      <TextInput
             style={ styles.textInput }
             placeholder={ strings.searchHereText }
             clearButtonMode="always"
             placeholderTextColor={ colors.userPostTimeColor }
             {...props}/>
-      </View>
+    </View>
   );
 }
 

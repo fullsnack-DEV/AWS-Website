@@ -16,18 +16,18 @@ import images from '../../../Constants/ImagePath'
 export default function GroupMembers() {
   const [searchText, setSearchText] = useState('');
   return (
-      <View style={styles.mainContainer}>
+    <View style={styles.mainContainer}>
 
-          <TCScrollableTabs>
-              <View tabLabel='Members' style={{ flex: 1 }}>
-                  <View style={styles.searchBarView}>
-                      <TCSearchBox value={searchText} onChangeText={(text) => setSearchText(text)}/>
-                      <Image source={ images.filterIcon } style={ styles.filterImage } />
-                  </View>
-              </View>
-              <View tabLabel='Followers' style={{ flex: 1 }}></View>
-          </TCScrollableTabs>
-      </View>
+      <TCScrollableTabs>
+        <View tabLabel='Members' style={{ flex: 1 }}>
+          <View style={styles.searchBarView}>
+            <TCSearchBox value={searchText} onChangeText={(text) => setSearchText(text)}/>
+            <Image source={ images.filterIcon } style={ styles.filterImage } />
+          </View>
+        </View>
+        <View tabLabel='Followers' style={{ flex: 1 }}></View>
+      </TCScrollableTabs>
+    </View>
   );
 }
 const styles = StyleSheet.create({

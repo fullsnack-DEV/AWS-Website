@@ -11,38 +11,38 @@ import fonts from '../../Constants/Fonts'
 export default function ReservationStatusView({ data }) {
   return (
 
-      <View style={styles.reservationTitleView}>
-          <TouchableOpacity>
-              <LinearGradient
+    <View style={styles.reservationTitleView}>
+      <TouchableOpacity>
+        <LinearGradient
             colors={[colors.yellowColor, colors.themeColor]}
             style={styles.borderView}>
-                  <View style={styles.dateView}>
-                      <Text style={styles.dateText}>Feb{'\n'}15</Text>
-                  </View>
-              </LinearGradient>
-          </TouchableOpacity>
-          <View style={styles.reservationTypeView}>
-              <Text style={[styles.reservationText, { color: '#FF4E00' }]}>
-                  RESERVATION REQUEST SENT
-              </Text>
+          <View style={styles.dateView}>
+            <Text style={styles.dateText}>Feb{'\n'}15</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+      <View style={styles.reservationTypeView}>
+        <Text style={[styles.reservationText, { color: '#FF4E00' }]}>
+          RESERVATION REQUEST SENT
+        </Text>
 
-              {data.responsible_to_secure_venue && (
-                  <Text style={styles.matchText}>Match · {data.sport}</Text>
-              )}
-              {data.referee && data.game && (
-                  <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
-              )}
-              {data.scorekeeper && data.game && (
-                  <Text style={styles.matchText}>
-                      Scorekeeper · {data.game.sport}
-                  </Text>
-              )}
-          </View>
-          <View style={styles.amountView}>
-              <Text style={styles.amountText}>${data.amount} CAD</Text>
-              <Text style={styles.cancelAmountText}>$35 CAD</Text>
-          </View>
+        {data.responsible_to_secure_venue && (
+          <Text style={styles.matchText}>Match · {data.sport}</Text>
+        )}
+        {data.referee && data.game && (
+          <Text style={styles.matchText}>Referee · {data.game.sport}</Text>
+        )}
+        {data.scorekeeper && data.game && (
+          <Text style={styles.matchText}>
+            Scorekeeper · {data.game.sport}
+          </Text>
+        )}
       </View>
+      <View style={styles.amountView}>
+        <Text style={styles.amountText}>${data.amount} CAD</Text>
+        <Text style={styles.cancelAmountText}>$35 CAD</Text>
+      </View>
+    </View>
 
   );
 }

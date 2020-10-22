@@ -8,7 +8,7 @@ import fonts from '../../Constants/Fonts'
 export default function TCScrollableTabs({ children }) {
   return (
 
-      <ScrollableTabView
+    <ScrollableTabView
                     style={{ marginTop: 5 }}
                     tabBarTextStyle = {{
                       fontSize: 16,
@@ -21,8 +21,8 @@ export default function TCScrollableTabs({ children }) {
                     renderTabBar={() => <DefaultTabBar />}
                   >
 
-          {children}
-      </ScrollableTabView>
+      {children}
+    </ScrollableTabView>
 
   );
 }

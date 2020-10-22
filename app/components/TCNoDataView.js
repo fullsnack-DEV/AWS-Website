@@ -8,9 +8,9 @@ import fonts from '../Constants/Fonts'
 
 export default function TCNoDataView({ title }) {
   return (
-      <View style={styles.noDataPlaceholderView}>
-          <Text style={styles.noDataPlaceholder}>{title}</Text>
-      </View>
+    <View style={styles.noDataPlaceholderView}>
+      <Text style={styles.noDataPlaceholder}>{title}</Text>
+    </View>
   );
 }
 
