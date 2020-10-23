@@ -7,15 +7,21 @@ import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import { getPostDetails } from '../../api/NewsFeedapi';
+import { createPost, getPostDetails } from '../../api/NewsFeedapi';
 
 import colors from '../../Constants/Colors'
+import uploadImages from '../../utils/imageAction';
+import ImageProgress from '../../components/newsFeed/ImageProgress';
 
-export default function FeedsScreen({ navigation }) {
+export default function FeedsScreen({ navigation, route }) {
+  console.log('Route :-:--', route);
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
   const [userID, setUserID] = useState('');
+  const [totalUploadCount, setTotalUploadCount] = useState(0);
+  const [doneUploadCount, setDoneUploadCount] = useState(0);
+  const [progressBar, setProgressBar] = useState(false);
 
   async function setCustomerId() {
     const currentUserID = await AsyncStorage.getItem('CurrentUserId');
@@ -26,6 +32,44 @@ export default function FeedsScreen({ navigation }) {
   useEffect(() => {
     setCustomerId();
   }, []);
+
+  const progressStatus = (completed, total) => {
+    setDoneUploadCount(completed < total ? (completed + 1) : total)
+  }
+
+  useEffect(() => {
+    const imageUploadFile = navigation.addListener('focus', async () => {
+      if (route.params && route.params.data) {
+        setTotalUploadCount(route.params.data.length || 1);
+        setProgressBar(true);
+        const imageArray = route.params.data.map((data) => ({ data }))
+        uploadImages(imageArray, progressStatus).then((responses) => {
+          const attachments = responses.map((item) => ({
+            type: 'image',
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+          }))
+          const params = {
+            text: route.params.postDescriptions ? route.params.postDescriptions : '',
+            attachments,
+          };
+          createPost(params)
+            .then(() => getPostDetails())
+            .then((response) => {
+              setPostData(response.payload.results)
+              setProgressBar(false);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages)
+            });
+        })
+      }
+    });
+
+    return () => {
+      imageUploadFile();
+    };
+  }, [route.params]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -65,15 +109,28 @@ export default function FeedsScreen({ navigation }) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <WritePost
-        navigation={navigation}
-        postDataItem={postData ? postData[0] : {}}
-      />
+            navigation={navigation}
+            postDataItem={postData ? postData[0] : {}}
+            onWritePostPress={() => {
+              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {} })
+              setDoneUploadCount(0);
+              setTotalUploadCount(0);
+            }}
+          />
+      {progressBar && <ImageProgress
+            numberOfUploaded={doneUploadCount}
+            totalUpload={totalUploadCount}
+            onCancelPress={() => {
+              console.log('Cancel Pressed!');
+            }}
+            postDataItem={postData ? postData[0] : {}}
+          />}
       <NewsFeedList
-        navigation={navigation}
-        newsFeedData={newsFeedData}
-        postData={postData}
-        userID={userID}
-      />
+            navigation={navigation}
+            newsFeedData={newsFeedData}
+            postData={postData}
+            userID={userID}
+          />
     </View>
   );
 }

@@ -33,7 +33,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
         setUserData(response.payload);
       })
       .catch((e) => {
-        console.log('eeeee :-', e);
+        console.log('eeeee Get Users :-', e.response);
         Alert.alert('', e.messages)
       });
   }, []);
@@ -44,7 +44,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
         setGroupData(response.payload);
       })
       .catch((e) => {
-        console.log('eeeee :-', e);
+        console.log('eeeee Get Group Users :-', e.response);
         Alert.alert('', e.messages)
       });
   }, []);

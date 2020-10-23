@@ -42,18 +42,18 @@ export const updatePost = async (params) => makeAPIRequest({
   params,
 });
 
-export const getImagePreSignedURL = async (playerID, params) => makeAPIRequest({
+export const getImagePreSignedURL = async (params) => makeAPIRequest({
   method: 'get',
-  url: api.baseURL + api.newsFeed.player + playerID + api.newsFeed.presignedurl,
+  url: Config.BASE_URL + api.newsFeed.presignedurl,
   params,
 });
 
 export const getUsers = async () => makeAPIRequest({
   method: 'get',
-  url: api.baseURL + api.newsFeed.getUser,
+  url: Config.BASE_URL + api.newsFeed.getUser,
 });
 
 export const getGroupsUser = async () => makeAPIRequest({
   method: 'get',
-  url: api.baseURL + api.newsFeed.getGroup,
+  url: Config.BASE_URL + api.newsFeed.getGroup,
 });
