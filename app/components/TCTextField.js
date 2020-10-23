@@ -3,50 +3,53 @@ import {
   StyleSheet,
 
   TextInput,
+  View,
 } from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 function TCTextField({
   placeholder,
+  placeholderTextColor = colors.userPostTimeColor,
   secureText = false,
   keyboardType = 'default',
+  style,
+  textStyle,
   ...otherProps
 }) {
   return (
-    <TextInput
-      style={ styles.textInput }
-      placeholder={ placeholder }
-      placeholderTextColor={ colors.themeColor }
-      secureTextEntry={ secureText }
-      keyboardType={ keyboardType }
-      { ...otherProps }
+    <View style={[styles.textContainer, style]}>
+      <TextInput
+        style={ [styles.textInput, textStyle] }
+        placeholder={ placeholder }
+        placeholderTextColor={ placeholderTextColor }
+        secureTextEntry={ secureText }
+        keyboardType={ keyboardType }
+        { ...otherProps }
     />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    color: colors.blackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+  textContainer: {
     height: 40,
-    marginBottom: hp('1.5%'),
-    marginLeft: wp('8%'),
-    marginRight: wp('8%'),
-    paddingLeft: 17,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    marginHorizontal: 15,
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
+    elevation: 3,
+  },
+  textInput: {
+    height: '100%',
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    color: colors.lightBlackColor,
   },
 });
 
