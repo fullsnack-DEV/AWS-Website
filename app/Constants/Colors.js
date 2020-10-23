@@ -28,7 +28,7 @@ const colors = {
   graySeparater: '#e1e1e1',
   textFieldColor: '#f3f3f3',
   doneButtonColor: '#29bce5',
-  offwhite: '#fcfcfc',
+  offwhite: '#FCFCFC',
   radoffwhiteioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
   veryLightBlack: '#616161',
@@ -49,5 +49,6 @@ const colors = {
   whiteGradientColor: '#FCFCFC',
   blackGradientColor: '#EDEDED',
   playerBadgeColor: '#50B5FF',
+  textFieldBGColor: '#00000029',
 };
 export default colors;

@@ -93,9 +93,7 @@ export const removeAuthKey = async () => {};
 // New Utility Method for set any kind of value
 export const setStorage = async (key, value) => {
   const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString();
-  console.log('valueString', valueString);
   await AsyncStorage.setItem(key, valueString);
-  console.log('valueString', valueString);
 };
 
 export const getStorage = async (key) => {

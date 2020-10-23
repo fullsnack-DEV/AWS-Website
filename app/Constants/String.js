@@ -204,5 +204,8 @@ const strings = {
   respondWithinText: 'RESPOND within',
   noReservationFountText: 'No Reservations Found',
 
+  enterFirstNamePlaceholder: 'Enter First Name',
+  enterLastNamePlaceholder: 'Enter Last Name',
+  enterBioPlaceholder: 'Enter Your Biography',
 };
 export default strings;
