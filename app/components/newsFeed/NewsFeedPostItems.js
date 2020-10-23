@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -24,7 +23,6 @@ import NewsFeedDescription from './NewsFeedDescription';
 import {
   commentPostTimeCalculate,
 } from '../../Constants/LoaderImages';
-import { deletePost, getPostDetails } from '../../api/NewsFeedapi';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
@@ -35,6 +33,7 @@ function NewsFeedPostItems({
   item,
   onLikePress,
   currentUserID,
+  onDeletePost,
 }) {
   const actionSheet = useRef();
   let like = false;
@@ -105,9 +104,6 @@ function NewsFeedPostItems({
                   return (
                     <VideoPost
                       data={attachItem}
-                      onVideoItemPress={() => {
-                        // navigation.navigate('FullVideoScreen', {url: attachItem.url});
-                      }}
                     />
                   );
                 }
@@ -122,8 +118,10 @@ function NewsFeedPostItems({
                 if (multiAttachItem.type === 'image') {
                   return (
                     <PostImageSet
+                      activeIndex={index}
                       data={multiAttachItem}
                       itemNumber={index + 1}
+                      attachedImages={attachedImages}
                       totalItemNumber={attachedImages.length}
                     />
                   );
@@ -131,8 +129,10 @@ function NewsFeedPostItems({
                 if (multiAttachItem.type === 'video') {
                   return (
                     <MultiPostVideo
+                      activeIndex={index}
                       data={multiAttachItem}
                       itemNumber={index + 1}
+                      attachedImages={attachedImages}
                       totalItemNumber={attachedImages.length}
                     />
                   );
@@ -254,13 +254,7 @@ function NewsFeedPostItems({
                   if (index === 0) {
                     navigation.navigate('EditPostScreen', { data: item });
                   } else if (index === 1) {
-                    const params = {
-                      activity_id: item.id,
-                    };
-                    deletePost(params)
-                      .then(() => getPostDetails())
-                      .then(() => navigation.goBack())
-                      .catch((e) => Alert.alert('', e.messages));
+                    onDeletePost();
                   }
                 }}
               />

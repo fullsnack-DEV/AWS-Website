@@ -14,7 +14,6 @@ import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 
 export default function FeedsScreen({ navigation, route }) {
-  console.log('Route :-:--', route);
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
@@ -113,6 +112,7 @@ export default function FeedsScreen({ navigation, route }) {
             postDataItem={postData ? postData[0] : {}}
             onWritePostPress={() => {
               navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {} })
+              navigation.setParams({ data: null, postDescriptions: '' })
               setDoneUploadCount(0);
               setTotalUploadCount(0);
             }}

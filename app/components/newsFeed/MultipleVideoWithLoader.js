@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity, Image, TouchableWithoutFeedback,
+  StyleSheet, View, Text, TouchableOpacity, Image,
 } from 'react-native';
 import Video from 'react-native-video';
-import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
@@ -13,21 +13,13 @@ import { loaderImage } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import MultipleImageModal from './MultipleImageModal';
 
-function MultiPostVideo({
-  data, itemNumber, totalItemNumber, attachedImages, activeIndex,
-}) {
-  const [isModalVisible, setModalVisible] = useState(false);
+function MultipleVideoWithLoader({ data }) {
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
 
   const randomImage = Math.floor(Math.random() * loaderImage.length);
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
 
   return (
     <View style={styles.singleImageDisplayStyle}>
@@ -43,39 +35,16 @@ function MultiPostVideo({
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
-      <Modal
-        isVisible={isModalVisible}
-        backdropColor="black"
-        style={{ margin: 0 }}
-        backdropOpacity={0}>
-        <MultipleImageModal
-          activeIndex={activeIndex}
-          attachedImages={attachedImages.length > 0 ? attachedImages : []}
-          backBtnPress={() => setModalVisible(false)}
-        />
-      </Modal>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          toggleModal();
-        }}>
-        <Video
-          paused={!play}
-          muted={!mute}
-          source={{ uri: data.url }}
-          style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
-          resizeMode={'cover'}
-          onLoad={() => {
-            setVideoLoad(true);
-          }}
-        />
-      </TouchableWithoutFeedback>
-      <View style={styles.lengthViewStyle}>
-        <Text style={styles.lengthTextStyle}>
-          {itemNumber}
-          {'/'}
-          {totalItemNumber}
-        </Text>
-      </View>
+      <Video
+        paused={!play}
+        muted={!mute}
+        source={{ uri: data.url }}
+        style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
+        resizeMode={'cover'}
+        onLoad={() => {
+          setVideoLoad(true);
+        }}
+      />
       {videoLoad && (
         <>
           <View style={styles.pauseMuteStyle}>
@@ -112,23 +81,6 @@ const styles = StyleSheet.create({
     tintColor: '#fff',
     width: wp('5%'),
   },
-  lengthTextStyle: {
-    color: '#fff',
-    fontFamily: fonts.RRegular,
-    fontSize: 15,
-    paddingHorizontal: wp('1.5%'),
-  },
-  lengthViewStyle: {
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: wp('5%'),
-    justifyContent: 'center',
-    padding: wp('1.5%'),
-    position: 'absolute',
-    right: wp('3%'),
-    top: wp('5%'),
-  },
   loadimageStyle: {
     height: 50,
     width: 50,
@@ -142,7 +94,7 @@ const styles = StyleSheet.create({
   pauseMuteStyle: {
     alignItems: 'center',
     alignSelf: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'red',
     borderRadius: wp('5%'),
     bottom: wp('2%'),
     height: wp('10%'),
@@ -158,14 +110,12 @@ const styles = StyleSheet.create({
     width: wp('4%'),
   },
   singleImageDisplayStyle: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: wp('4%'),
-    height: wp('91%'),
+    height: hp('65%'),
     justifyContent: 'center',
-    marginVertical: wp('1%'),
-    width: wp('91%'),
+    width: wp('98%'),
+    alignSelf: 'center',
+    alignItems: 'center',
   },
 });
 
-export default MultiPostVideo;
+export default MultipleVideoWithLoader;

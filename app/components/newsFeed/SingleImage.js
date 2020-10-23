@@ -1,19 +1,31 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleSheet, View, Text, TouchableWithoutFeedback,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import { loaderImage } from '../../Constants/LoaderImages';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import SingleImageModal from './SingleImageModal';
 
 function SingleImage({ data }) {
-  const uploadImageURL = data && typeof data.thumbnail === 'string' && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const uploadImageURL = data && typeof data.thumbnail === 'string'
+  && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
   const randomImage = Math.floor(Math.random() * loaderImage.length);
   let height = wp('94%');
   height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
   return (
     <View
       style={ [
@@ -34,19 +46,35 @@ function SingleImage({ data }) {
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
       </View>
-      <FastImage
-        style={ [
-          styles.uploadedImage,
-          {
-            height,
-            position: 'absolute',
-          },
-        ] }
-        source={ {
-          uri: uploadImageURL,
-        } }
-        resizeMode={ FastImage.resizeMode.cover }
-      />
+      <Modal
+        isVisible={isModalVisible}
+        backdropColor="black"
+        style={{ margin: 0 }}
+        backdropOpacity={0}>
+        <SingleImageModal
+          uploadImageURL={uploadImageURL && uploadImageURL}
+          backBtnPress={() => setModalVisible(false)}
+        />
+      </Modal>
+      <TouchableWithoutFeedback onPress={() => {
+        if (uploadImageURL) {
+          toggleModal();
+        }
+      }}>
+        <FastImage
+          style={ [
+            styles.uploadedImage,
+            {
+              height,
+              position: 'absolute',
+            },
+          ] }
+          source={ {
+            uri: uploadImageURL,
+          } }
+          resizeMode={ FastImage.resizeMode.cover }
+        />
+      </TouchableWithoutFeedback>
     </View>
   );
 }
