@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import { createReaction, getPostDetails } from '../../api/NewsFeedapi';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 
 export default function NewsFeedList({ navigation, postData, userID }) {
-  const [loading, setloading] = useState(false);
   const [pullRefresh, setPullRefresh] = useState(false);
   const [data, setData] = useState(postData);
 
   return (
     <View>
-      <ActivityLoader visible={loading} />
       <FlatList
         data={data.length > 0 ? data : postData}
         ItemSeparatorComponent={() => (
@@ -39,7 +36,6 @@ export default function NewsFeedList({ navigation, postData, userID }) {
             currentUserID={userID}
             navigation={navigation}
             onLikePress={() => {
-              setloading(true);
               const bodyParams = {
                 reaction_type: 'clap',
                 activity_id: item.id,
@@ -48,11 +44,9 @@ export default function NewsFeedList({ navigation, postData, userID }) {
                 .then(() => getPostDetails())
                 .then((response) => {
                   setData(response.payload.results);
-                  setloading(false);
                 })
                 .catch((e) => {
                   Alert.alert('', e.messages)
-                  setloading(false);
                 });
             }}
           />

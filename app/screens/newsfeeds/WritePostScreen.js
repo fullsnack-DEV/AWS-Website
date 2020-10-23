@@ -24,12 +24,11 @@ import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import { createPost, getPostDetails } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TagUserScreen from './TagUserScreen';
-
 import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
-import images from '../../Constants/ImagePath'
+import images from '../../Constants/ImagePath';
 
-export default function WritePostScreen({ navigation, route: { params: { postDataItem } } }) {
+export default function WritePostScreen({ navigation, route: { params: { postData } } }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState([]);
@@ -38,15 +37,10 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
 
   let userImage = '';
   let userName = '';
-  if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
-    userName = postDataItem.actor.data.full_name;
-    userImage = postDataItem.actor.data.thumbnail;
+  if (postData && postData.actor && postData.actor.data) {
+    userName = postData.actor.data.full_name;
+    userImage = postData.actor.data.thumbnail;
   }
-
-  // let playerID = '';
-  // if (postDataItem) {
-  //   playerID = postDataItem.id;
-  // }
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -73,21 +67,9 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
               onPress={ () => {
                 if (searchText.trim().length === 0 && selectImage.length === 0) {
                   Alert.alert('Please write some text or select any image.');
-                } else {
-                  setloading(true);
-                  const attachments = [];
-                  selectImage.map((imageItem) => {
-                    const obj = {
-                      type: 'image',
-                      url: imageItem.path,
-                      thumbnail: imageItem.path,
-                    };
-                    return attachments.push(obj);
-                  })
-
+                } else if (searchText.trim().length > 0 && selectImage.length === 0) {
                   const params = {
                     text: searchText,
-                    attachments,
                   };
                   createPost(params)
                     .then(() => getPostDetails())
@@ -99,6 +81,9 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                       Alert.alert('', e.messages)
                       setloading(false);
                     });
+                } else {
+                  navigation.navigate('FeedsScreen',
+                    { data: selectImage, postDescriptions: searchText });
                 }
               } }>
               Done
@@ -202,20 +187,13 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                   cropping: true,
                   multiple: true,
                   maxFiles: 10,
-                }).then((image) => {
-                  setSelectImage(image);
-                  // const imageCount = image.length;
-                  // const params = {
-                  //   count: imageCount,
-                  // }
-                  // getImagePreSignedURL(playerID, params)
-                  //   .then((response) => {
-                  //     console.log('Response of Signed URL :-', response);
-                  //   })
-                  //   .catch((e) => {
-                  //     Alert.alert('', e.messages)
-                  //     console.log('Error :-', e.response);
-                  //   });
+                }).then((data) => {
+                  setSelectImage(data);
+                  // uploadImage({ data: data[0] }).then((res) => {
+                  //   console.log('uploadImage :-', res);
+                  // }).catch((e) => {
+                  //   console.log('EEEE :-', e);
+                  // })
                 });
               } }
             />
@@ -245,7 +223,7 @@ const styles = StyleSheet.create({
   background: {
     borderRadius: hp('3%'),
     height: hp('6%'),
-    resizeMode: 'stretch',
+    resizeMode: 'cover',
     width: hp('6%'),
   },
   bottomImgView: {

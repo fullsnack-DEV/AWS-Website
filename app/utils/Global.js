@@ -70,6 +70,7 @@ const makeAPIRequest = async ({
     params,
     responseType,
   };
+  console.log('Options :-', options);
   try {
     const response = await axios(options);
     if (!response.data.status) {

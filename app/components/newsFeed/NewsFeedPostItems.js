@@ -53,7 +53,7 @@ function NewsFeedPostItems({
   let attachedImages = [];
   let descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
   if (item.object) {
-    if (JSON.parse(item.object).attachments.length > 0) {
+    if (JSON.parse(item.object).attachments !== undefined && JSON.parse(item.object).attachments.length > 0) {
       attachedImages = JSON.parse(item.object).attachments;
     }
     descriptions = JSON.parse(item.object).text;
