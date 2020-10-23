@@ -39,6 +39,7 @@ const images = {
   nextArrow: require('../assets/images/ic_next_arrow.png'),
   backArrow: require('../assets/images/ic_back_arrow.png'),
   vertical3Dot: require('../assets/images/ic_dot.png'),
+  horizontal3Dot: require('../assets/images/ic_horizontal_dot.png'),
   downArrow: require('../assets/images/ic_down_arrow.png'),
   upArrow: require('../assets/images/ic_up_arrow.png'),
   dropDownArrow: require('../assets/images/down_arrow.png'),
@@ -151,6 +152,9 @@ const images = {
   // members
   filterIcon: require('../assets/images/ic_filter.png'),
   arrowGraterthan: require('../assets/images/arrow_graterthan.png'),
+  teamT: require('../assets/images/team_T.png'),
+  clubC: require('../assets/images/club_C.png'),
+  editSection: require('../assets/images/ic_edit.png'),
 
 };
 

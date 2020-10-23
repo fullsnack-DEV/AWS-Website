@@ -6,11 +6,13 @@ import {
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-export default function TCMessageButton({ title = 'Message', onPress, color = colors.greeColor }) {
+export default function TCMessageButton({
+  title = 'Message', onPress, color = colors.greeColor, ...Props
+}) {
   return (
 
     <TouchableWithoutFeedback onPress={onPress}>
-      <View style={[styles.buttonView, { borderColor: color }]}>
+      <View style={[styles.buttonView, { borderColor: color }, Props]}>
         <Text style={[styles.buttonTitle, { color }]}>{title}</Text>
 
       </View>
@@ -37,6 +39,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     borderWidth: 1,
     borderColor: colors.greeColor,
+    elevation: 2,
   },
   buttonTitle: {
     alignSelf: 'center',

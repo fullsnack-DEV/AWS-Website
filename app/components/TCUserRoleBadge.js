@@ -24,6 +24,8 @@ const styles = StyleSheet.create({
 
   badgeView: {
     margin: 2,
+    marginLeft: 0,
+    marginRight: 4,
     alignItems: 'center',
     borderRadius: 5,
     height: 16,

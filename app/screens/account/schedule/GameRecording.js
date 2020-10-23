@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
+  Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
 
@@ -23,7 +24,7 @@ export default function GameRecording({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-          onPress={ () => alert('This is a 3 dot button!') }>
+          onPress={ () => Alert.alert('This is a 3 dot button!') }>
           <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
         </TouchableWithoutFeedback>
       ),

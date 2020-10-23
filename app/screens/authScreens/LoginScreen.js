@@ -46,8 +46,8 @@ const config = {
 };
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('kishan@gmail.com');
+  const [password, setPassword] = useState('Kishan@123');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
   // For activity indigator
@@ -112,9 +112,9 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  const login = (_email, _password) => {
+  const login = async (_email, _password) => {
     setloading(true);
-    Utility.clearStorage();
+    await Utility.clearStorage();
     firebase
       .auth()
       .signInWithEmailAndPassword(_email, _password)

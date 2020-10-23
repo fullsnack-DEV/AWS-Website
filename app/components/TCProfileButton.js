@@ -8,11 +8,11 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
 export default function TCProfileButton({
-  title = 'Profile', showArrow = true, onPress, style,
+  title = 'Profile', showArrow = true, onPressProfile, style,
 }) {
   return (
 
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPressProfile}>
       <View style={[styles.buttonView, style]}>
         <Text style={styles.roleTitle}>{title}</Text>
         {showArrow && <Image source={ images.arrowGraterthan } style={ styles.arrowImage } />}
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    elevation: 2,
   },
   roleTitle: {
     alignSelf: 'center',

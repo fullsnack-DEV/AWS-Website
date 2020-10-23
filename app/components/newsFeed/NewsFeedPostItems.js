@@ -50,6 +50,7 @@ function NewsFeedPostItems({
   if (item.actor && item.actor.data) {
     userImage = item.actor.data.full_image;
   }
+
   let attachedImages = [];
   let descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
   if (item.object) {
