@@ -3,6 +3,7 @@ import {
   StyleSheet, View, Text, TouchableOpacity, Image, TouchableWithoutFeedback,
 } from 'react-native';
 import Video from 'react-native-video';
+import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
@@ -12,77 +13,107 @@ import { loaderImage } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import SingleVideoModal from './SingleVideoModal';
 
-function VideoPost({ data, onVideoItemPress }) {
+function VideoPost({ data }) {
+  const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
+
+  const uploadVideoURL = data && typeof data.thumbnail === 'string'
+  && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
   const randomImage = Math.floor(Math.random() * loaderImage.length);
   let height = wp('94%');
   height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
 
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
   return (
     <View
-      style={ [
+      style={[
         styles.singleImageDisplayStyle,
         {
           height,
         },
-      ] }>
-      <View style={ [styles.singleImageDisplayStyle, {
-        borderWidth: 1,
-        borderColor: colors.lightgrayColor,
-        height,
-      }] }>
-        <FastImage
-          style={ styles.loadimageStyle }
-          source={ loaderImage[randomImage].image }
-          resizeMode={ FastImage.resizeMode.contain }
-        />
-        <Text style={ styles.loadingTextStyle }>Loading...</Text>
-      </View>
-      <TouchableWithoutFeedback onPress={ onVideoItemPress }>
-        <Video
-        paused={ !play }
-        muted={ !!mute }
-        source={ { uri: data.url } }
-        style={ [
+      ]}>
+      <View
+        style={[
           styles.singleImageDisplayStyle,
           {
+            borderWidth: 1,
+            borderColor: colors.lightgrayColor,
             height,
-            position: 'absolute',
           },
-        ] }
-        resizeMode={ 'cover' }
-        onVideoLoad={ () => {
-          setVideoLoad(true);
-        } }
-      />
+        ]}>
+        <FastImage
+          style={styles.loadimageStyle}
+          source={loaderImage[randomImage].image}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+        <Text style={styles.loadingTextStyle}>Loading...</Text>
+      </View>
+      <Modal
+        isVisible={isModalVisible}
+        backdropColor="black"
+        style={{ margin: 0 }}
+        backdropOpacity={0}>
+        <SingleVideoModal
+          data={data}
+          uploadVideoURL={uploadVideoURL && uploadVideoURL}
+          backBtnPress={() => setModalVisible(false)}
+        />
+      </Modal>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          toggleModal();
+        }}>
+        <Video
+          paused={!play}
+          muted={!mute}
+          source={{ uri: data.url }}
+          style={[
+            styles.singleImageDisplayStyle,
+            {
+              height,
+              position: 'absolute',
+            },
+          ]}
+          resizeMode={'cover'}
+          onLoad={() => {
+            setVideoLoad(true);
+          }}
+        />
       </TouchableWithoutFeedback>
-      {videoLoad
-          && <>
-            <View style={ styles.pauseMuteStyle }>
-              <TouchableOpacity
-            onPress={ () => {
-              setMute(!mute);
-            } }>
-                <Image
-              style={ styles.imageStyle }
-              source={ mute ? images.mute : images.unmute }
-            />
-              </TouchableOpacity>
-            </View>
-            <View style={ [styles.pauseMuteStyle, { right: wp('13.5%') }] }>
-              <TouchableOpacity
-            onPress={ () => {
-              setPlay(!play);
-            } }>
-                <Image style={ styles.playPauseImageStyle } source={ images.playPause } />
-              </TouchableOpacity>
-            </View>
-          </>
-      }
+      {videoLoad && (
+        <>
+          <View style={styles.pauseMuteStyle}>
+            <TouchableOpacity
+              onPress={() => {
+                setMute(!mute);
+              }}>
+              <Image
+                style={styles.imageStyle}
+                source={mute ? images.unmute : images.mute}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}>
+            <TouchableOpacity
+              onPress={() => {
+                setPlay(!play);
+              }}>
+              <Image
+                style={styles.playPauseImageStyle}
+                source={images.playPause}
+              />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </View>
   );
 }

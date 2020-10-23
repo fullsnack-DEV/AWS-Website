@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet, View, Text, Image,
+  StyleSheet, View, Text, Image, TouchableWithoutFeedback,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
@@ -10,10 +11,20 @@ import { loaderImage } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import MultipleImageModal from './MultipleImageModal';
 
-function PostImageSet({ data, itemNumber, totalItemNumber }) {
+function PostImageSet({
+  data, itemNumber, totalItemNumber, attachedImages, activeIndex,
+}) {
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const randomImage = Math.floor(Math.random() * loaderImage.length);
-  const uploadImageURL = data && typeof data.thumbnail === 'string' && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+  const uploadImageURL = data && typeof data.thumbnail === 'string'
+  && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   return (
     <View style={ styles.uploadedImage }>
@@ -25,13 +36,28 @@ function PostImageSet({ data, itemNumber, totalItemNumber }) {
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
       </View>
-      <Image
-        style={ [styles.uploadedImage, { position: 'absolute' }] }
-        source={ {
-          uri: uploadImageURL,
-        } }
-        resizeMode={ FastImage.resizeMode.cover }
-      />
+      <Modal
+        isVisible={isModalVisible}
+        backdropColor="black"
+        style={{ margin: 0 }}
+        backdropOpacity={0}>
+        <MultipleImageModal
+          activeIndex={activeIndex}
+          attachedImages={attachedImages.length > 0 ? attachedImages : []}
+          backBtnPress={() => setModalVisible(false)}
+        />
+      </Modal>
+      <TouchableWithoutFeedback onPress={() => {
+        toggleModal();
+      }}>
+        <Image
+          style={ [styles.uploadedImage, { position: 'absolute' }] }
+          source={ {
+            uri: uploadImageURL,
+          } }
+          resizeMode={ FastImage.resizeMode.cover }
+        />
+      </TouchableWithoutFeedback>
       <View style={ styles.lengthViewStyle }>
         <Text style={ styles.lengthTextStyle }>
           {itemNumber}

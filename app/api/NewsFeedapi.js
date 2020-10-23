@@ -30,10 +30,10 @@ export const createPost = async (bodyParams) => makeAPIRequest({
   data: bodyParams,
 });
 
-export const deletePost = async (params) => makeAPIRequest({
+export const deletePost = async (data) => makeAPIRequest({
   method: 'delete',
   url: Config.BASE_URL + api.newsFeed.createPostEndPoint,
-  params,
+  data,
 });
 
 export const updatePost = async (params) => makeAPIRequest({
