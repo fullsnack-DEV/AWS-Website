@@ -11,10 +11,10 @@ import {
 
 } from 'react-native-responsive-screen';
 
-import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
+import images from '../Constants/ImagePath';
+import strings from '../Constants/String';
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 
 export default function TCSearchBox({ ...props }) {
   return (
@@ -45,6 +45,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+
+    elevation: 2,
 
   },
   searchImg: {

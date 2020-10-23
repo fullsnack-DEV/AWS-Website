@@ -47,7 +47,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'PersonalInformationScreen'
     || routeName === 'FullVideoScreen'
     || routeName === 'ReservationDetailScreen'
-
+    || routeName === 'MembersProfileScreen'
     || routeName === 'TagUserScreen'
   ) {
     return false;
@@ -82,9 +82,10 @@ function AppNavigator() {
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.4,
           shadowRadius: 15,
-          elevation: 1,
+          elevation: 2,
         },
-      } }>
+      } }
+      >
       <Tab.Screen
         name="Home"
         component={ NewsFeedNavigator }

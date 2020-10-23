@@ -6,22 +6,25 @@ import {
   FlatList,
 } from 'react-native';
 
+import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { getReservationList } from '../../api/Reservationapi';
 import * as Utility from '../../utils/index';
 import MatchReservation from '../../components/reservations/MatchReservation';
 import TCNoDataView from '../../components/TCNoDataView';
 import strings from '../../Constants/String';
-import TCScrollableTabs from '../../components/reservations/TCScrollableTabs';
+import TCScrollableTabs from '../../components/TCScrollableTabs';
 
 export default function ReservationScreen({ navigation }) {
-  const [loading, setloading] = useState(true);
+  const isFocused = useIsFocused();
+  const [loading, setloading] = useState(false);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
 
   useEffect(() => {
+    setloading(true);
     getReservationListByCaller();
-  }, []);
+  }, [isFocused]);
 
   const getReservationListByCaller = async () => {
     const switchEntity = await Utility.getStorage('switchBy');
@@ -29,7 +32,7 @@ export default function ReservationScreen({ navigation }) {
     if (switchEntity === 'user') {
       const user = await Utility.getStorage('user');
       getReservationList(user.user_id).then((response) => {
-        console.log('RESERVATION LIST:', response.payload);
+        console.log('USER RESERVATION LIST:', response.payload);
         if (response.status) {
           setloading(false);
           const upcomingData = [];
@@ -56,7 +59,21 @@ export default function ReservationScreen({ navigation }) {
       getReservationList(team.group_id, 'team').then((response) => {
         if (response.status) {
           setloading(false);
-          console.log('TEAM DETAIL :', response.payload);
+          const upcomingData = [];
+          const pastData = [];
+          console.log('TEAM RESERVATION LIST:', response.payload);
+          // eslint-disable-next-line no-restricted-syntax
+          for (const temp of response.payload) {
+            const date = new Date(temp.timestamp);
+            const curruentDate = new Date();
+            if (curruentDate < date === 1) {
+              upcomingData.push(temp);
+            } else {
+              pastData.push(temp);
+            }
+          }
+          setUpcoming(upcomingData);
+          setPast(pastData);
         } else {
           Alert.alert('Towns Cup', response.messages);
         }
@@ -66,7 +83,21 @@ export default function ReservationScreen({ navigation }) {
       getReservationList(club.group_id, 'club').then((response) => {
         if (response.status) {
           setloading(false);
-          console.log('CLUB DETAIL :', response.payload);
+          const upcomingData = [];
+          const pastData = [];
+          console.log('CLUB RESERVATION LIST:', response.payload);
+          // eslint-disable-next-line no-restricted-syntax
+          for (const temp of response.payload) {
+            const date = new Date(temp.timestamp);
+            const curruentDate = new Date();
+            if (curruentDate < date === 1) {
+              upcomingData.push(temp);
+            } else {
+              pastData.push(temp);
+            }
+          }
+          setUpcoming(upcomingData);
+          setPast(pastData);
         } else {
           Alert.alert('Towns Cup', response.messages);
         }

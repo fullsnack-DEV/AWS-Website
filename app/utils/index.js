@@ -109,7 +109,15 @@ export const getStorage = async (key) => {
   return value;
 };
 export const clearStorage = async () => {
-  await AsyncStorage.clear();
+  const asyncStorageKeys = await AsyncStorage.getAllKeys();
+  if (asyncStorageKeys.length > 0) {
+    if (Platform.OS === 'android') {
+      await AsyncStorage.clear();
+    }
+    if (Platform.OS === 'ios') {
+      await AsyncStorage.multiRemove(asyncStorageKeys);
+    }
+  }
 };
 
 export const widthPercentageToDP = (widthPercent) => {

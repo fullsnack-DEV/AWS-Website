@@ -203,6 +203,8 @@ const strings = {
   detailText: 'DETAILS',
   respondWithinText: 'RESPOND within',
   noReservationFountText: 'No Reservations Found',
+  // member connection
+  connectAccountText: 'Invite or Connect Account',
 
 };
 export default strings;

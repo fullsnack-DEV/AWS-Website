@@ -22,6 +22,7 @@ import {
 import QB from 'quickblox-react-native-sdk';
 
 // import ActionSheet from 'react-native-actionsheet';
+import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors'
@@ -287,6 +288,7 @@ export default function AccountScreen({ navigation }) {
         text: 'OK',
         onPress: async () => {
           await Utility.clearStorage();
+          await firebase.auth().signOut();
           QB.auth
             .logout()
           authContext.setUser(null);
@@ -322,7 +324,7 @@ export default function AccountScreen({ navigation }) {
         });
       }
     } else if (section === 'Members') {
-      navigation.navigate('GroupMembers');
+      navigation.navigate('GroupMembersScreen');
     }
   };
 
@@ -357,16 +359,12 @@ export default function AccountScreen({ navigation }) {
                   alignContent: 'center',
                 }}>
                 <Image source={images.clubLable} style={styles.clubLableView} />
-                {!parentGroup.thumbnail && (
-                  <Image source={images.club_ph} style={styles.clubLable} />
-                )}
 
-                {parentGroup.thumbnail && (
-                  <Image
-                    source={{ uri: parentGroup.thumbnail }}
+                <Image
+                    source={parentGroup.thumbnail ? { uri: parentGroup.thumbnail } : images.club_ph}
                     style={styles.clubLable}
                   />
-                )}
+
                 <View
                   style={{
                     flexDirection: 'row',
@@ -391,19 +389,10 @@ export default function AccountScreen({ navigation }) {
 
         {switchBy === 'user' && (
           <View style={styles.profileView}>
-            {authContext.user.full_image === '' && (
-              <Image
-                source={images.profilePlaceHolder}
-                style={styles.entityImg}
-              />
-            )}
-            {authContext.user.full_image !== '' && (
-              <Image
-                source={{ uri: authContext.user.thumbnail }}
+            <Image
+                source={authContext.user.thumbnail ? { uri: authContext.user.thumbnail } : images.profilePlaceHolder}
                 style={styles.profileImg}
               />
-            )}
-
             <Text style={styles.nameText}>{authContext.user.full_name}</Text>
             <Text style={styles.locationText}>
               {authContext.user.city}, {authContext.user.state_abbr}
@@ -412,16 +401,10 @@ export default function AccountScreen({ navigation }) {
         )}
         {switchBy === 'team' && (
           <View style={styles.profileView}>
-            {!group.thumbnail && (
-              <Image source={images.team_ph} style={styles.profileImgGroup} />
-            )}
-
-            {group.thumbnail && (
-              <Image
-                source={{ uri: group.thumbnail }}
+            <Image
+                source={group.thumbnail ? { uri: group.thumbnail } : images.team_ph}
                 style={styles.profileImgGroup}
               />
-            )}
             <View
               style={{
                 flexDirection: 'row',
@@ -445,16 +428,10 @@ export default function AccountScreen({ navigation }) {
         )}
         {switchBy === 'club' && (
           <View style={styles.profileView}>
-            {!group.thumbnail && (
-              <Image source={images.club_ph} style={styles.profileImgGroup} />
-            )}
-
-            {group.thumbnail && (
-              <Image
-                source={{ uri: group.thumbnail }}
+            <Image
+                source={group.thumbnail ? { uri: group.thumbnail } : images.club_ph}
                 style={styles.profileImgGroup}
               />
-            )}
             <View
               style={{
                 flexDirection: 'row',
@@ -500,23 +477,13 @@ export default function AccountScreen({ navigation }) {
                         console.log('Pressed Team..', rowItem.rowId.sectionId);
                       }}>
                       <View style={styles.entityTextContainer}>
-                        {item.full_image ? (
-                          <Image
-                            source={{ uri: item.thumbnail }}
+                        <Image
+                            source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
                             style={styles.smallProfileImg}
                           />
-                        ) : (
-                          <Image
-                            source={images.teamPlaceholder}
-                            style={styles.smallProfileImg}
-                          />
-                        )}
                         <Text style={styles.entityName}>{item.group_name}</Text>
                         <Text style={styles.teamSportView}> {item.sport}</Text>
 
-                        {/* <Text style={styles.entityLocationText}>
-                {item.city}, {item.state_abbr}, {item.country}
-              </Text> */}
                       </View>
                     </TouchableWithoutFeedback>
                   )}
@@ -537,17 +504,12 @@ export default function AccountScreen({ navigation }) {
                         console.log('Pressed Team..', rowItem.rowId.sectionId);
                       }}>
                       <View style={styles.entityTextContainer}>
-                        {item.full_image ? (
-                          <Image
-                            source={{ uri: item.thumbnail }}
+
+                        <Image
+                            source={item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder }
                             style={styles.smallProfileImg}
                           />
-                        ) : (
-                          <Image
-                            source={images.clubPlaceholder}
-                            style={styles.smallProfileImg}
-                          />
-                        )}
+
                         <Text style={styles.entityName}>{item.group_name}</Text>
                         <Text style={styles.clubSportView}> {item.sport}</Text>
 
@@ -575,23 +537,15 @@ export default function AccountScreen({ navigation }) {
                         console.log('Pressed Team..', rowItem.rowId.sectionId);
                       }}>
                       <View style={styles.entityTextContainer}>
-                        {item.full_image ? (
-                          <Image
-                            source={{ uri: item.thumbnail }}
+
+                        <Image
+                            source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
                             style={styles.smallProfileImg}
                           />
-                        ) : (
-                          <Image
-                            source={images.teamPlaceholder}
-                            style={styles.smallProfileImg}
-                          />
-                        )}
+
                         <Text style={styles.entityName}>{item.group_name}</Text>
                         <Text style={styles.teamSportView}> {item.sport}</Text>
 
-                        {/* <Text style={styles.entityLocationText}>
-                {item.city}, {item.state_abbr}, {item.country}
-              </Text> */}
                       </View>
                     </TouchableWithoutFeedback>
                   )}
@@ -721,53 +675,34 @@ export default function AccountScreen({ navigation }) {
               }}>
               <View>
                 {item.entity_type === 'player'
-                  && (item.thumbnail ? (
-                    <View style={styles.imageContainer}>
-                      <Image
-                        source={{ uri: item.thumbnail }}
+                  && <View style={styles.imageContainer}>
+                    <Image
+                        source={item.thumbnail ? { uri: item.thumbnail } : images.profilePlaceHolder}
                         style={styles.playerImg}
                       />
-                    </View>
-                  ) : (
-                    <Image
-                      source={images.profilePlaceHolder}
-                      style={styles.entityImg}
-                    />
-                  ))}
+                  </View>
+                  }
                 {item.entity_type === 'club'
-                  && (item.thumbnail ? (
+                  && <View style={styles.placeholderView}>
                     <Image
-                      source={{ uri: item.thumbnail }}
-                      style={styles.entityImg}
-                    />
-                  ) : (
-                    <View style={styles.placeholderView}>
-                      <Image
-                        source={images.clubPlaceholder}
+                        source={ item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder}
                         style={styles.entityImg}
                       />
-                      <Text style={styles.oneCharacterText}>
-                        {item.group_name.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  ))}
+                    {item.thumbnail ? null : <Text style={styles.oneCharacterText}>
+                      {item.group_name.charAt(0).toUpperCase()}
+                    </Text>}
+                  </View>
+                  }
                 {item.entity_type === 'team'
-                  && (item.thumbnail ? (
+                  && <View style={styles.placeholderView}>
                     <Image
-                      source={{ uri: item.thumbnail }}
+                      source={ item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
                       style={styles.entityImg}
                     />
-                  ) : (
-                    <View style={styles.placeholderView}>
-                      <Image
-                        source={images.teamPlaceholder}
-                        style={styles.entityImg}
-                      />
-                      <Text style={styles.oneCharacterText}>
-                        {item.group_name.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  ))}
+                    {item.thumbnail ? null : <Text style={styles.oneCharacterText}>
+                      {item.group_name.charAt(0).toUpperCase()}
+                    </Text>}
+                  </View>}
 
                 {item.unread > 0 && (
                   <View style={styles.badgeView}>

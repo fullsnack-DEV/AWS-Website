@@ -14,7 +14,7 @@ import TCUserRoleBadge from '../TCUserRoleBadge';
 import TCProfileButton from '../TCProfileButton';
 import TCMessageButton from '../TCMessageButton';
 
-export default function UserRoleView() {
+export default function UserRoleView({ onPressProfile, onPressMessage }) {
   return (
     <>
       <View style={styles.roleViewContainer}>
@@ -44,9 +44,9 @@ export default function UserRoleView() {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <TCMessageButton title = 'Message' color={colors.greeColor}/>
+          <TCMessageButton title = 'Message' color={colors.greeColor} onPressMessage={onPressMessage}/>
           <View style={{ marginBottom: 5, marginTop: 5 }}></View>
-          <TCProfileButton/>
+          <TCProfileButton onPressProfile={onPressProfile} />
         </View>
       </View>
       <TCThinDivider/>
@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    elevation: 3,
   },
   topTextContainer: {
     marginLeft: 10,
