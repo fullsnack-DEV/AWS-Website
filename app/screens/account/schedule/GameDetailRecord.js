@@ -97,7 +97,7 @@ export default function GameDetailRecord({ navigation }) {
               ],
             },
           ] }
-          keyExtractor={ (item, index) => item + index }
+          keyExtractor={(item, index) => index.toString()}
           style={ { width: wp('72%'), height: hp('46%') } }
           showsVerticalScrollIndicator={ false }
         />
@@ -141,7 +141,7 @@ export default function GameDetailRecord({ navigation }) {
               data: ['item3', 'item4', 'item9', 'item10', 'item11'],
             },
           ] }
-          keyExtractor={ (item, index) => item + index }
+          keyExtractor={(item, index) => index.toString()}
           style={ { width: wp('72%'), height: hp('46%') } }
           showsVerticalScrollIndicator={ false }
         />

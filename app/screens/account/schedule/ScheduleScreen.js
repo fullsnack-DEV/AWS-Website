@@ -157,7 +157,7 @@ export default function ScheduleScreen({ navigation }) {
             },
             { title: 'FUTURE', data: ['item5', 'item6', 'item12'] },
           ] }
-          keyExtractor={ (item, index) => item + index }
+          keyExtractor={(item, index) => index.toString()}
         />
       ) : (
         <EventCalendar

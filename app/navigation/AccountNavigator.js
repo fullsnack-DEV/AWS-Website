@@ -4,37 +4,37 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import AccountScreen from '../screens/account/index';
+import AccountScreen from '../screens/account/AccountScreen';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import GameDetail from '../screens/account/schedule/GameDetail';
 import GameRecording from '../screens/account/schedule/GameRecording';
 import GameDetailRecord from '../screens/account/schedule/GameDetailRecord';
 import GameRecordList from '../screens/account/schedule/GameRecordList';
-import RegisterPlayer from '../screens/account/registerPlayer';
-import RegisterPlayerForm2 from '../screens/account/registerPlayer/registerPlayerForm2';
-import RegisterReferee from '../screens/account/registerReferee';
-import RegisterRefereeForm2 from '../screens/account/registerReferee/registerRefereeForm2';
-import CreateTeamForm1 from '../screens/account/createGroup/createTeam/createTeamForm1';
-import CreateTeamForm2 from '../screens/account/createGroup/createTeam/createTeamForm2';
-import CreateTeamForm3 from '../screens/account/createGroup/createTeam/createTeamForm3';
-import CreateTeamForm4 from '../screens/account/createGroup/createTeam/createTeamForm4';
-import SearchPlayerScreen from '../screens/account/createGroup/createTeam/searchPlayer';
-import TeamCreatedScreen from '../screens/account/createGroup/createTeam/teamCreated';
+import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
+import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
+import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
+import RegisterRefereeForm2 from '../screens/account/registerReferee/RegisterRefereeForm2';
+import CreateTeamForm1 from '../screens/account/createGroup/createTeam/CreateTeamForm1';
+import CreateTeamForm2 from '../screens/account/createGroup/createTeam/CreateTeamForm2';
+import CreateTeamForm3 from '../screens/account/createGroup/createTeam/CreateTeamForm3';
+import CreateTeamForm4 from '../screens/account/createGroup/createTeam/CreateTeamForm4';
+import SearchPlayerScreen from '../screens/account/createGroup/createTeam/SearchPlayerScreen';
+import TeamCreatedScreen from '../screens/account/createGroup/createTeam/TeamCreatedScreen';
 
-import CreateClubForm1 from '../screens/account/createGroup/createClub/createClubForm1';
-import CreateClubForm2 from '../screens/account/createGroup/createClub/createClubForm2';
-import CreateClubForm3 from '../screens/account/createGroup/createClub/createClubForm3';
-import ClubCreatedScreen from '../screens/account/createGroup/createClub/clubCreated';
+import CreateClubForm1 from '../screens/account/createGroup/createClub/CreateClubForm1';
+import CreateClubForm2 from '../screens/account/createGroup/createClub/CreateClubForm2';
+import CreateClubForm3 from '../screens/account/createGroup/createClub/CreateClubForm3';
+import ClubCreatedScreen from '../screens/account/createGroup/createClub/ClubCreatedScreen';
 
-import SearchLocationScreen from '../screens/account/commonScreen/searchLocation';
+import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 
-import JoinedTeamsScreen from '../screens/account/teams';
-import JoinedClubsScreen from '../screens/account/clubs';
+import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
+import JoinedClubsScreen from '../screens/account/JoinedClubsScreen';
 
-import GroupSettingPrivacyScreen from '../screens/account/groupSettingPrivacy';
-import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy';
-import ChangePasswordScreen from '../screens/account/userSettingPrivacy/changePassword'
-import PersonalInformationScreen from '../screens/account/userSettingPrivacy/personalInformation'
+import GroupSettingPrivacyScreen from '../screens/account/GroupSettingPrivacyScreen';
+import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy/UserSettingPrivacyScreen';
+import ChangePasswordScreen from '../screens/account/userSettingPrivacy/ChangePasswordScreen'
+import PersonalInformationScreen from '../screens/account/userSettingPrivacy/PersonalInformationScreen'
 import GroupMembers from '../screens/account/groupConnections/GroupMembers';
 import colors from '../Constants/Colors'
 

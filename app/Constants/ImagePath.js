@@ -149,6 +149,8 @@ const images = {
 
   // members
   filterIcon: require('../assets/images/ic_filter.png'),
+  arrowGraterthan: require('../assets/images/arrow_graterthan.png'),
+
 };
 
 export default images;
