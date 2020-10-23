@@ -11,6 +11,9 @@ const colors = {
   fbTextColor: '#4574DB',
   googleColor: '#616161',
   blackColor: '#000000',
+  uploadBGColor: '#ecf8f4',
+  uploadUnfillColor: '#abe3d6',
+  uploadTextColor: '#45c1a6',
   grayColor: '#A0A0A0',
   tabBackgroundColor: '#F6F6F6',
   lightgrayColor: '#E1E1E1',
@@ -25,7 +28,7 @@ const colors = {
   graySeparater: '#e1e1e1',
   textFieldColor: '#f3f3f3',
   doneButtonColor: '#29bce5',
-  offwhite: '#fcfcfc',
+  offwhite: '#FCFCFC',
   radoffwhiteioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
   veryLightBlack: '#616161',
@@ -46,5 +49,6 @@ const colors = {
   whiteGradientColor: '#FCFCFC',
   blackGradientColor: '#EDEDED',
   playerBadgeColor: '#50B5FF',
+  textFieldBGColor: '#00000029',
 };
 export default colors;

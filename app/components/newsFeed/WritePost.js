@@ -9,7 +9,7 @@ import {
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 
-function WritePost({ navigation, postDataItem }) {
+function WritePost({ postDataItem, onWritePostPress }) {
   let userImage = '';
   if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
     userImage = postDataItem.actor.data.thumbnail;
@@ -21,7 +21,7 @@ function WritePost({ navigation, postDataItem }) {
 
       <Text
         style={ styles.writePostText }
-        onPress={ () => navigation.navigate('WritePostScreen', { postDataItem }) }>
+        onPress={onWritePostPress}>
         Write a post...
       </Text>
 

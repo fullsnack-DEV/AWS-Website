@@ -1,10 +1,8 @@
 import React from 'react';
 import {
   StyleSheet,
-
   Text,
   TouchableOpacity,
-
 } from 'react-native';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
@@ -17,7 +15,7 @@ function TCButton({
 }) {
   return (
     <TouchableOpacity onPress={ onPress } style={ [styles.allButton, extraStyle] }>
-      <Text style={ [styles.signUpText, textColor] }>{title}</Text>
+      <Text style={ [styles.buttonText, textColor] }>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -31,15 +29,13 @@ const styles = StyleSheet.create({
     marginLeft: '7%',
     marginRight: '5%',
     shadowColor: colors.googleColor,
-
     shadowOffset: { width: 0, height: 2 },
-
     shadowOpacity: 0.5,
     shadowRadius: 5,
     width: '86%',
   },
 
-  signUpText: {
+  buttonText: {
     fontFamily: fonts.RBold,
     fontSize: 17,
     height: 50,

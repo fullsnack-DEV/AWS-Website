@@ -206,5 +206,8 @@ const strings = {
   // member connection
   connectAccountText: 'Invite or Connect Account',
 
+  enterFirstNamePlaceholder: 'Enter First Name',
+  enterLastNamePlaceholder: 'Enter Last Name',
+  enterBioPlaceholder: 'Enter Your Biography',
 };
 export default strings;

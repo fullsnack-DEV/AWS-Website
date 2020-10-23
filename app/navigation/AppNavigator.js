@@ -12,6 +12,7 @@ import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
 
 import ReservationNavigator from './ReservationNavigator';
+import HomeNavigator from './HomeNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -130,7 +131,7 @@ function AppNavigator() {
       />
       <Tab.Screen
         name="Message"
-        component={ HomeScreen }
+        component={ HomeNavigator }
         options={ {
           tabBarIcon: ({ focused }) => (
             <Image

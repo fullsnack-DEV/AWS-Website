@@ -43,6 +43,7 @@ const images = {
   downArrow: require('../assets/images/ic_down_arrow.png'),
   upArrow: require('../assets/images/ic_up_arrow.png'),
   dropDownArrow: require('../assets/images/down_arrow.png'),
+  dropDownArrow2: require('../assets/images/down_arrow.png'),
   curruentTime: require('../assets/images/ic_game_curruent_time.png'),
   gamePlus: require('../assets/images/ic_game_plus.png'),
   gameRecord: require('../assets/images/ic_record.png'),
