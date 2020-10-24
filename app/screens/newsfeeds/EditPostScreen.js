@@ -20,7 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageButton from '../../components/WritePost/ImageButton';
-import { updatePost, getPostDetails } from '../../api/NewsFeedapi';
+import { updatePost, getNewsFeed } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import TagUserScreen from './TagUserScreen';
@@ -106,7 +106,7 @@ export default function EditPostScreen({
                     attachments,
                   };
                   updatePost(params)
-                    .then(() => getPostDetails())
+                    .then(() => getNewsFeed())
                     .then(() => {
                       navigation.goBack();
                       setloading(false);

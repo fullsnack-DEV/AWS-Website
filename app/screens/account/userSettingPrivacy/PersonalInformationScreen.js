@@ -138,7 +138,8 @@ export default function PersonalInformationScreen({ navigation, route }) {
 
   // Get user information from async store
   const getUserInformation = async () => {
-    const userDetails = await Utility.getStorage('user')
+    const entity = await Utility.getStorage('loggedInEntity')
+    const userDetails = entity.obj
     setFName(userDetails.first_name);
     setLName(userDetails.last_name);
     setFullName(userDetails.full_name);
@@ -500,6 +501,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             updateUserProfile(bodyParams).then(async (response) => {
               if (response.status === true) {
                 Alert.alert('Towns Cup', 'Profile changed sucessfully');
+                // FIXME:
                 await Utility.setStorage('user', response.payload);
                 setEditMode(false);
                 authContext.setUser(response.payload);

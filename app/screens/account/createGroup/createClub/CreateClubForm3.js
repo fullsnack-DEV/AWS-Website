@@ -57,15 +57,13 @@ export default function CreateClubForm3({ navigation, route }) {
     (bodyParams.createdAt = 0.0);
     (bodyParams.entity_type = 'club');
     bodyParams.unread = 0;
-    console.log('BODY PARAMS:', bodyParams);
 
-    const teamObject = await Utility.getStorage('team');
-    const switchEntity = await Utility.getStorage('switchBy');
-
+    const entity = await Utility.getStorage('loggedInEntity');
+    // FIXME
     postGroups(
       bodyParams,
-      switchEntity === 'team' && teamObject.group_id,
-      switchEntity === 'team' && 'club',
+      entity.role === 'team' && entity.uid,
+      entity.role === 'team' && 'club',
     ).then((response) => {
       if (response.status === true) {
         setloading(false)

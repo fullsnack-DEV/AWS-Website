@@ -56,6 +56,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
       }
       patchRegisterPlayerDetails(body).then(async (response) => {
         if (response.status === true) {
+          // FIXME:
           await Utility.setStorage('user', response.payload);
           authContext.setUser(response.payload)
           Alert.alert('Towns Cup', 'Player sucessfully registered');

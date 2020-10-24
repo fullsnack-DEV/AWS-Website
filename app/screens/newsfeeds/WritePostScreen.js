@@ -21,7 +21,7 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
-import { createPost, getPostDetails } from '../../api/NewsFeedapi';
+import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TagUserScreen from './TagUserScreen';
 import fonts from '../../Constants/Fonts'
@@ -68,11 +68,11 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                 if (searchText.trim().length === 0 && selectImage.length === 0) {
                   Alert.alert('Please write some text or select any image.');
                 } else if (searchText.trim().length > 0 && selectImage.length === 0) {
-                  const params = {
+                  const data = {
                     text: searchText,
                   };
-                  createPost(params)
-                    .then(() => getPostDetails())
+                  createPost(data)
+                    .then(() => getNewsFeed())
                     .then(() => {
                       navigation.goBack()
                       setloading(false);

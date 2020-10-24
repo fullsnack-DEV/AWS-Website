@@ -2,15 +2,15 @@ import Config from 'react-native-config';
 import api from '../utils/endPoints';
 import makeAPIRequest from '../utils/Global';
 
-export const getNewsFeedDetails = async () => makeAPIRequest({
+export const getUsersPosts = async () => makeAPIRequest({
   method: 'get',
-  url: Config.BASE_URL + api.newsFeed.newsFeedDetail,
+  url: Config.BASE_URL + api.newsFeed.getUsersPosts,
 });
 
-export const getPostDetails = async () => makeAPIRequest({
+export const getNewsFeed = async () => makeAPIRequest({
   method: 'get',
-  url: Config.BASE_URL + api.newsFeed.postDetail,
-});
+  url: Config.BASE_URL + api.newsFeed.getNewsFeed,
+})
 
 export const getReactions = async (params) => makeAPIRequest({
   method: 'get',
@@ -18,10 +18,10 @@ export const getReactions = async (params) => makeAPIRequest({
   params,
 });
 
-export const createReaction = async (bodyParams) => makeAPIRequest({
+export const createReaction = async (data) => makeAPIRequest({
   method: 'post',
   url: Config.BASE_URL + api.newsFeed.reaction,
-  data: bodyParams,
+  data,
 });
 
 export const createPost = async (bodyParams) => makeAPIRequest({

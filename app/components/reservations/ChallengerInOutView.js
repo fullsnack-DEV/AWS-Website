@@ -8,29 +8,21 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import * as Utility from '../../utils/index';
 
-let switchEntity = '';
-let myID = '';
-let user = {};
-let team = {};
+let entity
+let uid = '';
 export default function ChallengerInOutView({ data }) {
   useEffect(() => {
-    userDetailFromStorage();
+    getLoggedInEntity();
   }, []);
 
-  const userDetailFromStorage = async () => {
-    switchEntity = await Utility.getStorage('switchBy');
-    if (switchEntity === 'user') {
-      user = await Utility.getStorage('user');
-      myID = user.user_id;
-    } else if (switchEntity === 'team') {
-      team = await Utility.getStorage('team');
-      myID = team.group_id;
-    }
+  const getLoggedInEntity = async () => {
+    entity = await Utility.getStorage('loggedInEntity');
+    uid = entity.uid
   };
   return (
     <>
       {data.responsible_to_secure_venue
-      && data.invited_by === myID
+      && data.invited_by === uid
       && data.invited_to === data.home_team.user_id ? (
         <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
           <Image source={images.requestOut} style={styles.inOutImageView} />

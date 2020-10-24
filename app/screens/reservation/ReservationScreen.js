@@ -9,7 +9,6 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { getReservationList } from '../../api/Reservationapi';
-import * as Utility from '../../utils/index';
 import MatchReservation from '../../components/reservations/MatchReservation';
 import TCNoDataView from '../../components/TCNoDataView';
 import strings from '../../Constants/String';
@@ -27,82 +26,27 @@ export default function ReservationScreen({ navigation }) {
   }, [isFocused]);
 
   const getReservationListByCaller = async () => {
-    const switchEntity = await Utility.getStorage('switchBy');
-
-    if (switchEntity === 'user') {
-      const user = await Utility.getStorage('user');
-      getReservationList(user.user_id).then((response) => {
-        console.log('USER RESERVATION LIST:', response.payload);
-        if (response.status) {
-          setloading(false);
-          const upcomingData = [];
-          const pastData = [];
-
-          // eslint-disable-next-line no-restricted-syntax
-          for (const temp of response.payload) {
-            const date = new Date(temp.timestamp);
-            const curruentDate = new Date();
-            if (curruentDate < date === 1) {
-              upcomingData.push(temp);
-            } else {
-              pastData.push(temp);
-            }
+    getReservationList().then((response) => {
+      if (response.status) {
+        setloading(false);
+        const upcomingData = [];
+        const pastData = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const temp of response.payload) {
+          const date = new Date(temp.timestamp);
+          const curruentDate = new Date();
+          if (curruentDate < date === 1) {
+            upcomingData.push(temp);
+          } else {
+            pastData.push(temp);
           }
-          setUpcoming(upcomingData);
-          setPast(pastData);
-        } else {
-          Alert.alert('Towns Cup', response.messages);
         }
-      });
-    } else if (switchEntity === 'team') {
-      const team = await Utility.getStorage('team');
-      getReservationList(team.group_id, 'team').then((response) => {
-        if (response.status) {
-          setloading(false);
-          const upcomingData = [];
-          const pastData = [];
-          console.log('TEAM RESERVATION LIST:', response.payload);
-          // eslint-disable-next-line no-restricted-syntax
-          for (const temp of response.payload) {
-            const date = new Date(temp.timestamp);
-            const curruentDate = new Date();
-            if (curruentDate < date === 1) {
-              upcomingData.push(temp);
-            } else {
-              pastData.push(temp);
-            }
-          }
-          setUpcoming(upcomingData);
-          setPast(pastData);
-        } else {
-          Alert.alert('Towns Cup', response.messages);
-        }
-      });
-    } else if (switchEntity === 'club') {
-      const club = await Utility.getStorage('club');
-      getReservationList(club.group_id, 'club').then((response) => {
-        if (response.status) {
-          setloading(false);
-          const upcomingData = [];
-          const pastData = [];
-          console.log('CLUB RESERVATION LIST:', response.payload);
-          // eslint-disable-next-line no-restricted-syntax
-          for (const temp of response.payload) {
-            const date = new Date(temp.timestamp);
-            const curruentDate = new Date();
-            if (curruentDate < date === 1) {
-              upcomingData.push(temp);
-            } else {
-              pastData.push(temp);
-            }
-          }
-          setUpcoming(upcomingData);
-          setPast(pastData);
-        } else {
-          Alert.alert('Towns Cup', response.messages);
-        }
-      });
-    }
+        setUpcoming(upcomingData);
+        setPast(pastData);
+      } else {
+        Alert.alert('Towns Cup', response.messages);
+      }
+    });
   };
 
   return (
