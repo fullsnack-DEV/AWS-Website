@@ -56,6 +56,7 @@ export default function ForgotPasswordScreen({ navigation }) {
       <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
       <Text style={ styles.resetText }>{strings.resetText}</Text>
       <TCTextField
+      style={styles.textFieldStyle}
         placeholder={ strings.enterEmailPlaceholder }
         secureText={ false }
         autoCapitalize="none"
@@ -120,5 +121,19 @@ const styles = StyleSheet.create({
     marginTop: hp('0.5%'),
     paddingLeft: 30,
     textAlign: 'left',
+  },
+  textFieldStyle: {
+    backgroundColor: colors.whiteColor,
+    fontFamily: fonts.RRegular,
+
+    marginBottom: 10,
+    marginLeft: 32,
+    marginRight: 32,
+
+    paddingLeft: 8,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
 });

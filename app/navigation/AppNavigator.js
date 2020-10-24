@@ -58,14 +58,14 @@ const getTabBarVisibility = (route) => {
 };
 
 function AppNavigator() {
-  const [switchBy, setSwitchBy] = useState('user');
+  const [role, setRole] = useState('user');
   useEffect(() => {
-    switchByEntity();
+    changeRole();
   });
 
-  const switchByEntity = async () => {
-    const switchEntities = await Utility.getStorage('switchBy');
-    setSwitchBy(switchEntities);
+  const changeRole = async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    setRole(entity.role);
   };
 
   return (
@@ -142,7 +142,7 @@ function AppNavigator() {
         } }
       />
 
-      {switchBy === 'team' && (
+      {role === 'team' && (
         <Tab.Screen
           name="Account"
           component={ AccountNavigator }
@@ -161,7 +161,7 @@ function AppNavigator() {
           }) }
         />
       )}
-      {switchBy === 'user' && (
+      {role === 'user' && (
         <Tab.Screen
           name="Account"
           component={ AccountNavigator }
@@ -176,7 +176,7 @@ function AppNavigator() {
           }) }
         />
       )}
-      {switchBy === 'club' && (
+      {role === 'club' && (
         <Tab.Screen
           name="Account"
           component={ AccountNavigator }

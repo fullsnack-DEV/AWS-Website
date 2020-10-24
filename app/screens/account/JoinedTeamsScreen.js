@@ -29,10 +29,9 @@ export default function JoinedTeamsScreen() {
   }, []);
 
   const getTeamsList = async () => {
-    const switchBy = await Utility.getStorage('switchBy');
-    if (switchBy === 'club') {
-      const clubObject = await Utility.getStorage('club');
-      getTeamsByClub(clubObject.group_id).then((response) => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    if (entity.role === 'club') {
+      getTeamsByClub(entity.uid).then((response) => {
         if (response.status === true) {
           console.log('RESPONSE OF TEAM LIST BY CLUB::', response.payload);
           setTeamList(response.payload);

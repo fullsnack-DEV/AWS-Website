@@ -32,14 +32,14 @@ function NewsFeedPostItems({
   key,
   item,
   onLikePress,
-  currentUserID,
+  caller_id,
   onDeletePost,
 }) {
   const actionSheet = useRef();
   let like = false;
   let filterLike = [];
   if (item.own_reactions && item.own_reactions.clap) {
-    filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === currentUserID);
+    filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
     if (filterLike.length > 0) {
       like = true;
     }

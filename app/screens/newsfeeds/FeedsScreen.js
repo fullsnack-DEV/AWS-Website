@@ -2,13 +2,11 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
   StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import { createPost, getPostDetails } from '../../api/NewsFeedapi';
-
+import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
 import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
@@ -17,20 +15,9 @@ export default function FeedsScreen({ navigation, route }) {
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
-  const [userID, setUserID] = useState('');
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
-
-  async function setCustomerId() {
-    const currentUserID = await AsyncStorage.getItem('CurrentUserId');
-    if (currentUserID) {
-      setUserID(currentUserID);
-    }
-  }
-  useEffect(() => {
-    setCustomerId();
-  }, []);
 
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
@@ -48,12 +35,12 @@ export default function FeedsScreen({ navigation, route }) {
             url: item.fullImage,
             thumbnail: item.thumbnail,
           }))
-          const params = {
+          const data = {
             text: route.params.postDescriptions ? route.params.postDescriptions : '',
             attachments,
           };
-          createPost(params)
-            .then(() => getPostDetails())
+          createPost(data)
+            .then(() => getNewsFeed())
             .then((response) => {
               setPostData(response.payload.results)
               setProgressBar(false);
@@ -71,9 +58,11 @@ export default function FeedsScreen({ navigation, route }) {
   }, [route.params]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getPostDetails()
-        .then((response) => setPostData(response.payload.results))
+    const unsubscribe = navigation.addListener('focus', async () => {
+      getNewsFeed()
+        .then((response) => {
+          setPostData(response.payload.results)
+        })
         .catch((e) => Alert.alert('', e.messages));
     });
 
@@ -92,8 +81,9 @@ export default function FeedsScreen({ navigation, route }) {
       ),
     });
   }, [navigation]);
+
   useEffect(() => {
-    getPostDetails()
+    getNewsFeed()
       .then((response) => {
         setPostData(response.payload.results);
         setloading(false);
@@ -129,7 +119,6 @@ export default function FeedsScreen({ navigation, route }) {
             navigation={navigation}
             newsFeedData={newsFeedData}
             postData={postData}
-            userID={userID}
           />
     </View>
   );

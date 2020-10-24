@@ -22,7 +22,6 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
 import { getuserDetail } from '../../api/Authapi';
-import { token_details } from '../../utils/constant';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -49,20 +48,6 @@ export default function WelcomeScreen({ navigation }) {
     webClientId: '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
     offlineAccess: false,
   });
-  const getUser = (uid) => {
-    getuserDetail(uid).then((response) => {
-      setloading(false);
-      if (response.status === true) {
-        Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
-      } else {
-        navigation.navigate('AddBirthdayScreen')
-      // navigation.navigate('ChooseLocationScreen');
-      }
-    }).catch(() => {
-      navigation.navigate('AddBirthdayScreen')
-    });
-    setloading(false);
-  };
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
@@ -82,13 +67,12 @@ export default function WelcomeScreen({ navigation }) {
         if (user) {
           user.getIdTokenResult().then(async (idTokenResult) => {
             console.log('User JWT: ', idTokenResult.token);
-            const tokenDetail = {
+            const token = {
               token: idTokenResult.token,
               expirationTime: idTokenResult.expirationTime,
             };
-            await Utility.setStorage(token_details, JSON.stringify(tokenDetail));
-            await Utility.setStorage('UID', user.uid);
 
+            await Utility.setStorage('UID', user.uid);
             const flName = user.displayName.split(' ');
 
             const userDetail = {};
@@ -101,9 +85,26 @@ export default function WelcomeScreen({ navigation }) {
               userDetail.last_name = 'Cup';
             }
             userDetail.email = user.email;
+            const entity = {
+              auth: { token, user_id: user.uid },
+              uid: user.uid,
+              role: 'user',
+            }
             await Utility.setStorage('userInfo', userDetail);
+            await Utility.setStorage('loggedInEntity', entity);
 
-            getUser(user.uid);
+            getuserDetail(user.uid).then((response) => {
+              setloading(false);
+              if (response.status === true) {
+                Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+              } else {
+                navigation.navigate('AddBirthdayScreen')
+              // navigation.navigate('ChooseLocationScreen');
+              }
+            }).catch(() => {
+              navigation.navigate('AddBirthdayScreen')
+            });
+            setloading(false);
           });
         }
       });
@@ -132,13 +133,17 @@ export default function WelcomeScreen({ navigation }) {
         if (user) {
           user.getIdTokenResult().then(async (idTokenResult) => {
             console.log('User JWT: ', idTokenResult.token);
-            const tokenDetail = {
+            const token = {
               token: idTokenResult.token,
               expirationTime: idTokenResult.expirationTime,
             };
-            await Utility.setStorage(token_details, JSON.stringify(tokenDetail));
-            await Utility.setStorage('UID', user.uid);
 
+            const entity = {
+              auth: { token, user_id: user.uid },
+              uid: user.uid,
+              role: 'user',
+            }
+            await Utility.setStorage('loggedInEntity', entity);
             const flName = user.displayName.split(' ');
 
             const userDetail = {};
@@ -151,9 +156,21 @@ export default function WelcomeScreen({ navigation }) {
               userDetail.last_name = 'Cup';
             }
             userDetail.email = user.email;
+
             await Utility.setStorage('userInfo', userDetail);
 
-            getUser(user.uid);
+            getuserDetail(user.uid).then((response) => {
+              setloading(false);
+              if (response.status === true) {
+                Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+              } else {
+                navigation.navigate('AddBirthdayScreen')
+              // navigation.navigate('ChooseLocationScreen');
+              }
+            }).catch(() => {
+              navigation.navigate('AddBirthdayScreen')
+            });
+            setloading(false);
           });
         }
       });

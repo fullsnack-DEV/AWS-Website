@@ -65,12 +65,12 @@ export default function CreateTeamForm4({ navigation, route }) {
     bodyParams.should_hide = false;
     console.log('bodyPARAMS:: ', bodyParams);
 
-    const clubObject = await Utility.getStorage('club');
-    const switchEntity = await Utility.getStorage('switchBy');
+    const entity = await Utility.getStorage('loggedInEntity');
+    // FIXME
     postGroups(
       bodyParams,
-      switchEntity === 'club' && clubObject.group_id,
-      switchEntity === 'club' && 'club',
+      entity.role === 'club' && entity.uid,
+      entity.role === 'club' && 'club',
     ).then((response) => {
       if (response.status === true) {
         setloading(false);

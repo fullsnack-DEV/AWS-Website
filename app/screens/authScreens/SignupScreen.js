@@ -24,7 +24,6 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
-import { token_details } from '../../utils/constant';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCButton from '../../components/TCButton';
@@ -92,10 +91,10 @@ export default function SignupScreen({ navigation }) {
 
     return false;
   };
-  const setAuthToken = async () => auth().onAuthStateChanged((user) => {
+  const saveUserDetails = async () => auth().onAuthStateChanged((user) => {
     if (user) {
-      user.getIdTokenResult().then((idTokenResult) => {
-        const tokenDetail = {
+      user.getIdTokenResult().then(async (idTokenResult) => {
+        const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
         };
@@ -104,11 +103,15 @@ export default function SignupScreen({ navigation }) {
           last_name: lName,
           email,
         };
-        Utility.setStorage(token_details, JSON.stringify(tokenDetail));
-        Utility.setStorage('token', idTokenResult.token);
-        Utility.setStorage('expiryTime', idTokenResult.expirationTime);
-        Utility.setStorage('UID', user.uid);
-        Utility.setStorage('userInfo', userDetail);
+
+        const entity = {
+          auth: { token, user_id: user.uid },
+          uid: user.uid,
+          role: 'user',
+        };
+        await Utility.setStorage('userInfo', userDetail);
+        await Utility.setStorage('loggedInEntity', entity);
+
         return user;
       });
     }
@@ -122,7 +125,7 @@ export default function SignupScreen({ navigation }) {
         firebase.auth().onAuthStateChanged((user) => {
           user.sendEmailVerification();
         });
-        return setAuthToken().then((user) => {
+        return saveUserDetails().then((user) => {
           getuserDetail(user.uid)
             .then(() => {
               setloading(false);
@@ -162,16 +165,19 @@ export default function SignupScreen({ navigation }) {
         </TouchableOpacity>
         <TCKeyboardView>
           <TCTextField
+          style={styles.textFieldStyle}
             placeholder={strings.fnameText}
             onChangeText={(text) => setFName(text)}
             value={fName}
           />
           <TCTextField
+          style={styles.textFieldStyle}
             placeholder={strings.lnameText}
             onChangeText={(text) => setLName(text)}
             value={lName}
           />
           <TCTextField
+            style={styles.textFieldStyle}
             placeholder={strings.emailPlaceHolder}
             autoCapitalize="none"
             keyboardType="email-address"
@@ -184,7 +190,7 @@ export default function SignupScreen({ navigation }) {
               placeholder={strings.passwordText}
               onChangeText={(text) => setPassword(text)}
               value={password}
-              placeholderTextColor={colors.themeColor}
+              // placeholderTextColor={colors.themeColor}
               secureTextEntry={hidePassword}
               keyboardType={'default'}
             />
@@ -194,6 +200,7 @@ export default function SignupScreen({ navigation }) {
           </View>
 
           <TCTextField
+          style={styles.textFieldStyle}
             placeholder={strings.confirmPasswordText}
             autoCapitalize="none"
             secureText={true}
@@ -273,5 +280,19 @@ const styles = StyleSheet.create({
     paddingLeft: 17,
 
     width: wp('75%'),
+  },
+  textFieldStyle: {
+    backgroundColor: colors.whiteColor,
+    fontFamily: fonts.RRegular,
+
+    marginBottom: 10,
+    marginLeft: 32,
+    marginRight: 32,
+
+    paddingLeft: 8,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
 });

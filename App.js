@@ -12,13 +12,13 @@ import * as Utility from './app/utils/index';
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [switchBy, setSwitchBy] = useState('user');
+  const [role, setRole] = useState('user');
   const [team, setTeam] = useState(null);
   const [club, setClub] = useState(null);
   const authValue = useMemo(
     () => ({
-      switchBy,
-      setSwitchBy,
+      role,
+      setRole,
       user,
       setUser,
       team,
@@ -26,14 +26,21 @@ export default function App() {
       club,
       setClub,
     }),
-    [switchBy, user, team, club],
+    [role, user, team, club],
   );
 
   const getLoginUserDetail = async () => {
-    const loginUserObject = await Utility.getStorage('user');
-    if (loginUserObject !== null || loginUserObject !== undefined) {
-      setUser(loginUserObject);
+    const entity = await Utility.getStorage('loggedInEntity');
+    if (entity) {
+      if (entity.role === 'user') {
+        setUser(entity.auth.user);
+      } else {
+        setUser(entity.obj);
+      }
     }
+    // if (entity ? entity.auth.user || entity.obj) {
+    //   setUser(entity.auth.user || entity.obj);
+    // }
   };
 
   const appSettings = {

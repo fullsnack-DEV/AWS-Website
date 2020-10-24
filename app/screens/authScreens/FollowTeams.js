@@ -93,11 +93,15 @@ export default function FollowTeams({ route }) {
     console.log('Followed Team:::', followedTeam);
   };
   const getUserInfo = async () => {
-    const uid = await Utility.getStorage('UID');
-    const response = await getuserDetail(uid);
+    const entity = await Utility.getStorage('loggedInEntity');
+    console.log('USER ENTITY:', entity);
+    const response = await getuserDetail(entity.auth.user_id);
+
     if (response.status) {
-      await Utility.setStorage('user', response.payload);
-      await Utility.setStorage('switchBy', 'user');
+      entity.obj = response.payload
+      entity.auth.user = response.payload
+      entity.role = 'user'
+      await Utility.setStorage('loggedInEntity', entity)
       await authContext.setUser(response.payload);
       setloading(false);
     } else {

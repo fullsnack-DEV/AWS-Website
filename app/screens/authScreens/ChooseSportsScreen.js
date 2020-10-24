@@ -72,8 +72,8 @@ export default function ChooseSportsScreen({ navigation, route }) {
   };
 
   const signUpWithTC = async () => {
+    setloading(true);
     const user = await Utility.getStorage('userInfo');
-
     const data = {
       first_name: user.first_name,
       last_name: user.last_name,
@@ -89,29 +89,28 @@ export default function ChooseSportsScreen({ navigation, route }) {
     };
 
     createUser(data).then((response) => {
-      setloading(true);
       if (response.status === true) {
-        console.log('PAYLOAD::', JSON.stringify(response));
         getUserInfo();
       } else {
         Alert.alert(response.messages);
       }
-      setloading(false);
     });
   };
   const getUserInfo = async () => {
-    setloading(true);
-    const uid = await Utility.getStorage('UID');
-    getuserDetail(uid).then(async (response) => {
-      if (response.status === true) {
-        await Utility.setStorage('user', response.payload);
-        authContext.setUser(response.payload);
-      } else {
-        console.log(response);
-        Alert.alert('Something went wrong..!!');
-      }
+    const entity = await Utility.getStorage('loggedInEntity');
+    console.log('USER ENTITY:', entity);
+    const response = await getuserDetail(entity.auth.user_id);
+
+    if (response.status) {
+      entity.obj = response.payload
+      entity.auth.user = response.payload
+      entity.role = 'user'
+      await Utility.setStorage('loggedInEntity', entity)
+      await authContext.setUser(response.payload);
       setloading(false);
-    });
+    } else {
+      throw new Error(response);
+    }
   };
 
   const renderItem = ({ item, index }) => (

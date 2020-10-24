@@ -3,12 +3,14 @@ import { View, FlatList, Alert } from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { createReaction, deletePost, getPostDetails } from '../../api/NewsFeedapi';
+import { createReaction, deletePost, getNewsFeed } from '../../api/NewsFeedapi';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 
-export default function NewsFeedList({ navigation, postData, userID }) {
+export default function NewsFeedList({
+  navigation, postData,
+}) {
   const [pullRefresh, setPullRefresh] = useState(false);
   const [data, setData] = useState(postData);
   const [loading, setloading] = useState(false);
@@ -39,7 +41,6 @@ export default function NewsFeedList({ navigation, postData, userID }) {
           <NewsFeedPostItems
             key={key}
             item={item}
-            currentUserID={userID}
             navigation={navigation}
             onLikePress={() => {
               const bodyParams = {
@@ -47,7 +48,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
                 activity_id: item.id,
               };
               createReaction(bodyParams)
-                .then(() => getPostDetails())
+                .then(() => getNewsFeed())
                 .then((response) => {
                   setData(response.payload.results);
                 })
@@ -61,7 +62,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
                 activity_id: item.id,
               };
               deletePost(params)
-                .then(() => getPostDetails())
+                .then(() => getNewsFeed())
                 .then((response) => {
                   setloading(false);
                   setData(response.payload.results);
@@ -76,7 +77,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
         refreshing={pullRefresh}
         onRefresh={() => {
           setPullRefresh(true);
-          getPostDetails()
+          getNewsFeed()
             .then((response) => {
               setData(response.payload.results);
               setPullRefresh(false);

@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,
+
   },
   textInput: {
     height: '100%',
