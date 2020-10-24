@@ -17,6 +17,7 @@ export default function NewsFeedList({ navigation, postData, userID }) {
     <View>
       <ActivityLoader visible={loading} />
       <FlatList
+        bounces={false}
         data={data.length > 0 ? data : postData}
         ItemSeparatorComponent={() => (
           <View

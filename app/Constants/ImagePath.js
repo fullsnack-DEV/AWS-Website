@@ -38,6 +38,7 @@ const images = {
   messageBox_account: require('../assets/images/ic_message_box.png'),
   nextArrow: require('../assets/images/ic_next_arrow.png'),
   backArrow: require('../assets/images/ic_back_arrow.png'),
+  menu: require('../assets/images/menu.png'),
   vertical3Dot: require('../assets/images/ic_dot.png'),
   horizontal3Dot: require('../assets/images/ic_horizontal_dot.png'),
   downArrow: require('../assets/images/ic_down_arrow.png'),

@@ -12,6 +12,12 @@ export const getPostDetails = async () => makeAPIRequest({
   url: Config.BASE_URL + api.newsFeed.postDetail,
 });
 
+export const getUserPosts = async (params) => makeAPIRequest({
+  method: 'get',
+  url: Config.BASE_URL + api.newsFeed.postDetail,
+  params,
+});
+
 export const getReactions = async (params) => makeAPIRequest({
   method: 'get',
   url: Config.BASE_URL + api.newsFeed.getReaction,
