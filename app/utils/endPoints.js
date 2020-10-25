@@ -10,7 +10,7 @@ const api = {
   // NewsFeed Constants
   newsFeed: {
     getNewsFeed: 'newsfeeds',
-    getUsersPosts: 'posts',
+    getUserPosts: 'posts',
     getReaction: 'reactions',
     reaction: 'reactions',
     createPostEndPoint: 'posts',

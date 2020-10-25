@@ -2,11 +2,6 @@ import Config from 'react-native-config';
 import api from '../utils/endPoints';
 import makeAPIRequest from '../utils/Global';
 
-export const getUsersPosts = async () => makeAPIRequest({
-  method: 'get',
-  url: Config.BASE_URL + api.newsFeed.getUsersPosts,
-});
-
 export const getNewsFeed = async () => makeAPIRequest({
   method: 'get',
   url: Config.BASE_URL + api.newsFeed.getNewsFeed,
@@ -14,7 +9,7 @@ export const getNewsFeed = async () => makeAPIRequest({
 
 export const getUserPosts = async (params) => makeAPIRequest({
   method: 'get',
-  url: Config.BASE_URL + api.newsFeed.postDetail,
+  url: Config.BASE_URL + api.newsFeed.getUserPosts,
   params,
 });
 
