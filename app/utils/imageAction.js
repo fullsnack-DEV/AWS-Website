@@ -12,6 +12,7 @@ const base64ToArrayBuffer = (base64) => {
     bytes[i] = binaryString.charCodeAt(i);
   }
   return bytes.buffer;
+  // return Buffer.from(binaryString)
 };
 
 const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
@@ -34,7 +35,7 @@ const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
   throw new Error('upoad-failed')
 };
 
-const uploadImage = ({ data }) => {
+const uploadImage = (data) => {
   const image = {
     ...data,
     thumbURL: '',
@@ -54,7 +55,6 @@ const uploadImage = ({ data }) => {
         type: image.path.split('.')[1] || 'jpeg',
       }),
       // FIXME: resize image here.
-      // FIXME: handle ios and android specific path
       uploadImageOnPreSignedUrls({
         url: preSignedUrls[1],
         uri: image.path,
@@ -64,7 +64,7 @@ const uploadImage = ({ data }) => {
   });
 };
 
-const uploadImages = async (images, cb) => {
+const uploadImages = async (images, cb = () => {}) => {
   let completed = 0;
   const promises = [];
   images.forEach((item) => promises.push(uploadImage(item)));

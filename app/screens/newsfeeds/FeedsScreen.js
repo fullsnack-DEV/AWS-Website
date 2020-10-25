@@ -28,7 +28,7 @@ export default function FeedsScreen({ navigation, route }) {
       if (route.params && route.params.data) {
         setTotalUploadCount(route.params.data.length || 1);
         setProgressBar(true);
-        const imageArray = route.params.data.map((data) => ({ data }))
+        const imageArray = route.params.data.map((data) => (data))
         uploadImages(imageArray, progressStatus).then((responses) => {
           const attachments = responses.map((item) => ({
             type: 'image',
