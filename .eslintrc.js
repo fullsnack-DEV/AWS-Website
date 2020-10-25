@@ -29,7 +29,7 @@ module.exports = {
     'react/display-name': [0],
     quotes: ['error', 'single'],
     'max-len': ['warn', {code: 132}],
-    'no-undef': [1],
+    'no-undef': [2],
     'react/jsx-curly-spacing': [0, 'always'],
     "react/jsx-indent": [2, 2, {checkAttributes: true, indentLogicalExpressions: true }],
     semi: [0, 'never'],

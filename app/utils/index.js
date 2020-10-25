@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
+import strings from '../Constants/String'
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -63,7 +64,7 @@ export const getOS = () => {
 
 export const showAlert = (message) => {
   Alert.alert(
-    titles.APP_NAME,
+    strings.titleBasic,
     message,
     [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
     { cancelable: false },

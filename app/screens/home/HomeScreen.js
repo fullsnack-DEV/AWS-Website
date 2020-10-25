@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Image,
-  StyleSheet, Text, TouchableOpacity, View,
+  StyleSheet, Text, TouchableOpacity, View, Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import ParallaxScrollView from '../../components/ParallaxScrollView';

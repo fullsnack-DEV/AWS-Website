@@ -34,10 +34,11 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
     });
   }, [navigation]);
 
-  onSeek = (seek) => {
+  const onSeek = (seek) => {
     this.videoPlayer.seek(seek);
   };
-  onPaused = () => {
+
+  const onPaused = () => {
     console.log('STATE::', playerState);
     if (paused === true) {
       setPlayerState(PLAYER_STATES.PLAYING);
@@ -47,46 +48,47 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
       setPaused(!paused);
     }
   };
-  onReplay = () => {
+
+  const onReplay = () => {
     setPlayerState(PLAYER_STATES.PLAYING);
     this.videoPlayer.seek(0);
   };
 
-  onProgress = (data) => {
+  const onProgress = (data) => {
     // Video Player will continue progress even if the video already ended
     if (!isLoading && playerState !== PLAYER_STATES.ENDED) {
       setCurrentTime(data.currentTime);
     }
   };
 
-  onLoad = (data) => {
+  const onLoad = (data) => {
     setDuration(data.duration);
     setIsLoading(false);
   };
 
-  onLoadStart = () => {
+  const onLoadStart = () => {
     setIsLoading(true);
   };
 
-  onEnd = () => {
+  const onEnd = () => {
     setPlayerState(PLAYER_STATES.ENDED);
   };
 
-  onError = () => alert('Oh! ', error);
+  // const onError = () => alert('Oh! ', error);
 
-  exitFullScreen = () => {};
+  // const exitFullScreen = () => {};
 
-  enterFullScreen = () => {};
+  // const enterFullScreen = () => {};
 
-  onFullScreen = () => {};
+  const onFullScreen = () => {};
   // renderToolbar = () => (
   //   <View style={styles.toolbar}>
   //     <Text>I'm a custom toolbar </Text>
   //   </View>
   // );
-  onSeeking = (curntTime) => setCurrentTime(curntTime);
+  const onSeeking = (curntTime) => setCurrentTime(curntTime);
 
-  onRefs = (videoPlayer) => {
+  const onRefs = (videoPlayer) => {
     this.videoPlayer = videoPlayer
   };
 
@@ -94,26 +96,26 @@ export default function NewsFeedVideoPlayer({ navigation, route }) {
     <View style={ styles.container }>
       <Video
         source={ { uri: route.params.url } } // Can be a URL or a local file.
-        ref={this.onRefs}
+        ref={onRefs}
         volume={ mute }
         // resizeMode="cover"
-        onEnd={ this.onEnd }
-        onLoad={ this.onLoad }
+        onEnd={ onEnd }
+        onLoad={ onLoad }
         paused={ paused }
         style={ styles.mediaPlayer }
-        onProgress={ this.onProgress }
-        onLoadStart={ this.onLoadStart }
+        onProgress={ onProgress }
+        onLoadStart={ onLoadStart }
       />
 
       <MediaControls
         mainColor="white"
-        onSeek={ this.onSeek }
-        onReplay={ this.onReplay }
-        onPaused={ this.onPaused }
-        onSeeking={ this.onSeeking }
+        onSeek={ onSeek }
+        onReplay={ onReplay }
+        onPaused={ onPaused }
+        onSeeking={ onSeeking }
         duration={ duration }
         isLoading={ isLoading }
-        onFullScreen={ this.onFullScreen }
+        onFullScreen={ onFullScreen }
         progress={ currentTime }
         playerState={ playerState }>
         <MediaControls.Toolbar>

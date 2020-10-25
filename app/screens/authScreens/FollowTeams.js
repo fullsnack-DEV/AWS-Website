@@ -35,7 +35,7 @@ export default function FollowTeams({ route }) {
   useEffect(() => {
     console.log('UseEffect Called... :::');
 
-    setFollowData = () => {
+    const setFollowData = () => {
       const arr = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const tempData of route.params.teamData) {
@@ -75,7 +75,7 @@ export default function FollowTeams({ route }) {
     });
   };
 
-  followUnfollowClicked = ({ item, index }) => {
+  const followUnfollowClicked = ({ item, index }) => {
     console.log('SELECTED:::', index);
 
     teams[index].follow = !item.follow;
@@ -132,7 +132,7 @@ export default function FollowTeams({ route }) {
         </View>
         <TouchableWithoutFeedback
             onPress={ () => {
-              this.followUnfollowClicked({ item, index });
+              followUnfollowClicked({ item, index });
             } }>
           {teams[index].follow ? (
             <View style={ styles.followingBtn }>

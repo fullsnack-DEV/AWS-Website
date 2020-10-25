@@ -3,17 +3,15 @@ import {
   StyleSheet,
   View,
   Text,
-
   Image,
   TextInput,
-
   TouchableOpacity,
   TouchableWithoutFeedback,
-
   ScrollView,
   Dimensions,
   FlatList,
   Platform,
+  Alert,
 } from 'react-native';
 
 import {
@@ -62,10 +60,9 @@ export default function RegisterReferee({ navigation }) {
     setLanguages(arr);
   }, []);
   const addMore = () => {
-    setSCertificate([...certificate, index]);
-
-    // eslint-disable-next-line no-plusplus
-    index++;
+    // FIXME:
+    setSCertificate([...certificate, certificate.length]);
+    // index += 1;
   };
 
   const toggleModal = () => {
@@ -73,20 +70,20 @@ export default function RegisterReferee({ navigation }) {
   };
 
   const renderItem = () => (
-    <View style={ { flexDirection: 'column' } }>
-      <View style={ styles.addCertificateView }>
+    <View style={{ flexDirection: 'column' }}>
+      <View style={styles.addCertificateView}>
         <TouchableOpacity>
-          <Image style={ styles.certificateImg } />
-          <Image source={ images.certificateUpload } style={ styles.chooseImage } />
+          <Image style={styles.certificateImg} />
+          <Image source={images.certificateUpload} style={styles.chooseImage} />
         </TouchableOpacity>
         <TextInput
-            placeholder={ strings.titleOrDescriptionText }
-            style={ styles.certificateDescription }
-            onChangeText={ (text) => onMatchFeeChanged(text) }
-            value={ matchFee }></TextInput>
+          placeholder={strings.titleOrDescriptionText}
+          style={styles.certificateDescription}
+          onChangeText={(text) => onMatchFeeChanged(text)}
+          value={matchFee}></TextInput>
       </View>
       <TouchableOpacity>
-        <Text style={ styles.delete }>{strings.deleteTitle}</Text>
+        <Text style={styles.delete}>{strings.deleteTitle}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -105,23 +102,23 @@ export default function RegisterReferee({ navigation }) {
   };
   const renderLanguage = ({ item, index }) => (
     <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => {
-          isIconCheckedOrNot({ item, index });
-        } }>
+      style={styles.listItem}
+      onPress={() => {
+        isIconCheckedOrNot({ item, index });
+      }}>
       <View>
-        <Text style={ styles.languageList }>{item.language}</Text>
-        <View style={ styles.checkbox }>
+        <Text style={styles.languageList}>{item.language}</Text>
+        <View style={styles.checkbox}>
           {languages[index].isChecked ? (
             <Image
-                source={ images.checkWhiteLanguage }
-                style={ styles.checkboxImg }
-              />
+              source={images.checkWhiteLanguage}
+              style={styles.checkboxImg}
+            />
           ) : (
-            <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
           )}
         </View>
-        <View style={ styles.shortSeparatorLine }></View>
+        <View style={styles.shortSeparatorLine}></View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -129,98 +126,99 @@ export default function RegisterReferee({ navigation }) {
   const checkValidation = () => {
     if (sports === '') {
       Alert.alert('Towns Cup', 'Sports cannot be blank');
-      return false
+      return false;
     }
 
-    return true
+    return true;
   };
 
   return (
-    <ScrollView style={ styles.mainContainer }>
-      <View style={ styles.formSteps }>
-        <View style={ styles.form1 }></View>
-        <View style={ styles.form2 }></View>
+    <ScrollView style={styles.mainContainer}>
+      <View style={styles.formSteps}>
+        <View style={styles.form1}></View>
+        <View style={styles.form2}></View>
       </View>
-      <Text style={ styles.LocationText }>
-        {strings.sportsEventsTitle}<Text style={ styles.mendatory }> {strings.star}</Text>
+      <Text style={styles.LocationText}>
+        {strings.sportsEventsTitle}
+        <Text style={styles.mendatory}> {strings.star}</Text>
       </Text>
       <RNPickerSelect
-        placeholder={ {
+        placeholder={{
           label: strings.selectSportPlaceholder,
           value: null,
-        } }
-        items={ [
+        }}
+        items={[
           { label: 'Football', value: 'football' },
           { label: 'Baseball', value: 'baseball' },
           { label: 'Hockey', value: 'hockey' },
-        ] }
-        onValueChange={ (value) => {
+        ]}
+        onValueChange={(value) => {
           setSports(value);
-        } }
-        useNativeAndroidPickerStyle={ false }
+        }}
+        useNativeAndroidPickerStyle={false}
         // eslint-disable-next-line no-sequences
-        style={ (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), { ...styles } }
-        value={ sports }
-        Icon={ () => <Image source={ images.dropDownArrow } style={ styles.downArrow } /> }
+        style={
+          (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
+          { ...styles })
+        }
+        value={sports}
+        Icon={() => (
+          <Image source={images.dropDownArrow} style={styles.downArrow} />
+        )}
       />
 
       <View
-        style={ {
+        style={{
           flexDirection: 'row',
           alignItems: 'center',
-        } }>
-        <Text style={ styles.LocationText }>{strings.descriptionText}</Text>
-
+        }}>
+        <Text style={styles.LocationText}>{strings.descriptionText}</Text>
       </View>
       <TextInput
-        style={ styles.descriptionTxt }
-        onChangeText={ (text) => onChangeText(text) }
-        value={ description }
+        style={styles.descriptionTxt}
+        onChangeText={(text) => onChangeText(text)}
+        value={description}
         multiline
-        numberOfLines={ 4 }
-        placeholder={ strings.descriptionRefereePlaceholder }
+        numberOfLines={4}
+        placeholder={strings.descriptionRefereePlaceholder}
       />
 
-      <Text style={ styles.LocationText }>
-        {strings.certificateTitle}
-
+      <Text style={styles.LocationText}>{strings.certificateTitle}</Text>
+      <Text style={styles.certificateSubText}>
+        {strings.certificateSubTitle}
       </Text>
-      <Text style={ styles.certificateSubText }>{strings.certificateSubTitle}</Text>
 
       <FlatList
-        scrollEnabled={ false }
-        data={ certificate }
+        scrollEnabled={false}
+        data={certificate}
         // keyExtractor={ ( index ) => index }
-        renderItem={ renderItem }
+        renderItem={renderItem}
       />
-      <TouchableOpacity onPress={ addMore } style={ styles.addCertificateButton }>
-        <Text style={ styles.addCertificateText }>
+      <TouchableOpacity onPress={addMore} style={styles.addCertificateButton}>
+        <Text style={styles.addCertificateText}>
           {strings.addCertificateTitle}
         </Text>
       </TouchableOpacity>
-      <Text style={ styles.LocationText }>
-        {strings.languageTitle}
-
-      </Text>
-      <View style={ styles.searchView }>
-        <TouchableOpacity onPress={ toggleModal }>
+      <Text style={styles.LocationText}>{strings.languageTitle}</Text>
+      <View style={styles.searchView}>
+        <TouchableOpacity onPress={toggleModal}>
           <TextInput
-            style={ styles.searchTextField }
-            placeholder={ strings.languagePlaceholder }
-            onChangeText={ (text) => setPlayer2(text) }
-            value={ selectedLanguages.toString() }
-            editable={ false }
+            style={styles.searchTextField}
+            placeholder={strings.languagePlaceholder}
+            //  onChangeText={(text) => setPlayer(text)}
+            value={selectedLanguages.toString()}
+            editable={false}
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
       </View>
 
       <Modal
-        isVisible={ isModalVisible }
+        isVisible={isModalVisible}
         backdropColor="black"
-        backdropOpacity={ 0 }
-        style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
+        backdropOpacity={0}
+        style={{ marginLeft: 0, marginRight: 0, marginBottom: 0 }}>
         <View
-          style={ {
+          style={{
             width: '100%',
             height: Dimensions.get('window').height / 2,
             backgroundColor: 'white',
@@ -233,27 +231,27 @@ export default function RegisterReferee({ navigation }) {
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.5,
             shadowRadius: 5,
-          } }>
+          }}>
           <Text
-            style={ {
+            style={{
               alignSelf: 'center',
               marginTop: 20,
               marginBottom: 20,
               fontSize: 16,
               fontFamily: fonts.RBold,
               color: colors.lightBlackColor,
-            } }>
+            }}>
             Languages
           </Text>
-          <View style={ styles.separatorLine }></View>
+          <View style={styles.separatorLine}></View>
           <FlatList
-            data={ languages }
+            data={languages}
             keyExtractor={(item, i) => i.toString()}
-            renderItem={ renderLanguage }
-            style={ { marginBottom: '25%' } }
+            renderItem={renderLanguage}
+            style={{ marginBottom: '25%' }}
           />
           <View
-            style={ {
+            style={{
               width: '100%',
               height: '25%',
               backgroundColor: 'white',
@@ -265,22 +263,22 @@ export default function RegisterReferee({ navigation }) {
               shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.5,
               shadowRadius: 5,
-            } }>
+            }}>
             <TouchableOpacity
-              onPress={ () => {
+              onPress={() => {
                 toggleModal();
-              } }>
+              }}>
               <LinearGradient
-                colors={ [colors.yellowColor, colors.themeColor] }
-                style={ styles.languageApplyButton }>
-                <Text style={ styles.nextButtonText }>{strings.applyTitle}</Text>
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={styles.languageApplyButton}>
+                <Text style={styles.nextButtonText}>{strings.applyTitle}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
       <TouchableOpacity
-        onPress={ () => {
+        onPress={() => {
           if (checkValidation()) {
             let bodyParams = {};
             const referee_data = [];
@@ -295,11 +293,11 @@ export default function RegisterReferee({ navigation }) {
 
             navigation.navigate('RegisterRefereeForm2', { bodyParams });
           }
-        } }>
+        }}>
         <LinearGradient
-          colors={ [colors.yellowColor, colors.themeColor] }
-          style={ styles.nextButton }>
-          <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+          colors={[colors.yellowColor, colors.themeColor]}
+          style={styles.nextButton}>
+          <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </ScrollView>
