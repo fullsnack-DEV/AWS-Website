@@ -36,7 +36,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const [matchFee, onMatchFeeChanged] = React.useState('');
   const [selected, setSelected] = useState(0);
 
-  registerPlayerCall = () => {
+  const registerPlayerCall = () => {
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };

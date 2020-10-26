@@ -83,7 +83,7 @@ export default function CreateClubForm1({ navigation, route }) {
     }
   }, [minAge, isFocused]);
 
-  checkValidation = () => {
+  const checkValidation = () => {
     if (sports === '') {
       Alert.alert('Towns Cup', 'Sports cannot be blank');
     } else if (clubName === '') {

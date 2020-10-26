@@ -31,7 +31,7 @@ export default function AddBirthdayScreen({ navigation }) {
   }, [])
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
+    const currentDate = selectedDate;
     setDateValue(currentDate);
     if (Platform.OS === 'android') {
       setShow(false);

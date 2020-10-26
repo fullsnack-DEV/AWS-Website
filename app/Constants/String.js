@@ -1,5 +1,6 @@
 const strings = {
   townsCupTitle: 'T O W N S C U P',
+  titleBasic: 'Townscup',
   townsCupTagLine: 'All Teams in the World.',
   welCome: 'Welcome',
   welcomeText: 'You\'re only a few steps away from joining Townscup.',

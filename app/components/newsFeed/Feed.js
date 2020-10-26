@@ -26,7 +26,7 @@ function Feed({ data, navigation }) {
 
   const json = JSON.parse(data.object);
 
-  renderItem = ({ index }) => {
+  const renderItem = ({ index }) => {
     if (json.attachments.length >= 3) {
       return (
         <TouchableWithoutFeedback>
@@ -103,7 +103,7 @@ function Feed({ data, navigation }) {
       return (
         <TouchableWithoutFeedback
           style={ styles.listItem }
-          onPress={ () => this.pushToPostDetail(
+          onPress={ () => pushToPostDetail(
             json.attachments[index].type,
             json.attachments[index].url,
           )
@@ -121,7 +121,7 @@ function Feed({ data, navigation }) {
       return (
         <TouchableWithoutFeedback
           style={ styles.listItem }
-          onPress={ () => this.pushToPostDetail(
+          onPress={ () => pushToPostDetail(
             json.attachments[index].type,
             json.attachments[index].url,
           )
@@ -135,7 +135,7 @@ function Feed({ data, navigation }) {
     }
     return <View />
   };
-  pushToPostDetail = (type, url) => {
+  const pushToPostDetail = (type, url) => {
     if (type === 'video') {
       navigate('NewsFeedVideoPlayer', { url });
     } else {
@@ -171,7 +171,7 @@ function Feed({ data, navigation }) {
       <FlatList
         data={ json.attachments }
         keyExtractor={ () => json.attachments.url }
-        renderItem={ this.renderItem }
+        renderItem={ renderItem }
         horizontal={ true }
         scrollEnabled={ true }
         showsHorizontalScrollIndicator={ false }

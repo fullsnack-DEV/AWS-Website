@@ -123,7 +123,7 @@ export default function ScheduleScreen({ navigation }) {
     });
   }, [navigation]);
   useEffect(() => {});
-  handleIndexChange = (index) => {
+  const handleIndexChange = (index) => {
     setSelectedIndex(index);
   };
 

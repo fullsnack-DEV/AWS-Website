@@ -162,7 +162,7 @@ export default function RegisterPlayer({ navigation }) {
             <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            onChangeText={ (text) => setPlayer2(text) }
+            // onChangeText={ (text) => setPlayer2(text) }
             value={ selectedLanguages.toString() }
             editable={ false }
             pointerEvents="none"></TextInput>

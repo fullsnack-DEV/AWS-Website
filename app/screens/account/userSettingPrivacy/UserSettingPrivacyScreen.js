@@ -29,7 +29,7 @@ export default function UserSettingPrivacyScreen({ navigation }) {
     } else if (opetions === 'Change Password') {
       navigation.navigate('ChangePasswordScreen');
     } else if (opetions === 'Privacy Setting') {
-      groupOpetionActionSheet.show();
+      // groupOpetionActionSheet.show();
     }
   };
   const renderMenu = ({ item }) => (
