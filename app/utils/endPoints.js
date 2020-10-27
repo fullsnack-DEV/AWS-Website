@@ -37,6 +37,9 @@ const api = {
     createGroups: 'groups',
     joinedTeams: 'groups/joined',
     teamsByClub: '/teams',
+    followers: '/followers',
+    members: '/members',
+    sendInvitation: 'users/invite',
   },
   reservation: {
     reservationList: 'reservations?referenceObject=true',

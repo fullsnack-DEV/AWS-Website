@@ -227,6 +227,7 @@ export default function AccountScreen({ navigation }) {
       setParentGroup(null);
       await Utility.setStorage('loggedInEntity', currentEntity);
       setAuthUser(currentEntity)
+      setRole('user')
     } else if (item.entity_type === 'team') {
       if (currentEntity.obj.entity_type === 'player') {
         const i = team.indexOf(item);
@@ -248,6 +249,7 @@ export default function AccountScreen({ navigation }) {
       getParentClub(item);
       await Utility.setStorage('loggedInEntity', currentEntity);
       setAuthUser(currentEntity)
+      setRole('team')
     } else if (item.entity_type === 'club') {
       if (currentEntity.obj.entity_type === 'player') {
         const i = club.indexOf(item);
@@ -271,6 +273,7 @@ export default function AccountScreen({ navigation }) {
       setGroup(item);
       await Utility.setStorage('loggedInEntity', currentEntity);
       setAuthUser(currentEntity)
+      setRole('club')
     }
 
     // let currentEntity = await Utility.getStorage('loggedInEntity');

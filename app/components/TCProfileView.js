@@ -25,7 +25,6 @@ export default function TCProfileView({
       <View style={styles.topTextContainer}>
         {type === 'medium' && <Text style={styles.mediumNameText} numberOfLines={1}>{name}</Text>}
         {type === 'large' && <Text style={styles.nameText} numberOfLines={1}>{name}</Text>}
-
         <Text style={styles.locationText} numberOfLines={1}>{location}</Text>
       </View>
     </View>
@@ -39,6 +38,7 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
     width: 40,
+    borderRadius: 20,
   },
 
   topViewContainer: {

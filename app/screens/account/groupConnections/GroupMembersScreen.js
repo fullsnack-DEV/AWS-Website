@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useRef,
+  useState, useLayoutEffect, useRef, useEffect,
 } from 'react';
 import {
   Dimensions,
@@ -9,6 +9,8 @@ import {
   Image,
   TouchableWithoutFeedback,
   SectionList,
+  Alert,
+  FlatList,
 } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import Modal from 'react-native-modal';
@@ -18,7 +20,14 @@ import UserRoleView from '../../../components/groupConnections/UserRoleView';
 
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
 import TCSearchBox from '../../../components/TCSearchBox';
+import TCNoDataView from '../../../components/TCNoDataView';
+import TCProfileView from '../../../components/TCProfileView';
 
+import {
+  getFollowersList, getMembersList,
+} from '../../../api/Accountapi';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import * as Utility from '../../../utils/index';
 import images from '../../../Constants/ImagePath'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
@@ -76,12 +85,45 @@ const filterArray = [
 ]
 export default function GroupMembersScreen({ navigation }) {
   const actionSheet = useRef();
+  // For activity indigator
+  const [loading, setloading] = useState(true);
   const actionSheetInvite = useRef();
   const [searchText, setSearchText] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [allSelected, setAllSelected] = useState(false);
   const [filter, setFilter] = useState([filterArray]);
+  const [members, setMembers] = useState([]);
+  const [followers, setFollowers] = useState([]);
 
+  useEffect(() => {
+    getFollowers()
+    getMembers()
+  }, [])
+
+  const getFollowers = async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    getFollowersList(entity.uid)
+      .then((response) => {
+        setFollowers(response.payload)
+
+        setloading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
+  const getMembers = async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    getMembersList(entity.uid)
+      .then((response) => {
+        setMembers(response.payload)
+
+        setloading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -142,7 +184,7 @@ export default function GroupMembersScreen({ navigation }) {
   );
   return (
     <View style={styles.mainContainer}>
-
+      <ActivityLoader visible={loading} />
       <TCScrollableTabs>
         <View tabLabel='Members' style={{ flex: 1 }}>
           <View style={styles.searchBarView}>
@@ -152,13 +194,23 @@ export default function GroupMembersScreen({ navigation }) {
             </TouchableWithoutFeedback>
           </View>
 
-          <UserRoleView onPressProfile = {() => navigation.navigate('MembersProfileScreen')}/>
-          <UserRoleView/>
-          <UserRoleView/>
-          <UserRoleView/>
+          {members.length > 0 ? <FlatList
+                  data={members}
+                  renderItem={({ item }) => <UserRoleView data = {item} onPressProfile = {() => navigation.navigate('MembersProfileScreen')}/>}
+                  keyExtractor={(item, index) => index.toString()}
+                  /> : <TCNoDataView title={'No Members Found'}/>}
 
         </View>
-        <View tabLabel='Followers' style={{ flex: 1 }}></View>
+        <View tabLabel='Followers' style={{ flex: 1 }}>
+          {followers.length > 0 ? <FlatList
+                  data={followers}
+                  renderItem={({ item }) => <View>
+                    <TCProfileView marginLeft={20} marginTop={20} image={item.thumbnail ? { uri: item.thumbnail } : images.profilePlaceHolder} name={`${item.first_name} ${item.last_name}`} location={`${item.city}, ${item.state_abbr}, ${item.country}`} type={'medium'}/>
+                    <TCThinDivider width={'90%'} marginBottom={5} />
+                  </View>}
+                  keyExtractor={(item, index) => index.toString()}
+                  /> : <TCNoDataView title={'No Followers Found'}/>}
+        </View>
       </TCScrollableTabs>
       <ActionSheet
                 ref={actionSheet}
@@ -168,7 +220,7 @@ export default function GroupMembersScreen({ navigation }) {
                 // destructiveButtonIndex={1}
                 onPress={(index) => {
                   if (index === 0) {
-                    console.log('Pressed sheet :', index);
+                    navigation.navigate('InvitationSentScreen');
                   } else if (index === 1) {
                     actionSheetInvite.current.show();
                   } else if (index === 2) {
@@ -250,6 +302,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 20,
     marginTop: 20,
+    marginBottom: 20,
   },
   navigationRightItem: {
     height: 15,

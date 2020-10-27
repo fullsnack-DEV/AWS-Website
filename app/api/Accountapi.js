@@ -60,3 +60,24 @@ export const getUsersList = async () => makeAPIRequest({
       Config.BASE_URL
       + api.account.registerPlayer,
 })
+
+export const getFollowersList = async (group_id) => makeAPIRequest({
+  method: 'get',
+  url:
+      Config.BASE_URL
+      + api.account.parentClubDetail + group_id + api.account.followers,
+})
+
+export const getMembersList = async (group_id) => makeAPIRequest({
+  method: 'get',
+  url:
+      Config.BASE_URL
+      + api.account.parentClubDetail + group_id + api.account.members,
+})
+export const sendInvitationInGroup = async (params) => makeAPIRequest({
+  method: 'post',
+  url:
+      Config.BASE_URL
+      + api.account.sendInvitation,
+  data: params,
+})

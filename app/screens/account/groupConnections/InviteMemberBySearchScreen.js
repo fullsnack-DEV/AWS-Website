@@ -2,7 +2,7 @@ import React, {
   useLayoutEffect, useState, useEffect,
 } from 'react';
 import {
-  Text, View, StyleSheet, FlatList,
+  Text, View, StyleSheet, FlatList, Alert,
 } from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -10,8 +10,8 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';
-import { getUsersList } from '../../../api/Accountapi';
-
+import { getUsersList, sendInvitationInGroup } from '../../../api/Accountapi';
+import * as Utility from '../../../utils/index';
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
 import TCTags from '../../../components/TCTags';
 
@@ -19,6 +19,7 @@ export default function InviteMembersBySearchScreen({ navigation }) {
   const [loading, setloading] = useState(true);
   const [players, setPlayers] = useState([])
   const [searchPlayers, setSearchPlayers] = useState([]);
+  const [selectedList, setSelectedList] = useState([]);
 
   const selectedPlayers = [];
   useEffect(() => {
@@ -27,14 +28,29 @@ export default function InviteMembersBySearchScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.sendButtonStyle} onPress={() => console.log('Sent invitation')}>Send</Text>
+        <Text style={styles.sendButtonStyle} onPress={() => sendInvitation()}>Send</Text>
       ),
     });
   }, [navigation]);
 
+  const sendInvitation = async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    const obj = {
+      entity_type: entity.role,
+      userIds: [...selectedList],
+      uid: entity.uid,
+    }
+    sendInvitationInGroup(obj).then((response) => {
+      console.log('Response of Invitation sent:', response);
+      navigation.navigate('InvitationSentScreen');
+    })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
   const getUsers = async () => {
     getUsersList().then((response) => {
-      if (response.status === true) {
+      if (response.status) {
         setloading(false);
         const result = response.payload.map((obj) => {
           // eslint-disable-next-line no-param-reassign
@@ -52,11 +68,11 @@ export default function InviteMembersBySearchScreen({ navigation }) {
     setPlayers([...players]);
     players.map((obj) => {
       if (obj.isChecked) {
-        selectedPlayers.push(obj)
+        selectedPlayers.push(obj.user_id)
       }
       return obj;
     })
-
+    setSelectedList(selectedPlayers);
     console.log('Selected Item:', selectedPlayers);
   };
   const searchFilterFunction = (text) => {
@@ -73,7 +89,7 @@ export default function InviteMembersBySearchScreen({ navigation }) {
     setPlayers([...players]);
     players.map((obj) => {
       if (obj.isChecked) {
-        selectedPlayers.push(obj)
+        selectedPlayers.push(obj.user_id)
       }
       return obj;
     })

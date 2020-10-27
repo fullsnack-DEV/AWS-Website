@@ -220,6 +220,7 @@ const strings = {
   editprofiletitle: 'Edit Profile',
   slogan: 'Slogan',
   enterSloganPlaceholder: 'Enter Your Slogan',
+  invitationSent: 'Invitation sent',
 
 };
 export default strings;
