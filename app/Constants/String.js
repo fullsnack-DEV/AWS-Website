@@ -29,7 +29,8 @@ const strings = {
   signUpCapitalText: 'SIGN UP',
   fnameText: 'First Name',
   lnameText: 'Last Name',
-
+  nameText: 'Name',
+  save: 'Save',
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
 
@@ -210,5 +211,10 @@ const strings = {
   enterFirstNamePlaceholder: 'Enter First Name',
   enterLastNamePlaceholder: 'Enter Last Name',
   enterBioPlaceholder: 'Enter Your Biography',
+  camera: 'Camera',
+  album: 'Album',
+  editprofiletitle: 'Edit Profile',
+  slogan: 'Slogan',
+  enterSloganPlaceholder: 'Enter Your Slogan',
 };
 export default strings;

@@ -35,13 +35,13 @@ function TCTouchableLabel({
           />
         {showNextArrow && (
           <Image
-        style={styles.iconStyle}
+        style={styles.nextIconStyle}
         source={ images.nextArrow }
       />
         )}
         {showDownArrow && (
           <Image
-        style={styles.iconStyle}
+        style={styles.downIconStyle}
         source={ images.dropDownArrow2 }
       />
         )}
@@ -73,11 +73,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     color: colors.lightBlackColor,
   },
-  iconStyle: {
+  nextIconStyle: {
     alignSelf: 'center',
-    resizeMode: 'center',
-    height: 24,
+    resizeMode: 'contain',
+    height: 18,
     width: 12,
+    marginEnd: 10,
+    tintColor: colors.userPostTimeColor,
+  },
+  downIconStyle: {
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    height: 12,
+    width: 18,
     marginEnd: 10,
     tintColor: colors.userPostTimeColor,
   },
