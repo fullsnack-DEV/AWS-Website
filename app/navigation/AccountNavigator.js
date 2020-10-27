@@ -37,6 +37,8 @@ import ChangePasswordScreen from '../screens/account/userSettingPrivacy/ChangePa
 import PersonalInformationScreen from '../screens/account/userSettingPrivacy/PersonalInformationScreen'
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
+import InviteMembersByEmailScreen from '../screens/account/groupConnections/InviteMembersByEmailScreen';
+import InviteMembersBySearchScreen from '../screens/account/groupConnections/InviteMemberBySearchScreen';
 import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
@@ -485,6 +487,38 @@ const AccountNavigator = () => (
         component={ MembersProfileScreen }
         options={ {
           title: 'Member Profile',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="InviteMembersByEmailScreen"
+        component={ InviteMembersByEmailScreen }
+        options={ {
+          title: 'Invite by Email',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="InviteMembersBySearchScreen"
+        component={ InviteMembersBySearchScreen }
+        options={ {
+          title: 'Invite by Search',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

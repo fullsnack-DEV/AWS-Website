@@ -51,6 +51,11 @@ const colors = {
   blackGradientColor: '#EDEDED',
   playerBadgeColor: '#50B5FF',
   textFieldBGColor: '#00000029',
+
+  greenGradientStart: '#45C188',
+  greenGradientEnd: '#B0DB4F',
+
   redColor: '#FD4E1E',
+
 };
 export default colors;

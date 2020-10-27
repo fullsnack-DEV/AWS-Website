@@ -23,6 +23,8 @@ const images = {
   footballSport: require('../assets/images/ic_Basketball.png'),
 
   checkWhite: require('../assets/images/ic_white_check.png'),
+  checkGreen: require('../assets/images/green_check.png'),
+  whiteUncheck: require('../assets/images/white_uncheck.png'),
   uncheckWhite: require('../assets/images/ic_white_uncheck.png'),
   checkEditor: require('../assets/images/ic_check_editor.png'),
   uncheckEditor: require('../assets/images/ic_uncheck_editor.png'),
@@ -157,6 +159,7 @@ const images = {
   teamT: require('../assets/images/team_T.png'),
   clubC: require('../assets/images/club_C.png'),
   editSection: require('../assets/images/ic_edit.png'),
+  tagDivider: require('../assets/images/tag_divider.png'),
 
 };
 

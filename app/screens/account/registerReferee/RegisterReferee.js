@@ -203,11 +203,10 @@ export default function RegisterReferee({ navigation }) {
       <View style={styles.searchView}>
         <TouchableOpacity onPress={toggleModal}>
           <TextInput
-            style={styles.searchTextField}
-            placeholder={strings.languagePlaceholder}
-            //  onChangeText={(text) => setPlayer(text)}
-            value={selectedLanguages.toString()}
-            editable={false}
+            style={ styles.searchTextField }
+            placeholder={ strings.languagePlaceholder }
+            value={ selectedLanguages.toString() }
+            editable={ false }
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
       </View>

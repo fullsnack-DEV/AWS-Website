@@ -126,26 +126,23 @@ export default function AccountScreen({ navigation }) {
       // ),
     });
   }, [navigation]);
-  useEffect(() => {
-    async function fetchData() {
-      const entity = await Utility.getStorage('loggedInEntity');
-      setAuthUser(entity);
-      if (entity.role === 'user') {
-        setRole('user');
-      } else if (entity.role === 'team') {
-        setRole('team');
-      } else if (entity.role === 'club') {
-        setRole('club');
-      }
-      Promise.all([
-        getOwnGroupList(),
-        getTeamsList(),
-        getClubList(),
-      ]).then(() => {
-        setloading(false);
-      });
+  useEffect(async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    setAuthUser(entity);
+    if (entity.role === 'user') {
+      setRole('user');
+    } else if (entity.role === 'team') {
+      setRole('team');
+    } else if (entity.role === 'club') {
+      setRole('club');
     }
-    fetchData();
+    Promise.all([
+      getOwnGroupList(),
+      getTeamsList(),
+      getClubList(),
+    ]).then(() => {
+      setloading(false);
+    });
   }, []);
 
   const getParentClub = (item) => {
@@ -214,6 +211,7 @@ export default function AccountScreen({ navigation }) {
   const switchProfile = async ({ item }) => {
     console.log('Item :-', item);
     setloading(true);
+
     let currentEntity = await Utility.getStorage('loggedInEntity');
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
@@ -274,6 +272,86 @@ export default function AccountScreen({ navigation }) {
       await Utility.setStorage('loggedInEntity', currentEntity);
       setAuthUser(currentEntity)
     }
+
+    // let currentEntity = await Utility.getStorage('loggedInEntity');
+    // if (item.entity_type === 'club') {
+    //   if (!entities.includes(currentEntity.auth.user, 0)) {
+    //     const i = entities.indexOf(currentEntity.auth.user);
+    //     if (i === -1) {
+    //       entities.unshift(currentEntity.auth.user);
+    //       setGroupList(entities);
+    //     }
+    //   }
+    //   const index = entities.indexOf(item);
+    //   if (!playerAdd) {
+    //     entities.splice(index, 1);
+    //     setGroupList(entities);
+    //   } else if (group.entity_type === 'player') {
+    //     entities.splice(index, 1);
+    //     setGroupList(entities);
+    //   } else {
+    //     entities.splice(index, 1, group);
+    //     setGroupList(entities);
+    //   }
+    //   currentEntity = {
+    //     ...currentEntity, uid: item.group_id, role: 'club', obj: item,
+    //   }
+    //   await Utility.setStorage('loggedInEntity', currentEntity);
+    //   setAuthUser(currentEntity)
+    //   setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
+    //   getTeamsList();
+    //   setGroup(item);
+    //   setParentGroup(null);
+    //   setGroupList(entities);
+    // } else if (item.entity_type === 'team') {
+    //   if (!entities.includes(currentEntity.auth.user, 0)) {
+    //     const i = entities.indexOf(currentEntity.auth.user);
+    //     if (i === -1) {
+    //       entities.unshift(currentEntity.auth.user);
+    //       setPlayerAdd(true);
+    //       setGroupList(entities);
+    //     }
+    //   }
+
+    //   const index = entities.indexOf(item);
+    //   if (!playerAdd) {
+    //     entities.splice(index, 1);
+    //     setGroupList(entities);
+    //   } else if (group.entity_type === 'player') {
+    //     entities.splice(index, 1);
+    //     setGroupList(entities);
+    //   } else {
+    //     entities.splice(index, 1, group);
+    //     setGroupList(entities);
+    //   }
+
+    //   currentEntity = {
+    //     ...currentEntity, uid: item.group_id, role: 'club', obj: item,
+    //   }
+    //   await Utility.setStorage('loggedInEntity', currentEntity);
+    //   setAuthUser(currentEntity)
+    //  getParentClub(item);
+
+    //   setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
+    //   setGroup(item);
+    //   setGroupList(entities);
+    // } else if (item.entity_type === 'player') {
+    //   currentEntity.uid = currentEntity.auth.user_id
+    //   currentEntity.role = 'user'
+    //   // FIXME
+    //   delete currentEntity.obj
+    //   await Utility.setStorage('loggedInEntity', currentEntity);
+    //   setAuthUser(currentEntity)
+    //   await Utility.removeAuthKey('club');
+    //   await Utility.removeAuthKey('team');
+    //   entities.splice(0, 1);
+    //   entities.push(group);
+    //   setGroup(item);
+    //   setParentGroup(null);
+    //   setGroupList(entities);
+    // }
+    // await Utility.setStorage('loggedInEntity', currentEntity)
+
     setloading(false);
   };
   const handleLogOut = async () => {
