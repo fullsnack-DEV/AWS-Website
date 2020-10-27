@@ -39,6 +39,7 @@ import GroupMembersScreen from '../screens/account/groupConnections/GroupMembers
 import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
 import InviteMembersByEmailScreen from '../screens/account/groupConnections/InviteMembersByEmailScreen';
 import InviteMembersBySearchScreen from '../screens/account/groupConnections/InviteMemberBySearchScreen';
+import InvitationSentScreen from '../screens/account/groupConnections/InvitationSentScreen';
 import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
@@ -529,6 +530,11 @@ const AccountNavigator = () => (
             borderBottomWidth: 0.3,
           },
         } }
+      />
+    <Stack.Screen
+        name="InvitationSentScreen"
+        component={ InvitationSentScreen }
+        options={ { headerShown: false } }
       />
   </Stack.Navigator>
 );

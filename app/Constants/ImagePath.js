@@ -160,7 +160,11 @@ const images = {
   clubC: require('../assets/images/club_C.png'),
   editSection: require('../assets/images/ic_edit.png'),
   tagDivider: require('../assets/images/tag_divider.png'),
-
+  emailSent1: require('../assets/images/InvitationEmail1.png'),
+  emailSent2: require('../assets/images/InvitationEmail2.png'),
+  emailSent3: require('../assets/images/InvitationEmail3.png'),
+  emailSent4: require('../assets/images/InvitationEmail4.png'),
+  emailSent5: require('../assets/images/InvitationEmail5.png'),
 };
 
 export default images;

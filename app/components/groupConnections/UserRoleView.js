@@ -14,7 +14,7 @@ import TCUserRoleBadge from '../TCUserRoleBadge';
 import TCProfileButton from '../TCProfileButton';
 import TCMessageButton from '../TCMessageButton';
 
-export default function UserRoleView({ onPressProfile, onPressMessage }) {
+export default function UserRoleView({ data, onPressProfile, onPressMessage }) {
   return (
     <>
       <View style={styles.roleViewContainer}>
@@ -25,21 +25,21 @@ export default function UserRoleView({ onPressProfile, onPressMessage }) {
         }}>
           <View style={styles.topViewContainer}>
             <View style={styles.profileView}>
-              <Image source={ images.profilePlaceHolder } style={ styles.profileImage } />
+              <Image source={ data.thumbnail ? { uri: data.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
             </View>
             <View style={styles.topTextContainer}>
-              <Text style={styles.nameText} numberOfLines={1}>Neymar JR</Text>
+              <Text style={styles.nameText} numberOfLines={1}>{data.first_name} {data.last_name}</Text>
               <View style={{ flexDirection: 'row' }}>
-                <TCUserRoleBadge/>
-                <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>
-                <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>
+                {data.group_member_detail.is_admin && <TCUserRoleBadge title='Admin' titleColor={colors.themeColor}/>}
+                {data.group_member_detail.is_coach && <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>}
+                {data.group_member_detail.is_player && <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>}
               </View>
             </View>
           </View>
           <View>
             <View style={styles.bottomViewContainer}>
-              <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text>
-              <Text style={styles.awayStatusText} numberOfLines={1}>Injured, Long-term Away</Text>
+              {/* <Text style={styles.skillText} numberOfLines={2}>Forward, Midfielder, Goal Keeper</Text> */}
+              {data.group_member_detail.status && <Text style={styles.awayStatusText} numberOfLines={1}>{data.group_member_detail.status.join(', ')}</Text>}
             </View>
           </View>
         </View>
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
     width: 40,
+    borderRadius: 20,
   },
   roleViewContainer: {
     marginTop: 20,

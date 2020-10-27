@@ -2,41 +2,73 @@ import React, {
   useState, useLayoutEffect,
 } from 'react';
 import {
-  Text, View, StyleSheet, FlatList,
+  Text, View, StyleSheet, FlatList, Alert,
 } from 'react-native';
-
+import { sendInvitationInGroup } from '../../../api/Accountapi';
+import * as Utility from '../../../utils/index';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 
-const emailArray = [
-  {
-    id: 1,
-    email: '',
-  },
-];
-
 export default function InviteMembersByEmailScreen({ navigation }) {
-  const [emailIndex, setEmailIndex] = useState(2);
+  const [email, setEmail] = useState([{
+    id: 0,
+    email: '',
+  }]);
+
   const addEmail = () => {
-    setEmailIndex(emailIndex + 1);
-    emailArray.push({
-      id: emailIndex,
+    const obj = {
+      id: email.length === 0 ? 0 : email.length,
       email: '',
-    });
+    }
+    setEmail([...email, obj]);
   };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.sendButtonStyle} onPress={() => console.log('Sent invitation')}>Send</Text>
+        <Text style={styles.sendButtonStyle} onPress={() => sendInvitation()}>Send</Text>
       ),
     });
-  }, [navigation]);
-  const renderItemEmail = () => (
-    <TCTextField placeholder="E-mail Address" keyboardType="email-address" style={{ alignSelf: 'center', width: ('85%'), marginBottom: 10 }}/>
+  }, [navigation, email]);
+
+  const sendInvitation = async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+
+    const emails = email.map((i) => i.email);
+    console.log('Emails :', emails);
+    const obj = {
+      entity_type: entity.role,
+      emailIds: emails,
+      uid: entity.uid,
+    }
+    console.log('body params:', obj);
+    sendInvitationInGroup(obj).then(() => {
+      setEmail([{
+        id: 0,
+        email: '',
+      }]);
+      navigation.navigate('InvitationSentScreen');
+    })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
+
+  const renderItemEmail = ({ item, index }) => (
+    <TCTextField
+    placeholder="E-mail Address"
+    keyboardType="email-address"
+    value={item.email}
+    onChangeText={ (value) => {
+      const tempEmail = [...email];
+      tempEmail[index].email = value;
+      setEmail(tempEmail);
+      console.log('Emails :', email);
+    } }
+    style={{ alignSelf: 'center', width: ('85%'), marginBottom: 10 }}/>
   );
 
   return (
@@ -45,7 +77,7 @@ export default function InviteMembersByEmailScreen({ navigation }) {
         {strings.inviteEmailText}
       </Text>
       <FlatList
-                data={emailArray}
+                data={email}
                 renderItem={renderItemEmail}
                 keyExtractor={(item, index) => index.toString()}
                 extraData={this.state}
