@@ -21,31 +21,35 @@ function TCProfileImageControl({
   profileImageStyle,
   bgImageButtonStyle,
   profileImageButtonStyle,
+  showEditButtons = false,
 }) {
-  console.log(bgImage);
-  console.log(profileImage);
-  console.log(bgImagePlaceholder);
   return (
     <View style={{ flex: 1 }}>
       <View>
-        <Image style={[styles.bgImageStyle, bgImageStyle]} />
-        <TouchableOpacity
+        <Image style={[styles.bgImageStyle, bgImageStyle]}
+        source={ bgImage }
+        defaultSource={ bgImagePlaceholder } />
+        {showEditButtons && <TouchableOpacity
+        style={styles.bgCameraButtonStyle}
         onPress={ onPressBGImage }>
           <Image
-            style={[styles.bgCameraButtonStyle, bgImageButtonStyle]}
+            style={[styles.bgImageButtonStyle, bgImageButtonStyle]}
             source={ buttonImage }
             />
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>
-      <Image style={[styles.profileImageStyle, profileImageStyle]}
-      source={profileImagePlaceholder} />
-      <TouchableOpacity
+      <Image style={[styles.profileImageStyle, profileImageStyle,
+        { marginTop: showEditButtons ? -20 : -36 }]}
+      source={profileImage || profileImagePlaceholder}
+      defaultSource={ profileImagePlaceholder } />
+      {showEditButtons && <TouchableOpacity
+      style={styles.profileCameraButtonStyle}
         onPress={ onPressProfileImage }>
         <Image
-            style={ [styles.profileCameraButtonStyle, profileImageButtonStyle]}
+            style={ [styles.profileImageButtonStyle, profileImageButtonStyle]}
             source={ buttonImage }
             />
-      </TouchableOpacity>
+      </TouchableOpacity>}
     </View>
   );
 }
@@ -53,28 +57,40 @@ function TCProfileImageControl({
 const styles = StyleSheet.create({
   bgImageStyle: {
     flex: 1,
-    aspectRatio: 375 / 173,
+    aspectRatio: 375 / 147,
     backgroundColor: colors.grayBackgroundColor,
+    resizeMode: 'cover',
   },
   profileImageStyle: {
-    height: 82,
-    width: 82,
-    marginTop: -41,
-    marginLeft: 15,
-    borderRadius: 41,
+    height: 71,
+    width: 71,
+    marginTop: -36,
+    borderRadius: 35.5,
+    borderWidth: 2,
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
   },
   bgCameraButtonStyle: {
     height: 22,
     width: 22,
     alignSelf: 'flex-end',
-    marginEnd: 15,
+    marginEnd: 16,
     marginTop: -37,
+  },
+  bgImageButtonStyle: {
+    height: 22,
+    width: 22,
   },
   profileCameraButtonStyle: {
     height: 22,
     width: 22,
     marginTop: -22,
-    marginLeft: 72,
+    marginLeft: 48,
+    alignSelf: 'center',
+  },
+  profileImageButtonStyle: {
+    height: 22,
+    width: 22,
   },
 });
 

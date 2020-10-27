@@ -15,6 +15,7 @@ module.exports = {
     },
   },
   rules: {
+    'prefer-destructuring':0,
     'no-use-before-define': [
       'error',
       {functions: true, classes: true, variables: false},
