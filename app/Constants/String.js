@@ -211,10 +211,15 @@ const strings = {
   enterFirstNamePlaceholder: 'Enter First Name',
   enterLastNamePlaceholder: 'Enter Last Name',
   enterBioPlaceholder: 'Enter Your Biography',
+
+  inviteEmailText: 'Please enter the e-mail account of the person that you want to invite.',
+  inviteSearchText: 'Who do you want to invite to your team?',
+  addEmailText: '+ Add E-Mail',
   camera: 'Camera',
   album: 'Album',
   editprofiletitle: 'Edit Profile',
   slogan: 'Slogan',
   enterSloganPlaceholder: 'Enter Your Slogan',
+
 };
 export default strings;
