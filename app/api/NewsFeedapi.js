@@ -7,12 +7,6 @@ export const getNewsFeed = async () => makeAPIRequest({
   url: Config.BASE_URL + api.newsFeed.getNewsFeed,
 })
 
-export const getUserPosts = async (params) => makeAPIRequest({
-  method: 'get',
-  url: Config.BASE_URL + api.newsFeed.getUserPosts,
-  params,
-});
-
 export const getReactions = async (params) => makeAPIRequest({
   method: 'get',
   url: Config.BASE_URL + api.newsFeed.getReaction,

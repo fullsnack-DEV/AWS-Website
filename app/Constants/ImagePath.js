@@ -87,6 +87,7 @@ const images = {
   noImagePH: require('../assets/images/no_image.png'),
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
+  plus: require('../assets/images/plus.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
   dotImage: require('../assets/images/ic_dot.png'),

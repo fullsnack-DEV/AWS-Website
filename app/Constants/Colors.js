@@ -6,6 +6,7 @@ const colors = {
   kHexColorFF8A01: '#FF8A01',
   kHexColor35B9A8: '#35B9A8',
   themeColor: '#FF8A01',
+  activeIndexColor: '#ff9628',
   whiteColor: '#FFFFFF',
   parrotColor: '#E8FFB4',
   fbTextColor: '#4574DB',

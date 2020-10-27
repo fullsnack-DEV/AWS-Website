@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -35,15 +35,31 @@ function NewsFeedPostItems({
   caller_id,
   onDeletePost,
 }) {
-  const actionSheet = useRef();
-  let like = false;
-  let filterLike = [];
-  if (item.own_reactions && item.own_reactions.clap) {
-    filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
-    if (filterLike.length > 0) {
-      like = true;
+  const [like, setLike] = useState(() => {
+    let filterLike = [];
+    if (item.own_reactions && item.own_reactions.clap) {
+      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
+      if (filterLike.length > 0) {
+        return true;
+      }
+      return false;
     }
-  }
+    return false;
+  });
+  const [likeCount, setLikeCount] = useState(() => {
+    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
+      return item.reaction_counts.clap;
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
+      setLikeCount(item.reaction_counts.clap);
+    }
+  }, [item]);
+  const actionSheet = useRef();
+  // let like = false;
 
   let userImage = '';
   if (item.actor && item.actor.data) {
@@ -223,11 +239,19 @@ function NewsFeedPostItems({
                     color: like === true ? '#FF8A01' : colors.reactionCountColor,
                   },
                 ]}>
-                {item.reaction_counts.clap > 0 ? item.reaction_counts.clap : ''}
+                {likeCount === 0 ? '' : likeCount}
               </Text>
             )}
             <TouchableOpacity
-              onPress={onLikePress}
+              onPress={() => {
+                setLike(!like);
+                if (like) {
+                  setLikeCount(likeCount - 1);
+                } else {
+                  setLikeCount(likeCount + 1);
+                }
+                onLikePress()
+              }}
               style={styles.imageTouchStyle}>
               {like === true ? (
                 <Image
