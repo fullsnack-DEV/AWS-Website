@@ -21,7 +21,12 @@ const api = {
   // Search Constants
   search: {},
   // Home Constants
-  home: {},
+  home: {
+    getUserPosts: 'posts',
+    getCurrentUser: 'users/',
+    players: 'players/',
+    gallery: '/gallery',
+  },
   // Notification Constants
   notification: {},
   // Account Constants

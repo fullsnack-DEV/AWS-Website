@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import React, { useEffect, useState } from 'react';
 import { View, FlatList, Alert } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -14,6 +15,19 @@ export default function NewsFeedList({
   const [pullRefresh, setPullRefresh] = useState(false);
   const [data, setData] = useState(postData);
   const [loading, setloading] = useState(false);
+  const [userID, setUserID] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const currentUserID = await AsyncStorage.getItem('CurrentUserId');
+      if (currentUserID) {
+        setUserID(currentUserID);
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <View>
@@ -43,6 +57,7 @@ export default function NewsFeedList({
             key={key}
             item={item}
             navigation={navigation}
+            caller_id={userID}
             onLikePress={() => {
               const bodyParams = {
                 reaction_type: 'clap',

@@ -91,7 +91,7 @@ export default function SignupScreen({ navigation }) {
 
     return false;
   };
-  const saveUserDetails = async () => auth().onAuthStateChanged((user) => {
+  const saveUserDetails = async () => auth().onAuthStateChanged(async (user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {

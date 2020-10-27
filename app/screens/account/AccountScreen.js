@@ -212,6 +212,7 @@ export default function AccountScreen({ navigation }) {
     });
   };
   const switchProfile = async ({ item }) => {
+    console.log('Item :-', item);
     setloading(true);
     let currentEntity = await Utility.getStorage('loggedInEntity');
     if (item.entity_type === 'player') {

@@ -23,11 +23,43 @@ function BackgroundProfile({
   profileImageStyle,
   bgImageButtonStyle,
   profileImageButtonStyle,
+  currentUserData,
 }) {
+  let bgImage = '';
+  if (currentUserData && currentUserData.background_full_image) {
+    bgImage = currentUserData.background_full_image;
+  }
+  let profileImage = '';
+  if (currentUserData && currentUserData.full_image) {
+    profileImage = currentUserData.full_image;
+  }
+  let followingsCounter = '';
+  if (currentUserData && currentUserData.following_count) {
+    followingsCounter = currentUserData.following_count;
+  }
+  let followersCounter = '';
+  if (currentUserData && currentUserData.follower_count) {
+    followersCounter = currentUserData.follower_count;
+  }
+  let fullName = '';
+  if (currentUserData && currentUserData.full_name) {
+    fullName = currentUserData.full_name;
+  }
+  let city = '';
+  let country = '';
+  if (currentUserData) {
+    if (currentUserData.city) {
+      city = currentUserData.city;
+    }
+    if (currentUserData.country) {
+      country = currentUserData.country;
+    }
+  }
+
   return (
     <View>
       <View>
-        <Image style={[styles.bgImageStyle, bgImageStyle]} />
+        <Image source={{ uri: bgImage }} style={[styles.bgImageStyle, bgImageStyle]} />
         <TouchableOpacity
         onPress={ onPressBGImage }>
           <Image
@@ -40,12 +72,12 @@ function BackgroundProfile({
         safeAreaStyle={{ position: 'absolute' }}
         leftComponent={
           <TouchableOpacity>
-            <Image source={images.backArrow} style={{ height: 22, width: 16 }} />
+            <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
           </TouchableOpacity>
         }
         rightComponent={
           <TouchableOpacity>
-            <Image source={images.menu} style={{ height: 22, width: 22 }} />
+            <Image source={images.menu} style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
           </TouchableOpacity>
         }
       />
@@ -53,17 +85,17 @@ function BackgroundProfile({
         <View style={styles.followingMainViewStyle}>
           <View style={styles.followingViewStyle}>
             <Text style={styles.followingTextStyle}>Following</Text>
-            <Text style={styles.followingLengthText}>365</Text>
+            <Text style={styles.followingLengthText}>{followingsCounter}</Text>
           </View>
           <View style={styles.followingSepratorView} />
           <View style={styles.followingViewStyle}>
             <Text style={styles.followingTextStyle}>Followers</Text>
-            <Text style={styles.followingLengthText}>365</Text>
+            <Text style={styles.followingLengthText}>{followersCounter}</Text>
           </View>
         </View>
       </View>
       <Image style={[styles.profileImageStyle, profileImageStyle]}
-        source={profileImagePlaceholder} />
+        source={profileImage ? { uri: profileImage } : profileImagePlaceholder} />
       <TouchableOpacity
         onPress={ onPressProfileImage }>
         <Image
@@ -72,8 +104,8 @@ function BackgroundProfile({
             />
       </TouchableOpacity>
       <View style={styles.userViewStyle}>
-        <Text style={styles.userTextStyle}>Christiano Ronaldo</Text>
-        <Text style={styles.cityTextStyle}>Vancouver, British Columbia</Text>
+        <Text style={styles.userTextStyle}>{fullName}</Text>
+        <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
       </View>
     </View>
   );

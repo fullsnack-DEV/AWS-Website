@@ -42,6 +42,7 @@ export default function FeedsScreen({ navigation, route }) {
           createPost(data)
             .then(() => getNewsFeed())
             .then((response) => {
+              navigation.setParams({ data: null, postDescriptions: '' })
               setPostData(response.payload.results)
               setProgressBar(false);
             })
