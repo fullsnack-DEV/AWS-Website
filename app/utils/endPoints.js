@@ -39,7 +39,9 @@ const api = {
     teamsByClub: '/teams',
     followers: '/followers',
     members: '/members',
+    memberInfo: '/members/',
     sendInvitation: 'users/invite',
+    connectMember: '/connect',
   },
   reservation: {
     reservationList: 'reservations?referenceObject=true',

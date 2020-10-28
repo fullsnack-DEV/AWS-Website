@@ -51,6 +51,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'MembersProfileScreen'
     || routeName === 'TagUserScreen'
     || routeName === 'InvitationSentScreen'
+
   ) {
     return false;
   }

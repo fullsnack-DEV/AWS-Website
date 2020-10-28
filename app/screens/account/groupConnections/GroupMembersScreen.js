@@ -12,6 +12,8 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+
 import ActionSheet from 'react-native-actionsheet';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
@@ -27,7 +29,7 @@ import {
   getFollowersList, getMembersList,
 } from '../../../api/Accountapi';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import * as Utility from '../../../utils/index';
+
 import images from '../../../Constants/ImagePath'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
@@ -83,12 +85,13 @@ const filterArray = [
     ],
   },
 ]
-export default function GroupMembersScreen({ navigation }) {
+export default function GroupMembersScreen({ navigation, route }) {
   const actionSheet = useRef();
+  const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(true);
   const actionSheetInvite = useRef();
-  const [searchText, setSearchText] = useState('');
+  const [searchMember, setSearchMember] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [allSelected, setAllSelected] = useState(false);
   const [filter, setFilter] = useState([filterArray]);
@@ -98,11 +101,10 @@ export default function GroupMembersScreen({ navigation }) {
   useEffect(() => {
     getFollowers()
     getMembers()
-  }, [])
+  }, [isFocused])
 
   const getFollowers = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    getFollowersList(entity.uid)
+    getFollowersList(route.params.groupID)
       .then((response) => {
         setFollowers(response.payload)
 
@@ -113,11 +115,10 @@ export default function GroupMembersScreen({ navigation }) {
       });
   }
   const getMembers = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    getMembersList(entity.uid)
+    getMembersList(route.params.groupID)
       .then((response) => {
         setMembers(response.payload)
-
+        setSearchMember(response.payload)
         setloading(false);
       })
       .catch((e) => {
@@ -163,6 +164,12 @@ export default function GroupMembersScreen({ navigation }) {
     ))
     setFilter(arr);
   }
+  const searchFilterFunction = (text) => {
+    const result = searchMember.filter(
+      (x) => x.first_name.includes(text) || x.last_name.includes(text),
+    );
+    setMembers(result);
+  };
   const renderFilterItem = ({ item, index }) => (
     <TouchableWithoutFeedback onPress={() => {
       isIconCheckedOrNot({ item, index });
@@ -188,7 +195,7 @@ export default function GroupMembersScreen({ navigation }) {
       <TCScrollableTabs>
         <View tabLabel='Members' style={{ flex: 1 }}>
           <View style={styles.searchBarView}>
-            <TCSearchBox value={searchText} onChangeText={(text) => setSearchText(text)}/>
+            <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) }/>
             <TouchableWithoutFeedback onPress={() => toggleModal()}>
               <Image source={ images.filterIcon } style={ styles.filterImage } />
             </TouchableWithoutFeedback>
@@ -196,7 +203,7 @@ export default function GroupMembersScreen({ navigation }) {
 
           {members.length > 0 ? <FlatList
                   data={members}
-                  renderItem={({ item }) => <UserRoleView data = {item} onPressProfile = {() => navigation.navigate('MembersProfileScreen')}/>}
+                  renderItem={({ item }) => <UserRoleView data = {item} onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}/>}
                   keyExtractor={(item, index) => index.toString()}
                   /> : <TCNoDataView title={'No Members Found'}/>}
 
@@ -228,7 +235,7 @@ export default function GroupMembersScreen({ navigation }) {
                   } else if (index === 3) {
                     console.log('Pressed sheet :', index);
                   } else if (index === 4) {
-                    console.log('Pressed sheet :', index);
+                    navigation.navigate('MembersViewPrivacyScreen');
                   } else if (index === 5) {
                     console.log('Pressed sheet :', index);
                   }

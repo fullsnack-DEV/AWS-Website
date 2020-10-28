@@ -38,7 +38,6 @@ export default function InviteMembersByEmailScreen({ navigation }) {
     const entity = await Utility.getStorage('loggedInEntity');
 
     const emails = email.map((i) => i.email);
-    console.log('Emails :', emails);
     const obj = {
       entity_type: entity.role,
       emailIds: emails,

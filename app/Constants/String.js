@@ -207,7 +207,10 @@ const strings = {
   noReservationFountText: 'No Reservations Found',
   // member connection
   connectAccountText: 'Invite or Connect Account',
-
+  connectProfile: 'Connect the profile to this account',
+  sendInvite: 'Send invitation to this e-mail account',
+  createOtherProfile: 'Create another member profile',
+  goToMemberProfile: 'GO TO MEMBERS',
   enterFirstNamePlaceholder: 'Enter First Name',
   enterLastNamePlaceholder: 'Enter Last Name',
   enterBioPlaceholder: 'Enter Your Biography',
@@ -221,6 +224,6 @@ const strings = {
   slogan: 'Slogan',
   enterSloganPlaceholder: 'Enter Your Slogan',
   invitationSent: 'Invitation sent',
-
+  userNotFoundByEmail: 'We didn’t find a user whose e-mail account is',
 };
 export default strings;

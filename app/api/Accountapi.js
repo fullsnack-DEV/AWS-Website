@@ -81,3 +81,17 @@ export const sendInvitationInGroup = async (params) => makeAPIRequest({
       + api.account.sendInvitation,
   data: params,
 })
+
+export const getMembersInfo = async (groupID, memberID) => makeAPIRequest({
+  method: 'get',
+  url:
+      Config.BASE_URL
+      + api.account.parentClubDetail + groupID + api.account.memberInfo + memberID,
+})
+
+export const connectProfile = async (groupID, memberID) => makeAPIRequest({
+  method: 'post',
+  url:
+      Config.BASE_URL
+      + api.account.parentClubDetail + groupID + api.account.memberInfo + memberID + api.account.connectMember,
+})

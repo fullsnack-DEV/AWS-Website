@@ -14,7 +14,7 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCProfileView({
-  image = images.profilePlaceHolder, name = 'Neymar JR', location = 'Vancouver, BC', type = 'large', ...Props
+  image = images.profilePlaceHolder, name = 'Neymar JR', location = 'Vancouver, BC', type = 'large', color = colors.lightBlackColor, ...Props
 }) {
   return (
 
@@ -23,9 +23,9 @@ export default function TCProfileView({
         <Image source={ image } style={ styles.profileImage } />
       </View>
       <View style={styles.topTextContainer}>
-        {type === 'medium' && <Text style={styles.mediumNameText} numberOfLines={1}>{name}</Text>}
-        {type === 'large' && <Text style={styles.nameText} numberOfLines={1}>{name}</Text>}
-        <Text style={styles.locationText} numberOfLines={1}>{location}</Text>
+        {type === 'medium' && <Text style={[styles.mediumNameText, { color }]} numberOfLines={1}>{name}</Text>}
+        {type === 'large' && <Text style={[styles.nameText, { color }]} numberOfLines={1}>{name}</Text>}
+        <Text style={[styles.locationText, { color }]} numberOfLines={1}>{location}</Text>
       </View>
     </View>
 
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
     width: 40,
-    borderRadius: 20,
+    borderRadius: 80,
   },
 
   topViewContainer: {
@@ -63,17 +63,14 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: 20,
-    color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
   },
   mediumNameText: {
     fontSize: 16,
-    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
   },
   locationText: {
     fontSize: 14,
-    color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
   },
 
