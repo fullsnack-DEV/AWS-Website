@@ -401,7 +401,8 @@ export default function AccountScreen({ navigation }) {
         });
       }
     } else if (section === 'Members') {
-      navigation.navigate('GroupMembersScreen');
+      const entity = await Utility.getStorage('loggedInEntity');
+      navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     }
   };
 

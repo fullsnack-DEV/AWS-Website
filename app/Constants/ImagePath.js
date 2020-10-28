@@ -160,6 +160,7 @@ const images = {
   clubC: require('../assets/images/club_C.png'),
   editSection: require('../assets/images/ic_edit.png'),
   tagDivider: require('../assets/images/tag_divider.png'),
+  chain: require('../assets/images/chain.png'),
   emailSent1: require('../assets/images/InvitationEmail1.png'),
   emailSent2: require('../assets/images/InvitationEmail2.png'),
   emailSent3: require('../assets/images/InvitationEmail3.png'),

@@ -40,6 +40,11 @@ import MembersProfileScreen from '../screens/account/groupConnections/MembersPro
 import InviteMembersByEmailScreen from '../screens/account/groupConnections/InviteMembersByEmailScreen';
 import InviteMembersBySearchScreen from '../screens/account/groupConnections/InviteMemberBySearchScreen';
 import InvitationSentScreen from '../screens/account/groupConnections/InvitationSentScreen';
+import UserNotFoundScreen from '../screens/account/groupConnections/UserNotFoundScreen';
+import MemberProfileCreatedScreen from '../screens/account/groupConnections/MemberProfileCreatedScreen';
+import UserFoundScreen from '../screens/account/groupConnections/UserFoundScreen';
+import MembersViewPrivacyScreen from '../screens/account/groupConnections/MembersViewPrivacyScreen';
+
 import colors from '../Constants/Colors'
 
 const Stack = createStackNavigator();
@@ -535,6 +540,49 @@ const AccountNavigator = () => (
         name="InvitationSentScreen"
         component={ InvitationSentScreen }
         options={ { headerShown: false } }
+      />
+    <Stack.Screen
+        name="UserNotFoundScreen"
+        component={ UserNotFoundScreen }
+        options={ {
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
+        } }
+      />
+    <Stack.Screen
+        name="MemberProfileCreatedScreen"
+        component={ MemberProfileCreatedScreen }
+        options={ {
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
+        } }
+      />
+    <Stack.Screen
+        name="UserFoundScreen"
+        component={ UserFoundScreen }
+        options={ {
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
+        } }
+      />
+    <Stack.Screen
+        name="MembersViewPrivacyScreen"
+        component={ MembersViewPrivacyScreen }
+        options={ {
+          title: 'View Privacy',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
       />
   </Stack.Navigator>
 );

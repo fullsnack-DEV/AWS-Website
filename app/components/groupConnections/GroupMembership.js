@@ -6,7 +6,7 @@ import {
   View,
   StyleSheet,
   Image,
-
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import images from '../../Constants/ImagePath'
@@ -18,31 +18,36 @@ import TCThinDivider from '../TCThinDivider';
 import TCUserRoleBadge from '../TCUserRoleBadge';
 import TCGroupNameBadge from '../TCGroupNameBadge';
 
-export default function GroupMembership() {
+export default function GroupMembership({ groupData, switchID, edit = false }) {
   return (
     <>
 
       <View style={styles.topViewContainer}>
-        <View style={styles.profileView}>
-          <Image source={ images.profilePlaceHolder } style={ styles.profileImage } />
-        </View>
-        <View style={styles.topTextContainer}>
-          <TCGroupNameBadge/>
-          <View style={{ flexDirection: 'row' }}>
-            <TCUserRoleBadge/>
-            <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>
-            <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={styles.profileView}>
+            <Image source={groupData.thumbnail ? { uri: groupData.thumbnail } : images.profilePlaceHolder } style={ styles.profileImage } />
+          </View>
+          <View style={styles.topTextContainer}>
+            <TCGroupNameBadge name={groupData.group_name} groupType={groupData.entity_type}/>
+            <View style={{ flexDirection: 'row' }}>
+              {groupData.is_admin && <TCUserRoleBadge title='Admin' titleColor={colors.themeColor}/>}
+              {groupData.is_coach && <TCUserRoleBadge title='Coach' titleColor={colors.greeColor}/>}
+              {groupData.is_player && <TCUserRoleBadge title='Player' titleColor={colors.playerBadgeColor}/>}
+            </View>
           </View>
         </View>
+        {edit || groupData.group_id === switchID ? <TouchableWithoutFeedback>
+          <Image source={ images.editSection } style={ styles.editImage } />
+        </TouchableWithoutFeedback> : null}
       </View>
-      <TCInfoField title={'Position'} value={'Forward'} marginLeft={25} marginTop={30}/>
-      <TCInfoField title={'Jersey Number'} value={'11'} marginLeft={25} />
-      <TCInfoField title={'Appearance'} value={'21 games'} marginLeft={25} />
-      <TCInfoField title={'Status'} value={'Injured Long-term Away'} marginLeft={25} color={colors.themeColor}/>
-      <Text style={styles.groupDescriptionText}>Association football, more commonly known
-        as foot ball or soccer team, is a team sports
-        played between two teams of eleven player
-      </Text>
+      {groupData.entity_type === 'team' && <>
+        <TCInfoField title={'Position'} value={groupData.positions ? groupData.positions.join(', ') : 'N/A'} marginLeft={25} marginTop={30}/>
+        <TCInfoField title={'Jersey Number'} value={groupData.jersey_number ? groupData.jersey_number : 'N/A'} marginLeft={25} />
+        <TCInfoField title={'Appearance'} value={groupData.appearance ? groupData.appearance : 'N/A'} marginLeft={25} />
+        <TCInfoField title={'Status'} value={groupData.status ? groupData.status.join(', ') : 'N/A'} marginLeft={25} color={colors.themeColor}/>
+      </>}
+      {groupData.note && <Text style={styles.groupDescriptionText}>{groupData.note}
+      </Text>}
       <TCThinDivider marginTop={20} width={'100%'}/>
     </>
   );
@@ -87,14 +92,18 @@ const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
     height: 40,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 40,
+    borderRadius: 80,
   },
 
   topViewContainer: {
     flexDirection: 'row',
     marginTop: 10,
     marginLeft: 20,
+    marginRight: 20,
+    justifyContent: 'space-between',
+
   },
   profileView: {
     backgroundColor: colors.whiteColor,
@@ -113,6 +122,7 @@ const styles = StyleSheet.create({
 
     marginLeft: 10,
     alignSelf: 'center',
+
   },
   groupDescriptionText: {
     marginTop: 10,
@@ -121,5 +131,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
+  },
+  editImage: {
+    alignSelf: 'center',
+    height: 18,
+    resizeMode: 'contain',
+    width: 18,
   },
 });

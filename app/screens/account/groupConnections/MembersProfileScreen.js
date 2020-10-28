@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect,
+  useLayoutEffect, useEffect, useState,
 } from 'react';
 import {
   Text,
@@ -9,8 +9,13 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
+  Alert,
+  FlatList,
 } from 'react-native';
 
+import { getMembersInfo } from '../../../api/Accountapi';
+import * as Utility from '../../../utils/index';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
@@ -23,8 +28,21 @@ import TCMessageButton from '../../../components/TCMessageButton';
 import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
 
-export default function MembersProfileScreen({ navigation }) {
+let entity = {};
+export default function MembersProfileScreen({ navigation, route }) {
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+    'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+  const [loading, setloading] = useState(true);
   // const [editable, setEditable] = useState(true);
+  const [editProfile, setEditProfile] = useState(false);
+  const [editBasicInfo, setEditBasicInfo] = useState(false);
+  const [editTeam, setEditTeam] = useState(false);
+  const [memberDetail, setMemberDetail] = useState({});
+
+  useEffect(() => {
+    getMemberInformation()
+  }, [])
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -35,19 +53,58 @@ export default function MembersProfileScreen({ navigation }) {
       ),
     });
   }, [navigation]);
+  const getAge = (dateString) => {
+    const today = new Date();
+    const birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age -= 1;
+    }
+    return age;
+  }
+  const getMemberInformation = async () => {
+    entity = await Utility.getStorage('loggedInEntity');
+    // Seeting of Edit option
+    if (entity.role === 'club') {
+      setEditProfile(true)
+      setEditBasicInfo(true)
+      setEditTeam(true)
+    } else if (route.params.whoSeeID === entity.uid) {
+      setEditProfile(true)
+      setEditBasicInfo(true)
+    }
+
+    getMembersInfo(route.params.groupID, route.params.memberID).then((response) => {
+      if (response.status) {
+        setMemberDetail(response.payload);
+        setloading(false)
+      }
+    })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
   return (
     <SafeAreaView>
+      <ActivityLoader visible={loading} />
       <ScrollView>
         <View style={styles.roleViewContainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-            <TCProfileView/>
-            <TouchableWithoutFeedback>
+            <TCProfileView image={memberDetail.thumbnail ? { uri: memberDetail.thumbnail } : images.profilePlaceHolder} name={`${memberDetail.first_name} ${memberDetail.last_name}`} location={`${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
+            {editProfile && <TouchableWithoutFeedback>
               <Image source={ images.editSection } style={ styles.editImage } />
-            </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>}
           </View>
           <Text style={styles.undatedTimeText} numberOfLines={2}>Joined club on May 9, 2019
             {'\n'}Last updated by Neymar JR on May 9, 2019</Text>
-          <TCBorderButton title={strings.connectAccountText} marginTop={20}/>
+          <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
+            if (memberDetail.connected) {
+              navigation.navigate('UserFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
+            } else {
+              navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
+            }
+          }}/>
 
         </View>
         <TCThickDivider marginTop={20}/>
@@ -55,48 +112,50 @@ export default function MembersProfileScreen({ navigation }) {
 
           <View style={styles.sectionEditView}>
             <Text style={styles.basicInfoTitle}>Basic Info</Text>
-            <TouchableWithoutFeedback>
+            {editBasicInfo && <TouchableWithoutFeedback>
               <Image source={ images.editSection } style={ styles.editImage } />
-            </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>}
           </View>
-          <TCInfoField title={'E-mail'} value={'van@whitecaps.com'}/>
-          <TCInfoField title={'Phone'} value={'+1 (778) 123-4567'}/>
-          <TCInfoField title={'Address'} value={'100 E Broadway, Vancouver, BC, Canada'}/>
-          <TCInfoField title={'Age'} value={'35'}/>
-          <TCInfoField title={'Birthday'} value={'Nov 27, 1988'}/>
-          <TCInfoField title={'Gender'} value={'Male'}/>
+          <TCInfoField title={'E-mail'} value={memberDetail.email ? memberDetail.email : 'N/A'}/>
+          <TCInfoField title={'Phone'} value={memberDetail.phone_numbers ? `${memberDetail.phone_numbers[0].country_code} ${memberDetail.phone_numbers[0].phone_number}` : 'N/A'}/>
+          <TCInfoField title={'Address'} value={memberDetail.street_address ? `${memberDetail.street_address}, ${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}` : `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
+          <TCInfoField title={'Age'} value={getAge(new Date(memberDetail.birthday * 1000))}/>
+          <TCInfoField title={'Birthday'} value={`${monthNames[new Date(memberDetail.birthday * 1000).getMonth()]} ${new Date(memberDetail.birthday * 1000).getDate()} ,${new Date(memberDetail.birthday * 1000).getFullYear()}`}/>
+          <TCInfoField title={'Gender'} value={memberDetail.gender ? memberDetail.gender : 'N/A'}/>
         </View>
         <TCThickDivider marginTop={20}/>
-        <View>
-          <View style={styles.sectionEditView}>
-            <Text style={styles.basicInfoTitle}>Family</Text>
-            <TouchableWithoutFeedback>
-              <Image source={ images.editSection } style={ styles.editImage } />
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.familyView}>
-            <TCProfileView type={'medium'} />
-            <TCMessageButton />
-          </View>
-          <TCThinDivider/>
-          <View style={styles.familyView}>
-            <TCProfileView type={'medium'} />
-            <TCMessageButton title={'Email'} color={colors.googleColor}/>
+        {memberDetail.family && <>
+          <View>
+            <View style={styles.sectionEditView}>
+              <Text style={styles.basicInfoTitle}>Family</Text>
+              <TouchableWithoutFeedback>
+                <Image source={ images.editSection } style={ styles.editImage } />
+              </TouchableWithoutFeedback>
+            </View>
+            <View style={styles.familyView}>
+              <TCProfileView type={'medium'} />
+              <TCMessageButton title={'Email'} color={colors.googleColor}/>
 
+            </View>
+            <TCThinDivider/>
+            <View style={styles.familyView}>
+              <TCProfileView type={'medium'} />
+              <TCMessageButton />
+            </View>
           </View>
-          <TCThinDivider/>
-          <View style={styles.familyView}>
-            <TCProfileView type={'medium'} />
-            <TCMessageButton />
-          </View>
-        </View>
-        <TCThickDivider marginTop={20}/>
+          <TCThickDivider marginTop={20}/>
+        </>}
         <View>
           <View style={styles.sectionEditView}>
             <Text style={styles.basicInfoTitle}>Membership</Text>
           </View>
-          <GroupMembership/>
-          <GroupMembership/>
+          {memberDetail.group && <GroupMembership groupData = {memberDetail.group} switchID={entity.uid} edit={editTeam}/>}
+          <FlatList
+                  data={memberDetail.teams}
+                  renderItem={({ item }) => <GroupMembership groupData = {item} switchID={entity.uid} edit={editTeam}/>}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
+                  />
 
         </View>
         <TCThickDivider marginTop={20}/>
