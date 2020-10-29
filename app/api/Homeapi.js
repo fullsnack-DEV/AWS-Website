@@ -13,6 +13,11 @@ export const getUserDetails = async (userID) => makeAPIRequest({
   url: Config.BASE_URL + api.home.getCurrentUser + userID,
 });
 
+export const getUserClubDetails = async (userID) => makeAPIRequest({
+  method: 'get',
+  url: Config.BASE_URL + api.home.getCurrentClubUser + userID,
+});
+
 export const getGallery = async (userID) => makeAPIRequest({
   method: 'get',
   url: Config.BASE_URL + api.home.players + userID + api.home.gallery,
