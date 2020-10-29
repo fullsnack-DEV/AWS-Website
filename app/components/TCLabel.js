@@ -6,10 +6,12 @@ import {
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
+import strings from '../Constants/String';
 
 function TCLabel({
   title,
   style,
+  required = false,
   ...otherProps
 }) {
   return (
@@ -17,7 +19,7 @@ function TCLabel({
       style={ [styles.labelText, style] }
       { ...otherProps }
     >
-      { title }
+      { title }{required && <Text style={ styles.mendatory }> {strings.star}</Text>}
     </Text>
   );
 }
@@ -31,6 +33,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'left',
     fontFamily: fonts.RRegular,
+  },
+  mendatory: {
+    color: 'red',
   },
 });
 

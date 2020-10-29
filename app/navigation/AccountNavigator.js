@@ -44,6 +44,10 @@ import UserNotFoundScreen from '../screens/account/groupConnections/UserNotFound
 import MemberProfileCreatedScreen from '../screens/account/groupConnections/MemberProfileCreatedScreen';
 import UserFoundScreen from '../screens/account/groupConnections/UserFoundScreen';
 import MembersViewPrivacyScreen from '../screens/account/groupConnections/MembersViewPrivacyScreen';
+import CreateMemberProfileForm1 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileForm1';
+import CreateMemberProfileTeamForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm2';
+import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm2';
+import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
 
 import colors from '../Constants/Colors'
 
@@ -573,6 +577,70 @@ const AccountNavigator = () => (
         component={ MembersViewPrivacyScreen }
         options={ {
           title: 'View Privacy',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateMemberProfileForm1"
+        component={ CreateMemberProfileForm1 }
+        options={ {
+          title: 'Create Member Profile',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateMemberProfileTeamForm2"
+        component={ CreateMemberProfileTeamForm2 }
+        options={ {
+          title: 'Create Member Profile',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateMemberProfileClubForm2"
+        component={ CreateMemberProfileClubForm2 }
+        options={ {
+          title: 'Create Member Profile',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateMemberProfileClubForm3"
+        component={ CreateMemberProfileClubForm3 }
+        options={ {
+          title: 'Create Member Profile',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

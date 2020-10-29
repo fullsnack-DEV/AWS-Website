@@ -166,6 +166,10 @@ const images = {
   emailSent3: require('../assets/images/InvitationEmail3.png'),
   emailSent4: require('../assets/images/InvitationEmail4.png'),
   emailSent5: require('../assets/images/InvitationEmail5.png'),
+
+  // create member profile
+  checkGreenBG: require('../assets/images/check_green_bg.png'),
+
 };
 
 export default images;

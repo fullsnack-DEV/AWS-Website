@@ -222,7 +222,7 @@ export default function AccountScreen({ navigation }) {
         setGroupList([...club, ...team]);
       }
       currentEntity = {
-        ...currentEntity, uid: item.group_id, role: 'team', obj: item,
+        ...currentEntity, uid: item.group_id, role: 'user', obj: item,
       }
       setParentGroup(null);
       await Utility.setStorage('loggedInEntity', currentEntity);
@@ -394,6 +394,7 @@ export default function AccountScreen({ navigation }) {
     } else if (section === 'Setting & Privacy') {
       const entity = await Utility.getStorage('loggedInEntity');
       if (entity.role === 'user') {
+        console.log('GO to UserSettingPrivacyScreen')
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
         navigation.navigate('GroupSettingPrivacyScreen', {
