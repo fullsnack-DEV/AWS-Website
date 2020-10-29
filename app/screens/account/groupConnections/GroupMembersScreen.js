@@ -227,11 +227,11 @@ export default function GroupMembersScreen({ navigation, route }) {
                 // destructiveButtonIndex={1}
                 onPress={(index) => {
                   if (index === 0) {
-                    navigation.navigate('InvitationSentScreen');
+                    // navigation.navigate('InvitationSentScreen');
                   } else if (index === 1) {
                     actionSheetInvite.current.show();
                   } else if (index === 2) {
-                    console.log('Pressed sheet :', index);
+                    navigation.navigate('CreateMemberProfileForm1');
                   } else if (index === 3) {
                     console.log('Pressed sheet :', index);
                   } else if (index === 4) {

@@ -187,6 +187,7 @@ export default function RegisterPlayer({ navigation }) {
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.5,
             shadowRadius: 5,
+            elevation: 15,
           } }>
             <Text
             style={ {

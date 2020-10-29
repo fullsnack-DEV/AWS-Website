@@ -16,16 +16,19 @@ function TCTextField({
   keyboardType = 'default',
   style,
   textStyle,
+  height = 40,
+  multiline = false,
   ...otherProps
 }) {
   return (
-    <View style={[styles.textContainer, style]}>
+    <View style={[styles.textContainer, style, { height }]}>
       <TextInput
-        style={ [styles.textInput, textStyle] }
+        style={ [styles.textInput, textStyle, { height }] }
         placeholder={ placeholder }
         placeholderTextColor={ placeholderTextColor }
         secureTextEntry={ secureText }
         keyboardType={ keyboardType }
+        multiline={multiline}
         { ...otherProps }
     />
     </View>
@@ -34,7 +37,7 @@ function TCTextField({
 
 const styles = StyleSheet.create({
   textContainer: {
-    height: 40,
+
     marginHorizontal: 15,
     backgroundColor: colors.offwhite,
     borderRadius: 5,

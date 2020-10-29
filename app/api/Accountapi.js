@@ -95,3 +95,11 @@ export const connectProfile = async (groupID, memberID) => makeAPIRequest({
       Config.BASE_URL
       + api.account.parentClubDetail + groupID + api.account.memberInfo + memberID + api.account.connectMember,
 })
+
+export const createMemberProfile = async (groupID, params) => makeAPIRequest({
+  method: 'post',
+  url:
+      Config.BASE_URL
+      + api.account.parentClubDetail + groupID + api.account.createMemberProfile,
+  data: params,
+})

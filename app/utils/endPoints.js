@@ -40,6 +40,7 @@ const api = {
     followers: '/followers',
     members: '/members',
     memberInfo: '/members/',
+    createMemberProfile: '/members',
     sendInvitation: 'users/invite',
     connectMember: '/connect',
   },
