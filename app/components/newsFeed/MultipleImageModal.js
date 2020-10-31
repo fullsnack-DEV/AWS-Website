@@ -12,6 +12,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Carousel from 'react-native-snap-carousel';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -23,19 +24,8 @@ export default function MultipleImageModal({ backBtnPress, attachedImages }) {
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.blackColor }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-      <SafeAreaView>
-        <View style={ styles.containerStyle }>
-          <View style={ styles.backIconViewStyle } />
-          <View style={ styles.writePostViewStyle } />
-          <View style={ styles.doneViewStyle }>
-            <TouchableOpacity onPress={backBtnPress}>
-              <Image source={ images.cancelImage } style={ styles.backImage } />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </SafeAreaView>
-      <View style={styles.searchViewStyle}>
-        <View>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.searchViewStyle}>
           <Carousel
             data={attachedImages}
             renderItem={({ item: multiAttachItem }) => {
@@ -55,13 +45,19 @@ export default function MultipleImageModal({ backBtnPress, attachedImages }) {
               }
               return <View />;
             }}
+            contentContainerCustomStyle={{ alignSelf: 'center' }}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
             sliderWidth={wp(100)}
             itemWidth={wp(100)}
           />
         </View>
-      </View>
+        <View style={ styles.containerStyle }>
+          <TouchableOpacity onPress={backBtnPress}>
+            <Image source={ images.cancelImage } style={ styles.backImage } />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }
@@ -70,13 +66,11 @@ const styles = StyleSheet.create({
   containerStyle: {
     alignSelf: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingVertical: hp('1%'),
-    width: wp('92%'),
-  },
-  backIconViewStyle: {
-    justifyContent: 'center',
-    width: wp('17%'),
+    width: wp('94%'),
+    position: 'absolute',
+    marginTop: getStatusBarHeight() + 10,
   },
   backImage: {
     height: hp('2%'),
@@ -84,21 +78,7 @@ const styles = StyleSheet.create({
     width: hp('2%'),
     marginRight: wp('3%'),
   },
-  doneViewStyle: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    width: wp('17%'),
-    paddingVertical: hp('0.5%'),
-  },
-  writePostViewStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: wp('58%'),
-  },
   searchViewStyle: {
     flex: 1,
-    backgroundColor: colors.blackColor,
-    // alignItems: 'center',
-    justifyContent: 'center',
   },
 });

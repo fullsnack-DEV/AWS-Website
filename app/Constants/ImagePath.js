@@ -41,6 +41,7 @@ const images = {
   nextArrow: require('../assets/images/ic_next_arrow.png'),
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
+  threeDotIcon: require('../assets/images/three_dot_icon.png'),
   vertical3Dot: require('../assets/images/ic_dot.png'),
   horizontal3Dot: require('../assets/images/ic_horizontal_dot.png'),
   downArrow: require('../assets/images/ic_down_arrow.png'),

@@ -51,6 +51,7 @@ import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/cr
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
 import colors from '../Constants/Colors'
+import EventScreen from '../screens/account/schedule/EventScreen';
 
 const Stack = createStackNavigator();
 
@@ -104,6 +105,23 @@ const AccountNavigator = () => (
           headerTitleStyle: {
             fontWeight: '500',
           },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EventScreen"
+        component={ EventScreen }
+        options={ {
+          title: 'Game',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,

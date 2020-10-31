@@ -9,6 +9,8 @@ import EditPersonalProfileScreen from '../screens/home/EditPersonalProfileScreen
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 
 import colors from '../Constants/Colors'
+import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
+import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 
 const Stack = createStackNavigator();
 
@@ -54,6 +56,42 @@ const HomeNavigator = () => (
             borderBottomWidth: 0.3,
           },
         }}
+      />
+
+    <Stack.Screen
+      name="WritePostScreen"
+      component={ WritePostScreen }
+      options={ {
+        title: 'Write Post',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      } }
+    />
+
+    <Stack.Screen
+        name="WriteCommentScreen"
+        component={ WriteCommentScreen }
+        options={ {
+          title: 'Write Comment',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
       />
 
     <Stack.Screen

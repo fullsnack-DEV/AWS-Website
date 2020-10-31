@@ -55,6 +55,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'UserNotFoundScreen'
     || routeName === 'MemberProfileCreatedScreen'
     || routeName === 'ConnectionReqSentScreen'
+    || routeName === 'EventScreen'
 
   ) {
     return false;
@@ -138,14 +139,15 @@ function AppNavigator() {
       <Tab.Screen
         name="Message"
         component={ HomeNavigator }
-        options={ {
+        options={ ({ route }) => ({
+          tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
             <Image
               source={ focused ? images.tab_message_selected : images.tab_message }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
           ),
-        } }
+        }) }
       />
 
       {role === 'team' && (

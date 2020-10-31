@@ -29,6 +29,9 @@ import SingleImageRender from '../../components/Home/SingleImageRender';
 import MultipleImageRender from '../../components/Home/MultipleImageRender';
 import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
+import uploadImages from '../../utils/imageAction';
+import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
+import ImageProgress from '../../components/newsFeed/ImageProgress';
 
 export default function HomeScreen({ navigation, route }) {
   const [postData, setPostData] = useState([]);
@@ -38,6 +41,9 @@ export default function HomeScreen({ navigation, route }) {
   const [userID, setUserID] = useState('');
   const [indexCounter, setIndexCounter] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
+  const [totalUploadCount, setTotalUploadCount] = useState(0);
+  const [doneUploadCount, setDoneUploadCount] = useState(0);
+  const [progressBar, setProgressBar] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -103,6 +109,38 @@ export default function HomeScreen({ navigation, route }) {
       unsubscribe();
     };
   }, []);
+
+  const progressStatus = (completed, total) => {
+    setDoneUploadCount(completed < total ? (completed + 1) : total)
+  }
+
+  const callthis = (data, postDesc) => {
+    if (data) {
+      setTotalUploadCount(data.length || 1);
+      setProgressBar(true);
+      const imageArray = data.map((dataItem) => (dataItem))
+      uploadImages(imageArray, progressStatus).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: 'image',
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+        }))
+        const dataParams = {
+          text: postDesc && postDesc,
+          attachments,
+        };
+        createPost(dataParams)
+          .then(() => getNewsFeed())
+          .then((response) => {
+            setPostData(response.payload.results)
+            setProgressBar(false);
+          })
+          .catch((e) => {
+            Alert.alert('', e.messages)
+          });
+      })
+    }
+  }
 
   const scrollToTop = useRef();
 
@@ -307,7 +345,7 @@ export default function HomeScreen({ navigation, route }) {
         ref={scrollToTop}
         backgroundColor="white"
         contentBackgroundColor="white"
-        parallaxHeaderHeight={300}
+        parallaxHeaderHeight={310}
         stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
         fadeOutForeground={false}
         renderFixedHeader={() => (
@@ -328,7 +366,7 @@ export default function HomeScreen({ navigation, route }) {
         )}
         renderStickyHeader={() => (
           <View>
-            {bgImage ? <Image source={{ uri: bgImage }} resizeMode={'cover'} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
+            {bgImage ? <Image source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
             <Header
               safeAreaStyle={{ position: 'absolute' }}
               centerComponent={
@@ -350,7 +388,7 @@ export default function HomeScreen({ navigation, route }) {
         >
         <View style={{ flex: 1 }}>
           <TCGradientButton
-              outerContainerStyle={{ marginVertical: 10 }}
+              outerContainerStyle={{ marginVertical: 10, marginTop: 20 }}
               title="Edit Profile" onPress = {() => { navigation.navigate('EditPersonalProfileScreen'); }
               }/>
           <View style={styles.sepratorStyle}/>
@@ -368,7 +406,7 @@ export default function HomeScreen({ navigation, route }) {
                     navigation={navigation}
                     postDataItem={postData ? postData[0] : {}}
                     onWritePostPress={() => {
-                      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {} })
+                      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis })
                     }}
                   />
                   <NewsFeedList
@@ -418,6 +456,14 @@ export default function HomeScreen({ navigation, route }) {
             )}/>
         </View>
       </ParallaxScrollView>
+      {progressBar && <ImageProgress
+        numberOfUploaded={doneUploadCount}
+        totalUpload={totalUploadCount}
+        onCancelPress={() => {
+          console.log('Cancel Pressed!');
+        }}
+        postDataItem={postData ? postData[0] : {}}
+      />}
     </View>
   );
 }
@@ -427,7 +473,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userTextStyle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
     color: colors.whiteColor,
