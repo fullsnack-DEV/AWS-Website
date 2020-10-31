@@ -64,6 +64,13 @@ function BackgroundProfile({
       </View>
       <View style={{ backgroundColor: colors.whiteColor }}>
         <View style={{ width: '100%' }}>
+          <Image style={[styles.profileImageStyle, profileImageStyle]}
+            source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
+          />
+          <View style={styles.userViewStyle}>
+            <Text style={styles.userTextStyle}>{fullName}</Text>
+            <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
+          </View>
           <View style={styles.followingMainViewStyle}>
             {currentUserData.following_count !== undefined ? <View style={styles.followingViewStyle}>
               <Text style={styles.followingTextStyle}>Following</Text>
@@ -79,13 +86,6 @@ function BackgroundProfile({
             </View>
           </View>
         </View>
-        <Image style={[styles.profileImageStyle, profileImageStyle]}
-          source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
-        />
-        <View style={styles.userViewStyle}>
-          <Text style={styles.userTextStyle}>{fullName}</Text>
-          <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
-        </View>
       </View>
     </View>
   );
@@ -100,26 +100,26 @@ const styles = StyleSheet.create({
   profileImageStyle: {
     height: 82,
     width: 82,
-    marginTop: -80,
-    marginLeft: 15,
+    marginTop: -45,
+    alignSelf: 'center',
     borderRadius: 41,
   },
   followingMainViewStyle: {
     justifyContent: 'space-around',
-    paddingHorizontal: 10,
     flexDirection: 'row',
-    width: '72%',
-    alignSelf: 'flex-end',
+    width: '94%',
+    alignSelf: 'center',
   },
   followingViewStyle: {
-    width: '36%',
+    width: '47%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: wp('1%'),
   },
   followingSepratorView: {
     height: 22,
     width: 1,
-    backgroundColor: colors.graySeparater,
+    backgroundColor: colors.grayEventColor,
     marginVertical: 4,
     alignSelf: 'center',
   },
@@ -134,7 +134,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
   },
   userViewStyle: {
-    padding: wp('4%'),
+    paddingHorizontal: wp('4%'),
+    paddingVertical: wp('1%'),
+    alignItems: 'center',
   },
   userTextStyle: {
     fontSize: 22,

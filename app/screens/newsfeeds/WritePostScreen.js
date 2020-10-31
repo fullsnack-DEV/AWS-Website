@@ -28,13 +28,13 @@ import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
 import images from '../../Constants/ImagePath';
 
-export default function WritePostScreen({ navigation, route: { params: { postData } } }) {
+export default function WritePostScreen({ navigation, route }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState([]);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(true);
-
+  const { params: { postData, onPressDone } } = route;
   let userImage = '';
   let userName = '';
   if (postData && postData.actor && postData.actor.data) {
@@ -45,7 +45,6 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-
   return (
     <KeyboardAvoidingView
       style={ { flex: 1 } }
@@ -82,8 +81,8 @@ export default function WritePostScreen({ navigation, route: { params: { postDat
                       setloading(false);
                     });
                 } else {
-                  navigation.navigate('FeedsScreen',
-                    { data: selectImage, postDescriptions: searchText });
+                  navigation.goBack();
+                  onPressDone(selectImage, searchText);
                 }
               } }>
               Done
