@@ -31,8 +31,9 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [playerStatus, setPlayerStatus] = useState([]);
   const [role, setRole] = useState('');
+  const [switchUser, setSwitchUser] = useState({})
 
-  const [group, setGroup] = useState({
+  const [groups, setGroups] = useState({
     createdAt: 0.0,
     homefield_address_latitude: 0.0,
     follower_count: 0,
@@ -53,18 +54,9 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
     privacy_followers: 'everyone',
     join_type: 'anyone',
     is_joined: false,
-
   })
   const [groupMemberDetail, setGroupMemberDetail] = useState({
-    group_id: entity.uid,
-    is_admin: false,
-    is_player: false,
-    is_coach: false,
-    jersey_number: '',
-    note: '',
-    status: [],
-    positions: [],
-    appearance: '',
+
   });
   const [positions, setPositions] = useState([{
     id: 0,
@@ -72,20 +64,22 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   }]);
 
   useEffect(() => {
+    const getAuthEntity = async () => {
+      entity = await Utility.getStorage('loggedInEntity');
+      setSwitchUser(entity)
+      setGroups({ ...groups, entity_type: entity.role })
+      setRole(entity.role);
+    }
     getAuthEntity()
   }, [])
-  const getAuthEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
-    setGroup({ ...group, entity_type: entity.role })
-    setRole(entity.role);
-  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => createMember()}>Done</Text>
       ),
     });
-  }, [navigation, groupMemberDetail, positions, role, group]);
+  }, [navigation, groupMemberDetail, positions, role, groups]);
 
   const addPosition = () => {
     const obj = {
@@ -98,7 +92,7 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   const createMember = () => {
     setloading(true)
     let bodyParams = {};
-    if (route.params.form1.full_image !== '') {
+    if (route.params.form1.full_image) {
       const imageArray = []
 
       imageArray.push({ path: route.params.form1.full_image });
@@ -110,8 +104,9 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
         }))
 
         bodyParams = {
-          ...route.params.form1, full_image: attachments[0].url, thumbnail: attachments[0].thumbnail, group_member_detail: groupMemberDetail, group,
+          ...route.params.form1, full_image: attachments[0].url, thumbnail: attachments[0].thumbnail, group: groups,
         }
+        bodyParams.group_member_detail = { ...groupMemberDetail, group_id: entity.uid };
         console.log('BODY PARAMS:', bodyParams);
         createProfile(bodyParams)
       })
@@ -119,14 +114,28 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
           Alert.alert('Towns Cup', e.messages)
           setloading(false);
         });
+    } else {
+      bodyParams = {
+        ...route.params.form1, group: groups,
+      }
+      bodyParams.group_member_detail = { ...groupMemberDetail, group_id: entity.uid };
+      console.log('BODY PARAMS:', bodyParams);
+      createProfile(bodyParams)
     }
   }
-  const createProfile = async (params) => {
+  const createProfile = (params) => {
     createMemberProfile(entity.uid, params).then((response) => {
       if (response.status) {
         setloading(false);
         console.log('Response :', response.payload);
-        navigation.navigate('MemberProfileCreatedScreen')
+
+        if (response.payload.group_member_detail.canConnect === true && response.payload.group_member_detail.connected === false) {
+          const title = strings.connectMemberProfile
+          navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
+        } else {
+          const title = strings.sendInvite
+          navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
+        }
       }
     })
   }
@@ -151,14 +160,14 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
         <View style={styles.form2}></View>
       </View>
 
-      <View style={{
+      {switchUser.obj && <View style={{
         flexDirection: 'row', alignItems: 'center', marginLeft: 15, marginRight: 15,
       }}>
         <View style={styles.profileView}>
-          <Image source={ images.teamPlaceholder } style={ styles.profileImage } />
+          <Image source={switchUser.obj.thumbnail ? { uri: switchUser.obj.thumbnail } : images.teamPlaceholder } style={ styles.profileImage } />
         </View>
-        <TCGroupNameBadge />
-      </View>
+        <TCGroupNameBadge name={switchUser.obj.group_name} groupType={switchUser.role}/>
+      </View>}
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Admin Authority And Role</Text>
         <View style={styles.checkBoxContainer}>
@@ -304,7 +313,7 @@ const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
     height: 25,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 25,
     borderRadius: 50,
   },

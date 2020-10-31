@@ -214,6 +214,7 @@ const strings = {
   connectAccountText: 'Invite or Connect Account',
   connectProfile: 'Connect the profile to this account',
   sendInvite: 'Send invitation to this e-mail account',
+  connectMemberProfile: 'Connect this member to profile',
   createOtherProfile: 'Create another member profile',
   goToMemberProfile: 'GO TO MEMBERS',
   enterFirstNamePlaceholder: 'Enter First Name',

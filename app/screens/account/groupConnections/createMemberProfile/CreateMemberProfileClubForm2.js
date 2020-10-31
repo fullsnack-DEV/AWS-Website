@@ -18,9 +18,10 @@ import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
 let entity = {};
-export default function CreateMemberProfileClubForm2({ navigation }) {
+export default function CreateMemberProfileClubForm2({ navigation, route }) {
   const [auth, setAuth] = useState({})
   const [teamList, setTeamList] = useState([]);
+  const [groupAdmin, setGroupAdmin] = useState(false);
   // const [memberDetail, setMemberDetail] = useState({
   //   group_id: entity.uid,
   //   is_admin: false,
@@ -32,16 +33,20 @@ export default function CreateMemberProfileClubForm2({ navigation }) {
   const getAuthEntity = async () => {
     entity = await Utility.getStorage('loggedInEntity');
     setAuth(entity);
-    console.log('AUTH::', entity);
     getTeamsList()
   }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => navigation.navigate('CreateMemberProfileClubForm3')}>Next</Text>
+        <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>Next</Text>
       ),
     });
-  }, [navigation, auth]);
+  }, [navigation, auth, groupAdmin, teamList]);
+
+  const pressedNext = () => {
+    const membersAuthority = { ...route.params.form1, group_member_detail: { group_id: entity.uid, is_admin: groupAdmin }, teams: teamList.map(({ group_id, is_admin, is_member }) => ({ group_id, is_admin, is_member })) }
+    navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
+  }
   const getTeamsList = async () => {
     getTeamsByClub(entity.uid).then((response) => {
       if (response.status) {
@@ -71,12 +76,17 @@ export default function CreateMemberProfileClubForm2({ navigation }) {
           flexDirection: 'row', alignItems: 'center', marginRight: 15, marginBottom: 15,
         }}>
           <View style={styles.profileView}>
-            <Image source={auth.obj.thumbnail ? { uri: auth.obj.thumbnail } : images.clubPlaceholder } style={ styles.profileImage } />
+            <Image source={((auth || {}).obj || {}).thumbnail ? { uri: auth.obj.thumbnail } : images.clubPlaceholder } style={ styles.profileImage } />
           </View>
-          <TCGroupNameBadge name={auth.obj.group_name} groupType={'club'}/>
+          <TCGroupNameBadge name={((auth || {}).obj || {}).group_name || ''} groupType={'club'}/>
+
         </View>
         <View style={styles.checkBoxContainer}>
-          <Image source={images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity onPress={() => {
+            setGroupAdmin(!groupAdmin)
+          }}>
+            <Image source={groupAdmin ? images.uncheckWhite : images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Admin</Text>
         </View>
 

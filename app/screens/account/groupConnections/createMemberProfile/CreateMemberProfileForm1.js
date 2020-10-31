@@ -46,19 +46,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
   }]);
 
   const [memberInfo, setMemberInfo] = useState({
-    postal_code: '',
-    first_name: '',
-    state_abbr: '',
-    last_name: '',
-    birthday: '',
-    phone_numbers: [],
-    country: '',
-    email: '',
-    city: '',
-    street_address: '',
-    gender: '',
-    full_image: '',
-    thumbnail: '',
+
   })
 
   useEffect(() => {
@@ -85,7 +73,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
             if (entity.role === 'team') {
               navigation.navigate('CreateMemberProfileTeamForm2', { form1: memberInfo })
             } else if (entity.role === 'club') {
-              navigation.navigate('CreateMemberProfileClubForm2')
+              navigation.navigate('CreateMemberProfileClubForm2', { form1: memberInfo })
             }
           }
         }}>Next</Text>

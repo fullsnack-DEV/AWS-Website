@@ -77,11 +77,13 @@ export default function MembersProfileScreen({ navigation, route }) {
 
     getMembersInfo(route.params.groupID, route.params.memberID).then((response) => {
       if (response.status) {
+        console.log('PROFILE RESPONSE::', response.payload);
         setMemberDetail(response.payload);
         setloading(false)
       }
     })
       .catch((e) => {
+        setloading(false)
         Alert.alert('', e.messages)
       });
   }
@@ -99,7 +101,7 @@ export default function MembersProfileScreen({ navigation, route }) {
           <Text style={styles.undatedTimeText} numberOfLines={2}>Joined club on May 9, 2019
             {'\n'}Last updated by Neymar JR on May 9, 2019</Text>
           <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
-            if (memberDetail.connected) {
+            if (memberDetail.group.connected) {
               navigation.navigate('UserFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
             } else {
               navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })

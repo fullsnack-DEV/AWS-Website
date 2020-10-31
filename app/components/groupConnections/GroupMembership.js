@@ -21,7 +21,6 @@ import TCGroupNameBadge from '../TCGroupNameBadge';
 export default function GroupMembership({ groupData, switchID, edit = false }) {
   return (
     <>
-
       <View style={styles.topViewContainer}>
         <View style={{ flexDirection: 'row' }}>
           <View style={styles.profileView}>
@@ -46,8 +45,8 @@ export default function GroupMembership({ groupData, switchID, edit = false }) {
         <TCInfoField title={'Appearance'} value={groupData.appearance ? groupData.appearance : 'N/A'} marginLeft={25} />
         <TCInfoField title={'Status'} value={groupData.status ? groupData.status.join(', ') : 'N/A'} marginLeft={25} color={colors.themeColor}/>
       </>}
-      {groupData.note && <Text style={styles.groupDescriptionText}>{groupData.note}
-      </Text>}
+      {groupData.note ? <Text style={styles.groupDescriptionText}>{groupData.note}
+      </Text> : null}
       <TCThinDivider marginTop={20} width={'100%'}/>
     </>
   );
