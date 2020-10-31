@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  FlatList,
+
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -25,23 +27,31 @@ import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
+import TCTouchableLabel from '../../../../components/TCTouchableLabel';
+import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 
 let entity = {};
+
 export default function CreateMemberProfileForm1({ navigation }) {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
   const actionSheet = useRef();
-
-  const [profileImage, setProfileImage] = useState('');
-
+  const [show, setShow] = useState(false);
   const [role, setRole] = useState('');
-  // const [phoneNumber, setPhoneNumber] = useState([]);
+  const [phoneNumber, setPhoneNumber] = useState([{
+    id: 0,
+    phone_number: '',
+    country_code: '',
+  }]);
 
   const [memberInfo, setMemberInfo] = useState({
     postal_code: '',
     first_name: '',
     state_abbr: '',
     last_name: '',
-    birthday: 973246442,
-    phone_numbers: [], // [{ phone_number: '9876543210', country_code: 'Canada(+1)' }, { phone_number: '0000111110', country_code: 'United States(+1)' }],
+    birthday: '',
+    phone_numbers: [],
     country: '',
     email: '',
     city: '',
@@ -50,11 +60,19 @@ export default function CreateMemberProfileForm1({ navigation }) {
     full_image: '',
     thumbnail: '',
   })
-  const [teamName, setTeamName] = useState('');
 
-  useEffect(async () => {
+  useEffect(() => {
     getAuthEntity();
   }, [])
+  const addPhoneNumber = () => {
+    const obj = {
+      id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
+      code: '',
+      number: '',
+    }
+    setPhoneNumber([...phoneNumber, obj]);
+  };
+
   const getAuthEntity = async () => {
     entity = await Utility.getStorage('loggedInEntity');
     setRole(entity.role);
@@ -73,7 +91,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
         }}>Next</Text>
       ),
     });
-  }, [navigation, memberInfo, profileImage, role]);
+  }, [navigation, memberInfo, role, phoneNumber, show]);
 
   const checkValidation = () => {
     if (memberInfo.first_name === '') {
@@ -104,7 +122,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
     return (false)
   }
   const deleteImage = () => {
-    setProfileImage('')
+    setMemberInfo({ ...memberInfo, full_image: undefined })
   }
 
   const onProfileImageClicked = () => {
@@ -131,7 +149,31 @@ export default function CreateMemberProfileForm1({ navigation }) {
       setMemberInfo({ ...memberInfo, full_image: data.path })
     });
   }
-
+  const handleDonePress = ({ date }) => {
+    setShow(!show)
+    setMemberInfo({ ...memberInfo, birthday: new Date(date).getTime() })
+  }
+  const handleCancelPress = () => {
+    setShow(!show)
+  }
+  const renderPhoneNumber = ({ item, index }) => (
+    <TCPhoneNumber
+     marginBottom={2}
+    placeholder={strings.selectCode}
+    value={item.country_code}
+    numberValue={item.phone_number}
+    onValueChange={(value) => {
+      const tempCode = [...phoneNumber];
+      tempCode[index].country_code = value;
+      setPhoneNumber(tempCode);
+      setMemberInfo({ ...memberInfo, phone_numbers: phoneNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
+    }} onChangeText={(text) => {
+      const tempPhone = [...phoneNumber];
+      tempPhone[index].phone_number = text;
+      setPhoneNumber(tempPhone);
+      setMemberInfo({ ...memberInfo, phone_numbers: phoneNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
+    }} />
+  );
   return (
 
     <ScrollView style={styles.mainContainer}>
@@ -142,7 +184,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
       </View>
 
       <View style={styles.profileView}>
-        <Image source={memberInfo.full_image !== '' ? { uri: memberInfo.full_image } : images.profilePlaceHolder} style={styles.profileChoose}/>
+        <Image source={memberInfo.full_image ? { uri: memberInfo.full_image } : images.profilePlaceHolder} style={styles.profileChoose}/>
         <TouchableOpacity style={styles.choosePhoto} onPress={() => onProfileImageClicked()}>
           <Image source={images.certificateUpload} style={styles.choosePhoto}/>
         </TouchableOpacity>
@@ -161,16 +203,29 @@ export default function CreateMemberProfileForm1({ navigation }) {
 
       <View>
         <TCLable title={'Phone'}/>
-        <TCPhoneNumber placeholder={strings.selectCode} />
+
+        <FlatList
+                data={phoneNumber}
+                renderItem={renderPhoneNumber}
+                keyExtractor={(item, index) => index.toString()}
+                // style={styles.flateListStyle}
+                >
+        </FlatList>
+
       </View>
-      <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => console.log('Add..')}/>
+      <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
       <View>
         <TCLable title={'Address'} />
         <TCTextField value={memberInfo.street_address} onChangeText={(text) => setMemberInfo({ ...memberInfo, street_address: text })} placeholder={strings.addressPlaceholder} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'Birthday'} />
-        <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/>
+        {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
+
+        <TCTouchableLabel
+        title={memberInfo.birthday && `${`${monthNames[new Date(memberInfo.birthday).getMonth()]} ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(memberInfo.birthday).getFullYear()}`}
+      placeholder={strings.birthDatePlaceholder}
+      onPress={() => setShow(!show)} />
       </View>
       <View >
         <TCLable title={'Gender'}/>
@@ -187,9 +242,9 @@ export default function CreateMemberProfileForm1({ navigation }) {
       <View style={{ marginBottom: 20 }}/>
       <ActionSheet
                 ref={actionSheet}
-                options={profileImage ? [strings.camera, strings.album, strings.deleteTitle, strings.cancelTitle] : [strings.camera, strings.album, strings.cancelTitle]}
-                destructiveButtonIndex={profileImage && 2}
-                cancelButtonIndex={profileImage ? 3 : 2}
+                options={memberInfo.full_image ? [strings.camera, strings.album, strings.deleteTitle, strings.cancelTitle] : [strings.camera, strings.album, strings.cancelTitle]}
+                destructiveButtonIndex={memberInfo.full_image && 2}
+                cancelButtonIndex={memberInfo.full_image ? 3 : 2}
                 onPress={(index) => {
                   if (index === 0) {
                     openCamera();
@@ -200,6 +255,9 @@ export default function CreateMemberProfileForm1({ navigation }) {
                   }
                 }}
               />
+
+      <TCDateTimePicker title={'Choose Birthday'} visible={show} onDone={handleDonePress} onCancel={handleCancelPress}/>
+
     </ScrollView>
 
   );

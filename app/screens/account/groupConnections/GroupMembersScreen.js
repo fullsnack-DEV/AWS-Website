@@ -20,13 +20,11 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import UserRoleView from '../../../components/groupConnections/UserRoleView';
 
-import TCScrollableTabs from '../../../components/TCScrollableTabs';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
-import TCProfileView from '../../../components/TCProfileView';
 
 import {
-  getFollowersList, getMembersList,
+  getMembersList,
 } from '../../../api/Accountapi';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -96,24 +94,11 @@ export default function GroupMembersScreen({ navigation, route }) {
   const [allSelected, setAllSelected] = useState(false);
   const [filter, setFilter] = useState([filterArray]);
   const [members, setMembers] = useState([]);
-  const [followers, setFollowers] = useState([]);
 
   useEffect(() => {
-    getFollowers()
     getMembers()
   }, [isFocused])
 
-  const getFollowers = async () => {
-    getFollowersList(route.params.groupID)
-      .then((response) => {
-        setFollowers(response.payload)
-
-        setloading(false);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-      });
-  }
   const getMembers = async () => {
     getMembersList(route.params.groupID)
       .then((response) => {
@@ -192,33 +177,22 @@ export default function GroupMembersScreen({ navigation, route }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <TCScrollableTabs>
-        <View tabLabel='Members' style={{ flex: 1 }}>
-          <View style={styles.searchBarView}>
-            <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) }/>
-            <TouchableWithoutFeedback onPress={() => toggleModal()}>
-              <Image source={ images.filterIcon } style={ styles.filterImage } />
-            </TouchableWithoutFeedback>
-          </View>
 
-          {members.length > 0 ? <FlatList
+      <View tabLabel='Members' style={{ flex: 1 }}>
+        <View style={styles.searchBarView}>
+          <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) }/>
+          {/* <TouchableWithoutFeedback onPress={() => toggleModal()}>
+            <Image source={ images.filterIcon } style={ styles.filterImage } />
+          </TouchableWithoutFeedback> */}
+        </View>
+
+        {members.length > 0 ? <FlatList
                   data={members}
                   renderItem={({ item }) => <UserRoleView data = {item} onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}/>}
                   keyExtractor={(item, index) => index.toString()}
                   /> : <TCNoDataView title={'No Members Found'}/>}
 
-        </View>
-        <View tabLabel='Followers' style={{ flex: 1 }}>
-          {followers.length > 0 ? <FlatList
-                  data={followers}
-                  renderItem={({ item }) => <View>
-                    <TCProfileView marginLeft={20} marginTop={20} image={item.thumbnail ? { uri: item.thumbnail } : images.profilePlaceHolder} name={`${item.first_name} ${item.last_name}`} location={`${item.city}, ${item.state_abbr}, ${item.country}`} type={'medium'}/>
-                    <TCThinDivider width={'90%'} marginBottom={5} />
-                  </View>}
-                  keyExtractor={(item, index) => index.toString()}
-                  /> : <TCNoDataView title={'No Followers Found'}/>}
-        </View>
-      </TCScrollableTabs>
+      </View>
       <ActionSheet
                 ref={actionSheet}
                 // title={'News Feed Post'}
@@ -298,13 +272,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  filterImage: {
-    marginLeft: 10,
-    alignSelf: 'center',
-    height: 25,
-    resizeMode: 'contain',
-    width: 25,
-  },
+  // filterImage: {
+  //   marginLeft: 10,
+  //   alignSelf: 'center',
+  //   height: 25,
+  //   resizeMode: 'contain',
+  //   width: 25,
+  // },
   searchBarView: {
     flexDirection: 'row',
     marginLeft: 20,

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   StyleSheet,
-  TouchableOpacity,
   View,
   Image,
   Text,
@@ -12,19 +11,14 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import Header from './Header';
 
 function BackgroundProfile({
-  onPressBGImage,
-  onPressProfileImage,
   profileImagePlaceholder = images.profilePlaceHolder,
-  buttonImage = images.certificateUpload,
   bgImageStyle,
   profileImageStyle,
-  bgImageButtonStyle,
-  profileImageButtonStyle,
   currentUserData,
 }) {
+  console.log('Current User Data ::--', currentUserData);
   let bgImage = '';
   if (currentUserData && currentUserData.background_full_image) {
     bgImage = currentUserData.background_full_image;
@@ -33,17 +27,24 @@ function BackgroundProfile({
   if (currentUserData && currentUserData.full_image) {
     profileImage = currentUserData.full_image;
   }
-  let followingsCounter = '';
+  let followingsCounter = 0;
   if (currentUserData && currentUserData.following_count) {
     followingsCounter = currentUserData.following_count;
   }
-  let followersCounter = '';
+  let memberCount = 0;
+  if (currentUserData && currentUserData.member_count) {
+    memberCount = currentUserData.member_count;
+  }
+  let followersCounter = 0;
   if (currentUserData && currentUserData.follower_count) {
     followersCounter = currentUserData.follower_count;
   }
   let fullName = '';
   if (currentUserData && currentUserData.full_name) {
     fullName = currentUserData.full_name;
+  }
+  if (currentUserData && currentUserData.full_name === undefined) {
+    fullName = currentUserData.group_name;
   }
   let city = '';
   let country = '';
@@ -57,55 +58,34 @@ function BackgroundProfile({
   }
 
   return (
-    <View>
+    <View style={{ width: wp('100%') }}>
       <View>
-        <Image source={{ uri: bgImage }} style={[styles.bgImageStyle, bgImageStyle]} />
-        <TouchableOpacity
-        onPress={ onPressBGImage }>
-          <Image
-            style={[styles.bgCameraButtonStyle, bgImageButtonStyle]}
-            source={ buttonImage }
-            />
-        </TouchableOpacity>
+        <Image source={bgImage ? { uri: bgImage } : images.profilePlaceHolder} style={[styles.bgImageStyle, bgImageStyle]} />
       </View>
-      <Header
-        safeAreaStyle={{ position: 'absolute' }}
-        leftComponent={
-          <TouchableOpacity>
-            <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
-          </TouchableOpacity>
-        }
-        rightComponent={
-          <TouchableOpacity>
-            <Image source={images.menu} style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
-          </TouchableOpacity>
-        }
-      />
-      <View style={{ width: '100%' }}>
-        <View style={styles.followingMainViewStyle}>
-          <View style={styles.followingViewStyle}>
-            <Text style={styles.followingTextStyle}>Following</Text>
-            <Text style={styles.followingLengthText}>{followingsCounter}</Text>
-          </View>
-          <View style={styles.followingSepratorView} />
-          <View style={styles.followingViewStyle}>
-            <Text style={styles.followingTextStyle}>Followers</Text>
-            <Text style={styles.followingLengthText}>{followersCounter}</Text>
+      <View style={{ backgroundColor: colors.whiteColor }}>
+        <View style={{ width: '100%' }}>
+          <View style={styles.followingMainViewStyle}>
+            {currentUserData.following_count !== undefined ? <View style={styles.followingViewStyle}>
+              <Text style={styles.followingTextStyle}>Following</Text>
+              <Text style={styles.followingLengthText}>{followingsCounter}</Text>
+            </View> : <View style={styles.followingViewStyle}>
+              <Text style={styles.followingTextStyle}>Members</Text>
+              <Text style={styles.followingLengthText}>{memberCount}</Text>
+            </View>}
+            <View style={styles.followingSepratorView} />
+            <View style={styles.followingViewStyle}>
+              <Text style={styles.followingTextStyle}>Followers</Text>
+              <Text style={styles.followingLengthText}>{followersCounter}</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <Image style={[styles.profileImageStyle, profileImageStyle]}
-        source={profileImage ? { uri: profileImage } : profileImagePlaceholder} />
-      <TouchableOpacity
-        onPress={ onPressProfileImage }>
-        <Image
-            style={ [styles.profileCameraButtonStyle, profileImageButtonStyle]}
-            source={ buttonImage }
-            />
-      </TouchableOpacity>
-      <View style={styles.userViewStyle}>
-        <Text style={styles.userTextStyle}>{fullName}</Text>
-        <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
+        <Image style={[styles.profileImageStyle, profileImageStyle]}
+          source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
+        />
+        <View style={styles.userViewStyle}>
+          <Text style={styles.userTextStyle}>{fullName}</Text>
+          <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
+        </View>
       </View>
     </View>
   );
@@ -115,6 +95,7 @@ const styles = StyleSheet.create({
   bgImageStyle: {
     aspectRatio: 375 / 173,
     backgroundColor: colors.grayBackgroundColor,
+    opacity: 0,
   },
   profileImageStyle: {
     height: 82,
@@ -122,19 +103,6 @@ const styles = StyleSheet.create({
     marginTop: -80,
     marginLeft: 15,
     borderRadius: 41,
-  },
-  bgCameraButtonStyle: {
-    height: 22,
-    width: 22,
-    alignSelf: 'flex-end',
-    marginEnd: 15,
-    marginTop: -37,
-  },
-  profileCameraButtonStyle: {
-    height: 22,
-    width: 22,
-    marginTop: -22,
-    marginLeft: 72,
   },
   followingMainViewStyle: {
     justifyContent: 'space-around',

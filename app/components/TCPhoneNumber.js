@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 15,
     marginRight: 15,
+    marginBottom: 10,
     justifyContent: 'space-between',
 
   },
@@ -82,6 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     height: 40,
+    width: '100%',
   },
 
   miniDownArrow: {
@@ -90,6 +92,7 @@ const styles = StyleSheet.create({
     tintColor: colors.grayColor,
     top: 15,
     width: 12,
+    right: 15,
   },
   inputIOS: {
     height: 40,
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     paddingVertical: 12,
     paddingHorizontal: 15,
-    width: '125%',
+    width: 180,
     color: colors.lightBlackColor,
     paddingRight: 30,
     backgroundColor: colors.offwhite,
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     paddingRight: 30,
     backgroundColor: colors.offwhite,
-
+    width: 170,
     borderRadius: 5,
 
     elevation: 3,

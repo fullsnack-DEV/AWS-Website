@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, Image, Platform, StyleSheet,
 } from 'react-native';
@@ -25,10 +25,6 @@ export default function AddBirthdayScreen({ navigation }) {
   const [dateValue, setDateValue] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-
-  useEffect(() => {
-
-  }, [])
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -93,9 +89,9 @@ export default function AddBirthdayScreen({ navigation }) {
           value={dateValue}
           mode={mode}
           maximumDate={new Date()}
-          style={ {
-            position: 'absolute', left: 0, right: 0, bottom: 10,
-          } }
+          // style={ {
+          //   position: 'absolute', left: 0, right: 0, bottom: 10,
+          // } }
         />}
 
     </View>

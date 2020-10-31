@@ -90,6 +90,7 @@ const images = {
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
   plus: require('../assets/images/plus.png'),
+  multipleImagesIcon: require('../assets/images/multiple_images.png'),
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
   dotImage: require('../assets/images/ic_dot.png'),
@@ -98,6 +99,7 @@ const images = {
   comment: require('../assets/images/comment.png'),
   share: require('../assets/images/share.png'),
   mute: require('../assets/images/mute.png'),
+  videoPlayBtn: require('../assets/images/video_play_button.png'),
   unmute: require('../assets/images/unmute.png'),
   playPause: require('../assets/images/play_pause.png'),
   exitGrey: require('../assets/images/exitGrey.png'),

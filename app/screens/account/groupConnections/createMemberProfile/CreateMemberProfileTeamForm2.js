@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  FlatList,
+
 } from 'react-native';
 
 import * as Utility from '../../../../utils/index';
@@ -27,38 +29,72 @@ import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 let entity = {};
 export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   const [loading, setloading] = useState(false);
-  const [injured, setInjured] = useState(false);
-  const [longtermaway, setLongtermaway] = useState(false);
-  const [suspended, setSuspended] = useState(false);
+  const [playerStatus, setPlayerStatus] = useState([]);
+  const [role, setRole] = useState('');
 
+  const [group, setGroup] = useState({
+    createdAt: 0.0,
+    homefield_address_latitude: 0.0,
+    follower_count: 0,
+    am_i_admin: false,
+    homefield_address_longitude: 0.0,
+    privacy_profile: 'members',
+    allclubmemberautomatically_sync: false,
+    allclubmembermannually_sync: false,
+    member_count: 0,
+    privacy_events: 'everyone',
+    privacy_members: 'everyone',
+    office_address_latitude: 0.0,
+    office_address_longitude: 0.0,
+    approval_required: false,
+    is_following: false,
+    should_hide: false,
+    entity_type: '',
+    privacy_followers: 'everyone',
+    join_type: 'anyone',
+    is_joined: false,
+
+  })
   const [groupMemberDetail, setGroupMemberDetail] = useState({
-    group_member_detail: {
-      group_id: entity.uid,
-      is_admin: false,
-      is_player: false,
-      is_coach: false,
-      jersey_number: '',
-      note: '',
-      status: ['injured', 'longtermaway', 'suspended'],
-      positions: ['Forwarder', 'Keeper'],
-      appearance: '',
-    },
+    group_id: entity.uid,
+    is_admin: false,
+    is_player: false,
+    is_coach: false,
+    jersey_number: '',
+    note: '',
+    status: [],
+    positions: [],
+    appearance: '',
   });
+  const [positions, setPositions] = useState([{
+    id: 0,
+    position: '',
+  }]);
 
-  const [teamName, setTeamName] = useState('');
-
-  useEffect(async () => {
-    entity = await Utility.getStorage('loggedInEntity');
+  useEffect(() => {
+    getAuthEntity()
   }, [])
-
+  const getAuthEntity = async () => {
+    entity = await Utility.getStorage('loggedInEntity');
+    setGroup({ ...group, entity_type: entity.role })
+    setRole(entity.role);
+  }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => createMember()}>Done</Text>
       ),
     });
-  }, [navigation, groupMemberDetail]);
+  }, [navigation, groupMemberDetail, positions, role, group]);
 
+  const addPosition = () => {
+    const obj = {
+      id: positions.length === 0 ? 0 : positions.length,
+      code: '',
+      number: '',
+    }
+    setPositions([...positions, obj]);
+  };
   const createMember = () => {
     setloading(true)
     let bodyParams = {};
@@ -72,19 +108,12 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
           url: item.fullImage,
           thumbnail: item.thumbnail,
         }))
-        console.log('FULL IMAGE URL ::::::', attachments[0].url);
-        console.log('THUMBNAIL IMAGE URL::::::', attachments[0].thumbnail);
+
         bodyParams = {
-          ...route.params.form1, full_image: attachments[0].url, thumbnail: attachments[0].thumbnail, groupMemberDetail,
+          ...route.params.form1, full_image: attachments[0].url, thumbnail: attachments[0].thumbnail, group_member_detail: groupMemberDetail, group,
         }
         console.log('BODY PARAMS:', bodyParams);
-        createMemberProfile(entity.uid, bodyParams).then((response) => {
-          if (response.status) {
-            setloading(false);
-            console.log('Response :', response.payload);
-            navigation.navigate('MemberProfileCreatedScreen')
-          }
-        })
+        createProfile(bodyParams)
       })
         .catch((e) => {
           Alert.alert('Towns Cup', e.messages)
@@ -92,7 +121,28 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
         });
     }
   }
-
+  const createProfile = async (params) => {
+    createMemberProfile(entity.uid, params).then((response) => {
+      if (response.status) {
+        setloading(false);
+        console.log('Response :', response.payload);
+        navigation.navigate('MemberProfileCreatedScreen')
+      }
+    })
+  }
+  const renderPosition = ({ item, index }) => (
+    <TCTextField
+    value={item.position}
+    onChangeText={(text) => {
+      const tempPosition = [...positions];
+      tempPosition[index].position = text;
+      setPositions(tempPosition);
+      setGroupMemberDetail({ ...groupMemberDetail, positions: positions.map((e) => e.position) })
+    }}
+    placeholder={strings.positionPlaceholder}
+     keyboardType={'default'}
+     style={{ marginBottom: 10 }}/>
+  );
   return (
     <ScrollView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -132,12 +182,18 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
       </View>
       <View>
         <TCLable title={'Position'}/>
-        <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.positionPlaceholder} keyboardType={'default'}/>
+        <FlatList
+                data={positions}
+                renderItem={renderPosition}
+                keyExtractor={(item, index) => index.toString()}
+                // style={styles.flateListStyle}
+                >
+        </FlatList>
       </View>
-      <TCMessageButton title={strings.addPosition} width={95} alignSelf = 'center' marginTop={15} onPress={() => console.log('Add..')}/>
+      <TCMessageButton title={strings.addPosition} width={95} alignSelf = 'center' marginTop={15} onPress={() => addPosition()}/>
       <View>
         <TCLable title={'Jersey Number'}/>
-        <TCTextField value={groupMemberDetail.jersey_number} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, jersey_number: text })} placeholder={strings.positionPlaceholder} keyboardType={'number-pad'}/>
+        <TCTextField value={groupMemberDetail.jersey_number} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, jersey_number: text })} placeholder={strings.jerseyNumberPlaceholder} keyboardType={'number-pad'}/>
       </View>
       <View>
         <TCLable title={'Appearance'}/>
@@ -146,20 +202,49 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
       <View style={styles.mainCheckBoxContainer}>
         <Text style={styles.checkBoxTitle}>Status</Text>
         <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => setInjured(!injured)}>
-            <Image source={injured ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity
+          onPress={() => {
+            if (playerStatus.indexOf('Injured') !== -1) {
+              const i = playerStatus.indexOf('Injured')
+              playerStatus.splice(i, 1);
+            } else {
+              playerStatus.push('Injured')
+            }
+            setPlayerStatus(playerStatus)
+            setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus })
+          }}>
+            <Image source={playerStatus.indexOf('Injured') !== -1 ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Injured</Text>
         </View>
         <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => setLongtermaway(!longtermaway)}>
-            <Image source={longtermaway ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity onPress={() => {
+            if (playerStatus.indexOf('Long-term Away') !== -1) {
+              const i = playerStatus.indexOf('Long-term Away')
+              playerStatus.splice(i, 1);
+            } else {
+              playerStatus.push('Long-term Away')
+            }
+            setPlayerStatus(playerStatus)
+            setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus })
+          }}>
+            <Image source={playerStatus.some((el) => el === 'Long-term Away') ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Long-term Away</Text>
         </View>
         <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => setSuspended(!suspended)}>
-            <Image source={suspended ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+          <TouchableOpacity
+          onPress={() => {
+            if (playerStatus.indexOf('Suspended') !== -1) {
+              const i = playerStatus.indexOf('Suspended')
+              playerStatus.splice(i, 1);
+            } else {
+              playerStatus.push('Suspended')
+            }
+            setPlayerStatus(playerStatus)
+            setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus })
+          }}>
+            <Image source={playerStatus.some((el) => el === 'Suspended') ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
           </TouchableOpacity>
           <Text style={styles.checkBoxItemText}>Suspended</Text>
         </View>
