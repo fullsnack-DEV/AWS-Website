@@ -126,23 +126,26 @@ export default function AccountScreen({ navigation }) {
       // ),
     });
   }, [navigation]);
-  useEffect(async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    setAuthUser(entity);
-    if (entity.role === 'user') {
-      setRole('user');
-    } else if (entity.role === 'team') {
-      setRole('team');
-    } else if (entity.role === 'club') {
-      setRole('club');
+  useEffect(() => {
+    const getData = async () => {
+      const entity = await Utility.getStorage('loggedInEntity');
+      setAuthUser(entity);
+      if (entity.role === 'user') {
+        setRole('user');
+      } else if (entity.role === 'team') {
+        setRole('team');
+      } else if (entity.role === 'club') {
+        setRole('club');
+      }
+      Promise.all([
+        getOwnGroupList(),
+        getTeamsList(),
+        getClubList(),
+      ]).then(() => {
+        setloading(false);
+      });
     }
-    Promise.all([
-      getOwnGroupList(),
-      getTeamsList(),
-      getClubList(),
-    ]).then(() => {
-      setloading(false);
-    });
+    getData()
   }, []);
 
   const getParentClub = (item) => {
