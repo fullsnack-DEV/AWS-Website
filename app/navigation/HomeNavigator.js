@@ -11,6 +11,9 @@ import SearchLocationScreen from '../screens/account/commonScreen/SearchLocation
 import colors from '../Constants/Colors'
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
+import strings from '../Constants/String';
+import UserAboutScreen from '../screens/home/UserAboutScreen';
+import UserBasicInfoScreen from '../screens/home/UserBasicInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -81,6 +84,40 @@ const HomeNavigator = () => (
         component={ WriteCommentScreen }
         options={ {
           title: 'Write Comment',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+
+    <Stack.Screen
+        name="UserAboutScreen"
+        component={UserAboutScreen}
+        options={{
+          title: strings.editabouttitle,
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+
+    <Stack.Screen
+        name="UserBasicInfoScreen"
+        component={UserBasicInfoScreen}
+        options={{
+          title: strings.editbasicinfotitle,
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

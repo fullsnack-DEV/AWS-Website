@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   StyleSheet,
-  Dimensions,
   View,
   SafeAreaView,
 } from 'react-native';
@@ -23,7 +22,11 @@ export default function TCDateTimePicker({
         backdropColor="black"
         backdropOpacity={0.5}
         style={{
-          marginLeft: 0, marginRight: 0, marginBottom: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          flexDirection: 'column-reverse',
+          justifyContent: 'flex-start',
         }}>
         <View style={styles.modelHeaderContainer}>
           <DatePicker
@@ -43,6 +46,7 @@ export default function TCDateTimePicker({
           />
         </View>
       </Modal>
+
     </SafeAreaView>
   );
 }
@@ -50,12 +54,9 @@ export default function TCDateTimePicker({
 const styles = StyleSheet.create({
   modelHeaderContainer: {
     width: '100%',
-    height: Dimensions.get('window').height / 3.8,
     backgroundColor: colors.whiteColor,
-    position: 'absolute',
     bottom: 0,
     left: 0,
-
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,

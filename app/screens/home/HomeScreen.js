@@ -32,6 +32,8 @@ import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import uploadImages from '../../utils/imageAction';
 import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
+import UserInfo from '../../components/Home/User/UserInfo';
+import { getJoinedTeams } from '../../api/Accountapi';
 
 export default function HomeScreen({ navigation, route }) {
   const [postData, setPostData] = useState([]);
@@ -48,6 +50,7 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = await Utility.getStorage('loggedInEntity');
+
       if (entity.role === 'club' || entity.role === 'team') {
         if (entity.uid === undefined) {
           getUserDetails(entity.auth.user_id)
@@ -70,8 +73,17 @@ export default function HomeScreen({ navigation, route }) {
       } else if (entity.role === 'user') {
         getUserDetails(entity.uid)
           .then((res) => {
+            const userDetails = res.payload;
             setCurrentUserData(res.payload);
-            setloading(false);
+            getJoinedTeams(entity.uid)
+              .then((response) => {
+                userDetails.joined_teams = response.payload.teams;
+                userDetails.joined_clubs = response.payload.clubs;
+                setCurrentUserData(userDetails);
+              })
+              .catch((errorTeam) => {
+                userDetails.joined_group_erros = errorTeam.messages;
+              });
           })
           .catch((error) => {
             Alert.alert('', error.messages)
@@ -415,7 +427,13 @@ export default function HomeScreen({ navigation, route }) {
                     userID={userID}
                   />
                 </View>)}
-                {tabKey === 1 && (<View style={{ flex: 1 }} />)}
+                {tabKey === 1 && (<View style={{ flex: 1 }} >
+                  <UserInfo
+                    navigation={navigation}
+                    userDetails={currentUserData}
+                    userID={userID}
+                  />
+                </View>)}
                 {tabKey === 2 && (<View style={{ flex: 1 }} />)}
                 {tabKey === 3 && (<View style={{ flex: 1 }} />)}
                 {tabKey === 4 && (<View>

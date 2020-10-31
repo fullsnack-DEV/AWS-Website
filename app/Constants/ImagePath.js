@@ -107,7 +107,7 @@ const images = {
   gallaryImage: require('../assets/images/image.png'),
   bagTick: require('../assets/images/bagTick.png'),
   attatchmentGrey: require('../assets/images/attachmentGrey.png'),
-  likeOrange: require('../assets/images/orangeLike.png'),
+  // likeOrange: require('../assets/images/orangeLike.png'),
 
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
@@ -172,6 +172,7 @@ const images = {
 
   // create member profile
   checkGreenBG: require('../assets/images/check_green_bg.png'),
+  editButton: require('../assets/images/edit_button.png'),
 
 };
 

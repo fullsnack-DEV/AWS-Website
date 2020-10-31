@@ -7,10 +7,10 @@ import {
 } from 'react-native-responsive-screen';
 
 function ImageButton({
-  source, onImagePress, imageStyle, resizeMode,
+  source, onImagePress, imageStyle, resizeMode, style,
 }) {
   return (
-    <TouchableOpacity onPress={ onImagePress }>
+    <TouchableOpacity onPress={ onImagePress } style={ [styles.containerStyle, style] }>
       <Image source={ source } style={ [styles.imageStyle, imageStyle] } resizeMode={ 'contain' || resizeMode }/>
     </TouchableOpacity>
   );
