@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     height: 45,
     paddingLeft: 17,
     paddingRight: 5,
-    width: wp('80%'),
+    width: wp('90%'),
 
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 3 },

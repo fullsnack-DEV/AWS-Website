@@ -79,7 +79,6 @@ export default function InviteMembersByEmailScreen({ navigation }) {
                 data={email}
                 renderItem={renderItemEmail}
                 keyExtractor={(item, index) => index.toString()}
-                extraData={this.state}
                 style={styles.flateListStyle}
                 >
       </FlatList>

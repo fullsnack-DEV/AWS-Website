@@ -12,7 +12,7 @@ import fonts from '../Constants/Fonts'
 import images from '../Constants/ImagePath'
 
 function TCTouchableLabel({
-  title,
+  title = '',
   onPress,
   placeholder,
   placeholderTextColor = colors.userPostTimeColor,

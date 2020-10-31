@@ -119,8 +119,8 @@ export default function MembersProfileScreen({ navigation, route }) {
           <TCInfoField title={'E-mail'} value={memberDetail.email ? memberDetail.email : 'N/A'}/>
           <TCInfoField title={'Phone'} value={memberDetail.phone_numbers ? `${memberDetail.phone_numbers[0].country_code} ${memberDetail.phone_numbers[0].phone_number}` : 'N/A'}/>
           <TCInfoField title={'Address'} value={memberDetail.street_address ? `${memberDetail.street_address}, ${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}` : `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
-          <TCInfoField title={'Age'} value={getAge(new Date(memberDetail.birthday * 1000))}/>
-          <TCInfoField title={'Birthday'} value={`${monthNames[new Date(memberDetail.birthday * 1000).getMonth()]} ${new Date(memberDetail.birthday * 1000).getDate()} ,${new Date(memberDetail.birthday * 1000).getFullYear()}`}/>
+          <TCInfoField title={'Age'} value={getAge(new Date(memberDetail.birthday))}/>
+          <TCInfoField title={'Birthday'} value={`${monthNames[new Date(memberDetail.birthday).getMonth()]} ${new Date(memberDetail.birthday).getDate()} ,${new Date(memberDetail.birthday).getFullYear()}`}/>
           <TCInfoField title={'Gender'} value={memberDetail.gender ? memberDetail.gender : 'N/A'}/>
         </View>
         <TCThickDivider marginTop={20}/>

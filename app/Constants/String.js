@@ -13,6 +13,7 @@ const strings = {
   emailPlaceHolder: 'Email',
   addressPlaceholder: 'Address',
   positionPlaceholder: 'Position',
+  birthDatePlaceholder: 'Birthday',
   AppearancePlaceholder: 'Appearance',
   writeNotesPlaceholder: 'Notes',
   enterEmailPlaceholder: 'Enter your email',
@@ -233,5 +234,6 @@ const strings = {
   enterSloganPlaceholder: 'Enter Your Slogan',
   invitationSent: 'Invitation sent',
   userNotFoundByEmail: 'We didn’t find a user whose e-mail account is',
+  jerseyNumberPlaceholder: 'Jersey Number',
 };
 export default strings;

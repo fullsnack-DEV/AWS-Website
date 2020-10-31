@@ -1,28 +1,61 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
   ScrollView,
-
+  Alert,
+  FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import images from '../../../../Constants/ImagePath';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-
+import { getTeamsByClub } from '../../../../api/Accountapi';
+import * as Utility from '../../../../utils/index';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
+let entity = {};
 export default function CreateMemberProfileClubForm2({ navigation }) {
+  const [auth, setAuth] = useState({})
+  const [teamList, setTeamList] = useState([]);
+  // const [memberDetail, setMemberDetail] = useState({
+  //   group_id: entity.uid,
+  //   is_admin: false,
+  // });
+
+  useEffect(() => {
+    getAuthEntity()
+  }, [])
+  const getAuthEntity = async () => {
+    entity = await Utility.getStorage('loggedInEntity');
+    setAuth(entity);
+    console.log('AUTH::', entity);
+    getTeamsList()
+  }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => navigation.navigate('CreateMemberProfileClubForm3')}>Next</Text>
       ),
     });
-  }, [navigation]);
-
+  }, [navigation, auth]);
+  const getTeamsList = async () => {
+    getTeamsByClub(entity.uid).then((response) => {
+      if (response.status) {
+        // eslint-disable-next-line array-callback-return
+        response.payload.map((e) => {
+          e.is_admin = false;
+          e.is_member = false;
+        });
+        setTeamList(response.payload);
+      } else {
+        Alert.alert(response.messages);
+      }
+    });
+  };
   return (
 
     <ScrollView style={styles.mainContainer}>
@@ -38,9 +71,9 @@ export default function CreateMemberProfileClubForm2({ navigation }) {
           flexDirection: 'row', alignItems: 'center', marginRight: 15, marginBottom: 15,
         }}>
           <View style={styles.profileView}>
-            <Image source={ images.clubPlaceholder } style={ styles.profileImage } />
+            <Image source={auth.obj.thumbnail ? { uri: auth.obj.thumbnail } : images.clubPlaceholder } style={ styles.profileImage } />
           </View>
-          <TCGroupNameBadge groupType={'club'}/>
+          <TCGroupNameBadge name={auth.obj.group_name} groupType={'club'}/>
         </View>
         <View style={styles.checkBoxContainer}>
           <Image source={images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
@@ -49,44 +82,46 @@ export default function CreateMemberProfileClubForm2({ navigation }) {
 
       </View>
       <TCThinDivider/>
-      <View style={styles.mainCheckBoxContainer}>
-        <View style={{
-          flexDirection: 'row', alignItems: 'center', marginRight: 15, marginBottom: 15,
-        }}>
-          <View style={styles.profileView}>
-            <Image source={ images.teamPlaceholder } style={ styles.profileImage } />
-          </View>
-          <TCGroupNameBadge />
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <Image source={images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          <Text style={styles.checkBoxItemText}>Member</Text>
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <Image source={images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          <Text style={styles.checkBoxItemText}>Admin</Text>
-        </View>
-      </View>
-      <TCThinDivider/>
-      <View style={styles.mainCheckBoxContainer}>
-        <View style={{
-          flexDirection: 'row', alignItems: 'center', marginRight: 15, marginBottom: 15,
-        }}>
-          <View style={styles.profileView}>
-            <Image source={ images.teamPlaceholder } style={ styles.profileImage } />
-          </View>
-          <TCGroupNameBadge />
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <Image source={images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          <Text style={styles.checkBoxItemText}>Member</Text>
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <Image source={images.checkGreenBG} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          <Text style={styles.checkBoxItemText}>Admin</Text>
-        </View>
-      </View>
-      <TCThinDivider/>
+      <FlatList
+                  data={teamList}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item, index }) => (
+                    <>
+                      <View style={styles.mainCheckBoxContainer}>
+                        <View style={{
+                          flexDirection: 'row', alignItems: 'center', marginRight: 15, marginBottom: 15,
+                        }}>
+                          <View style={styles.profileView}>
+                            <Image source={ item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder } style={ styles.profileImage } />
+                          </View>
+                          <TCGroupNameBadge name={item.group_name} groupType={'team'}/>
+                        </View>
+                        <View style={styles.checkBoxContainer}>
+                          <TouchableOpacity onPress={() => {
+                            const tempList = [...teamList];
+                            tempList[index].is_member = !item.is_member;
+                            setTeamList(tempList);
+                          }}>
+                            <Image source={item.is_member ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+                          </TouchableOpacity>
+                          <Text style={styles.checkBoxItemText}>Member</Text>
+                        </View>
+                        <View style={styles.checkBoxContainer}>
+                          <TouchableOpacity onPress={() => {
+                            const tempList = [...teamList];
+                            tempList[index].is_admin = !item.is_admin;
+                            setTeamList(tempList);
+                          }}>
+                            <Image source={item.is_admin ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
+                          </TouchableOpacity>
+                          <Text style={styles.checkBoxItemText}>Admin</Text>
+                        </View>
+                      </View>
+                      <TCThinDivider/>
+                    </>
+                  )}
+                  />
+
       <View style={{ marginBottom: 20 }}/>
     </ScrollView>
 
@@ -145,7 +180,7 @@ const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
     height: 25,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 25,
     borderRadius: 50,
   },
