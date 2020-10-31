@@ -144,7 +144,7 @@ export default function ScheduleScreen({ navigation }) {
         <SectionList
           renderItem={ () => (
             // <Text key={index}>.{item}</Text>
-            <TCEventView onPress={ () => navigation.navigate('GameDetail') } />
+            <TCEventView onPress={ () => navigation.navigate('EventScreen') } />
           ) }
           renderSectionHeader={ ({ section: { title } }) => (
             <Text style={ styles.sectionHeader }>{title}</Text>

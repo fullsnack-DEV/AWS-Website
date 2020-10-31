@@ -24,10 +24,7 @@ function MultipleVideoWithLoader({ data }) {
   return (
     <View style={styles.singleImageDisplayStyle}>
       <View
-        style={[
-          styles.singleImageDisplayStyle,
-          { borderWidth: 1, borderColor: colors.lightgrayColor },
-        ]}>
+        style={styles.singleImageDisplayStyle}>
         <FastImage
           style={styles.loadimageStyle}
           source={loaderImage[randomImage].image}

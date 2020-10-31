@@ -21,7 +21,7 @@ function MultipleImageWithLoader({
 
   return (
     <View style={ styles.uploadedImage }>
-      <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
+      <View style={styles.uploadedImage}>
         <FastImage
           style={ styles.imageStyle }
           source={ loaderImage[randomImage].image }

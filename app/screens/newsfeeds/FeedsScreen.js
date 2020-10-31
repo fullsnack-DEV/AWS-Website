@@ -11,52 +11,13 @@ import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 
-export default function FeedsScreen({ navigation, route }) {
+export default function FeedsScreen({ navigation }) {
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
-
-  const progressStatus = (completed, total) => {
-    setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }
-
-  useEffect(() => {
-    const imageUploadFile = navigation.addListener('focus', async () => {
-      if (route.params && route.params.data) {
-        setTotalUploadCount(route.params.data.length || 1);
-        setProgressBar(true);
-        const imageArray = route.params.data.map((data) => (data))
-        uploadImages(imageArray, progressStatus).then((responses) => {
-          const attachments = responses.map((item) => ({
-            type: 'image',
-            url: item.fullImage,
-            thumbnail: item.thumbnail,
-          }))
-          const data = {
-            text: route.params.postDescriptions ? route.params.postDescriptions : '',
-            attachments,
-          };
-          createPost(data)
-            .then(() => getNewsFeed())
-            .then((response) => {
-              navigation.setParams({ data: null, postDescriptions: '' })
-              setPostData(response.payload.results)
-              setProgressBar(false);
-            })
-            .catch((e) => {
-              Alert.alert('', e.messages)
-            });
-        })
-      }
-    });
-
-    return () => {
-      imageUploadFile();
-    };
-  }, [route.params]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -70,7 +31,7 @@ export default function FeedsScreen({ navigation, route }) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -95,6 +56,38 @@ export default function FeedsScreen({ navigation, route }) {
       });
   }, []);
 
+  const progressStatus = (completed, total) => {
+    setDoneUploadCount(completed < total ? (completed + 1) : total)
+  }
+
+  const callthis = (data, postDesc) => {
+    if (data) {
+      setTotalUploadCount(data.length || 1);
+      setProgressBar(true);
+      const imageArray = data.map((dataItem) => (dataItem))
+      uploadImages(imageArray, progressStatus).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: 'image',
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+        }))
+        const dataParams = {
+          text: postDesc && postDesc,
+          attachments,
+        };
+        createPost(dataParams)
+          .then(() => getNewsFeed())
+          .then((response) => {
+            setPostData(response.payload.results)
+            setProgressBar(false);
+          })
+          .catch((e) => {
+            Alert.alert('', e.messages)
+          });
+      })
+    }
+  }
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -102,8 +95,7 @@ export default function FeedsScreen({ navigation, route }) {
             navigation={navigation}
             postDataItem={postData ? postData[0] : {}}
             onWritePostPress={() => {
-              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {} })
-              navigation.setParams({ data: null, postDescriptions: '' })
+              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis })
               setDoneUploadCount(0);
               setTotalUploadCount(0);
             }}
