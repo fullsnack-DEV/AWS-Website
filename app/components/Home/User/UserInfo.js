@@ -120,13 +120,13 @@ export default function UserInfo({
               userDetails,
             });
           }}/>
-          <TCInfoField title={'Email'} value={userDetails.email} marginLeft={10} marginTop={20}/>
-          <TCInfoField title={'Phone'} value={userDetails.phone} marginLeft={10} marginTop={2}/>
-          <TCInfoField title={'Address'} value={'1200 Alberni street, Vancouver 1200 Alberni street, Vancouver '} marginLeft={10} marginTop={2}/>
-          <TCInfoField title={'Birth'} value={birthdayInString(userDetails.birthday)} marginLeft={10} marginTop={2}/>
-          <TCInfoField title={'Gender'} value={userDetails.gender} marginLeft={10} marginTop={2}/>
-          <TCInfoField title={'Height'} value={userDetails.height} marginLeft={10} marginTop={2}/>
-          <TCInfoField title={'Weight'} value={userDetails.weight} marginLeft={10} marginTop={2}/>
+          <TCInfoField title={'Email'} value={userDetails.email ? userDetails.email : 'n/a'} marginLeft={10} marginTop={20}/>
+          <TCInfoField title={'Phone'} value={userDetails.phone ? userDetails.phone : 'n/a'} marginLeft={10} marginTop={2}/>
+          <TCInfoField title={'Address'} value={userDetails.address ? userDetails.address : 'n/a'} marginLeft={10} marginTop={2}/>
+          <TCInfoField title={'Birth'} value={userDetails.birthday ? birthdayInString(userDetails.birthday) : 'n/a'} marginLeft={10} marginTop={2}/>
+          <TCInfoField title={'Gender'} value={userDetails.gender ? userDetails.gender : 'n/a'} marginLeft={10} marginTop={2}/>
+          <TCInfoField title={'Height'} value={userDetails.height ? userDetails.height : 'n/a'} marginLeft={10} marginTop={2}/>
+          <TCInfoField title={'Weight'} value={userDetails.weight ? userDetails.weight : 'n/a'} marginLeft={10} marginTop={2}/>
         </View>
         {/* Gray divider */}
         <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>

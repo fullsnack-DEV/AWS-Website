@@ -122,7 +122,6 @@ const HomeNavigator = () => (
           headerTitleStyle: {
             fontWeight: '500',
           },
-          headerShown: false,
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,
