@@ -19,7 +19,7 @@ import * as Utility from '../../utils/index';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
 import {
-  getUserDetails, getGallery, getUserPosts, getUserClubDetails,
+  getUserDetails, getGallery, getUserPosts, getGroupDetails,
 } from '../../api/Homeapi';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -47,81 +47,46 @@ export default function HomeScreen({ navigation, route }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
 
+  const getData = async (uid, isUserHome) => {
+    if (isUserHome) {
+      getUserDetails(uid).then((res) => {
+        const userDetails = res.payload;
+        setCurrentUserData(res.payload);
+        getJoinedTeams(uid).then((response) => {
+          userDetails.joined_teams = response.payload.teams;
+          userDetails.joined_clubs = response.payload.clubs;
+          setCurrentUserData(userDetails);
+        });
+      });
+    } else {
+      getGroupDetails(uid).then((res) => {
+        setCurrentUserData(res.payload);
+      });
+    }
+    getUserPosts(uid).then((response) => {
+      setPostData(response.payload.results);
+      setloading(false);
+    });
+    getGallery(uid).then((res) => {
+      setGalleryData(res.payload);
+    });
+    setUserID(uid);
+  };
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = await Utility.getStorage('loggedInEntity');
-
-      if (entity.role === 'club' || entity.role === 'team') {
-        if (entity.uid === undefined) {
-          getUserDetails(entity.auth.user_id)
-            .then((res) => {
-              setCurrentUserData(res.payload);
-              setloading(false);
-            })
-            .catch((error) => {
-              Alert.alert('', error.messages)
-              setloading(false);
-            });
-        } else {
-          getUserClubDetails(entity.uid)
-            .then((res) => {
-              setCurrentUserData(res.payload);
-              setloading(false);
-            })
-            .catch(() => setloading(false));
-        }
-      } else if (entity.role === 'user') {
-        getUserDetails(entity.uid)
-          .then((res) => {
-            const userDetails = res.payload;
-            setCurrentUserData(res.payload);
-            getJoinedTeams(entity.uid)
-              .then((response) => {
-                userDetails.joined_teams = response.payload.teams;
-                userDetails.joined_clubs = response.payload.clubs;
-                setCurrentUserData(userDetails);
-              })
-              .catch((errorTeam) => {
-                userDetails.joined_group_erros = errorTeam.messages;
-              });
-          })
-          .catch((error) => {
-            Alert.alert('', error.messages)
-            setloading(false);
-          });
-      }
-      if (entity.uid === undefined) {
-        setUserID(entity.auth.user_id);
-      } else {
-        setUserID(entity.uid);
-      }
-      const params = {
-        uid: entity.uid || entity.auth.user_id,
-      };
-      getUserPosts(params)
-        .then((response) => {
-          setPostData(response.payload.results);
-          setloading(false);
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages)
-          setloading(false);
-        });
-      getGallery(entity.uid || entity.auth.user_id)
-        .then((res) => {
-          setGalleryData(res.payload);
-          setloading(false);
-        })
-        .catch((error) => {
-          Alert.alert('', error.messages)
-          setloading(false);
-        })
+      const uid = entity.uid || entity.auth.user_id;
+      // FIXME: take uid from param because any user may visit home screen of user/club
+      getData(uid, entity.role === 'user').catch((error) => {
+        Alert.alert('', error.messages);
+        setloading(false);
+      });
     });
     return () => {
       unsubscribe();
     };
   }, []);
-
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
   }

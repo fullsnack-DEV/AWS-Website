@@ -13,9 +13,9 @@ export const getUserDetails = async (userID) => makeAPIRequest({
   url: Config.BASE_URL + api.home.getCurrentUser + userID,
 });
 
-export const getUserClubDetails = async (userID) => makeAPIRequest({
+export const getGroupDetails = async (userID) => makeAPIRequest({
   method: 'get',
-  url: Config.BASE_URL + api.home.getCurrentClubUser + userID,
+  url: Config.BASE_URL + api.home.getGroupDetails + userID,
 });
 
 export const getGallery = async (userID) => makeAPIRequest({

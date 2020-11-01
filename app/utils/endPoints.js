@@ -24,7 +24,7 @@ const api = {
   home: {
     getUserPosts: 'posts',
     getCurrentUser: 'users/',
-    getCurrentClubUser: 'groups/',
+    getGroupDetails: 'groups/',
     players: 'players/',
     gallery: '/gallery',
   },
