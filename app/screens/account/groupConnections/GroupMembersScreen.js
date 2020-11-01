@@ -18,8 +18,8 @@ import ActionSheet from 'react-native-actionsheet';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 
+import * as Utility from '../../../utils/index';
 import UserRoleView from '../../../components/groupConnections/UserRoleView';
-
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
 
@@ -83,6 +83,7 @@ const filterArray = [
     ],
   },
 ]
+let entity = {};
 export default function GroupMembersScreen({ navigation, route }) {
   const actionSheet = useRef();
   const isFocused = useIsFocused();
@@ -94,9 +95,15 @@ export default function GroupMembersScreen({ navigation, route }) {
   const [allSelected, setAllSelected] = useState(false);
   const [filter, setFilter] = useState([filterArray]);
   const [members, setMembers] = useState([]);
+  const [switchUser, setSwitchUser] = useState({})
 
   useEffect(() => {
+    const getAuthEntity = async () => {
+      entity = await Utility.getStorage('loggedInEntity');
+      setSwitchUser(entity)
+    }
     getMembers()
+    getAuthEntity()
   }, [isFocused])
 
   const getMembers = async () => {
@@ -119,7 +126,7 @@ export default function GroupMembersScreen({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation]);
+  }, [navigation, switchUser]);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -196,8 +203,9 @@ export default function GroupMembersScreen({ navigation, route }) {
       <ActionSheet
                 ref={actionSheet}
                 // title={'News Feed Post'}
-                options={['Group Message', 'Invite Member', 'Create Member Profile', 'Connect Member Account', 'Privacy Setting', 'Setting', 'Cancel']}
-                cancelButtonIndex={6}
+                options={switchUser.role === 'club' ? ['Group Message', 'Invite Member', 'Create Member Profile', 'Connect Member Account', 'Privacy Setting', 'Setting', 'Cancel']
+                  : ['Group Message', 'Invite Member', 'Create Member Profile', 'Connect Member Account', 'Privacy Setting', 'Cancel']}
+                cancelButtonIndex={switchUser.role === 'club' ? 6 : 5}
                 // destructiveButtonIndex={1}
                 onPress={(index) => {
                   if (index === 0) {
@@ -212,6 +220,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                     navigation.navigate('MembersViewPrivacyScreen');
                   } else if (index === 5) {
                     console.log('Pressed sheet :', index);
+                    navigation.navigate('ClubSettingScreen');
                   }
                 }}
               />

@@ -32,9 +32,9 @@ export const postGroups = async (params, caller_id, caller) => makeAPIRequest({
   data: params,
 })
 
-export const getJoinedTeams = async () => makeAPIRequest({
+export const getJoinedTeams = async (player_id = undefined) => makeAPIRequest({
   method: 'get',
-  url: Config.BASE_URL + api.account.joinedTeams,
+  url: Config.BASE_URL + api.account.joinedTeams + player_id ? `?player_id= + ${player_id}` : '',
 })
 
 export const getTeamsByClub = async (clubID) => makeAPIRequest({
@@ -101,5 +101,13 @@ export const createMemberProfile = async (groupID, params) => makeAPIRequest({
   url:
       Config.BASE_URL
       + api.account.parentClubDetail + groupID + api.account.createMemberProfile,
+  data: params,
+})
+
+export const syncClubSetting = async (groupID, params) => makeAPIRequest({
+  method: 'patch',
+  url:
+      Config.BASE_URL
+      + api.account.parentClubDetail + groupID,
   data: params,
 })

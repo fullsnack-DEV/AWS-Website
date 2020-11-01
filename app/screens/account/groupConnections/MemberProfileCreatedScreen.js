@@ -1,33 +1,72 @@
-import React, {
-
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Text, View, StyleSheet, Image,
+  Text, View, StyleSheet, Image, Alert, Linking,
 } from 'react-native';
 
+import * as Utility from '../../../utils/index';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import { connectProfile } from '../../../api/Accountapi';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import strings from '../../../Constants/String';
 import TCBorderButton from '../../../components/TCBorderButton';
 
-export default function MemberProfileCreatedScreen({ navigation }) {
+let entity = {};
+export default function MemberProfileCreatedScreen({ navigation, route }) {
+  const [loading, setloading] = useState(false);
+  const [switchUser, setSwitchUser] = useState({})
+
+  useEffect(() => {
+    const getAuthEntity = async () => {
+      entity = await Utility.getStorage('loggedInEntity');
+      setSwitchUser(entity)
+    }
+    getAuthEntity()
+  }, [])
+  const connectMemberProfile = () => {
+    setloading(true)
+    connectProfile(switchUser.uid, route.params.memberObj.user_id).then((response) => {
+      if (response.status) {
+        setloading(false)
+        Alert.alert('Towns Cup', response.messages)
+        console.log('RESPONSE::::::');
+        navigation.navigate('ConnectionReqSentScreen', { memberObj: route.params.memberObj });
+      }
+    })
+      .catch((e) => {
+        setloading(false)
+        Alert.alert('Towns Cup', e.messages)
+      });
+  }
   return (
+
     <View style={styles.mainContainer}>
+
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.signUpBg1} />
+      <ActivityLoader visible={loading} />
 
-      <View style={styles.topContainer}>
-        <Text style={styles.notFoundUserText}>Neymar’s profile has been created in your club.</Text>
-        <Image style={styles.userImage} source={images.profilePlaceHolder}></Image>
-        <Text style={styles.emailText}>neymar@hotmail.com</Text>
+      {route.params.memberObj && <View style={styles.topContainer}>
+        <Text style={styles.notFoundUserText}>{route.params.memberObj.first_name}’s profile has been created in your {switchUser.role}.</Text>
+        <Image style={styles.userImage} source={route.params.memberObj.thumbnail ? { uri: route.params.memberObj.thumbnail } : images.profilePlaceHolder}></Image>
+        <Text style={styles.emailText}>{route.params.memberObj.email}</Text>
 
-        <TCBorderButton title={strings.sendInvite} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('MemberProfileCreatedScreen')} fontSize={16}/>
+        <TCBorderButton title={route.params.buttonTitle} borderColor={colors.whiteColor} marginTop={20} onPress={() => {
+          if (route.params.buttonTitle === 'Connect this member profile') {
+            connectMemberProfile()
+          } else {
+            Linking.openURL(`mailto:${route.params.memberObj.email}`)
+          }
+        }} fontSize={16}/>
         <TCBorderButton title={strings.createOtherProfile} textColor={colors.whiteColor} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('MemberProfileCreatedScreen')} fontSize={16} backgroundColor={'transparent'}/>
 
-      </View>
-      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('MemberProfileCreatedScreen')} fontSize={16} marginBottom={15}/>
+      </View>}
+
+      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('MemberProfileCreatedScreen')} fontSize={16} marginBottom={50}/>
+
     </View>
+
   );
 }
 const styles = StyleSheet.create({

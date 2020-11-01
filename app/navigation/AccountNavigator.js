@@ -48,7 +48,8 @@ import CreateMemberProfileForm1 from '../screens/account/groupConnections/create
 import CreateMemberProfileTeamForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileTeamForm2';
 import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm2';
 import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
-
+import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
+import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
 import colors from '../Constants/Colors'
 import EventScreen from '../screens/account/schedule/EventScreen';
 
@@ -659,6 +660,31 @@ const AccountNavigator = () => (
         component={ CreateMemberProfileClubForm3 }
         options={ {
           title: 'Create Member Profile',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="ConnectionReqSentScreen"
+        component={ ConnectionReqSentScreen }
+        options={ {
+          headerTransparent: true,
+          title: ' ',
+          headerTintColor: colors.whiteColor,
+        } }
+      />
+    <Stack.Screen
+        name="ClubSettingScreen"
+        component={ ClubSettingScreen }
+        options={ {
+          title: 'Settings',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
