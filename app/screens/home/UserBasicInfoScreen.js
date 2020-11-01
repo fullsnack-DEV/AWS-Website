@@ -114,11 +114,16 @@ export default function UserBasicInfoScreen({ navigation, route }) {
 
         <View>
           <TCLabel title= {strings.phone }/>
-          <TCPhoneNumber placeholder={strings.selectCode}
-          value={userData.phone_country}
-          numberValue={userData.phone}
-          onChangeText={(text) => setUserData({ ...userData, phone: text })}
-          />
+          <TCPhoneNumber
+            marginBottom={2}
+            placeholder={strings.selectCode}
+            value={userData.phone_country}
+            numberValue={userData.phone}
+            onValueChange={(value) => {
+              setUserData({ ...userData, phone_country: value })
+            }} onChangeText={(text) => {
+              setUserData({ ...userData, phone: text })
+            }} />
         </View>
 
         <View>
