@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   View, Text, StyleSheet, FlatList, Image,
 } from 'react-native';
@@ -88,7 +89,6 @@ export default function UserInfo({
         <View style={styles.sectionStyle}>
           <TCEditHeader title= {strings.abouttitle} showEditButton={true}
           onEditPress={() => {
-            console.log('edit about clicked')
             navigation.navigate('UserAboutScreen', {
               userDetails,
             });
