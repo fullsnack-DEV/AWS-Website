@@ -60,7 +60,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
         <Text style={ {
           marginEnd: 16,
           fontSize: 14,
-          fontFamily: fonts.RLight,
+          fontFamily: fonts.RRegular,
           color: colors.lightBlackColor,
         } } onPress={ () => {
           onSaveButtonClicked();
@@ -95,7 +95,6 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
       Alert.alert('Towns Cup', 'Location cannot be blank');
       return false
     }
-
     return true
   };
 
@@ -172,7 +171,9 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
           callUpdateUserAPI(userProfile);
         })
           .catch((e) => {
-            Alert.alert('Towns Cup', e.messages)
+            setTimeout(() => {
+              Alert.alert('Towns Cup', e.messages)
+            }, 0.1)
             setloading(false);
           });
       } else {
@@ -182,14 +183,12 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   }
 
   const callUpdateUserAPI = (userProfile) => {
-    setloading(true);
-    console.log('bodyParams :- ', userProfile)
-    setloading(false);
     updateUserProfile(userProfile).then(async (response) => {
+      setloading(false);
       if (response && response.status === true) {
         setTimeout(() => {
           Alert.alert('Towns Cup', 'Profile changed sucessfully');
-        }, 0)
+        }, 0.1)
         const entity = await Utility.getStorage('loggedInEntity')
         entity.obj = response.payload;
         entity.auth.user = response.payload;
@@ -197,9 +196,8 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
       } else {
         setTimeout(() => {
           Alert.alert('Towns Cup', 'Something went wrong');
-        }, 0)
+        }, 0.1)
       }
-      setloading(false);
     })
   }
 
@@ -270,7 +268,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
       } else {
         actionSheet.current.show();
       }
-    }, 0)
+    }, 0.1)
   }
 
   const onProfileImageClicked = () => {
@@ -281,7 +279,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
       } else {
         actionSheet.current.show();
       }
-    }, 0)
+    }, 0.1)
   }
 
   return (
@@ -366,14 +364,9 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
             multiline
             maxLength={150}
             value={description}
-            style={ styles.sloganTxt }
+            height={120}
             />
         </View>
-
-        {/* <TCGradientButton
-          title={strings.saveTitle}
-          onPress = {() => onSaveButtonClicked()}
-        /> */}
       </ScrollView>
     </>
   );
@@ -383,9 +376,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
-  },
-  sloganTxt: {
-    height: 120,
   },
   validationSign: {
     fontSize: 20,

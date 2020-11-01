@@ -12,10 +12,12 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCInfoField({
-  title = 'title', value = 'value', color = colors.lightBlackColor, ...Props
+  title = 'title',
+  value = 'value',
+  color = colors.lightBlackColor,
+  ...Props
 }) {
   return (
-
     <View style={[styles.fieldView, Props]}>
       <Text style={styles.fieldTitle} numberOfLines={1}>{title}</Text>
       <Text style={[styles.fieldValue, { color }]} numberOfLines={2} >{value}</Text>
@@ -26,7 +28,7 @@ export default function TCInfoField({
 const styles = StyleSheet.create({
   fieldView: {
     flexDirection: 'row',
-    marginLeft: 20,
+    marginLeft: 25,
     marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
@@ -36,10 +38,11 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     flex: 0.3,
+    paddingTop: 4,
   },
   fieldValue: {
     fontSize: 16,
-
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     flex: 0.7,
   },

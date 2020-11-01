@@ -10,6 +10,10 @@ export const deviceWidth = Dimensions.get('window').width;
 
 export const getPageLimit = () => 10;
 
+export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+  'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
 export const isFieldEmpty = (text) => {
   console.log('text', text);
   if (text === '') {

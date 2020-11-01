@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useState,
+} from 'react';
+
 import {
   StyleSheet, Platform, Image, View, TextInput,
 
@@ -12,20 +15,31 @@ import images from '../Constants/ImagePath'
 export default function TCPhoneNumber({
   placeholder, value, numberValue, onValueChange, onChangeText,
 }) {
+  console.log('this value', value)
+
+  const [countryCode, setCountryCode] = useState(value);
+
+  const onPhoneNumberCountryChanged = async (local_countryCode) => {
+    console.log('Value', local_countryCode);
+    setCountryCode(local_countryCode)
+    if (onValueChange) {
+      onValueChange(local_countryCode);
+    }
+  }
+
   return (
     <View
          style={ styles.mainContainer}>
       <RNPickerSelect
            placeholder={ {
              label: placeholder,
-             value: '',
            } }
            items={ [
              { label: 'Canada(+1)', value: 'Canada(+1)' },
              { label: 'United States(+1)', value: 'United States(+1)' },
            ] }
-           onValueChange={ onValueChange }
-           value={ value }
+           onValueChange={ onPhoneNumberCountryChanged }
+           value={ countryCode }
            // disabled={ !editMode }
            useNativeAndroidPickerStyle={ false }
            // eslint-disable-next-line no-sequences

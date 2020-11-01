@@ -36,6 +36,7 @@ const strings = {
   lnameText: 'Last Name',
   nameText: 'Name',
   save: 'Save',
+  done: 'Done',
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
 
@@ -237,6 +238,7 @@ const strings = {
   lastName: 'Last Name',
   enterLastNamePlaceholder: 'Enter Last Name',
   enterBioPlaceholder: 'Enter Your Biography',
+  enterAboutPlaceholder: 'Enter Your About',
 
   inviteEmailText: 'Please enter the e-mail account of the person that you want to invite.',
   inviteSearchText: 'Who do you want to invite to your team?',
@@ -251,5 +253,20 @@ const strings = {
   invitationSent: 'Invitation sent',
   userNotFoundByEmail: 'We didn’t find a user whose e-mail account is',
   jerseyNumberPlaceholder: 'Jersey Number',
+
+  abouttitle: 'About',
+  basicinfotitle: 'Basic Info',
+  teamstitle: 'Teams',
+  clubstitle: 'Clubs',
+  signedupin: 'Signed up in ',
+  editabouttitle: 'Edit About',
+  editbasicinfotitle: 'Edit Basic Info',
+  birth: 'Birth',
+  gender: 'Gender',
+  phone: 'Phone',
+  height: 'Height',
+  weight: 'Weight',
+  heightplaceholder: 'Enter Your Height',
+  weightplaceholder: 'Enter Your Weight',
 };
 export default strings;
