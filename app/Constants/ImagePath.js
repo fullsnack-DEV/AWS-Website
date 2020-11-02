@@ -174,6 +174,9 @@ const images = {
   checkGreenBG: require('../assets/images/check_green_bg.png'),
   editButton: require('../assets/images/edit_button.png'),
 
+  radioUnSelectGreen: require('../assets/images/uncheck_no_tick.png'),
+  radioSelectGreen: require('../assets/images/check_green_tick.png'),
+
 };
 
 export default images;

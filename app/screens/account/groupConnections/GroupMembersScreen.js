@@ -11,6 +11,7 @@ import {
   SectionList,
   Alert,
   FlatList,
+
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -195,7 +196,12 @@ export default function GroupMembersScreen({ navigation, route }) {
 
         {members.length > 0 ? <FlatList
                   data={members}
-                  renderItem={({ item }) => <UserRoleView data = {item} onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}/>}
+                  renderItem={({ item }) => <UserRoleView data = {item}
+                   onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}
+                   onPressMessage ={() => {
+                     console.log('EMAIL PRESSED');
+                     // Linking.openURL(`mailto:${item.email}`);
+                   }}/>}
                   keyExtractor={(item, index) => index.toString()}
                   /> : <TCNoDataView title={'No Members Found'}/>}
 
@@ -215,11 +221,10 @@ export default function GroupMembersScreen({ navigation, route }) {
                   } else if (index === 2) {
                     navigation.navigate('CreateMemberProfileForm1');
                   } else if (index === 3) {
-                    console.log('Pressed sheet :', index);
+                    navigation.navigate('ConnectMemberAccountScreen', { groupID: route.params.groupID });
                   } else if (index === 4) {
                     navigation.navigate('MembersViewPrivacyScreen');
                   } else if (index === 5) {
-                    console.log('Pressed sheet :', index);
                     navigation.navigate('ClubSettingScreen');
                   }
                 }}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, Platform, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import HomeScreen from '../screens/home/HomeScreen';
+// import HomeScreen from '../screens/home/HomeScreen';
 
 import AccountNavigator from './AccountNavigator';
 import NewsFeedNavigator from './NewsFeedNavigator';
@@ -13,6 +13,7 @@ import images from '../Constants/ImagePath'
 
 import ReservationNavigator from './ReservationNavigator';
 import HomeNavigator from './HomeNavigator';
+import AccountDrawerNavigator from './AccountDrawerNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -124,7 +125,7 @@ function AppNavigator() {
       />
       <Tab.Screen
         name="Notification"
-        component={ HomeScreen }
+        component={ AccountDrawerNavigator }
         options={ {
           tabBarIcon: ({ focused }) => (
             <Image

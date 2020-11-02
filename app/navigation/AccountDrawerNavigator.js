@@ -1,9 +1,9 @@
-// import React from 'react';
+import React from 'react';
 
-// import { createDrawerNavigator } from '@react-navigation/drawer';
-// import AccountNavigator from './AccountNavigator';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import AccountScreen from '../screens/account/AccountScreen';
+import HomeNavigator from './HomeNavigator';
 
-// import AccountScreen from '../screens/account/index';
 // import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 // import GameDetail from '../screens/account/schedule/GameDetail';
 // import GameRecording from '../screens/account/schedule/GameRecording';
@@ -35,12 +35,16 @@
 // import ChangePasswordScreen from '../screens/account/userSettingPrivacy/changePassword'
 // import PersonalInformationScreen from '../screens/account/userSettingPrivacy/personalInformation'
 
-// const Drawer = createDrawerNavigator();
+const Drawer = createDrawerNavigator();
 
-// const AccountDrawerNavigator = () => (
-//     <Drawer.Navigator>
-//         <Drawer.Screen name="AccountScreen" component={ AccountNavigator } />
-//     </Drawer.Navigator>
-// )
+const AccountDrawerNavigator = () => (
+  <Drawer.Navigator drawerContent={(props) => <AccountScreen {...props} />}
+   drawerPosition={'right'}
+   openByDefault={false}
+   drawerStyle={{ width: '76%' }}>
+    <Drawer.Screen name="Home" component={ HomeNavigator } />
 
-// export default AccountDrawerNavigator;
+  </Drawer.Navigator>
+)
+
+export default AccountDrawerNavigator;

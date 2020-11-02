@@ -50,6 +50,8 @@ import CreateMemberProfileClubForm2 from '../screens/account/groupConnections/cr
 import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/createMemberProfile/CreateMemberProfileClubForm3';
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
+import ConnectMemberAccountScreen from '../screens/account/groupConnections/ConnectMemberAccountScreen';
+
 import colors from '../Constants/Colors'
 import EventScreen from '../screens/account/schedule/EventScreen';
 import CreateEventScreen from '../screens/account/schedule/CreateEventScreen';
@@ -693,6 +695,22 @@ const AccountNavigator = () => (
         component={ ClubSettingScreen }
         options={ {
           title: 'Settings',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="ConnectMemberAccountScreen"
+        component={ ConnectMemberAccountScreen }
+        options={ {
+          title: 'Connect Member Account',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
