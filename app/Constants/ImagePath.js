@@ -23,6 +23,7 @@ const images = {
   footballSport: require('../assets/images/ic_Basketball.png'),
 
   checkWhite: require('../assets/images/ic_white_check.png'),
+  check: require('../assets/images/check.png'),
   checkGreen: require('../assets/images/green_check.png'),
   whiteUncheck: require('../assets/images/white_uncheck.png'),
   uncheckWhite: require('../assets/images/ic_white_uncheck.png'),

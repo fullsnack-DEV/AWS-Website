@@ -47,14 +47,17 @@ export default function HomeScreen({ navigation, route }) {
   const [progressBar, setProgressBar] = useState(false);
 
   const getData = async (uid, isUserHome) => {
+    const user_ID = uid;
     if (isUserHome) {
       getUserDetails(uid).then((res) => {
         const userDetails = res.payload;
         setCurrentUserData(res.payload);
         getJoinedGroups(uid).then((response) => {
-          userDetails.joined_teams = response.payload.teams;
-          userDetails.joined_clubs = response.payload.clubs;
-          setCurrentUserData(userDetails);
+          if (response) {
+            userDetails.joined_teams = response.payload.teams;
+            userDetails.joined_clubs = response.payload.clubs;
+            setCurrentUserData(userDetails);
+          }
         });
       });
     } else {
@@ -62,7 +65,10 @@ export default function HomeScreen({ navigation, route }) {
         setCurrentUserData(res.payload);
       });
     }
-    getUserPosts(uid).then((response) => {
+    const params = {
+      uid: user_ID,
+    };
+    getUserPosts(params).then((response) => {
       setPostData(response.payload.results);
       setloading(false);
     });
@@ -76,60 +82,10 @@ export default function HomeScreen({ navigation, route }) {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       const uid = entity.uid || entity.auth.user_id;
-      // FIXME: take uid from param because any user may visit home screen of user/club
       getData(uid, entity.role === 'user').catch((error) => {
         Alert.alert('', error.messages);
         setloading(false);
       });
-      if (entity.role === 'club' || entity.role === 'team') {
-        if (entity.uid === undefined) {
-          getUserDetails(entity.auth.user_id)
-            .then((res) => {
-              setCurrentUserData(res.payload);
-              setloading(false);
-            })
-            .catch((error) => {
-              Alert.alert('', error.messages)
-              setloading(false);
-            });
-        }
-      } else if (entity.role === 'user') {
-        getUserDetails(entity.uid || entity.auth.user_id)
-          .then((res) => {
-            setCurrentUserData(res.payload);
-            setloading(false);
-          })
-          .catch((error) => {
-            Alert.alert('', error.messages)
-            setloading(false);
-          });
-      }
-      if (entity.uid === undefined) {
-        setUserID(entity.auth.user_id);
-      } else {
-        setUserID(entity.uid);
-      }
-      const params = {
-        uid: entity.uid || entity.auth.user_id,
-      };
-      getUserPosts(params)
-        .then((response) => {
-          setPostData(response.payload.results);
-          setloading(false);
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages)
-          setloading(false);
-        });
-      getGallery(entity.uid || entity.auth.user_id)
-        .then((res) => {
-          setGalleryData(res.payload);
-          setloading(false);
-        })
-        .catch((error) => {
-          Alert.alert('', error.messages)
-          setloading(false);
-        })
     });
     return () => {
       unsubscribe();
@@ -175,6 +131,10 @@ export default function HomeScreen({ navigation, route }) {
           .then((response) => {
             setPostData(response.payload.results)
             setProgressBar(false);
+            getGallery(userID).then((res) => {
+              console.log('Gallery Response :::---', res);
+              setGalleryData(res.payload);
+            });
           })
           .catch((e) => {
             Alert.alert('', e.messages)
@@ -225,7 +185,7 @@ export default function HomeScreen({ navigation, route }) {
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
-              console.log('Pick Images :-', pickImages);
+              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -276,7 +236,7 @@ export default function HomeScreen({ navigation, route }) {
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
-              console.log('Pick Images :-', pickImages);
+              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -327,7 +287,7 @@ export default function HomeScreen({ navigation, route }) {
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
-              console.log('Pick Images :-', pickImages);
+              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -443,13 +403,13 @@ export default function HomeScreen({ navigation, route }) {
             renderTabContain={(tabKey) => (
               <View>
                 {tabKey === 0 && (<View>
-                  <WritePost
+                  {editProfileVisible && <WritePost
                     navigation={navigation}
                     postDataItem={postData ? postData[0] : {}}
                     onWritePostPress={() => {
-                      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis })
+                      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: [] })
                     }}
-                  />
+                  />}
                   <NewsFeedList
                     navigation={navigation}
                     postData={postData}

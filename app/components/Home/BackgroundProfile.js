@@ -18,7 +18,6 @@ function BackgroundProfile({
   profileImageStyle,
   currentUserData,
 }) {
-  console.log('Current User Data ::--', currentUserData);
   let bgImage = '';
   if (currentUserData && currentUserData.background_full_image) {
     bgImage = currentUserData.background_full_image;

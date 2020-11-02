@@ -116,7 +116,7 @@ export default function ScheduleScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-          onPress={ () => alert('This is a 3 dot button!') }>
+          onPress={ () => navigation.navigate('CreateEventScreen') }>
           <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
         </TouchableWithoutFeedback>
       ),

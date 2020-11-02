@@ -95,7 +95,7 @@ export default function FeedsScreen({ navigation }) {
             navigation={navigation}
             postDataItem={postData ? postData[0] : {}}
             onWritePostPress={() => {
-              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis })
+              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: [] })
               setDoneUploadCount(0);
               setTotalUploadCount(0);
             }}

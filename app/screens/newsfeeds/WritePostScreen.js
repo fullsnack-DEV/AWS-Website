@@ -29,9 +29,10 @@ import colors from '../../Constants/Colors'
 import images from '../../Constants/ImagePath';
 
 export default function WritePostScreen({ navigation, route }) {
+  console.log('Route :-', route);
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [selectImage, setSelectImage] = useState([]);
+  const [selectImage, setSelectImage] = useState(route.params.selectedImageList);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(true);
   const { params: { postData, onPressDone } } = route;
