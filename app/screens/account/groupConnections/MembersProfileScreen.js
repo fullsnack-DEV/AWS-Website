@@ -13,7 +13,7 @@ import {
   FlatList,
 } from 'react-native';
 
-import { getMembersInfo } from '../../../api/Accountapi';
+import { getGroupMembersInfo } from '../../../api/Groups';
 import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath'
@@ -75,7 +75,7 @@ export default function MembersProfileScreen({ navigation, route }) {
       setEditBasicInfo(true)
     }
 
-    getMembersInfo(route.params.groupID, route.params.memberID).then((response) => {
+    getGroupMembersInfo(route.params.groupID, route.params.memberID).then((response) => {
       if (response.status) {
         console.log('PROFILE RESPONSE::', response.payload);
         setMemberDetail(response.payload);

@@ -12,7 +12,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { getJoinedTeams } from '../../api/Accountapi';
+import { getJoinedGroups } from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts'
@@ -22,7 +22,7 @@ export default function JoinedClubsScreen() {
   const [clubList, setClubList] = useState([]);
 
   useEffect(() => {
-    getJoinedTeams().then((response) => {
+    getJoinedGroups().then((response) => {
       if (response.status === true) {
         setClubList(response.payload.clubs);
       } else {

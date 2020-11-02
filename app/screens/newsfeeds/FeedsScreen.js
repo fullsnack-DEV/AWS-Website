@@ -6,7 +6,7 @@ import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
+import { createPost, getNewsFeed } from '../../api/NewsFeeds';
 import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';

@@ -13,7 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { getJoinedTeams, getTeamsByClub } from '../../api/Accountapi';
+import { getJoinedGroups, getTeamsOfClub } from '../../api/Groups';
 
 import * as Utility from '../../utils/index';
 
@@ -31,7 +31,7 @@ export default function JoinedTeamsScreen() {
   const getTeamsList = async () => {
     const entity = await Utility.getStorage('loggedInEntity');
     if (entity.role === 'club') {
-      getTeamsByClub(entity.uid).then((response) => {
+      getTeamsOfClub(entity.uid).then((response) => {
         if (response.status === true) {
           console.log('RESPONSE OF TEAM LIST BY CLUB::', response.payload);
           setTeamList(response.payload);
@@ -40,7 +40,7 @@ export default function JoinedTeamsScreen() {
         }
       });
     } else {
-      getJoinedTeams().then((response) => {
+      getJoinedGroups().then((response) => {
         if (response.status === true) {
           console.log('RESPONSE OF TEAM LIST::', response.payload);
           setTeamList(response.payload.teams);

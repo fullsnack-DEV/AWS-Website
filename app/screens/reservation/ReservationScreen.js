@@ -8,7 +8,7 @@ import {
 
 import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import { getReservationList } from '../../api/Reservationapi';
+import { getReservationList } from '../../api/Reservations';
 import MatchReservation from '../../components/reservations/MatchReservation';
 import TCNoDataView from '../../components/TCNoDataView';
 import strings from '../../Constants/String';

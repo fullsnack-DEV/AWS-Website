@@ -19,7 +19,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import * as Utility from '../../../../utils/index';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
-import { postGroups } from '../../../../api/Accountapi';
+import { createGroup } from '../../../../api/Groups';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors';
@@ -60,7 +60,7 @@ export default function CreateClubForm3({ navigation, route }) {
 
     const entity = await Utility.getStorage('loggedInEntity');
     // FIXME
-    postGroups(
+    createGroup(
       bodyParams,
       entity.role === 'team' && entity.uid,
       entity.role === 'team' && 'club',

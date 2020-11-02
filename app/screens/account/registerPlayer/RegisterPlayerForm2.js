@@ -25,7 +25,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import * as Utility from '../../../utils/index';
 
-import { patchRegisterPlayerDetails } from '../../../api/Accountapi';
+import { patchRegisterPlayerDetails } from '../../../api/Users';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 

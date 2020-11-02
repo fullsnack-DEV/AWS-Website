@@ -29,7 +29,7 @@ import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-import { getuserDetail } from '../../api/Authapi';
+import { getUserDetails } from '../../api/Users';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 
@@ -109,7 +109,7 @@ export default function LoginScreen({ navigation }) {
   };
   const getUserInfo = async () => {
     let entity = await Utility.getStorage('loggedInEntity');
-    const response = await getuserDetail(entity.auth.user_id);
+    const response = await getUserDetails(entity.auth.user_id);
     if (response.status) {
       entity = {
         ...entity,
@@ -157,7 +157,7 @@ export default function LoginScreen({ navigation }) {
                 expirationTime: idTokenResult.expirationTime,
               };
 
-              return getuserDetail(user.uid).then(async (response) => {
+              return getUserDetails(user.uid).then(async (response) => {
                 if (response.status) {
                   const entity = {
                     uid: user.uid,
@@ -207,7 +207,7 @@ export default function LoginScreen({ navigation }) {
                 expirationTime: idTokenResult.expirationTime,
               };
 
-              return getuserDetail(user.uid).then(async (response) => {
+              return getUserDetails(user.uid).then(async (response) => {
                 if (response.status) {
                   const entity = {
                     uid: user.uid,

@@ -21,7 +21,7 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
-import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
+import { createPost, getNewsFeed } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TagUserScreen from './TagUserScreen';
 import fonts from '../../Constants/Fonts'

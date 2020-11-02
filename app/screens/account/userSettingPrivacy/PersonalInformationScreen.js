@@ -25,7 +25,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
 import { useIsFocused } from '@react-navigation/native';
-import { updateUserProfile } from '../../../api/Accountapi';
+import { updateUserProfile } from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';

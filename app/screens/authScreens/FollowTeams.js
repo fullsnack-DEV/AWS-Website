@@ -13,7 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { getuserDetail, createUser } from '../../api/Authapi';
+import { getUserDetails, createUser } from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
@@ -95,7 +95,7 @@ export default function FollowTeams({ route }) {
   const getUserInfo = async () => {
     const entity = await Utility.getStorage('loggedInEntity');
     console.log('USER ENTITY:', entity);
-    const response = await getuserDetail(entity.auth.user_id);
+    const response = await getUserDetails(entity.auth.user_id);
 
     if (response.status) {
       entity.obj = response.payload

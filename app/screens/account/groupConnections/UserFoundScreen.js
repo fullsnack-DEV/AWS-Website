@@ -15,7 +15,7 @@ import fonts from '../../../Constants/Fonts'
 import strings from '../../../Constants/String';
 import TCProfileView from '../../../components/TCProfileView';
 import TCBorderButton from '../../../components/TCBorderButton';
-import { connectProfile } from '../../../api/Accountapi';
+import { connectProfile } from '../../../api/Groups';
 
 export default function UserFoundScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);

@@ -24,8 +24,8 @@ import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
 
 import {
-  getMembersList,
-} from '../../../api/Accountapi';
+  getGroupMembers,
+} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 import images from '../../../Constants/ImagePath'
@@ -107,7 +107,7 @@ export default function GroupMembersScreen({ navigation, route }) {
   }, [isFocused])
 
   const getMembers = async () => {
-    getMembersList(route.params.groupID)
+    getGroupMembers(route.params.groupID)
       .then((response) => {
         setMembers(response.payload)
         setSearchMember(response.payload)

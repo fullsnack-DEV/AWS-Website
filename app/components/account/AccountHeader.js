@@ -23,9 +23,9 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
 import {
-  getParentClubDetail,
+  getGroupDetails,
 
-} from '../../api/Accountapi';
+} from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
 
@@ -36,7 +36,7 @@ export default function AccountHeader({ authEntity, entityRole }) {
     console.log('AUTH DATA::', authEntity);
   }, [])
   const getParentClub = (item) => {
-    getParentClubDetail(item.group_id).then((response) => {
+    getGroupDetails(item.group_id).then((response) => {
       if (response.status === true) {
         if (response.payload.club !== undefined) {
           setParentGroup(response.payload.club);

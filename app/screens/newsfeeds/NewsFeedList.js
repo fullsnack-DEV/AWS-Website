@@ -4,7 +4,7 @@ import { View, FlatList, Alert } from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { createReaction, deletePost, getNewsFeed } from '../../api/NewsFeedapi';
+import { createReaction, deletePost, getNewsFeed } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'

@@ -7,7 +7,7 @@ import {
   Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,
 } from 'react-native';
 
-import { syncClubSetting } from '../../../api/Accountapi';
+import { patchGroup } from '../../../api/Groups';
 import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
@@ -27,7 +27,7 @@ export default function ClubSettingScreen({ navigation }) {
       allclubmembermannually_sync: selected === 0,
       allclubmemberautomatically_sync: selected === 1,
     }
-    syncClubSetting(entity.uid, bodyParams).then((response) => {
+    patchGroup(entity.uid, bodyParams).then((response) => {
       if (response.status) {
         setloading(false)
         console.log('Response :', response.payload);

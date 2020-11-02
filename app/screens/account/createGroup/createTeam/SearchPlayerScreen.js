@@ -23,7 +23,7 @@ import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
 
-import { getUsersList } from '../../../../api/Accountapi';
+import { getUsersList } from '../../../../api/Users';
 
 export default function SearchPlayerScreen({ navigation, route }) {
   const [players, setPlayers] = useState([]);
