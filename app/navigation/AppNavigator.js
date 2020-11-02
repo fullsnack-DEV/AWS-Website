@@ -56,7 +56,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'MemberProfileCreatedScreen'
     || routeName === 'ConnectionReqSentScreen'
     || routeName === 'EventScreen'
-
+    || routeName === 'CreateEventScreen'
   ) {
     return false;
   }

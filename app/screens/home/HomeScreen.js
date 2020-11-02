@@ -38,6 +38,7 @@ export default function HomeScreen({ navigation, route }) {
   const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(true);
+  const [editProfileVisible, setEditProfileVisible] = useState(false);
   const [userID, setUserID] = useState('');
   const [indexCounter, setIndexCounter] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
@@ -80,11 +81,76 @@ export default function HomeScreen({ navigation, route }) {
         Alert.alert('', error.messages);
         setloading(false);
       });
+      if (entity.role === 'club' || entity.role === 'team') {
+        if (entity.uid === undefined) {
+          getUserDetails(entity.auth.user_id)
+            .then((res) => {
+              setCurrentUserData(res.payload);
+              setloading(false);
+            })
+            .catch((error) => {
+              Alert.alert('', error.messages)
+              setloading(false);
+            });
+        }
+      } else if (entity.role === 'user') {
+        getUserDetails(entity.uid || entity.auth.user_id)
+          .then((res) => {
+            setCurrentUserData(res.payload);
+            setloading(false);
+          })
+          .catch((error) => {
+            Alert.alert('', error.messages)
+            setloading(false);
+          });
+      }
+      if (entity.uid === undefined) {
+        setUserID(entity.auth.user_id);
+      } else {
+        setUserID(entity.uid);
+      }
+      const params = {
+        uid: entity.uid || entity.auth.user_id,
+      };
+      getUserPosts(params)
+        .then((response) => {
+          setPostData(response.payload.results);
+          setloading(false);
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages)
+          setloading(false);
+        });
+      getGallery(entity.uid || entity.auth.user_id)
+        .then((res) => {
+          setGalleryData(res.payload);
+          setloading(false);
+        })
+        .catch((error) => {
+          Alert.alert('', error.messages)
+          setloading(false);
+        })
     });
     return () => {
       unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const entity = await Utility.getStorage('loggedInEntity');
+      setEditProfileVisible(false);
+      if (entity.obj.user_id !== undefined) {
+        if (entity.obj.user_id === entity.auth.user_id) {
+          setEditProfileVisible(true);
+        }
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
+
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
   }
@@ -362,10 +428,10 @@ export default function HomeScreen({ navigation, route }) {
         )}
         >
         <View style={{ flex: 1 }}>
-          <TCGradientButton
+          {editProfileVisible && <TCGradientButton
               outerContainerStyle={{ marginVertical: 10, marginTop: 20 }}
               title="Edit Profile" onPress = {() => { navigation.navigate('EditPersonalProfileScreen'); }
-              }/>
+              }/>}
           <View style={styles.sepratorStyle}/>
           <TCScrollableProfileTabs
             tabItem={['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
