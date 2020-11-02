@@ -100,13 +100,9 @@ export default function MembersProfileScreen({ navigation, route }) {
           </View>
           <Text style={styles.undatedTimeText} numberOfLines={2}>Joined club on May 9, 2019
             {'\n'}Last updated by Neymar JR on May 9, 2019</Text>
-          <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
-            if (memberDetail.group.connected) {
-              navigation.navigate('UserFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
-            } else {
-              navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
-            }
-          }}/>
+          {!memberDetail.connected && <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
+            navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
+          }}/>}
 
         </View>
         <TCThickDivider marginTop={20}/>

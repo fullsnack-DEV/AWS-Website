@@ -4,6 +4,8 @@ import {
   View,
   Image,
   Text,
+  Linking,
+  Alert,
 } from 'react-native';
 
 import images from '../../Constants/ImagePath';
@@ -45,8 +47,21 @@ export default function UserRoleView({ data, onPressProfile, onPressMessage }) {
         </View>
         <View style={styles.buttonContainer}>
           {data.group_member_detail.connected ? <TCMessageButton title = 'Message' color={colors.greeColor} onPressMessage={onPressMessage}/>
-            : <TCMessageButton title = 'Email' color={colors.lightBlackColor} onPressMessage={onPressMessage}/>}
-
+            : <TCMessageButton title = 'Email' color={colors.lightBlackColor} onPress={() => {
+              Linking.canOpenURL('mailto:')
+                // eslint-disable-next-line consistent-return
+                .then((supported) => {
+                  if (!supported) {
+                    // Linking.openURL(`mailto:${data.email}`)
+                    Alert.alert('Towns Cup', 'Please configure email in your device')
+                  } else {
+                    return Linking.openURL(`mailto:${data.email}`)
+                  }
+                })
+                .catch((err) => {
+                  console.error('An error occurred', err)
+                })
+            }}/>}
           <View style={{ marginBottom: 5, marginTop: 5 }}></View>
           <TCProfileButton onPressProfile={onPressProfile} />
         </View>

@@ -124,6 +124,7 @@ export default function AccountScreen({ navigation }) {
     });
   }, [navigation]);
   useEffect(() => {
+    console.log('NAVIGATION::', navigation);
     const getData = async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       setAuthUser(entity);

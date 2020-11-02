@@ -359,7 +359,7 @@ export default function HomeScreen({ navigation, route }) {
                 </TouchableOpacity>)
             }
             rightComponent={
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.openDrawer()}>
                 <Image source={images.menu} style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
               </TouchableOpacity>
             }
