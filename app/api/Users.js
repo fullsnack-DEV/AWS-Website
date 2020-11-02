@@ -19,7 +19,7 @@ export const updateUserProfile = async (params) => makeAPIRequest({
   data: params,
 })
 
-export const getUsersList = async () => makeAPIRequest({
+export const getUserList = async () => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/users`,
 })
