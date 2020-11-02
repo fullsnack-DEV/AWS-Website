@@ -14,7 +14,8 @@ import {
 } from 'react-native-responsive-screen';
 
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { getSportsList, createUser, getuserDetail } from '../../api/Authapi';
+import { createUser, getUserDetails } from '../../api/Users';
+import getSportsList from '../../api/Games';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import TCButton from '../../components/TCButton';
@@ -99,7 +100,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
   const getUserInfo = async () => {
     const entity = await Utility.getStorage('loggedInEntity');
     console.log('USER ENTITY:', entity);
-    const response = await getuserDetail(entity.auth.user_id);
+    const response = await getUserDetails(entity.auth.user_id);
 
     if (response.status) {
       entity.obj = response.payload

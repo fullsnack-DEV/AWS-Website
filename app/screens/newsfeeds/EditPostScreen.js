@@ -20,7 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageButton from '../../components/WritePost/ImageButton';
-import { updatePost, getNewsFeed } from '../../api/NewsFeedapi';
+import { updatePost, getNewsFeed } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import TagUserScreen from './TagUserScreen';

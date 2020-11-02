@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import * as Utility from '../../../../utils/index';
-import { createMemberProfile } from '../../../../api/Accountapi';
+import { createMemberProfile } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';

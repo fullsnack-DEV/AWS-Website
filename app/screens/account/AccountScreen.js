@@ -31,12 +31,9 @@ import fonts from '../../Constants/Fonts'
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
 
-import {
-  getParentClubDetail,
-  getUnreadCount,
-  getJoinedTeams,
-  getTeamsByClub,
-} from '../../api/Accountapi';
+import { getGroupDetails, getJoinedGroups, getTeamsOfClub } from '../../api/Groups';
+
+import getUnreadCount from '../../api/Notificaitons';
 
 import * as Utility from '../../utils/index';
 
@@ -149,7 +146,7 @@ export default function AccountScreen({ navigation }) {
   }, []);
 
   const getParentClub = (item) => {
-    getParentClubDetail(item.group_id).then((response) => {
+    getGroupDetails(item.group_id).then((response) => {
       if (response.status === true) {
         if (response.payload.club !== undefined) {
           setParentGroup(response.payload.club);
@@ -183,7 +180,7 @@ export default function AccountScreen({ navigation }) {
   const getTeamsList = async () => {
     const loggedInEntity = await Utility.getStorage('loggedInEntity');
     if (loggedInEntity.role === 'club') {
-      getTeamsByClub(loggedInEntity.uid).then((response) => {
+      getTeamsOfClub(loggedInEntity.uid).then((response) => {
         if (response.status === true) {
           setTeamList(response.payload);
         } else {
@@ -191,7 +188,7 @@ export default function AccountScreen({ navigation }) {
         }
       });
     } else {
-      getJoinedTeams().then((response) => {
+      getJoinedGroups().then((response) => {
         console.log('response::', response)
         if (response.status === true) {
           setTeamList(response.payload.teams);
@@ -203,7 +200,7 @@ export default function AccountScreen({ navigation }) {
   };
 
   const getClubList = async () => {
-    getJoinedTeams().then((response) => {
+    getJoinedGroups().then((response) => {
       if (response.status === true) {
         setClubList(response.payload.clubs);
       } else {

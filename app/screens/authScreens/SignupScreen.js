@@ -17,7 +17,7 @@ import {
 
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
-import { getuserDetail } from '../../api/Authapi';
+import { getUserDetails } from '../../api/Users';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
@@ -126,7 +126,7 @@ export default function SignupScreen({ navigation }) {
           user.sendEmailVerification();
         });
         return saveUserDetails().then((user) => {
-          getuserDetail(user.uid)
+          getUserDetails(user.uid)
             .then(() => {
               setloading(false);
               Alert.alert('This user is already registered!');

@@ -18,9 +18,9 @@ import colors from '../../Constants/Colors';
 import * as Utility from '../../utils/index';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
-import {
-  getUserDetails, getGallery, getUserPosts, getGroupDetails,
-} from '../../api/Homeapi';
+import { getUserDetails, getGallery } from '../../api/Users';
+import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
+import { getGroupDetails, getJoinedGroups } from '../../api/Groups';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TabView from '../../components/Home/TabView';
@@ -30,10 +30,8 @@ import MultipleImageRender from '../../components/Home/MultipleImageRender';
 import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import uploadImages from '../../utils/imageAction';
-import { createPost, getNewsFeed } from '../../api/NewsFeedapi';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
-import { getJoinedTeams } from '../../api/Accountapi';
 
 export default function HomeScreen({ navigation, route }) {
   const [postData, setPostData] = useState([]);
@@ -52,7 +50,7 @@ export default function HomeScreen({ navigation, route }) {
       getUserDetails(uid).then((res) => {
         const userDetails = res.payload;
         setCurrentUserData(res.payload);
-        getJoinedTeams(uid).then((response) => {
+        getJoinedGroups(uid).then((response) => {
           userDetails.joined_teams = response.payload.teams;
           userDetails.joined_clubs = response.payload.clubs;
           setCurrentUserData(userDetails);

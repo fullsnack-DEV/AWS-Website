@@ -4,7 +4,7 @@ import React, {
 import {
   Text, View, StyleSheet, FlatList, Alert,
 } from 'react-native';
-import { sendInvitationInGroup } from '../../../api/Accountapi';
+import { sendInvitationInGroup } from '../../../api/Users';
 import * as Utility from '../../../utils/index';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';

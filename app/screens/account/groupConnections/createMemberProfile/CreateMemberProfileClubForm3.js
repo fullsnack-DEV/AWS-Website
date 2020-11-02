@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 
-import { createMemberProfile } from '../../../../api/Accountapi';
+import { createMemberProfile } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';

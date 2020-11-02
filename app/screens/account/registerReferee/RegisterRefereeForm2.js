@@ -20,7 +20,7 @@ import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 
-import { patchRegisterRefereeDetails } from '../../../api/Accountapi';
+import { patchRegisterRefereeDetails } from '../../../api/Users';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 

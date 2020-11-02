@@ -10,7 +10,7 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';
-import { getUsersList, sendInvitationInGroup } from '../../../api/Accountapi';
+import { getUsersList, sendInvitationInGroup } from '../../../api/Users';
 import * as Utility from '../../../utils/index';
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
 import TCTags from '../../../components/TCTags';

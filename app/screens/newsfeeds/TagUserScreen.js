@@ -17,7 +17,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
-import { getGroupsUser, getUsers } from '../../api/NewsFeedapi';
+import { getUsers } from '../../api/Users';
+import { getMyGroups } from '../../api/Groups';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -39,7 +40,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
   }, []);
 
   useEffect(() => {
-    getGroupsUser()
+    getMyGroups()
       .then((response) => {
         setGroupData(response.payload);
       })

@@ -18,7 +18,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
-import { searchLocationList } from '../../../api/Authapi';
+import searchLocations from '../../../api/External';
 
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts'
@@ -34,7 +34,7 @@ export default function SearchLocationScreen({ navigation, route }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocationList(searchLocationText).then((response) => {
+      searchLocations(searchLocationText).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       });

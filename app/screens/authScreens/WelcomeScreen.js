@@ -21,7 +21,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
-import { getuserDetail } from '../../api/Authapi';
+import { getUserDetails } from '../../api/Users';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -93,7 +93,7 @@ export default function WelcomeScreen({ navigation }) {
             await Utility.setStorage('userInfo', userDetail);
             await Utility.setStorage('loggedInEntity', entity);
 
-            getuserDetail(user.uid).then((response) => {
+            getUserDetails(user.uid).then((response) => {
               setloading(false);
               if (response.status === true) {
                 Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
@@ -159,7 +159,7 @@ export default function WelcomeScreen({ navigation }) {
 
             await Utility.setStorage('userInfo', userDetail);
 
-            getuserDetail(user.uid).then((response) => {
+            getUserDetails(user.uid).then((response) => {
               setloading(false);
               if (response.status === true) {
                 Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')

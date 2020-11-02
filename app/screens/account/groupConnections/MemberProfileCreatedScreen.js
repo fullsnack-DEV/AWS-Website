@@ -5,7 +5,7 @@ import {
 
 import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import { connectProfile } from '../../../api/Accountapi';
+import { connectProfile } from '../../../api/Groups';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'

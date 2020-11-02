@@ -12,7 +12,7 @@ import {
 import images from '../../../../Constants/ImagePath';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-import { getTeamsByClub } from '../../../../api/Accountapi';
+import { getTeamsOfClub } from '../../../../api/Groups';
 import * as Utility from '../../../../utils/index';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
@@ -48,7 +48,7 @@ export default function CreateMemberProfileClubForm2({ navigation, route }) {
     navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
   }
   const getTeamsList = async () => {
-    getTeamsByClub(entity.uid).then((response) => {
+    getTeamsOfClub(entity.uid).then((response) => {
       if (response.status) {
         // eslint-disable-next-line array-callback-return
         response.payload.map((e) => {

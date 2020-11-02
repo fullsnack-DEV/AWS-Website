@@ -18,7 +18,7 @@ import {
 } from 'react-native-responsive-screen';
 import WriteCommentItems from '../../components/newsFeed/WriteCommentItems';
 
-import { createReaction, getReactions } from '../../api/NewsFeedapi';
+import { createReaction, getReactions } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
 import images from '../../Constants/ImagePath';

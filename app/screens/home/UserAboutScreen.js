@@ -13,7 +13,7 @@ import {
 
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
-import { updateUserProfile } from '../../api/Accountapi';
+import { updateUserProfile } from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils';

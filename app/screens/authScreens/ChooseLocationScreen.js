@@ -23,7 +23,8 @@ import Separator from '../../components/Separator';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-import { searchLocationList, searchGroupList } from '../../api/Authapi';
+import { searchGroups } from '../../api/Groups';
+import searchLocation from '../../api/External';
 
 export default function ChooseLocationScreen({ navigation }) {
   const [cityData, setCityData] = useState([]);
@@ -36,7 +37,7 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocationList(searchLocationText).then((response) => {
+      searchLocation(searchLocationText).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -52,7 +53,7 @@ export default function ChooseLocationScreen({ navigation }) {
       city: item.terms[0].value,
     };
 
-    searchGroupList(queryParams).then((response) => {
+    searchGroups(queryParams).then((response) => {
       if (response.status === true) {
         if (response.payload.length > 0) {
           navigation.navigate('TotalTeamsScreen', {

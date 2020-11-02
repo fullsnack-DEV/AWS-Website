@@ -2,7 +2,7 @@ import fs from 'react-native-fs';
 import axios from 'axios';
 // import ImageResizer from 'react-native-image-resizer';
 import { decode as atob } from 'base-64';
-import { getImagePreSignedURL } from '../api/NewsFeedapi';
+import getImagePreSignedURL from '../api/Media';
 
 const base64ToArrayBuffer = (base64) => {
   const binaryString = atob(base64);
