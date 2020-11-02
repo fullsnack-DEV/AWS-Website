@@ -11,17 +11,19 @@ import images from '../../Constants/ImagePath';
 
 function AddPhotoItem({
   onAddPhotoPress,
+  disabled,
 }) {
   return (
     <TouchableOpacity
         style={styles.headerImagePickerView}
         onPress={onAddPhotoPress}
+        disabled={disabled}
     >
       <Image
         style={styles.plusImageStyle}
         source={images.plus}
       />
-      <Text style={styles.addPhotoTextStyle}>Add Photo</Text>
+      <Text style={styles.addPhotoTextStyle}>Add</Text>
     </TouchableOpacity>
   );
 }

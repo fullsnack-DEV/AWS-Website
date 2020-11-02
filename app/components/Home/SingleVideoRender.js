@@ -10,7 +10,6 @@ import images from '../../Constants/ImagePath';
 import MultipleImageModal from '../newsFeed/MultipleImageModal';
 
 function SingleVideoRender({ data }) {
-  console.log('Data ::--,', data.attachments[0].url);
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
