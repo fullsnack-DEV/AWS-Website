@@ -11,13 +11,11 @@ import MapView, { Marker } from 'react-native-maps';
 function EventMapView({ region, coordinate }) {
   return (
     <MapView
-        region={region}
-        scrollEnabled={false}
-        style={styles.mapViewStyle}
-    >
-      <Marker
-        coordinate={coordinate}
-      />
+      region={region}
+      scrollEnabled={false}
+      zoomEnabled={false}
+      style={styles.mapViewStyle}>
+      <Marker coordinate={coordinate} />
     </MapView>
   );
 }

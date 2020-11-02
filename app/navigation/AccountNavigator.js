@@ -52,115 +52,123 @@ import ConnectionReqSentScreen from '../screens/account/groupConnections/Connect
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
 import colors from '../Constants/Colors'
 import EventScreen from '../screens/account/schedule/EventScreen';
+import CreateEventScreen from '../screens/account/schedule/CreateEventScreen';
 
 const Stack = createStackNavigator();
 
 const AccountNavigator = () => (
   <Stack.Navigator
-      screenOptions={ {
+    screenOptions={{
+      // headerTintColor: colors.blackColor,
+      // headerTransparent: true,
+      // headerTitle: true,
+      headerBackTitleVisible: false,
+    }}>
+    <Stack.Screen
+      name="AccountScreen"
+      component={AccountScreen}
+      options={{
+        // title: 'Account',
         // headerTintColor: colors.blackColor,
-        // headerTransparent: true,
-        // headerTitle: true,
-        headerBackTitleVisible: false,
-      } }>
+        // headerTitleStyle: {
+        //   fontWeight: '500',
+        // },
+        // headerStyle: {
+        //   backgroundColor: colors.whiteColor,
+        //   borderBottomColor: colors.grayColor,
+        //   borderBottomWidth: 0.3,
+        // },
+        headerShown: false,
+      }}
+    />
     <Stack.Screen
-        name="AccountScreen"
-        component={ AccountScreen }
-        options={ {
-          // title: 'Account',
-          // headerTintColor: colors.blackColor,
-          // headerTitleStyle: {
-          //   fontWeight: '500',
-          // },
-          // headerStyle: {
-          //   backgroundColor: colors.whiteColor,
-          //   borderBottomColor: colors.grayColor,
-          //   borderBottomWidth: 0.3,
-          // },
-          headerShown: false,
-        } }
-      />
+      name="ScheduleScreen"
+      component={ScheduleScreen}
+      options={{
+        title: 'Schedule',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
-        name="ScheduleScreen"
-        component={ ScheduleScreen }
-        options={ {
-          title: 'Schedule',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="GameDetail"
+      component={GameDetail}
+      options={{
+        title: 'Game',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
-        name="GameDetail"
-        component={ GameDetail }
-        options={ {
-          title: 'Game',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="EventScreen"
+      component={EventScreen}
+      options={{
+        title: 'Game',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
-        name="EventScreen"
-        component={ EventScreen }
-        options={ {
-          title: 'Game',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerShown: false,
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="CreateEventScreen"
+      component={CreateEventScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
     <Stack.Screen
-        name="GameRecording"
-        component={ GameRecording }
-        options={ {
-          title: 'Match Record',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="GameRecording"
+      component={GameRecording}
+      options={{
+        title: 'Match Record',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
-        name="GameDetailRecord"
-        component={ GameDetailRecord }
-        options={ {
-          title: 'Match Record',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
+      name="GameDetailRecord"
+      component={GameDetailRecord}
+      options={{
+        title: 'Match Record',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
 
     <Stack.Screen
         name="GameRecordList"

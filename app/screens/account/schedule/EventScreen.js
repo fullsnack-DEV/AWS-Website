@@ -6,7 +6,6 @@ import {
   Image,
   Text,
   SafeAreaView,
-  Platform,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
@@ -76,20 +75,20 @@ export default function EventScreen({ navigation }) {
           title={'Place'}
         >
           <Text style={styles.textValueStyle}>{'800 Griffiths Way, Vancouver, BC V6B 6G1'}</Text>
-          {Platform.OS === 'ios' && (
-            <EventMapView
-              region={{
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              coordinate={{
-                latitude: 37.78825,
-                longitude: -122.4324,
-              }}
-            />
-          )}
+          {/* {Platform.OS === 'ios' && ( */}
+          <EventMapView
+            region={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            coordinate={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+            }}
+          />
+          {/* )} */}
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
