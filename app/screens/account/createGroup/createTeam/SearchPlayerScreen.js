@@ -23,7 +23,7 @@ import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
 
-import { getUsersList } from '../../../../api/Users';
+import { getUserList } from '../../../../api/Users';
 
 export default function SearchPlayerScreen({ navigation, route }) {
   const [players, setPlayers] = useState([]);
@@ -39,7 +39,7 @@ export default function SearchPlayerScreen({ navigation, route }) {
     });
   }, [navigation]);
   const getPlayerList = async () => {
-    getUsersList().then((response) => {
+    getUserList().then((response) => {
       if (response.status === true) {
         const arr = [];
         // eslint-disable-next-line no-restricted-syntax

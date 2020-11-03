@@ -27,7 +27,7 @@ export const getTeamsOfClub = async (clubID) => makeAPIRequest({
   url: `${Config.BASE_URL}/groups/${clubID}/teams`,
 })
 
-export const getFollowers = async (group_id) => makeAPIRequest({
+export const getGroupFollowers = async (group_id) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/groups/${group_id}/followers`,
 })
