@@ -42,7 +42,6 @@ export default function ChooseSportsScreen({ navigation, route }) {
         console.log('response', response.payload);
 
         const arr = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const tempData of response.payload) {
           tempData.isChecked = false;
           arr.push(tempData);
@@ -62,7 +61,6 @@ export default function ChooseSportsScreen({ navigation, route }) {
 
     setSports([...sports]);
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const temp of sports) {
       if (temp.isChecked) {
         selectedSports.push(temp.sport_name);

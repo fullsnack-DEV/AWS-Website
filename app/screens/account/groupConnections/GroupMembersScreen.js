@@ -139,7 +139,6 @@ export default function GroupMembersScreen({ navigation, route }) {
 
     setFilter([...filter]);
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const temp of filter) {
       if (temp.isSelected) {
         setFilter.push(temp.data);

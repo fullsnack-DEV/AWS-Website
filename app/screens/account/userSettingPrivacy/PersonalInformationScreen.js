@@ -91,7 +91,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
   useEffect(() => {
     getUserInformation();
     const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
     for (const tempData of language) {
       tempData.isChecked = false;
       arr.push(tempData);
@@ -159,9 +158,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
     const arr = [];
     const tempArr = []
     let match = false;
-    // eslint-disable-next-line no-restricted-syntax
     for (const temp of language) {
-      // eslint-disable-next-line no-restricted-syntax
       for (const tempLang of userDetails.language) {
         if (tempLang === temp.language) {
           match = true;
@@ -195,7 +192,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
 
     setLanguages([...languages]);
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const temp of languages) {
       if (temp.isChecked) {
         selectedLanguage.push(temp.language);

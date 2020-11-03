@@ -37,7 +37,6 @@ export default function FollowTeams({ route }) {
 
     const setFollowData = () => {
       const arr = [];
-      // eslint-disable-next-line no-restricted-syntax
       for (const tempData of route.params.teamData) {
         tempData.follow = false;
 
@@ -82,7 +81,6 @@ export default function FollowTeams({ route }) {
 
     setTeams([...teams]);
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const temp of teams) {
       if (temp.follow) {
         followedTeam.push(temp.group_id);
