@@ -32,6 +32,9 @@ import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
+import ScheduleTabView from '../../components/Home/ScheduleTabView';
+import TouchableIcon from '../../components/Home/TouchableIcon';
+import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
 
 export default function HomeScreen({ navigation, route }) {
   const [postData, setPostData] = useState([]);
@@ -41,6 +44,7 @@ export default function HomeScreen({ navigation, route }) {
   const [editProfileVisible, setEditProfileVisible] = useState(false);
   const [userID, setUserID] = useState('');
   const [indexCounter, setIndexCounter] = useState(0);
+  const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
@@ -424,7 +428,26 @@ export default function HomeScreen({ navigation, route }) {
                   />
                 </View>)}
                 {tabKey === 2 && (<View style={{ flex: 1 }} />)}
-                {tabKey === 3 && (<View style={{ flex: 1 }} />)}
+                {tabKey === 3 && (<View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                    <TouchableIcon
+                      source={images.searchLocation}
+                      onItemPress={() => {}}
+                    />
+                    <ScheduleTabView
+                      indexCounter={scheduleIndexCounter}
+                      onFirstTabPress={() => setScheduleIndexCounter(0)}
+                      onSecondTabPress={() => setScheduleIndexCounter(1)}
+                    />
+                    <TouchableIcon
+                      source={images.plus}
+                      imageStyle={{ tintColor: colors.orangeColor }}
+                      onItemPress={() => {}}
+                    />
+                  </View>
+                  {scheduleIndexCounter === 0 && <EventScheduleScreen
+                  />}
+                </View>)}
                 {tabKey === 4 && (<View>
                   <TabView
                     indexCounter={indexCounter}

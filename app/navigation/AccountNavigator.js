@@ -55,6 +55,7 @@ import ConnectMemberAccountScreen from '../screens/account/groupConnections/Conn
 import colors from '../Constants/Colors'
 import EventScreen from '../screens/account/schedule/EventScreen';
 import CreateEventScreen from '../screens/account/schedule/CreateEventScreen';
+import DefaultColorScreen from '../screens/account/schedule/DefaultColorScreen';
 
 const Stack = createStackNavigator();
 
@@ -135,6 +136,13 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="DefaultColorScreen"
+      component={DefaultColorScreen}
       options={{
         headerShown: false,
       }}

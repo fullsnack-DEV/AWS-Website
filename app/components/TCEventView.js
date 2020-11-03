@@ -15,32 +15,32 @@ import {
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
+import fonts from '../Constants/Fonts';
 
-export default function TCEventView({ onPress }) {
+export default function TCEventView({ onPress, data }) {
   return (
     <TouchableWithoutFeedback style={ styles.backgroundView } onPress={ onPress }>
       <View style={ styles.backgroundView } onPress={ onPress }>
-        <View style={ styles.colorView }>
-          <Text style={ styles.dateMonthText }>Aug </Text>
-          <Text style={ styles.dateText }>13 </Text>
+        <View style={ [styles.colorView, { backgroundColor: data.eventColor }] }>
+          <Text style={ styles.dateMonthText }>{data.dateMonth}</Text>
+          <Text style={ styles.dateText }>{data.date}</Text>
         </View>
         <View style={ styles.eventText }>
           <View style={ styles.eventTitlewithDot }>
-            <Text style={ styles.eventTitle } numberOfLines={ 1 }>
-              Event 1 will come in Vancuver on special day dsfdsf dsf df adsfds
-              fsadfadsf
+            <Text style={ [styles.eventTitle, { color: data.eventColor }] } numberOfLines={ 1 }>
+              {data.title}
             </Text>
             <Image source={ images.vertical3Dot } style={ styles.threedot } />
           </View>
           <View style={ styles.descriptionView }>
             <Text style={ styles.eventDescription } numberOfLines={ 2 }>
-              Event description for special event.
+              {data.description}
             </Text>
           </View>
           <View style={ styles.bottomView }>
-            <Text style={ styles.eventTime }>12:00 PM - 11:00 AM</Text>
+            <Text style={ styles.eventTime }>{data.eventTime}</Text>
             <Text> | </Text>
-            <Text style={ styles.eventLocation }>Vancouver, BC, Canada</Text>
+            <Text style={ styles.eventLocation }>{data.eventLocation}</Text>
           </View>
         </View>
       </View>
@@ -72,24 +72,25 @@ const styles = StyleSheet.create({
   },
   colorView: {
     alignItems: 'center',
-    backgroundColor: colors.lightBlueColor,
+    backgroundColor: colors.orangeColor,
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 10,
     height: 86,
-    justifyContent: 'center',
+    paddingTop: 10,
+    paddingLeft: 5,
     width: wp('10%'),
   },
 
   dateMonthText: {
-    color: colors.blueColor,
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RLight,
-    marginBottom: 5,
+    color: colors.whiteColor,
+    fontSize: 16,
+    fontFamily: fonts.RLight,
+    // marginBottom: 3,
   },
   dateText: {
-    color: colors.blueColor,
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+    fontSize: 20,
+    fontFamily: fonts.RBold,
     marginBottom: 5,
   },
   descriptionView: {

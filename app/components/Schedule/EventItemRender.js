@@ -5,11 +5,12 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function EventItemRender({ title, children }) {
+function EventItemRender({ title, children, containerStyle }) {
   return (
-    <View style={styles.containerStyle}>
+    <View style={[styles.containerStyle, containerStyle]}>
       <Text style={styles.headerTextStyle}>{title}</Text>
       {children}
     </View>
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fonts.RRegular,
     marginVertical: 3,
+    color: colors.lightBlackColor,
   },
 });
 

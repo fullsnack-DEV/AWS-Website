@@ -1,36 +1,29 @@
 import React, {
-  useEffect, useState, useLayoutEffect,
+  useState, useLayoutEffect, useRef,
 } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Image,
-
-  SectionList,
   Dimensions,
 } from 'react-native';
-
-import SegmentedControlTab from 'react-native-segmented-control-tab';
 import EventCalendar from 'react-native-events-calendar';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
 import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
+import ActionSheet from 'react-native-actionsheet';
 import images from '../../../Constants/ImagePath';
-
-import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors'
+import TCScrollableTabs from '../../../components/TCScrollableTabs';
+import TouchableIcon from '../../../components/Home/TouchableIcon';
+import ScheduleTabView from '../../../components/Home/ScheduleTabView';
+import EventScheduleScreen from './EventScheduleScreen';
 
 export default function ScheduleScreen({ navigation }) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
 
   const { width } = Dimensions.get('window');
+
   const events = [
     {
       start: '2017-09-07 00:30:00',
@@ -39,8 +32,8 @@ export default function ScheduleScreen({ navigation }) {
       summary: '3412 Piedmont Rd NE, GA 3032',
     },
     {
-      start: '2017-09-07 01:30:00',
-      end: '2017-09-07 02:20:00',
+      start: '2017-09-07 01:55:00',
+      end: '2017-09-07 02:45:00',
       title: 'Dr. Mariana Joseph',
       summary: '3412 Piedmont Rd NE, GA 3032',
     },
@@ -116,74 +109,66 @@ export default function ScheduleScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-          onPress={ () => navigation.navigate('CreateEventScreen') }>
+          onPress={ () => { actionSheet.current.show(); } }>
           <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
         </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
-  useEffect(() => {});
-  const handleIndexChange = (index) => {
-    setSelectedIndex(index);
-  };
+
+  const actionSheet = useRef();
 
   return (
     <View style={ styles.mainContainer }>
-      <SegmentedControlTab
-        values={ ['Events', 'Calendar'] }
-        selectedIndex={ selectedIndex }
-        onTabPress={ handleIndexChange }
-        borderRadius={ 20 }
-        tabsContainerStyle={ styles.segmentContainer }
-        tabStyle={ styles.tab }
-        activeTabStyle={ styles.activeTab }
-        tabTextStyle={ styles.tabTextStyle }
-        activeTabTextStyle={ styles.activeTabTextStyle }
+      <TCScrollableTabs initialPage={2}>
+        <View tabLabel='Info' style={{ flex: 1 }}></View>
+        <View tabLabel='Scoreboard' style={{ flex: 1 }}></View>
+        <View tabLabel='Schedule' style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+            <TouchableIcon
+              source={images.searchLocation}
+              onItemPress={() => {}}
+            />
+            <ScheduleTabView
+              indexCounter={scheduleIndexCounter}
+              onFirstTabPress={() => setScheduleIndexCounter(0)}
+              onSecondTabPress={() => setScheduleIndexCounter(1)}
+            />
+            <TouchableIcon
+              source={images.plus}
+              imageStyle={{ tintColor: colors.orangeColor }}
+              onItemPress={() => { navigation.navigate('CreateEventScreen') }}
+            />
+          </View>
+          {scheduleIndexCounter === 0 && <EventScheduleScreen
+            onItemPress={() => navigation.navigate('EventScreen')}
+          />}
+          {scheduleIndexCounter === 1 && <EventCalendar
+            eventTapped={ () => alert('Event tapped..') }
+            // eventTapped={this._eventTapped.bind(this)}
+            events={ events }
+            width={ width }
+            initDate={ '2017-09-08' }
+          />}
+        </View>
+        <View tabLabel='Gallery' style={{ flex: 1 }}></View>
+      </TCScrollableTabs>
+      <ActionSheet
+        ref={actionSheet}
+        options={['Default Color', 'Group Events', 'View Privacy', 'Cancel']}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={3}
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('DefaultColorScreen');
+          }
+        }}
       />
-      {selectedIndex === 0 ? (
-        <SectionList
-          renderItem={ () => (
-            // <Text key={index}>.{item}</Text>
-            <TCEventView onPress={ () => navigation.navigate('EventScreen') } />
-          ) }
-          renderSectionHeader={ ({ section: { title } }) => (
-            <Text style={ styles.sectionHeader }>{title}</Text>
-          ) }
-          sections={ [
-            { title: 'TODAY', data: ['item1', 'item2', 'item7', 'item8'] },
-            {
-              title: 'TOMORROW',
-              data: ['item3', 'item4', 'item9', 'item10', 'item11'],
-            },
-            { title: 'FUTURE', data: ['item5', 'item6', 'item12'] },
-          ] }
-          keyExtractor={(item, index) => index.toString()}
-        />
-      ) : (
-        <EventCalendar
-          eventTapped={ () => alert('Event tapped..') }
-          // eventTapped={this._eventTapped.bind(this)}
-          events={ events }
-          width={ width }
-          initDate={ '2017-09-08' }
-        />
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  activeTab: {
-    alignSelf: 'center',
-    backgroundColor: colors.blueColor,
-    borderColor: colors.blueColor,
-    borderRadius: 20,
-  },
-  activeTabTextStyle: {
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RBold,
-    color: colors.whiteColor,
-  },
   headerRightImg: {
     height: 15,
     marginRight: 20,
@@ -196,33 +181,5 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     width: '100%',
     height: '100%',
-  },
-  sectionHeader: {
-    fontSize: wp('3.5%'),
-    // fontFamily: fonts.RBold,
-    color: colors.grayColor,
-    paddingBottom: 8,
-    marginBottom: 5,
-    paddingLeft: 10,
-    backgroundColor: colors.whiteColor,
-  },
-  segmentContainer: {
-    alignSelf: 'center',
-    borderColor: colors.lightBlueColor,
-    borderRadius: 19,
-    borderWidth: 1,
-    height: 38,
-    marginTop: hp('3%'),
-    padding: 1,
-    width: wp('50%'),
-  },
-  tab: {
-    borderColor: colors.whiteColor,
-    height: 32,
-  },
-  tabTextStyle: {
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RBold,
-    color: colors.blueColor,
   },
 });
