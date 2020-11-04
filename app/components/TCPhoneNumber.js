@@ -1,5 +1,4 @@
 import React, {
-  useState,
 } from 'react';
 
 import {
@@ -17,11 +16,7 @@ export default function TCPhoneNumber({
 }) {
   console.log('this value', value)
 
-  const [countryCode, setCountryCode] = useState(value);
-
   const onPhoneNumberCountryChanged = async (local_countryCode) => {
-    console.log('Value', local_countryCode);
-    setCountryCode(local_countryCode)
     if (onValueChange) {
       onValueChange(local_countryCode);
     }
@@ -39,7 +34,7 @@ export default function TCPhoneNumber({
              { label: 'United States(+1)', value: 'United States(+1)' },
            ] }
            onValueChange={ onPhoneNumberCountryChanged }
-           value={ countryCode }
+           value={ value }
            // disabled={ !editMode }
            useNativeAndroidPickerStyle={ false }
            // eslint-disable-next-line no-sequences

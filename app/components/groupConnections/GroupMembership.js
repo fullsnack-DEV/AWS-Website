@@ -18,7 +18,9 @@ import TCThinDivider from '../TCThinDivider';
 import TCUserRoleBadge from '../TCUserRoleBadge';
 import TCGroupNameBadge from '../TCGroupNameBadge';
 
-export default function GroupMembership({ groupData, switchID, edit = false }) {
+export default function GroupMembership({
+  groupData, switchID, edit = false, onEditPressed,
+}) {
   return (
     <>
       <View style={styles.topViewContainer}>
@@ -35,7 +37,7 @@ export default function GroupMembership({ groupData, switchID, edit = false }) {
             </View>
           </View>
         </View>
-        {edit || groupData.group_id === switchID ? <TouchableWithoutFeedback>
+        {edit || groupData.group_id === switchID ? <TouchableWithoutFeedback onPress={onEditPressed}>
           <Image source={ images.editSection } style={ styles.editImage } />
         </TouchableWithoutFeedback> : null}
       </View>
