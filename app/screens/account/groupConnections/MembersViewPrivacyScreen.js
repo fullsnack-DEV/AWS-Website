@@ -4,12 +4,12 @@ import React, {
   useState, useEffect,
 } from 'react';
 import {
-  Text, View, StyleSheet, Image, TouchableOpacity, ScrollView,
+  Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,
 } from 'react-native';
 
-// import {
-//   syncClubSetting,
-// } from '../../../api/Groups';
+import {
+  patchGroup,
+} from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils/index';
 import images from '../../../Constants/ImagePath';
@@ -19,7 +19,7 @@ import strings from '../../../Constants/String';
 import TCGradientButton from '../../../components/TCGradientButton';
 
 let entity = {};
-export default function MembersViewPrivacyScreen() {
+export default function MembersViewPrivacyScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [switchUser, setSwitchUser] = useState({})
@@ -37,23 +37,23 @@ export default function MembersViewPrivacyScreen() {
 
   const sendClubSetting = async () => {
     setloading(true)
-    // const bodyParams = {
-    //   privacy_members: (member === 0 && 'everyone') || (member === 1 && 'followers') || (member === 2 && 'members') || (member === 3 && 'admins'),
-    //   privacy_followers: (follower === 0 && 'everyone') || (follower === 1 && 'followers') || (follower === 2 && 'members') || (follower === 3 && 'admins'),
-    //   privacy_profile: (profile === 0 && 'members') || (profile === 1 && 'admins'),
-    // }
-    // console.log('BODY :', bodyParams);
-    // syncClubSetting(switchUser.uid, bodyParams).then((response) => {
-    //   if (response.status) {
-    //     setloading(false)
-    //     console.log('Response :', response.payload);
-    //     navigation.goBack()
-    //   }
-    // })
-    //   .catch((e) => {
-    //     Alert.alert('Towns Cup', e.messages)
-    //     setloading(false);
-    //   });
+    const bodyParams = {
+      privacy_members: (member === 0 && 'everyone') || (member === 1 && 'followers') || (member === 2 && 'members') || (member === 3 && 'admins'),
+      privacy_followers: (follower === 0 && 'everyone') || (follower === 1 && 'followers') || (follower === 2 && 'members') || (follower === 3 && 'admins'),
+      privacy_profile: (profile === 0 && 'members') || (profile === 1 && 'admins'),
+    }
+    console.log('BODY :', bodyParams);
+    patchGroup(switchUser.uid, bodyParams).then((response) => {
+      if (response.status) {
+        setloading(false)
+        console.log('Response :', response.payload);
+        navigation.goBack()
+      }
+    })
+      .catch((e) => {
+        Alert.alert('Towns Cup', e.messages)
+        setloading(false);
+      });
   }
 
   return (

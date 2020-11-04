@@ -51,6 +51,11 @@ import CreateMemberProfileClubForm3 from '../screens/account/groupConnections/cr
 import ConnectionReqSentScreen from '../screens/account/groupConnections/ConnectionReqSentScreen';
 import ClubSettingScreen from '../screens/account/groupConnections/ClubSettingScreen';
 import ConnectMemberAccountScreen from '../screens/account/groupConnections/ConnectMemberAccountScreen';
+import EditMemberInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberInfoScreen';
+import EditMemberBasicInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberBasicInfoScreen';
+import EditMemberTeamInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberTeamInfoScreen';
+import EditMemberClubInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberClubInfoScreen';
+import EditClubNotesScreen from '../screens/account/groupConnections/editMemberProfile/EditClubNotesScreen';
 
 import colors from '../Constants/Colors'
 import EventScreen from '../screens/account/schedule/EventScreen';
@@ -711,6 +716,86 @@ const AccountNavigator = () => (
         component={ ConnectMemberAccountScreen }
         options={ {
           title: 'Connect Member Account',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EditMemberInfoScreen"
+        component={ EditMemberInfoScreen }
+        options={ {
+          title: 'Name',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EditMemberBasicInfoScreen"
+        component={ EditMemberBasicInfoScreen }
+        options={ {
+          title: 'Basic Info',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EditMemberTeamInfoScreen"
+        component={ EditMemberTeamInfoScreen }
+        options={ {
+          title: '',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EditMemberClubInfoScreen"
+        component={ EditMemberClubInfoScreen }
+        options={ {
+          title: '',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EditClubNotesScreen"
+        component={ EditClubNotesScreen }
+        options={ {
+          title: '',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

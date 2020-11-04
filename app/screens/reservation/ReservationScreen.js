@@ -87,6 +87,7 @@ export default function ReservationScreen({ navigation }) {
         )}</View>
       </TCScrollableTabs>
     </View>
+
   );
 }
 const styles = StyleSheet.create({

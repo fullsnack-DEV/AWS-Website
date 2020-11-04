@@ -17,7 +17,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
-import { getUsers } from '../../api/Users';
+import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -29,7 +29,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
   const [filteredUserData, setFilteredUserData] = useState([]);
 
   useEffect(() => {
-    getUsers()
+    getUserList()
       .then((response) => {
         setUserData(response.payload);
       })

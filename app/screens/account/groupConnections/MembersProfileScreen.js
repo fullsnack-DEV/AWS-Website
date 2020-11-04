@@ -12,6 +12,7 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 import { getGroupMembersInfo } from '../../../api/Groups';
 import * as Utility from '../../../utils/index';
@@ -33,16 +34,18 @@ export default function MembersProfileScreen({ navigation, route }) {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
     'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
+  const isFocused = useIsFocused();
   const [loading, setloading] = useState(true);
   // const [editable, setEditable] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [editBasicInfo, setEditBasicInfo] = useState(false);
   const [editTeam, setEditTeam] = useState(false);
+  const [editMembership, setEditMembership] = useState(false);
   const [memberDetail, setMemberDetail] = useState({});
 
   useEffect(() => {
     getMemberInformation()
-  }, [])
+  }, [isFocused])
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -70,6 +73,7 @@ export default function MembersProfileScreen({ navigation, route }) {
       setEditProfile(true)
       setEditBasicInfo(true)
       setEditTeam(true)
+      setEditMembership(true)
     } else if (route.params.whoSeeID === entity.uid) {
       setEditProfile(true)
       setEditBasicInfo(true)
@@ -87,6 +91,7 @@ export default function MembersProfileScreen({ navigation, route }) {
         Alert.alert('', e.messages)
       });
   }
+
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
@@ -94,7 +99,7 @@ export default function MembersProfileScreen({ navigation, route }) {
         <View style={styles.roleViewContainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
             <TCProfileView image={memberDetail.thumbnail ? { uri: memberDetail.thumbnail } : images.profilePlaceHolder} name={`${memberDetail.first_name} ${memberDetail.last_name}`} location={`${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
-            {editProfile && <TouchableWithoutFeedback>
+            {editProfile && <TouchableWithoutFeedback onPress={() => navigation.navigate('EditMemberInfoScreen', { memberInfo: memberDetail })}>
               <Image source={ images.editSection } style={ styles.editImage } />
             </TouchableWithoutFeedback>}
           </View>
@@ -110,7 +115,7 @@ export default function MembersProfileScreen({ navigation, route }) {
 
           <View style={styles.sectionEditView}>
             <Text style={styles.basicInfoTitle}>Basic Info</Text>
-            {editBasicInfo && <TouchableWithoutFeedback>
+            {editBasicInfo && <TouchableWithoutFeedback onPress={() => navigation.navigate('EditMemberBasicInfoScreen', { memberInfo: memberDetail })}>
               <Image source={ images.editSection } style={ styles.editImage } />
             </TouchableWithoutFeedback>}
           </View>
@@ -144,13 +149,20 @@ export default function MembersProfileScreen({ navigation, route }) {
           <TCThickDivider marginTop={20}/>
         </>}
         <View>
+          {/* <View style={styles.sectionEditView}>
+            <Text style={styles.basicInfoTitle}>Membership</Text>
+          </View> */}
+
           <View style={styles.sectionEditView}>
             <Text style={styles.basicInfoTitle}>Membership</Text>
+            {editMembership && <TouchableWithoutFeedback onPress={() => navigation.navigate('EditClubNotesScreen', { memberInfo: memberDetail.group })}>
+              <Image source={ images.editSection } style={ styles.editImage } />
+            </TouchableWithoutFeedback>}
           </View>
-          {memberDetail.group && <GroupMembership groupData = {memberDetail.group} switchID={entity.uid} edit={editTeam}/>}
+          {memberDetail.group && <GroupMembership groupData = {memberDetail.group} switchID={entity.uid} edit={editTeam} onEditPressed={() => navigation.navigate('EditMemberClubInfoScreen', { groupMemberDetail: memberDetail.group })}/>}
           <FlatList
                   data={memberDetail.teams}
-                  renderItem={({ item }) => <GroupMembership groupData = {item} switchID={entity.uid} edit={editTeam}/>}
+                  renderItem={({ item }) => <GroupMembership groupData = {item} switchID={entity.uid} edit={editTeam} onEditPressed={() => navigation.navigate('EditMemberTeamInfoScreen', { groupMemberDetail: item })}/>}
                   keyExtractor={(item, index) => index.toString()}
                   scrollEnabled={false}
                   />
@@ -207,5 +219,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     margin: 15,
+    marginRight: 20,
   },
 });
