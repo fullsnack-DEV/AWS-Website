@@ -31,7 +31,6 @@ export default function ReservationScreen({ navigation }) {
         setloading(false);
         const upcomingData = [];
         const pastData = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const temp of response.payload) {
           const date = new Date(temp.timestamp);
           const curruentDate = new Date();

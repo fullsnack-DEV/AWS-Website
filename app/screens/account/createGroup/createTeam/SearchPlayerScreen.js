@@ -42,7 +42,6 @@ export default function SearchPlayerScreen({ navigation, route }) {
     getUserList().then((response) => {
       if (response.status === true) {
         const arr = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const tempData of response.payload) {
           tempData.isChecked = false;
           arr.push(tempData);
@@ -55,7 +54,6 @@ export default function SearchPlayerScreen({ navigation, route }) {
   };
   const selectPlayer = (item) => {
     const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
     for (const tempData of players) {
       if (item.user_id === tempData.user_id) {
         tempData.isChecked = true;

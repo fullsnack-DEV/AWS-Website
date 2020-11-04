@@ -42,7 +42,6 @@ export default function CreateClubForm1({ navigation, route }) {
   useEffect(() => {
     const minAgeArray = [];
     let maxAgeArray = [];
-    // eslint-disable-next-line no-plusplus
     for (let i = 1; i <= 70; i++) {
       const dataSource = {
         label: `${i}`,
@@ -50,7 +49,6 @@ export default function CreateClubForm1({ navigation, route }) {
       };
       minAgeArray.push(dataSource);
     }
-    // eslint-disable-next-line no-plusplus
     for (let i = minAge; i <= 70; i++) {
       const dataSource = {
         label: `${i}`,

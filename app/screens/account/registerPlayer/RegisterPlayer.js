@@ -51,7 +51,6 @@ export default function RegisterPlayer({ navigation }) {
     ];
 
     const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
     for (const tempData of language) {
       tempData.isChecked = false;
       arr.push(tempData);
@@ -77,7 +76,6 @@ export default function RegisterPlayer({ navigation }) {
 
     setLanguages([...languages]);
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const temp of languages) {
       if (temp.isChecked) {
         selectedLanguage.push(temp.language);

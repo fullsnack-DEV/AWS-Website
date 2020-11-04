@@ -69,7 +69,6 @@ const uploadImages = async (images, cb = () => {}) => {
   const promises = [];
   images.forEach((item) => promises.push(uploadImage(item)));
   cb(0, images.length);
-  // eslint-disable-next-line no-restricted-syntax
   for (const promise of promises) {
     // eslint-disable-next-line no-loop-func
     promise.then((image) => {
