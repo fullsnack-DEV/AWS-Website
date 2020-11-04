@@ -61,6 +61,7 @@ import colors from '../Constants/Colors'
 import EventScreen from '../screens/account/schedule/EventScreen';
 import CreateEventScreen from '../screens/account/schedule/CreateEventScreen';
 import DefaultColorScreen from '../screens/account/schedule/DefaultColorScreen';
+import GroupEventScreen from '../screens/account/schedule/GroupEventScreen';
 
 const Stack = createStackNavigator();
 
@@ -148,6 +149,13 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="DefaultColorScreen"
       component={DefaultColorScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="GroupEventScreen"
+      component={GroupEventScreen}
       options={{
         headerShown: false,
       }}

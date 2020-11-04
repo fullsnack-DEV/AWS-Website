@@ -212,6 +212,7 @@ const strings = {
   aboutValue: 'I love playing soccer, Association football, more more commonly known as football or soccer, [a] is a team sport played between seven teams of eleven players with a spherical ball.',
   eventColorTitle: 'Event Color',
   eventCreatedTitle: 'Events Created By You',
+  groupEventTitle: 'Show The Events In The Following Groups',
   eventImportedTitle: 'Event Imported From Groups',
   games: 'Games',
   timeTitle: 'Time',
