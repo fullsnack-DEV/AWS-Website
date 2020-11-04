@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect, useEffect, useState,
+  useLayoutEffect, useEffect, useState, useRef,
 } from 'react';
 import {
   Text,
@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
-import { getGroupMembersInfo } from '../../../api/Groups';
+import ActionSheet from 'react-native-actionsheet';
+import { getGroupMembersInfo, deleteMember } from '../../../api/Groups';
 import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath'
@@ -34,6 +35,7 @@ export default function MembersProfileScreen({ navigation, route }) {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
     'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
+  const actionSheet = useRef();
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(true);
   // const [editable, setEditable] = useState(true);
@@ -41,7 +43,8 @@ export default function MembersProfileScreen({ navigation, route }) {
   const [editBasicInfo, setEditBasicInfo] = useState(false);
   const [editTeam, setEditTeam] = useState(false);
   const [editMembership, setEditMembership] = useState(false);
-  const [memberDetail, setMemberDetail] = useState({});
+  const [memberDetail, setMemberDetail] = useState();
+  const [switchUser, setSwitchUser] = useState({})
 
   useEffect(() => {
     getMemberInformation()
@@ -49,13 +52,13 @@ export default function MembersProfileScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback
-          onPress={ () => console.log('3 Dot pressed') }>
+        route.params.whoSeeID === entity.uid && <TouchableWithoutFeedback
+          onPress={ () => actionSheet.current.show() }>
           <Image source={ images.vertical3Dot } style={ styles.navigationRightItem } />
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation]);
+  }, [navigation, memberDetail, editBasicInfo, editMembership, editTeam, switchUser, editProfile, loading]);
   const getAge = (dateString) => {
     const today = new Date();
     const birthDate = new Date(dateString);
@@ -67,8 +70,11 @@ export default function MembersProfileScreen({ navigation, route }) {
     return age;
   }
   const getMemberInformation = async () => {
+    setloading(true)
     entity = await Utility.getStorage('loggedInEntity');
-    // Seeting of Edit option
+    setSwitchUser(entity)
+
+    // Setting of Edit option
     if (entity.role === 'club') {
       setEditProfile(true)
       setEditBasicInfo(true)
@@ -91,20 +97,47 @@ export default function MembersProfileScreen({ navigation, route }) {
         Alert.alert('', e.messages)
       });
   }
+  const deleteMemberProfile = (groupID, memberID) => {
+    setloading(true)
+    deleteMember(groupID, memberID).then((response) => {
+      if (response.status) {
+        setloading(false)
+        console.log('PROFILE RESPONSE::', response.payload);
+        navigation.goBack()
+      }
+    })
+      .catch((e) => {
+        setloading(false)
+        Alert.alert('', e.messages)
+      });
+  }
+
+  function MemberPhoneNumber() {
+    let numbersString
+    if (memberDetail.phone_numbers) {
+      console.log('PHONE NUMBER ARRAY::', memberDetail.phone_numbers);
+      const numbers = memberDetail.phone_numbers.map((e) => `${e.country_code} ${e.phone_number}`)
+      numbersString = numbers.join('\n')
+    } else {
+      numbersString = 'N/A'
+    }
+    return <TCInfoField title={'Phone'} value={numbersString}/>;
+  }
 
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
-      <ScrollView>
+      {memberDetail && <ScrollView>
         <View style={styles.roleViewContainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-            <TCProfileView image={memberDetail.thumbnail ? { uri: memberDetail.thumbnail } : images.profilePlaceHolder} name={`${memberDetail.first_name} ${memberDetail.last_name}`} location={`${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
+            <TCProfileView image={memberDetail.thumbnail ? { uri: memberDetail.thumbnail } : images.profilePlaceHolder} name={`${memberDetail.first_name} ${memberDetail.last_name}`} location={memberDetail.city && memberDetail.state_abbr && memberDetail.country && `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
             {editProfile && <TouchableWithoutFeedback onPress={() => navigation.navigate('EditMemberInfoScreen', { memberInfo: memberDetail })}>
               <Image source={ images.editSection } style={ styles.editImage } />
             </TouchableWithoutFeedback>}
           </View>
-          <Text style={styles.undatedTimeText} numberOfLines={2}>Joined club on May 9, 2019
-            {'\n'}Last updated by Neymar JR on May 9, 2019</Text>
+          {memberDetail.joined_date && <Text style={styles.undatedTimeText} numberOfLines={2}>
+            Joined club on {monthNames[new Date(memberDetail.joined_date).getMonth()]} {new Date(memberDetail.joined_date).getDate()} ,{new Date(memberDetail.joined_date).getFullYear()}
+            {'\n'}Last updated by {memberDetail.updatedBy.first_name} {memberDetail.updatedBy.last_name}  on {monthNames[new Date(memberDetail.updated_date).getMonth()]} {new Date(memberDetail.updated_date).getDate()} ,{new Date(memberDetail.updated_date).getFullYear()}</Text>}
           {!memberDetail.connected && <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
             navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
           }}/>}
@@ -120,10 +153,10 @@ export default function MembersProfileScreen({ navigation, route }) {
             </TouchableWithoutFeedback>}
           </View>
           <TCInfoField title={'E-mail'} value={memberDetail.email ? memberDetail.email : 'N/A'}/>
-          <TCInfoField title={'Phone'} value={memberDetail.phone_numbers ? `${memberDetail.phone_numbers[0].country_code} ${memberDetail.phone_numbers[0].phone_number}` : 'N/A'}/>
+          <MemberPhoneNumber/>
           <TCInfoField title={'Address'} value={memberDetail.street_address ? `${memberDetail.street_address}, ${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}` : `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
-          <TCInfoField title={'Age'} value={getAge(new Date(memberDetail.birthday))}/>
-          <TCInfoField title={'Birthday'} value={`${monthNames[new Date(memberDetail.birthday).getMonth()]} ${new Date(memberDetail.birthday).getDate()} ,${new Date(memberDetail.birthday).getFullYear()}`}/>
+          <TCInfoField title={'Age'} value={memberDetail.birthday && getAge(new Date(memberDetail.birthday))}/>
+          <TCInfoField title={'Birthday'} value={memberDetail.birthday && `${monthNames[new Date(memberDetail.birthday).getMonth()]} ${new Date(memberDetail.birthday).getDate()} ,${new Date(memberDetail.birthday).getFullYear()}`}/>
           <TCInfoField title={'Gender'} value={memberDetail.gender ? memberDetail.gender : 'N/A'}/>
         </View>
         <TCThickDivider marginTop={20}/>
@@ -169,7 +202,54 @@ export default function MembersProfileScreen({ navigation, route }) {
 
         </View>
         <TCThickDivider marginTop={20}/>
-      </ScrollView>
+        <ActionSheet
+                ref={actionSheet}
+                // title={'News Feed Post'}
+                options={switchUser.role === 'team' ? ['Sync Info', 'Delete Member from Team', 'Cancel'] : ['Sync Info', 'Delete Member from Club', 'Cancel']}
+                cancelButtonIndex={2}
+                destructiveButtonIndex={1}
+                onPress={(index) => {
+                  if (index === 0) {
+                    Alert.alert(
+                      'The basic info in this profile will be updated with the info in the member’s account.',
+                      '',
+                      [{
+                        text: 'Yes',
+                        onPress: async () => {
+                          getMemberInformation()
+                        },
+                      },
+                      {
+                        text: 'Cancel',
+                        style: 'cancel',
+                      },
+
+                      ],
+                      { cancelable: false },
+                    );
+                  } else if (index === 1) {
+                    Alert.alert(
+                      `Do you want to remove ${memberDetail.first_name} ${memberDetail.last_name} from ${switchUser.obj.group_name}?`,
+                      '',
+                      [{
+                        text: 'Yes',
+                        onPress: async () => {
+                          deleteMemberProfile(switchUser.uid, memberDetail.user_id)
+                        },
+                      },
+                      {
+                        text: 'Cancel',
+                        style: 'cancel',
+                      },
+
+                      ],
+                      { cancelable: false },
+                    );
+                  }
+                }}
+              />
+      </ScrollView>}
+
     </SafeAreaView>
   );
 }

@@ -18,7 +18,7 @@ import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
 let entity = {};
-export default function EditMemberClubInfoScreen({ navigation, route }) {
+export default function EditMemberClubInfoScreen({ navigation }) {
   const [auth, setAuth] = useState({})
   const [teamList, setTeamList] = useState([]);
   const [groupAdmin, setGroupAdmin] = useState(false);
@@ -44,17 +44,11 @@ export default function EditMemberClubInfoScreen({ navigation, route }) {
   }, [navigation, auth, groupAdmin, teamList]);
 
   const pressedNext = () => {
-    const membersAuthority = { ...route.params.form1, group_member_detail: { group_id: entity.uid, is_admin: groupAdmin }, teams: teamList.map(({ group_id, is_admin, is_member }) => ({ group_id, is_admin, is_member })) }
-    navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
+    navigation.goBack()
   }
   const getTeamsList = async () => {
     getTeamsOfClub(entity.uid).then((response) => {
       if (response.status) {
-        // eslint-disable-next-line array-callback-return
-        // response.payload.map((e) => {
-        //   e.is_admin = false;
-        //   e.can_ join_membership_acceptedadmin = false;
-        // });
         setTeamList(response.payload);
       } else {
         Alert.alert(response.messages);

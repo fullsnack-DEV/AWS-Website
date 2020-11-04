@@ -67,14 +67,11 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
       });
   }
   const connectMemberProfile = () => {
-    const result = members.filter(
-      (x) => x.isSelect === true,
-    );
-    console.log('GROUPID:', switchUser.uid)
-    console.log('MEMBERID:', result.user_id)
+    const result = members.filter((x) => x.isSelect === true);
+    const obj = result[0]
     if (result.length > 0) {
       setloading(true)
-      connectProfile(switchUser.uid, result.user_id).then((response) => {
+      connectProfile(switchUser.uid, obj.user_id).then((response) => {
         console.log('PAYLOAD RESPONSE:', JSON.stringify(response))
         if (response.status) {
           console.log('PAYLOAD:', response.payload)

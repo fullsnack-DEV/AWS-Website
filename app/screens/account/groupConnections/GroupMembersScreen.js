@@ -121,10 +121,11 @@ export default function GroupMembersScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback
+        switchUser.uid === route.params.groupID && <TouchableWithoutFeedback
           onPress={ () => actionSheet.current.show() }>
           <Image source={ images.horizontal3Dot } style={ styles.navigationRightItem } />
         </TouchableWithoutFeedback>
+
       ),
     });
   }, [navigation, switchUser]);
@@ -224,7 +225,9 @@ export default function GroupMembersScreen({ navigation, route }) {
                   } else if (index === 4) {
                     navigation.navigate('MembersViewPrivacyScreen');
                   } else if (index === 5) {
-                    navigation.navigate('ClubSettingScreen');
+                    if (switchUser.role === 'club') {
+                      navigation.navigate('ClubSettingScreen');
+                    }
                   }
                 }}
               />

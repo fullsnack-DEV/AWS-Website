@@ -12,8 +12,8 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCInfoField({
-  title = 'title',
-  value = 'value',
+  title = 'N/A',
+  value = 'N/A',
   color = colors.lightBlackColor,
   ...Props
 }) {

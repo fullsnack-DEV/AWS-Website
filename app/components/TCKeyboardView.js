@@ -7,7 +7,7 @@ function TCKeyboardView({ children }) {
     <KeyboardAvoidingView
       style={ { flex: 1 } }
       behavior={ Platform.OS === 'ios' ? 'padding' : null }
-      keyboardVerticalOffset={ Platform.OS === 'ios' ? 10 : 0 }
+      keyboardVerticalOffset={ Platform.OS === 'ios' ? 100 : 0 }
       enabled={ Platform.OS === 'ios' }>
       <ScrollView>{children}</ScrollView>
     </KeyboardAvoidingView>
