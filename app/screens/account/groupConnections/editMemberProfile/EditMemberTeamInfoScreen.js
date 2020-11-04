@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
   FlatList,
 
 } from 'react-native';
@@ -24,6 +23,7 @@ import TCTextField from '../../../../components/TCTextField';
 
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCNavigationHeader from '../../../../components/TCNavigationHeader';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 export default function EditMemberTeamInfoScreen({ navigation, route }) {
@@ -68,19 +68,19 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
   const editTeamProfile = () => {
     setloading(true)
     const bodyParams = {};
-    if (!groupMemberDetail.jersey_number && groupMemberDetail.jersey_number !== '') {
+    if (groupMemberDetail.jersey_number && groupMemberDetail.jersey_number !== '') {
       bodyParams.jersey_number = groupMemberDetail.jersey_number;
     }
-    if (!groupMemberDetail.appearance && groupMemberDetail.appearance !== '') {
+    if (groupMemberDetail.appearance && groupMemberDetail.appearance !== '') {
       bodyParams.appearance = groupMemberDetail.appearance;
     }
-    if (!groupMemberDetail.note && groupMemberDetail.note !== '') {
+    if (groupMemberDetail.note && groupMemberDetail.note !== '') {
       bodyParams.note = groupMemberDetail.note;
     }
-    if (!groupMemberDetail.positions) {
+    if (groupMemberDetail.positions) {
       bodyParams.positions = groupMemberDetail.positions;
     }
-    if (!groupMemberDetail.status) {
+    if (groupMemberDetail.status) {
       bodyParams.status = groupMemberDetail.status;
     }
     bodyParams.is_admin = groupMemberDetail.is_admin;
@@ -114,7 +114,8 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
   );
 
   return (
-    <ScrollView style={styles.mainContainer}>
+
+    <TCKeyboardView>
       <ActivityLoader visible={loading} />
 
       <View style={styles.mainCheckBoxContainer}>
@@ -212,16 +213,11 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
         <TCTextField value={groupMemberDetail.note} height={100} multiline={true} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, note: text })} placeholder={strings.writeNotesPlaceholder} keyboardType={'default'}/>
       </View>
       <View style={{ marginBottom: 20 }}/>
-    </ScrollView>
+    </TCKeyboardView>
 
   );
 }
 const styles = StyleSheet.create({
-
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
   nextButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,

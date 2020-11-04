@@ -44,7 +44,7 @@ export const getGroupMembersInfo = async (groupID, memberID) => makeAPIRequest({
 
 export const connectProfile = async (groupID, memberID) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}groups/${groupID}/members/${memberID}/connect/`,
+  url: `${Config.BASE_URL}groups/${groupID}/members/${memberID}/connect`,
 })
 
 export const createMemberProfile = async (groupID, params) => makeAPIRequest({
@@ -74,4 +74,8 @@ export const patchMember = async (groupID, memberID, params) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}groups/${groupID}/members/${memberID}`,
   data: params,
+})
+export const deleteMember = async (groupID, memberID) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}groups/${groupID}/members/${memberID}`,
 })

@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
   Alert,
   FlatList,
 
@@ -25,6 +24,7 @@ import TCTextField from '../../../../components/TCTextField';
 
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 export default function CreateMemberProfileTeamForm2({ navigation, route }) {
@@ -146,14 +146,16 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
       const tempPosition = [...positions];
       tempPosition[index].position = text;
       setPositions(tempPosition);
-      setGroupMemberDetail({ ...groupMemberDetail, positions: positions.map((e) => e.position) })
+      const filteredPosition = positions.filter((obj) => ![null, undefined, ''].includes(obj))
+      setGroupMemberDetail({ ...groupMemberDetail, positions: filteredPosition.map((e) => e.position) })
     }}
     placeholder={strings.positionPlaceholder}
      keyboardType={'default'}
      style={{ marginBottom: 10 }}/>
   );
   return (
-    <ScrollView style={styles.mainContainer}>
+    <TCKeyboardView>
+
       <ActivityLoader visible={loading} />
       <View style={styles.formSteps}>
         <View style={styles.form1}></View>
@@ -263,7 +265,7 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
         <TCTextField value={groupMemberDetail.note} height={100} multiline={true} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, note: text })} placeholder={strings.writeNotesPlaceholder} keyboardType={'default'}/>
       </View>
       <View style={{ marginBottom: 20 }}/>
-    </ScrollView>
+    </TCKeyboardView>
 
   );
 }
@@ -288,10 +290,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: 15,
     marginTop: 15,
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
   },
 
   profileView: {

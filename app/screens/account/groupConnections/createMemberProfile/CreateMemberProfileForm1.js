@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
   Alert,
   FlatList,
 
@@ -21,7 +20,6 @@ import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-
 import TCPicker from '../../../../components/TCPicker';
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
@@ -29,6 +27,7 @@ import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 
@@ -154,17 +153,19 @@ export default function CreateMemberProfileForm1({ navigation }) {
       const tempCode = [...phoneNumber];
       tempCode[index].country_code = value;
       setPhoneNumber(tempCode);
-      setMemberInfo({ ...memberInfo, phone_numbers: phoneNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
+      const filteredNumber = phoneNumber.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
+      setMemberInfo({ ...memberInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
     }} onChangeText={(text) => {
       const tempPhone = [...phoneNumber];
       tempPhone[index].phone_number = text;
       setPhoneNumber(tempPhone);
-      setMemberInfo({ ...memberInfo, phone_numbers: phoneNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
+      const filteredNumber = phoneNumber.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
+      setMemberInfo({ ...memberInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
     }} />
   );
   return (
+    <TCKeyboardView>
 
-    <ScrollView style={styles.mainContainer}>
       <View style={styles.formSteps}>
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
@@ -203,8 +204,24 @@ export default function CreateMemberProfileForm1({ navigation }) {
       </View>
       <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
       <View>
-        <TCLable title={'Address'} />
+        <TCLable title={'Street Address'} />
         <TCTextField value={memberInfo.street_address} onChangeText={(text) => setMemberInfo({ ...memberInfo, street_address: text })} placeholder={strings.addressPlaceholder} keyboardType={'default'}/>
+      </View>
+      <View>
+        <TCLable title={'city'} />
+        <TCTextField value={memberInfo.city} onChangeText={(text) => setMemberInfo({ ...memberInfo, city: text })} placeholder={strings.cityText} keyboardType={'default'}/>
+      </View>
+      <View>
+        <TCLable title={'State/Province/Region'} />
+        <TCTextField value={memberInfo.state_abbr} onChangeText={(text) => setMemberInfo({ ...memberInfo, state_abbr: text })} placeholder={strings.stateText} keyboardType={'default'}/>
+      </View>
+      <View>
+        <TCLable title={'Country'} />
+        <TCTextField value={memberInfo.country} onChangeText={(text) => setMemberInfo({ ...memberInfo, country: text })} placeholder={strings.countryText} keyboardType={'default'}/>
+      </View>
+      <View>
+        <TCLable title={'Postal Code/Zip'} />
+        <TCTextField value={memberInfo.postal_code} onChangeText={(text) => setMemberInfo({ ...memberInfo, postal_code: text })} placeholder={strings.postalCodeText} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'Birthday'} />
@@ -245,8 +262,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
               />
 
       <TCDateTimePicker title={'Choose Birthday'} visible={show} onDone={handleDonePress} onCancel={handleCancelPress}/>
-
-    </ScrollView>
+    </TCKeyboardView>
 
   );
 }
@@ -279,10 +295,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: 15,
     marginTop: 15,
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
   },
   profileChoose: {
     height: 70,

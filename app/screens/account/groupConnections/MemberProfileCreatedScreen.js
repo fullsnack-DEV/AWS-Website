@@ -22,6 +22,10 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
       entity = await Utility.getStorage('loggedInEntity');
       setSwitchUser(entity)
     }
+    navigation.dispatch({
+      routeName: 'B',
+      type: 'GoToRoute',
+    });
     getAuthEntity()
   }, [])
   const connectMemberProfile = () => {
@@ -63,7 +67,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
 
       </View>}
 
-      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('MemberProfileCreatedScreen')} fontSize={16} marginBottom={50}/>
+      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.goBack('GroupMembersScreen')} fontSize={16} marginBottom={50}/>
 
     </View>
 

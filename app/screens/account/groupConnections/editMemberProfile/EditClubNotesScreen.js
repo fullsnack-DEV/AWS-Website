@@ -46,7 +46,7 @@ export default function EditClubNotesScreen({ navigation, route }) {
   const editNote = () => {
     setloading(true)
     const bodyParams = {};
-    if (!memberInfo.note && memberInfo.note !== '') {
+    if (memberInfo.note && memberInfo.note !== '') {
       bodyParams.note = memberInfo.note;
       bodyParams.is_admin = false;
     }

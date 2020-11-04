@@ -5,8 +5,6 @@ import {
   StyleSheet,
   View,
   Text,
-
-  ScrollView,
   Alert,
   FlatList,
 
@@ -24,6 +22,7 @@ import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 
@@ -104,24 +103,24 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
   const editMemberBasicInfo = () => {
     setloading(true)
     const bodyParams = {};
-    if (!memberInfo.email && memberInfo.email !== '') {
+    if (memberInfo.email && memberInfo.email !== '') {
       bodyParams.email = memberInfo.email;
     }
-    if (!memberInfo.phone_numbers) {
+    if (memberInfo.phone_numbers.length) {
       bodyParams.phone_numbers = memberInfo.phone_numbers;
-    } if (!memberInfo.street_address && memberInfo.street_address !== '') {
+    } if (memberInfo.street_address && memberInfo.street_address !== '') {
       bodyParams.street_address = memberInfo.street_address;
-    } if (!memberInfo.city && memberInfo.city !== '') {
+    } if (memberInfo.city && memberInfo.city !== '') {
       bodyParams.city = memberInfo.city;
-    } if (!memberInfo.state_abbr && memberInfo.state_abbr !== '') {
+    } if (memberInfo.state_abbr && memberInfo.state_abbr !== '') {
       bodyParams.state_abbr = memberInfo.state_abbr;
-    } if (!memberInfo.country && memberInfo.country !== '') {
+    } if (memberInfo.country && memberInfo.country !== '') {
       bodyParams.country = memberInfo.country;
-    } if (!memberInfo.postal_code && memberInfo.postal_code !== '') {
+    } if (memberInfo.postal_code && memberInfo.postal_code !== '') {
       bodyParams.postal_code = memberInfo.postal_code;
-    } if (!memberInfo.birthday && memberInfo.birthday !== '') {
+    } if (memberInfo.birthday && memberInfo.birthday !== '') {
       bodyParams.birthday = memberInfo.birthday;
-    } if (!memberInfo.gender && memberInfo.gender !== '') {
+    } if (memberInfo.gender && memberInfo.gender !== '') {
       bodyParams.gender = memberInfo.gender;
     }
 
@@ -157,17 +156,19 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
         const tempCode = [...phoneNumber];
         tempCode[index].country_code = value;
         setPhoneNumber(tempCode);
-        setMemberInfo({ ...memberInfo, phone_numbers: phoneNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
+        const filteredNumber = phoneNumber.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
+        setMemberInfo({ ...memberInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
       }} onChangeText={(text) => {
         const tempPhone = [...phoneNumber];
         tempPhone[index].phone_number = text;
         setPhoneNumber(tempPhone);
-        setMemberInfo({ ...memberInfo, phone_numbers: phoneNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
+        const filteredNumber = phoneNumber.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
+        setMemberInfo({ ...memberInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
       }} />
   );
   return (
 
-    <ScrollView style={styles.mainContainer}>
+    <TCKeyboardView>
       <ActivityLoader visible={loading} />
       <View>
         <TCLable title={'E-Mail'} required={true}/>
@@ -186,23 +187,23 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
       <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
       <View>
         <TCLable title={'Street Address'} />
-        <TCTextField value={memberInfo.street_address} onChangeText={(text) => text !== '' && setMemberInfo({ ...memberInfo, street_address: text })} placeholder={strings.addressPlaceholder} keyboardType={'default'}/>
+        <TCTextField value={memberInfo.street_address} onChangeText={(text) => setMemberInfo({ ...memberInfo, street_address: text })} placeholder={strings.addressPlaceholder} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'city'} />
-        <TCTextField value={memberInfo.city} onChangeText={(text) => text !== '' && setMemberInfo({ ...memberInfo, city: text })} placeholder={strings.cityText} keyboardType={'default'}/>
+        <TCTextField value={memberInfo.city} onChangeText={(text) => setMemberInfo({ ...memberInfo, city: text })} placeholder={strings.cityText} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'State/Province/Region'} />
-        <TCTextField value={memberInfo.state_abbr} onChangeText={(text) => text !== '' && setMemberInfo({ ...memberInfo, state_abbr: text })} placeholder={strings.stateText} keyboardType={'default'}/>
+        <TCTextField value={memberInfo.state_abbr} onChangeText={(text) => setMemberInfo({ ...memberInfo, state_abbr: text })} placeholder={strings.stateText} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'Country'} />
-        <TCTextField value={memberInfo.country} onChangeText={(text) => text !== '' && setMemberInfo({ ...memberInfo, country: text })} placeholder={strings.countryText} keyboardType={'default'}/>
+        <TCTextField value={memberInfo.country} onChangeText={(text) => setMemberInfo({ ...memberInfo, country: text })} placeholder={strings.countryText} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'Postal Code/Zip'} />
-        <TCTextField value={memberInfo.postal_code} onChangeText={(text) => text !== '' && setMemberInfo({ ...memberInfo, postal_code: text })} placeholder={strings.postalCodeText} keyboardType={'default'}/>
+        <TCTextField value={memberInfo.postal_code} onChangeText={(text) => setMemberInfo({ ...memberInfo, postal_code: text })} placeholder={strings.postalCodeText} keyboardType={'default'}/>
       </View>
       <View>
         <TCLable title={'Birthday'} />
@@ -223,18 +224,11 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
       <View style={{ marginBottom: 20 }}/>
 
       <TCDateTimePicker title={'Choose Birthday'} visible={show} onDone={handleDonePress} onCancel={handleCancelPress}/>
-
-    </ScrollView>
+    </TCKeyboardView>
 
   );
 }
 const styles = StyleSheet.create({
-
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-
   nextButtonStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,

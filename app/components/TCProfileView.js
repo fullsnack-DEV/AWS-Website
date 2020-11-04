@@ -14,18 +14,18 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCProfileView({
-  image = images.profilePlaceHolder, name = 'Neymar JR', location = 'Vancouver, BC', type = 'large', color = colors.lightBlackColor, ...Props
+  image = images.profilePlaceHolder, name, location, type = 'large', color = colors.lightBlackColor, ...Props
 }) {
   return (
 
     <View style={[styles.topViewContainer, Props]}>
       <View style={styles.profileView}>
-        <Image source={ image } style={ styles.profileImage } />
+        {image && <Image source={ image } style={ styles.profileImage } />}
       </View>
       <View style={styles.topTextContainer}>
-        {type === 'medium' && <Text style={[styles.mediumNameText, { color }]} numberOfLines={1}>{name}</Text>}
-        {type === 'large' && <Text style={[styles.nameText, { color }]} numberOfLines={1}>{name}</Text>}
-        <Text style={[styles.locationText, { color }]} numberOfLines={1}>{location}</Text>
+        {type === 'medium' && name && <Text style={[styles.mediumNameText, { color }]} numberOfLines={1}>{name}</Text>}
+        {type === 'large' && name && <Text style={[styles.nameText, { color }]} numberOfLines={1}>{name}</Text>}
+        {location && <Text style={[styles.locationText, { color }]} numberOfLines={1}>{location}</Text>}
       </View>
     </View>
 
