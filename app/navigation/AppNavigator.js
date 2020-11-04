@@ -59,6 +59,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'EventScreen'
     || routeName === 'CreateEventScreen'
     || routeName === 'DefaultColorScreen'
+    || routeName === 'GroupEventScreen'
   ) {
     return false;
   }

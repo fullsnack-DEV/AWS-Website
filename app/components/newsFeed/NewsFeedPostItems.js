@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -34,6 +35,7 @@ function NewsFeedPostItems({
   onLikePress,
   caller_id,
   onDeletePost,
+  onImageProfilePress,
 }) {
   const [like, setLike] = useState(() => {
     let filterLike = [];
@@ -78,13 +80,15 @@ function NewsFeedPostItems({
   return (
     <View key={key}>
       <View style={styles.mainContainer}>
-        <Image
-          style={styles.background}
-          source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
-          resizeMode={'cover'}
-        />
+        <TouchableWithoutFeedback onPress={onImageProfilePress}>
+          <Image
+            style={styles.background}
+            source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
+            resizeMode={'cover'}
+          />
+        </TouchableWithoutFeedback>
         <View style={styles.userNameView}>
-          <Text style={styles.userNameTxt}>{item.actor.data.full_name}</Text>
+          <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
           <Text style={styles.activeTimeAgoTxt}>
             {/* {moment(item.time).startOf('hour').fromNow()} */}
             {commentPostTimeCalculate(item.time)}
