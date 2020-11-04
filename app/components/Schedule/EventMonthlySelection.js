@@ -71,11 +71,11 @@ const styles = StyleSheet.create({
     width: '98%',
   },
   downArrow: {
-    height: 12,
+    height: 15,
     resizeMode: 'contain',
     right: 25,
     tintColor: colors.grayColor,
     top: 22,
-    width: 12,
+    width: 15,
   },
 });

@@ -5,7 +5,7 @@ import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
-export default function TCScrollableTabs({ children }) {
+export default function TCScrollableTabs({ children, initialPage }) {
   return (
 
     <ScrollableTabView
@@ -17,7 +17,7 @@ export default function TCScrollableTabs({ children }) {
                     tabBarActiveTextColor = {colors.themeColor}
                     tabBarInactiveTextColor={colors.lightBlackColor}
                     tabBarUnderlineStyle = {{ backgroundColor: colors.themeColor }}
-                    initialPage={0}
+                    initialPage={0 || initialPage}
                     renderTabBar={() => <ScrollableTabBar />}
                   >
 

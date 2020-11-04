@@ -31,6 +31,7 @@ const colors = {
   graySeparater: '#e1e1e1',
   textFieldColor: '#f3f3f3',
   doneButtonColor: '#29bce5',
+  actionSheetColor: '#006ff9',
   offwhite: '#FCFCFC',
   radoffwhiteioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',

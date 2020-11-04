@@ -58,6 +58,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ConnectionReqSentScreen'
     || routeName === 'EventScreen'
     || routeName === 'CreateEventScreen'
+    || routeName === 'DefaultColorScreen'
   ) {
     return false;
   }

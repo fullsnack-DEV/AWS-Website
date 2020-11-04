@@ -7,8 +7,11 @@ import {
   Text,
   SafeAreaView,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import moment from 'moment';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -16,10 +19,14 @@ import {
 import Header from '../../../components/Home/Header';
 import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
+import EventMapView from '../../../components/Schedule/EventMapView';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
+import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
+import RadioBtnItem from '../../../components/Schedule/RadioBtnItem';
 import ToggleView from '../../../components/Schedule/ToggleView';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
@@ -48,13 +55,73 @@ const eventColorsData = [
   },
 ];
 
+const challengeAvailability = [
+  {
+    id: 0,
+    isSelected: true,
+    title: strings.setAvailable,
+  },
+  {
+    id: 1,
+    isSelected: false,
+    title: strings.block,
+  },
+];
+
+const updateRecurringEvent = [
+  {
+    id: 0,
+    isSelected: true,
+    title: strings.thisEvent,
+  },
+  {
+    id: 1,
+    isSelected: false,
+    title: strings.thisAndFollowingEvent,
+  },
+];
+
 export default function CreateEventScreen({ navigation }) {
   const [eventColors, setEventColors] = useState(eventColorsData);
+  const [challengeAvailable, setChallengeAvailable] = useState(challengeAvailability);
+  const [updateEvent, setUpdateEvent] = useState(updateRecurringEvent);
   const [toggle, setToggle] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState('Weekly');
+  const [startDateVisible, setStartDateVisible] = useState(false);
+  const [endDateVisible, setEndDateVisible] = useState(false);
+  const [untilDateVisible, setUntilDateVisible] = useState(false);
+  const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [startDate, setStartDate] = useState(strings.date);
+  const [startTime, setStartTime] = useState(strings.time);
+  const [endDate, setEndDate] = useState(strings.date);
+  const [endTime, setEndTime] = useState(strings.time);
+  const [untilDate, setUntilDate] = useState(strings.date);
+  const [untilTime, setUntilTime] = useState(strings.time);
+
+  const handleStateDatePress = (date) => {
+    setStartDate(moment(date).format('ll'));
+    setStartTime(moment(date).format('h:mm a'));
+    setStartDateVisible(!startDateVisible)
+  }
+  const handleCancelPress = () => {
+    setStartDateVisible(false)
+    setEndDateVisible(false)
+    setUntilDateVisible(false)
+  }
+
+  const handleEndDatePress = (date) => {
+    setEndDate(moment(date).format('ll'));
+    setEndTime(moment(date).format('h:mm a'));
+    setEndDateVisible(!endDateVisible)
+  }
+
+  const handleUntilDatePress = (date) => {
+    setUntilDate(moment(date).format('ll'));
+    setUntilTime(moment(date).format('h:mm a'));
+    setUntilDateVisible(!untilDateVisible)
+  }
 
   return (
-    <SafeAreaView style={ styles.mainContainerStyle }>
+    <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack() }>
@@ -71,81 +138,190 @@ export default function CreateEventScreen({ navigation }) {
         }
       />
       <View style={ styles.sperateLine } />
-      <ScrollView>
-        <EventTextInputItem
-          title={strings.title}
-          placeholder={strings.titlePlaceholder}
-          onChangeText={() => {}}
-          value={strings.createTitleValue}
-        />
-        <EventTextInputItem
-          title={strings.about}
-          placeholder={strings.aboutPlaceholder}
-          onChangeText={() => {}}
-          multiline={true}
-          value={strings.createAboutValue}
-        />
-        <EventItemRender
-          title={strings.eventColorTitle}
-        >
-          <FlatList
-            data={eventColors}
-            horizontal={true}
-            ItemSeparatorComponent={() => <View style={{ width: wp('3%') }} />}
-            ListFooterComponent={() => <EventColorItem
-              eventColorViewStyle={{ marginLeft: wp('3%') }}
-              source={images.plus}
-            />}
-            renderItem={ ({ item, index }) => <EventColorItem
-              source={item.isSelected ? images.check : null}
-              imageStyle={{ tintColor: colors.whiteColor }}
-              onItemPress={() => {
-                eventColors[index].isSelected = !eventColors[index].isSelected;
-                setEventColors([...eventColors]);
-              }}
-              eventColorViewStyle={{ backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor }}
-            /> }
-            keyExtractor={ (item, index) => index.toString() }
-        />
-        </EventItemRender>
-
-        <EventItemRender
-          title={strings.timeTitle}
-        >
-          <View style={styles.toggleViewStyle}>
-            <Text style={styles.allDayText}>{strings.allDay}</Text>
-            <ToggleView
-              isOn={toggle}
-              onColor={colors.toggleOnColor}
-              offColor={colors.userPostTimeColor}
-              size={'medium'}
-              onToggle={(isOn) => setToggle(isOn)}
+      <ScrollView bounces={false}>
+        <SafeAreaView>
+          <EventTextInputItem
+            title={strings.title}
+            placeholder={strings.titlePlaceholder}
+            onChangeText={() => {}}
+            value={strings.createTitleValue}
+          />
+          <EventTextInputItem
+            title={strings.about}
+            placeholder={strings.aboutPlaceholder}
+            onChangeText={() => {}}
+            multiline={true}
+            value={strings.createAboutValue}
+          />
+          <EventItemRender
+            title={strings.eventColorTitle}
+          >
+            <FlatList
+              data={eventColors}
+              horizontal={true}
+              ItemSeparatorComponent={() => <View style={{ width: wp('3%') }} />}
+              ListFooterComponent={() => <EventColorItem
+                eventColorViewStyle={{ marginLeft: wp('3%') }}
+                source={images.plus}
+              />}
+              renderItem={ ({ item, index }) => <EventColorItem
+                source={item.isSelected ? images.check : null}
+                imageStyle={{ tintColor: colors.whiteColor }}
+                onItemPress={() => {
+                  eventColors[index].isSelected = !eventColors[index].isSelected;
+                  setEventColors([...eventColors]);
+                }}
+                eventColorViewStyle={{ backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor }}
+              /> }
+              keyExtractor={ (item, index) => index.toString() }
             />
-          </View>
-          <EventTimeSelectItem
-            title={strings.starts}
-            date={strings.date}
-            time={strings.time}
+          </EventItemRender>
+
+          <EventItemRender
+            title={strings.timeTitle}
+          >
+            <View style={styles.toggleViewStyle}>
+              <Text style={styles.allDayText}>{strings.allDay}</Text>
+              <ToggleView
+                isOn={toggle}
+                onColor={colors.toggleOnColor}
+                offColor={colors.userPostTimeColor}
+                size={'medium'}
+                onToggle={(isOn) => setToggle(isOn)}
+              />
+            </View>
+            <EventTimeSelectItem
+              title={strings.starts}
+              date={startDate}
+              time={startTime}
+              onDatePress={() => setStartDateVisible(!startDateVisible)}
+            />
+            <EventTimeSelectItem
+              title={strings.ends}
+              date={endDate}
+              time={endTime}
+              containerStyle={{ marginBottom: 12 }}
+              onDatePress={() => setEndDateVisible(!endDateVisible)}
+            />
+            <EventMonthlySelection
+              dataSource={[
+                { label: 'Weekly', value: 'Weekly' },
+                { label: 'Monthly', value: 'Monthly' },
+              ]}
+              placeholder={strings.selectTimePlaceholder}
+              value={selectWeekMonth}
+              onValueChange={(value) => {
+                setSelectWeekMonth(value);
+              }}
+            />
+            <EventTimeSelectItem
+              title={strings.until}
+              date={untilDate}
+              time={untilTime}
+              containerStyle={{ marginBottom: 12 }}
+              onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+            />
+          </EventItemRender>
+
+          <EventItemRender
+            title={strings.place}
+          >
+            <EventSearchLocation
+                onChangeText={() => {}}
+            />
+            <EventMapView
+              region={{
+                latitude: 37.78825,
+                longitude: -122.4324,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              coordinate={{
+                latitude: 37.78825,
+                longitude: -122.4324,
+              }}
+            />
+          </EventItemRender>
+
+          <EventItemRender
+            title={strings.availableTitle}
+            containerStyle={{ marginTop: 10 }}
+          >
+            <Text style={styles.availableSubHeader}>{strings.availableSubTitle}</Text>
+            <FlatList
+              data={challengeAvailable}
+              style={{ marginTop: 10 }}
+              ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+              renderItem={ ({ item }) => <RadioBtnItem
+                titleName={item.title}
+                selected={item.isSelected}
+                onRadioBtnPress={() => {
+                  challengeAvailable.map((availableItem) => {
+                    const availableData = availableItem;
+                    if (availableData.id === item.id) {
+                      availableData.isSelected = true;
+                    } else {
+                      availableData.isSelected = false;
+                    }
+                    return null;
+                  })
+                  setChallengeAvailable([...challengeAvailable])
+                }}
+              />
+              }
+              keyExtractor={ (item, index) => index.toString() }
+            />
+          </EventItemRender>
+
+          <EventItemRender
+            title={strings.recurringEventTitle}
+            containerStyle={{ marginVertical: 15 }}
+          >
+            <FlatList
+              data={updateEvent}
+              style={{ marginTop: 10 }}
+              ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+              renderItem={ ({ item }) => <RadioBtnItem
+                titleName={item.title}
+                selected={item.isSelected}
+                onRadioBtnPress={() => {
+                  updateEvent.map((eventItem) => {
+                    const eventData = eventItem;
+                    if (eventData.id === item.id) {
+                      eventData.isSelected = true;
+                    } else {
+                      eventData.isSelected = false;
+                    }
+                    return null;
+                  })
+                  setUpdateEvent([...updateEvent])
+                }}
+              />
+              }
+              keyExtractor={ (item, index) => index.toString() }
+            />
+          </EventItemRender>
+          <DateTimePickerView
+            visible={startDateVisible}
+            onDone={handleStateDatePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
           />
-          <EventTimeSelectItem
-            title={strings.ends}
-            date={strings.date}
-            time={strings.time}
-            containerStyle={{ marginBottom: 12 }}
+          <DateTimePickerView
+            visible={endDateVisible}
+            onDone={handleEndDatePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
           />
-          <EventMonthlySelection
-            dataSource={[
-              { label: 'Weekly', value: 'Weekly' },
-              { label: 'Monthly', value: 'Monthly' },
-            ]}
-            value={selectWeekMonth}
-            onValueChange={(value) => {
-              setSelectWeekMonth(value);
-            }}
+          <DateTimePickerView
+            visible={untilDateVisible}
+            onDone={handleUntilDatePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
           />
-        </EventItemRender>
+        </SafeAreaView>
       </ScrollView>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -181,5 +357,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  availableSubHeader: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginTop: 5,
   },
 });
