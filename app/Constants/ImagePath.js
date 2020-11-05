@@ -131,6 +131,8 @@ const images = {
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
   clubPlaceholder: require('../assets/images/club_placeholder.png'),
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
+  teamPlaceholderSmall: require('../assets/images/teamplaceholder.png'),
+  clubPlaceholderSmall: require('../assets/images/clubplaceholder.png'),
 
   Payout_method: require('../assets/images/Payout_method.png'),
   Transations: require('../assets/images/Transations.png'),

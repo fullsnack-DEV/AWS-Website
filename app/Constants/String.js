@@ -294,5 +294,8 @@ const strings = {
   weight: 'Weight',
   heightplaceholder: 'Enter Your Height',
   weightplaceholder: 'Enter Your Weight',
+  playin: 'Plays In',
+  refereesin: 'Referees In',
+  totalGames: 'game',
 };
 export default strings;

@@ -8,6 +8,7 @@ import {
 
 import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
+import TCImage from './TCImage'
 
 function TCProfileImageControl({
   onPressBGImage,
@@ -26,9 +27,10 @@ function TCProfileImageControl({
   return (
     <View style={{ flex: 1 }}>
       <View>
-        <Image style={[styles.bgImageStyle, bgImageStyle]}
+        <TCImage containerStyle={[styles.bgContainerStyle]} imageStyle={[styles.bgImageStyle, bgImageStyle]}
         source={ bgImage }
-        defaultSource={ bgImagePlaceholder } />
+        defaultSource={ bgImagePlaceholder }
+        />
         {showEditButtons && <TouchableOpacity
         style={styles.bgCameraButtonStyle}
         onPress={ onPressBGImage }>
@@ -38,7 +40,7 @@ function TCProfileImageControl({
             />
         </TouchableOpacity>}
       </View>
-      <Image style={[styles.profileImageStyle, profileImageStyle,
+      <TCImage imageStyle={[styles.profileImageStyle, profileImageStyle,
         { marginTop: showEditButtons ? -20 : -36 }]}
       source={profileImage || profileImagePlaceholder}
       defaultSource={ profileImagePlaceholder } />
@@ -55,9 +57,12 @@ function TCProfileImageControl({
 }
 
 const styles = StyleSheet.create({
-  bgImageStyle: {
+  bgContainerStyle: {
     flex: 1,
     aspectRatio: 375 / 147,
+  },
+  bgImageStyle: {
+    flex: 1,
     backgroundColor: colors.grayBackgroundColor,
     resizeMode: 'cover',
   },
