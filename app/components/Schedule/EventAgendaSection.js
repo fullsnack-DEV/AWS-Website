@@ -7,6 +7,7 @@ import {
 import { Agenda } from 'react-native-calendars';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function EventAgendaSection({
@@ -21,6 +22,9 @@ export default function EventAgendaSection({
                   agendaKnobColor: colors.lightgrayColor,
                   selectedDayBackgroundColor: colors.orangeColor,
                   todayTextColor: colors.orangeColor,
+                  textSectionTitleColor: colors.googleColor,
+                  textDayHeaderFontFamily: fonts.RBold,
+                  textDayHeaderFontSize: 12,
                 }}
                 refreshing={false}
                 loadItemsForMonth={loadItemsForMonth}

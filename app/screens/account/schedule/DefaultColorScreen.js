@@ -22,7 +22,30 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 
-const eventColorsData = [
+const createdEventData = [
+  {
+    id: 0,
+    color: colors.themeColor,
+    isSelected: true,
+  },
+  {
+    id: 1,
+    color: colors.yellowColor,
+    isSelected: false,
+  },
+  {
+    id: 2,
+    color: colors.greeColor,
+    isSelected: false,
+  },
+  {
+    id: 3,
+    color: colors.eventBlueColor,
+    isSelected: false,
+  },
+];
+
+const importedEventData = [
   {
     id: 0,
     color: colors.themeColor,
@@ -46,7 +69,10 @@ const eventColorsData = [
 ];
 
 export default function DefaultColorScreen({ navigation }) {
-  const [eventColors, setEventColors] = useState(eventColorsData);
+  const [createdEventColors, setCreatedEventColors] = useState(createdEventData);
+  const [importedEventColors, setImportedEventColors] = useState(importedEventData);
+  console.log('Created Event Color :-', createdEventColors);
+  console.log('Imported Event Color :-', importedEventColors);
 
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
@@ -68,10 +94,10 @@ export default function DefaultColorScreen({ navigation }) {
       <View style={ styles.sperateLine } />
       <SafeAreaView>
         <EventItemRender
-        title={strings.eventCreatedTitle}
+          title={strings.eventCreatedTitle}
         >
           <FlatList
-            data={eventColors}
+            data={createdEventColors}
             horizontal={true}
             ItemSeparatorComponent={() => <View style={{ width: wp('3%') }} />}
             ListFooterComponent={() => <EventColorItem
@@ -82,8 +108,31 @@ export default function DefaultColorScreen({ navigation }) {
             source={item.isSelected ? images.check : null}
             imageStyle={{ tintColor: colors.whiteColor }}
             onItemPress={() => {
-              eventColors[index].isSelected = !eventColors[index].isSelected;
-              setEventColors([...eventColors]);
+              createdEventColors[index].isSelected = !createdEventColors[index].isSelected;
+              setCreatedEventColors([...createdEventColors]);
+            }}
+            eventColorViewStyle={{ backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor }}
+            /> }
+            keyExtractor={ (item, index) => index.toString() }
+          />
+        </EventItemRender>
+        <EventItemRender
+          title={strings.eventImportedTitle}
+        >
+          <FlatList
+            data={importedEventColors}
+            horizontal={true}
+            ItemSeparatorComponent={() => <View style={{ width: wp('3%') }} />}
+            ListFooterComponent={() => <EventColorItem
+            eventColorViewStyle={{ marginLeft: wp('3%') }}
+            source={images.plus}
+            />}
+            renderItem={ ({ item, index }) => <EventColorItem
+            source={item.isSelected ? images.check : null}
+            imageStyle={{ tintColor: colors.whiteColor }}
+            onItemPress={() => {
+              importedEventColors[index].isSelected = !importedEventColors[index].isSelected;
+              setImportedEventColors([...importedEventColors]);
             }}
             eventColorViewStyle={{ backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor }}
             /> }

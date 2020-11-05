@@ -25,7 +25,6 @@ import EventSearchLocation from '../../../components/Schedule/EventSearchLocatio
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import RadioBtnItem from '../../../components/Schedule/RadioBtnItem';
-import ToggleView from '../../../components/Schedule/ToggleView';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -182,13 +181,12 @@ export default function CreateEventScreen({ navigation }) {
           >
             <View style={styles.toggleViewStyle}>
               <Text style={styles.allDayText}>{strings.allDay}</Text>
-              <ToggleView
-                isOn={toggle}
-                onColor={colors.toggleOnColor}
-                offColor={colors.userPostTimeColor}
-                size={'medium'}
-                onToggle={(isOn) => setToggle(isOn)}
-              />
+              <TouchableOpacity style={ styles.checkbox } onPress={() => setToggle(!toggle)}>
+                <Image
+                    source={ toggle ? images.checkWhiteLanguage : images.uncheckWhite}
+                    style={ styles.checkboxImg }
+                  />
+              </TouchableOpacity>
             </View>
             <EventTimeSelectItem
               title={strings.starts}
@@ -363,5 +361,15 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginTop: 5,
+  },
+  checkboxImg: {
+    width: wp('5.5%'),
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  checkbox: {
+    alignSelf: 'center',
+    position: 'absolute',
+    right: wp(0),
   },
 });
