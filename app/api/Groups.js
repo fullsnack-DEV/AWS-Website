@@ -16,7 +16,7 @@ export const createGroup = async (params, caller_id, caller) => makeAPIRequest({
 
 export const getJoinedGroups = async (player_id = undefined) => {
   const query = player_id ? `?player_id= + ${player_id}` : ''
-  makeAPIRequest({
+  return makeAPIRequest({
     method: 'get',
     url: `${Config.BASE_URL}/groups/joined${query}`,
   })

@@ -72,14 +72,16 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
     backgroundImage, backgroundFullImage, backgroundImageChanged, currentImageSelection]);
 
   useEffect(() => {
+    getUserInformation();
+  }, []);
+
+  useEffect(() => {
     if (route.params && route.params.city) {
       const newLocation = `${route.params.city}, ${route.params.state}, ${route.params.country}`;
       setLocation(newLocation);
       setCity(route.params.city);
       setState(route.params.state);
       setCountry(route.params.country);
-    } else {
-      getUserInformation();
     }
   }, [isFocused]);
 
