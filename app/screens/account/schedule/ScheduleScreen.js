@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import EventCalendar from 'react-native-events-calendar';
 import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
+import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
@@ -27,11 +27,12 @@ import TwoTabView from '../../../components/Schedule/TowTabView';
 import BackForwardView from '../../../components/Schedule/BackForwardView';
 import EventInCalender from '../../../components/Schedule/EventInCalender';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
+import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
 
 const DATA = [
   {
     id: '1',
-    date: '2020-11-04',
+    date: '2020-11-04 01:30:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -40,7 +41,7 @@ const DATA = [
   },
   {
     id: '2',
-    date: '2020-11-05',
+    date: '2020-11-05 05:00:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -49,7 +50,7 @@ const DATA = [
   },
   {
     id: '7',
-    date: '2020-11-06',
+    date: '2020-11-06 02:45:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -58,7 +59,7 @@ const DATA = [
   },
   {
     id: '8',
-    date: '2020-11-07',
+    date: '2020-11-07 13:12:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -67,7 +68,7 @@ const DATA = [
   },
   {
     id: '3',
-    date: '2020-11-04',
+    date: '2020-11-04 19:38:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -76,7 +77,7 @@ const DATA = [
   },
   {
     id: '4',
-    date: '2020-11-04',
+    date: '2020-11-04 07:25:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -85,7 +86,7 @@ const DATA = [
   },
   {
     id: '9',
-    date: '2020-11-05',
+    date: '2020-11-05 16:16:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -94,7 +95,7 @@ const DATA = [
   },
   {
     id: '10',
-    date: '2020-11-06',
+    date: '2020-11-06 17:26:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -103,7 +104,7 @@ const DATA = [
   },
   {
     id: '11',
-    date: '2020-11-07',
+    date: '2020-11-07 08:08:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -112,7 +113,7 @@ const DATA = [
   },
   {
     id: '5',
-    date: '2020-11-08',
+    date: '2020-11-08 06:19:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -121,7 +122,7 @@ const DATA = [
   },
   {
     id: '6',
-    date: '2020-11-04',
+    date: '2020-11-04 04:44:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -130,7 +131,7 @@ const DATA = [
   },
   {
     id: '12',
-    date: '2020-11-06',
+    date: '2020-11-06 15:15:00',
     title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
     description: 'Event description for special event.',
     eventTime: '12:00 PM - 11:00 AM',
@@ -145,78 +146,91 @@ const events = [
     end: '2020-11-04 01:45:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.orangeColor,
   },
   {
     start: '2020-11-05 01:55:00',
     end: '2020-11-05 02:45:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.yellowColor,
   },
   {
     start: '2020-11-06 04:10:00',
     end: '2020-11-06 04:40:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.blueColor,
   },
   {
     start: '2020-11-07 01:05:00',
     end: '2020-11-07 01:45:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.greeColor,
   },
   {
     start: '2020-11-04 14:30:00',
     end: '2020-11-04 16:30:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.radoffwhiteioButtonColor,
   },
   {
     start: '2020-11-05 01:20:00',
     end: '2020-11-05 02:20:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.blueColor,
   },
   {
     start: '2020-11-07 04:10:00',
     end: '2020-11-07 04:40:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.orangeColor,
   },
   {
     start: '2020-11-08 00:45:00',
     end: '2020-11-08 01:45:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.greeColor,
   },
   {
     start: '2020-11-09 01:20:00',
     end: '2020-11-09 03:45:00',
     title: 'Dr. Kishan Makani',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.radoffwhiteioButtonColor,
   },
   {
     start: '2020-11-04 11:30:00',
     end: '2020-11-04 12:30:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.yellowColor,
   },
   {
     start: '2020-11-09 01:30:00',
     end: '2020-11-09 02:00:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.blueColor,
   },
   {
     start: '2020-11-08 03:10:00',
     end: '2020-11-08 03:40:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.greeColor,
   },
   {
     start: '2020-11-06 00:10:00',
     end: '2020-11-06 01:45:00',
     title: 'Dr. Mariana Joseph',
     summary: '3412 Piedmont Rd NE, GA 3032',
+    eventColor: colors.radoffwhiteioButtonColor,
   },
 ];
 
@@ -237,7 +251,8 @@ export default function ScheduleScreen({ navigation }) {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const eventdata = [];
       eventData.filter((event_item) => {
-        if (event_item.date === date) {
+        const eventDate = moment(event_item.date).format('YYYY-MM-DD');
+        if (eventDate === date) {
           eventdata.push(event_item);
         }
         return null;
@@ -324,7 +339,8 @@ export default function ScheduleScreen({ navigation }) {
                 const date = moment(day.dateString).format('YYYY-MM-DD');
                 const data = [];
                 eventData.filter((event_item) => {
-                  if (event_item.date === date) {
+                  const eventDateSelect = moment(event_item.date).format('YYYY-MM-DD');
+                  if (eventDateSelect === date) {
                     data.push(event_item);
                   }
                   return null;
@@ -337,7 +353,18 @@ export default function ScheduleScreen({ navigation }) {
                 renderItem={({ item: itemValue }) => <EventInCalender
                   data={itemValue}
                 />}
-                ListHeaderComponent={() => <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>}
+                ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
+                  <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
+                  <Text style={styles.headerTodayText}>
+                    {moment(selectionDate).calendar(null, {
+                      lastWeek: '[Last] dddd',
+                      lastDay: '[Yesterday]',
+                      sameDay: '[Today]',
+                      nextDay: '[Tomorrow]',
+                      nextWeek: 'dddd',
+                    })}
+                  </Text>
+                </View>}
                 bounces={false}
                 style={{ flex: 1 }}
                 keyExtractor={(itemValueKey, index) => index.toString()}
@@ -368,6 +395,16 @@ export default function ScheduleScreen({ navigation }) {
                 width={width}
                 initDate={timetableSelectDate}
                 scrollToFirst={true}
+                renderEvent={(event) => <CalendarTimeTableView
+                  title={event.title}
+                  summary={event.summary}
+                  containerStyle={{ borderLeftColor: event.eventColor }}
+                  eventTitleStyle={{ color: event.eventColor }}
+                />}
+                styles={{
+                  event: styles.eventViewStyle,
+                  line: { backgroundColor: colors.lightgrayColor },
+                }}
               />}
             />}
           </View>}
@@ -382,8 +419,6 @@ export default function ScheduleScreen({ navigation }) {
         onPress={(index) => {
           if (index === 0) {
             navigation.navigate('DefaultColorScreen');
-          } else if (index === 1) {
-            navigation.navigate('GroupEventScreen');
           }
         }}
       />
@@ -401,9 +436,6 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
-    width: '100%',
-    height: '100%',
   },
   shceduleCalenderView: {
     flexDirection: 'row',
@@ -413,10 +445,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   filterHeaderText: {
-    marginHorizontal: 12,
+    marginLeft: 12,
+    marginRight: 8,
     marginVertical: 5,
     fontSize: 25,
     color: colors.orangeColor,
     fontFamily: fonts.RMedium,
+  },
+  eventViewStyle: {
+    opacity: 1,
+    backgroundColor: colors.whiteColor,
+    shadowOpacity: 0.8,
+    borderWidth: 0.5,
+    shadowColor: colors.lightgrayColor,
+    shadowOffset: {
+      height: 3,
+      width: 1,
+    },
+    elevation: 5,
+    overflow: 'visible',
+    paddingLeft: 0,
+    paddingTop: 0,
+  },
+  headerTodayText: {
+    fontSize: 13,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+    alignSelf: 'flex-end',
+    bottom: 6,
   },
 });

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   inactiveEventPrivacyText: {
     color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RLight,
     letterSpacing: 0.5,
     fontSize: 14,
   },

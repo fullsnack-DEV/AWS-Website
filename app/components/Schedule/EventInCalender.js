@@ -22,8 +22,10 @@ export default function EventInCalender({ onPress, data }) {
     <TouchableWithoutFeedback style={ styles.backgroundView } onPress={ onPress }>
       <View style={ styles.backgroundView } onPress={ onPress }>
         <View style={ [styles.colorView, { backgroundColor: data.eventColor }] }>
-          <Text style={ styles.dateMonthText }>{moment(data.date).format('MMM')}</Text>
-          <Text style={ styles.dateText }>{moment(data.date).format('DD')}</Text>
+          <Text style={ styles.hourTextStyle }>{moment(data.date).format('h')}
+            <Text style={ styles.minuteTextStyle }>{moment(data.date).format(':mm')}</Text>
+          </Text>
+          <Text style={ styles.dateText }>{moment(data.date).format('a')}</Text>
         </View>
         <View style={ styles.eventText }>
           <View style={ styles.eventTitlewithDot }>
@@ -39,8 +41,8 @@ export default function EventInCalender({ onPress, data }) {
           </View>
           <View style={ styles.bottomView }>
             <Text style={ styles.eventTime }>{data.eventTime}</Text>
-            <Text> | </Text>
-            <Text style={ styles.eventLocation }>{data.eventLocation}</Text>
+            <Text style={ [styles.eventTime, { marginHorizontal: 5 }] }> | </Text>
+            <Text style={ styles.eventTime }>{data.eventLocation}</Text>
           </View>
         </View>
       </View>
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
-    borderRadius: 10,
+    borderRadius: 5,
     elevation: 5,
     flexDirection: 'row',
     height: 86,
@@ -64,83 +66,72 @@ const styles = StyleSheet.create({
     width: wp('94%'),
   },
   bottomView: {
-    bottom: 8,
+    bottom: 5,
     flexDirection: 'row',
     marginLeft: 10,
-
     position: 'absolute',
   },
   colorView: {
     alignItems: 'center',
     backgroundColor: colors.orangeColor,
-    borderBottomLeftRadius: 10,
-    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 5,
+    borderTopLeftRadius: 5,
     height: 86,
     paddingTop: 10,
-    paddingLeft: 5,
-    width: wp('10%'),
+    width: wp('12%'),
   },
-
-  dateMonthText: {
-    color: colors.whiteColor,
-    fontSize: 16,
-    fontFamily: fonts.RLight,
-    // marginBottom: 3,
-  },
-  dateText: {
+  hourTextStyle: {
     color: colors.whiteColor,
     fontSize: 20,
     fontFamily: fonts.RBold,
+  },
+  minuteTextStyle: {
+    color: colors.whiteColor,
+    fontSize: 13,
+    fontFamily: fonts.RBold,
+  },
+  dateText: {
+    color: colors.whiteColor,
+    fontSize: 16,
+    fontFamily: fonts.RLight,
     marginBottom: 5,
   },
   descriptionView: {
     alignItems: 'flex-start',
-    height: 30,
-
     justifyContent: 'center',
   },
   eventDescription: {
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RRegular,
-
-    color: colors.googleColor,
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
     lineHeight: 15,
-
     flexWrap: 'wrap',
-  },
-  eventLocation: {
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RRegular,
-    color: colors.googleColor,
+    top: 3,
   },
   eventText: {
     flexDirection: 'column',
     padding: 10,
-    width: wp('76%'),
+    width: wp('83%'),
   },
-
   eventTime: {
-    fontSize: wp('3%'),
-    // fontFamily: fonts.RRegular,
-
-    color: colors.googleColor,
+    fontSize: 12,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
   },
   eventTitle: {
-    fontSize: wp('3.4%'),
-    // fontFamily: fonts.RBold,
-    // marginLeft: 15,
-    // marginRight: 5,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    width: wp('70%'),
     color: colors.googleColor,
-    // marginTop: 8,
-    marginBottom: 1,
   },
   eventTitlewithDot: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   threedot: {
     height: 12,
-    marginLeft: 20,
-    marginTop: 2,
+    right: 6,
+    marginTop: 5,
     resizeMode: 'contain',
     tintColor: colors.grayColor,
     width: 12,

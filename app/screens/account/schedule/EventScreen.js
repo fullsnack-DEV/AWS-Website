@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,12 +6,14 @@ import {
   Image,
   Text,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import ActionSheet from 'react-native-actionsheet';
 import Header from '../../../components/Home/Header';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
@@ -21,6 +23,9 @@ import EventTimeItem from '../../../components/Schedule/EventTimeItem';
 import EventMapView from '../../../components/Schedule/EventMapView';
 
 export default function EventScreen({ navigation }) {
+  const actionSheet = useRef();
+  const editactionsheet = useRef();
+
   return (
     <SafeAreaView style={ styles.mainContainerStyle }>
       <Header
@@ -33,7 +38,7 @@ export default function EventScreen({ navigation }) {
           <Text style={styles.eventTextStyle}>Event</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={() => actionSheet.current.show()}>
             <Image source={images.vertical3Dot} style={styles.threeDotImageStyle} />
           </TouchableOpacity>
         }
@@ -100,6 +105,62 @@ export default function EventScreen({ navigation }) {
           </View>
         </EventItemRender>
       </ScrollView>
+      <ActionSheet
+        ref={actionSheet}
+        options={['Edit', 'Delete', 'Cancel']}
+        cancelButtonIndex={2}
+        destructiveButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            editactionsheet.current.show();
+          } else if (index === 1) {
+            Alert.alert(
+              'Do you want to delete this event ?',
+              '',
+              [{
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                },
+              },
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+
+              ],
+              { cancelable: false },
+            );
+          }
+        }}
+      />
+      <ActionSheet
+        ref={editactionsheet}
+        options={['Change Event Color', 'Hide', 'Cancel']}
+        cancelButtonIndex={2}
+        // destructiveButtonIndex={1}
+        onPress={(index) => {
+          if (index === 1) {
+            Alert.alert(
+              'Do you want to delete this event ?',
+              '',
+              [{
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                },
+              },
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+
+              ],
+              { cancelable: false },
+            );
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

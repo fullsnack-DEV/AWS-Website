@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   inactiveEventPrivacyText: {
     color: colors.themeColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RBold,
     letterSpacing: 0.5,
     fontSize: 16,
   },
