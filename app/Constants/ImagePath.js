@@ -179,6 +179,7 @@ const images = {
 
   radioUnSelectGreen: require('../assets/images/uncheck_no_tick.png'),
   radioSelectGreen: require('../assets/images/check_green_tick.png'),
+  menuClose: require('../assets/images/menu_close.png'),
 
 };
 

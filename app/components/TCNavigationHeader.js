@@ -24,8 +24,8 @@ export default function TCNavigationHeader({ name, groupType, image }) {
 const styles = StyleSheet.create({
   profileView: {
     backgroundColor: colors.whiteColor,
-    height: 26,
-    width: 26,
+    height: 22,
+    width: 22,
     borderRadius: 54,
     marginRight: 5,
 
@@ -40,9 +40,9 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     alignSelf: 'center',
-    height: 25,
+    height: 20,
     resizeMode: 'cover',
-    width: 25,
+    width: 20,
     borderRadius: 50,
   },
 

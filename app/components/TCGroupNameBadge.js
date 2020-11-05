@@ -13,9 +13,9 @@ import images from '../Constants/ImagePath'
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
-export default function TCGroupNameBadge({ name = 'Tiger Youths', groupType = 'team' }) {
+export default function TCGroupNameBadge({ name = 'Tiger Youths', groupType = 'team', ...otherProps }) {
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View style={{ flexDirection: 'row' }} {...otherProps}>
       <Text style={styles.nameText} numberOfLines={1}>{name}</Text>
       <Image source={ groupType === 'team' ? images.teamT : images.clubC} style={ styles.teamTImage } />
     </View>

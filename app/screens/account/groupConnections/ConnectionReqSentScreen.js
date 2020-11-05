@@ -17,7 +17,7 @@ export default function ConnectionReqSentScreen({ route }) {
         <View style={styles.imageContainer}>
           <Image source={images.emailSent1} style={styles.rotateImage}/>
         </View>
-        <Text style={styles.infoText}>When {route.params.memberObj.first_name} {route.params.memberObj.last_name} accepts the request, the user’s account will be connected to the member’s profile created in your club.</Text>
+        <Text style={styles.infoText}>When {route.params.memberObj.first_name} {route.params.memberObj.last_name} accepts the request, the user’s account will be connected to the member’s profile created in your group.</Text>
       </View>
     </View>
   );

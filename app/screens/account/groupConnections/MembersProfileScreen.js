@@ -135,9 +135,9 @@ export default function MembersProfileScreen({ navigation, route }) {
               <Image source={ images.editSection } style={ styles.editImage } />
             </TouchableWithoutFeedback>}
           </View>
-          {memberDetail.joined_date && <Text style={styles.undatedTimeText} numberOfLines={2}>
-            Joined club on {monthNames[new Date(memberDetail.joined_date).getMonth()]} {new Date(memberDetail.joined_date).getDate()} ,{new Date(memberDetail.joined_date).getFullYear()}
-            {'\n'}Last updated by {memberDetail.updatedBy.first_name} {memberDetail.updatedBy.last_name}  on {monthNames[new Date(memberDetail.updated_date).getMonth()]} {new Date(memberDetail.updated_date).getDate()} ,{new Date(memberDetail.updated_date).getFullYear()}</Text>}
+          {memberDetail.group.updatedBy && <Text style={styles.undatedTimeText} numberOfLines={2}>
+            Joined club on {monthNames[new Date(memberDetail.group.joined_date).getMonth()]} {new Date(memberDetail.group.joined_date).getDate()} ,{new Date(memberDetail.group.joined_date).getFullYear()}
+            {'\n'}Last updated by {memberDetail.group.updatedBy.first_name} {memberDetail.group.updatedBy.last_name}  on {monthNames[new Date(memberDetail.group.updated_date).getMonth()]} {new Date(memberDetail.group.updated_date).getDate()} ,{new Date(memberDetail.group.updated_date).getFullYear()}</Text>}
           {!memberDetail.connected && <TCBorderButton title={strings.connectAccountText} marginTop={20} onPress={() => {
             navigation.navigate('UserNotFoundScreen', { memberObj: memberDetail, groupID: route.params.groupID })
           }}/>}
@@ -230,7 +230,7 @@ export default function MembersProfileScreen({ navigation, route }) {
                   } else if (index === 1) {
                     Alert.alert(
                       `Do you want to remove ${memberDetail.first_name} ${memberDetail.last_name} from ${switchUser.obj.group_name}?`,
-                      '',
+
                       [{
                         text: 'Yes',
                         onPress: async () => {

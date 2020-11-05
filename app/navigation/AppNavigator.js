@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // import HomeScreen from '../screens/home/HomeScreen';
 
-import AccountNavigator from './AccountNavigator';
 import NewsFeedNavigator from './NewsFeedNavigator';
 import * as Utility from '../utils/index';
 
@@ -12,7 +11,7 @@ import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
 
 import ReservationNavigator from './ReservationNavigator';
-import HomeNavigator from './HomeNavigator';
+
 import AccountDrawerNavigator from './AccountDrawerNavigator';
 
 const Tab = createBottomTabNavigator();
@@ -60,6 +59,11 @@ const getTabBarVisibility = (route) => {
     || routeName === 'CreateEventScreen'
     || routeName === 'DefaultColorScreen'
     || routeName === 'GroupEventScreen'
+    || routeName === 'UserFoundScreen'
+    || routeName === 'UserNotFoundScreen'
+    || routeName === 'MemberProfileCreatedScreen'
+    || routeName === 'InvitationSentScreen'
+    || routeName === 'ConnectionReqSentScreen'
   ) {
     return false;
   }
@@ -67,11 +71,11 @@ const getTabBarVisibility = (route) => {
   return true;
 };
 
-function AppNavigator() {
+function AppNavigator({ navigation }) {
   const [role, setRole] = useState('user');
   useEffect(() => {
     changeRole();
-  });
+  }, [navigation]);
 
   const changeRole = async () => {
     const entity = await Utility.getStorage('loggedInEntity');
@@ -127,7 +131,7 @@ function AppNavigator() {
       />
       <Tab.Screen
         name="Notification"
-        component={ AccountDrawerNavigator }
+        component={ NewsFeedNavigator }
         options={ {
           tabBarIcon: ({ focused }) => (
             <Image
@@ -141,7 +145,7 @@ function AppNavigator() {
       />
       <Tab.Screen
         name="Message"
-        component={ HomeNavigator }
+        component={ NewsFeedNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
@@ -156,7 +160,7 @@ function AppNavigator() {
       {role === 'team' && (
         <Tab.Screen
           name="Account"
-          component={ AccountNavigator }
+          component={ AccountDrawerNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
@@ -175,7 +179,7 @@ function AppNavigator() {
       {role === 'user' && (
         <Tab.Screen
           name="Account"
-          component={ AccountNavigator }
+          component={ AccountDrawerNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
@@ -190,7 +194,7 @@ function AppNavigator() {
       {role === 'club' && (
         <Tab.Screen
           name="Account"
-          component={ AccountNavigator }
+          component={ AccountDrawerNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (

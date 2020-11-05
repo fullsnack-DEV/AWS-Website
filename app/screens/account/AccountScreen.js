@@ -7,16 +7,15 @@ import {
   Image,
   FlatList,
   ScrollView,
-  Platform,
   ImageBackground,
   SafeAreaView,
   Alert,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
 import QB from 'quickblox-react-native-sdk';
@@ -38,6 +37,7 @@ import getUnreadCount from '../../api/Notificaitons';
 import * as Utility from '../../utils/index';
 
 import images from '../../Constants/ImagePath';
+import TCNavigationHeader from '../../components/TCNavigationHeader';
 
 export default function AccountScreen({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -124,7 +124,7 @@ export default function AccountScreen({ navigation }) {
     });
   }, [navigation]);
   useEffect(() => {
-    console.log('NAVIGATION::', navigation);
+    console.log('EFFECT CALLED:: ACCOUNT');
     const getData = async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       setAuthUser(entity);
@@ -169,7 +169,15 @@ export default function AccountScreen({ navigation }) {
           // setEntities([...clubs, ...teams]);
           setTeam(teams);
           setClub(clubs);
+          // if (authUser.role === 'user') {
           setGroupList([...clubs, ...teams]);
+          // } else if (authUser.role === 'team') {
+          //   const updatedTeam = team.filter((item) => item.group_id !== authUser.uid);
+          //   setGroupList([authUser.auth.user, ...club, ...updatedTeam]);
+          // } else if (authUser.role === 'club') {
+          //   const updatedClub = club.filter((item) => item.group_id !== authUser.uid);
+          //   setGroupList([authUser.auth.user, ...updatedClub, ...team]);
+          // }
         } else {
           Alert.alert(response.messages);
         }
@@ -182,7 +190,7 @@ export default function AccountScreen({ navigation }) {
     const loggedInEntity = await Utility.getStorage('loggedInEntity');
     if (loggedInEntity.role === 'club') {
       getTeamsOfClub(loggedInEntity.uid).then((response) => {
-        if (response.status === true) {
+        if (response.status) {
           setTeamList(response.payload);
         } else {
           Alert.alert(response.messages);
@@ -190,8 +198,8 @@ export default function AccountScreen({ navigation }) {
       });
     } else {
       getJoinedGroups().then((response) => {
-        console.log('response::', response)
-        if (response.status === true) {
+        console.log('JOINED response::', response)
+        if (response.status) {
           setTeamList(response.payload.teams);
         } else {
           Alert.alert(response.messages);
@@ -216,9 +224,11 @@ export default function AccountScreen({ navigation }) {
     let currentEntity = await Utility.getStorage('loggedInEntity');
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         team.push(currentEntity.obj)
         setGroupList([...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         club.push(currentEntity.obj)
         setGroupList([...club, ...team]);
       }
@@ -231,14 +241,17 @@ export default function AccountScreen({ navigation }) {
       setRole('user')
     } else if (item.entity_type === 'team') {
       if (currentEntity.obj.entity_type === 'player') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = team.indexOf(item);
         team.splice(i, 1);
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'team') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = team.indexOf(item);
         team.splice(i, 1, currentEntity.obj);
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = team.indexOf(item);
         team.splice(i, 1);
         club.push(currentEntity.obj)
@@ -253,15 +266,18 @@ export default function AccountScreen({ navigation }) {
       setRole('team')
     } else if (item.entity_type === 'club') {
       if (currentEntity.obj.entity_type === 'player') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = club.indexOf(item);
         club.splice(i, 1);
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'team') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = club.indexOf(item);
         club.splice(i, 1);
         team.push(currentEntity.obj)
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
+        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = club.indexOf(item);
         club.splice(i, 1, currentEntity.obj);
         setGroupList([authUser.auth.user, ...club, ...team]);
@@ -276,86 +292,6 @@ export default function AccountScreen({ navigation }) {
       setAuthUser(currentEntity)
       setRole('club')
     }
-
-    // let currentEntity = await Utility.getStorage('loggedInEntity');
-    // if (item.entity_type === 'club') {
-    //   if (!entities.includes(currentEntity.auth.user, 0)) {
-    //     const i = entities.indexOf(currentEntity.auth.user);
-    //     if (i === -1) {
-    //       entities.unshift(currentEntity.auth.user);
-    //       setGroupList(entities);
-    //     }
-    //   }
-    //   const index = entities.indexOf(item);
-    //   if (!playerAdd) {
-    //     entities.splice(index, 1);
-    //     setGroupList(entities);
-    //   } else if (group.entity_type === 'player') {
-    //     entities.splice(index, 1);
-    //     setGroupList(entities);
-    //   } else {
-    //     entities.splice(index, 1, group);
-    //     setGroupList(entities);
-    //   }
-    //   currentEntity = {
-    //     ...currentEntity, uid: item.group_id, role: 'club', obj: item,
-    //   }
-    //   await Utility.setStorage('loggedInEntity', currentEntity);
-    //   setAuthUser(currentEntity)
-    //   setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
-    //   getTeamsList();
-    //   setGroup(item);
-    //   setParentGroup(null);
-    //   setGroupList(entities);
-    // } else if (item.entity_type === 'team') {
-    //   if (!entities.includes(currentEntity.auth.user, 0)) {
-    //     const i = entities.indexOf(currentEntity.auth.user);
-    //     if (i === -1) {
-    //       entities.unshift(currentEntity.auth.user);
-    //       setPlayerAdd(true);
-    //       setGroupList(entities);
-    //     }
-    //   }
-
-    //   const index = entities.indexOf(item);
-    //   if (!playerAdd) {
-    //     entities.splice(index, 1);
-    //     setGroupList(entities);
-    //   } else if (group.entity_type === 'player') {
-    //     entities.splice(index, 1);
-    //     setGroupList(entities);
-    //   } else {
-    //     entities.splice(index, 1, group);
-    //     setGroupList(entities);
-    //   }
-
-    //   currentEntity = {
-    //     ...currentEntity, uid: item.group_id, role: 'club', obj: item,
-    //   }
-    //   await Utility.setStorage('loggedInEntity', currentEntity);
-    //   setAuthUser(currentEntity)
-    //  getParentClub(item);
-
-    //   setEntities(entities.filter((value) => JSON.stringify(value) !== '{}'));
-    //   setGroup(item);
-    //   setGroupList(entities);
-    // } else if (item.entity_type === 'player') {
-    //   currentEntity.uid = currentEntity.auth.user_id
-    //   currentEntity.role = 'user'
-    //   // FIXME
-    //   delete currentEntity.obj
-    //   await Utility.setStorage('loggedInEntity', currentEntity);
-    //   setAuthUser(currentEntity)
-    //   await Utility.removeAuthKey('club');
-    //   await Utility.removeAuthKey('team');
-    //   entities.splice(0, 1);
-    //   entities.push(group);
-    //   setGroup(item);
-    //   setParentGroup(null);
-    //   setGroupList(entities);
-    // }
-    // await Utility.setStorage('loggedInEntity', currentEntity)
-
     setloading(false);
   };
   const handleLogOut = async () => {
@@ -484,56 +420,41 @@ export default function AccountScreen({ navigation }) {
       <ActivityLoader visible={loading} />
       <ScrollView style={styles.mainContainer}>
 
-        {parentGroup !== null && (
-          <>
-            <TouchableWithoutFeedback
-              style={{
-                flexDirection: 'row',
-                padding: 15,
-                marginTop: Platform.OS === 'ios' ? 50 : 0,
-              }}>
-              <View
+        <View style={{
+          flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, alignItems: 'center',
+        }}>
+          {parentGroup ? (<View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  alignContent: 'center',
                 }}>
-                <Image source={images.clubLable} style={styles.clubLableView} />
-
-                <Image
-                    source={parentGroup.thumbnail ? { uri: parentGroup.thumbnail } : images.club_ph}
-                    style={styles.clubLable}
-                  />
-
-                <View
+            <Image source={images.clubLable} style={styles.clubLableView} />
+            <View
                   style={{
                     flexDirection: 'row',
-                    alignSelf: 'center',
+                    marginLeft: 10,
+                    // backgroundColor: 'red',
                   }}>
-                  <Text style={styles.clubNameText}>
-                    {parentGroup.group_name}
-                  </Text>
-
-                  <View style={styles.identityViewTop}>
-                    <ImageBackground
-                      source={images.clubSqure}
-                      style={styles.badgeCounter}
-                    />
-                    <Text style={styles.badgeCounter}>C</Text>
-                  </View>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </>
-        )}
+              <TCNavigationHeader
+                 name={parentGroup.group_name}
+                 groupType={'club'}
+                 image={parentGroup.thumbnail && parentGroup.thumbnail }/>
+            </View>
+          </View>) : <View></View>}
+          <View>
+            <TouchableOpacity onPress={() => navigation.closeDrawer()} >
+              <Image source={images.menuClose} style={styles.closeMenu}/>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {authUser.role === 'user' && (
           <View style={styles.profileView}>
             <Image
                 source={authUser.auth.user.thumbnail ? { uri: authUser.auth.user.thumbnail } : images.profilePlaceHolder}
-                style={styles.profileImg}
+                style={[styles.profileImg, { marginTop: 20 }]}
               />
-            {/* <Text style={styles.nameText}>{authUser.auth.user.full_name}</Text> */}
+            <Text style={styles.nameText}>{authUser.auth.user.full_name}</Text>
             <Text style={styles.locationText}>
               {authUser.auth.user.city}, {authUser.auth.user.state_abbr}
             </Text>
@@ -850,15 +771,9 @@ const styles = StyleSheet.create({
     top: 10,
     width: 20,
   },
-  clubLable: {
-    borderRadius: 10,
-    height: 20,
-    marginLeft: 20,
-    resizeMode: 'cover',
-    width: 20,
-  },
+
   clubLableView: {
-    height: 40,
+    height: 34,
     width: 230,
     resizeMode: 'cover',
     // backgroundColor: colors.themeColor,
@@ -866,13 +781,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     // marginLeft:20,
   },
-  clubNameText: {
-    alignSelf: 'center',
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    fontSize: wp('3.5%'),
-    marginLeft: 10,
-  },
+
   clubSportView: {
 
     color: colors.greeColor,
@@ -936,16 +845,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignSelf: 'center',
   },
-
-  identityViewTop: {
-    // backgroundColor: colors.lightBlueColor,
-    height: 16,
-    width: 16,
-    borderRadius: 3,
-    marginLeft: 10,
-
-    alignSelf: 'center',
-  },
   imageContainer: {
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 1 },
@@ -991,7 +890,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 20,
-    marginTop: hp('1%'),
+    marginTop: 5,
   },
   nextArrow: {
     alignSelf: 'center',
@@ -1047,6 +946,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteColor,
   },
+  closeMenu: {
+    height: 14,
+    width: 14,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+    marginRight: 20,
+  },
   profileImgGroup: {
     height: 50,
     width: 50,
@@ -1058,7 +964,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteColor,
   },
-  profileView: { height: 150, marginTop: Platform.OS === 'ios' ? 50 : 0 },
+  profileView: { height: 150 },
   separatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.lightgrayColor,

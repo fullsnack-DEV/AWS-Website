@@ -18,6 +18,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
   const [switchUser, setSwitchUser] = useState({})
 
   useEffect(() => {
+    console.log('NAVIGATION:', navigation);
     const getAuthEntity = async () => {
       entity = await Utility.getStorage('loggedInEntity');
       setSwitchUser(entity)
@@ -60,14 +61,26 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
           if (route.params.buttonTitle === 'Connect this member profile') {
             connectMemberProfile()
           } else {
-            Linking.openURL(`mailto:${route.params.memberObj.email}`)
+            Linking.canOpenURL('mailto:')
+            // eslint-disable-next-line consistent-return
+              .then((supported) => {
+                if (!supported) {
+                  // Linking.openURL(`mailto:${data.email}`)
+                  Alert.alert('Towns Cup', 'Please configure email in your device')
+                } else {
+                  return Linking.openURL(`mailto:${route.params.memberObj.email}`)
+                }
+              })
+              .catch((err) => {
+                console.error('An error occurred', err)
+              })
           }
         }} fontSize={16}/>
-        <TCBorderButton title={strings.createOtherProfile} textColor={colors.whiteColor} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('MemberProfileCreatedScreen')} fontSize={16} backgroundColor={'transparent'}/>
+        <TCBorderButton title={strings.createOtherProfile} textColor={colors.whiteColor} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('CreateMemberProfileForm1')} fontSize={16} backgroundColor={'transparent'}/>
 
       </View>}
 
-      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.goBack('GroupMembersScreen')} fontSize={16} marginBottom={50}/>
+      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('GroupMembersScreen')} fontSize={16} marginBottom={50}/>
 
     </View>
 
