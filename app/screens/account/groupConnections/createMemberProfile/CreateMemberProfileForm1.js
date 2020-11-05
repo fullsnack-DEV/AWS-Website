@@ -45,7 +45,9 @@ export default function CreateMemberProfileForm1({ navigation }) {
   }]);
 
   const [memberInfo, setMemberInfo] = useState({
-
+    first_name: '',
+    last_name: '',
+    email: '',
   })
 
   useEffect(() => {

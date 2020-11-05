@@ -1,8 +1,10 @@
 import React from 'react';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Platform } from 'react-native';
 import AccountScreen from '../screens/account/AccountScreen';
 import HomeNavigator from './HomeNavigator';
+import colors from '../Constants/Colors'
 
 // import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 // import GameDetail from '../screens/account/schedule/GameDetail';
@@ -40,8 +42,22 @@ const Drawer = createDrawerNavigator();
 const AccountDrawerNavigator = () => (
   <Drawer.Navigator drawerContent={(props) => <AccountScreen {...props} />}
    drawerPosition={'right'}
+drawerContentOptions={{
+  activeTintColor: 'red',
+}}
    openByDefault={false}
-   drawerStyle={{ width: '76%' }}>
+   overlayColor={'white'}
+   drawerStyle={{
+     width: '90%',
+     backgroundColor: colors.whiteColor,
+     borderTopLeftRadius: 10,
+     marginTop: Platform.OS === 'ios' ? 60 : 20,
+     shadowColor: colors.googleColor,
+     shadowOffset: { width: 0, height: 1 },
+     shadowOpacity: 0.5,
+     shadowRadius: 6,
+     elevation: 13,
+   }}>
     <Drawer.Screen name="Home" component={ HomeNavigator } />
 
   </Drawer.Navigator>

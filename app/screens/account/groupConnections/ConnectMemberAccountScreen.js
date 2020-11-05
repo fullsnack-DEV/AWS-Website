@@ -76,7 +76,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         if (response.status) {
           console.log('PAYLOAD:', response.payload)
           setloading(false)
-          navigation.navigate('ConnectionReqSentScreen', { memberObj: response.payload });
+          navigation.navigate('ConnectionReqSentScreen', { memberObj: obj });
         }
       })
         .catch((e) => {

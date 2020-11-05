@@ -91,14 +91,15 @@ export default function GroupMembersScreen({ navigation, route }) {
   // For activity indigator
   const [loading, setloading] = useState(true);
   const actionSheetInvite = useRef();
-  const [searchMember, setSearchMember] = useState([]);
+  const [searchMember, setSearchMember] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   const [allSelected, setAllSelected] = useState(false);
   const [filter, setFilter] = useState([filterArray]);
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState();
   const [switchUser, setSwitchUser] = useState({})
 
   useEffect(() => {
+    console.log('NAVIGATION:', navigation);
     const getAuthEntity = async () => {
       entity = await Utility.getStorage('loggedInEntity');
       setSwitchUser(entity)
@@ -186,7 +187,7 @@ export default function GroupMembersScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <View tabLabel='Members' style={{ flex: 1 }}>
+      {members && <View tabLabel='Members' style={{ flex: 1 }}>
         <View style={styles.searchBarView}>
           <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) }/>
           {/* <TouchableWithoutFeedback onPress={() => toggleModal()}>
@@ -205,7 +206,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                   keyExtractor={(item, index) => index.toString()}
                   /> : <TCNoDataView title={'No Members Found'}/>}
 
-      </View>
+      </View>}
       <ActionSheet
                 ref={actionSheet}
                 // title={'News Feed Post'}

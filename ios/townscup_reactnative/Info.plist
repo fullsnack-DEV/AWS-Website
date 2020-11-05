@@ -49,6 +49,7 @@
 	<string>Towns Cup</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>mailto</string>
 		<string>fbapi</string>
 		<string>fb-messenger-share-api</string>
 		<string>fbauth2</string>

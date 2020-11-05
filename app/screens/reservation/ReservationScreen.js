@@ -53,7 +53,7 @@ export default function ReservationScreen({ navigation }) {
       <ActivityLoader visible={loading} />
 
       <TCScrollableTabs>
-        <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0
+        <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0 && loading === false
           ? <TCNoDataView title={strings.noReservationFountText}/>
           : <FlatList
                     data={upcoming }
@@ -68,7 +68,7 @@ export default function ReservationScreen({ navigation }) {
                     )}
                 />
                 }</View>
-        <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 ? (
+        <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 && loading === false ? (
           <TCNoDataView title={strings.noReservationFountText}/>
         ) : (
           <FlatList

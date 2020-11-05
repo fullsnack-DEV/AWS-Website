@@ -18,7 +18,7 @@ export const getJoinedGroups = async (player_id = undefined) => {
   const query = player_id ? `?player_id= + ${player_id}` : ''
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/groups/joined${query}`,
+    url: `${Config.BASE_URL}groups/joined${query}`,
   })
 }
 
