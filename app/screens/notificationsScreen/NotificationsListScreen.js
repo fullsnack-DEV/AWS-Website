@@ -36,8 +36,10 @@ import fonts from '../../Constants/Fonts';
 import TCNoDataView from '../../components/TCNoDataView';
 import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 function NotificationsListScreen({ navigation }) {
+  const [loading, setloading] = useState(true);
   const navigateFlatList = () => {
   };
   const onDelete = ({ item }) => {
@@ -185,6 +187,7 @@ function NotificationsListScreen({ navigation }) {
   }, [mainNotificationsList]);
 
   const callNotificationList = () => {
+    setloading(true)
     const entity = groupList[currentTab];
     setSelectedEntity({ ...entity });
     let currentUserId = '';
@@ -219,8 +222,10 @@ function NotificationsListScreen({ navigation }) {
           { data: [...erlierNotifications], section: 'EARLIER' },
         ];
         setMainNotificationsList([...array.filter((item) => item.data.length !== 0)]);
+        setloading(false)
       })
       .catch((e) => {
+        setloading(false)
         Alert.alert(e.messages);
       });
   };
@@ -246,6 +251,7 @@ function NotificationsListScreen({ navigation }) {
         />
         <TCThinDivider marginTop={0} width={'100%'} />
       </View>
+      <ActivityLoader visible={loading} />
       {mainNotificationsList && mainNotificationsList.length > 0 ? (
         <SectionList
           sections={mainNotificationsList}
