@@ -74,6 +74,11 @@ import DefaultColorScreen from '../screens/account/schedule/DefaultColorScreen';
 import GroupEventScreen from '../screens/account/schedule/GroupEventScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 
+// Create challenge
+import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
+import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
+import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateChallengeForm3';
+
 const Stack = createStackNavigator();
 
 const HomeNavigator = () => (
@@ -924,6 +929,54 @@ const HomeNavigator = () => (
         component={ EditClubNotesScreen }
         options={ {
           title: '',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateChallengeForm1"
+        component={ CreateChallengeForm1 }
+        options={ {
+          title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateChallengeForm2"
+        component={ CreateChallengeForm2 }
+        options={ {
+          title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateChallengeForm3"
+        component={ CreateChallengeForm3 }
+        options={ {
+          title: 'Challenge',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

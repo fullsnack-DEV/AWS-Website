@@ -31,8 +31,7 @@ function TCGradientButton({
 
 const styles = StyleSheet.create({
   outerContainerStyle: {
-    marginHorizontal: 15,
-    marginVertical: 35,
+    margin: 15,
   },
   containerStyle: {
     height: 40,

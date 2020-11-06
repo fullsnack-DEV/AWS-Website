@@ -60,7 +60,7 @@ const colors = {
 
   greenGradientStart: '#45C188',
   greenGradientEnd: '#B0DB4F',
-
+  orangeNotesColor: '#FF4E00',
   redColor: '#FD4E1E',
 
 };

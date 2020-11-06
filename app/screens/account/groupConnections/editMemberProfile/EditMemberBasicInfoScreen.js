@@ -217,6 +217,7 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
         <TCPicker dataSource={[
           { label: 'Male', value: 'male' },
           { label: 'Female', value: 'female' },
+          { label: 'Other', value: 'other' },
         ]}
             placeholder={strings.selectGenderPlaceholder}
             value={memberInfo.gender} onValueChange={(value) => value !== '' && setMemberInfo({ ...memberInfo, gender: value })}/>

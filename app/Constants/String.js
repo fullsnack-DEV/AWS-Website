@@ -27,6 +27,7 @@ const strings = {
   birthDatePlaceholder: 'Birthday',
   AppearancePlaceholder: 'Appearance',
   writeNotesPlaceholder: 'Notes',
+  writedownRulesPlaceholder: 'Write down the rules',
   enterEmailPlaceholder: 'Enter your email',
   passwordPlaceHolder: 'Password',
   forgotPassword: 'Forgot Password?',

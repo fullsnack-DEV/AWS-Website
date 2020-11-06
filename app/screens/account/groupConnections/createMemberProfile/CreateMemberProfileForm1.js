@@ -37,7 +37,9 @@ export default function CreateMemberProfileForm1({ navigation }) {
   ];
   const actionSheet = useRef();
   const [show, setShow] = useState(false);
+  const [locationFieldVisible, setLocationFieldVisible] = useState(false);
   const [role, setRole] = useState('');
+
   const [phoneNumber, setPhoneNumber] = useState([{
     id: 0,
     phone_number: '',
@@ -207,24 +209,28 @@ export default function CreateMemberProfileForm1({ navigation }) {
       <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
       <View>
         <TCLable title={'Street Address'} />
-        <TCTextField value={memberInfo.street_address} onChangeText={(text) => setMemberInfo({ ...memberInfo, street_address: text })} placeholder={strings.addressPlaceholder} keyboardType={'default'}/>
+        <TCTextField value={memberInfo.street_address}
+        onChangeText={(text) => setMemberInfo({ ...memberInfo, street_address: text })}
+        placeholder={strings.addressPlaceholder}
+        keyboardType={'default'}
+        onFocus={() => setLocationFieldVisible(true)}/>
       </View>
-      <View>
+      {locationFieldVisible && <View>
         <TCLable title={'city'} />
         <TCTextField value={memberInfo.city} onChangeText={(text) => setMemberInfo({ ...memberInfo, city: text })} placeholder={strings.cityText} keyboardType={'default'}/>
-      </View>
-      <View>
+      </View>}
+      {locationFieldVisible && <View>
         <TCLable title={'State/Province/Region'} />
         <TCTextField value={memberInfo.state_abbr} onChangeText={(text) => setMemberInfo({ ...memberInfo, state_abbr: text })} placeholder={strings.stateText} keyboardType={'default'}/>
-      </View>
-      <View>
+      </View>}
+      {locationFieldVisible && <View>
         <TCLable title={'Country'} />
         <TCTextField value={memberInfo.country} onChangeText={(text) => setMemberInfo({ ...memberInfo, country: text })} placeholder={strings.countryText} keyboardType={'default'}/>
-      </View>
-      <View>
+      </View>}
+      {locationFieldVisible && <View>
         <TCLable title={'Postal Code/Zip'} />
         <TCTextField value={memberInfo.postal_code} onChangeText={(text) => setMemberInfo({ ...memberInfo, postal_code: text })} placeholder={strings.postalCodeText} keyboardType={'default'}/>
-      </View>
+      </View>}
       <View>
         <TCLable title={'Birthday'} />
         {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
@@ -239,12 +245,19 @@ export default function CreateMemberProfileForm1({ navigation }) {
         <TCPicker dataSource={[
           { label: 'Male', value: 'male' },
           { label: 'Female', value: 'female' },
+          { label: 'Other', value: 'other' },
         ]}
           placeholder={strings.selectGenderPlaceholder}
           value={memberInfo.gender} onValueChange={(value) => {
             setMemberInfo({ ...memberInfo, gender: value })
           }}
           />
+      </View>
+      <View style={{ marginLeft: 15, marginTop: 15 }}>
+        <Text style={styles.smallTxt}>
+          (<Text style={styles.mendatory}>{strings.star} </Text>
+          {strings.requiredText})
+        </Text>
       </View>
       <View style={{ marginBottom: 20 }}/>
       <ActionSheet
@@ -332,5 +345,14 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     marginRight: 10,
+  },
+  smallTxt: {
+    color: colors.grayColor,
+    fontSize: 12,
+    fontFamily: fonts.RLight,
+    textAlign: 'left',
+  },
+  mendatory: {
+    color: 'red',
   },
 });
