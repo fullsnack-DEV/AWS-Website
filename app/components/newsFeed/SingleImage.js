@@ -7,20 +7,18 @@ import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { loaderImage } from '../../Constants/LoaderImages';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import SingleImageModal from './SingleImageModal';
+import images from '../../Constants/ImagePath';
 
 function SingleImage({ data }) {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const uploadImageURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
-
-  const randomImage = Math.floor(Math.random() * loaderImage.length);
-  let height = wp('94%');
-  height = data.media_height > data.media_width ? height = wp('114%') : height = wp('74%');
+  let height = wp('96%');
+  height = data.media_height > data.media_width ? height = wp('116%') : height = wp('76%');
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -41,7 +39,7 @@ function SingleImage({ data }) {
       }]}>
         <FastImage
           style={ styles.imageStyle }
-          source={ loaderImage[randomImage].image }
+          source={ images.imageLoadingGIF }
           resizeMode={ FastImage.resizeMode.contain }
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
@@ -94,10 +92,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: wp('5%'),
-    height: wp('94%'),
+    height: wp('96%'),
     justifyContent: 'center',
     marginVertical: '2%',
-    width: wp('94%'),
+    width: wp('96%'),
   },
 });
 

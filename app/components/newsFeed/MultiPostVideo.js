@@ -9,7 +9,6 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import { loaderImage } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
@@ -22,8 +21,6 @@ function MultiPostVideo({
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
-
-  const randomImage = Math.floor(Math.random() * loaderImage.length);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -38,7 +35,7 @@ function MultiPostVideo({
         ]}>
         <FastImage
           style={styles.loadimageStyle}
-          source={loaderImage[randomImage].image}
+          source={images.imageLoadingGIF}
           resizeMode={FastImage.resizeMode.contain}
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>

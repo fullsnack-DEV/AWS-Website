@@ -21,6 +21,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import EventTimeItem from '../../../components/Schedule/EventTimeItem';
 import EventMapView from '../../../components/Schedule/EventMapView';
+import strings from '../../../Constants/String';
 
 export default function EventScreen({ navigation }) {
   const actionSheet = useRef();
@@ -46,41 +47,40 @@ export default function EventScreen({ navigation }) {
       <View style={ styles.sperateLine } />
       <ScrollView>
         <EventItemRender
-          title={'Title'}
+          title={strings.titleValue}
         >
-          <Text style={styles.textValueStyle}>{'Games with Vancouver Whitecaps'}</Text>
+          <Text style={styles.textValueStyle}>{strings.titleValue}</Text>
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
-          title={'About'}
+          title={strings.about}
         >
-          <Text style={styles.textValueStyle}>{'I love playing soccer, Association football, more more commonly known as football or soccer, [a] is a team sport played between seven teams of eleven players with a spherical ball.'}</Text>
+          <Text style={styles.textValueStyle}>{strings.aboutValue}</Text>
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
-          title={'Event Color'}
+          title={strings.eventColorTitle}
         >
           <View style={styles.eventColorViewStyle} />
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
-          title={'Time'}
+          title={strings.timeTitle}
         >
           <EventTimeItem
-            from={'From'}
-            fromTime={'Feb 15, 2019 1:00 am'}
-            to={'To'}
-            toTime={'Feb 15, 2019 1:00 am'}
-            repeat={'Repeat'}
-            repeatTime={'Weekly \n(Until Mar 25, 2019 12:00 am)'}
+            from={strings.from}
+            fromTime={strings.fromTime}
+            to={strings.to}
+            toTime={strings.fromTime}
+            repeat={strings.repeat}
+            repeatTime={strings.repeatTime}
           />
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
-          title={'Place'}
+          title={strings.place}
         >
-          <Text style={styles.textValueStyle}>{'800 Griffiths Way, Vancouver, BC V6B 6G1'}</Text>
-          {/* {Platform.OS === 'ios' && ( */}
+          <Text style={styles.textValueStyle}>{strings.placeName}</Text>
           <EventMapView
             region={{
               latitude: 37.78825,
@@ -93,15 +93,14 @@ export default function EventScreen({ navigation }) {
               longitude: -122.4324,
             }}
           />
-          {/* )} */}
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
-          title={'Challenge Availability'}
+          title={strings.availableTitle}
         >
           <View style={{ flexDirection: 'row', marginTop: 3 }}>
             <Image source={images.checkWhiteLanguage} style={styles.availableImageStyle} />
-            <Text style={styles.availableTextStyle}>{'Available'}</Text>
+            <Text style={styles.availableTextStyle}>{strings.available}</Text>
           </View>
         </EventItemRender>
       </ScrollView>
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
   },
   eventTextStyle: {
     fontSize: 16,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RBold,
     alignSelf: 'center',
   },
   sepratorViewStyle: {
@@ -200,6 +199,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     marginTop: 3,
+    color: colors.lightBlackColor,
   },
   eventColorViewStyle: {
     backgroundColor: colors.orangeColor,

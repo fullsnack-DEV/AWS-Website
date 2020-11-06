@@ -4,19 +4,24 @@ import {
   StyleSheet,
   Text,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
 export default function BackForwardView({
-  textValue,
+  textValue, onBackArrowPress, onForwardArrowPress,
 }) {
   return (
     <View style={styles.containerStyle}>
-      <Image source={images.backArrow} style={styles.imageViewStyle} />
+      <TouchableOpacity onPress={onBackArrowPress}>
+        <Image source={images.backArrow} style={styles.imageViewStyle} />
+      </TouchableOpacity>
       <Text style={styles.textViewStyle}>{textValue}</Text>
-      <Image source={images.arrowGraterthan} style={styles.imageViewStyle} />
+      <TouchableOpacity onPress={onForwardArrowPress}>
+        <Image source={images.arrowGraterthan} style={styles.imageViewStyle} />
+      </TouchableOpacity>
     </View>
   );
 }
