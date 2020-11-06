@@ -32,7 +32,7 @@ import AuthContext from '../../auth/context';
 
 import { getGroupDetails, getJoinedGroups, getTeamsOfClub } from '../../api/Groups';
 
-import getUnreadCount from '../../api/Notificaitons';
+import { getUnreadCount } from '../../api/Notificaitons';
 
 import * as Utility from '../../utils/index';
 

@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   bigDivider: {
     backgroundColor: colors.thinDividerColor,
 
-    marginTop: 15,
+    marginTop: 0,
     alignSelf: 'center',
   },
 

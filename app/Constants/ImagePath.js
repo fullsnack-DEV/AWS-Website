@@ -56,7 +56,7 @@ const images = {
   gameStart: require('../assets/images/ic_game_start.png'),
   gameDetail: require('../assets/images/ic_details.png'),
   deleteRecentGoal: require('../assets/images/ic_delete_recent_goal.png'),
-
+  deleteIcon: require('../assets/images/delete.png'),
   gameYC: require('../assets/images/ic_yc.png'),
   gameRC: require('../assets/images/ic_rc.png'),
   gameGoal: require('../assets/images/ic_goal.png'),

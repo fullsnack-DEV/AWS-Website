@@ -1,36 +1,37 @@
 import React from 'react';
+import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
-import AccountScreen from '../screens/account/AccountScreen';
+import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
+
+import colors from '../Constants/Colors';
 
 const Stack = createStackNavigator();
-const NotificationNavigator = () => (
-  <Stack.Navigator
-    screenOptions={{
-      // headerTintColor: colors.blackColor,
-      // headerTransparent: true,
-      // headerTitle: true,
-      headerBackTitleVisible: false,
-    }}>
-    <Stack.Screen
-      name="AccountScreen"
-      component={AccountScreen}
-      options={{
-        // title: 'Account',
-        // headerTintColor: colors.blackColor,
-        // headerTitleStyle: {
-        //   fontWeight: '500',
-        // },
-        // headerStyle: {
-        //   backgroundColor: colors.whiteColor,
-        //   borderBottomColor: colors.grayColor,
-        //   borderBottomWidth: 0.3,
-        // },
-        headerShown: false,
-      }}
-    />
 
-  </Stack.Navigator>
-);
+function NotificationNavigator() {
+  return (
+    <Stack.Navigator
+        screenOptions={{
+          headerBackTitleVisible: true,
+        }}>
+      <Stack.Screen
+         name="NotificationsListScreen"
+         component={NotificationsListScreen}
+         options={{
+           title: 'Notification',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
+    </Stack.Navigator>
+  );
+}
 
 export default NotificationNavigator;

@@ -20,6 +20,7 @@ module.exports = {
       'error',
       {functions: true, classes: true, variables: false},
     ],
+    'no-underscore-dangle': ['error', {allowAfterThis: true}],
     'react-native/no-unused-styles': 2,
     'react-native/split-platform-components': 2,
     'react-native/no-inline-styles': 0,

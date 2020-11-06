@@ -11,6 +11,9 @@ import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
 
 import ReservationNavigator from './ReservationNavigator';
+import NotificationNavigator from './NotificationNavigator';
+// import HomeNavigator from './HomeNavigator';
+// import AccountDrawerNavigator from './AccountDrawerNavigator';
 
 import AccountDrawerNavigator from './AccountDrawerNavigator';
 
@@ -131,7 +134,7 @@ function AppNavigator({ navigation }) {
       />
       <Tab.Screen
         name="Notification"
-        component={ NewsFeedNavigator }
+        component={ NotificationNavigator }
         options={ {
           tabBarIcon: ({ focused }) => (
             <Image
