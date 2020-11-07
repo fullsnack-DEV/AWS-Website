@@ -78,6 +78,8 @@ import GroupMembersScreen from '../screens/account/groupConnections/GroupMembers
 import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
 import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
 import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateChallengeForm3';
+import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
+import EditEventScreen from '../screens/account/schedule/EditEventScreen';
 
 const Stack = createStackNavigator();
 
@@ -258,17 +260,14 @@ const HomeNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: 'Game',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
         headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+      }}
+    />
+    <Stack.Screen
+      name="EditEventScreen"
+      component={EditEventScreen}
+      options={{
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -288,6 +287,13 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="GroupEventScreen"
       component={GroupEventScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="ViewPrivacyScreen"
+      component={ViewPrivacyScreen}
       options={{
         headerShown: false,
       }}

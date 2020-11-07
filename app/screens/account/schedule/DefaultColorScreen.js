@@ -14,8 +14,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import Modal from 'react-native-modal';
-import { ColorPicker } from 'react-native-color-picker'
+import * as Utility from '../../../utils/index';
 import Header from '../../../components/Home/Header';
 import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -23,6 +22,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
+import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 
 const createdEventData = [
   {
@@ -115,12 +115,11 @@ export default function DefaultColorScreen({ navigation }) {
   const [gamesEventColors, setGamesEventColor] = useState(gamesData);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
+  const [pressAddEventColor, setPressAddEventColor] = useState('');
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-
-  console.log('Selected Event Colors :-', selectedEventColors);
 
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
@@ -153,7 +152,11 @@ export default function DefaultColorScreen({ navigation }) {
               if (index === createdEventColors.length) {
                 return (
                   <EventColorItem
-                    onItemPress={() => { toggleModal(); setSelectedEventColors([]) }}
+                    onItemPress={() => {
+                      toggleModal();
+                      setSelectedEventColors([])
+                      setPressAddEventColor('Created Events');
+                    }}
                     source={images.plus}
                   />
                 );
@@ -163,10 +166,11 @@ export default function DefaultColorScreen({ navigation }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    createdEventColors.map((createEventItem) => {
+                    createdEventColors.map(async (createEventItem) => {
                       const createEventData = createEventItem;
                       if (createEventData.id === item.id) {
                         createEventData.isSelected = true;
+                        await Utility.setStorage('createdEventColor', item);
                       } else {
                         createEventData.isSelected = false;
                       }
@@ -175,7 +179,10 @@ export default function DefaultColorScreen({ navigation }) {
                     setCreatedEventColors([...createdEventColors])
                   }}
                   eventColorViewStyle={{
-                    backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor, marginRight: wp(3),
+                    backgroundColor: item.color,
+                    borderWidth: item.isSelected ? 2 : 0,
+                    borderColor: colors.whiteColor,
+                    marginRight: wp(3),
                   }}
                 />
               );
@@ -195,7 +202,11 @@ export default function DefaultColorScreen({ navigation }) {
               if (index === importedEventColors.length) {
                 return (
                   <EventColorItem
-                    onItemPress={() => { toggleModal(); setSelectedEventColors([]) }}
+                    onItemPress={() => {
+                      toggleModal();
+                      setSelectedEventColors([])
+                      setPressAddEventColor('Imported Events');
+                    }}
                     source={images.plus}
                   />
                 );
@@ -205,10 +216,11 @@ export default function DefaultColorScreen({ navigation }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    importedEventColors.map((importedEventItem) => {
+                    importedEventColors.map(async (importedEventItem) => {
                       const importedEvent = importedEventItem;
                       if (importedEvent.id === item.id) {
                         importedEvent.isSelected = true;
+                        await Utility.setStorage('importedEventColor', item);
                       } else {
                         importedEvent.isSelected = false;
                       }
@@ -217,7 +229,10 @@ export default function DefaultColorScreen({ navigation }) {
                     setImportedEventColors([...importedEventColors])
                   }}
                   eventColorViewStyle={{
-                    backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor, marginRight: wp(3),
+                    backgroundColor: item.color,
+                    borderWidth: item.isSelected ? 2 : 0,
+                    borderColor: colors.whiteColor,
+                    marginRight: wp(3),
                   }}
                 />
               );
@@ -237,7 +252,11 @@ export default function DefaultColorScreen({ navigation }) {
               if (index === gamesEventColors.length) {
                 return (
                   <EventColorItem
-                    onItemPress={() => { toggleModal(); setSelectedEventColors([]) }}
+                    onItemPress={() => {
+                      toggleModal();
+                      setSelectedEventColors([])
+                      setPressAddEventColor('Game Events');
+                    }}
                     source={images.plus}
                   />
                 );
@@ -247,10 +266,11 @@ export default function DefaultColorScreen({ navigation }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    gamesEventColors.map((gamesEventItem) => {
+                    gamesEventColors.map(async (gamesEventItem) => {
                       const gamesEvent = gamesEventItem;
                       if (gamesEvent.id === item.id) {
                         gamesEvent.isSelected = true;
+                        await Utility.setStorage('gameEventColor', item);
                       } else {
                         gamesEvent.isSelected = false;
                       }
@@ -259,7 +279,10 @@ export default function DefaultColorScreen({ navigation }) {
                     setGamesEventColor([...gamesEventColors])
                   }}
                   eventColorViewStyle={{
-                    backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor, marginRight: wp(3),
+                    backgroundColor: item.color,
+                    borderWidth: item.isSelected ? 2 : 0,
+                    borderColor: colors.whiteColor,
+                    marginRight: wp(3),
                   }}
                 />
               );
@@ -268,100 +291,89 @@ export default function DefaultColorScreen({ navigation }) {
           />
         </EventItemRender>
       </SafeAreaView>
-      <Modal
-        isVisible={isModalVisible}
-        backdropColor="black"
-        style={{ margin: 0, justifyContent: 'flex-end' }}
-        hasBackdrop
+      <DefaultColorModal
+        isModalVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
-        backdropOpacity={0}>
-        <View style={{
-          height: hp('70%'), shadowOpacity: 0.15, shadowOffset: { height: -10, width: 0 }, backgroundColor: colors.whiteColor, borderTopLeftRadius: 25, borderTopRightRadius: 25, alignItems: 'center',
-        }}>
-          <Header
-            mainContainerStyle={{ borderTopLeftRadius: 25, borderTopRightRadius: 25, paddingVertical: 20 }}
-            leftComponent={
-              <TouchableOpacity onPress={() => setModalVisible(false) }>
-                <Image source={images.cancelImage} style={{ height: 15, width: 15, tintColor: colors.lightBlackColor }} resizeMode={'contain'} />
-              </TouchableOpacity>
+        cancelImageSource={images.cancelImage}
+        onCancelImagePress={() => setModalVisible(false)}
+        headerCenterText={'Add color'}
+        onColorSelected={(selectColor) => {
+          const data = [...selectedEventColors];
+          let obj = {};
+          if (pressAddEventColor === 'Created Events') {
+            obj = {
+              id: createdEventColors.length + data.length,
+              color: selectColor,
+              isSelected: false,
+            };
+          }
+          if (pressAddEventColor === 'Imported Events') {
+            obj = {
+              id: importedEventColors.length + data.length,
+              color: selectColor,
+              isSelected: false,
+            };
+          }
+          if (pressAddEventColor === 'Game Events') {
+            obj = {
+              id: gamesEventColors.length + data.length,
+              color: selectColor,
+              isSelected: false,
+            };
+          }
+          if (selectedEventColors.length === 0) {
+            setcounter(counter + 1);
+            data.push(obj);
+            setSelectedEventColors(data);
+          } else {
+            const filterColor = selectedEventColors.filter((select_color_item) => selectColor === select_color_item.color);
+            if (filterColor.length === 0) {
+              setcounter(counter + 1);
+              data.push(obj);
+              setSelectedEventColors(data);
             }
-            centerComponent={
-              <Text style={{
-                fontSize: 16, fontFamily: fonts.RBold, color: colors.lightBlackColor, alignSelf: 'center',
-              }}>Add color</Text>
-            }
-            rightComponent={
-              <TouchableOpacity style={{ padding: 2 }}>
-                <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.lightBlackColor }}>Done</Text>
-              </TouchableOpacity>
-            }
-          />
-          <View style={{ height: 1, width: wp('100%'), backgroundColor: colors.writePostSepratorColor }} />
-          <View style={{ flex: 1 }}>
-            <ColorPicker
-              onColorSelected={(selectColor) => {
-                const data = [...selectedEventColors];
-                const obj = {
-                  id: counter,
-                  color: selectColor,
-                  isSelected: false,
-                };
-                if (selectedEventColors.length === 0) {
-                  setcounter(counter + 1);
-                  data.push(obj);
-                  setSelectedEventColors(data);
-                } else {
-                  const filterColor = selectedEventColors.filter((select_color_item) => selectColor === select_color_item.color);
-                  if (filterColor.length === 0) {
-                    setcounter(counter + 1);
-                    data.push(obj);
-                    setSelectedEventColors(data);
-                  }
-                }
-                // setSelectedEventColors(data);
-                // data.filter((select_color_item) => {
-                //   if (selectColor !== select_color_item.color) {
-                //     setSelectedEventColors(data);
-                //   }
-                //   return null;
-                // })
+          }
+        }}
+        onDonePress={() => {
+          if (pressAddEventColor === 'Created Events') {
+            const createdEventAddData = [...createdEventColors, ...selectedEventColors];
+            setCreatedEventColors(createdEventAddData);
+            setModalVisible(false);
+          }
+          if (pressAddEventColor === 'Imported Events') {
+            const importedEventAddData = [...importedEventColors, ...selectedEventColors];
+            setImportedEventColors(importedEventAddData);
+            setModalVisible(false);
+          }
+          if (pressAddEventColor === 'Game Events') {
+            const gamesEventAddData = [...gamesEventColors, ...selectedEventColors];
+            setGamesEventColor(gamesEventAddData);
+            setModalVisible(false);
+          }
+        }}
+        flatListData={[...selectedEventColors, '0']}
+        renderItem={({ item, index }) => {
+          if (index === selectedEventColors.length) {
+            return (
+              <EventColorItem
+                source={images.plus}
+              />
+            );
+          }
+          return (
+            <EventColorItem
+              source={item.isSelected ? images.check : null}
+              imageStyle={{ tintColor: colors.whiteColor }}
+              eventColorViewStyle={{
+                backgroundColor: item.color,
+                borderWidth: item.isSelected ? 2 : 0,
+                borderColor: colors.whiteColor,
+                marginRight: wp(3),
               }}
-              defaultColor={colors.orangeColor}
-              style={{ height: wp('80%'), width: wp('80%'), alignSelf: 'center' }}
             />
-            <FlatList
-              data={[...selectedEventColors, '0']}
-              numColumns={5}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ width: wp('1.5%') }} />}
-              renderItem={ ({ item, index }) => {
-                if (index === selectedEventColors.length) {
-                  return (
-                    <EventColorItem
-                      // onItemPress={() => { toggleModal(); }}
-                      source={images.plus}
-                    />
-                  );
-                }
-                return (
-                  <EventColorItem
-                    source={item.isSelected ? images.check : null}
-                    imageStyle={{ tintColor: colors.whiteColor }}
-                    // onItemPress={() => {
-                    //   createdEventColors[index].isSelected = !createdEventColors[index].isSelected;
-                    //   setCreatedEventColors([...createdEventColors]);
-                    // }}
-                    eventColorViewStyle={{
-                      backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor, marginRight: wp(3),
-                    }}
-                  />
-                );
-              }}
-              keyExtractor={ (item, index) => index.toString() }
-            />
-          </View>
-        </View>
-      </Modal>
+          );
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

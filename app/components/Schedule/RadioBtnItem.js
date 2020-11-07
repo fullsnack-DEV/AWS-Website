@@ -8,11 +8,13 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function RadioBtnItem({ titleName, onRadioBtnPress, selected }) {
+export default function RadioBtnItem({
+  titleName, onRadioBtnPress, selected, touchRadioBtnStyle,
+}) {
   return (
     <View style={styles.containerStyle}>
       <Text style={styles.titleTextStyle}>{titleName}</Text>
-      <TouchableOpacity style={styles.touchRedStyle}
+      <TouchableOpacity style={[styles.touchRadioBtnStyle, touchRadioBtnStyle]}
         onPress={onRadioBtnPress}
       >
         <View style={selected ? styles.viewFirstStyle : styles.viewSecondStyle}></View>
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  touchRedStyle: {
+  touchRadioBtnStyle: {
     height: 22,
     width: 22,
     borderRadius: 22 / 2,

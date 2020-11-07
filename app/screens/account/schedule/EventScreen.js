@@ -47,7 +47,7 @@ export default function EventScreen({ navigation }) {
       <View style={ styles.sperateLine } />
       <ScrollView>
         <EventItemRender
-          title={strings.titleValue}
+          title={strings.title}
         >
           <Text style={styles.textValueStyle}>{strings.titleValue}</Text>
         </EventItemRender>
@@ -111,7 +111,8 @@ export default function EventScreen({ navigation }) {
         destructiveButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
-            editactionsheet.current.show();
+            // editactionsheet.current.show();
+            navigation.navigate('EditEventScreen');
           } else if (index === 1) {
             Alert.alert(
               'Do you want to delete this event ?',

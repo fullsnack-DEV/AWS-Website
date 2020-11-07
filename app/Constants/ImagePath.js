@@ -134,6 +134,8 @@ const images = {
   teamPlaceholderSmall: require('../assets/images/teamplaceholder.png'),
   clubPlaceholderSmall: require('../assets/images/clubplaceholder.png'),
 
+  usaImage: require('../assets/images/NewYorkCityFC.png'),
+
   Payout_method: require('../assets/images/Payout_method.png'),
   Transations: require('../assets/images/Transations.png'),
   Payment_method: require('../assets/images/Payment_method.png'),
