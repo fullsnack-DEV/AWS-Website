@@ -12,6 +12,7 @@ const strings = {
   orText: 'OR',
   emailPlaceHolder: 'Email',
   allDay: 'All day',
+  all: 'All',
   starts: 'Starts',
   ends: 'Ends',
   until: 'Until',
@@ -227,6 +228,8 @@ const strings = {
   place: 'Place',
   placeName: '800 Griffiths Way, Vancouver, BC V6B 6G1',
   availableTitle: 'Challenge Availability',
+  scheduleTitle: 'Schedule',
+  whoCanSeeShcedule: 'Who can see my schedule?',
   availableSubTitle: 'Do you want to set the time to be available for challenge during this event?',
   available: 'Available',
 

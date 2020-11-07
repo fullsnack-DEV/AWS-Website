@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   TextInput,
+  Image,
 } from 'react-native';
 
 import {
@@ -12,16 +13,22 @@ import {
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 
-export default function EventSearchLocation({ onChangeText }) {
+export default function EventSearchLocation({ onChangeText, sectionStyle, value }) {
   return (
-    <View style={ styles.sectionStyle }>
+    <View style={[styles.sectionStyle, sectionStyle]}>
+      <Image
+        source={images.searchLocation}
+        style={styles.searchImageStyle}
+      />
       <TextInput
         style={ styles.textInput }
         placeholder={ strings.searchHereText }
         clearButtonMode="always"
         placeholderTextColor={ colors.userPostTimeColor }
         onChangeText={onChangeText}
+        value={value}
       />
     </View>
   );
@@ -52,5 +59,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     paddingLeft: 10,
+  },
+  searchImageStyle: {
+    height: 16,
+    width: 16,
+    tintColor: colors.magnifyIconColor,
+    marginHorizontal: 5,
   },
 });
