@@ -35,6 +35,7 @@ import UserInfo from '../../components/Home/User/UserInfo';
 import ScheduleTabView from '../../components/Home/ScheduleTabView';
 import TouchableIcon from '../../components/Home/TouchableIcon';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
+import TCMessageButton from '../../components/TCMessageButton';
 
 export default function HomeScreen({ navigation, route }) {
   const [postData, setPostData] = useState([]);
@@ -391,6 +392,7 @@ export default function HomeScreen({ navigation, route }) {
           />
         )}
         >
+        <TCMessageButton title={'Challenge'} marginHorizontal={20} onPress={() => navigation.navigate('CreateChallengeForm1')}/>
         <View style={{ flex: 1 }}>
           {editProfileVisible && <TCGradientButton
               outerContainerStyle={{ marginVertical: 10, marginTop: 20 }}

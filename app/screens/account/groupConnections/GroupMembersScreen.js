@@ -199,13 +199,9 @@ export default function GroupMembersScreen({ navigation, route }) {
                   data={members}
                   renderItem={({ item }) => <UserRoleView data = {item}
                    onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}
-                   onPressMessage ={() => {
-                     console.log('EMAIL PRESSED');
-                     // Linking.openURL(`mailto:${item.email}`);
-                   }}/>}
+                  />}
                   keyExtractor={(item, index) => index.toString()}
                   /> : <TCNoDataView title={'No Members Found'}/>}
-
       </View>}
       <ActionSheet
                 ref={actionSheet}

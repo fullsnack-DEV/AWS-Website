@@ -181,6 +181,10 @@ const images = {
   radioSelectGreen: require('../assets/images/check_green_tick.png'),
   menuClose: require('../assets/images/menu_close.png'),
 
+  // create challenge
+  swapTeam: require('../assets/images/swap_team.png'),
+  radioCheckGreenBG: require('../assets/images/radio_check_green_bg.png'),
+
 };
 
 export default images;
