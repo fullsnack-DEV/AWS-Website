@@ -7,18 +7,15 @@ import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { loaderImage } from '../../Constants/LoaderImages';
-
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import MultipleImageModal from './MultipleImageModal';
+import images from '../../Constants/ImagePath';
 
 function PostImageSet({
   data, itemNumber, totalItemNumber, attachedImages, activeIndex,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
-
-  const randomImage = Math.floor(Math.random() * loaderImage.length);
   const uploadImageURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
@@ -31,7 +28,7 @@ function PostImageSet({
       <View style={ [styles.uploadedImage, { borderWidth: 1, borderColor: colors.lightgrayColor }] }>
         <FastImage
           style={ styles.imageStyle }
-          source={ loaderImage[randomImage].image }
+          source={ images.imageLoadingGIF }
           resizeMode={ FastImage.resizeMode.contain }
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>

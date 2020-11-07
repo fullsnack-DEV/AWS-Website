@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   fromTimeTextStyle: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
+    color: colors.lightBlackColor,
   },
   timeSepratorView: {
     borderColor: colors.writePostSepratorColor,

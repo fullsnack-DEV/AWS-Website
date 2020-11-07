@@ -7,15 +7,14 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { loaderImage } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import images from '../../Constants/ImagePath';
 
 function MultipleImageWithLoader({
   data,
 }) {
-  const randomImage = Math.floor(Math.random() * loaderImage.length);
   const uploadImageURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
@@ -24,7 +23,7 @@ function MultipleImageWithLoader({
       <View style={styles.uploadedImage}>
         <FastImage
           style={ styles.imageStyle }
-          source={ loaderImage[randomImage].image }
+          source={ images.imageLoadingGIF }
           resizeMode={ FastImage.resizeMode.contain }
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>

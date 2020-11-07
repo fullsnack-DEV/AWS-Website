@@ -30,6 +30,7 @@ export default function EventAgendaSection({
                 loadItemsForMonth={loadItemsForMonth}
                 renderKnob={() => <Image source={images.dropDownArrow2} style={styles.imageStyle} resizeMode={'contain'} />}
                 renderDay={() => {}}
+                scrollEnabled
                 onDayPress={onDayPress}
                 disabledByDefault={false}
                 hideKnob={false}

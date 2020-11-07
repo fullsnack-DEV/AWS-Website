@@ -153,6 +153,7 @@ const images = {
   badmintonLoader: require('../assets/images/badminton_loader.png'),
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
+  imageLoadingGIF: require('../assets/images/image_loading.gif'),
 
   // Reservation Component
   requestIn: require('../assets/images/request_in.png'),

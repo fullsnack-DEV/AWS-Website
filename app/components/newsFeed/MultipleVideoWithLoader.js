@@ -9,7 +9,6 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
-import { loaderImage } from '../../Constants/LoaderImages';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
@@ -19,15 +18,13 @@ function MultipleVideoWithLoader({ data }) {
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
 
-  const randomImage = Math.floor(Math.random() * loaderImage.length);
-
   return (
     <View style={styles.singleImageDisplayStyle}>
       <View
         style={styles.singleImageDisplayStyle}>
         <FastImage
           style={styles.loadimageStyle}
-          source={loaderImage[randomImage].image}
+          source={images.imageLoadingGIF}
           resizeMode={FastImage.resizeMode.contain}
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
