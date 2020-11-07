@@ -7,28 +7,12 @@ import {
 import { RectButton } from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import images from '../../Constants/ImagePath'
 
 export default class AppleStyleSwipeableRow extends Component {
-  renderLeftActions = (progress, dragX) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-    });
-    return (
-      <RectButton style={styles.leftAction} onPress={this.props.onPress}>
-        <Animated.Text
-          style={[
-            styles.actionText,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}>
-          Archive
-        </Animated.Text>
-      </RectButton>
-    );
-  };
+  onPress = () => {
+    this.close()
+    this.props.onPress()
+  }
 
   renderRightAction = (text, color, x, progress) => {
     const trans = progress.interpolate({
@@ -39,9 +23,9 @@ export default class AppleStyleSwipeableRow extends Component {
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
         <RectButton
           style={[styles.rightAction, { backgroundColor: color }]}
-          onPress={this.props.onPress}>
+          onPress={this.onPress}>
           <Text style={styles.actionText}>{text}</Text>
-          <Image source={ images.deleteIcon} style={styles.deleteImgContainer} />
+          <Image source={this.props.image} style={styles.deleteImgContainer} />
         </RectButton>
       </Animated.View>
     );
@@ -53,9 +37,7 @@ export default class AppleStyleSwipeableRow extends Component {
         width: 70,
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
       }}>
-      {/* {this.renderRightAction('More', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('Flag', '#ffab00', 128, progress)} */}
-      {this.renderRightAction('', '#dd2c00', 0, progress)}
+      {this.renderRightAction('', this.props.color, 0, progress)}
     </View>
   );
 
@@ -73,9 +55,7 @@ export default class AppleStyleSwipeableRow extends Component {
       <Swipeable
         ref={this.updateRef}
         friction={2}
-        // leftThreshold={30}
         rightThreshold={40}
-        // renderLeftActions={this.renderLeftActions}
         renderRightActions={this.renderRightActions}>
         {children}
       </Swipeable>
@@ -84,11 +64,6 @@ export default class AppleStyleSwipeableRow extends Component {
 }
 
 const styles = StyleSheet.create({
-  leftAction: {
-    flex: 1,
-    backgroundColor: '#497AFC',
-    justifyContent: 'center',
-  },
   actionText: {
     color: 'white',
     fontSize: 16,
