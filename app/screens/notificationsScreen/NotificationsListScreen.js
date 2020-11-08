@@ -27,7 +27,7 @@ import TodayNotificationItem from '../../components/notificationComponent/TodayN
 import NotificationInviteCell from '../../components/notificationComponent/NotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType'
 import {
-  getUnreadCount, getNotificationsList, acceptRequest, declineRequest,
+  getUnreadCount, getNotificationsList, acceptRequest, declineRequest, deleteNotification,
 } from '../../api/Notificaitons';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -42,9 +42,16 @@ function NotificationsListScreen({ navigation }) {
   const [loading, setloading] = useState(true);
   const navigateFlatList = () => {
   };
+
   const onDelete = ({ item }) => {
-    Alert.alert('delete clicked', 'sssss11111');
-    console.log('items1', item);
+    setloading(true);
+    const ids = item.activities.map((activity) => activity.id)
+    deleteNotification(ids, item.type).then(() => {
+      callNotificationList()
+    }).catch(() => {
+      setloading(false);
+      Alert.alert('Failed to move to trash. Try again later')
+    });
   };
 
   const onAccept = (requestId) => {
@@ -71,7 +78,7 @@ function NotificationsListScreen({ navigation }) {
     || verb.includes(NotificationType.invitePlayerToJoingame);
 
   const renderPendingRequestComponent = ({ item }) => (
-    <AppleStyleSwipeableRow onPress={() => onDelete({ item })}>
+    <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
       {isInvite(item.activities[0].verb) && (
         <RectButton
           style={styles.rectButton}>
@@ -118,7 +125,7 @@ function NotificationsListScreen({ navigation }) {
   );
 
   const renderNotificationComponent = ({ item }) => (
-    <AppleStyleSwipeableRow>
+    <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
       <RectButton
               style={styles.rectButton}>
         <TodayNotificationItem
@@ -133,11 +140,11 @@ function NotificationsListScreen({ navigation }) {
 
   const RenderSections = ({ item, section }) => {
     if (section.section === 'PENDING REQUESTS') {
-      return renderPendingRequestComponent({ item })
+      return renderPendingRequestComponent({ item: { ...item, type: 'request' } })
     }
 
     if (section.section === 'EARLIER' || section.section === 'TODAY') {
-      return renderNotificationComponent({ item })
+      return renderNotificationComponent({ item: { ...item, type: 'notification' } })
     }
 
     return null
@@ -190,19 +197,10 @@ function NotificationsListScreen({ navigation }) {
     setloading(true)
     const entity = groupList[currentTab];
     setSelectedEntity({ ...entity });
-    let currentUserId = '';
-    if (entity.entity_type === 'player') {
-      currentUserId = entity.group_id;
-    } else if (entity.entity_type === 'team') {
-      currentUserId = entity.group_id;
-    } else if (entity.entity_type === 'club') {
-      currentUserId = entity.group_id;
-    }
-
     const params = {
       mark_read: 'true',
       mark_seen: 'true',
-      uid: currentUserId,
+      uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
     };
     getNotificationsList(params)
       .then((response) => {
@@ -217,9 +215,9 @@ function NotificationsListScreen({ navigation }) {
         );
 
         const array = [
-          { data: [...pendingReqNotification], section: 'PENDING REQUESTS' },
-          { data: [...todayNotifications], section: 'TODAY' },
-          { data: [...erlierNotifications], section: 'EARLIER' },
+          { data: [...pendingReqNotification], section: 'PENDING REQUESTS', type: 'request' },
+          { data: [...todayNotifications], section: 'TODAY', type: 'notification' },
+          { data: [...erlierNotifications], section: 'EARLIER', type: 'notification' },
         ];
         setMainNotificationsList([...array.filter((item) => item.data.length !== 0)]);
         setloading(false)
@@ -268,10 +266,13 @@ function NotificationsListScreen({ navigation }) {
         ref={actionSheet}
         options={['Trash', 'Cancel']}
         cancelButtonIndex={1}
-        onPress={() => {
-          // if (index === 0) {
-          // } else if (index === 1) {
-          // }
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('TrashScreen', {
+              selectedGroup: groupList[currentTab],
+              selectedEntity,
+            });
+          }
         }}
       />
     </View>

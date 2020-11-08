@@ -4,7 +4,7 @@ import makeAPIRequest from '../utils/Global';
 export const getUnreadCount = () => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/notifications/unreadcount/`,
-})
+});
 
 export const getNotificationsList = (params) => makeAPIRequest({
   method: 'get',
@@ -12,10 +12,17 @@ export const getNotificationsList = (params) => makeAPIRequest({
   params,
 });
 
-export const deleteNotification = (entityType, entityId) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}notifications?entity_type/${entityType}/entity_id/${entityId}`,
-})
+export const deleteNotification = (id, type) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}notifications`,
+  data: type === 'request' ? { notificationIds: id } : { requestIds: id },
+});
+
+export const restoreNotification = (id, type) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}notifications/restore`,
+  data: type === 'request' ? { notificationIds: id } : { requestIds: id },
+});
 
 export const acceptRequest = (requestId) => makeAPIRequest({
   method: 'post',
@@ -25,4 +32,10 @@ export const acceptRequest = (requestId) => makeAPIRequest({
 export const declineRequest = (requestId) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}requests/${requestId}/decline`,
+});
+
+export const getTrash = (params) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/trash`,
+  params,
 });
