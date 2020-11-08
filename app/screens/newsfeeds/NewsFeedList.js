@@ -29,6 +29,13 @@ export default function NewsFeedList({
     };
   }, []);
 
+  const onProfilePress = (item) => {
+    navigation.navigate('HomeScreen', {
+      uid: item.actor.id,
+      role: item.actor.data.entity_type === 'player' ? 'user' : item.actor.data.entity_type,
+    })
+  }
+
   return (
     <View>
       <ActivityLoader visible={loading} />
@@ -58,6 +65,7 @@ export default function NewsFeedList({
             item={item}
             navigation={navigation}
             caller_id={userID}
+            onImageProfilePress={() => onProfilePress(item) }
             onLikePress={() => {
               const bodyParams = {
                 reaction_type: 'clap',

@@ -18,6 +18,8 @@ function BackgroundProfile({
   profileImageStyle,
   currentUserData,
 }) {
+  console.log('currentUserData data', currentUserData)
+
   let bgImage = '';
   if (currentUserData && currentUserData.background_full_image) {
     bgImage = currentUserData.background_full_image;
@@ -39,10 +41,10 @@ function BackgroundProfile({
     followersCounter = currentUserData.follower_count;
   }
   let fullName = '';
-  if (currentUserData && currentUserData.full_name) {
-    fullName = currentUserData.full_name;
+  if (currentUserData && currentUserData.first_name) {
+    fullName = `${currentUserData.first_name} ${currentUserData.last_name}`;
   }
-  if (currentUserData && currentUserData.full_name === undefined) {
+  if (currentUserData && currentUserData.first_name === undefined) {
     fullName = currentUserData.group_name;
   }
   let city = '';

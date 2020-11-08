@@ -17,6 +17,9 @@ import UserInfoRefereesInItem from './UserInfoRefereesInItem';
 export default function UserInfo({
   navigation, userDetails,
 }) {
+  const playin = userDetails.games && userDetails.games.length > 0
+  const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
+
   const renderTeam = ({ item }) => (
     <UserInfoGroupItem title={item.group_name}
     imagedata={item.thumbnail ? { uri: item.thumbnail } : undefined}
@@ -43,7 +46,7 @@ export default function UserInfo({
 
   return (
     <View>
-      {/* About section 123 */}
+      {/* About section */}
       <View style={styles.sectionStyle}>
         <TCEditHeader title= {strings.abouttitle} showEditButton={true}
           onEditPress={() => {
@@ -89,7 +92,7 @@ export default function UserInfo({
       {/* Gray divider */}
       <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
       {/* Play in section */}
-      {userDetails.games.length && <View>
+      {playin && <View>
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin} showNextArrow={true}/>
           <FlatList
@@ -104,7 +107,7 @@ export default function UserInfo({
         {/* Gray divider */}
         <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
       </View>}
-      {userDetails.referee_data.length && <View>
+      {refereesIn && <View>
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin} showNextArrow={true}/>
           <FlatList

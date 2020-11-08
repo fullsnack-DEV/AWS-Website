@@ -10,7 +10,6 @@ import {
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
-import TCGradientButton from '../../components/TCGradientButton';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -18,7 +17,9 @@ import colors from '../../Constants/Colors';
 import * as Utility from '../../utils/index';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
-import { getUserDetails, getGallery } from '../../api/Users';
+import {
+  getUserDetails, getGallery, followUser, unfollowUser, inviteUser,
+} from '../../api/Users';
 import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
 import { getGroupDetails, getJoinedGroups } from '../../api/Groups';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
@@ -35,14 +36,23 @@ import UserInfo from '../../components/Home/User/UserInfo';
 import ScheduleTabView from '../../components/Home/ScheduleTabView';
 import TouchableIcon from '../../components/Home/TouchableIcon';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
-import TCMessageButton from '../../components/TCMessageButton';
+import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection'
 
 export default function HomeScreen({ navigation, route }) {
+  // kRohwT4rjwdmWEfNVNT0BGrGOEo2
+  // const [currentEntity] = useState({ uid: '80b08c35-494d-4275-b7f3-3af62826295f', role: 'user' })
+  // const [currentEntity] = useState({ uid: route.params.uid, role: route.params.role })
+  // const [currentEntity, setCurrentEntity] = useState({})
+  const [isUserHome, setUserHome] = useState(false)
+  // const [isClubHome, setClubHome] = useState(false)
+  // const [isTeamHome, setTeamHome] = useState(false)
+  const [loggedInEntity, setLoggedInEntity] = useState({})
+  const [isAdmin, setIsAdmin] = useState(false)
+
   const [postData, setPostData] = useState([]);
   const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(true);
-  const [editProfileVisible, setEditProfileVisible] = useState(false);
   const [userID, setUserID] = useState('');
   const [indexCounter, setIndexCounter] = useState(0);
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
@@ -51,9 +61,16 @@ export default function HomeScreen({ navigation, route }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
 
-  const getData = async (uid, isUserHome) => {
+  const getData = async (uid, role) => {
+    const userHome = role === 'user'
+    // const clubHome = role === 'club'
+    // const teamHome = role === 'team'
+    setUserHome(userHome)
+    // setClubHome(clubHome)
+    // setTeamHome(teamHome)
+
     const user_ID = uid;
-    if (isUserHome) {
+    if (userHome) {
       getUserDetails(uid).then((res) => {
         const userDetails = res.payload;
         setCurrentUserData(res.payload);
@@ -86,8 +103,22 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = await Utility.getStorage('loggedInEntity');
-      const uid = entity.uid || entity.auth.user_id;
-      getData(uid, entity.role === 'user').catch((error) => {
+      setLoggedInEntity(entity)
+
+      let uid = entity.uid
+      let role = entity.role
+
+      if (route.params && route.params.uid && route.params.role) {
+        uid = route.params.uid;
+        role = route.params.role;
+        if (entity.uid === uid) {
+          setIsAdmin(true)
+        }
+      } else {
+        setIsAdmin(true)
+      }
+
+      getData(uid, role).catch((error) => {
         Alert.alert('', error.messages);
         setloading(false);
       });
@@ -96,21 +127,6 @@ export default function HomeScreen({ navigation, route }) {
       unsubscribe();
     };
   }, []);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const entity = await Utility.getStorage('loggedInEntity');
-      setEditProfileVisible(false);
-      if (entity.obj.user_id !== undefined) {
-        if (entity.obj.user_id === entity.auth.user_id) {
-          setEditProfileVisible(true);
-        }
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, [navigation]);
 
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
@@ -331,6 +347,64 @@ export default function HomeScreen({ navigation, route }) {
     return <View />
   }
 
+  const callFollowAPIForUser = async () => {
+    setloading(true);
+    const params = {
+      entity_type: 'player',
+    };
+    followUser(params, userID).then(() => {
+      currentUserData.is_following = true;
+      setCurrentUserData(currentUserData);
+      setloading(false);
+    }).catch((error) => {
+      Alert.alert('', error.messages);
+      setloading(false);
+    });
+  };
+
+  const callUnfollowAPIForUser = async () => {
+    setloading(true);
+    const params = {
+      entity_type: 'player',
+    };
+    unfollowUser(params, userID).then(() => {
+      currentUserData.is_following = false;
+      setCurrentUserData(currentUserData);
+      setloading(false);
+    }).catch((error) => {
+      Alert.alert('', error.messages);
+      setloading(false);
+    });
+  };
+
+  const callInviteAPIForUser = async () => {
+    setloading(true);
+    const params = {
+      entity_type: loggedInEntity.role,
+      uid: loggedInEntity.uid,
+    };
+    inviteUser(params, userID).then(() => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
+      }, 0.1)
+      setloading(false);
+    }).catch((error) => {
+      Alert.alert('', error.messages);
+      setloading(false);
+    });
+  };
+
+  const onUserAction = (action) => {
+    console.log('action pressed', action)
+    if (action === 'follow') {
+      callFollowAPIForUser();
+    } else if (action === 'unfollow') {
+      callUnfollowAPIForUser();
+    } else if (action === 'invite') {
+      callInviteAPIForUser();
+    }
+  }
+
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
@@ -392,12 +466,12 @@ export default function HomeScreen({ navigation, route }) {
           />
         )}
         >
-        <TCMessageButton title={'Challenge'} marginHorizontal={20} onPress={() => navigation.navigate('CreateChallengeForm1')}/>
         <View style={{ flex: 1 }}>
-          {editProfileVisible && <TCGradientButton
-              outerContainerStyle={{ marginVertical: 10, marginTop: 20 }}
-              title="Edit Profile" onPress = {() => { navigation.navigate('EditPersonalProfileScreen'); }
-              }/>}
+          {isUserHome && <UserHomeTopSection navigation={navigation}
+                    userDetails={currentUserData}
+                    isAdmin={isAdmin}
+                    loggedInEntity={loggedInEntity}
+                    onAction={onUserAction}/>}
           <View style={styles.sepratorStyle}/>
           <TCScrollableProfileTabs
             tabItem={['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
@@ -409,7 +483,7 @@ export default function HomeScreen({ navigation, route }) {
             renderTabContain={(tabKey) => (
               <View>
                 {tabKey === 0 && (<View>
-                  {editProfileVisible && <WritePost
+                  {isAdmin && <WritePost
                     navigation={navigation}
                     postDataItem={postData ? postData[0] : {}}
                     onWritePostPress={() => {
@@ -511,8 +585,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
   },
   sepratorStyle: {
-    marginVertical: 10,
-    height: 6,
+    height: 7,
     width: ('100%'),
     backgroundColor: colors.graySeparater,
   },

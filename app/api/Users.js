@@ -50,3 +50,21 @@ export const getGallery = async (userID) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/players/${userID}/gallery/`,
 });
+
+export const followUser = async (params, userID) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/players/${userID}/follow`,
+  data: params,
+});
+
+export const unfollowUser = async (params, userID) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/players/${userID}/unfollow`,
+  data: params,
+});
+
+export const inviteUser = async (params, userID) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/users/${userID}/invite`,
+  data: params,
+});

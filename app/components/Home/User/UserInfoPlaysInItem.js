@@ -37,8 +37,6 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 10,
     backgroundColor: colors.whiteColor,
-    borderColor: colors.lightgrayColor,
-    borderWidth: 0.5,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,

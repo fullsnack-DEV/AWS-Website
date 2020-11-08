@@ -298,5 +298,10 @@ const strings = {
   playin: 'Plays In',
   refereesin: 'Referees In',
   totalGames: 'game',
+  message: 'Message',
+  follow: 'Follow',
+  following: 'Following',
+  invite: 'Invite',
+  member: 'Member',
 };
 export default strings;
