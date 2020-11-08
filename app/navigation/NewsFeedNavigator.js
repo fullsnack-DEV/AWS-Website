@@ -9,6 +9,8 @@ import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
 import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
+import HomeScreen from '../screens/home/HomeScreen';
+
 import colors from '../Constants/Colors'
 import EntitySearchScreen from '../screens/EntitySearchScreen';
 
@@ -127,6 +129,24 @@ const NewsFeedNavigator = () => (
         component={ EntitySearchScreen }
         options={ {
           title: 'Search',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
+        name="HomeScreen"
+        component={ HomeScreen }
+        options={ {
+          title: 'Home',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

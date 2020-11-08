@@ -8,17 +8,22 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
 export default function TCProfileButton({
-  title = 'Profile', showArrow = true, onPressProfile, style,
+  title = 'Profile',
+  showArrow = true,
+  onPressProfile,
+  style,
+  rightImage = images.arrowGraterthan,
+  imageStyle,
+  textStyle,
 }) {
   return (
 
     <TouchableWithoutFeedback onPress={onPressProfile}>
       <View style={[styles.buttonView, style]}>
-        <Text style={styles.roleTitle}>{title}</Text>
-        {showArrow && <Image source={ images.arrowGraterthan } style={ styles.arrowImage } />}
+        <Text style={[styles.textStyle, textStyle]}>{title}</Text>
+        {showArrow && <Image source={ rightImage } style={ [styles.arrowImage, imageStyle] } />}
       </View>
     </TouchableWithoutFeedback>
-
   );
 }
 
@@ -39,7 +44,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  roleTitle: {
+  textStyle: {
     alignSelf: 'center',
     fontFamily: fonts.RMedium,
     fontSize: 12,
