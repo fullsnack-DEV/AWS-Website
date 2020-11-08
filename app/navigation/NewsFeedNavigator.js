@@ -12,6 +12,7 @@ import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 
 import colors from '../Constants/Colors'
+import EntitySearchScreen from '../screens/EntitySearchScreen';
 
 const Stack = createStackNavigator();
 
@@ -124,6 +125,24 @@ const NewsFeedNavigator = () => (
         } }
       />
     <Stack.Screen
+        name="EntitySearchScreen"
+        component={ EntitySearchScreen }
+        options={ {
+          title: 'Search',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
         name="HomeScreen"
         component={ HomeScreen }
         options={ {
@@ -140,6 +159,7 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
+
   </Stack.Navigator>
 );
 

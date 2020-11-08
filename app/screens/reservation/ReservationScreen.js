@@ -27,25 +27,24 @@ export default function ReservationScreen({ navigation }) {
 
   const getReservationListByCaller = async () => {
     getReservationList().then((response) => {
-      if (response.status) {
-        setloading(false);
-        const upcomingData = [];
-        const pastData = [];
-        for (const temp of response.payload) {
-          const date = new Date(temp.timestamp);
-          const curruentDate = new Date();
-          if (curruentDate < date === 1) {
-            upcomingData.push(temp);
-          } else {
-            pastData.push(temp);
-          }
+      setloading(false);
+      const upcomingData = [];
+      const pastData = [];
+      for (const temp of response.payload) {
+        const date = new Date(temp.timestamp);
+        const curruentDate = new Date();
+        if (curruentDate < date === 1) {
+          upcomingData.push(temp);
+        } else {
+          pastData.push(temp);
         }
-        setUpcoming(upcomingData);
-        setPast(pastData);
-      } else {
-        Alert.alert('Towns Cup', response.messages);
       }
-    });
+      setUpcoming(upcomingData);
+      setPast(pastData);
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
+    })
   };
 
   return (

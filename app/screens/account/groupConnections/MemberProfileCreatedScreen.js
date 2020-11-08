@@ -32,17 +32,14 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
   const connectMemberProfile = () => {
     setloading(true)
     connectProfile(switchUser.uid, route.params.memberObj.user_id).then((response) => {
-      if (response.status) {
-        setloading(false)
-        Alert.alert('Towns Cup', response.messages)
-        console.log('RESPONSE::::::');
-        navigation.navigate('ConnectionReqSentScreen', { memberObj: route.params.memberObj });
-      }
+      setloading(false)
+      Alert.alert('Towns Cup', response.messages)
+      navigation.navigate('ConnectionReqSentScreen', { memberObj: route.params.memberObj });
     })
-      .catch((e) => {
+      .catch((error) => {
         setloading(false)
-        Alert.alert('Towns Cup', e.messages)
-      });
+        Alert.alert(error)
+      })
   }
   return (
 

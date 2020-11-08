@@ -40,7 +40,9 @@ export default function ChooseLocationScreen({ navigation }) {
       searchLocation(searchLocationText).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
-      });
+      }).catch((error) => {
+        Alert.alert(error)
+      })
     } else {
       setNoData(true);
       setCityData([]);
@@ -54,27 +56,25 @@ export default function ChooseLocationScreen({ navigation }) {
     };
 
     searchGroups(queryParams).then((response) => {
-      if (response.status === true) {
-        if (response.payload.length > 0) {
-          navigation.navigate('TotalTeamsScreen', {
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
-            totalTeams: response.payload.length,
-            teamData: response.payload,
-          });
-        } else {
-          navigation.navigate('ChooseSportsScreen', {
-
-            city: item.terms[0].value,
-            state: item.terms[1].value,
-            country: item.terms[2].value,
-          });
-        }
+      if (response.payload.length > 0) {
+        navigation.navigate('TotalTeamsScreen', {
+          city: item.terms[0].value,
+          state: item.terms[1].value,
+          country: item.terms[2].value,
+          totalTeams: response.payload.length,
+          teamData: response.payload,
+        });
       } else {
-        Alert.alert('Towns Cup', response.messages);
+        navigation.navigate('ChooseSportsScreen', {
+
+          city: item.terms[0].value,
+          state: item.terms[1].value,
+          country: item.terms[2].value,
+        });
       }
-    });
+    }).catch((error) => {
+      Alert.alert(error)
+    })
   };
 
   const renderItem = ({ item, index }) => (

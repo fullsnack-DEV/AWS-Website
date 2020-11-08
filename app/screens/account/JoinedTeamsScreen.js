@@ -6,6 +6,7 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
 
 import {
@@ -32,22 +33,16 @@ export default function JoinedTeamsScreen() {
     const entity = await Utility.getStorage('loggedInEntity');
     if (entity.role === 'club') {
       getTeamsOfClub(entity.uid).then((response) => {
-        if (response.status === true) {
-          console.log('RESPONSE OF TEAM LIST BY CLUB::', response.payload);
-          setTeamList(response.payload);
-        } else {
-          alert(response.messages);
-        }
-      });
+        setTeamList(response.payload);
+      }).catch((error) => {
+        Alert.alert(error)
+      })
     } else {
       getJoinedGroups().then((response) => {
-        if (response.status === true) {
-          console.log('RESPONSE OF TEAM LIST::', response.payload);
-          setTeamList(response.payload.teams);
-        } else {
-          alert(response.messages);
-        }
-      });
+        setTeamList(response.payload.teams);
+      }).catch((error) => {
+        Alert.alert(error)
+      })
     }
   };
 

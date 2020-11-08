@@ -86,30 +86,26 @@ export default function MembersProfileScreen({ navigation, route }) {
     }
 
     getGroupMembersInfo(route.params.groupID, route.params.memberID).then((response) => {
-      if (response.status) {
-        console.log('PROFILE RESPONSE::', response.payload);
-        setMemberDetail(response.payload);
-        setloading(false)
-      }
+      console.log('PROFILE RESPONSE::', response.payload);
+      setMemberDetail(response.payload);
+      setloading(false)
     })
-      .catch((e) => {
+      .catch((error) => {
         setloading(false)
-        Alert.alert('', e.messages)
-      });
+        Alert.alert(error)
+      })
   }
   const deleteMemberProfile = (groupID, memberID) => {
     setloading(true)
     deleteMember(groupID, memberID).then((response) => {
-      if (response.status) {
-        setloading(false)
-        console.log('PROFILE RESPONSE::', response.payload);
-        navigation.goBack()
-      }
+      setloading(false)
+      console.log('PROFILE RESPONSE::', response.payload);
+      navigation.goBack()
     })
-      .catch((e) => {
+      .catch((error) => {
         setloading(false)
-        Alert.alert('', e.messages)
-      });
+        Alert.alert(error)
+      })
   }
 
   function MemberPhoneNumber() {

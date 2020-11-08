@@ -44,24 +44,24 @@ export default function InviteMembersBySearchScreen({ navigation }) {
       console.log('Response of Invitation sent:', response);
       navigation.navigate('InvitationSentScreen');
     })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-      });
+      .catch((error) => {
+        Alert.alert(error)
+      })
   }
   const getUsers = async () => {
     getUserList().then((response) => {
-      if (response.status) {
-        setloading(false);
-        const result = response.payload.map((obj) => {
-          // eslint-disable-next-line no-param-reassign
-          obj.isChecked = false;
-          return obj;
-        })
-
-        setPlayers(result);
-        setSearchPlayers(result);
-      }
-    });
+      setloading(false);
+      const result = response.payload.map((obj) => {
+        // eslint-disable-next-line no-param-reassign
+        obj.isChecked = false;
+        return obj;
+      })
+      setPlayers(result);
+      setSearchPlayers(result);
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
+    })
   };
   const selectPlayer = ({ item, index }) => {
     players[index].isChecked = !item.isChecked;

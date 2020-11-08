@@ -57,6 +57,7 @@ const images = {
   gameDetail: require('../assets/images/ic_details.png'),
   deleteRecentGoal: require('../assets/images/ic_delete_recent_goal.png'),
   deleteIcon: require('../assets/images/delete.png'),
+  roundArrow: require('../assets/images/roundArrow.png'),
   gameYC: require('../assets/images/ic_yc.png'),
   gameRC: require('../assets/images/ic_rc.png'),
   gameGoal: require('../assets/images/ic_goal.png'),
@@ -133,6 +134,8 @@ const images = {
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
   teamPlaceholderSmall: require('../assets/images/teamplaceholder.png'),
   clubPlaceholderSmall: require('../assets/images/clubplaceholder.png'),
+
+  usaImage: require('../assets/images/NewYorkCityFC.png'),
 
   Payout_method: require('../assets/images/Payout_method.png'),
   Transations: require('../assets/images/Transations.png'),

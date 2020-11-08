@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Alert,
 
 } from 'react-native';
 
@@ -90,13 +91,13 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
     const body = {
       group_member_detail: bodyParams,
     }
-    console.log('BODY PARAMS:', body);
-    patchMember(groupMemberDetail.group_id, groupMemberDetail.user_id, body).then((response) => {
-      if (response.status) {
-        setloading(false);
-        console.log('Response :', response.payload);
-        navigation.goBack()
-      }
+
+    patchMember(groupMemberDetail.group_id, groupMemberDetail.user_id, body).then(() => {
+      setloading(false);
+      navigation.goBack()
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
     })
   }
   const renderPosition = ({ item, index }) => (

@@ -148,74 +148,63 @@ export default function AccountScreen({ navigation }) {
 
   const getParentClub = (item) => {
     getGroupDetails(item.group_id).then((response) => {
-      if (response.status === true) {
-        if (response.payload.club !== undefined) {
-          setParentGroup(response.payload.club);
-        } else {
-          setParentGroup(null);
-        }
+      if (response.payload.club !== undefined) {
+        setParentGroup(response.payload.club);
       } else {
-        Alert.alert(response.messages);
+        setParentGroup(null);
       }
-    });
+    })
+      .catch((error) => {
+        Alert.alert(error)
+      })
   };
   const getOwnGroupList = async () => {
-    try {
-      getUnreadCount().then((response) => {
-        if (response.status === true) {
-          const { teams } = response.payload;
-          const { clubs } = response.payload;
-          console.log('ENTITY DATA:::::::', response.payload);
-          // setEntities([...clubs, ...teams]);
-          setTeam(teams);
-          setClub(clubs);
-          // if (authUser.role === 'user') {
-          setGroupList([...clubs, ...teams]);
-          // } else if (authUser.role === 'team') {
-          //   const updatedTeam = team.filter((item) => item.group_id !== authUser.uid);
-          //   setGroupList([authUser.auth.user, ...club, ...updatedTeam]);
-          // } else if (authUser.role === 'club') {
-          //   const updatedClub = club.filter((item) => item.group_id !== authUser.uid);
-          //   setGroupList([authUser.auth.user, ...updatedClub, ...team]);
-          // }
-        } else {
-          Alert.alert(response.messages);
-        }
-      });
-    } catch (e) {
-      Alert.alert('Towns Cup', e.messages)
-    }
+    getUnreadCount().then((response) => {
+      const { teams } = response.payload;
+      const { clubs } = response.payload;
+      console.log('ENTITY DATA:::::::', response.payload);
+      // setEntities([...clubs, ...teams]);
+      setTeam(teams);
+      setClub(clubs);
+      // if (authUser.role === 'user') {
+      setGroupList([...clubs, ...teams]);
+      // } else if (authUser.role === 'team') {
+      //   const updatedTeam = team.filter((item) => item.group_id !== authUser.uid);
+      //   setGroupList([authUser.auth.user, ...club, ...updatedTeam]);
+      // } else if (authUser.role === 'club') {
+      //   const updatedClub = club.filter((item) => item.group_id !== authUser.uid);
+      //   setGroupList([authUser.auth.user, ...updatedClub, ...team]);
+      // }
+    })
+      .catch((error) => {
+        Alert.alert(error)
+      })
   };
   const getTeamsList = async () => {
     const loggedInEntity = await Utility.getStorage('loggedInEntity');
     if (loggedInEntity.role === 'club') {
       getTeamsOfClub(loggedInEntity.uid).then((response) => {
-        if (response.status) {
-          setTeamList(response.payload);
-        } else {
-          Alert.alert(response.messages);
-        }
-      });
+        setTeamList(response.payload);
+      }).catch((error) => {
+        Alert.alert(error)
+      })
     } else {
       getJoinedGroups().then((response) => {
         console.log('JOINED response::', response)
-        if (response.status) {
-          setTeamList(response.payload.teams);
-        } else {
-          Alert.alert(response.messages);
-        }
-      });
+
+        setTeamList(response.payload.teams);
+      }).catch((error) => {
+        Alert.alert(error)
+      })
     }
   };
 
   const getClubList = async () => {
     getJoinedGroups().then((response) => {
-      if (response.status === true) {
-        setClubList(response.payload.clubs);
-      } else {
-        Alert.alert(response.messages);
-      }
-    });
+      setClubList(response.payload.clubs);
+    }).catch((error) => {
+      Alert.alert(error)
+    })
   };
   const switchProfile = async ({ item }) => {
     console.log('Item :-', item);

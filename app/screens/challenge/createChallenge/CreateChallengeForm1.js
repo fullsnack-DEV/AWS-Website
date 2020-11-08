@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
-} from 'react-native';
 
+} from 'react-native';
+import TimePicker from 'react-native-24h-timepicker';
 import { useIsFocused } from '@react-navigation/native';
-import MapView, { Marker } from 'react-native-maps';
 
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -19,10 +19,11 @@ import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
+import EventMapView from '../../../components/Schedule/EventMapView';
 
 export default function CreateChallengeForm1({ navigation }) {
   const isFocused = useIsFocused();
-
+  const timePicker = useRef();
   useEffect(() => {
 
   }, [isFocused]);
@@ -40,6 +41,7 @@ export default function CreateChallengeForm1({ navigation }) {
       <View>
 
         <TCLabel title={'Match - Soccer'}/>
+
         <TCThickDivider/>
       </View>
       <View>
@@ -76,7 +78,17 @@ export default function CreateChallengeForm1({ navigation }) {
       <View>
         <TCLabel title={'Date & Time'} required={true}/>
         <View style={styles.viewContainer}>
-          <TCTouchableLabel title={'Choose Date & Time'} showNextArrow={true}/>
+          <TimePicker
+          ref={timePicker}
+          onCancel={() => timePicker.current.close()}
+          onConfirm={(hour, minute) => console.log('HHMM', hour, minute)}
+          minuteInterval={5}
+          minuteUnit={' min'}
+        />
+          <TCTouchableLabel
+          title={'Choose Date & Time'}
+          showNextArrow={true}
+          onPress={() => timePicker.current.open()}/>
         </View>
         <TCThickDivider marginTop={20}/>
       </View>
@@ -101,24 +113,18 @@ export default function CreateChallengeForm1({ navigation }) {
         <View style={styles.venueContainer}>
           <Text style={styles.venueTitle}>Calgary stampede</Text>
           <Text style={styles.venueAddress}>555 Saddledome Rise SE, Calgary, AB T2G 2W1</Text>
-          <MapView
-                style = {styles.map}
-                minZoomLevel={5}
-                initialRegion={{
-                  latitude: 37.78825,
-                  longitude: -122.4324,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}>
-            <Marker
-                    key={'1'}
-                    coordinate={{
-                      latitude: 37.78825,
-                      longitude: -122.4324,
-                    }}
-                    title={'TownsCup'}
-                    description={'This is townscup location'}/>
-          </MapView>
+
+          <EventMapView coordinate={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+          }}
+          region={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          style = {styles.map}/>
         </View>
         <TCThickDivider marginTop={8}/>
       </View>

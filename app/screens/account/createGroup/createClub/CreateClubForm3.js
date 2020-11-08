@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 
 import {
@@ -65,15 +66,13 @@ export default function CreateClubForm3({ navigation, route }) {
       entity.role === 'team' && entity.uid,
       entity.role === 'team' && 'club',
     ).then((response) => {
-      if (response.status === true) {
+      setloading(false)
+      navigation.navigate('ClubCreatedScreen', {
+        groupName: response.payload.group_name,
+      }).catch((error) => {
         setloading(false)
-        navigation.navigate('ClubCreatedScreen', {
-          groupName: response.payload.group_name,
-        });
-      } else {
-        alert(response.messages);
-      }
-      console.log('RESPONSE WITH TEAM IS:: ', response);
+        Alert.alert(error)
+      })
     });
   };
 

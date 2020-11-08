@@ -62,6 +62,7 @@ const colors = {
   greenGradientEnd: '#B0DB4F',
   orangeNotesColor: '#FF4E00',
   redColor: '#FD4E1E',
+  redDelColor: '#FF4E00',
 
 };
 export default colors;

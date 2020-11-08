@@ -53,18 +53,14 @@ export default function EditClubNotesScreen({ navigation, route }) {
     const body = {
       group_member_detail: bodyParams,
     }
-    console.log('BODY PARAMS:', body);
-    patchMember(memberInfo.group_id, memberInfo.user_id, bodyParams).then((response) => {
-      if (response.status) {
-        console.log('EDIT INFO RESPONSE::', response);
-        setloading(false)
-        navigation.goBack()
-      }
+    patchMember(memberInfo.group_id, memberInfo.user_id, body).then(() => {
+      setloading(false)
+      navigation.goBack()
     })
-      .catch((e) => {
+      .catch((error) => {
         setloading(false)
-        Alert.alert('', e.messages)
-      });
+        Alert.alert(error)
+      })
   }
 
   return (

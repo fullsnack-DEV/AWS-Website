@@ -72,16 +72,14 @@ export default function CreateTeamForm4({ navigation, route }) {
       entity.role === 'club' && entity.uid,
       entity.role === 'club' && 'club',
     ).then((response) => {
-      if (response.status === true) {
-        setloading(false);
-        navigation.navigate('TeamCreatedScreen', {
-          groupName: response.payload.group_name,
-        });
-      } else {
-        Alert.alert(response.messages);
-      }
-      console.log('RESPONSE IS:: ', response);
-    });
+      setloading(false);
+      navigation.navigate('TeamCreatedScreen', {
+        groupName: response.payload.group_name,
+      });
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
+    })
   };
 
   return (

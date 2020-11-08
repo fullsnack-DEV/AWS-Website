@@ -3,6 +3,7 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
+import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 
 import colors from '../Constants/Colors';
 
@@ -12,13 +13,29 @@ function NotificationNavigator() {
   return (
     <Stack.Navigator
         screenOptions={{
-          headerBackTitleVisible: true,
+          headerBackTitleVisible: false,
         }}>
       <Stack.Screen
          name="NotificationsListScreen"
          component={NotificationsListScreen}
          options={{
            title: 'Notification',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
+      <Stack.Screen
+         name="TrashScreen"
+         component={TrashScreen}
+         options={{
+           title: 'Trash',
            headerTintColor: colors.blackColor,
            headerTitleStyle: {
              fontWeight: '500',

@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
+import * as Utility from '../../../utils/index';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
@@ -248,6 +249,8 @@ export default function ScheduleScreen({ navigation }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
+      const created_event_color = await Utility.getStorage('createdEventColor');
+      console.log('created Event Color :::--', created_event_color);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const eventdata = [];
       eventData.filter((event_item) => {
@@ -419,6 +422,10 @@ export default function ScheduleScreen({ navigation }) {
         onPress={(index) => {
           if (index === 0) {
             navigation.navigate('DefaultColorScreen');
+          } else if (index === 1) {
+            navigation.navigate('GroupEventScreen');
+          } else if (index === 2) {
+            navigation.navigate('ViewPrivacyScreen');
           }
         }}
       />

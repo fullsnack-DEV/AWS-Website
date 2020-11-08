@@ -8,13 +8,14 @@ import {
 } from 'react-native-responsive-screen';
 import MapView, { Marker } from 'react-native-maps';
 
-function EventMapView({ region, coordinate }) {
+function EventMapView({ region, coordinate, style }) {
   return (
     <MapView
+
       region={region}
       scrollEnabled={false}
       zoomEnabled={false}
-      style={styles.mapViewStyle}>
+      style={[styles.mapViewStyle, style]}>
       <Marker coordinate={coordinate} />
     </MapView>
   );

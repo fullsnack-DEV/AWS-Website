@@ -30,6 +30,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
+import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 
 const eventColorsData = [
   {
@@ -83,7 +84,10 @@ const updateRecurringEvent = [
 export default function CreateEventScreen({ navigation }) {
   const [eventColors, setEventColors] = useState(eventColorsData);
   const [challengeAvailable, setChallengeAvailable] = useState(challengeAvailability);
+  const [selectedEventColors, setSelectedEventColors] = useState([]);
+  const [counter, setcounter] = useState(0);
   const [updateEvent, setUpdateEvent] = useState(updateRecurringEvent);
+  const [isColorPickerModal, setIsColorPickerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
@@ -118,6 +122,10 @@ export default function CreateEventScreen({ navigation }) {
     setUntilTime(moment(date).format('h:mm a'));
     setUntilDateVisible(!untilDateVisible)
   }
+
+  const colorToggleModal = () => {
+    setIsColorPickerModal(!isColorPickerModal);
+  };
 
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
@@ -155,11 +163,12 @@ export default function CreateEventScreen({ navigation }) {
           <EventItemRender
             title={strings.eventColorTitle}
           >
-            <FlatList
+            {/* <FlatList
               data={eventColors}
               horizontal={true}
               ItemSeparatorComponent={() => <View style={{ width: wp('3%') }} />}
               ListFooterComponent={() => <EventColorItem
+                onItemPress={() => colorToggleModal()}
                 eventColorViewStyle={{ marginLeft: wp('3%') }}
                 source={images.plus}
               />}
@@ -172,6 +181,50 @@ export default function CreateEventScreen({ navigation }) {
                 }}
                 eventColorViewStyle={{ backgroundColor: item.color, borderWidth: item.isSelected ? 2 : 0, borderColor: colors.whiteColor }}
               /> }
+              keyExtractor={ (item, index) => index.toString() }
+            /> */}
+            <FlatList
+              data={[...eventColors, '0']}
+              numColumns={5}
+              scrollEnabled={false}
+              ItemSeparatorComponent={() => <View style={{ width: wp('1.5%') }} />}
+              renderItem={ ({ item, index }) => {
+                if (index === eventColors.length) {
+                  return (
+                    <EventColorItem
+                      onItemPress={() => {
+                        colorToggleModal();
+                        setSelectedEventColors([])
+                      }}
+                      source={images.plus}
+                    />
+                  );
+                }
+                return (
+                  <EventColorItem
+                    source={item.isSelected ? images.check : null}
+                    imageStyle={{ tintColor: colors.whiteColor }}
+                    onItemPress={() => {
+                      eventColors.map(async (createEventItem) => {
+                        const createEventData = createEventItem;
+                        if (createEventData.id === item.id) {
+                          createEventData.isSelected = true;
+                        } else {
+                          createEventData.isSelected = false;
+                        }
+                        return null;
+                      })
+                      setEventColors([...eventColors])
+                    }}
+                    eventColorViewStyle={{
+                      backgroundColor: item.color,
+                      borderWidth: item.isSelected ? 2 : 0,
+                      borderColor: colors.whiteColor,
+                      marginRight: wp(3),
+                    }}
+                  />
+                );
+              }}
               keyExtractor={ (item, index) => index.toString() }
             />
           </EventItemRender>
@@ -225,7 +278,7 @@ export default function CreateEventScreen({ navigation }) {
             title={strings.place}
           >
             <EventSearchLocation
-                onChangeText={() => {}}
+              onChangeText={() => {}}
             />
             <EventMapView
               region={{
@@ -316,6 +369,61 @@ export default function CreateEventScreen({ navigation }) {
             onDone={handleUntilDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+          />
+          <DefaultColorModal
+            isModalVisible={isColorPickerModal}
+            onBackdropPress={() => setIsColorPickerModal(false)}
+            cancelImageSource={images.cancelImage}
+            containerStyle={{ height: hp('75%') }}
+            onCancelImagePress={() => setIsColorPickerModal(false)}
+            headerCenterText={'Add color'}
+            onColorSelected={(selectColor) => {
+              const data = [...selectedEventColors];
+              const obj = {
+                id: eventColors.length + data.length,
+                color: selectColor,
+                isSelected: false,
+              };
+              if (selectedEventColors.length === 0) {
+                setcounter(counter + 1);
+                data.push(obj);
+                setSelectedEventColors(data);
+              } else {
+                const filterColor = selectedEventColors.filter((select_color_item) => selectColor === select_color_item.color);
+                if (filterColor.length === 0) {
+                  setcounter(counter + 1);
+                  data.push(obj);
+                  setSelectedEventColors(data);
+                }
+              }
+            }}
+            onDonePress={() => {
+              const createdEventAddData = [...eventColors, ...selectedEventColors];
+              setEventColors(createdEventAddData);
+              setIsColorPickerModal(false);
+            }}
+            flatListData={[...selectedEventColors, '0']}
+            renderItem={({ item, index }) => {
+              if (index === selectedEventColors.length) {
+                return (
+                  <EventColorItem
+                    source={images.plus}
+                  />
+                );
+              }
+              return (
+                <EventColorItem
+                source={item.isSelected ? images.check : null}
+                imageStyle={{ tintColor: colors.whiteColor }}
+                eventColorViewStyle={{
+                  backgroundColor: item.color,
+                  borderWidth: item.isSelected ? 2 : 0,
+                  borderColor: colors.whiteColor,
+                  marginRight: wp(3),
+                }}
+                />
+              );
+            }}
           />
         </SafeAreaView>
       </ScrollView>

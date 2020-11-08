@@ -44,16 +44,14 @@ export default function MembersViewPrivacyScreen({ navigation }) {
     }
     console.log('BODY :', bodyParams);
     patchGroup(switchUser.uid, bodyParams).then((response) => {
-      if (response.status) {
-        setloading(false)
-        console.log('Response :', response.payload);
-        navigation.goBack()
-      }
+      setloading(false)
+      console.log('Response :', response.payload);
+      navigation.goBack()
     })
-      .catch((e) => {
-        Alert.alert('Towns Cup', e.messages)
-        setloading(false);
-      });
+      .catch((error) => {
+        setloading(false)
+        Alert.alert(error)
+      })
   }
 
   return (

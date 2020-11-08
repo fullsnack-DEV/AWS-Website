@@ -28,16 +28,14 @@ export default function ClubSettingScreen({ navigation }) {
       allclubmemberautomatically_sync: selected === 1,
     }
     patchGroup(entity.uid, bodyParams).then((response) => {
-      if (response.status) {
-        setloading(false)
-        console.log('Response :', response.payload);
-        navigation.goBack()
-      }
+      setloading(false)
+      console.log('Response :', response.payload);
+      navigation.goBack()
     })
-      .catch((e) => {
-        Alert.alert('Towns Cup', e.messages)
-        setloading(false);
-      });
+      .catch((error) => {
+        setloading(false)
+        Alert.alert(error)
+      })
   }
   return (
     <View style={styles.mainContainer}>
