@@ -23,16 +23,14 @@ export default function UserFoundScreen({ navigation, route }) {
   const connectMemberProfile = () => {
     setloading(true)
     connectProfile(route.params.groupID, route.params.memberObj.user_id).then((response) => {
-      if (response.status) {
-        setloading(false)
-        Alert.alert('Towns Cup', response.messages)
-        navigation.goBack();
-      }
+      setloading(false)
+      Alert.alert('Towns Cup', response.messages)
+      navigation.goBack();
     })
-      .catch((e) => {
+      .catch((error) => {
         setloading(false)
-        Alert.alert('', e.messages)
-      });
+        Alert.alert(error)
+      })
   }
   return (
     <View style={styles.mainContainer}>

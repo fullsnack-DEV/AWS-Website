@@ -38,20 +38,17 @@ export default function ChooseSportsScreen({ navigation, route }) {
   useEffect(() => {
     getSportsList().then((response) => {
       setloading(true);
-      if (response.status === true) {
-        console.log('response', response.payload);
-
-        const arr = [];
-        for (const tempData of response.payload) {
-          tempData.isChecked = false;
-          arr.push(tempData);
-        }
-        setSports(arr);
-      } else {
-        Alert.alert(response.messages);
+      const arr = [];
+      for (const tempData of response.payload) {
+        tempData.isChecked = false;
+        arr.push(tempData);
       }
+      setSports(arr);
       setloading(false);
-    });
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
+    })
   }, []);
 
   const isIconCheckedOrNot = ({ item, index }) => {
@@ -87,13 +84,12 @@ export default function ChooseSportsScreen({ navigation, route }) {
       country: route.params.country,
     };
 
-    createUser(data).then((response) => {
-      if (response.status === true) {
-        getUserInfo();
-      } else {
-        Alert.alert(response.messages);
-      }
-    });
+    createUser(data).then(() => {
+      getUserInfo();
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
+    })
   };
   const getUserInfo = async () => {
     const entity = await Utility.getStorage('loggedInEntity');

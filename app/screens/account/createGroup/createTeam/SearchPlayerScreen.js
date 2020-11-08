@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 
 import {
@@ -40,17 +41,17 @@ export default function SearchPlayerScreen({ navigation, route }) {
   }, [navigation]);
   const getPlayerList = async () => {
     getUserList().then((response) => {
-      if (response.status === true) {
-        const arr = [];
-        for (const tempData of response.payload) {
-          tempData.isChecked = false;
-          arr.push(tempData);
-        }
-
-        setPlayers(arr);
-        setSearchPlayers(arr);
+      const arr = [];
+      for (const tempData of response.payload) {
+        tempData.isChecked = false;
+        arr.push(tempData);
       }
-    });
+
+      setPlayers(arr);
+      setSearchPlayers(arr);
+    }).catch((error) => {
+      Alert.alert(error)
+    })
   };
   const selectPlayer = (item) => {
     const arr = [];

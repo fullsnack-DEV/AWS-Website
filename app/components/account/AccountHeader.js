@@ -37,16 +37,15 @@ export default function AccountHeader({ authEntity, entityRole }) {
   }, [])
   const getParentClub = (item) => {
     getGroupDetails(item.group_id).then((response) => {
-      if (response.status === true) {
-        if (response.payload.club !== undefined) {
-          setParentGroup(response.payload.club);
-        } else {
-          setParentGroup(null);
-        }
+      if (response.payload.club !== undefined) {
+        setParentGroup(response.payload.club);
       } else {
-        Alert.alert(response.messages);
+        setParentGroup(null);
       }
-    });
+    })
+      .catch((error) => {
+        Alert.alert(error)
+      })
   };
 
   return (

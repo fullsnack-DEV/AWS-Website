@@ -61,28 +61,24 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         setSearchMember(response.payload.filter((obj) => obj.group_member_detail.connected === false && obj.group_member_detail.canConnect === true))
         setloading(false);
       })
-      .catch((e) => {
-        setloading(false);
-        Alert.alert('', e.messages)
-      });
+      .catch((error) => {
+        setloading(false)
+        Alert.alert(error)
+      })
   }
   const connectMemberProfile = () => {
     const result = members.filter((x) => x.isSelect === true);
     const obj = result[0]
     if (result.length > 0) {
       setloading(true)
-      connectProfile(switchUser.uid, obj.user_id).then((response) => {
-        console.log('PAYLOAD RESPONSE:', JSON.stringify(response))
-        if (response.status) {
-          console.log('PAYLOAD:', response.payload)
-          setloading(false)
-          navigation.navigate('ConnectionReqSentScreen', { memberObj: obj });
-        }
+      connectProfile(switchUser.uid, obj.user_id).then(() => {
+        setloading(false)
+        navigation.navigate('ConnectionReqSentScreen', { memberObj: obj });
       })
-        .catch((e) => {
+        .catch((error) => {
           setloading(false)
-          Alert.alert('Towns Cup', e)
-        });
+          Alert.alert(error)
+        })
     } else {
       Alert.alert('Towns Cup', 'Please select one member for connect with profile.')
     }

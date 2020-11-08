@@ -111,13 +111,13 @@ export default function WelcomeScreen({ navigation }) {
     })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
-          alert('This email address is not registerd');
+          Alert.alert('This email address is not registerd');
         }
         if (error.code === 'auth/email-already-in-use') {
-          alert('That email address is already in use!');
+          Alert.alert('That email address is already in use!');
         }
         if (error.code === 'auth/invalid-email') {
-          alert('That email address is invalid!');
+          Alert.alert('That email address is invalid!');
         }
       });
   }
@@ -177,13 +177,13 @@ export default function WelcomeScreen({ navigation }) {
     })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
-          alert('This email address is not registerd');
+          Alert.alert('This email address is not registerd');
         }
         if (error.code === 'auth/email-already-in-use') {
-          alert('That email address is already in use!');
+          Alert.alert('That email address is already in use!');
         }
         if (error.code === 'auth/invalid-email') {
-          alert('That email address is invalid!');
+          Alert.alert('That email address is invalid!');
         }
       });
   }

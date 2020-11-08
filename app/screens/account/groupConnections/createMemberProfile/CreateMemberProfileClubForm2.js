@@ -49,17 +49,15 @@ export default function CreateMemberProfileClubForm2({ navigation, route }) {
   }
   const getTeamsList = async () => {
     getTeamsOfClub(entity.uid).then((response) => {
-      if (response.status) {
-        // eslint-disable-next-line array-callback-return
-        response.payload.map((e) => {
-          e.is_admin = false;
-          e.is_member = false;
-        });
-        setTeamList(response.payload);
-      } else {
-        Alert.alert(response.messages);
-      }
-    });
+      // eslint-disable-next-line array-callback-return
+      response.payload.map((e) => {
+        e.is_admin = false;
+        e.is_member = false;
+      });
+      setTeamList(response.payload);
+    }).catch((error) => {
+      Alert.alert(error)
+    })
   };
   return (
 

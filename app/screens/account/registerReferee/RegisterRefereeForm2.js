@@ -43,17 +43,15 @@ export default function RegisterRefereeForm2({ navigation, route }) {
       } else {
         bodyParams.referee_data[0].cancellation_policy = 'flexible';
       }
-      console.log('bodyPARAMS:: ', bodyParams);
-      patchRegisterRefereeDetails(bodyParams).then((response) => {
-        if (response.status === true) {
-          navigation.navigate('AccountScreen');
-          Alert.alert('Towns Cup', 'Referee sucessfully registered');
-        } else {
-          Alert.alert('Towns Cup', response.messages);
-        }
-        console.log('RESPONSE IS:: ', response);
+      patchRegisterRefereeDetails(bodyParams).then(() => {
+        navigation.navigate('AccountScreen');
+        Alert.alert('Towns Cup', 'Referee sucessfully registered');
+
         setloading(false);
-      });
+      }).catch((error) => {
+        setloading(false)
+        Alert.alert(error)
+      })
     }
   };
 
