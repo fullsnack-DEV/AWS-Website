@@ -37,7 +37,7 @@ export default function FeedsScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-          onPress={() => navigation.navigate('AccountScreen')}>
+          onPress={() => navigation.navigate('EntitySearchScreen')}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),

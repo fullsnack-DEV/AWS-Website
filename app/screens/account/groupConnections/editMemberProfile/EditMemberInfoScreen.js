@@ -83,22 +83,19 @@ export default function EditMemberInfoScreen({ navigation, route }) {
       bodyParams = {
         first_name: memberInfo.first_name, last_name: memberInfo.last_name,
       }
-      console.log('BODY PARAMS:', bodyParams);
+
       editMemberInfo(memberInfo.group.group_id, memberInfo.user_id, bodyParams)
     }
   }
   const editMemberInfo = (groupID, memberID, param) => {
-    patchMember(groupID, memberID, param).then((response) => {
-      if (response.status) {
-        console.log('EDIT INFO RESPONSE::', response);
-        setloading(false)
-        navigation.goBack()
-      }
+    patchMember(groupID, memberID, param).then(() => {
+      setloading(false)
+      navigation.goBack()
     })
-      .catch((e) => {
+      .catch((error) => {
         setloading(false)
-        Alert.alert('', e.messages)
-      });
+        Alert.alert(error)
+      })
   }
   const checkValidation = () => {
     if (memberInfo.first_name === '') {

@@ -38,6 +38,7 @@ const strings = {
     'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
   nextTitle: 'NEXT',
+  confirmAndPayTitle: 'CONFIRM AND PAY',
   applyTitle: 'APPLY',
   cancelTitle: 'CANCEL',
   doneTitle: 'DONE',

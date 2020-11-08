@@ -125,18 +125,19 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   }
   const createProfile = (params) => {
     createMemberProfile(entity.uid, params).then((response) => {
-      if (response.status) {
-        setloading(false);
-        console.log('Response :', response.payload);
+      setloading(false);
+      console.log('Response :', response.payload);
 
-        if (response.payload.group_member_detail.canConnect === true && response.payload.group_member_detail.connected === false) {
-          const title = strings.connectMemberProfile
-          navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
-        } else {
-          const title = strings.sendInvite
-          navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
-        }
+      if (response.payload.group_member_detail.canConnect === true && response.payload.group_member_detail.connected === false) {
+        const title = strings.connectMemberProfile
+        navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
+      } else {
+        const title = strings.sendInvite
+        navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
       }
+    }).catch((error) => {
+      setloading(false)
+      Alert.alert(error)
     })
   }
   const renderPosition = ({ item, index }) => (

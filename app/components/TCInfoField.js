@@ -15,12 +15,14 @@ export default function TCInfoField({
   title = 'N/A',
   value = 'N/A',
   color = colors.lightBlackColor,
+  titleStyle,
+  valueStyle,
   ...Props
 }) {
   return (
     <View style={[styles.fieldView, Props]}>
-      <Text style={styles.fieldTitle} numberOfLines={1}>{title}</Text>
-      <Text style={[styles.fieldValue, { color }]} numberOfLines={2} >{value}</Text>
+      <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={1}>{title}</Text>
+      <Text style={[styles.fieldValue, valueStyle, { color }]} numberOfLines={3} >{value}</Text>
     </View>
 
   );

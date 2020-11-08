@@ -141,9 +141,10 @@ export default function HomeScreen({ navigation, route }) {
               setGalleryData(res.payload);
             });
           })
-          .catch((e) => {
-            Alert.alert('', e.messages)
-          });
+          .catch((error) => {
+            setloading(false)
+            Alert.alert(error)
+          })
       })
     }
   }

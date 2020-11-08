@@ -48,12 +48,10 @@ export default function EditMemberClubInfoScreen({ navigation }) {
   }
   const getTeamsList = async () => {
     getTeamsOfClub(entity.uid).then((response) => {
-      if (response.status) {
-        setTeamList(response.payload);
-      } else {
-        Alert.alert(response.messages);
-      }
-    });
+      setTeamList(response.payload);
+    }).catch((error) => {
+      Alert.alert(error)
+    })
   };
   return (
 

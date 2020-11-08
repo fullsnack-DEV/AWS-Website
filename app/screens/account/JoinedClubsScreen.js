@@ -6,6 +6,7 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -23,12 +24,10 @@ export default function JoinedClubsScreen() {
 
   useEffect(() => {
     getJoinedGroups().then((response) => {
-      if (response.status === true) {
-        setClubList(response.payload.clubs);
-      } else {
-        alert(response.messages);
-      }
-    });
+      setClubList(response.payload.clubs);
+    }).catch((error) => {
+      Alert.alert(error)
+    })
   }, []);
 
   return (

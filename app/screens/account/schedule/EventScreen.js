@@ -47,7 +47,7 @@ export default function EventScreen({ navigation }) {
       <View style={ styles.sperateLine } />
       <ScrollView>
         <EventItemRender
-          title={strings.title}
+          title={strings.titleValue}
         >
           <Text style={styles.textValueStyle}>{strings.titleValue}</Text>
         </EventItemRender>

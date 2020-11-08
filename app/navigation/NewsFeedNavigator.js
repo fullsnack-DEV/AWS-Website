@@ -10,6 +10,7 @@ import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
 import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 import colors from '../Constants/Colors'
+import EntitySearchScreen from '../screens/EntitySearchScreen';
 
 const Stack = createStackNavigator();
 
@@ -121,6 +122,24 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+        name="EntitySearchScreen"
+        component={ EntitySearchScreen }
+        options={ {
+          title: 'Search',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
   </Stack.Navigator>
 );
 

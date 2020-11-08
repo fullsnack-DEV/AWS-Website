@@ -19,7 +19,7 @@ import TCLabel from '../../../components/TCLabel';
 
 import TCMessageButton from '../../../components/TCMessageButton';
 
-export default function CreateChallengeForm3() {
+export default function CreateChallengeForm3({ navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function CreateChallengeForm3() {
         </Text>
       </View>
 
-      <TCGradientButton title={strings.nextTitle} onPress={() => console.log('NEXT')}/>
+      <TCGradientButton title={strings.nextTitle} onPress={() => navigation.navigate('CreateChallengeForm4')}/>
     </TCKeyboardView>
 
   );
