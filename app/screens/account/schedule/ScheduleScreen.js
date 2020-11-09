@@ -8,6 +8,7 @@ import {
   FlatList,
   Text,
   Dimensions,
+  Alert,
 } from 'react-native';
 import moment from 'moment';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -29,248 +30,68 @@ import BackForwardView from '../../../components/Schedule/BackForwardView';
 import EventInCalender from '../../../components/Schedule/EventInCalender';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
-
-const DATA = [
-  {
-    id: '1',
-    date: '2020-11-04 01:30:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.orangeColor,
-  },
-  {
-    id: '2',
-    date: '2020-11-05 05:00:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: '7',
-    date: '2020-11-06 02:45:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.blueColor,
-  },
-  {
-    id: '8',
-    date: '2020-11-07 13:12:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.greeColor,
-  },
-  {
-    id: '3',
-    date: '2020-11-04 19:38:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.orangeColor,
-  },
-  {
-    id: '4',
-    date: '2020-11-04 07:25:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: '9',
-    date: '2020-11-05 16:16:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.blueColor,
-  },
-  {
-    id: '10',
-    date: '2020-11-06 17:26:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.greeColor,
-  },
-  {
-    id: '11',
-    date: '2020-11-07 08:08:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.lightBlueColor,
-  },
-  {
-    id: '5',
-    date: '2020-11-08 06:19:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.orangeColor,
-  },
-  {
-    id: '6',
-    date: '2020-11-04 04:44:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: '12',
-    date: '2020-11-06 15:15:00',
-    title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-    description: 'Event description for special event.',
-    eventTime: '12:00 PM - 11:00 AM',
-    eventLocation: 'Vancouver, BC, Canada',
-    eventColor: colors.blueColor,
-  },
-];
-
-const events = [
-  {
-    start: '2020-11-04 00:30:00',
-    end: '2020-11-04 01:45:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.orangeColor,
-  },
-  {
-    start: '2020-11-05 01:55:00',
-    end: '2020-11-05 02:45:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.yellowColor,
-  },
-  {
-    start: '2020-11-06 04:10:00',
-    end: '2020-11-06 04:40:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.blueColor,
-  },
-  {
-    start: '2020-11-07 01:05:00',
-    end: '2020-11-07 01:45:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.greeColor,
-  },
-  {
-    start: '2020-11-04 14:30:00',
-    end: '2020-11-04 16:30:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.radoffwhiteioButtonColor,
-  },
-  {
-    start: '2020-11-05 01:20:00',
-    end: '2020-11-05 02:20:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.blueColor,
-  },
-  {
-    start: '2020-11-07 04:10:00',
-    end: '2020-11-07 04:40:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.orangeColor,
-  },
-  {
-    start: '2020-11-08 00:45:00',
-    end: '2020-11-08 01:45:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.greeColor,
-  },
-  {
-    start: '2020-11-09 01:20:00',
-    end: '2020-11-09 03:45:00',
-    title: 'Dr. Kishan Makani',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.radoffwhiteioButtonColor,
-  },
-  {
-    start: '2020-11-04 11:30:00',
-    end: '2020-11-04 12:30:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.yellowColor,
-  },
-  {
-    start: '2020-11-09 01:30:00',
-    end: '2020-11-09 02:00:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.blueColor,
-  },
-  {
-    start: '2020-11-08 03:10:00',
-    end: '2020-11-08 03:40:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.greeColor,
-  },
-  {
-    start: '2020-11-06 00:10:00',
-    end: '2020-11-06 01:45:00',
-    title: 'Dr. Mariana Joseph',
-    summary: '3412 Piedmont Rd NE, GA 3032',
-    eventColor: colors.radoffwhiteioButtonColor,
-  },
-];
+import {
+  deleteEvent, getEventById, getEvents, getSlots,
+} from '../../../api/Schedule';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation }) {
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
-  const [eventData] = useState(DATA);
-  const [timeTable] = useState(events);
+  const [eventData, setEventData] = useState([]);
+  const [timeTable, setTimeTable] = useState([]);
+  const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [eventSelectDate, setEventSelectDate] = useState(new Date());
   const [timetableSelectDate, setTimeTableSelectDate] = useState(new Date());
   const [filterEventData, setFilterEventData] = useState([]);
   const [filterTimeTable, setFilterTimeTable] = useState([]);
   const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      const created_event_color = await Utility.getStorage('createdEventColor');
-      console.log('created Event Color :::--', created_event_color);
       const date = moment(new Date()).format('YYYY-MM-DD');
+      const entity = await Utility.getStorage('loggedInEntity');
+      const entityRole = entity.role === 'user' ? 'users' : 'groups';
+      const uid = entity.uid || entity.auth.user_id;
       const eventdata = [];
-      eventData.filter((event_item) => {
-        const eventDate = moment(event_item.date).format('YYYY-MM-DD');
-        if (eventDate === date) {
-          eventdata.push(event_item);
-        }
-        return null;
-      });
-      setFilterEventData(eventdata);
-
       const timetabledata = [];
-      timeTable.filter((timetable_item) => {
-        const timetabledate = moment(timetable_item.start).format('YYYY-MM-DD');
-        if (timetabledate === date) {
-          timetabledata.push(timetable_item);
-        }
-        return null;
-      })
-      setFilterTimeTable(timetabledata);
+      getEvents(entityRole, uid).then((response) => {
+        setEventData(response.payload);
+        setTimeTable(response.payload);
+        response.payload.filter((event_item) => {
+          const startDate = new Date(event_item.start_datetime * 1000);
+          const eventDate = moment(startDate).format('YYYY-MM-DD');
+          if (eventDate === date) {
+            eventdata.push(event_item);
+          }
+          return null;
+        });
+        setFilterEventData(eventdata);
+        response.payload.filter((timetable_item) => {
+          const timetable_date = new Date(timetable_item.start_datetime * 1000);
+          const endDate = new Date(timetable_item.end_datetime * 1000);
+          const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+          if (timetabledate === date) {
+            const obj = {
+              ...timetable_item,
+              start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+              end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+            };
+            timetabledata.push(obj);
+          }
+          return null;
+        })
+        setFilterTimeTable(timetabledata);
+      }).catch((e) => {
+        Alert.alert('', e.messages)
+      });
+      getSlots(entityRole, uid).then((response) => {
+        console.log('Response in Slots :-', response);
+      }).catch((e) => {
+        Alert.alert('', e.messages)
+      });
       return null;
     });
     return () => {
@@ -289,12 +110,20 @@ export default function ScheduleScreen({ navigation }) {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    if (selectedEventItem) {
+      eventEditDeleteAction.current.show();
+    }
+  }, [selectedEventItem]);
+
   const actionSheet = useRef();
+  const eventEditDeleteAction = useRef();
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
 
   return (
     <View style={ styles.mainContainer }>
+      <ActivityLoader visible={loading} />
       <TCScrollableTabs initialPage={2}>
         <View tabLabel='Info' style={{ flex: 1 }}></View>
         <View tabLabel='Scoreboard' style={{ flex: 1 }}></View>
@@ -316,7 +145,21 @@ export default function ScheduleScreen({ navigation }) {
             />
           </View>
           {scheduleIndexCounter === 0 && <EventScheduleScreen
-            onItemPress={() => navigation.navigate('EventScreen')}
+            eventData={eventData}
+            navigation={navigation}
+            onThreeDotPress={(item) => {
+              setSelectedEventItem(item);
+            }}
+            onItemPress={async (item) => {
+              const entity = await Utility.getStorage('loggedInEntity');
+              const uid = entity.uid || entity.auth.user_id;
+              const entityRole = entity.role === 'user' ? 'users' : 'groups';
+              getEventById(entityRole, uid, item.cal_id).then((response) => {
+                navigation.navigate('EventScreen', { data: response.payload });
+              }).catch((e) => {
+                console.log('Error :-', e);
+              })
+            }}
           />}
           {scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
             <View style={styles.shceduleCalenderView}>
@@ -342,7 +185,8 @@ export default function ScheduleScreen({ navigation }) {
                 const date = moment(day.dateString).format('YYYY-MM-DD');
                 const data = [];
                 eventData.filter((event_item) => {
-                  const eventDateSelect = moment(event_item.date).format('YYYY-MM-DD');
+                  const startDate = new Date(event_item.start_datetime * 1000);
+                  const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
                   if (eventDateSelect === date) {
                     data.push(event_item);
                   }
@@ -354,6 +198,19 @@ export default function ScheduleScreen({ navigation }) {
               renderItem={(item) => <FlatList
                 data={item}
                 renderItem={({ item: itemValue }) => <EventInCalender
+                  onPress={async () => {
+                    const entity = await Utility.getStorage('loggedInEntity');
+                    const uid = entity.uid || entity.auth.user_id;
+                    const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                    getEventById(entityRole, uid, itemValue.cal_id).then((response) => {
+                      navigation.navigate('EventScreen', { data: response.payload });
+                    }).catch((e) => {
+                      console.log('Error :-', e);
+                    })
+                  }}
+                  onThreeDotPress={() => {
+                    setSelectedEventItem(itemValue);
+                  }}
                   data={itemValue}
                 />}
                 ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
@@ -380,12 +237,20 @@ export default function ScheduleScreen({ navigation }) {
               }}
               onDayPress={(day) => {
                 setTimeTableSelectDate(day.dateString);
-                const dateValue = moment(day.dateString).format('YYYY-MM-DD');
+                const date = moment(day.dateString).format('YYYY-MM-DD');
                 const dataItem = [];
                 timeTable.filter((time_table_item) => {
-                  const dateInTimeTableSelect = moment(time_table_item.start).format('YYYY-MM-DD');
-                  if (dateInTimeTableSelect === dateValue) {
-                    dataItem.push(time_table_item);
+                  const startDate = new Date(time_table_item.start_datetime * 1000);
+                  const endDate = new Date(time_table_item.end_datetime * 1000);
+                  const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+                  if (eventDateSelect === date) {
+                    const obj = {
+                      ...time_table_item,
+                      start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
+                      end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+                    };
+                    dataItem.push(obj);
+                    console.log('Date Item :-', dataItem);
                   }
                   return null;
                 });
@@ -396,13 +261,13 @@ export default function ScheduleScreen({ navigation }) {
                 eventTapped={(event) => { console.log('Event ::--', event) }}
                 events={item}
                 width={width}
-                initDate={timetableSelectDate}
+                initDate={timeTableSelectionDate}
                 scrollToFirst={true}
                 renderEvent={(event) => <CalendarTimeTableView
                   title={event.title}
-                  summary={event.summary}
-                  containerStyle={{ borderLeftColor: event.eventColor }}
-                  eventTitleStyle={{ color: event.eventColor }}
+                  summary={event.descriptions}
+                  containerStyle={{ borderLeftColor: event.color }}
+                  eventTitleStyle={{ color: event.color }}
                 />}
                 styles={{
                   event: styles.eventViewStyle,
@@ -426,6 +291,52 @@ export default function ScheduleScreen({ navigation }) {
             navigation.navigate('GroupEventScreen');
           } else if (index === 2) {
             navigation.navigate('ViewPrivacyScreen');
+          }
+        }}
+      />
+      <ActionSheet
+        ref={eventEditDeleteAction}
+        options={['Edit', 'Delete', 'Cancel']}
+        cancelButtonIndex={2}
+        destructiveButtonIndex={1}
+        onPress={(index) => {
+          setSelectedEventItem(null);
+          if (index === 0) {
+            navigation.navigate('EditEventScreen', { data: selectedEventItem });
+          }
+          if (index === 1) {
+            Alert.alert(
+              'Do you want to delete this event ?',
+              '',
+              [{
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                  setloading(true);
+                  const entity = await Utility.getStorage('loggedInEntity');
+                  const uid = entity.uid || entity.auth.user_id;
+                  const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                  deleteEvent(entityRole, uid, selectedEventItem.cal_id)
+                    .then(() => getEvents(entityRole, uid))
+                    .then((response) => {
+                      setloading(false);
+                      setEventData(response.payload);
+                      setTimeTable(response.payload);
+                    })
+                    .catch((e) => {
+                      setloading(false);
+                      Alert.alert('', e.messages)
+                    });
+                },
+              },
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+
+              ],
+              { cancelable: false },
+            );
           }
         }}
       />

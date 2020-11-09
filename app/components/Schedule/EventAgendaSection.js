@@ -18,6 +18,7 @@ export default function EventAgendaSection({
       <View style={styles.SeapratorStyle} />
       <Agenda
                 items={items}
+                minDate={new Date()}
                 theme={{
                   agendaKnobColor: colors.lightgrayColor,
                   selectedDayBackgroundColor: colors.orangeColor,

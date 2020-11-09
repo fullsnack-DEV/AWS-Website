@@ -6,6 +6,7 @@ export default function DateTimePickerView({
   onCancel,
   visible = false,
   onHide,
+  date,
 }) {
   return (
     <DateTimePickerModal
@@ -14,6 +15,7 @@ export default function DateTimePickerView({
         onConfirm={onDone}
         onCancel={onCancel}
         onHide={onHide}
+        date={date}
     />
   );
 }

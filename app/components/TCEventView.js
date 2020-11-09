@@ -3,44 +3,70 @@ import {
   StyleSheet,
   View,
   Text,
-
   Image,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
-
 import {
   widthPercentageToDP as wp,
-
 } from 'react-native-responsive-screen';
-
+import moment from 'moment';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts';
 
-export default function TCEventView({ onPress, data }) {
+export default function TCEventView({ onPress, data, onThreeDotPress }) {
+  let startDate = '';
+  if (data && data.start_datetime) {
+    startDate = new Date(data.start_datetime * 1000);
+  }
+  let endDate = '';
+  if (data && data.end_datetime) {
+    endDate = new Date(data.end_datetime * 1000);
+  }
+  let eventColor = '';
+  if (data && data.color) {
+    eventColor = data.color;
+  }
+  let location = '';
+  if (data && data.location) {
+    location = data.location;
+  }
+  let description = '';
+  if (data && data.descriptions) {
+    description = data.descriptions;
+  }
+  let title = '';
+  if (data && data.title) {
+    title = data.title;
+  }
+
   return (
     <TouchableWithoutFeedback style={ styles.backgroundView } onPress={ onPress }>
       <View style={ styles.backgroundView } onPress={ onPress }>
-        <View style={ [styles.colorView, { backgroundColor: data.eventColor }] }>
-          <Text style={ styles.dateMonthText }>{data.dateMonth}</Text>
-          <Text style={ styles.dateText }>{data.date}</Text>
+        <View style={ [styles.colorView, { backgroundColor: eventColor }] }>
+          <Text style={ styles.dateMonthText }>{moment(startDate).format('MMM')}</Text>
+          <Text style={ styles.dateText }>{moment(startDate).format('DD')}</Text>
         </View>
         <View style={ styles.eventText }>
           <View style={ styles.eventTitlewithDot }>
-            <Text style={ [styles.eventTitle, { color: data.eventColor }] } numberOfLines={ 1 }>
-              {data.title}
+            <Text style={ [styles.eventTitle, { color: eventColor }] } numberOfLines={ 1 }>
+              {title}
             </Text>
-            <Image source={ images.vertical3Dot } style={ styles.threedot } />
+            <TouchableOpacity onPress={onThreeDotPress}>
+              <Image source={ images.vertical3Dot } style={ styles.threedot } />
+            </TouchableOpacity>
           </View>
           <View style={ styles.descriptionView }>
             <Text style={ styles.eventDescription } numberOfLines={ 2 }>
-              {data.description}
+              {description}
             </Text>
           </View>
           <View style={ styles.bottomView }>
-            <Text style={ styles.eventTime }>{data.eventTime}</Text>
+            <Text style={ styles.eventTime }>{`${moment(startDate).format('LT')} - `}</Text>
+            <Text style={ styles.eventTime }>{moment(endDate).format('LT')}</Text>
             <Text style={ [styles.eventTime, { marginHorizontal: 5 }] }> | </Text>
-            <Text style={ styles.eventTime }>{data.eventLocation}</Text>
+            <Text style={ styles.eventTime }>{location}</Text>
           </View>
         </View>
       </View>
