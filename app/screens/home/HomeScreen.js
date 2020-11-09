@@ -37,6 +37,7 @@ import ScheduleTabView from '../../components/Home/ScheduleTabView';
 import TouchableIcon from '../../components/Home/TouchableIcon';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
 import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection'
+// import TCMessageButton from '../../components/TCMessageButton'
 
 export default function HomeScreen({ navigation, route }) {
   // kRohwT4rjwdmWEfNVNT0BGrGOEo2
@@ -467,6 +468,7 @@ export default function HomeScreen({ navigation, route }) {
           />
         )}
         >
+        {/* <TCMessageButton title={'Challenge'} marginHorizontal={20} onPress={() => navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })}/> */}
         <View style={{ flex: 1 }}>
           {isUserHome && <UserHomeTopSection navigation={navigation}
                     userDetails={currentUserData}

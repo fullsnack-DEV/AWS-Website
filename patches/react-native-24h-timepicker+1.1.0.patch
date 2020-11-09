@@ -1,0 +1,17 @@
+diff --git a/node_modules/react-native-24h-timepicker/.DS_Store b/node_modules/react-native-24h-timepicker/.DS_Store
+new file mode 100644
+index 0000000..9a874b5
+Binary files /dev/null and b/node_modules/react-native-24h-timepicker/.DS_Store differ
+diff --git a/node_modules/react-native-24h-timepicker/src/index.js b/node_modules/react-native-24h-timepicker/src/index.js
+index 14e68e6..5ca6396 100644
+--- a/node_modules/react-native-24h-timepicker/src/index.js
++++ b/node_modules/react-native-24h-timepicker/src/index.js
+@@ -28,7 +28,7 @@ class TimePicker extends Component {
+     for (let i = 0; i <= interval; i++) {
+       const value = `${i * hourInterval}`;
+       const item = (
+-        <Picker.Item key={value} value={value} label={value + hourUnit} />
++        <Picker.Item key={value} value={value} label={value <= 12 ? `${value} am` : `${value-12} pm`} />
+       );
+       items.push(item);
+     }

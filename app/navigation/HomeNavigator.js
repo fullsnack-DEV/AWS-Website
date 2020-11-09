@@ -78,6 +78,12 @@ import GroupMembersScreen from '../screens/account/groupConnections/GroupMembers
 import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
 import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
 import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateChallengeForm3';
+import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateChallengeForm4';
+import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
+import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
+
+import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
+
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
 
@@ -983,6 +989,70 @@ const HomeNavigator = () => (
         component={ CreateChallengeForm3 }
         options={ {
           title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateChallengeForm4"
+        component={ CreateChallengeForm4 }
+        options={ {
+          title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CreateChallengeForm5"
+        component={ CreateChallengeForm5 }
+        options={ {
+          title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="ChooseDateTimeScreen"
+        component={ ChooseDateTimeScreen }
+        options={ {
+          title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="ChooseAddressScreen"
+        component={ ChooseAddressScreen }
+        options={ {
+          title: 'Venue',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

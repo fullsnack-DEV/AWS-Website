@@ -1,14 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
+  TouchableOpacity,
+  Alert,
 
 } from 'react-native';
 import TimePicker from 'react-native-24h-timepicker';
-import { useIsFocused } from '@react-navigation/native';
-
+import { getLatLong } from '../../../api/External';
+import * as Utility from '../../../utils/index';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -21,16 +23,63 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
 import EventMapView from '../../../components/Schedule/EventMapView';
 
-export default function CreateChallengeForm1({ navigation }) {
-  const isFocused = useIsFocused();
+let entity = {};
+export default function CreateChallengeForm1({ navigation, route }) {
   const timePicker = useRef();
+  const [venue, setVenue] = useState(0)
+  const [cordinate, setCordinate] = useState()
+  const [teams, setteams] = useState([])
+  const [region, setRegion] = useState()
+  const [secureVenue, setsecureVenue] = useState(0)
+  const [venueData, setVenueData] = useState({
+    lat: null,
+    long: null,
+    title: null,
+    address: null,
+    venueType: null,
+
+  })
+
   useEffect(() => {
-
-  }, [isFocused]);
-
+    getAuthEntity();
+    if (route && route.params && route.params.venueObj) {
+      getLatLongData();
+    }
+  }, [])
+  const getAuthEntity = async () => {
+    entity = await Utility.getStorage('loggedInEntity');
+    if (route && route.params && route.params.groupObj) {
+      teams.push(entity.obj)
+      teams.push(route.params.groupObj)
+      setteams([...teams])
+      console.log('TEAMS::', teams);
+    }
+  }
+  const getLatLongData = async () => {
+    getLatLong(route.params.venueObj.description).then((response) => {
+      setCordinate({
+        latitude: response.results[0].geometry.location.lat,
+        longitude: response.results[0].geometry.location.lng,
+      })
+      setRegion({
+        latitude: response.results[0].geometry.location.lat,
+        longitude: response.results[0].geometry.location.lng,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      })
+      setVenueData({
+        ...venueData, address: route.params.venueObj.description, venueType: 'other', lat: response.results[0].geometry.location.lat, long: response.results[0].geometry.location.lng,
+      })
+      console.log('LAT LONG::', JSON.stringify(response));
+    });
+  };
+  const swapTeam = () => {
+    setteams([teams[1], teams[0]])
+  }
   return (
 
-    <TCKeyboardView>
+    (teams.length > 0
+    && <TCKeyboardView>
       <View style={styles.formSteps}>
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
@@ -39,9 +88,7 @@ export default function CreateChallengeForm1({ navigation }) {
         <View style={styles.form5}></View>
       </View>
       <View>
-
-        <TCLabel title={'Match - Soccer'}/>
-
+        <TCLabel title={`Match · ${teams[0].sport}`}/>
         <TCThickDivider/>
       </View>
       <View>
@@ -50,26 +97,26 @@ export default function CreateChallengeForm1({ navigation }) {
           <Text style={styles.homeLableStyle}>HOME</Text>
           <View style={styles.teamViewStyle}>
             <View style={styles.imageShadowView}>
-              <Image source={images.team_ph} style={styles.imageView}/>
+              <Image source={teams[0].thumbnail ? teams[0].thumbnail : images.teamPlaceholder} style={styles.imageView}/>
             </View>
             <View style={styles.teamTextContainer}>
-              <Text style={styles.teamNameLable}>Vancuer Whitecap FC</Text>
-              <Text style={styles.locationLable}>Vancouver, BC</Text>
+              <Text style={styles.teamNameLable}>{teams[0].group_name}</Text>
+              <Text style={styles.locationLable}>{teams[0].city}, {teams[0].state_abbr}</Text>
             </View>
           </View>
         </View>
-        <View style={styles.swapContainer}>
+        <TouchableOpacity style={styles.swapContainer} onPress={() => swapTeam()}>
           <Image source={images.swapTeam} style={styles.swapImageStyle}/>
-        </View>
+        </TouchableOpacity>
         <View style={styles.teamContainer}>
           <Text style={styles.homeLableStyle}>AWAY</Text>
           <View style={styles.teamViewStyle}>
             <View style={styles.imageShadowView}>
-              <Image source={images.team_ph} style={styles.imageView}/>
+              <Image source={teams[1].thumbnail ? teams[1].thumbnail : images.teamPlaceholder} style={styles.imageView}/>
             </View>
             <View style={styles.teamTextContainer}>
-              <Text style={styles.teamNameLable}>Vancuer Whitecap FC</Text>
-              <Text style={styles.locationLable}>Vancouver, BC</Text>
+              <Text style={styles.teamNameLable}>{teams[1].group_name}</Text>
+              <Text style={styles.locationLable}>{teams[1].city}, {teams[1].state_abbr}</Text>
             </View>
           </View>
         </View>
@@ -81,14 +128,18 @@ export default function CreateChallengeForm1({ navigation }) {
           <TimePicker
           ref={timePicker}
           onCancel={() => timePicker.current.close()}
-          onConfirm={(hour, minute) => console.log('HHMM', hour, minute)}
+          onConfirm={(hour, minute) => {
+            console.log('HHMM', hour, minute)
+            timePicker.current.close()
+          }}
           minuteInterval={5}
           minuteUnit={' min'}
         />
           <TCTouchableLabel
           title={'Choose Date & Time'}
           showNextArrow={true}
-          onPress={() => timePicker.current.open()}/>
+
+          onPress={() => navigation.navigate('ChooseDateTimeScreen')}/>
         </View>
         <TCThickDivider marginTop={20}/>
       </View>
@@ -96,34 +147,80 @@ export default function CreateChallengeForm1({ navigation }) {
         <TCLabel title={'Venue'} required={true}/>
         <View style={styles.viewContainer}>
           <View style={styles.radioContainer}>
-            <Text style={styles.radioText}>Vancouver Whitecaps FC’s home</Text>
-            <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Text style={styles.radioText}>{teams[0].group_name}’s home</Text>
+            <TouchableOpacity onPress={() => {
+              if (teams[0].home_address) {
+                setVenue(1)
+                setCordinate({
+                  latitude: teams[0].homefield_address_latitude,
+                  longitude: teams[0].homefield_address_longitude,
+                })
+                setRegion({
+                  latitude: teams[0].homefield_address_latitude,
+                  longitude: teams[0].homefield_address_longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                })
+                setVenueData({
+                  ...venueData,
+                  address: teams[0].home_address,
+                  title: `${teams[0].group_name}'s Home`,
+                  venueType: 'HomeTeam',
+                  lat: teams[0].homefield_address_latitude,
+                  long: teams[0].homefield_address_longitude,
+                })
+              } else {
+                Alert.alert('The venue of this team has\'t been determine yet. Please determine it first')
+              }
+            }}>
+              <Image source={venue === 1 ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            </TouchableOpacity>
           </View>
           <View style={styles.radioContainer}>
-            <Text style={styles.radioText}>New York City FC’s home</Text>
-            <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Text style={styles.radioText}>{teams[1].group_name}’s home</Text>
+            <TouchableOpacity onPress={() => {
+              if (teams[1].home_address) {
+                setVenue(2)
+                setCordinate({
+                  latitude: teams[1].homefield_address_latitude,
+                  longitude: teams[1].homefield_address_longitude,
+                })
+                setRegion({
+                  latitude: teams[1].homefield_address_latitude,
+                  longitude: teams[1].homefield_address_longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                })
+                setVenueData({
+                  ...venueData,
+                  address: teams[1].home_address,
+                  title: `${teams[1].group_name}'s Home`,
+                  venueType: 'AwayTeam',
+                  lat: teams[1].homefield_address_latitude,
+                  long: teams[1].homefield_address_longitude,
+                })
+              } else {
+                Alert.alert('The venue of this team has\'t been determine yet. Please determine it first')
+              }
+            }}>
+              <Image source={venue === 2 ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            </TouchableOpacity>
           </View>
           <View style={styles.radioContainer}>
             <Text style={styles.radioText}>Other place</Text>
-            <Image source={images.radioCheckGreenBG} style={styles.radioSelectStyle}/>
+            <TouchableOpacity onPress={() => setVenue(0)}>
+              <Image source={venue === 0 ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            </TouchableOpacity>
           </View>
-          <TCTextField placeholder={'Venue name'} />
-          <TCTextField placeholder={'Address'} style={{ marginTop: 12, marginBottom: 12 }}/>
+          {venue === 0 && <TCTextField placeholder={'Venue name'} value={venueData.title && venueData.title} onChangeText={(text) => setVenueData({ ...venueData, title: text })} />}
+          {venue === 0 && <TCTouchableLabel title={route && route.params && route.params.venueObj ? route.params.venueObj.description : 'Address'} style={{ marginTop: 10, marginBottom: 10 }} onPress={() => navigation.navigate('ChooseAddressScreen', { comeFrom: 'CreateChallengeForm1' })}/>}
         </View>
         <View style={styles.venueContainer}>
-          <Text style={styles.venueTitle}>Calgary stampede</Text>
-          <Text style={styles.venueAddress}>555 Saddledome Rise SE, Calgary, AB T2G 2W1</Text>
+          <Text style={styles.venueTitle}>{(venue === 0 && venueData.title && venueData.title) || (venue === 1 && `${teams[0].group_name}'s Home`) || (venue === 2 && `${teams[1].group_name}'s Home`)}</Text>
+          <Text style={styles.venueAddress}>{(venue === 0 && route && route.params && route.params.venueObj ? route.params.venueObj.description : 'Address') || (venue === 1 && teams[0].home_address) || (venue === 2 && teams[1].home_address)}</Text>
 
-          <EventMapView coordinate={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-          }}
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
+          <EventMapView coordinate={ cordinate}
+          region={region}
           style = {styles.map}/>
         </View>
         <TCThickDivider marginTop={8}/>
@@ -134,12 +231,17 @@ export default function CreateChallengeForm1({ navigation }) {
           above venue for this game? </Text>
         <View style={styles.viewContainer}>
           <View style={styles.radioContainer}>
-            <Text style={styles.radioText}>Vancouver Whitecaps FC’s home</Text>
-            <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Text style={styles.radioText}>{teams[0].group_name}’s home</Text>
+            <TouchableOpacity onPress ={() => setsecureVenue(0)}>
+              <Image source={secureVenue === 0 ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            </TouchableOpacity>
           </View>
+
           <View style={styles.radioContainer}>
-            <Text style={styles.radioText}>New York City FC’s home</Text>
-            <Image source={images.radioCheckGreenBG} style={styles.radioSelectStyle}/>
+            <Text style={styles.radioText}>{teams[0].group_name}’s home</Text>
+            <TouchableOpacity onPress={() => setsecureVenue(1)}>
+              <Image source={ secureVenue === 1 ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            </TouchableOpacity>
           </View>
         </View>
         <Text style={styles.responsibilityNote}>
@@ -155,7 +257,7 @@ export default function CreateChallengeForm1({ navigation }) {
       </Text>
 
       <TCGradientButton title={strings.nextTitle} onPress={() => navigation.navigate('CreateChallengeForm2')}/>
-    </TCKeyboardView>
+    </TCKeyboardView>)
 
   );
 }
@@ -328,4 +430,5 @@ const styles = StyleSheet.create({
   responsibilityNoteMedium: {
     fontFamily: fonts.RMedium,
   },
+
 });
