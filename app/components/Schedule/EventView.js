@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     lineHeight: 15,
     marginLeft: 10,
+    width: wp('77%'),
     top: 3,
   },
   eventTime: {

@@ -18,10 +18,10 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
-import searchLocations from '../../../api/External';
 
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts'
+import { searchLocationPlaceDetail, searchLocations } from '../../../api/External';
 
 export default function SearchLocationScreen({ navigation, route }) {
   const [cityData, setCityData] = useState([]);
@@ -45,6 +45,22 @@ export default function SearchLocationScreen({ navigation, route }) {
   };
 
   const getTeamsData = async (item) => {
+    searchLocationPlaceDetail(item.place_id).then((response) => {
+      if (response) {
+        if (route.params.comeFrom === 'CreateEventScreen') {
+          navigation.navigate('CreateEventScreen', {
+            locationName: item.description,
+            locationDetail: response.result.geometry.location,
+          });
+        }
+        if (route.params.comeFrom === 'EditEventScreen') {
+          navigation.navigate('EditEventScreen', {
+            locationName: item.description,
+            locationDetail: response.result.geometry.location,
+          });
+        }
+      }
+    });
     if (route.params.comeFrom === 'CreateTeamForm1') {
       navigation.navigate('CreateTeamForm1', {
         city: item.terms[0].value,
