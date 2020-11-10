@@ -129,7 +129,7 @@ export default function UserHomeTopSection({
             data={userDetails.games}
             horizontal
             renderItem={renderPlayIn}
-            keyExtractor={(index) => index.toString()}
+            keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />
         </View>

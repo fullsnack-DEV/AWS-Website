@@ -14,7 +14,11 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCProfileView({
-  image = images.profilePlaceHolder, name, location, type = 'large', color = colors.lightBlackColor, ...Props
+  image = images.profilePlaceHolder,
+  name,
+  location,
+  type = 'large',
+  color = colors.lightBlackColor, ...Props
 }) {
   return (
 

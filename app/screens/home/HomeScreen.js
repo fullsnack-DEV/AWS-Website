@@ -9,6 +9,7 @@ import {
 } from 'react-native-responsive-screen';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
+import LinearGradient from 'react-native-linear-gradient';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -21,7 +22,10 @@ import {
   getUserDetails, getGallery, followUser, unfollowUser, inviteUser,
 } from '../../api/Users';
 import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
-import { getGroupDetails, getJoinedGroups } from '../../api/Groups';
+import {
+  getGroupDetails, getJoinedGroups,
+  followTeam, unfollowTeam, joinTeam, leaveTeam, inviteTeam,
+} from '../../api/Groups';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TabView from '../../components/Home/TabView';
@@ -36,17 +40,15 @@ import UserInfo from '../../components/Home/User/UserInfo';
 import ScheduleTabView from '../../components/Home/ScheduleTabView';
 import TouchableIcon from '../../components/Home/TouchableIcon';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
-import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection'
-// import TCMessageButton from '../../components/TCMessageButton'
+import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
+import UserClubTopSection from '../../components/Home/User/UserClubTopSection';
+import UserTeamTopSection from '../../components/Home/User/UserTeamTopSection';
+import strings from '../../Constants/String';
 
 export default function HomeScreen({ navigation, route }) {
-  // kRohwT4rjwdmWEfNVNT0BGrGOEo2
-  // const [currentEntity] = useState({ uid: '80b08c35-494d-4275-b7f3-3af62826295f', role: 'user' })
-  // const [currentEntity] = useState({ uid: route.params.uid, role: route.params.role })
-  // const [currentEntity, setCurrentEntity] = useState({})
   const [isUserHome, setUserHome] = useState(false)
-  // const [isClubHome, setClubHome] = useState(false)
-  // const [isTeamHome, setTeamHome] = useState(false)
+  const [isClubHome, setClubHome] = useState(false)
+  const [isTeamHome, setTeamHome] = useState(false)
   const [loggedInEntity, setLoggedInEntity] = useState({})
   const [isAdmin, setIsAdmin] = useState(false)
 
@@ -64,17 +66,15 @@ export default function HomeScreen({ navigation, route }) {
 
   const getData = async (uid, role) => {
     const userHome = role === 'user'
-    // const clubHome = role === 'club'
-    // const teamHome = role === 'team'
-    setUserHome(userHome)
-    // setClubHome(clubHome)
-    // setTeamHome(teamHome)
+    const clubHome = role === 'club'
+    const teamHome = role === 'team'
 
     const user_ID = uid;
     if (userHome) {
       getUserDetails(uid).then((res) => {
         const userDetails = res.payload;
         setCurrentUserData(res.payload);
+        setUserHome(userHome)
         getJoinedGroups(uid).then((response) => {
           if (response) {
             userDetails.joined_teams = response.payload.teams;
@@ -86,6 +86,8 @@ export default function HomeScreen({ navigation, route }) {
     } else {
       getGroupDetails(uid).then((res) => {
         setCurrentUserData(res.payload);
+        setClubHome(clubHome)
+        setTeamHome(teamHome)
       });
     }
     const params = {
@@ -120,7 +122,9 @@ export default function HomeScreen({ navigation, route }) {
       }
 
       getData(uid, role).catch((error) => {
-        Alert.alert('', error.messages);
+        setTimeout(() => {
+          Alert.alert('Towns Cup', error.messages);
+        }, 0.1)
         setloading(false);
       });
     });
@@ -359,7 +363,9 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData(currentUserData);
       setloading(false);
     }).catch((error) => {
-      Alert.alert('', error.messages);
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
       setloading(false);
     });
   };
@@ -374,7 +380,9 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData(currentUserData);
       setloading(false);
     }).catch((error) => {
-      Alert.alert('', error.messages);
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
       setloading(false);
     });
   };
@@ -391,7 +399,111 @@ export default function HomeScreen({ navigation, route }) {
       }, 0.1)
       setloading(false);
     }).catch((error) => {
-      Alert.alert('', error.messages);
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
+      setloading(false);
+    });
+  };
+
+  const callFollowAPIForTeam = async (ignoreLoading = false) => {
+    if (ignoreLoading) { setloading(true); }
+    const params = {
+      entity_type: 'team',
+    };
+    followTeam(params, userID).then(() => {
+      console.log('is_following set to true')
+      currentUserData.is_following = true;
+      currentUserData.follower_count += 1;
+      setCurrentUserData(currentUserData);
+      setloading(false);
+    }).catch((error) => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
+      setloading(false);
+    });
+  };
+
+  const callUnfollowAPIForTeam = async () => {
+    setloading(true);
+    const params = {
+      entity_type: 'player',
+    };
+    unfollowTeam(params, userID).then(() => {
+      currentUserData.is_following = false;
+      if (currentUserData.follower_count > 0) {
+        currentUserData.follower_count -= 1
+      }
+      setCurrentUserData(currentUserData);
+      setloading(false);
+    }).catch((error) => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
+      setloading(false);
+    });
+  };
+
+  const callJoinTeamAPIForUser = async () => {
+    setloading(true);
+    const params = {
+      entity_type: 'team',
+    };
+    joinTeam(params, userID).then(() => {
+      currentUserData.is_joined = true;
+      currentUserData.member_count += 1
+      if (currentUserData.is_following === false) {
+        callFollowAPIForTeam(true);
+      } else {
+        setCurrentUserData(currentUserData);
+        setloading(false);
+      }
+    }).catch((error) => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
+      setloading(false);
+    });
+  };
+
+  const callUnjoinTeamAPIForUser = async () => {
+    setloading(true);
+    const params = {
+      entity_type: 'player',
+    };
+    leaveTeam(params, userID).then(() => {
+      currentUserData.is_joined = false;
+      if (currentUserData.member_count > 0) {
+        currentUserData.member_count -= 1
+      }
+      setCurrentUserData(currentUserData);
+      setloading(false);
+    }).catch((error) => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
+      setloading(false);
+    });
+  };
+
+  const callInviteTeamAPIForClub = async () => {
+    setloading(true);
+    const params = [userID];
+    inviteTeam(params, loggedInEntity.uid).then(() => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', `“${currentUserData.group_name}“ is invited successfully`);
+      }, 0.1)
+      currentUserData.is_joined = false;
+      if (currentUserData.member_count > 0) {
+        currentUserData.member_count -= 1
+      }
+      setCurrentUserData(currentUserData);
+      setloading(false);
+    }).catch((error) => {
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.messages);
+      }, 0.1)
       setloading(false);
     });
   };
@@ -404,11 +516,58 @@ export default function HomeScreen({ navigation, route }) {
       callUnfollowAPIForUser();
     } else if (action === 'invite') {
       callInviteAPIForUser();
+    } else if (action === 'edit') {
+      navigation.navigate('EditPersonalProfileScreen')
     }
+  }
+
+  const onClubAction = (action) => {
+    console.log('action pressed', action)
+    if (action === 'follow') {
+      callFollowAPIForUser();
+    } else if (action === 'unfollow') {
+      callUnfollowAPIForUser();
+    } else if (action === 'invite') {
+      callInviteAPIForUser();
+    } else if (action === 'edit') {
+      navigation.navigate('EditPersonalProfileScreen')
+    }
+  }
+
+  const onTeamAction = (action) => {
+    console.log('action pressed', action)
+    if (action === 'follow') {
+      callFollowAPIForTeam();
+    } else if (action === 'unfollow') {
+      callUnfollowAPIForTeam();
+    } else if (action === 'join') {
+      callJoinTeamAPIForUser();
+    } else if (action === 'unjoin') {
+      callUnjoinTeamAPIForUser();
+    } else if (action === 'invite') {
+      callInviteTeamAPIForClub();
+    } else if (action === 'edit') {
+      navigation.navigate('EditPersonalProfileScreen')
+    }
+  }
+
+  const onChallengePress = () => {
+    console.log('challenge pressed')
+    navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
   }
 
   return (
     <View style={ styles.mainContainer }>
+      {(isTeamHome && loggedInEntity.role === 'team')
+      && <View style={ styles.challengeButtonStyle }>
+        <TouchableOpacity onPress={ onChallengePress } styles={styles.outerContainerStyle}>
+          <LinearGradient
+       colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+       style={styles.containerStyle}>
+            <Text style={ styles.buttonText }>{strings.challenge.toUpperCase()}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>}
       <ActivityLoader visible={loading} />
       <Header
         safeAreaStyle={{ position: 'absolute' }}
@@ -468,13 +627,19 @@ export default function HomeScreen({ navigation, route }) {
           />
         )}
         >
-        {/* <TCMessageButton title={'Challenge'} marginHorizontal={20} onPress={() => navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })}/> */}
         <View style={{ flex: 1 }}>
-          {isUserHome && <UserHomeTopSection navigation={navigation}
-                    userDetails={currentUserData}
+          {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                     isAdmin={isAdmin}
                     loggedInEntity={loggedInEntity}
                     onAction={onUserAction}/>}
+          {isClubHome && <UserClubTopSection clubDetails={currentUserData}
+            isAdmin={isAdmin}
+            loggedInEntity={loggedInEntity}
+            onAction={onClubAction}/>}
+          {isTeamHome && <UserTeamTopSection teamDetails={currentUserData}
+            isAdmin={isAdmin}
+            loggedInEntity={loggedInEntity}
+            onAction={onTeamAction}/>}
           <View style={styles.sepratorStyle}/>
           <TCScrollableProfileTabs
             tabItem={['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
@@ -606,5 +771,37 @@ const styles = StyleSheet.create({
   stickyImageStyle: {
     width: wp('100%'),
     height: 90,
+  },
+  challengeButtonStyle: {
+    position: 'absolute',
+    width: '100%',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    zIndex: 1001,
+    bottom: 40,
+  },
+  outerContainerStyle: {
+    shadowColor: colors.greenShadowColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  containerStyle: {
+    height: 40,
+    borderRadius: 4,
+    justifyContent: 'center',
+    shadowColor: colors.greenShadowColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  buttonText: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    color: colors.whiteColor,
+    fontSize: 17,
+    fontFamily: fonts.RBold,
   },
 });

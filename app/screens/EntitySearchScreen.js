@@ -9,10 +9,9 @@ import {
   TouchableWithoutFeedback,
   Alert,
   FlatList,
-
+  TouchableOpacity,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-
 import * as Utility from '../utils/index';
 
 import TCSearchBox from '../components/TCSearchBox';
@@ -20,6 +19,11 @@ import TCSearchBox from '../components/TCSearchBox';
 import {
   getMyGroups,
 } from '../api/Groups';
+
+import {
+  getUserList,
+} from '../api/Users';
+
 import ActivityLoader from '../components/loader/ActivityLoader';
 
 import images from '../Constants/ImagePath'
@@ -39,27 +43,46 @@ export default function EntitySearchScreen({ navigation, route }) {
   const [groups, setGroups] = useState();
   const [switchUser, setSwitchUser] = useState({})
 
+  let list = []
+
   useEffect(() => {
     console.log('NAVIGATION:', navigation);
     const getAuthEntity = async () => {
       entity = await Utility.getStorage('loggedInEntity');
       setSwitchUser(entity)
     }
+    list = [];
     getMembers()
+    getUsers()
     getAuthEntity()
   }, [isFocused])
 
   const getMembers = async () => {
     getMyGroups()
       .then((response) => {
-        setGroups(response.payload)
-        setSearchMember(response.payload)
+        list = [...list, ...response.payload]
+        setGroups([...list])
+        setSearchMember(list)
         setloading(false);
       })
       .catch((e) => {
         Alert.alert('', e.messages)
       });
   }
+
+  const getUsers = async () => {
+    getUserList()
+      .then((response) => {
+        list = [...list, ...response.payload]
+        setGroups([...list])
+        setSearchMember(list)
+        setloading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -74,16 +97,25 @@ export default function EntitySearchScreen({ navigation, route }) {
 
   const searchFilterFunction = (text) => {
     const result = searchMember.filter(
-      (x) => x.group_name.includes(text),
+      (x) => ((x.group_name && x.group_name.includes(text)) || (x.first_name && x.first_name.includes(text))),
     );
     setGroups(result);
   };
-  const renderList = ({ item }) => (
 
-    <View>
-      <TCProfileView name={item.group_name} location={item.entity_type} margin={20}/>
+  const onProfilePress = (item) => {
+    console.log(item);
+    navigation.navigate('HomeScreen', {
+      uid: item.group_id ? item.group_id : item.user_id,
+      backButtonVisible: true,
+      role: item.entity_type === 'player' ? 'user' : item.entity_type,
+    })
+  }
+
+  const renderList = ({ item }) => (
+    <TouchableOpacity onPress={() => { onProfilePress(item) }}>
+      <TCProfileView name={item.group_name || `${item.first_name} ${item.last_name}`} location={item.entity_type} margin={20} onPressProfile/>
       <TCThinDivider/>
-    </View>
+    </TouchableOpacity>
   )
 
   return (

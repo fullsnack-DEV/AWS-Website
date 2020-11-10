@@ -79,3 +79,33 @@ export const deleteMember = async (groupID, memberID) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}groups/${groupID}/members/${memberID}`,
 })
+
+export const followTeam = async (params, groupID) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/groups/${groupID}/follow`,
+  data: params,
+});
+
+export const unfollowTeam = async (params, groupID) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/groups/${groupID}/unfollow`,
+  data: params,
+});
+
+export const joinTeam = async (params, groupID) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/groups/${groupID}/join`,
+  data: params,
+});
+
+export const leaveTeam = async (params, groupID) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}/groups/${groupID}/join`,
+  data: params,
+});
+
+export const inviteTeam = async (params, groupID) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}/groups/${groupID}/inviteTeams`,
+  data: params,
+});
