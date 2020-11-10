@@ -1,6 +1,11 @@
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 
+export const blockedSlots = async (groupID) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}team/${groupID}/slots`,
+});
+
 export const getEvents = async (entity_type, entity_id) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/${entity_type}/${entity_id}/events`,

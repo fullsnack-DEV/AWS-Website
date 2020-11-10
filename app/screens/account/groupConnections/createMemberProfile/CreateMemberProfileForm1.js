@@ -53,6 +53,10 @@ export default function CreateMemberProfileForm1({ navigation }) {
   })
 
   useEffect(() => {
+    const getAuthEntity = async () => {
+      entity = await Utility.getStorage('loggedInEntity');
+      setRole(entity.role);
+    }
     getAuthEntity();
   }, [])
   const addPhoneNumber = () => {
@@ -64,10 +68,6 @@ export default function CreateMemberProfileForm1({ navigation }) {
     setPhoneNumber([...phoneNumber, obj]);
   };
 
-  const getAuthEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
-    setRole(entity.role);
-  }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (

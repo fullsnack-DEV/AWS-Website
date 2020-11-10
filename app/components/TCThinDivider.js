@@ -5,10 +5,10 @@ import {
 
 import colors from '../Constants/Colors';
 
-export default function TCThinDivider({ height = 1, width = '90%' }) {
+export default function TCThinDivider({ height = 1, width = '90%', ...props }) {
   return (
 
-    <View style={[styles.bigDivider, { height, width }]}></View>
+    <View style={[styles.bigDivider, { height, width }]} {...props}></View>
 
   );
 }
