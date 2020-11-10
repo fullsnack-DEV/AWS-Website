@@ -9,10 +9,10 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCScrollableProfileTabs({
-  onChangeTab, currentTab, renderTabContain, tabItem,
+  onChangeTab, currentTab, renderTabContain, tabItem, customStyle,
 }) {
   return (
-    <View>
+    <View style={customStyle}>
       <ScrollableTabView
         onChangeTab={onChangeTab}
         style={{ marginTop: 5 }}

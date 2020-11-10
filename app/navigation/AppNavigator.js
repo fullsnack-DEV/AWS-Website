@@ -11,6 +11,7 @@ import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
 
 import ReservationNavigator from './ReservationNavigator';
+import MessageNavigator from './MessageNavigator';
 import NotificationNavigator from './NotificationNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import AccountDrawerNavigator from './AccountDrawerNavigator';
@@ -61,6 +62,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'EventScreen'
     || routeName === 'EditEventScreen'
     || routeName === 'CreateEventScreen'
+    || routeName === 'MessageChat'
     || routeName === 'DefaultColorScreen'
     || routeName === 'GroupEventScreen'
     || routeName === 'ViewPrivacy'
@@ -69,6 +71,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'MemberProfileCreatedScreen'
     || routeName === 'InvitationSentScreen'
     || routeName === 'ConnectionReqSentScreen'
+    || routeName === 'MessageNewGroupScreen'
   ) {
     return false;
   }
@@ -150,7 +153,7 @@ function AppNavigator({ navigation }) {
       />
       <Tab.Screen
         name="Message"
-        component={ NewsFeedNavigator }
+        component={ MessageNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (

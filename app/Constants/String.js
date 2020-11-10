@@ -308,5 +308,8 @@ const strings = {
   following: 'Following',
   invite: 'Invite',
   member: 'Member',
+
+  // Message
+  noMessageFountText: 'No Message Found',
 };
 export default strings;

@@ -189,6 +189,12 @@ const images = {
   swapTeam: require('../assets/images/swap_team.png'),
   radioCheckGreenBG: require('../assets/images/radio_check_green_bg.png'),
 
+  // Message Module
+  messageCamera: require('../assets/images/messageCamera.png'),
+  sendButton: require('../assets/images/sendButton.png'),
+  groupUsers: require('../assets/images/groupUsers.png'),
+  plus_round_orange: require('../assets/images/plus_round_orange.png'),
+  leave_chat_room: require('../assets/images/leave_chat_room.png'),
 };
 
 export default images;

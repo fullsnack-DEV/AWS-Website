@@ -32,6 +32,7 @@ import fonts from '../../Constants/Fonts';
 import { getUserDetails } from '../../api/Users';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
+import { QBlogin } from '../../utils/QuickBlox';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -91,7 +92,7 @@ export default function LoginScreen({ navigation }) {
           },
         }
         await Utility.setStorage('loggedInEntity', entity);
-        getUserInfo(user.uid);
+        await getUserInfo(user.uid);
       });
     }
   };
@@ -103,9 +104,13 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .signInWithEmailAndPassword(_email, _password)
       .then(() => {
+        setloading(false);
         auth().onAuthStateChanged(onAuthStateChanged);
       })
-      .catch((error) => Alert.alert(error.messages || error.code || JSON.stringify(error)));
+      .catch((error) => {
+        Alert.alert(error.messages || error.code || JSON.stringify(error))
+        setloading(false);
+      });
   };
   const getUserInfo = async () => {
     let entity = await Utility.getStorage('loggedInEntity');
@@ -116,10 +121,15 @@ export default function LoginScreen({ navigation }) {
       }
       entity.auth.user = response.payload;
       entity.obj = response.payload;
-      await Utility.setStorage('loggedInEntity', entity);
 
-      console.log('LOGIN USER ENTITY:::::', entity);
-      await authContext.setUser(response.payload);
+      QBlogin(entity.uid, response.payload).then(async (res) => {
+        entity = { ...entity, QB: { ...res, connected: true } }
+        await Utility.setStorage('loggedInEntity', entity);
+        console.log('LOGIN USER ENTITY:::::', entity);
+        authContext.setUser(response.payload);
+      }).catch(async (error) => {
+        console.log(error.message);
+      });
     } else {
       throw new Error(response);
     }

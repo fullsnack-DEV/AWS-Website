@@ -134,3 +134,19 @@ export const heightPercentageToDP = (heightPercent) => {
   const elemHeight = parseFloat(heightPercent);
   return PixelRatio.roundToNearestPixel((screenHeight * elemHeight) / 100);
 };
+
+const backgroundColors = [
+  '#53c6a2',
+  '#fdd762',
+  '#9261d3',
+  '#43dce7',
+  '#ffcc5a',
+  '#ea4398',
+  '#4a5de1',
+  '#e95555',
+  '#7eda54',
+  '#f9b647',
+]
+
+// eslint-disable-next-line no-bitwise
+export const getRandomColor = () => backgroundColors[backgroundColors.length * Math.random() | 0]

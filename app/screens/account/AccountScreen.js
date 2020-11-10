@@ -18,8 +18,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import QB from 'quickblox-react-native-sdk';
-
 // import ActionSheet from 'react-native-actionsheet';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
@@ -38,6 +36,7 @@ import * as Utility from '../../utils/index';
 
 import images from '../../Constants/ImagePath';
 import TCNavigationHeader from '../../components/TCNavigationHeader';
+import { QBlogin, QBLogout } from '../../utils/QuickBlox';
 
 export default function AccountScreen({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -281,8 +280,33 @@ export default function AccountScreen({ navigation }) {
       setAuthUser(currentEntity)
       setRole('club')
     }
-    setloading(false);
+    switchQBAccount(item);
   };
+
+  const switchQBAccount = async (accountData) => {
+    setloading(true);
+    let entity = await Utility.getStorage('loggedInEntity').then()
+    entity = { ...entity, QB: { connected: false } }
+    await Utility.setStorage('loggedInEntity', entity);
+    await QBLogout();
+    const uid = accountData.entity_type === 'player' ? 'user_id' : 'group_id'
+    QBlogin(
+      accountData[uid],
+      {
+        ...accountData,
+        full_name: accountData.group_name,
+      },
+    ).then(async (res) => {
+      setloading(false);
+      let loginData = await Utility.getStorage('loggedInEntity');
+      loginData = await { ...loginData, QB: { ...res, connected: true } }
+      await Utility.setStorage('loggedInEntity', loginData);
+    }).catch(async (error) => {
+      setloading(false);
+      console.log(error.message);
+    })
+  }
+
   const handleLogOut = async () => {
     Alert.alert(
       'Towns Cup',
@@ -290,10 +314,9 @@ export default function AccountScreen({ navigation }) {
       [{
         text: 'OK',
         onPress: async () => {
-          await Utility.clearStorage();
+          QBLogout();
           await firebase.auth().signOut();
-          QB.auth
-            .logout()
+          await Utility.clearStorage();
           authContext.setUser(null);
         },
       },
