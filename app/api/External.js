@@ -19,3 +19,8 @@ export const searchLocationPlaceDetail = async (place_id) => makeAPIRequest({
   method: 'get',
   url: `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
 });
+
+export const getLocationNameWithLatLong = async (latValue, longValue) => makeAPIRequest({
+  method: 'get',
+  url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latValue},${longValue}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+})

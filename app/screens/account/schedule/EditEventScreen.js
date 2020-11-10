@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import moment from 'moment';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
@@ -34,6 +35,8 @@ import EventSearchLocation from '../../../components/Schedule/EventSearchLocatio
 import RadioBtnItem from '../../../components/Schedule/RadioBtnItem';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import { editEvent, getEvents } from '../../../api/Schedule';
+import TCGradientButton from '../../../components/TCGradientButton';
 
 const eventColorData = [
   {
@@ -77,6 +80,7 @@ export default function EditEventScreen({ navigation, route }) {
   let eventColor = '';
   let fromDate = '';
   let toDate = '';
+  let createdAtDate = '';
   let location = '';
   let latValue = '';
   let longValue = '';
@@ -100,6 +104,9 @@ export default function EditEventScreen({ navigation, route }) {
     }
     if (route.params.data.end_datetime) {
       toDate = new Date(route.params.data.end_datetime * 1000);
+    }
+    if (route.params.data.created_at) {
+      createdAtDate = route.params.data.created_at;
     }
     if (route.params.data.location) {
       location = route.params.data.location;
@@ -130,7 +137,7 @@ export default function EditEventScreen({ navigation, route }) {
 
   const isFocused = useIsFocused();
   const [aboutDesc, setAboutDesc] = useState(aboutDescription);
-  const [singleSelectEventColor, setSingleSelectEventColor] = useState(eventColor);
+  const [singleSelectEventColor, setSingleSelectEventColor] = useState(eventColor[0] !== '#' ? `#${eventColor}` : eventColor);
   const [toggle, setToggle] = useState(false);
   const [eventStartDateTime, setEventStartdateTime] = useState(fromDate);
   const [eventEndDateTime, setEventEnddateTime] = useState(toDate);
@@ -198,51 +205,6 @@ export default function EditEventScreen({ navigation, route }) {
         }
         centerComponent={
           <Text style={styles.eventTextStyle}>Event - {event_Title}</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
-            setloading(true);
-            const entity = await Utility.getStorage('loggedInEntity');
-            const u_id = entity.uid || entity.auth.user_id;
-            // const entityRole = entity.role === 'user' ? 'users' : 'groups';
-            const data = [{
-              title: event_Title,
-              descriptions: aboutDesc,
-              color: singleSelectEventColor,
-              start_datetime: new Date(eventStartDateTime).getTime() / 1000,
-              end_datetime: new Date(eventEndDateTime).getTime() / 1000,
-              location: searchLocation,
-              latitude: locationDetail.lat,
-              longitude: locationDetail.lng,
-              isBlocked: is_Blocked,
-              cal_id: calID,
-              owner_id: ownerID,
-              cal_type: calType,
-              createdBy: {
-                last_name: entity.obj.last_name,
-                first_name: entity.obj.first_name,
-                uid: u_id,
-              },
-              allDay: false,
-              is_recurring: false,
-              createdAt: 1604919517,
-            }]
-            console.log('Data :-', data);
-            // editEvent(entityRole, u_id, data)
-            //   .then(() => getEvents(entityRole, u_id))
-            //   .then((response) => {
-            //     setloading(false);
-            //     navigation.goBack();
-            //     console.log('Response :-', response);
-            //   })
-            //   .catch((e) => {
-            //     setloading(false);
-            //     console.log('Error ::--', e);
-            //     Alert.alert('', e.messages)
-            //   });
-          }}>
-            <Text>Done</Text>
-          </TouchableOpacity>
         }
       />
       <View style={ styles.sperateLine } />
@@ -560,6 +522,52 @@ export default function EditEventScreen({ navigation, route }) {
             }}
         />
         </EditEventModal>
+        <TCGradientButton
+          style={{ marginBottom: 0 }}
+          outerContainerStyle={{ width: wp('80%'), alignSelf: 'center' }}
+          title={strings.doneTitle}
+          onPress={async () => {
+            setloading(true);
+            const entity = await Utility.getStorage('loggedInEntity');
+            const u_id = entity.uid || entity.auth.user_id;
+            const entityRole = entity.role === 'user' ? 'users' : 'groups';
+            const params = {
+              title: event_Title,
+              descriptions: aboutDesc,
+              color: singleSelectEventColor,
+              start_datetime: new Date(eventStartDateTime).getTime() / 1000,
+              end_datetime: new Date(eventEndDateTime).getTime() / 1000,
+              location: searchLocation,
+              latitude: locationDetail.lat,
+              longitude: locationDetail.lng,
+              isBlocked: is_Blocked,
+              cal_id: calID,
+              owner_id: ownerID,
+              cal_type: calType,
+              createdBy: [{
+                last_name: entity.obj.last_name,
+                first_name: entity.obj.first_name,
+                uid: u_id,
+              }],
+              allDay: false,
+              is_recurring: false,
+              createdAt: createdAtDate,
+            };
+            console.log('Data :-', params);
+            editEvent(entityRole, u_id, params)
+              .then(() => getEvents(entityRole, u_id))
+              .then((response) => {
+                setloading(false);
+                navigation.goBack();
+                console.log('Response :-', response);
+              })
+              .catch((e) => {
+                setloading(false);
+                console.log('Error ::--', e);
+                Alert.alert('', e.messages)
+              });
+          }}
+        />
       </ScrollView>
     </SafeAreaView>
   );

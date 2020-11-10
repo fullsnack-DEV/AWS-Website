@@ -34,6 +34,6 @@ export const createEvent = async (entity_type, entity_id, data) => makeAPIReques
 
 export const editEvent = async (entity_type, entity_id, data) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}/${entity_type}/${entity_id}/events`,
+  url: `${Config.BASE_URL}${entity_type}/${entity_id}/events`,
   data,
 });

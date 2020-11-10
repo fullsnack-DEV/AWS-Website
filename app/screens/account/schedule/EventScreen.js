@@ -101,7 +101,7 @@ export default function EventScreen({ navigation, route }) {
         <EventItemRender
           title={strings.eventColorTitle}
         >
-          <View style={[styles.eventColorViewStyle, { backgroundColor: eventColor }]} />
+          <View style={[styles.eventColorViewStyle, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} />
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender

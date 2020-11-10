@@ -20,6 +20,7 @@ function EventTextInputItem({
         onChangeText={onChangeText}
         value={value}
         multiline={multiline}
+        placeholderTextColor={colors.lightgrayColor}
       />
     </View>
   );
