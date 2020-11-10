@@ -14,8 +14,8 @@ function TCGradientButton({
   onPress,
   style,
   textStyle,
-  startGradientColor = colors.yellowColor,
-  endGradientColor = colors.themeColor,
+  startGradientColor = colors.orangeGradientColor,
+  endGradientColor = colors.yellowColor,
   outerContainerStyle,
 }) {
   return (

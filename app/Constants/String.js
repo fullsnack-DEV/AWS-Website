@@ -308,6 +308,9 @@ const strings = {
   following: 'Following',
   invite: 'Invite',
   member: 'Member',
+  join: 'Join',
+  joining: 'Joining',
+  challenge: 'Challenge',
 
   // Message
   noMessageFountText: 'No Message Found',

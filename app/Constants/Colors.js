@@ -63,6 +63,7 @@ const colors = {
   orangeNotesColor: '#FF4E00',
   redColor: '#FD4E1E',
   redDelColor: '#FF4E00',
-
+  orangeGradientColor: '#FF6F01',
+  greenShadowColor: '#7CCF6B',
 };
 export default colors;
