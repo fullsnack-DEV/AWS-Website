@@ -1,164 +1,67 @@
-import React, {
-} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
   SectionList,
   KeyboardAvoidingView,
 } from 'react-native';
+import moment from 'moment';
 import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 
-const DATA = [
-  {
-    title: 'Today',
-    data: [
+export default function EventScheduleScreen({ onItemPress, eventData, onThreeDotPress }) {
+  let filterData = [];
+  if (eventData) {
+    const todayData = [];
+    const tomorrowData = [];
+    const futureData = [];
+    eventData.filter((item_filter) => {
+      const startDate = new Date(item_filter.start_datetime * 1000);
+      const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
+      const dateText = moment(dateFormat).calendar(null, {
+        lastDay: '[Yesterday]',
+        sameDay: '[Today]',
+        nextDay: '[Tomorrow]',
+        nextWeek: '[Future]',
+        sameElse: '[Future]',
+      })
+      if (dateText === 'Today') {
+        todayData.push(item_filter);
+      }
+      if (dateText === 'Tomorrow') {
+        tomorrowData.push(item_filter);
+      }
+      if (dateText === 'Future') {
+        futureData.push(item_filter);
+      }
+      return null;
+    })
+    filterData = [
       {
-        id: '1',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.orangeColor,
+        title: 'Today',
+        data: todayData,
       },
       {
-        id: '2',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.yellowColor,
+        title: 'Tomorrow',
+        data: tomorrowData,
       },
       {
-        id: '7',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.blueColor,
+        title: 'Future',
+        data: futureData,
       },
-      {
-        id: '8',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.greeColor,
-      },
-    ],
-  },
-  {
-    title: 'Tomorrow',
-    data: [
-      {
-        id: '3',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.orangeColor,
-      },
-      {
-        id: '4',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.yellowColor,
-      },
-      {
-        id: '9',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.blueColor,
-      },
-      {
-        id: '10',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.greeColor,
-      },
-      {
-        id: '11',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.lightBlueColor,
-      },
-    ],
-  },
-  {
-    title: 'Future',
-    data: [
-      {
-        id: '5',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.orangeColor,
-      },
-      {
-        id: '6',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.yellowColor,
-      },
-      {
-        id: '12',
-        dateMonth: 'Aug ',
-        date: '13 ',
-        title: 'Event 1 will come in Vancuver on special day dsfdsf dsf df adsfdsfsadfadsf',
-        description: 'Event description for special event.',
-        eventTime: '12:00 PM - 11:00 AM',
-        eventLocation: 'Vancouver, BC, Canada',
-        eventColor: colors.blueColor,
-      },
-    ],
-  },
-];
-
-export default function EventScheduleScreen({ onItemPress }) {
+    ];
+  }
   return (
     <KeyboardAvoidingView style={ styles.mainContainer } behavior={'padding'}>
       <SectionList
             renderItem={ ({ item }) => (
-              <TCEventView onPress={onItemPress} data={item} />
+              <TCEventView onPress={() => onItemPress(item)} data={item} onThreeDotPress={() => onThreeDotPress(item)} />
             ) }
             renderSectionHeader={ ({ section: { title } }) => (
               <Text style={ styles.sectionHeader }>{title}</Text>
             ) }
-            sections={DATA}
+            sections={filterData}
             keyExtractor={(item, index) => index.toString()}
             bounces={false}
           />

@@ -1,36 +1,32 @@
 import React from 'react';
 import {
   StyleSheet,
-  View,
-  TextInput,
   Image,
+  Text,
 } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
 
 } from 'react-native-responsive-screen';
-import strings from '../../Constants/String';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-export default function EventSearchLocation({ onChangeText, sectionStyle, value }) {
+export default function EventSearchLocation({
+  sectionStyle,
+  onLocationPress,
+  locationText,
+}) {
   return (
-    <View style={[styles.sectionStyle, sectionStyle]}>
+    <TouchableWithoutFeedback style={[styles.sectionStyle, sectionStyle]} onPress={onLocationPress}>
       <Image
         source={images.searchLocation}
         style={styles.searchImageStyle}
       />
-      <TextInput
-        style={ styles.textInput }
-        placeholder={ strings.searchHereText }
-        clearButtonMode="always"
-        placeholderTextColor={ colors.userPostTimeColor }
-        onChangeText={onChangeText}
-        value={value}
-      />
-    </View>
+      <Text style={ [styles.textInput, { color: colors.userPostTimeColor }] }>{locationText}</Text>
+    </TouchableWithoutFeedback>
   );
 }
 

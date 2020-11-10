@@ -15,3 +15,7 @@ export const getLatLong = async (addressText) => makeAPIRequest({
   url: `https://maps.googleapis.com/maps/api/geocode/json?address=${addressText.replace(/ /g, '+')}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
   // url: `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeID}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
 })
+export const searchLocationPlaceDetail = async (place_id) => makeAPIRequest({
+  method: 'get',
+  url: `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4`,
+});
