@@ -123,14 +123,14 @@ export default function EventScreen({ navigation, route }) {
           <Text style={styles.textValueStyle}>{location}</Text>
           <EventMapView
             region={{
-              latitude: lati,
-              longitude: longi,
+              latitude: Number(lati),
+              longitude: Number(longi),
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
             coordinate={{
-              latitude: lati,
-              longitude: longi,
+              latitude: Number(lati),
+              longitude: Number(longi),
             }}
           />
         </EventItemRender>

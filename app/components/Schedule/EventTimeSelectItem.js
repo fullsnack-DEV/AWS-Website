@@ -9,14 +9,14 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function EventTimeSelectItem({
-  title, date, time, onDatePress, containerStyle,
+  title, date, time, onDatePress, containerStyle, toggle,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <Text style={styles.headerTextStyle}>{title}</Text>
       <TouchableOpacity style={styles.dateSelectStyle} onPress={onDatePress}>
         <Text style={styles.dateTextStyle}>{date}</Text>
-        <Text style={[styles.dateTextStyle, { marginLeft: 12 }]}>{time}</Text>
+        {toggle && <Text style={[styles.dateTextStyle, { marginLeft: 12 }]}>{time}</Text>}
       </TouchableOpacity>
     </View>
   );
