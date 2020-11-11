@@ -34,6 +34,8 @@ import {
   deleteEvent, getEventById, getEvents, getSlots,
 } from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import CreateEventButton from '../../../components/Schedule/CreateEventButton';
+import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 
 const { width } = Dimensions.get('window');
 
@@ -48,6 +50,11 @@ export default function ScheduleScreen({ navigation }) {
   const [filterTimeTable, setFilterTimeTable] = useState([]);
   const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
   const [loading, setloading] = useState(false);
+  const [createEventModal, setCreateEventModal] = useState(false);
+
+  // const toggleModal = () => {
+  //   setCreateEventModal(!createEventModal);
+  // };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -129,38 +136,40 @@ export default function ScheduleScreen({ navigation }) {
         <View tabLabel='Scoreboard' style={{ flex: 1 }}></View>
         <View tabLabel='Schedule' style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-            <TouchableIcon
-              source={images.searchLocation}
-              onItemPress={() => {}}
-            />
+            <View style={{ padding: 5, height: 16, width: 16 }} />
             <ScheduleTabView
               indexCounter={scheduleIndexCounter}
               onFirstTabPress={() => setScheduleIndexCounter(0)}
               onSecondTabPress={() => setScheduleIndexCounter(1)}
             />
             <TouchableIcon
-              source={images.plus}
-              imageStyle={{ tintColor: colors.orangeColor }}
-              onItemPress={() => { navigation.navigate('CreateEventScreen') }}
+              source={images.searchLocation}
+              onItemPress={() => {}}
             />
           </View>
-          {scheduleIndexCounter === 0 && <EventScheduleScreen
-            eventData={eventData}
-            navigation={navigation}
-            onThreeDotPress={(item) => {
-              setSelectedEventItem(item);
-            }}
-            onItemPress={async (item) => {
-              const entity = await Utility.getStorage('loggedInEntity');
-              const uid = entity.uid || entity.auth.user_id;
-              const entityRole = entity.role === 'user' ? 'users' : 'groups';
-              getEventById(entityRole, uid, item.cal_id).then((response) => {
-                navigation.navigate('EventScreen', { data: response.payload });
-              }).catch((e) => {
-                console.log('Error :-', e);
-              })
-            }}
-          />}
+          {scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+            <EventScheduleScreen
+              eventData={eventData}
+              navigation={navigation}
+              onThreeDotPress={(item) => {
+                setSelectedEventItem(item);
+              }}
+              onItemPress={async (item) => {
+                const entity = await Utility.getStorage('loggedInEntity');
+                const uid = entity.uid || entity.auth.user_id;
+                const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                getEventById(entityRole, uid, item.cal_id).then((response) => {
+                  navigation.navigate('EventScreen', { data: response.payload });
+                }).catch((e) => {
+                  console.log('Error :-', e);
+                })
+              }}
+            />
+            {!createEventModal && <CreateEventButton
+              source={images.plus}
+              onPress={() => setCreateEventModal(true) }
+            />}
+          </View>}
           {scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
             <View style={styles.shceduleCalenderView}>
               <BackForwardView
@@ -250,7 +259,6 @@ export default function ScheduleScreen({ navigation }) {
                       end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
                     };
                     dataItem.push(obj);
-                    console.log('Date Item :-', dataItem);
                   }
                   return null;
                 });
@@ -266,8 +274,8 @@ export default function ScheduleScreen({ navigation }) {
                 renderEvent={(event) => <CalendarTimeTableView
                   title={event.title}
                   summary={event.descriptions}
-                  containerStyle={{ borderLeftColor: event.color }}
-                  eventTitleStyle={{ color: event.color }}
+                  containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color }}
+                  eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
                 />}
                 styles={{
                   event: styles.eventViewStyle,
@@ -275,10 +283,22 @@ export default function ScheduleScreen({ navigation }) {
                 }}
               />}
             />}
+            {!createEventModal && <CreateEventButton
+              source={images.plus}
+              onPress={() => setCreateEventModal(true)}
+            />}
           </View>}
         </View>
         <View tabLabel='Gallery' style={{ flex: 1 }}></View>
       </TCScrollableTabs>
+      <CreateEventBtnModal
+        visible={createEventModal}
+        onCancelPress={() => setCreateEventModal(false)}
+        onCreateEventPress={() => {
+          setCreateEventModal(false)
+          navigation.navigate('CreateEventScreen', { comeName: 'ScheduleScreen' })
+        }}
+      />
       <ActionSheet
         ref={actionSheet}
         options={['Default Color', 'Group Events', 'View Privacy', 'Cancel']}

@@ -18,6 +18,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
+import Geolocation from '@react-native-community/geolocation';
 import Header from '../../../components/Home/Header';
 import * as Utility from '../../../utils/index';
 import EventColorItem from '../../../components/Schedule/EventColorItem';
@@ -36,6 +37,7 @@ import strings from '../../../Constants/String';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 import { createEvent, getEvents } from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import { getLocationNameWithLatLong } from '../../../api/External';
 
 const eventColorsData = [
   {
@@ -88,8 +90,8 @@ const updateRecurringEvent = [
 
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
-  const [eventTitle, setEventTitle] = useState(strings.createTitleValue);
-  const [eventDescription, setEventDescription] = useState(strings.createAboutValue);
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventDescription, setEventDescription] = useState('');
   const [singleSelectEventColor, setSingleSelectEventColor] = useState(colors.orangeColor);
   const [toggle, setToggle] = useState(false);
   const [eventStartDateTime, setEventStartdateTime] = useState('');
@@ -143,6 +145,36 @@ export default function CreateEventScreen({ navigation, route }) {
     }
   }, [isFocused]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      if (route.params.comeName) {
+        Geolocation.getCurrentPosition((position) => {
+          const latValue = position.coords.latitude;
+          const longValue = position.coords.longitude;
+          const obj = {
+            lat: latValue,
+            lng: longValue,
+          };
+          setLocationDetail(obj);
+          getLocationNameWithLatLong(latValue, longValue).then((res) => {
+            setSearchLocation(res.results[0].formatted_address);
+          })
+        },
+        (error) => {
+          console.log('Error :-', error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 10000,
+        })
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [route.params.comeName]);
+
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <ActivityLoader visible={loading} />
@@ -161,9 +193,9 @@ export default function CreateEventScreen({ navigation, route }) {
             const uid = entity.uid || entity.auth.user_id;
             const entityRole = entity.role === 'user' ? 'users' : 'groups';
 
-            if (eventTitle === strings.createTitleValue) {
+            if (eventTitle === '') {
               Alert.alert('Towns Cup', 'Please Enter Event Title.');
-            } else if (eventDescription === strings.createAboutValue) {
+            } else if (eventDescription === '') {
               Alert.alert('Towns Cup', 'Please Enter Event Description.');
             } else if (eventStartDateTime === '') {
               Alert.alert('Towns Cup', 'Please Select Event Start Date and Time.');
@@ -298,10 +330,11 @@ export default function CreateEventScreen({ navigation, route }) {
               title={strings.ends}
               date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : strings.date}
               time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : strings.time}
-              containerStyle={{ marginBottom: 12 }}
+              containerStyle={{ marginBottom: 8 }}
               onDatePress={() => setEndDateVisible(!endDateVisible)}
             />
             <EventMonthlySelection
+              title={strings.repeat}
               dataSource={[
                 { label: 'Weekly', value: 'Weekly' },
                 { label: 'Monthly', value: 'Monthly' },
@@ -326,10 +359,10 @@ export default function CreateEventScreen({ navigation, route }) {
           >
             <EventSearchLocation
               onLocationPress={() => {
-                // console.log('Pressed!');
                 navigation.navigate('SearchLocationScreen', {
                   comeFrom: 'CreateEventScreen',
                 })
+                navigation.setParams({ comeName: null });
               }}
               locationText={searchLocation}
             />
@@ -516,8 +549,8 @@ const styles = StyleSheet.create({
   },
   toggleViewStyle: {
     flexDirection: 'row',
-    marginHorizontal: 15,
-    justifyContent: 'space-between',
+    marginHorizontal: 2,
+    justifyContent: 'flex-end',
     paddingVertical: 3,
     alignItems: 'center',
     marginBottom: 8,
@@ -526,6 +559,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    right: wp('8%'),
   },
   availableSubHeader: {
     fontSize: 16,

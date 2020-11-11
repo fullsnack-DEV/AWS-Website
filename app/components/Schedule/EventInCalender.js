@@ -47,7 +47,7 @@ export default function EventInCalender({ onPress, data, onThreeDotPress }) {
   return (
     <TouchableWithoutFeedback style={ styles.backgroundView } onPress={onPress}>
       <View style={ styles.backgroundView } onPress={ onPress }>
-        <View style={ [styles.colorView, { backgroundColor: eventColor }] }>
+        <View style={ [styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }] }>
           <Text style={ styles.hourTextStyle }>{moment(startDate).format('h')}
             <Text style={ styles.minuteTextStyle }>{moment(startDate).format(':mm')}</Text>
           </Text>
@@ -55,7 +55,7 @@ export default function EventInCalender({ onPress, data, onThreeDotPress }) {
         </View>
         <View style={ styles.eventText }>
           <View style={ styles.eventTitlewithDot }>
-            <Text style={ [styles.eventTitle, { color: eventColor }] } numberOfLines={ 1 }>
+            <Text style={ [styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }] } numberOfLines={ 1 }>
               {title}
             </Text>
             <TouchableOpacity onPress={onThreeDotPress}>

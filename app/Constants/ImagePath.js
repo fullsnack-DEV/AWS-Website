@@ -72,6 +72,8 @@ const images = {
   commentReport: require('../assets/images/comment_report.png'),
   tagImage: require('../assets/images/tag.png'),
   cancelImage: require('../assets/images/cancel.png'),
+  createEventImage: require('../assets/images/create_event_image.png'),
+  challengeAvailableImage: require('../assets/images/challenge_available_image.png'),
   videoPlayerHandle: require('../assets/images/oval.png'),
   tab_home_selected: require('../assets/images/tab_home_selected.png'),
 
