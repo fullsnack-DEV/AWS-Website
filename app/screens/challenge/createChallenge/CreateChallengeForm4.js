@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-
+import * as Utility from '../../../utils/index';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -21,11 +21,32 @@ import TCInfoImageField from '../../../components/TCInfoImageField';
 import TCInfoField from '../../../components/TCInfoField';
 import EventMapView from '../../../components/Schedule/EventMapView';
 
-export default function CreateChallengeForm4({ navigation }) {
+let entity = {};
+export default function CreateChallengeForm4({ navigation, route }) {
   const isFocused = useIsFocused();
+  const [homeTeam, setHomeTeam] = useState()
+  const [awayTeam, setAwayTeam] = useState()
+  const [bodyParams, setbodyParams] = useState()
 
   useEffect(() => {
-
+    const getAuthEntity = async () => {
+      entity = await Utility.getStorage('loggedInEntity');
+      if (route && route.params && route.params.teamData) {
+        if (route.params.teamData[0].group_id === entity.uid) {
+          console.log('TEams::', route.params.teamData);
+          setHomeTeam(route.params.teamData[0])
+          setAwayTeam(route.params.teamData[1])
+        } else {
+          setHomeTeam(route.params.teamData[1])
+          setAwayTeam(route.params.teamData[0])
+        }
+      }
+    };
+    getAuthEntity()
+    if (route && route.params && route.params.body) {
+      console.log('BODY PARAMS:', route.params.body);
+      setbodyParams(route.params.body)
+    }
   }, [isFocused]);
 
   return (
@@ -54,27 +75,27 @@ export default function CreateChallengeForm4({ navigation }) {
             <Image source={images.requestOut} style={styles.reqOutImage}/>
             <Text style={styles.challengerText}>Challenger</Text>
           </View>
-          <View style={styles.teamView}>
+          {homeTeam && <View style={styles.teamView}>
             <Image source={images.teamPlaceholder} style={styles.teamImage}/>
-            <Text style={styles.teamNameText}>New York City FC</Text>
-          </View>
+            <Text style={styles.teamNameText}>{homeTeam.group_name}</Text>
+          </View>}
         </View>
         <View style={styles.challengeeView} >
           <View style={styles.teamView}>
             <Image source={images.requestIn} style={styles.reqOutImage}/>
             <Text style={styles.challengeeText}>Challengee</Text>
           </View>
-          <View style={styles.teamView}>
+          {awayTeam && <View style={styles.teamView}>
             <Image source={images.teamPlaceholder} style={styles.teamImage}/>
             <Text style={{
               marginLeft: 5, fontFamily: fonts.RMedium, fontSize: 16, color: colors.lightBlackColor,
-            }}>New York City FC</Text>
-          </View>
+            }}>{awayTeam.group_name}</Text>
+          </View>}
         </View>
       </View>
       <TCThinDivider />
       <View>
-        <TCLabel title={'Match · Soccer'}/>
+        <TCLabel title={`Match · ${bodyParams.sport}`}/>
         <TCInfoImageField title={'Home'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
         <TCThinDivider />
         <TCInfoImageField title={'Away'} name={'Vancuver Whitecap FC'} marginLeft={30}/>

@@ -15,6 +15,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import TimePicker from 'react-native-24h-timepicker';
+import moment from 'moment';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { blockedSlots } from '../../../api/Schedule';
 import strings from '../../../Constants/String';
@@ -39,13 +40,14 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     'Nov',
     'Dec',
   ];
+  const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(Date.now());
+  const [selectedDate, setSelectedDate] = useState(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`);
 
-  const [fromTime, setfromTime] = useState('24:00:00');
-  const [toTime, setToTime] = useState('23:55:00');
+  const [fromTime, setfromTime] = useState('00:00:00');
+  const [toTime, setToTime] = useState('00:00:00');
   const [fromDate, setfromDate] = useState();
   const [toDate, setToDate] = useState();
   const [timePickerFor, setTimePickerFor] = useState();
@@ -64,32 +66,34 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const onConfirm = (hour, minute) => {
     console.log('HHMM', hour, minute);
+    const hr = hour < 10 ? `0${hour}` : hour
+
     if (timePickerFor === 'from') {
-      const str = `${hour}:${minute}:00`;
+      const str = `${hr}:${minute}:00`;
       console.log('DONE FROM TIME::', str);
       setfromTime(str);
     } else {
-      const str = `${hour}:${minute}:00`;
+      const str = `${hr}:${minute}:00`;
       console.log('DONE TO TIME::', str);
       setToTime(str);
     }
     timePicker.current.close();
   };
 
-  // const tConvert = (timeString) => {
-  //   const timeString12hr = new Date(
-  //     `1970-01-01T${timeString}Z`,
-  //   ).toLocaleTimeString(
-  //     {},
-  //     {
-  //       timeZone: 'UTC',
-  //       hour12: true,
-  //       hour: 'numeric',
-  //       minute: 'numeric',
-  //     },
-  //   );
-  //   return timeString12hr;
-  // };
+  const tConvert = (timeString) => {
+    const timeString12hr = new Date(
+      `1970-01-01T${timeString}Z`,
+    ).toLocaleTimeString(
+      {},
+      {
+        timeZone: 'UTC',
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric',
+      },
+    );
+    return timeString12hr;
+  };
 
   const getSlots = () => {
     setloading(true);
@@ -268,7 +272,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
         <Text style={styles.dateHeader}>Tue, 19 Feb</Text>
         <UnavailableTimeView/> */}
-          {filteredData && <Text style={styles.dateHeader}>{new Date(selectedDate).getDate()} {monthNames[new Date(selectedDate).getMonth()]}</Text>}
+          {filteredData && <Text style={styles.dateHeader}>{daysNames[new Date(selectedDate).getDay()]}, {new Date(selectedDate).getDate()} {monthNames[new Date(selectedDate).getMonth()]}</Text>}
           <FlatList
          data={filteredData}
          renderItem={({ item }) => <UnavailableTimeView startDate={item.start_datetime} endDate={item.end_datetime}/>}
@@ -319,7 +323,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                     timePicker.current.open();
                   }}>
                   {'   '}
-                  {fromTime}
+                  {tConvert(fromTime)}
                 </Text>
               </View>
             </View>
@@ -368,7 +372,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                     setTimePickerFor('to');
                     timePicker.current.open();
                   }}>{'   '}
-                  {toTime}
+                  {tConvert(toTime)}
                 </Text>
               </View>
             </View>
@@ -392,7 +396,20 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
       <TCGradientButton
         title={strings.applyTitle}
-        onPress={() => navigation.navigate('CreateChallengeForm3')}
+        onPress={() => {
+          const fromStr = fromDate || selectedDate
+          const toStr = toDate || selectedDate
+          const fromStamp = moment(`${fromStr} ${fromTime}`).format('YYYY-MM-DDTHH:mm:ss');
+          const toStamp = moment(`${toStr} ${toTime}`).format('YYYY-MM-DDTHH:mm:ss');
+
+          console.log('FROM-TO D/T:', `${new Date(fromStamp).getHours()}:${new Date(
+            fromStamp,
+          ).getMinutes()}:${new Date(
+            fromStamp,
+          ).getSeconds()}`);
+
+          navigation.navigate('CreateChallengeForm1', { from: `${new Date(moment(fromStamp).utcOffset(0))}`, to: `${new Date(moment(toStamp).utcOffset(0))}` })
+        }}
       />
     </>
   );
