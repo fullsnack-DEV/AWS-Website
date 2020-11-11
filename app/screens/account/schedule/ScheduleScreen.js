@@ -11,7 +11,9 @@ import {
   Alert,
 } from 'react-native';
 import moment from 'moment';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
@@ -189,6 +191,7 @@ export default function ScheduleScreen({ navigation }) {
               items={{
                 [selectionDate.toString()]: [filterEventData],
               }}
+              selected={selectionDate}
               onDayPress={(day) => {
                 setEventSelectDate(day.dateString);
                 const date = moment(day.dateString).format('YYYY-MM-DD');
@@ -217,6 +220,8 @@ export default function ScheduleScreen({ navigation }) {
                       console.log('Error :-', e);
                     })
                   }}
+                  eventBetweenSection={false}
+                  eventOfSection={true}
                   onThreeDotPress={() => {
                     setSelectedEventItem(itemValue);
                   }}
@@ -271,12 +276,17 @@ export default function ScheduleScreen({ navigation }) {
                 width={width}
                 initDate={timeTableSelectionDate}
                 scrollToFirst={true}
-                renderEvent={(event) => <CalendarTimeTableView
-                  title={event.title}
-                  summary={event.descriptions}
-                  containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color }}
-                  eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
-                />}
+                renderEvent={(event) => <View style={{ flex: 1 }}>
+                  <CalendarTimeTableView
+                    title={event.title}
+                    summary={event.descriptions}
+                    containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color, width: event.width }}
+                    eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
+                  />
+                  {event.isBlocked && <View style={{
+                    width: event.width + 68, height: event.height, backgroundColor: 'rgba(0,0,0,0.3)', position: 'absolute', marginLeft: -59, borderRadius: 10,
+                  }} />}
+                </View>}
                 styles={{
                   event: styles.eventViewStyle,
                   line: { backgroundColor: colors.lightgrayColor },

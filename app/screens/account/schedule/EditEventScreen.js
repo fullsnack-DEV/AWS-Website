@@ -20,23 +20,19 @@ import * as Utility from '../../../utils/index';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
-import EventTimeItem from '../../../components/Schedule/EventTimeItem';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import strings from '../../../Constants/String';
-import EventView from '../../../components/Schedule/EventView';
-import EditEventItem from '../../../components/Schedule/EditEventItem';
-import EditEventModal from '../EditEventModal';
-import EventTextInput from '../../../components/Schedule/EventTextInput';
 import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
-import RadioBtnItem from '../../../components/Schedule/RadioBtnItem';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { editEvent, getEvents } from '../../../api/Schedule';
-import TCGradientButton from '../../../components/TCGradientButton';
+import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
+import EventItemRender from '../../../components/Schedule/EventItemRender';
+import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 
 const eventColorData = [
   {
@@ -61,19 +57,6 @@ const eventColorData = [
   },
 ];
 
-const challengeAvailability = [
-  {
-    id: 0,
-    isSelected: true,
-    title: strings.setAvailable,
-  },
-  {
-    id: 1,
-    isSelected: false,
-    title: strings.block,
-  },
-];
-
 export default function EditEventScreen({ navigation, route }) {
   let event_Title = '';
   let aboutDescription = '';
@@ -82,8 +65,8 @@ export default function EditEventScreen({ navigation, route }) {
   let toDate = '';
   let createdAtDate = '';
   let location = '';
-  let latValue = '';
-  let longValue = '';
+  let latValue = null;
+  let longValue = null;
   let latLongLocation = {};
   let blockValue = false;
   let calID = '';
@@ -136,6 +119,7 @@ export default function EditEventScreen({ navigation, route }) {
   }
 
   const isFocused = useIsFocused();
+  const [eventTitle, setEventTitle] = useState(event_Title);
   const [aboutDesc, setAboutDesc] = useState(aboutDescription);
   const [singleSelectEventColor, setSingleSelectEventColor] = useState(eventColor[0] !== '#' ? `#${eventColor}` : eventColor);
   const [toggle, setToggle] = useState(false);
@@ -152,8 +136,6 @@ export default function EditEventScreen({ navigation, route }) {
   const [eventColors, setEventColors] = useState(eventColorData);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
-  const [challengeAvailable, setChallengeAvailable] = useState(challengeAvailability);
-  const [eventModalHeader, setEventModalHeader] = useState('');
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
@@ -204,121 +186,82 @@ export default function EditEventScreen({ navigation, route }) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Event - {event_Title}</Text>
+          <Text style={styles.eventTextStyle}>Edit an Event</Text>
+        }
+        rightComponent={
+          <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
+            setloading(true);
+            const entity = await Utility.getStorage('loggedInEntity');
+            const u_id = entity.uid || entity.auth.user_id;
+            const entityRole = entity.role === 'user' ? 'users' : 'groups';
+            const params = {
+              title: event_Title,
+              descriptions: aboutDesc,
+              color: singleSelectEventColor,
+              start_datetime: new Date(eventStartDateTime).getTime() / 1000,
+              end_datetime: new Date(eventEndDateTime).getTime() / 1000,
+              location: searchLocation,
+              latitude: locationDetail.lat,
+              longitude: locationDetail.lng,
+              isBlocked: is_Blocked,
+              cal_id: calID,
+              owner_id: ownerID,
+              cal_type: calType,
+              createdBy: [{
+                last_name: entity.obj.last_name,
+                first_name: entity.obj.first_name,
+                uid: u_id,
+              }],
+              allDay: false,
+              is_recurring: false,
+              createdAt: createdAtDate,
+            };
+            console.log('Data :-', params);
+            editEvent(entityRole, u_id, params)
+              .then(() => getEvents(entityRole, u_id))
+              .then((response) => {
+                setloading(false);
+                navigation.goBack();
+                console.log('Response :-', response);
+              })
+              .catch((e) => {
+                setloading(false);
+                console.log('Error ::--', e);
+                Alert.alert('', e.messages)
+              });
+          }}>
+            <Text>Done</Text>
+          </TouchableOpacity>
         }
       />
       <View style={ styles.sperateLine } />
       <ScrollView>
-        <EventView
-          colorView={{ backgroundColor: singleSelectEventColor }}
-          dateMonth={moment(eventStartDateTime).format('MMM')}
-          date={moment(eventStartDateTime).format('DD')}
-          title={event_Title}
-          eventTitle={{ color: singleSelectEventColor }}
-          description={aboutDesc}
-          eventTime={`${moment(eventStartDateTime).format('LT')} - ${moment(eventEndDateTime).format('LT')}`}
-          eventLocation={'BC Stadium'}
-          containerStyle={{ marginVertical: 20 }}
+        <EventTextInputItem
+          title={strings.title}
+          placeholder={strings.titlePlaceholder}
+          onChangeText={(text) => {
+            setEventTitle(text);
+          }}
+          value={eventTitle}
         />
 
-        <EditEventItem
+        <EventTextInputItem
           title={strings.about}
-          onEditPress={() => {
-            toggleModal();
-            setEventModalHeader(strings.about)
+          placeholder={strings.aboutPlaceholder}
+          onChangeText={(text) => {
+            setAboutDesc(text);
           }}
-        >
-          <Text style={styles.textValueStyle}>{aboutDesc}</Text>
-        </EditEventItem>
-        <View style={styles.sepratorViewStyle} />
-        <EditEventItem
-          title={strings.eventColorTitle}
-          onEditPress={() => {
-            toggleModal();
-            setEventModalHeader(strings.eventColorTitle)
-          }}
-        >
-          <View style={[styles.eventColorViewStyle, { backgroundColor: singleSelectEventColor }]} />
-        </EditEventItem>
-        <View style={styles.sepratorViewStyle} />
-        <EditEventItem
-          title={strings.timeTitle}
-          onEditPress={() => {
-            toggleModal();
-            setEventModalHeader(strings.timeTitle)
-          }}
-        >
-          <EventTimeItem
-            from={strings.from}
-            fromTime={eventStartDateTime ? moment(eventStartDateTime).format('ll h:mm a') : strings.fromTime}
-            to={strings.to}
-            toTime={eventEndDateTime ? moment(eventEndDateTime).format('ll h:mm a') : strings.fromTime}
-            repeat={strings.repeat}
-            repeatTime={eventUntilDateTime ? moment(eventUntilDateTime).format('ll h:mm a') : strings.fromTime}
-          />
-        </EditEventItem>
-        <View style={styles.sepratorViewStyle} />
-        <EditEventItem
-          title={strings.place}
-          onEditPress={() => {
-            toggleModal();
-            setEventModalHeader(strings.place)
-          }}
-        >
-          <Text style={styles.textValueStyle}>{searchLocation}</Text>
-          <EventMapView
-            region={{
-              latitude: locationDetail ? locationDetail.lat : latValue,
-              longitude: locationDetail ? locationDetail.lng : longValue,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            coordinate={{
-              latitude: locationDetail ? locationDetail.lat : latValue,
-              longitude: locationDetail ? locationDetail.lng : longValue,
-            }}
-          />
-        </EditEventItem>
-        <View style={styles.sepratorViewStyle} />
-        <EditEventItem
-          title={strings.availableTitle}
-          onEditPress={() => {
-            toggleModal();
-            setEventModalHeader(strings.availableTitle)
-          }}
-        >
-          {!is_Blocked ? <View style={{ flexDirection: 'row', marginTop: 3 }}>
-            <Image source={images.checkWhiteLanguage} style={styles.availableImageStyle} />
-            <Text style={styles.availableTextStyle}>{strings.available}</Text>
-          </View> : <View style={{ flexDirection: 'row', marginTop: 3 }}>
-            <View style={styles.blockedImageViewStyle}>
-              <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
-            </View>
-            <Text style={[styles.availableTextStyle, { color: colors.veryLightBlack }]}>{strings.blocked}</Text>
-          </View>}
-        </EditEventItem>
-        <EditEventModal
-            isModalVisible={isModalVisible}
-            onBackdropPress={() => setModalVisible(false)}
-            cancelImageSource={images.cancelImage}
-            onCancelImagePress={() => setModalVisible(false)}
-            headerCenterText={eventModalHeader}
-            onDonePress={() => setModalVisible(false)}
-        >
-          {eventModalHeader === strings.about && <EventTextInput
-            placeholder={strings.aboutPlaceholder}
-            onChangeText={(text) => {
-              setAboutDesc(text);
-            }}
-            multiline={true}
-            value={aboutDesc}
-          />}
+          multiline={true}
+          value={aboutDesc}
+        />
 
-          {eventModalHeader === strings.eventColorTitle && <FlatList
+        <EventItemRender
+            title={strings.eventColorTitle}
+          >
+          <FlatList
             data={[...eventColors, '0']}
             numColumns={5}
             scrollEnabled={false}
-            style={{ marginTop: 20 }}
             ItemSeparatorComponent={() => <View style={{ width: wp('1.5%') }} />}
             renderItem={ ({ item, index }) => {
               if (index === eventColors.length) {
@@ -359,214 +302,174 @@ export default function EditEventScreen({ navigation, route }) {
               );
             }}
             keyExtractor={ (item, index) => index.toString() }
-          />}
+          />
+        </EventItemRender>
 
-          {eventModalHeader === strings.timeTitle && <View style={{ marginTop: 20 }}>
-            <View style={styles.toggleViewStyle}>
-              <Text style={styles.allDayText}>{strings.allDay}</Text>
-              <TouchableOpacity style={styles.checkbox} onPress={() => setToggle(!toggle)}>
-                <Image
-                    source={toggle ? images.checkWhiteLanguage : images.uncheckWhite}
-                    style={styles.checkboxImg}
-                  />
-              </TouchableOpacity>
-            </View>
-            <EventTimeSelectItem
-              title={strings.starts}
-              date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : strings.date}
-              time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : strings.time}
-              onDatePress={() => setStartDateVisible(!startDateVisible)}
-            />
-            <EventTimeSelectItem
-              title={strings.ends}
-              date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : strings.date}
-              time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : strings.time}
-              containerStyle={{ marginBottom: 12 }}
-              onDatePress={() => setEndDateVisible(!endDateVisible)}
-            />
-            <EventMonthlySelection
-              dataSource={[
-                { label: 'Weekly', value: 'Weekly' },
-                { label: 'Monthly', value: 'Monthly' },
-              ]}
-              placeholder={strings.selectTimePlaceholder}
-              value={selectWeekMonth}
-              onValueChange={(value) => {
-                setSelectWeekMonth(value);
-              }}
-            />
-            <EventTimeSelectItem
-              title={strings.until}
-              date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : strings.date}
-              time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : strings.time}
-              containerStyle={{ marginBottom: 12 }}
-              onDatePress={() => setUntilDateVisible(!untilDateVisible)}
-            />
-          </View>}
+        <EventItemRender
+            title={strings.timeTitle}
+          >
+          <View style={styles.toggleViewStyle}>
+            <Text style={styles.allDayText}>{strings.allDay}</Text>
+            <TouchableOpacity style={ styles.checkbox } onPress={() => setToggle(!toggle)}>
+              <Image
+                  source={ toggle ? images.checkWhiteLanguage : images.uncheckWhite}
+                  style={ styles.checkboxImg }
+                />
+            </TouchableOpacity>
+          </View>
+          <EventTimeSelectItem
+            title={strings.starts}
+            toggle={!toggle}
+            date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : strings.date}
+            time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : strings.time}
+            onDatePress={() => setStartDateVisible(!startDateVisible)}
+          />
+          <EventTimeSelectItem
+            title={strings.ends}
+            toggle={!toggle}
+            date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : strings.date}
+            time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : strings.time}
+            containerStyle={{ marginBottom: 8 }}
+            onDatePress={() => setEndDateVisible(!endDateVisible)}
+          />
+          <EventMonthlySelection
+            title={strings.repeat}
+            dataSource={[
+              { label: 'Weekly', value: 'Weekly' },
+              { label: 'Monthly', value: 'Monthly' },
+            ]}
+            placeholder={strings.selectTimePlaceholder}
+            value={selectWeekMonth}
+            onValueChange={(value) => {
+              setSelectWeekMonth(value);
+            }}
+          />
+          <EventTimeSelectItem
+            title={strings.until}
+            toggle={!toggle}
+            date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : strings.date}
+            time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : strings.time}
+            containerStyle={{ marginBottom: 12 }}
+            onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+          />
+        </EventItemRender>
 
-          {eventModalHeader === strings.place && <EventSearchLocation
-            sectionStyle={{ marginTop: 20 }}
-            locationText={searchLocation}
+        <EventItemRender
+            title={strings.place}
+          >
+          <EventSearchLocation
             onLocationPress={() => {
               toggleModal();
               navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'EditEventScreen',
               })
             }}
-          />}
-          {eventModalHeader === strings.availableTitle && <View style={{ width: wp('94%'), marginTop: 20 }}>
-            <Text style={styles.availableSubHeader}>{strings.availableSubTitle}</Text>
-            <FlatList
-              data={challengeAvailable}
-              style={{ marginTop: 10 }}
-              ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-              renderItem={ ({ item }) => <RadioBtnItem
-                titleName={item.title}
-                selected={item.isSelected}
-                onRadioBtnPress={() => {
-                  challengeAvailable.map((availableItem) => {
-                    const availableData = availableItem;
-                    if (availableData.id === item.id) {
-                      availableData.isSelected = true;
-                      if (availableData.title === 'Block') {
-                        setIsBlocked(availableData.isSelected);
-                      } else {
-                        setIsBlocked(false);
-                      }
-                    } else {
-                      availableData.isSelected = false;
-                    }
-                    return null;
-                  })
-                  setChallengeAvailable([...challengeAvailable])
-                }}
-                touchRadioBtnStyle={{ right: 10 }}
-              />
-              }
-              keyExtractor={ (item, index) => index.toString() }
-            />
-          </View>}
-          <DateTimePickerView
-            visible={startDateVisible}
-            onDone={handleStateDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            date={eventStartDateTime}
+            locationText={searchLocation}
           />
-          <DateTimePickerView
-            visible={endDateVisible}
-            onDone={handleEndDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            date={eventEndDateTime}
+          <EventMapView
+            region={{
+              latitude: locationDetail ? Number(locationDetail.lat) : Number(latValue),
+              longitude: locationDetail ? Number(locationDetail.lng) : Number(longValue),
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            coordinate={{
+              latitude: locationDetail ? Number(locationDetail.lat) : Number(latValue),
+              longitude: locationDetail ? Number(locationDetail.lng) : Number(longValue),
+            }}
           />
-          <DateTimePickerView
-            visible={untilDateVisible}
-            onDone={handleUntilDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
+        </EventItemRender>
+
+        <EventItemRender
+            title={strings.availableTitle}
+            containerStyle={{ marginTop: 10 }}
+          >
+          <Text style={styles.availableSubHeader}>{strings.availableSubTitle}</Text>
+          <BlockAvailableTabView
+            blocked={is_Blocked}
+            firstTabTitle={'Block'}
+            secondTabTitle={'Set available'}
+            onFirstTabPress={() => setIsBlocked(true)}
+            onSecondTabPress={() => setIsBlocked(false)}
           />
-          <DefaultColorModal
-            isModalVisible={isColorPickerModal}
-            onBackdropPress={() => setIsColorPickerModal(false)}
-            cancelImageSource={images.cancelImage}
-            containerStyle={{ height: hp('75%') }}
-            onCancelImagePress={() => setIsColorPickerModal(false)}
-            headerCenterText={'Add color'}
-            onColorSelected={(selectColor) => {
-              const data = [...selectedEventColors];
-              const obj = {
-                id: eventColors.length + data.length,
-                color: selectColor,
-                isSelected: false,
-              };
-              if (selectedEventColors.length === 0) {
+        </EventItemRender>
+        <DefaultColorModal
+          isModalVisible={isColorPickerModal}
+          onBackdropPress={() => setIsColorPickerModal(false)}
+          cancelImageSource={images.cancelImage}
+          containerStyle={{ height: hp('75%') }}
+          onCancelImagePress={() => setIsColorPickerModal(false)}
+          headerCenterText={'Add color'}
+          onColorSelected={(selectColor) => {
+            const data = [...selectedEventColors];
+            const obj = {
+              id: eventColors.length + data.length,
+              color: selectColor,
+              isSelected: false,
+            };
+            if (selectedEventColors.length === 0) {
+              setcounter(counter + 1);
+              data.push(obj);
+              setSelectedEventColors(data);
+            } else {
+              const filterColor = selectedEventColors.filter((select_color_item) => selectColor === select_color_item.color);
+              if (filterColor.length === 0) {
                 setcounter(counter + 1);
                 data.push(obj);
                 setSelectedEventColors(data);
-              } else {
-                const filterColor = selectedEventColors.filter((select_color_item) => selectColor === select_color_item.color);
-                if (filterColor.length === 0) {
-                  setcounter(counter + 1);
-                  data.push(obj);
-                  setSelectedEventColors(data);
-                }
               }
-            }}
-            onDonePress={() => {
-              const createdEventAddData = [...eventColors, ...selectedEventColors];
-              setEventColors(createdEventAddData);
-              setIsColorPickerModal(false);
-            }}
-            flatListData={[...selectedEventColors, '0']}
-            renderItem={({ item, index }) => {
-              if (index === selectedEventColors.length) {
-                return (
-                  <EventColorItem
-                    source={images.plus}
-                  />
-                );
-              }
+            }
+          }}
+          onDonePress={() => {
+            const createdEventAddData = [...eventColors, ...selectedEventColors];
+            setEventColors(createdEventAddData);
+            setIsColorPickerModal(false);
+          }}
+          flatListData={[...selectedEventColors, '0']}
+          renderItem={({ item, index }) => {
+            if (index === selectedEventColors.length) {
               return (
                 <EventColorItem
-                source={item.isSelected ? images.check : null}
-                imageStyle={{ tintColor: colors.whiteColor }}
-                eventColorViewStyle={{
-                  backgroundColor: item.color,
-                  borderWidth: item.isSelected ? 2 : 0,
-                  borderColor: colors.whiteColor,
-                  marginRight: wp(3),
-                }}
+                  source={images.plus}
                 />
               );
-            }}
-        />
-        </EditEventModal>
-        <TCGradientButton
-          style={{ marginBottom: 0 }}
-          outerContainerStyle={{ width: wp('80%'), alignSelf: 'center' }}
-          title={strings.doneTitle}
-          onPress={async () => {
-            setloading(true);
-            const entity = await Utility.getStorage('loggedInEntity');
-            const u_id = entity.uid || entity.auth.user_id;
-            const entityRole = entity.role === 'user' ? 'users' : 'groups';
-            const params = {
-              title: event_Title,
-              descriptions: aboutDesc,
-              color: singleSelectEventColor,
-              start_datetime: new Date(eventStartDateTime).getTime() / 1000,
-              end_datetime: new Date(eventEndDateTime).getTime() / 1000,
-              location: searchLocation,
-              latitude: locationDetail.lat,
-              longitude: locationDetail.lng,
-              isBlocked: is_Blocked,
-              cal_id: calID,
-              owner_id: ownerID,
-              cal_type: calType,
-              createdBy: [{
-                last_name: entity.obj.last_name,
-                first_name: entity.obj.first_name,
-                uid: u_id,
-              }],
-              allDay: false,
-              is_recurring: false,
-              createdAt: createdAtDate,
-            };
-            console.log('Data :-', params);
-            editEvent(entityRole, u_id, params)
-              .then(() => getEvents(entityRole, u_id))
-              .then((response) => {
-                setloading(false);
-                navigation.goBack();
-                console.log('Response :-', response);
-              })
-              .catch((e) => {
-                setloading(false);
-                console.log('Error ::--', e);
-                Alert.alert('', e.messages)
-              });
+            }
+            return (
+              <EventColorItem
+              source={item.isSelected ? images.check : null}
+              imageStyle={{ tintColor: colors.whiteColor }}
+              eventColorViewStyle={{
+                backgroundColor: item.color,
+                borderWidth: item.isSelected ? 2 : 0,
+                borderColor: colors.whiteColor,
+                marginRight: wp(3),
+              }}
+              />
+            );
           }}
+        />
+        <DateTimePickerView
+          visible={startDateVisible}
+          onDone={handleStateDatePress}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          date={eventStartDateTime}
+          mode={toggle ? 'date' : 'datetime'}
+        />
+        <DateTimePickerView
+          visible={endDateVisible}
+          onDone={handleEndDatePress}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          date={eventEndDateTime}
+          mode={toggle ? 'date' : 'datetime'}
+        />
+        <DateTimePickerView
+          visible={untilDateVisible}
+          onDone={handleUntilDatePress}
+          onCancel={handleCancelPress}
+          onHide={handleCancelPress}
+          mode={toggle ? 'date' : 'datetime'}
         />
       </ScrollView>
     </SafeAreaView>
@@ -593,39 +496,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     alignSelf: 'center',
   },
-  sepratorViewStyle: {
-    borderColor: colors.sepratorColor,
-    borderWidth: hp('0.4%'),
-    marginVertical: hp('1.5%'),
-  },
-  textValueStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginTop: 3,
-    color: colors.lightBlackColor,
-  },
-  eventColorViewStyle: {
-    backgroundColor: colors.orangeColor,
-    width: wp('16%'),
-    height: hp('3.5%'),
-    marginTop: 3,
-    borderRadius: 5,
-  },
-  availableImageStyle: {
-    width: 25,
-    height: 25,
-    borderRadius: 25 / 2,
-  },
-  availableTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginLeft: 15,
-    color: colors.greeColor,
-  },
   toggleViewStyle: {
     flexDirection: 'row',
-    marginHorizontal: 15,
-    justifyContent: 'space-between',
+    marginHorizontal: 2,
+    justifyContent: 'flex-end',
     paddingVertical: 3,
     alignItems: 'center',
     marginBottom: 8,
@@ -634,6 +508,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    right: wp('8%'),
   },
   checkboxImg: {
     width: wp('5.5%'),
@@ -644,24 +519,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     right: wp(0),
-  },
-  availableSubHeader: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginTop: 5,
-  },
-  blockedImageViewStyle: {
-    height: 26,
-    width: 26,
-    borderRadius: 26 / 2,
-    backgroundColor: colors.veryLightBlack,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cancelImageStyle: {
-    width: 10,
-    height: 10,
-    tintColor: colors.whiteColor,
   },
 });

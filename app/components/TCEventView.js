@@ -14,8 +14,16 @@ import moment from 'moment';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts';
+import EventOfItem from './Schedule/EventOfItem';
+import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
 
-export default function TCEventView({ onPress, data, onThreeDotPress }) {
+export default function TCEventView({
+  onPress,
+  data,
+  onThreeDotPress,
+  eventBetweenSection,
+  eventOfSection,
+}) {
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -57,17 +65,28 @@ export default function TCEventView({ onPress, data, onThreeDotPress }) {
               <Image source={ images.vertical3Dot } style={ styles.threedot } />
             </TouchableOpacity>
           </View>
-          <View style={ styles.descriptionView }>
-            <Text style={ styles.eventDescription } numberOfLines={ 2 }>
-              {description}
-            </Text>
-          </View>
+          <Text style={ styles.eventDescription } numberOfLines={ 2 }>
+            {description}
+          </Text>
           <View style={ styles.bottomView }>
             <Text style={ styles.eventTime }>{`${moment(startDate).format('LT')} - `}</Text>
             <Text style={ styles.eventTime }>{moment(endDate).format('LT')}</Text>
             <Text style={ [styles.eventTime, { marginHorizontal: 5 }] }> | </Text>
             <Text style={ styles.eventTime }>{location}</Text>
           </View>
+          {eventBetweenSection && <EventBetweenUserItem
+            firstUserImage={images.commentReport}
+            firstText={'Vancouver Whitecaps'}
+            secondUserImage={images.usaImage}
+            secondText={'Newyork City FC'}
+          />}
+          {eventOfSection && <EventOfItem
+            eventOfText={'Event of'}
+            countryIcon={images.commentReport}
+            cityName={'Vancouver League'}
+            leagueIcon={images.myTeams}
+            eventTextStyle={{ color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }}
+          />}
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -81,7 +100,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
     flexDirection: 'row',
-    height: 86,
     marginBottom: 15,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
@@ -90,17 +108,14 @@ const styles = StyleSheet.create({
     width: wp('94%'),
   },
   bottomView: {
-    bottom: 5,
     flexDirection: 'row',
-    marginLeft: 10,
-    position: 'absolute',
+    marginTop: 10,
   },
   colorView: {
     alignItems: 'center',
     backgroundColor: colors.orangeColor,
     borderBottomLeftRadius: 5,
     borderTopLeftRadius: 5,
-    height: 86,
     paddingTop: 10,
     paddingLeft: 5,
     width: wp('12%'),
@@ -114,22 +129,14 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: 20,
     fontFamily: fonts.RBold,
-    marginBottom: 5,
-  },
-  descriptionView: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
   },
   eventDescription: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     lineHeight: 15,
-    flexWrap: 'wrap',
-    top: 3,
   },
   eventText: {
-    flexDirection: 'column',
     padding: 10,
     width: wp('83%'),
   },

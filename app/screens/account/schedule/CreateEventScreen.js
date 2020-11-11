@@ -28,7 +28,6 @@ import EventMonthlySelection from '../../../components/Schedule/EventMonthlySele
 import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
-import RadioBtnItem from '../../../components/Schedule/RadioBtnItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -38,6 +37,7 @@ import DefaultColorModal from '../../../components/Schedule/DefaultColor/Default
 import { createEvent, getEvents } from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { getLocationNameWithLatLong } from '../../../api/External';
+import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 
 const eventColorsData = [
   {
@@ -62,32 +62,6 @@ const eventColorsData = [
   },
 ];
 
-const challengeAvailability = [
-  {
-    id: 0,
-    isSelected: true,
-    title: strings.setAvailable,
-  },
-  {
-    id: 1,
-    isSelected: false,
-    title: strings.block,
-  },
-];
-
-const updateRecurringEvent = [
-  {
-    id: 0,
-    isSelected: true,
-    title: strings.thisEvent,
-  },
-  {
-    id: 1,
-    isSelected: false,
-    title: strings.thisAndFollowingEvent,
-  },
-];
-
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
   const [eventTitle, setEventTitle] = useState('');
@@ -100,14 +74,11 @@ export default function CreateEventScreen({ navigation, route }) {
   const [searchLocation, setSearchLocation] = useState(strings.searchHereText);
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
-  const [is_Recurring, setIsRecurring] = useState(false);
   const [loading, setloading] = useState(false);
 
   const [eventColors, setEventColors] = useState(eventColorsData);
-  const [challengeAvailable, setChallengeAvailable] = useState(challengeAvailability);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
-  const [updateEvent, setUpdateEvent] = useState(updateRecurringEvent);
   const [isColorPickerModal, setIsColorPickerModal] = useState(false);
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
@@ -185,7 +156,7 @@ export default function CreateEventScreen({ navigation, route }) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Event</Text>
+          <Text style={styles.eventTextStyle}>Create an Event</Text>
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
@@ -218,7 +189,6 @@ export default function CreateEventScreen({ navigation, route }) {
                 latitude: locationDetail.lat,
                 longitude: locationDetail.lng,
                 isBlocked: is_Blocked,
-                is_recurring: is_Recurring,
               }]
               createEvent(entityRole, uid, data)
                 .then(() => getEvents(entityRole, uid))
@@ -322,12 +292,14 @@ export default function CreateEventScreen({ navigation, route }) {
             </View>
             <EventTimeSelectItem
               title={strings.starts}
+              toggle={!toggle}
               date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : strings.date}
               time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : strings.time}
               onDatePress={() => setStartDateVisible(!startDateVisible)}
             />
             <EventTimeSelectItem
               title={strings.ends}
+              toggle={!toggle}
               date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : strings.date}
               time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : strings.time}
               containerStyle={{ marginBottom: 8 }}
@@ -347,6 +319,7 @@ export default function CreateEventScreen({ navigation, route }) {
             />
             <EventTimeSelectItem
               title={strings.until}
+              toggle={!toggle}
               date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : strings.date}
               time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : strings.time}
               containerStyle={{ marginBottom: 12 }}
@@ -385,86 +358,35 @@ export default function CreateEventScreen({ navigation, route }) {
             containerStyle={{ marginTop: 10 }}
           >
             <Text style={styles.availableSubHeader}>{strings.availableSubTitle}</Text>
-            <FlatList
-              data={challengeAvailable}
-              style={{ marginTop: 10 }}
-              ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-              renderItem={ ({ item }) => <RadioBtnItem
-                titleName={item.title}
-                selected={item.isSelected}
-                onRadioBtnPress={() => {
-                  challengeAvailable.map((availableItem) => {
-                    const availableData = availableItem;
-                    if (availableData.id === item.id) {
-                      availableData.isSelected = true;
-                      if (availableData.title === 'Block') {
-                        setIsBlocked(availableData.isSelected);
-                      } else {
-                        setIsBlocked(false);
-                      }
-                    } else {
-                      availableData.isSelected = false;
-                    }
-                    return null;
-                  })
-                  setChallengeAvailable([...challengeAvailable])
-                }}
-              />
-              }
-              keyExtractor={ (item, index) => index.toString() }
+            <BlockAvailableTabView
+              blocked={is_Blocked}
+              firstTabTitle={'Block'}
+              secondTabTitle={'Set available'}
+              onFirstTabPress={() => setIsBlocked(true)}
+              onSecondTabPress={() => setIsBlocked(false)}
             />
           </EventItemRender>
 
-          <EventItemRender
-            title={strings.recurringEventTitle}
-            containerStyle={{ marginVertical: 15 }}
-          >
-            <FlatList
-              data={updateEvent}
-              style={{ marginTop: 10 }}
-              ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-              renderItem={ ({ item }) => <RadioBtnItem
-                titleName={item.title}
-                selected={item.isSelected}
-                onRadioBtnPress={() => {
-                  updateEvent.map((eventItem) => {
-                    const eventData = eventItem;
-                    if (eventData.id === item.id) {
-                      eventData.isSelected = true;
-                      if (eventData.title === 'This event') {
-                        setIsRecurring(false);
-                      } else {
-                        setIsRecurring(eventData.isSelected);
-                      }
-                    } else {
-                      eventData.isSelected = false;
-                    }
-                    return null;
-                  })
-                  setUpdateEvent([...updateEvent])
-                }}
-              />
-              }
-              keyExtractor={ (item, index) => index.toString() }
-            />
-          </EventItemRender>
           <DateTimePickerView
             visible={startDateVisible}
             onDone={handleStateDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
             visible={endDateVisible}
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
             visible={untilDateVisible}
             onDone={handleUntilDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            mode={toggle ? 'date' : 'datetime'}
           />
           <DefaultColorModal
             isModalVisible={isColorPickerModal}

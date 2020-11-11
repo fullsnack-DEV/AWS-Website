@@ -7,11 +7,12 @@ export default function DateTimePickerView({
   visible = false,
   onHide,
   date,
+  mode,
 }) {
   return (
     <DateTimePickerModal
         isVisible={visible}
-        mode="datetime"
+        mode={mode}
         onConfirm={onDone}
         onCancel={onCancel}
         onHide={onHide}

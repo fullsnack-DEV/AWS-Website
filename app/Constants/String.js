@@ -231,7 +231,7 @@ const strings = {
   availableTitle: 'Challenge Availability',
   scheduleTitle: 'Schedule',
   whoCanSeeShcedule: 'Who can see my schedule?',
-  availableSubTitle: 'Do you want to set the time to be available for challenge during this event?',
+  availableSubTitle: 'Do you want to set the time to be available to receive a challenge request during this event?',
   available: 'Available',
   blocked: 'Blocked',
 
