@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
+  FlatList,
+  TouchableOpacity,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -19,13 +21,126 @@ import TCLabel from '../../../components/TCLabel';
 
 import TCMessageButton from '../../../components/TCMessageButton';
 
-export default function CreateChallengeForm3({ navigation }) {
+export default function CreateChallengeForm3({ navigation, route }) {
   const isFocused = useIsFocused();
+  const [referees, setReferees] = useState([{
+    id: 0,
+    is_chief: true,
+    responsible_team_id: 'none',
+  }]);
 
+  const [scorekeeper, setScorekeeper] = useState([{
+    id: 0,
+    is_chief: false,
+    responsible_team_id: 'none',
+  }]);
   useEffect(() => {
 
   }, [isFocused]);
+  const addReferee = () => {
+    const obj = {
+      id: referees.length === 0 ? 0 : referees.length,
+      is_chief: false,
+      responsible_team_id: 'none',
+    }
+    setReferees([...referees, obj]);
+  };
+  const addScorekeeper = () => {
+    const obj = {
+      id: scorekeeper.length === 0 ? 0 : scorekeeper.length,
+      is_chief: false,
+      responsible_team_id: 'none',
+    }
+    setScorekeeper([...scorekeeper, obj]);
+  };
+  const renderReferee = ({ index }) => (
+    <View>
+      <View style={styles.viewTitleContainer}>
+        <Text style={styles.refereeCountTitle}>Referee {index + 1} {index === 0 && '(Chief)'}</Text>
+        {index !== 0 && <Text style={styles.deleteButton} onPress={() => {
+          referees.splice(index, 1)
+          setReferees([...referees])
+        }}>Delete</Text>}
+      </View>
 
+      <View style={styles.viewContainer}>
+        <View style={styles.radioContainer}>
+          <Text style={styles.radioText}>None</Text>
+          <TouchableOpacity onPress={() => {
+            const ref = [...referees];
+            ref[index].responsible_team_id = 'none'
+            setReferees(ref)
+          }}>
+            <Image source={referees[index].responsible_team_id === 'none' ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.radioContainer}>
+          <Text style={styles.radioText}>{route.params.teamData[0].group_name}’s home</Text>
+          <TouchableOpacity onPress={() => {
+            const ref = [...referees];
+            ref[index].responsible_team_id = route.params.teamData[0].group_id
+            setReferees(ref)
+          }}>
+            <Image source={referees[index].responsible_team_id === route.params.teamData[0].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.radioContainer}>
+          <Text style={styles.radioText}>{route.params.teamData[1].group_name}’s home</Text>
+          <TouchableOpacity onPress={() => {
+            const ref = [...referees];
+            ref[index].responsible_team_id = route.params.teamData[1].group_id
+            setReferees(ref)
+          }}>
+            <Image source={referees[index].responsible_team_id === route.params.teamData[1].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+  const renderScorekeeper = ({ index }) => (
+    <View>
+      <View style={styles.viewTitleContainer}>
+        <Text style={styles.refereeCountTitle}>Scorekeeper {index + 1} </Text>
+        <Text style={styles.deleteButton} onPress={() => {
+          scorekeeper.splice(index, 1)
+          setScorekeeper([...scorekeeper])
+        }}>Delete</Text>
+      </View>
+
+      <View style={styles.viewContainer}>
+        <View style={styles.radioContainer}>
+          <Text style={styles.radioText}>None</Text>
+          <TouchableOpacity onPress={() => {
+            const score = [...scorekeeper];
+            score[index].responsible_team_id = 'none'
+            setScorekeeper(score)
+          }}>
+            <Image source={scorekeeper[index].responsible_team_id === 'none' ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.radioContainer}>
+          <Text style={styles.radioText}>{route.params.teamData[0].group_name}’s home</Text>
+          <TouchableOpacity onPress={() => {
+            const score = [...scorekeeper];
+            score[index].responsible_team_id = route.params.teamData[0].group_id
+            setScorekeeper(score)
+          }}>
+            <Image source={scorekeeper[index].responsible_team_id === route.params.teamData[0].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.radioContainer}>
+          <Text style={styles.radioText}>{route.params.teamData[1].group_name}’s home</Text>
+          <TouchableOpacity onPress={() => {
+            const score = [...scorekeeper];
+            score[index].responsible_team_id = route.params.teamData[1].group_id
+            setScorekeeper(score)
+          }}>
+            <Image source={scorekeeper[index].responsible_team_id === route.params.teamData[1].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
   return (
 
     <TCKeyboardView>
@@ -41,47 +156,41 @@ export default function CreateChallengeForm3({ navigation }) {
         <TCLabel title={'Responsibility To Secure Referees'} />
         <Text style={styles.responsibilityText}>Which team ought to secure and pay for
           referees for this game? </Text>
-        <View>
-          <Text style={styles.refereeCountTitle}>Referee 1 (Chief)</Text>
-          <View style={styles.viewContainer}>
-            <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>None</Text>
-              <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
-            </View>
-            <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>Vancouver Whitecaps FC’s home</Text>
-              <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
-            </View>
-            <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>New York City FC’s home</Text>
-              <Image source={images.radioCheckGreenBG} style={styles.radioSelectStyle}/>
-            </View>
-          </View>
-        </View>
-        <TCMessageButton title={'+ Add Referee'} width={120} alignSelf={'center'} marginTop={15} marginBottom={20}/>
+
+        <FlatList
+                data={referees}
+                renderItem={renderReferee}
+                keyExtractor={(item, index) => index.toString()}
+
+                >
+        </FlatList>
+        <TCMessageButton
+         title={'+ Add Referee'}
+         width={120}
+         alignSelf={'center'}
+          marginTop={15}
+           marginBottom={20}
+           onPress={() => addReferee()}/>
         <TCThickDivider/>
 
         <TCLabel title={'Responsibility To Scorekeeper'} />
         <Text style={styles.responsibilityText}>Who ought to secure and pay for scorekeeper
           for this game?  </Text>
-        <View>
-          <Text style={styles.refereeCountTitle}>Scorekeeper 1</Text>
-          <View style={styles.viewContainer}>
-            <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>None</Text>
-              <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
-            </View>
-            <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>Vancouver Whitecaps FC’s home</Text>
-              <Image source={images.radioUnselect} style={styles.radioSelectStyle}/>
-            </View>
-            <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>New York City FC’s home</Text>
-              <Image source={images.radioCheckGreenBG} style={styles.radioSelectStyle}/>
-            </View>
-          </View>
-        </View>
-        <TCMessageButton title={'+ Add Scorekeeper'} width={120} alignSelf={'center'} marginTop={15} marginBottom={20}/>
+
+        <FlatList
+                data={scorekeeper}
+                renderItem={renderScorekeeper}
+                keyExtractor={(item, index) => index.toString()}
+
+                >
+        </FlatList>
+        <TCMessageButton
+        title={'+ Add Scorekeeper'}
+         width={120}
+         alignSelf={'center'}
+          marginTop={15}
+          marginBottom={20}
+          onPress={() => addScorekeeper()}/>
 
         <Text style={styles.responsibilityNote}>
           The match fee doesn’t include the <Text style = {styles.responsibilityNoteMedium}>Match Place Fee, Referee Fee
@@ -91,12 +200,19 @@ export default function CreateChallengeForm3({ navigation }) {
         </Text>
       </View>
 
-      <TCGradientButton title={strings.nextTitle} onPress={() => navigation.navigate('CreateChallengeForm4')}/>
+      <TCGradientButton title={strings.nextTitle} onPress={() => {
+        navigation.navigate('CreateChallengeForm4', {
+          teamData: route.params.teamData,
+          body: {
+            ...route.params.body,
+            referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
+            scorekeeper: scorekeeper.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
+          },
+        })
+      }}/>
     </TCKeyboardView>
-
   );
 }
-
 const styles = StyleSheet.create({
   form1: {
     backgroundColor: colors.themeColor,
@@ -188,5 +304,17 @@ const styles = StyleSheet.create({
   },
   responsibilityNoteMedium: {
     fontFamily: fonts.RMedium,
+  },
+  deleteButton: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.themeColor,
+    marginRight: 25,
+
+  },
+  viewTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });

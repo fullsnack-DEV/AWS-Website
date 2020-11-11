@@ -551,22 +551,25 @@ export default function HomeScreen({ navigation, route }) {
     }
   }
 
-  const onChallengePress = () => {
-    console.log('challenge pressed')
-    navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
+  const onChallengePress = async () => {
+    if (loggedInEntity.obj.sport === currentUserData.sport) {
+      navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
+    } else {
+      Alert.alert('Sport must be same for both teams')
+    }
   }
 
   return (
     <View style={ styles.mainContainer }>
       {(isTeamHome && loggedInEntity.role === 'team')
       && <View style={ styles.challengeButtonStyle }>
-        <TouchableOpacity onPress={ onChallengePress } styles={styles.outerContainerStyle}>
+        {loggedInEntity.obj.group_id !== currentUserData.group_id && <TouchableOpacity onPress={ onChallengePress } styles={styles.outerContainerStyle}>
           <LinearGradient
        colors={[colors.greenGradientStart, colors.greenGradientEnd]}
        style={styles.containerStyle}>
             <Text style={ styles.buttonText }>{strings.challenge.toUpperCase()}</Text>
           </LinearGradient>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>}
       <ActivityLoader visible={loading} />
       <Header

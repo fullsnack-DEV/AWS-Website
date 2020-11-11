@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
   Text,
+  Alert,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -14,13 +15,20 @@ import TCGradientButton from '../../../components/TCGradientButton';
 import TCLabel from '../../../components/TCLabel';
 import TCTextField from '../../../components/TCTextField';
 
-export default function CreateChallengeForm2({ navigation }) {
+export default function CreateChallengeForm2({ navigation, route }) {
+  const [rules, setRules] = useState('')
   const isFocused = useIsFocused();
 
   useEffect(() => {
 
   }, [isFocused]);
-
+  const checkValidation = () => {
+    if (rules === '') {
+      Alert.alert('Towns Cup', 'Rules cannot be blank');
+      return false
+    }
+    return true
+  };
   return (
     <View>
       <View style={styles.formSteps}>
@@ -34,12 +42,28 @@ export default function CreateChallengeForm2({ navigation }) {
 
         <TCLabel title={'Rules'}/>
         <Text style={styles.responsibilityText}>Please, add the rules of the match.</Text>
-        <TCTextField height={100} multiline={true} placeholder={strings.writedownRulesPlaceholder} keyboardType={'default'}/>
+        <TCTextField
+        height={100}
+        multiline={true}
+        placeholder={strings.writedownRulesPlaceholder}
+        keyboardType={'default'}
+        value={rules}
+        onChangeText={(text) => setRules(text)}/>
 
       </View>
       <View style={{ flex: 1 }}/>
       <View style={{ marginBottom: 20 }}>
-        <TCGradientButton title={strings.nextTitle} onPress={() => navigation.navigate('CreateChallengeForm3')}/>
+        <TCGradientButton title={strings.nextTitle} onPress={() => {
+          if (checkValidation()) {
+            navigation.navigate('CreateChallengeForm3', {
+              teamData: route.params.teamData,
+              body: {
+                ...route.params.body,
+                special_rule: rules,
+              },
+            })
+          }
+        }}/>
       </View>
 
     </View>
