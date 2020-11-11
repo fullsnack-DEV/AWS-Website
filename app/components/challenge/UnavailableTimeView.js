@@ -8,17 +8,17 @@ import {
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-export default function UnavailableTimeView() {
+export default function UnavailableTimeView({ startDate, endDate }) {
   return (
     <View style={{ marginLeft: 15, marginRight: 15 }}>
       <View style={styles.fieldView}>
         <View style={{
           backgroundColor: colors.lightgrayColor, flex: 0.4, height: 25, justifyContent: 'center', alignItems: 'center', borderRadius: 5,
         }}>
-          <Text style={styles.fieldTitle} numberOfLines={1}>Unavailable time</Text>
+          <Text style={styles.fieldTitle} numberOfLines={1}>Blocked zone</Text>
         </View>
         <View style={{ flex: 0.6 }}>
-          <Text style={styles.fieldValue} numberOfLines={3} >12:00am - 02:00am</Text>
+          <Text style={styles.fieldValue} numberOfLines={3} >{`${new Date(startDate * 1000).getHours()}:${new Date(startDate * 1000).getMinutes()} - ${new Date(endDate * 1000).getHours()}:${new Date(endDate * 1000).getMinutes()}`}</Text>
         </View>
       </View>
     </View>

@@ -139,7 +139,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
           title={'Choose Date & Time'}
           showNextArrow={true}
 
-          onPress={() => navigation.navigate('ChooseDateTimeScreen')}/>
+          onPress={() => navigation.navigate('ChooseDateTimeScreen', { otherTeam: route.params.groupObj })}/>
         </View>
         <TCThickDivider marginTop={20}/>
       </View>
