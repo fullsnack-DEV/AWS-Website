@@ -39,6 +39,8 @@ export default function TCDateTimePicker({
           titleText = {title}
           monthDisplayMode={'en-long'}
           minDate={'1900-1-1'}
+          maxDate={'2030-1-1'}
+          defaultDate={new Date()}
           rowHeight={45}
           toolBarConfirmStyle={styles.doneStyle}
           toolBarCancelStyle={styles.cancelStyle}
