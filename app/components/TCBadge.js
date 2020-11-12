@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { normalize } from 'react-native-elements';
 import { widthPercentageToDP as wp } from '../utils';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
@@ -8,8 +7,9 @@ import colors from '../Constants/Colors';
 const TCBadge = ({
   value = '',
   align = 'center',
+  style = {},
 }) => (
-  <View style={{ ...styles.badgeContainer, alignSelf: align }}>
+  <View style={{ ...styles.badgeContainer, alignSelf: align, ...style }}>
     <Text style={styles.valueText}>{value}</Text>
   </View>
 )
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontFamily: fonts.RRegular,
-    fontSize: normalize(10),
+    fontSize: 12,
     color: colors.whiteColor,
   },
 })

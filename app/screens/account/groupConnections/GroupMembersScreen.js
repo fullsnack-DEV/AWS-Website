@@ -198,7 +198,13 @@ export default function GroupMembersScreen({ navigation, route }) {
         {members.length > 0 ? <FlatList
                   data={members}
                   renderItem={({ item }) => <UserRoleView data = {item}
-                   onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}
+                  onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}
+                  onPressMessage={() => {
+                    navigation.navigate('Message', {
+                      screen: 'MessageMainScreen',
+                      params: { userId: item.user_id },
+                    })
+                  }}
                   />}
                   keyExtractor={(item, index) => index.toString()}
                   /> : <TCNoDataView title={'No Members Found'}/>}

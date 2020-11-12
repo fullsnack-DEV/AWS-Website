@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   FlatList,
@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { normalize } from 'react-native-elements';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import Header from '../../components/Home/Header';
@@ -17,7 +16,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
-import { QB_DIALOG_TYPE, QBcreateDialog } from '../../utils/QuickBlox';
+import { QB_DIALOG_TYPE, QBcreateDialog, QBupdateDialog } from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
 
 const MessageNewGroupScreen = ({ route, navigation }) => {
@@ -25,6 +24,11 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
   const [selectedInvitees, setSelectedInvitees] = useState([...selectedInviteesData]);
   const [groupName, setGroupName] = useState('');
 
+  useEffect(() => {
+    if (route?.params?.dialog) {
+      setGroupName(route?.params?.dialog?.name)
+    }
+  }, [])
   const renderSelectedContactList = ({ item }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
     const fullName = _.get(customData, ['full_name'], '')
@@ -34,25 +38,29 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
     return (
       <View style={styles.selectedContactInnerView}>
         <View>
-          <View>
-            <FastImage
+          <FastImage
               resizeMode={'contain'}
               source={finalImage}
               style={styles.selectedContactImage}
             />
-            <TouchableOpacity
+          <TouchableOpacity
               style={styles.selectedContactButtonView}
               onPress={() => toggleSelection(true, item)}>
-              <Image source={images.cancelImage} style={styles.deSelectedContactImage} />
-            </TouchableOpacity>
-          </View>
-          <Text
+            <Image source={images.cancelImage} style={styles.deSelectedContactImage} />
+          </TouchableOpacity>
+        </View>
+        <Text
             ellipsizeMode={'tail'}
             numberOfLines={2}
-            style={{ textAlign: 'center', flex: 1, width: wp(20) }}>
-            {fullName}
-          </Text>
-        </View>
+            style={{
+              fontFamily: fonts.RBold,
+              fontSize: 10,
+              textAlign: 'center',
+              flex: 1,
+              width: wp(20),
+            }}>
+          {fullName}
+        </Text>
       </View>
     );
   };
@@ -70,7 +78,44 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
       navigation.replace('MessageInviteScreen')
     }
   };
+  const onDonePress = () => {
+    if (groupName !== '') {
+      const occupantsIds = [];
 
+      selectedInvitees.filter((item) => occupantsIds.push(item.id))
+      if (route?.params?.dialog) {
+        const participantsIds = [];
+        const participants = route?.params?.participants ?? [];
+        participants.filter((item) => participantsIds.push(item.id))
+        const dialogId = route?.params?.dialog?.id;
+        const createdByUserId = route?.params?.dialog?.userId;
+
+        const removeUsers = participantsIds.filter((item) => item !== createdByUserId && !occupantsIds.includes(item));
+        const addUsers = occupantsIds.filter((item) => createdByUserId !== item && !participantsIds.includes(item));
+        QBupdateDialog(dialogId, addUsers, removeUsers, groupName).then((res) => {
+          setSelectedInvitees([]);
+          navigation.replace('MessageChat', {
+            screen: 'MessageChatRoom',
+            params: { dialog: res },
+          });
+        }).catch((error) => {
+          console.log(error);
+        })
+      } else if (occupantsIds.length > 0) {
+        QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName).then((res) => {
+          setSelectedInvitees([]);
+          navigation.replace('MessageChat', {
+            screen: 'MessageChatRoom',
+            params: { dialog: res },
+          });
+        }).catch((error) => {
+          console.log(error);
+        })
+      }
+    } else {
+      Alert.alert('Enter Chatroom Name')
+    }
+  }
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Header
@@ -83,25 +128,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
           <Text style={styles.eventTitleTextStyle}>New Group</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={() => {
-            if (groupName !== '') {
-              const occupantsIds = []
-              selectedInvitees.filter((item) => occupantsIds.push(item.id))
-              if (occupantsIds.length > 0) {
-                QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName).then((res) => {
-                  setSelectedInvitees([]);
-                  navigation.navigate('MessageChat', {
-                    screen: 'MessageChatRoom',
-                    params: { dialog: res },
-                  });
-                }).catch((error) => {
-                  console.log(error);
-                })
-              }
-            } else {
-              Alert.alert('Enter Chatroom Name')
-            }
-          }}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
             <Text style={styles.eventTextStyle}>Done</Text>
           </TouchableOpacity>
         }
@@ -123,7 +150,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <View style={styles.inputBoxContainer}>
           <Text style={styles.chatRoomName}>Chatroom Name</Text>
-          <TCInputBox placeHolderText={'New Group'} onChangeText={setGroupName}/>
+          <TCInputBox placeHolderText={'New Group'} value={groupName} onChangeText={setGroupName}/>
         </View>
       </View>
       <View style={styles.participantsContainer}>
@@ -131,8 +158,9 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
         {selectedInvitees.length > 0 && (
           <View style={styles.selectedInviteesMainView}>
             <FlatList
-              style={{ flex: 1 }}
-              numColumns={4}
+              style={{ flex: 1, alignSelf: 'center' }}
+              contentContainerStyle={{ alignSelf: selectedInvitees.length >= 4 ? 'center' : 'flex-start' }}
+              numColumns={5}
               showsHorizontalScrollIndicator={false}
               data={selectedInvitees || []}
               keyExtractor={(item, index) => index.toString()}
@@ -170,16 +198,16 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    height: wp(20),
-    width: wp(20),
+    height: 80,
+    width: 80,
     borderRadius: wp(6),
   },
   selectedInviteesMainView: {
     alignItems: 'flex-start',
     flex: 1,
-    width: wp('100%'),
+    width: wp(100),
     paddingVertical: hp(1),
-    paddingHorizontal: wp(2),
+    marginHorizontal: 15,
     backgroundColor: colors.whiteColor,
   },
   selectedContactButtonView: {
@@ -195,12 +223,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   selectedContactInnerView: {
-    paddingHorizontal: wp(0.5),
     marginBottom: hp(2),
   },
   selectedContactImage: {
-    width: wp(12),
-    height: wp(12),
+    width: 45,
+    height: 45,
     borderRadius: wp(6),
     alignSelf: 'center',
     // borderWidth: 0.5,
@@ -236,9 +263,9 @@ const styles = StyleSheet.create({
     marginTop: hp(5),
   },
   chatRoomName: {
-    fontSize: normalize(14),
+    fontSize: 20,
     fontFamily: fonts.RRegular,
-    marginBottom: wp(1),
+    marginBottom: 10,
   },
   participantsContainer: {
     alignItems: 'center',
@@ -250,7 +277,7 @@ const styles = StyleSheet.create({
   participantsText: {
     alignSelf: 'flex-start',
     textAlign: 'left',
-    fontSize: normalize(14),
+    fontSize: 20,
     fontFamily: fonts.RRegular,
     marginBottom: wp(1),
   },

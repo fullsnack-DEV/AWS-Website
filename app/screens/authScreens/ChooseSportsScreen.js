@@ -13,7 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { QBcreateUser } from '../../utils/QuickBlox';
+import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { createUser, getUserDetails } from '../../api/Users';
 import getSportsList from '../../api/Games';
 import images from '../../Constants/ImagePath';
@@ -101,12 +101,13 @@ export default function ChooseSportsScreen({ navigation, route }) {
       entity.auth.user = response.payload
       entity.role = 'user'
       await authContext.setUser(response.payload);
-      QBcreateUser(entity.uid, response.payload).then(async (res) => {
-        entity = await { ...entity, QB: { ...res, connected: true } }
-        Utility.setStorage('loggedInEntity', entity);
+      QBlogin(entity.uid, response.payload).then(async (res) => {
+        entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+        await Utility.setStorage('loggedInEntity', entity);
+        await QBconnectAndSubscribe();
       }).catch(async () => {
-        entity = await { ...entity, QB: { connected: false } }
-        Utility.setStorage('loggedInEntity', entity);
+        entity = { ...entity, QB: { connected: false } }
+        await Utility.setStorage('loggedInEntity', entity);
       });
       setloading(false);
     } else {

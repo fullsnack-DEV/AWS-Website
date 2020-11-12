@@ -46,7 +46,7 @@ export default function UserRoleView({ data, onPressProfile, onPressMessage }) {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          {data.group_member_detail.connected ? <TCMessageButton title = 'Message' color={colors.greeColor} onPressMessage={onPressMessage}/>
+          {data.group_member_detail.connected ? <TCMessageButton title = 'Message' color={colors.greeColor} onPress={onPressMessage}/>
             : <TCMessageButton title = 'Email' color={colors.lightBlackColor} onPress={() => {
               Linking.canOpenURL('mailto:')
                 // eslint-disable-next-line consistent-return

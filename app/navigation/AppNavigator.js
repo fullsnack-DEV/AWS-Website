@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Platform, StyleSheet } from 'react-native';
+import {
+  Image, Platform, StyleSheet, NativeEventEmitter, View,
+} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // import HomeScreen from '../screens/home/HomeScreen';
 
+import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
 import * as Utility from '../utils/index';
 
@@ -17,6 +20,9 @@ import NotificationNavigator from './NotificationNavigator';
 // import AccountDrawerNavigator from './AccountDrawerNavigator';
 
 import AccountDrawerNavigator from './AccountDrawerNavigator';
+import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
+import TCBadge from '../components/TCBadge';
+import { widthPercentageToDP as wp } from '../utils/index';
 
 const Tab = createBottomTabNavigator();
 
@@ -78,12 +84,42 @@ const getTabBarVisibility = (route) => {
 
   return true;
 };
+const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 function AppNavigator({ navigation }) {
   const [role, setRole] = useState('user');
+  const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
     changeRole();
+    QBeventListeners();
   }, [navigation]);
+
+  const getQBToken = async () => {
+    const entity = await Utility.getStorage('loggedInEntity');
+    return entity?.QB?.token ?? null;
+  }
+
+  const QBeventListeners = () => {
+    QbMessageEmitter.addListener(
+      QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+      getUnReadMessageHandler,
+    )
+
+    getUnReadMessageHandler()
+  }
+  const getUnReadMessageHandler = async () => {
+    const token = await getQBToken();
+    if (token) {
+      fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
+        .then((response) => response.json())
+        .then((jsonData) => {
+          setUnreadCount(jsonData?.total ?? 0)
+        })
+        .catch(() => {
+          setUnreadCount(0)
+        });
+    }
+  }
 
   const changeRole = async () => {
     const entity = await Utility.getStorage('loggedInEntity');
@@ -156,12 +192,21 @@ function AppNavigator({ navigation }) {
         component={ MessageNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => (
-            <Image
+          tabBarIcon: ({ focused }) => {
+            getUnReadMessageHandler();
+            return (<View>
+              {unreadCount > 0 && <TCBadge style={{
+                position: 'absolute',
+                zIndex: 10,
+                right: wp(-1),
+              }} value={unreadCount} />}
+              <Image
               source={ focused ? images.tab_message_selected : images.tab_message }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
-          ),
+            </View>
+            )
+          },
         }) }
       />
 
