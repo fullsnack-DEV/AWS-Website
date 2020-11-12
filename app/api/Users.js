@@ -1,7 +1,7 @@
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 
-export const patchRegisterPlayerDetails = async (params) => makeAPIRequest({
+export const patchPlayer = async (params) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}/users`,
   data: params,

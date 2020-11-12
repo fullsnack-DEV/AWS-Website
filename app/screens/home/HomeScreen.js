@@ -551,7 +551,7 @@ export default function HomeScreen({ navigation, route }) {
     }
   }
 
-  const onChallengePress = async () => {
+  const onChallengePress = () => {
     if (loggedInEntity.obj.sport === currentUserData.sport) {
       navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
     } else {

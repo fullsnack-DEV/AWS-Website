@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
   Text,
+  Alert,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 
-// import { getFeesEstimation } from '../../../api/Challenge'
+import { getFeesEstimation, createChallenge } from '../../../api/Challenge'
+import * as Utility from '../../../utils/index';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -16,17 +18,75 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCLabel from '../../../components/TCLabel';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-export default function CreateChallengeForm5({ navigation }) {
+let entity = {};
+export default function CreateChallengeForm5({ navigation, route }) {
   const isFocused = useIsFocused();
+  const [loading, setloading] = useState(false);
+  // const [paymentInfo, setPaymentInfo] = useState();
+  // const [homeTeam, setHomeTeam] = useState();
+  // const [awayTeam, setAwayTeam] = useState();
 
   useEffect(() => {
-
+    getAuthEntity();
+    getFeeDetail()
   }, [isFocused]);
+  const getAuthEntity = async () => {
+    entity = await Utility.getStorage('loggedInEntity');
+  };
+  const getFeeDetail = () => {
+    if (route && route.params && route.params.teamData && route.params.body) {
+      if (route.params.teamData[0].group_id === entity.uid) {
+        // setHomeTeam(route.params.teamData[0])
+        // setAwayTeam(route.params.teamData[1])
+        const body = {}
+        body.start_datetime = route.params.body.start_datetime / 1000
+        body.end_datetime = route.params.body.end_datetime / 1000
+        body.manual_fee = false
+        body.currency_type = 'CAD'
+        body.payment_method_type = 'card'
+        setloading(true)
+        getFeesEstimation(route.params.teamData[1].group_id, body).then((response) => {
+          setloading(false)
+          console.log('RESPONSE:', response);
+          // setPaymentInfo(response.payload)
+        }).catch((error) => {
+          setloading(false)
+          Alert.alert(error.messages)
+        })
+      }
+    }
+  }
+  const createChallengeTeam = () => {
+    if (route && route.params && route.params.teamData && route.params.body) {
+      if (route.params.teamData[0].group_id === entity.uid) {
+        const body = { ...route.params.body }
+        body.userChallenge = false
+        body.total_charges = 0.0
+        body.total_game_charges = 0.0
+        body.total_payout = 0.0
+        body.service_fee1_charges = 0.0
+        body.service_fee2_charges = 0.0
+        body.manual_fee = false
+        body.currency_type = 'CAD'
+        body.payment_method_type = 'card'
+        setloading(true)
+        createChallenge(route.params.teamData[1].group_id, body).then((response) => {
+          setloading(false)
+          console.log('RESPONSE:', response);
+          navigation.navigate('ChallengeSentScreen')
+        }).catch((error) => {
+          setloading(false)
+          Alert.alert(error.messages)
+        })
+      }
+    }
+  }
 
   return (
-
     <TCKeyboardView>
+      <ActivityLoader visible={loading}/>
       <View style={styles.formSteps}>
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
@@ -36,7 +96,8 @@ export default function CreateChallengeForm5({ navigation }) {
       </View>
       <View style={styles.viewMarginStyle}>
         <TCLabel title={'Payment'}/>
-        <MatchFeesCard/>
+        {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
+        <MatchFeesCard />
       </View>
 
       <View style={styles.viewMarginStyle}>
@@ -55,7 +116,9 @@ export default function CreateChallengeForm5({ navigation }) {
       </View>
       <View style={{ flex: 1 }}/>
       <View style={{ marginBottom: 10 }}>
-        <TCGradientButton title={strings.confirmAndPayTitle} onPress={() => navigation.navigate('CreateChallengeForm2')}/>
+        <TCGradientButton title={strings.confirmAndPayTitle} onPress={() => {
+          createChallengeTeam()
+        }}/>
       </View>
     </TCKeyboardView>
 
