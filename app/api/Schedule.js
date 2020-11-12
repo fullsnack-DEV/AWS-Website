@@ -16,6 +16,12 @@ export const getSlots = async (entity_type, entity_id) => makeAPIRequest({
   url: `${Config.BASE_URL}/${entity_type}/${entity_id}/slots`,
 });
 
+export const editSlots = async (entity_type, entity_id, data) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/${entity_type}/${entity_id}/slots`,
+  data,
+});
+
 export const deleteEvent = async (entity_type, entity_id, eventID) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}/${entity_type}/${entity_id}/events/${eventID}`,

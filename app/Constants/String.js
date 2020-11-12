@@ -17,6 +17,7 @@ const strings = {
   ends: 'Ends',
   until: 'Until',
   weekly: 'Weekly',
+  addTime: 'Add time',
   setAvailable: 'Set available',
   block: 'Block',
   thisEvent: 'This event',
@@ -234,6 +235,7 @@ const strings = {
   availableSubTitle: 'Do you want to set the time to be available to receive a challenge request during this event?',
   available: 'Available',
   blocked: 'Blocked',
+  editChallengeTitle: 'Set the time to be available to receive a challenge request or block it.',
 
   // Group setting & Privacy
   connectionTitle: 'Connetions',
