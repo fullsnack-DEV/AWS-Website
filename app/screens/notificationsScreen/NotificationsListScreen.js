@@ -17,14 +17,13 @@ import {
 import {
   FlatList,
   TouchableOpacity,
-  RectButton,
 } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
-import NotificationListComponent from '../../components/notificationComponent/NotificationListComponent';
+import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
-import TodayNotificationItem from '../../components/notificationComponent/TodayNotificationItem';
-import NotificationInviteCell from '../../components/notificationComponent/NotificationInviteCell';
+import NotificationItem from '../../components/notificationComponent/NotificationItem';
+import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType'
 import {
   getUnreadCount, getNotificationsList, acceptRequest, declineRequest, deleteNotification,
@@ -37,31 +36,10 @@ import TCNoDataView from '../../components/TCNoDataView';
 import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import strings from '../../Constants/String';
+import * as Utility from '../../utils/index';
 
 function NotificationsListScreen({ navigation }) {
-  const [loading, setloading] = useState(true);
-  const navigateFlatList = () => {
-  };
-
-  const onDelete = ({ item }) => {
-    setloading(true);
-    const ids = item.activities.map((activity) => activity.id)
-    deleteNotification(ids, item.type).then(() => {
-      callNotificationList()
-    }).catch(() => {
-      setloading(false);
-      Alert.alert('Failed to move to trash. Try again later')
-    });
-  };
-
-  const onAccept = (requestId) => {
-    acceptRequest(requestId).catch(Alert.alert('Failed to accept request. Try again later'))
-  }
-
-  const onDecline = ({ requestId }) => {
-    declineRequest(requestId).catch(Alert.alert('Failed to decline request. Try again later'))
-  };
-
   const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState();
@@ -71,6 +49,73 @@ function NotificationsListScreen({ navigation }) {
   const [mainNotificationsList, setMainNotificationsList] = useState();
   const currentDate = new Date();
   const [selectedEntity, setSelectedEntity] = useState();
+  const [activeScreen, setActiveScreen] = useState(false);
+
+  const [loading, setloading] = useState(true);
+  const navigateFlatList = () => {
+    console.log('cell selected')
+  };
+
+  const onDelete = ({ item }) => {
+    if (activeScreen) {
+      setloading(true);
+      const ids = item.activities.map((activity) => activity.id)
+      deleteNotification(ids, item.type).then(() => {
+        callNotificationList()
+      }).catch(() => {
+        setloading(false);
+        Alert.alert('Failed to move to trash. Try again later')
+      });
+    } else {
+      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
+      Alert.alert(`Do you want to switch account to ${name}?`, '', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+      ],
+      { cancelable: true })
+    }
+  };
+
+  const onAccept = (requestId) => {
+    if (activeScreen) {
+      acceptRequest(requestId).catch(Alert.alert('Failed to accept request. Try again later'))
+    } else {
+      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
+      Alert.alert(`Do you want to switch account to ${name}?`, '', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+      ],
+      { cancelable: true })
+    }
+  }
+
+  const onDecline = ({ requestId }) => {
+    console.log('hello dear')
+
+    if (activeScreen) {
+      declineRequest(requestId).catch(Alert.alert('Failed to decline request. Try again later'))
+    } else {
+      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
+      Alert.alert(`Do you want to switch account to ${name}?`, '', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+      ],
+      { cancelable: true })
+    }
+  };
+
   const isInvite = (verb) => verb.includes(NotificationType.inviteToJoinClub)
     || verb.includes(NotificationType.invitePlayerToJoinTeam)
     || verb.includes(NotificationType.invitePlayerToJoinClub)
@@ -80,70 +125,43 @@ function NotificationsListScreen({ navigation }) {
   const renderPendingRequestComponent = ({ item }) => (
     <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
       {isInvite(item.activities[0].verb) && (
-        <RectButton
-          style={styles.rectButton}>
-          <NotificationInviteCell
-            data={item}
+        <PRNotificationInviteCell
+            item={item}
+            selectedEntity={selectedEntity}
             onAccept={() => onAccept(item.activities[0].id)}
             onDecline={() => onDecline(item.activities[0].id)}
-            card={navigateFlatList}
+            onPress={navigateFlatList}
           />
-        </RectButton>
       )}
 
-      {
-      (item.activities[0].verb.includes(NotificationType.challengeOffered)
-      || item.activities[0].verb.includes(NotificationType.challengeAltered))
-      && (<RectButton
-          style={styles.rectButton}>
-        <NotificationListComponent
-            data={item}
-            selectedEntity={selectedEntity}
-            cta1={navigateFlatList}
-            cta2={navigateFlatList}
-            card={navigateFlatList}
-          />
-      </RectButton>
-      )}
-
-      {
-      (item.activities[0].verb.includes(NotificationType.refereeRequest)
-      || item.activities[0].verb.includes(NotificationType.changeRefereeRequest)
-      || item.activities[0].verb.includes(NotificationType.scorekeeperRequest))
-      && (<RectButton
-          style={styles.rectButton}>
-        <NotificationListComponent
-            data={item}
-            selectedEntity={selectedEntity}
-            cta1={navigateFlatList}
-            cta2={navigateFlatList}
-            card={navigateFlatList}
-          />
-      </RectButton>
+      {!isInvite(item.activities[0].verb) && (<PRNotificationDetailMessageItem
+          item={item}
+          selectedEntity={selectedEntity}
+          onDetailPress={navigateFlatList}
+          onMessagePress={navigateFlatList}
+          onPress={navigateFlatList}
+        />
       )}
     </AppleStyleSwipeableRow>
   );
 
   const renderNotificationComponent = ({ item }) => (
     <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
-      <RectButton
-              style={styles.rectButton}>
-        <TodayNotificationItem
-                data={item}
-                cta1={navigateFlatList}
-                cta2={navigateFlatList}
-                card={navigateFlatList}
-              />
-      </RectButton>
+      <NotificationItem
+          data={item}
+          cta1={navigateFlatList}
+          cta2={navigateFlatList}
+          card={navigateFlatList}
+        />
     </AppleStyleSwipeableRow>
   )
 
   const RenderSections = ({ item, section }) => {
-    if (section.section === 'PENDING REQUESTS') {
+    if (section.section === strings.pendingrequests) {
       return renderPendingRequestComponent({ item: { ...item, type: 'request' } })
     }
 
-    if (section.section === 'EARLIER' || section.section === 'TODAY') {
+    if (section.section === strings.earlier || section.section === strings.today) {
       return renderNotificationComponent({ item: { ...item, type: 'notification' } })
     }
 
@@ -196,6 +214,7 @@ function NotificationsListScreen({ navigation }) {
   const callNotificationList = () => {
     setloading(true)
     const entity = groupList[currentTab];
+
     setSelectedEntity({ ...entity });
     const params = {
       mark_read: 'true',
@@ -203,7 +222,7 @@ function NotificationsListScreen({ navigation }) {
       uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
     };
     getNotificationsList(params)
-      .then((response) => {
+      .then(async (response) => {
         const pendingReqNotification = response.payload.requests;
         const todayNotifications = response.payload.notifications.filter(
           (item) => Moment(item.created_at).format('yyyy-MM-DD')
@@ -214,12 +233,24 @@ function NotificationsListScreen({ navigation }) {
             !== Moment(currentDate).format('yyyy-MM-DD'),
         );
 
+        // parseChallengeOfferAlter()
+
         const array = [
-          { data: [...pendingReqNotification], section: 'PENDING REQUESTS', type: 'request' },
-          { data: [...todayNotifications], section: 'TODAY', type: 'notification' },
-          { data: [...erlierNotifications], section: 'EARLIER', type: 'notification' },
+          { data: [...pendingReqNotification], section: strings.pendingrequests, type: 'request' },
+          { data: [...todayNotifications], section: strings.today, type: 'notification' },
+          { data: [...erlierNotifications], section: strings.earlier, type: 'notification' },
         ];
+
+        // console.log('notification array ', array);
+
         setMainNotificationsList([...array.filter((item) => item.data.length !== 0)]);
+        const loggedInEntity = await Utility.getStorage('loggedInEntity');
+        const currentGroupID = selectedEntity.entity_type === 'player' ? entity.user_id : entity.group_id
+        if (loggedInEntity.uid === currentGroupID) {
+          setActiveScreen(true);
+        } else {
+          setActiveScreen(false);
+        }
         setloading(false)
       })
       .catch((e) => {
@@ -227,6 +258,18 @@ function NotificationsListScreen({ navigation }) {
         Alert.alert(e.messages);
       });
   };
+
+  const itemSeparator = () => (
+    // Item Separator
+    <View style={styles.listItemSeparatorStyle} />
+  );
+
+  const renderSectionFooter = ({ section }) => {
+    if (section.section === strings.pendingrequests) {
+      return <View style={[styles.listItemSeparatorStyle, { height: 7, backgroundColor: colors.grayBackgroundColor }]} />
+    }
+    return <View style={styles.listItemSeparatorStyle} />
+  }
 
   const renderGroupItem = ({ item, index }) => (
     <TouchableOpacity onPress={() => activeTab(index)} key={index}>
@@ -237,8 +280,9 @@ function NotificationsListScreen({ navigation }) {
       />
     </TouchableOpacity>
   );
+
   return (
-    <View style={styles.rowViewStyle}>
+    <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
       <View>
         <FlatList
           ref={refContainer}
@@ -246,18 +290,24 @@ function NotificationsListScreen({ navigation }) {
           showsHorizontalScrollIndicator={false}
           data={groupList}
           renderItem={renderGroupItem}
+          keyExtractor={(item, index) => index.toString()}
         />
         <TCThinDivider marginTop={0} width={'100%'} />
       </View>
       <ActivityLoader visible={loading} />
       {mainNotificationsList && mainNotificationsList.length > 0 ? (
         <SectionList
+          ItemSeparatorComponent={itemSeparator}
           sections={mainNotificationsList}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={RenderSections}
           renderSectionHeader={({ section: { section } }) => (
-            <Text style={styles.header}>{section}</Text>
+            <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
+              <View style={styles.listItemSeparatorStyle}/>
+              <Text style={styles.header}>{section}</Text>
+            </View>
           )}
+          renderSectionFooter={renderSectionFooter}
         />
       ) : (
         <TCNoDataView title={'No records found'} />
@@ -278,6 +328,7 @@ function NotificationsListScreen({ navigation }) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   rowViewStyle: {
     flex: 1,
@@ -292,17 +343,16 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#fff',
     height: 53,
-    fontFamily: fonts.RLight,
+    fontFamily: fonts.RRegular,
     fontSize: 20,
-
     padding: 15,
+    color: colors.lightBlackColor,
     alignContent: 'center',
   },
-  rectButton: {
-    flex: 1,
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    backgroundColor: colors.whiteColor,
+  listItemSeparatorStyle: {
+    height: 0.5,
+    width: '100%',
+    backgroundColor: colors.linesepratorColor,
   },
 });
 

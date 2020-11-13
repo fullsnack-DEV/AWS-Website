@@ -12,6 +12,22 @@ const NotificationType = {
   refereeRequest: 'refereeRequest',
   changeRefereeRequest: 'changeRefereeRequest',
   scorekeeperRequest: 'scorekeeperRequest',
+
+  initialChallengePaymentFail: 'initialChallengePaymentFail',
+  alterChallengePaymentFail: 'alterChallengePaymentFail',
+  challengeAwaitingPaymentPaid: 'challengeAwaitingPaymentPaid',
+  gameAutoCanceledDueToInitialPaymentFailed: 'gameAutoCanceledDueToInitialPaymentFailed',
+  gameAutoRestoredDueToAlterPaymentFailed: 'gameAutoRestoredDueToAlterPaymentFailed',
+  gameCanceledDuringAwaitingPayment: 'gameCanceledDuringAwaitingPayment',
+  gameRestoredDuringAwaitingPayment: 'gameRestoredDuringAwaitingPayment',
+
+  refereeReservationInitialPaymentFail: 'refereeReservationInitialPaymentFail',
+  refereeReservationAlterPaymentFail: 'refereeReservationAlterPaymentFail',
+  refereeReservationAwaitingPaymentPaid: 'refereeReservationAwaitingPaymentPaid',
+  refereeReservationAutoCanceledDueToInitialPaymentFailed: 'refereeReservationAutoCanceledDueToInitialPaymentFailed',
+  refereeReservationAutoRestoredDueToAlterPaymentFailed: 'refereeReservationAutoRestoredDueToAlterPaymentFailed',
+  refereeReservationCanceledDuringAwaitingPayment: 'refereeReservationCanceledDuringAwaitingPayment',
+  refereeReservationRestoredDuringAwaitingPayment: 'refereeReservationRestoredDuringAwaitingPayment',
 };
 
 export default NotificationType

@@ -1,15 +1,11 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
-  View, StyleSheet, SectionList, Text, Alert,
+  View, StyleSheet, FlatList, Alert, Text,
 } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-// import ActionSheet from 'react-native-actionsheet';
-import Moment from 'moment';
-// import { color } from 'react-native-reanimated';
-import NotificationListComponent from '../../components/notificationComponent/NotificationListComponent';
-// import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
-import TodayNotificationItem from '../../components/notificationComponent/TodayNotificationItem';
-import NotificationInviteCell from '../../components/notificationComponent/NotificationInviteCell';
+import _ from 'lodash'
+import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
+import NotificationItem from '../../components/notificationComponent/NotificationItem';
+import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
 
 import { getTrash, restoreNotification } from '../../api/Notificaitons';
@@ -20,12 +16,12 @@ import TCNoDataView from '../../components/TCNoDataView';
 // import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import strings from '../../Constants/String';
 
 function TrashScreen({ navigation, route }) {
   const [loading, setloading] = useState(true);
   const [mainNotificationsList, setMainNotificationsList] = useState();
   const [selectedEntity, setSelectedEntity] = useState();
-  const currentDate = new Date();
   useLayoutEffect(() => {
     setSelectedEntity({ ...route.selectedGroup });
 
@@ -44,25 +40,11 @@ function TrashScreen({ navigation, route }) {
     };
     getTrash(params)
       .then((response) => {
-        const pendingReqNotification = response.payload.requests;
-        const todayNotifications = response.payload.notifications.filter(
-          (item) => Moment(item.created_at).format('yyyy-MM-DD')
-            === Moment(currentDate).format('yyyy-MM-DD'),
-        );
-        const erlierNotifications = response.payload.notifications.filter(
-          (item) => Moment(item.created_at).format('yyyy-MM-DD')
-            !== Moment(currentDate).format('yyyy-MM-DD'),
-        );
-
-        const array = [
-          { data: [...pendingReqNotification], section: 'PENDING REQUESTS' },
-          { data: [...todayNotifications], section: 'TODAY' },
-          { data: [...erlierNotifications], section: 'EARLIER' },
-        ];
-        setMainNotificationsList([
-          ...array.filter((item) => item.data.length !== 0),
-        ]);
-
+        const requests = response.payload.requests.map((obj) => ({ ...obj, type: 'request', createdDate: new Date(`${obj.created_at}+0000`) }))
+        const notifications = response.payload.notifications.map((obj) => ({ ...obj, type: 'notification', createdDate: new Date(`${obj.updated_at}+0000`) }))
+        let trashNotifications = [...requests, ...notifications];
+        trashNotifications = _.orderBy(trashNotifications, ['createdDate'], ['desc']);
+        setMainNotificationsList(trashNotifications);
         setloading(false);
       })
       .catch((e) => {
@@ -97,23 +79,18 @@ function TrashScreen({ navigation, route }) {
       color={colors.themeColor}
       image={images.roundArrow}>
       {isInvite(item.activities[0].verb) && (
-        <RectButton style={styles.rectButton}>
-          <NotificationInviteCell data={item} card={navigateFlatList} />
-        </RectButton>
+        <PRNotificationInviteCell data={item} card={navigateFlatList} />
       )}
       {(item.activities[0].verb.includes(NotificationType.challengeOffered)
         || item.activities[0].verb.includes(
           NotificationType.challengeAltered,
-        )) && (
-          <RectButton style={styles.rectButton}>
-            <NotificationListComponent
+        )) && (<PRNotificationDetailMessageItem
             data={item}
             selectedEntity={selectedEntity}
             cta1={navigateFlatList}
             cta2={navigateFlatList}
             card={navigateFlatList}
           />
-          </RectButton>
       )}
       {(item.activities[0].verb.includes(NotificationType.refereeRequest)
         || item.activities[0].verb.includes(
@@ -122,15 +99,13 @@ function TrashScreen({ navigation, route }) {
         || item.activities[0].verb.includes(
           NotificationType.scorekeeperRequest,
         )) && (
-          <RectButton style={styles.rectButton}>
-            <NotificationListComponent
+          <PRNotificationDetailMessageItem
             data={item}
             selectedEntity={selectedEntity}
             cta1={navigateFlatList}
             cta2={navigateFlatList}
             card={navigateFlatList}
           />
-          </RectButton>
       )}
     </AppleStyleSwipeableRow>
   );
@@ -140,39 +115,38 @@ function TrashScreen({ navigation, route }) {
       onPress={() => onRestore({ item })}
       color={colors.themeColor}
       image={images.roundArrow}>
-      <RectButton style={styles.rectButton}>
-        <TodayNotificationItem
+      <NotificationItem
           data={item}
           cta1={navigateFlatList}
           cta2={navigateFlatList}
           card={navigateFlatList}
         />
-      </RectButton>
     </AppleStyleSwipeableRow>
   );
 
-  const RenderSections = ({ item, section }) => {
-    if (section.section === 'PENDING REQUESTS') {
-      return renderPendingRequestComponent({ item: { ...item, type: 'request' } });
+  const renderTrashItem = ({ item }) => {
+    if (item.type === 'request') {
+      return renderPendingRequestComponent({ item });
     }
-
-    if (section.section === 'EARLIER' || section.section === 'TODAY') {
-      return renderNotificationComponent({ item: { ...item, type: 'notification' } });
+    if (item.type === 'notification') {
+      return renderNotificationComponent({ item });
     }
     return null;
   };
   return (
-    <View style={styles.rowViewStyle}>
+    <View style={styles.containerStyle}>
       <ActivityLoader visible={loading} />
+      <View style={styles.trashMessageContainerStyle}>
+        <Text style={styles.trashMessageStyle}>{strings.trashmessage}</Text>
+      </View>
       {mainNotificationsList && mainNotificationsList.length > 0 ? (
-        <SectionList
-          sections={mainNotificationsList}
-          keyExtractor={(item, index) => index}
-          renderItem={RenderSections}
-          renderSectionHeader={({ section: { section } }) => (
-            <Text style={styles.header}>{section}</Text>
-          )}
-        />
+        <FlatList
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        data={mainNotificationsList}
+        renderItem={renderTrashItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
       ) : (
         <TCNoDataView title={'No records found'} />
       )}
@@ -180,23 +154,18 @@ function TrashScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  rowViewStyle: {
+  containerStyle: {
     flex: 1,
   },
-  header: {
-    backgroundColor: '#fff',
-    height: 53,
-    fontFamily: fonts.RLight,
-    fontSize: 20,
-
-    padding: 15,
-    alignContent: 'center',
+  trashMessageContainerStyle: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: colors.thinDividerColor,
   },
-  rectButton: {
-    flex: 1,
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    backgroundColor: colors.whiteColor,
+  trashMessageStyle: {
+    fontFamily: fonts.RRegular,
+    fontSize: 12,
+    color: colors.darkGrayTrashColor,
   },
 });
 

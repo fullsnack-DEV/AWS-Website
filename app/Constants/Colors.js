@@ -65,6 +65,8 @@ const colors = {
   orangeNotesColor: '#FF4E00',
   redColor: '#FD4E1E',
   redDelColor: '#FF4E00',
+  linesepratorColor: '#C4C4C4',
+  darkGrayTrashColor: '#707070',
   orangeGradientColor: '#FF6F01',
   greenShadowColor: '#7CCF6B',
 };
