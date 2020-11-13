@@ -21,6 +21,10 @@ export default function BlockAvailableTabView({
   endGradientColor = blocked ? '#A9A9A9' : '#4AC285',
   firstTabTitle,
   secondTabTitle,
+  activeEventPricacy,
+  inactiveEventPricacy,
+  activeEventPrivacyText,
+  inactiveEventPrivacyText,
 }) {
   return (
     <LinearGradient
@@ -29,15 +33,20 @@ export default function BlockAvailableTabView({
       >
       <TouchableOpacity
             onPress={onFirstTabPress}
-            style={blocked ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+            style={blocked ? [styles.activeEventPricacy, activeEventPricacy] : [styles.inactiveEventPricacy, inactiveEventPricacy]}
         >
-        <Text style={blocked ? [styles.activeEventPrivacyText, { color: colors.grayColor }] : styles.inactiveEventPrivacyText}>{firstTabTitle}</Text>
+        <Text
+          style={blocked ? [styles.activeEventPrivacyText, activeEventPrivacyText, { color: colors.grayColor }]
+            : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]}
+        >{firstTabTitle}</Text>
       </TouchableOpacity>
       <TouchableOpacity
             onPress={onSecondTabPress}
-            style={!blocked ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+            style={!blocked ? [styles.activeEventPricacy, activeEventPricacy] : [styles.inactiveEventPricacy, inactiveEventPricacy]}
         >
-        <Text style={!blocked ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>{secondTabTitle}</Text>
+        <Text style={!blocked ? [styles.activeEventPrivacyText, activeEventPrivacyText]
+          : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]}
+        >{secondTabTitle}</Text>
       </TouchableOpacity>
     </LinearGradient>
   );

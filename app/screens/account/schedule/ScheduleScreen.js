@@ -38,6 +38,7 @@ import {
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
+import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
 
 const { width } = Dimensions.get('window');
 
@@ -270,28 +271,51 @@ export default function ScheduleScreen({ navigation }) {
                 setFilterTimeTable(dataItem);
                 return null;
               }}
-              renderItem={(item) => <EventCalendar
-                eventTapped={(event) => { console.log('Event ::--', event) }}
-                events={item}
-                width={width}
-                initDate={timeTableSelectionDate}
-                scrollToFirst={true}
-                renderEvent={(event) => <View style={{ flex: 1 }}>
-                  <CalendarTimeTableView
-                    title={event.title}
-                    summary={event.descriptions}
-                    containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color, width: event.width }}
-                    eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
-                  />
-                  {event.isBlocked && <View style={{
-                    width: event.width + 68, height: event.height, backgroundColor: 'rgba(0,0,0,0.3)', position: 'absolute', marginLeft: -59, borderRadius: 10,
-                  }} />}
-                </View>}
-                styles={{
-                  event: styles.eventViewStyle,
-                  line: { backgroundColor: colors.lightgrayColor },
-                }}
-              />}
+              renderItem={(item) => <View>
+                <EventCalendar
+                  eventTapped={(event) => { console.log('Event ::--', event) }}
+                  events={item}
+                  width={width}
+                  initDate={timeTableSelectionDate}
+                  scrollToFirst={true}
+                  renderEvent={(event) => <View style={{ flex: 1 }}>
+                    <CalendarTimeTableView
+                      title={event.title}
+                      summary={event.descriptions}
+                      containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color, width: event.width }}
+                      eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
+                    />
+                    {event.isBlocked && <View style={{
+                      width: event.width + 68, height: event.height, backgroundColor: 'rgba(0,0,0,0.3)', position: 'absolute', marginLeft: -59, borderRadius: 10,
+                    }} />}
+                  </View>}
+                  styles={{
+                    event: styles.eventViewStyle,
+                    line: { backgroundColor: colors.lightgrayColor },
+                  }}
+                />
+                {item.length > 0 && <FlatList
+                  data={item}
+                  scrollEnabled={false}
+                  showsHorizontalScrollIndicator={ false }
+                  renderItem={ ({ item: blockItem }) => {
+                    if (blockItem.isBlocked) {
+                      return (
+                        <EventBlockTimeTableView
+                          blockText={'Blocked Zone'}
+                          blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
+                        />
+                      );
+                    }
+                    return <View />;
+                  }}
+                  ItemSeparatorComponent={ () => (
+                    <View style={ { height: wp('3%') } } />
+                  ) }
+                  style={ { marginVertical: wp('4%') } }
+                  keyExtractor={(itemValue, index) => index.toString() }
+                />}
+              </View>}
             />}
             {!createEventModal && <CreateEventButton
               source={images.plus}
@@ -307,6 +331,10 @@ export default function ScheduleScreen({ navigation }) {
         onCreateEventPress={() => {
           setCreateEventModal(false)
           navigation.navigate('CreateEventScreen', { comeName: 'ScheduleScreen' })
+        }}
+        onChallengePress={() => {
+          setCreateEventModal(false)
+          navigation.navigate('EditChallengeAvailability')
         }}
       />
       <ActionSheet

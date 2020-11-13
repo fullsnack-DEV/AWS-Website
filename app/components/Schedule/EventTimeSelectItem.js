@@ -9,11 +9,11 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function EventTimeSelectItem({
-  title, date, time, onDatePress, containerStyle, toggle,
+  title, date, time, onDatePress, containerStyle, toggle, headerTextStyle,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <Text style={styles.headerTextStyle}>{title}</Text>
+      <Text style={[styles.headerTextStyle, headerTextStyle]}>{title}</Text>
       <TouchableOpacity style={styles.dateSelectStyle} onPress={onDatePress}>
         <Text style={styles.dateTextStyle}>{date}</Text>
         {toggle && <Text style={[styles.dateTextStyle, { marginLeft: 12 }]}>{time}</Text>}

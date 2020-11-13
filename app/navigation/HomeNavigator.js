@@ -86,6 +86,7 @@ import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddr
 
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
+import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
 import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
 
 const Stack = createStackNavigator();
@@ -280,6 +281,13 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="EditChallengeAvailability"
+      component={EditChallengeAvailability}
       options={{
         headerShown: false,
       }}
