@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, Alert } from 'react-native';
+import {
+  View, FlatList, Alert, ActivityIndicator,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
@@ -10,8 +12,9 @@ import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 
 export default function NewsFeedList({
-  navigation, postData,
+  navigation, postData, onEndReached, footerLoading = false,
 }) {
+  // console.log('Post Data ::--', postData);
   const [pullRefresh, setPullRefresh] = useState(false);
   const [data, setData] = useState(postData);
   const [loading, setloading] = useState(false);
@@ -53,11 +56,11 @@ export default function NewsFeedList({
           />
         )}
         ListFooterComponent={() => (
-          <View
+          !footerLoading ? <View
             style={{
               height: hp(10),
             }}
-          />
+          /> : <ActivityIndicator size={'small'} color={ colors.blackColor } style={{ alignSelf: 'center', marginBottom: hp(10) }} />
         )}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, key }) => (
@@ -99,6 +102,8 @@ export default function NewsFeedList({
             }}
           />
         )}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
         refreshing={pullRefresh}
         onRefresh={() => {
           setPullRefresh(true);

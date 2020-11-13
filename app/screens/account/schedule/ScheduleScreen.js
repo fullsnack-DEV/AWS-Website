@@ -67,41 +67,41 @@ export default function ScheduleScreen({ navigation }) {
       const uid = entity.uid || entity.auth.user_id;
       const eventdata = [];
       const timetabledata = [];
+      let eventTimeTableData = [];
       getEvents(entityRole, uid).then((response) => {
-        setEventData(response.payload);
-        setTimeTable(response.payload);
-        response.payload.filter((event_item) => {
-          const startDate = new Date(event_item.start_datetime * 1000);
-          const eventDate = moment(startDate).format('YYYY-MM-DD');
-          if (eventDate === date) {
-            eventdata.push(event_item);
-          }
-          return null;
-        });
-        setFilterEventData(eventdata);
-        response.payload.filter((timetable_item) => {
-          const timetable_date = new Date(timetable_item.start_datetime * 1000);
-          const endDate = new Date(timetable_item.end_datetime * 1000);
-          const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-          if (timetabledate === date) {
-            const obj = {
-              ...timetable_item,
-              start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-              end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-            };
-            timetabledata.push(obj);
-          }
-          return null;
+        getSlots(entityRole, uid).then((res) => {
+          eventTimeTableData = [...response.payload, ...res.payload];
+          console.log('Response in Slots :-', res);
+          setEventData(eventTimeTableData);
+          setTimeTable(eventTimeTableData);
+          eventTimeTableData.filter((event_item) => {
+            const startDate = new Date(event_item.start_datetime * 1000);
+            const eventDate = moment(startDate).format('YYYY-MM-DD');
+            if (eventDate === date) {
+              eventdata.push(event_item);
+            }
+            return null;
+          });
+          setFilterEventData(eventdata);
+          eventTimeTableData.filter((timetable_item) => {
+            const timetable_date = new Date(timetable_item.start_datetime * 1000);
+            const endDate = new Date(timetable_item.end_datetime * 1000);
+            const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+            if (timetabledate === date) {
+              const obj = {
+                ...timetable_item,
+                start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+                end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+              };
+              timetabledata.push(obj);
+            }
+            return null;
+          })
+          setFilterTimeTable(timetabledata);
         })
-        setFilterTimeTable(timetabledata);
       }).catch((e) => {
         Alert.alert('', e.messages)
-      });
-      getSlots(entityRole, uid).then((response) => {
-        console.log('Response in Slots :-', response);
-      }).catch((e) => {
-        Alert.alert('', e.messages)
-      });
+      })
       return null;
     });
     return () => {
@@ -210,7 +210,7 @@ export default function ScheduleScreen({ navigation }) {
               }}
               renderItem={(item) => <FlatList
                 data={item}
-                renderItem={({ item: itemValue }) => <EventInCalender
+                renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
                   onPress={async () => {
                     const entity = await Utility.getStorage('loggedInEntity');
                     const uid = entity.uid || entity.auth.user_id;
@@ -227,7 +227,7 @@ export default function ScheduleScreen({ navigation }) {
                     setSelectedEventItem(itemValue);
                   }}
                   data={itemValue}
-                />}
+                />)}
                 ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
                   <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
                   <Text style={styles.headerTodayText}>
@@ -279,13 +279,13 @@ export default function ScheduleScreen({ navigation }) {
                   initDate={timeTableSelectionDate}
                   scrollToFirst={true}
                   renderEvent={(event) => <View style={{ flex: 1 }}>
-                    <CalendarTimeTableView
+                    {event.cal_type === 'event' && <CalendarTimeTableView
                       title={event.title}
                       summary={event.descriptions}
                       containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color, width: event.width }}
                       eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
-                    />
-                    {event.isBlocked && <View style={{
+                    />}
+                    {event.cal_type === 'blocked' && <View style={{
                       width: event.width + 68, height: event.height, backgroundColor: 'rgba(0,0,0,0.3)', position: 'absolute', marginLeft: -59, borderRadius: 10,
                     }} />}
                   </View>}
@@ -299,7 +299,7 @@ export default function ScheduleScreen({ navigation }) {
                   scrollEnabled={false}
                   showsHorizontalScrollIndicator={ false }
                   renderItem={ ({ item: blockItem }) => {
-                    if (blockItem.isBlocked) {
+                    if (blockItem.cal_type === 'blocked') {
                       return (
                         <EventBlockTimeTableView
                           blockText={'Blocked Zone'}

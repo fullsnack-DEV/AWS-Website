@@ -6,7 +6,7 @@ import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import { createPost, getNewsFeed } from '../../api/NewsFeeds';
+import { createPost, getNewsFeed, getNewsFeedNextList } from '../../api/NewsFeeds';
 import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
@@ -15,6 +15,7 @@ export default function FeedsScreen({ navigation }) {
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
+  const [footerLoading, setFooterLoading] = useState(false);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
@@ -112,6 +113,24 @@ export default function FeedsScreen({ navigation }) {
             navigation={navigation}
             newsFeedData={newsFeedData}
             postData={postData}
+            footerLoading={footerLoading}
+            onEndReached={() => {
+              setFooterLoading(true)
+              const params = {
+                id_lt: postData[postData.length - 1].id,
+              };
+              getNewsFeedNextList(params).then((response) => {
+                if (response) {
+                  setFooterLoading(false)
+                  const data = [...postData, ...response.payload.results]
+                  setPostData(data);
+                }
+              })
+                .catch((error) => {
+                  setFooterLoading(false)
+                  console.log('Next Data Error :-', error);
+                })
+            }}
           />
     </View>
   );

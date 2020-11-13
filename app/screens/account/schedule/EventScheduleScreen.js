@@ -56,7 +56,7 @@ export default function EventScheduleScreen({ onItemPress, eventData, onThreeDot
     <KeyboardAvoidingView style={ styles.mainContainer } behavior={'padding'}>
       <SectionList
             renderItem={ ({ item }) => (
-              <TCEventView
+              item.cal_type === 'event' && <TCEventView
                 onPress={() => onItemPress(item)}
                 data={item}
                 onThreeDotPress={() => onThreeDotPress(item)}
