@@ -316,5 +316,20 @@ const strings = {
 
   // Message
   noMessageFountText: 'No Message Found',
+
+  other: 'other',
+  others: 'others',
+  and: 'and',
+
+  pendingrequests: 'Pending Requests',
+  today: 'Today',
+  earlier: 'Earlier',
+
+  trashmessage: 'Notifications in trash will be permanently deleted 30 days after they are moved in trash.',
+  left: 'left',
+  responsetime: '* Response time :',
+  responsetimeexpired: 'RESPONSE PERIOD EXPIRED',
+  decline: 'DECLINE',
+  accept: 'ACCEPT',
 };
 export default strings;
