@@ -54,7 +54,7 @@ export default function MembersProfileScreen({ navigation, route }) {
       headerRight: () => (
         route.params.whoSeeID === entity.uid && <TouchableWithoutFeedback
           onPress={ () => actionSheet.current.show() }>
-          <Image source={ images.vertical3Dot } style={ styles.navigationRightItem } />
+          <Image source={ images.horizontal3Dot } style={ styles.navigationRightItem } />
         </TouchableWithoutFeedback>
       ),
     });

@@ -25,7 +25,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import * as Utility from '../../../utils/index';
 
-import { patchRegisterPlayerDetails } from '../../../api/Users';
+import { patchPlayer } from '../../../api/Users';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 
@@ -54,7 +54,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
       const body = {
         registered_sports: registerdPlayerData,
       }
-      patchRegisterPlayerDetails(body).then(async (response) => {
+      patchPlayer(body).then(async (response) => {
         if (response.status === true) {
           // FIXME:
           await Utility.setStorage('user', response.payload);

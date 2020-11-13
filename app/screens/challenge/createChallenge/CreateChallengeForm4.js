@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
+  StyleSheet, View, Text, Image, FlatList,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -23,10 +20,24 @@ import EventMapView from '../../../components/Schedule/EventMapView';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   const isFocused = useIsFocused();
-  const [homeTeam, setHomeTeam] = useState()
-  const [awayTeam, setAwayTeam] = useState()
-  const [bodyParams, setbodyParams] = useState()
+  const [homeTeam, setHomeTeam] = useState();
+  const [awayTeam, setAwayTeam] = useState();
+  const [bodyParams, setbodyParams] = useState();
 
   useEffect(() => {
     const getAuthEntity = async () => {
@@ -34,23 +45,74 @@ export default function CreateChallengeForm4({ navigation, route }) {
       if (route && route.params && route.params.teamData) {
         if (route.params.teamData[0].group_id === entity.uid) {
           console.log('TEams::', route.params.teamData);
-          setHomeTeam(route.params.teamData[0])
-          setAwayTeam(route.params.teamData[1])
+          setHomeTeam(route.params.teamData[0]);
+          setAwayTeam(route.params.teamData[1]);
         } else {
-          setHomeTeam(route.params.teamData[1])
-          setAwayTeam(route.params.teamData[0])
+          setHomeTeam(route.params.teamData[1]);
+          setAwayTeam(route.params.teamData[0]);
         }
       }
     };
-    getAuthEntity()
+    getAuthEntity();
     if (route && route.params && route.params.body) {
       console.log('BODY PARAMS:', route.params.body);
-      setbodyParams(route.params.body)
+      setbodyParams(route.params.body);
     }
   }, [isFocused]);
 
-  return (
+  const tConvert = (timeString) => {
+    const timeString12hr = new Date(
+      `1970-01-01T${timeString}Z`,
+    ).toLocaleTimeString(
+      {},
+      {
+        timeZone: 'UTC',
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric',
+      },
+    );
+    return timeString12hr;
+  };
+  const time_format = (d) => {
+    const hours = format_two_digits(d.getHours());
+    const minutes = format_two_digits(d.getMinutes());
+    const seconds = format_two_digits(d.getSeconds());
+    return tConvert(`${hours}:${minutes}:${seconds}`);
+  };
+  const format_two_digits = (n) => (n < 10 ? `0${n}` : n);
+  // eslint-disable-next-line consistent-return
+  const getTimeDifferent = (sDate, eDate) => {
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    return `${hours} hours ${minutes} minutes`;
+  };
+
+  const renderSecureReferee = ({ item, index }) => (
+    <TCInfoImageField
+      title={index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`}
+      name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam.group_id ? homeTeam.group_name : awayTeam.group_name)))}
+      marginLeft={30}
+    />
+  );
+
+  const renderSecureScorekeeper = ({ item, index }) => (
+    <TCInfoImageField
+      title={`Scorekeeper ${index + 1}`}
+      name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam.group_id ? homeTeam.group_name : awayTeam.group_name)))}
+      marginLeft={30}
+    />
+  );
+  return (
     <TCKeyboardView>
       <View style={styles.formSteps}>
         <View style={styles.form1}></View>
@@ -60,107 +122,173 @@ export default function CreateChallengeForm4({ navigation, route }) {
         <View style={styles.form5}></View>
       </View>
       <View>
-        <TCLabel title={'Please, review your match reservatoin request before you send it.'} style={{ color: colors.themeColor }}/>
-        <TCThickDivider/>
+        <TCLabel
+          title={
+          'Please, review your match reservatoin request before you send it.'
+          }
+          style={{ color: colors.themeColor }}
+        />
+        <TCThickDivider />
       </View>
-      <View style={{
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        margin: 15,
-
-      }} >
-        <View style={styles.challengerView} >
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          margin: 15,
+        }}>
+        <View style={styles.challengerView}>
           <View style={styles.teamView}>
-            <Image source={images.requestOut} style={styles.reqOutImage}/>
+            <Image source={images.requestOut} style={styles.reqOutImage} />
             <Text style={styles.challengerText}>Challenger</Text>
           </View>
-          {homeTeam && <View style={styles.teamView}>
-            <Image source={images.teamPlaceholder} style={styles.teamImage}/>
-            <Text style={styles.teamNameText}>{homeTeam.group_name}</Text>
-          </View>}
-        </View>
-        <View style={styles.challengeeView} >
+
           <View style={styles.teamView}>
-            <Image source={images.requestIn} style={styles.reqOutImage}/>
+            <Image source={images.teamPlaceholder} style={styles.teamImage} />
+            <Text style={styles.teamNameText}>{homeTeam && homeTeam.group_name}</Text>
+          </View>
+
+        </View>
+        <View style={styles.challengeeView}>
+          <View style={styles.teamView}>
+            <Image source={images.requestIn} style={styles.reqOutImage} />
             <Text style={styles.challengeeText}>Challengee</Text>
           </View>
-          {awayTeam && <View style={styles.teamView}>
-            <Image source={images.teamPlaceholder} style={styles.teamImage}/>
-            <Text style={{
-              marginLeft: 5, fontFamily: fonts.RMedium, fontSize: 16, color: colors.lightBlackColor,
-            }}>{awayTeam.group_name}</Text>
-          </View>}
+
+          <View style={styles.teamView}>
+            <Image source={images.teamPlaceholder} style={styles.teamImage} />
+            <Text
+                style={{
+                  marginLeft: 5,
+                  fontFamily: fonts.RMedium,
+                  fontSize: 16,
+                  color: colors.lightBlackColor,
+                }}>
+              {awayTeam && awayTeam.group_name}
+            </Text>
+          </View>
+
         </View>
       </View>
       <TCThinDivider />
-      <View>
-        <TCLabel title={`Match · ${bodyParams.sport}`}/>
-        <TCInfoImageField title={'Home'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
-        <TCThinDivider />
-        <TCInfoImageField title={'Away'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
-        <TCThinDivider />
-        <TCInfoField title={'Time'} value={'Feb 15, 2020  12:00pm - \nFeb 15, 2020 \n3:30pm ( 3h 30m )'}
-        marginLeft={30} titleStyle={{ fontSize: 16 }}/>
-        <TCThinDivider />
-        <TCInfoField title={'Venue'} value={'Scotiabank Saddledome'}
-        marginLeft={30} titleStyle={{ fontSize: 16 }}/>
-        <TCThinDivider />
-        <TCInfoField title={'Address'} value={'555 Saddledome Rise SE,Calgary, AB T2G 2W1'}
-        marginLeft={30} titleStyle={{ fontSize: 16 }}/>
-        <EventMapView coordinate={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-        }}
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          style = {styles.map}/>
-        <TCThickDivider marginTop={20}/>
-
-      </View>
-      <View>
-        <TCLabel title={'Responsibility  to Secure Venue'} />
-        <View style={styles.viewContainer}>
-          <View style={styles.fieldValue}>
-            <Image source={images.teamPlaceholder} style={styles.imageView}/>
-            <Text style={styles.teamNameText} numberOfLines={1}>Vancuver Whitecap FC</Text>
-          </View>
+      {bodyParams && route && route.params && route.params.teamData && (
+        <View>
+          <TCLabel title={`Match · ${bodyParams.sport}`} />
+          <TCInfoImageField
+            title={'Home'}
+            name={route.params.teamData[0].group_name}
+            marginLeft={30}
+          />
+          <TCThinDivider />
+          <TCInfoImageField
+            title={'Away'}
+            name={route.params.teamData[1].group_name}
+            marginLeft={30}
+          />
+          <TCThinDivider />
+          <TCInfoField
+            title={'Time'}
+            value={`${
+              monthNames[new Date(bodyParams.start_datetime).getMonth()]
+            } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
+              bodyParams.start_datetime,
+            ).getFullYear()} ${time_format(
+              new Date(new Date(bodyParams.start_datetime)),
+            )} - \n${
+              monthNames[new Date(bodyParams.end_datetime).getMonth()]
+            } ${new Date(bodyParams.end_datetime).getDate()}, ${new Date(
+              bodyParams.end_datetime,
+            ).getFullYear()} ${time_format(
+              new Date(new Date(bodyParams.end_datetime)),
+            )}\n( ${getTimeDifferent(
+              new Date(bodyParams.start_datetime),
+              new Date(bodyParams.end_datetime),
+            )} )`}
+            marginLeft={30}
+            titleStyle={{ fontSize: 16 }}
+          />
+          <TCThinDivider />
+          <TCInfoField
+            title={'Venue'}
+            value={bodyParams.venue.title}
+            marginLeft={30}
+            titleStyle={{ fontSize: 16 }}
+          />
+          <TCThinDivider />
+          <TCInfoField
+            title={'Address'}
+            value={bodyParams.venue.address}
+            marginLeft={30}
+            titleStyle={{ fontSize: 16 }}
+          />
+          <EventMapView
+            coordinate={{
+              latitude: bodyParams.venue.lat,
+              longitude: bodyParams.venue.long,
+            }}
+            region={{
+              latitude: bodyParams.venue.lat,
+              longitude: bodyParams.venue.long,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            style={styles.map}
+          />
+          <TCThickDivider marginTop={20} />
         </View>
-        <TCThickDivider marginTop={8}/>
-      </View>
-      <View>
-        <TCLabel title={'Rules'} />
-        <Text style={styles.rulesText}>1. Tackle is not allowed {'\n'}2. 3 times of 30 minute game for 90 minutes
-          {'\n'}3. A change of players is allowed…</Text>
-      </View>
-      <TCThickDivider marginTop={20}/>
+      )}
+      {bodyParams && (
+        <View>
+          <TCLabel title={'Responsibility  to Secure Venue'} />
+          <View style={styles.viewContainer}>
+            <View style={styles.fieldValue}>
+              <Image source={images.teamPlaceholder} style={styles.imageView} />
+              <Text style={styles.teamNameText} numberOfLines={1}>
+                {bodyParams.responsible_to_secure_venue}
+              </Text>
+            </View>
+          </View>
+          <TCThickDivider marginTop={8} />
+        </View>
+      )}
+      {bodyParams && (
+        <View>
+          <TCLabel title={'Rules'} />
+          <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
+        </View>
+      )}
+      <TCThickDivider marginTop={20} />
       <View>
         <TCLabel title={'Responsibility to Secure Referees'} />
-        <TCInfoImageField title={'Referee 1 (Chief)'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
-        <TCThinDivider />
-        <TCInfoImageField title={'Referee 2'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
-        <TCThinDivider />
-        <TCInfoImageField title={'Referee 3'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
+        {bodyParams && <FlatList
+          data={bodyParams.referee}
+          renderItem={renderSecureReferee}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => <TCThinDivider />}
+        />}
       </View>
-      <TCThickDivider marginTop={10}/>
+      <TCThickDivider marginTop={10} />
       <View>
         <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
-        <TCInfoImageField title={'Scorekeeper 1'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
-        <TCThinDivider />
-        <TCInfoImageField title={'Scorekeeper 2'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
-        <TCThinDivider />
-        <TCInfoImageField title={'Scorekeeper 3'} name={'Vancuver Whitecap FC'} marginLeft={30}/>
+        {bodyParams && <FlatList
+          data={bodyParams.scorekeeper}
+          renderItem={renderSecureScorekeeper}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => <TCThinDivider />}
+        />}
       </View>
-      <TCGradientButton title={strings.nextTitle} onPress={() => navigation.navigate('CreateChallengeForm5')}/>
+      <TCGradientButton
+        title={strings.nextTitle}
+        onPress={() => navigation.navigate('CreateChallengeForm5', {
+          teamData: route.params.teamData,
+          body: {
+            ...route.params.body,
+          },
+        })}
+      />
     </TCKeyboardView>
-
   );
 }
-
 const styles = StyleSheet.create({
   form1: {
     backgroundColor: colors.themeColor,
@@ -274,7 +402,6 @@ const styles = StyleSheet.create({
     flex: 0.5,
   },
   challengeeView: {
-
     flex: 0.5,
   },
 });

@@ -124,7 +124,7 @@ export default function GroupMembersScreen({ navigation, route }) {
       headerRight: () => (
         switchUser.uid === route.params.groupID && <TouchableWithoutFeedback
           onPress={ () => actionSheet.current.show() }>
-          <Image source={ images.horizontal3Dot } style={ styles.navigationRightItem } />
+          <Image source={ images.vertical3Dot } style={ styles.navigationRightItem } />
         </TouchableWithoutFeedback>
 
       ),

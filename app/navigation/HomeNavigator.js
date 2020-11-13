@@ -86,6 +86,7 @@ import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddr
 
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
+import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
 
 const Stack = createStackNavigator();
 
@@ -1051,6 +1052,22 @@ const HomeNavigator = () => (
     <Stack.Screen
         name="ChooseAddressScreen"
         component={ ChooseAddressScreen }
+        options={ {
+          title: 'Venue',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="ChallengeSentScreen"
+        component={ ChallengeSentScreen }
         options={ {
           title: 'Venue',
           headerTintColor: colors.blackColor,
