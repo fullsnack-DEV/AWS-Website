@@ -1,10 +1,13 @@
 import React from 'react';
 import {
-  TouchableOpacity, View, StyleSheet, Text, Image,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Text,
 } from 'react-native';
-import { normalize } from 'react-native-elements';
 import moment from 'moment';
-import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
+import QB from 'quickblox-react-native-sdk';
 import { widthPercentageToDP as wp } from '../utils';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -19,7 +22,6 @@ const TCHorizontalMessageOverview = (
     numberOfMembers = 0,
     numberOfUnreadMessages = 0,
     lastMessageDate = new Date(),
-    avatarBackgroundColor = colors.yellowColor,
     onPress,
   },
 ) => {
@@ -28,16 +30,13 @@ const TCHorizontalMessageOverview = (
 
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
-      {dialogType === 3 ? (
-        <LinearGradient
-            colors={ [colors.yellowColor, colors.themeColor] }
-            style={{ ...styles.avatarContainer, backgroundColor: avatarBackgroundColor } }>
-          <Text style={styles.avatarContainerText}>{title[0].toUpperCase()}</Text>
-        </LinearGradient>
-      ) : (
-        <Image source={images.groupUsers} style={styles.imageContainer} />
-      )}
-
+      <View style={styles.imageMainContainer}>
+        {dialogType === QB.chat.DIALOG_TYPE.CHAT ? (
+          <FastImage source={images.profilePlaceHolder} style={styles.imageContainer} />
+        ) : (
+          <FastImage source={images.groupUsers} style={styles.imageContainer} />
+        )}
+      </View>
       <View style={styles.rightContainer}>
         <View style={styles.rightTitleContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -59,32 +58,21 @@ const TCHorizontalMessageOverview = (
 const styles = StyleSheet.create({
   horizontalMessageOverviewContainer: {
     width: wp(100),
-    padding: wp(4),
+    paddingVertical: 12.5,
     flexDirection: 'row',
     // backgroundColor: 'red',
 
   },
-  avatarContainer: {
-    height: wp(13),
-    width: wp(13),
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: wp(15),
-  },
-  avatarContainerText: {
-    color: 'white',
-    fontSize: normalize(18),
-    fontFamily: fonts.RBold,
-    textAlign: 'center',
+  imageMainContainer: {
+    marginRight: 12,
+    marginLeft: 15,
   },
   imageContainer: {
-    height: wp(13),
-    width: wp(13),
+    height: 45,
+    width: 45,
     resizeMode: 'contain',
   },
   rightContainer: {
-    paddingHorizontal: wp(2),
     flexDirection: 'row',
     flex: 1,
   },
@@ -95,30 +83,31 @@ const styles = StyleSheet.create({
   title: {
     flexWrap: 'wrap',
     fontFamily: fonts.RBold,
-    fontSize: normalize(14),
+    fontSize: 16,
     color: colors.lightBlackColor,
   },
   subTitle: {
     fontFamily: fonts.RLight,
-    fontSize: normalize(14),
+    fontSize: 16,
     color: colors.lightBlackColor,
   },
   numberOfMembers: {
     color: colors.userPostTimeColor,
     fontFamily: fonts.RMedium,
-    fontSize: normalize(14),
+    fontSize: 16,
     flex: 1,
     alignSelf: 'flex-start',
-    marginLeft: wp(2),
+    marginLeft: 10,
   },
   rightDateAndMessageCounterContainer: {
     flex: 0.2,
     justifyContent: 'space-evenly',
     alignItems: 'flex-end',
+    alignSelf: 'flex-start',
   },
   lastMessageDate: {
     fontFamily: fonts.RRegular,
-    fontSize: normalize(10),
+    fontSize: 12,
     color: colors.grayColor,
   },
 })

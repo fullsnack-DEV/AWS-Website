@@ -1,40 +1,56 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   StyleSheet, Image, FlatList, TouchableOpacity, Alert,
 } from 'react-native';
-import _ from 'lodash';
-import { normalize } from 'react-native-elements';
 
+import QB from 'quickblox-react-native-sdk';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import { QBleaveDialog } from '../../utils/QuickBlox';
+import * as Utility from '../../utils';
 
 const MessageInviteeDrawerScreen = ({
   navigation,
   participants = [],
   dialog = null,
 }) => {
-  console.log(participants);
+  const [myUserId, setMyUserId] = useState(null);
+  useEffect(() => {
+    const getUser = async () => {
+      const entity = await Utility.getStorage('loggedInEntity');
+      setMyUserId(entity.QB.id);
+    }
+    getUser();
+  }, []);
+
   const inviteButton = () => (
-    <TouchableOpacity style={styles.rowContainer} onPress={() => {}}>
-      <Image style={ styles.inviteImage } source={ images.plus_round_orange } />
-      <Text style={[styles.rowText, { color: colors.orangeColor }]}>Invite</Text>
-    </TouchableOpacity>
+    <View>
+      {dialog?.userId === myUserId && (
+        <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.replace('MessageInviteScreen', {
+          dialog,
+          selectedInvitees: participants?.[0],
+          participants: participants?.[0],
+        })}>
+          <Image style={ styles.inviteImage } source={ images.plus_round_orange } />
+          <Text style={[styles.rowText, { color: colors.orangeColor }]}>Invite</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   )
 
   const renderRow = ({ item }) => {
-    const fullImage = _.get(item, ['full_image'], '');
+    const customData = JSON.parse(item?.customData);
+    const fullImage = customData?.full_image ?? '';
     const finalImage = fullImage ? { uri: fullImage } : images.profilePlaceHolder;
-
     return (
       <View style={styles.rowContainer}>
         <Image style={styles.inviteImage} source={finalImage}/>
-        <Text style={styles.rowText}>{item.fullName}</Text>
+        <Text style={styles.rowText}>{customData?.full_name}</Text>
       </View>)
   }
   const leaveRoom = () => {
@@ -61,15 +77,23 @@ const MessageInviteeDrawerScreen = ({
       { cancelable: false },
     );
   }
+  let fullName = dialog?.name;
+  if (dialog?.type === QB.chat.DIALOG_TYPE.CHAT) {
+    fullName = dialog?.name.slice(2, dialog?.name?.length)
+  }
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.viewContainer}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.titleLabel}>Chatroom Name</Text>
-          <Text style={[styles.title, { marginLeft: wp(3) }]}>{dialog?.name}</Text>
+          <Text style={styles.titleLabel}>
+            {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && 'Chatroom Name'}
+          </Text>
+          <Text style={[styles.title, { marginLeft: wp(3) }]}>
+            {fullName}
+          </Text>
           <View style={styles.separator}/>
           <Text style={styles.titleLabel}>Participants</Text>
-          {inviteButton()}
+          {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && inviteButton()}
           <FlatList
                 data={participants[0]}
                 renderItem={renderRow}
@@ -97,12 +121,13 @@ const styles = StyleSheet.create({
     marginVertical: hp(1),
   },
   titleLabel: {
-    fontSize: normalize(16),
+    fontSize: 20,
     fontFamily: fonts.LRegular,
     color: colors.lightBlackColor,
   },
   title: {
-    fontSize: normalize(18),
+    marginTop: hp(1),
+    fontSize: 20,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
@@ -113,17 +138,18 @@ const styles = StyleSheet.create({
     marginLeft: wp(3),
   },
   rowText: {
-    fontSize: normalize(16),
+    fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginLeft: wp(3),
   },
   inviteImage: {
+    borderRadius: 25,
     height: wp(6),
     width: wp(6),
   },
   grayText: {
-    fontSize: normalize(12),
+    fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.userPostTimeColor,
   },

@@ -32,7 +32,7 @@ import fonts from '../../Constants/Fonts';
 import { getUserDetails } from '../../api/Users';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
-import { QBlogin } from '../../utils/QuickBlox';
+import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -123,9 +123,10 @@ export default function LoginScreen({ navigation }) {
       entity.obj = response.payload;
 
       QBlogin(entity.uid, response.payload).then(async (res) => {
-        entity = { ...entity, QB: { ...res, connected: true } }
+        entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
         await Utility.setStorage('loggedInEntity', entity);
         console.log('LOGIN USER ENTITY:::::', entity);
+        await QBconnectAndSubscribe()
         authContext.setUser(response.payload);
       }).catch(async (error) => {
         console.log(error.message);

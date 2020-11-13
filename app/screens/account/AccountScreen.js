@@ -36,7 +36,9 @@ import * as Utility from '../../utils/index';
 
 import images from '../../Constants/ImagePath';
 import TCNavigationHeader from '../../components/TCNavigationHeader';
-import { QBlogin, QBLogout } from '../../utils/QuickBlox';
+import {
+  QB_ACCOUNT_TYPE, QBconnectAndSubscribe, QBlogin, QBLogout,
+} from '../../utils/QuickBlox';
 
 export default function AccountScreen({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -280,31 +282,40 @@ export default function AccountScreen({ navigation }) {
       setAuthUser(currentEntity)
       setRole('club')
     }
-    switchQBAccount(item);
+    await switchQBAccount(item);
   };
 
   const switchQBAccount = async (accountData) => {
     setloading(true);
-    let entity = await Utility.getStorage('loggedInEntity').then()
+    let entity = await Utility.getStorage('loggedInEntity')
     entity = { ...entity, QB: { connected: false } }
     await Utility.setStorage('loggedInEntity', entity);
-    await QBLogout();
-    const uid = accountData.entity_type === 'player' ? 'user_id' : 'group_id'
-    QBlogin(
-      accountData[uid],
-      {
-        ...accountData,
-        full_name: accountData.group_name,
-      },
-    ).then(async (res) => {
-      setloading(false);
-      let loginData = await Utility.getStorage('loggedInEntity');
-      loginData = await { ...loginData, QB: { ...res, connected: true } }
-      await Utility.setStorage('loggedInEntity', loginData);
-    }).catch(async (error) => {
-      setloading(false);
-      console.log(error.message);
-    })
+    const entityType = await accountData?.entity_type ?? '';
+    const uid = entityType === 'player' ? 'user_id' : 'group_id'
+    QBLogout().then(async () => {
+      const {
+        USER, CLUB, LEAGUE, TEAM,
+      } = QB_ACCOUNT_TYPE;
+      let accountType = USER;
+      if (entityType === 'club') accountType = CLUB;
+      else if (entityType === 'team') accountType = TEAM;
+      else if (entityType === 'league') accountType = LEAGUE;
+
+      await QBlogin(
+        accountData[uid],
+        {
+          ...accountData,
+          full_name: accountData.group_name,
+        },
+        accountType,
+      ).then(async (res) => {
+        entity.QB = { ...res.user, connected: true, token: res?.session?.token }
+        await Utility.setStorage('loggedInEntity', entity);
+        await QBconnectAndSubscribe()
+      }).catch((e) => console.log(e))
+    }).catch((e) => {
+      console.log(e);
+    }).finally(() => setloading(false));
   }
 
   const handleLogOut = async () => {

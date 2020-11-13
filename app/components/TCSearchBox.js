@@ -16,11 +16,14 @@ import strings from '../Constants/String';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-export default function TCSearchBox({ onChangeText, ...props }) {
+export default function TCSearchBox({
+  onChangeText, style, value, ...props
+}) {
   return (
-    <View style={ styles.sectionStyle } {...props}>
+    <View style={{ ...styles.sectionStyle, ...style } } {...props}>
       <Image source={ images.searchLocation } style={ styles.searchImg } />
       <TextInput
+          value={value}
             style={ styles.textInput }
             placeholder={ strings.searchHereText }
             clearButtonMode="always"
@@ -41,7 +44,6 @@ const styles = StyleSheet.create({
     paddingLeft: 17,
     paddingRight: 5,
     width: wp('90%'),
-
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,

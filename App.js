@@ -6,7 +6,7 @@ import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
 import * as Utility from './app/utils/index';
-import { QBinit } from './app/utils/QuickBlox';
+import { QBconnectAndSubscribe, QBinit } from './app/utils/QuickBlox';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -32,6 +32,7 @@ export default function App() {
     if (entity) {
       if (entity.role === 'user') {
         setUser(entity.auth.user);
+        await QBconnectAndSubscribe();
       } else {
         setUser(entity.obj);
       }

@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Text,
   View,
   StyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { normalize } from 'react-native-elements';
-import moment from 'moment';
 import FastImage from 'react-native-fast-image';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../utils';
 import colors from '../Constants/Colors';
@@ -14,14 +12,13 @@ import fonts from '../Constants/Fonts';
 import { QBgetFileURL } from '../utils/QuickBlox';
 
 const TCMessage = ({
-  date,
   body,
   type = 'sender',
   messageStyle,
   attachments = [],
 }) => {
   const [fileUrls, setFileUrls] = useState([]);
-  const getTime = () => moment(date).format('hh: mm A')
+
   const GradiantContainer = ({
     style,
     startGradiantColor,
@@ -38,61 +35,62 @@ const TCMessage = ({
   )
 
   useEffect(() => {
-    const urls = []
     attachments.map((item) => QBgetFileURL(item.id).then((fileUrl) => {
-      urls.push(fileUrl)
+      setFileUrls((urls) => [...urls, fileUrl])
     }))
-    setFileUrls(urls)
   }, [])
 
   return (
-    <View>
-      {type === 'sender' && <Text style={styles.timeContainer}>{getTime()}</Text>}
+    <Fragment>
       <GradiantContainer
-        startGradiantColor={type === 'receiver' ? colors.whiteGradientColor : colors.yellowColor}
-        endGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor}
-        style={{
-          ...styles.messageContaienr,
-          shadowColor: type === 'sender' ? colors.googleColor : '',
-          shadowOffset: type === 'sender' ? { width: 0, height: -2 } : {},
-          shadowOpacity: type === 'sender' ? 0.5 : 0,
-          shadowRadius: type === 'sender' ? 4 : 0,
-          elevation: type === 'sender' ? 10 : 0,
-          borderTopLeftRadius: type === 'receiver' ? 0 : wp(2),
-          borderBottomRightRadius: type === 'sender' ? 0 : wp(2),
-          ...messageStyle,
-        }}>
-        <View style={{ alignSelf: 'flex-start', padding: wp(2) }}>
-          {attachments.length === 0 && (
+            startGradiantColor={type === 'receiver' ? colors.whiteColor : colors.yellowColor}
+            endGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor}
+            style={{
+              ...styles.messageContaienr,
+              shadowColor: type === 'sender' ? colors.googleColor : '',
+              shadowOffset: type === 'sender' ? { width: 0, height: -2 } : {},
+              shadowOpacity: type === 'sender' ? 0.5 : 0,
+              shadowRadius: type === 'sender' ? 4 : 0,
+              elevation: type === 'sender' ? 10 : 0,
+              borderTopLeftRadius: type === 'receiver' ? 0 : wp(2),
+              borderBottomRightRadius: type === 'sender' ? 0 : wp(2),
+              ...messageStyle,
+            }}>
+        {body === '[attachment]'
+          || <View style={{ alignSelf: 'flex-start', padding: wp(2) }}>
             <Text
                   style={{
                     ...styles.messageText,
                     color: type === 'sender' ? colors.whiteColor : colors.lightBlackColor,
-                  }}>{body}</Text>
-          )}
-        </View>
+                  }}>
+              {body}
+            </Text>
+          </View>}
       </GradiantContainer>
-
       {/*  Attachments */}
       {fileUrls.length > 0 && (
-        <View style={{ ...styles.attachmentsContainer, paddingLeft: type === 'receiver' ? wp(5) : wp(2) }}>
+        <View style={{
+          paddingLeft: type === 'receiver' ? wp(5) : wp(2),
+        }}>
           {fileUrls.map((item) => (
             <FastImage
                 source={{ uri: item }}
                 key={item}
+                resizeMode={'cover'}
                 style={{
+                  marginTop: hp(1),
+                  overflow: 'hidden',
                   borderBottomRightRadius: type === 'receiver' ? wp(3) : wp(0),
                   borderBottomLeftRadius: wp(3),
                   borderTopRightRadius: wp(3),
                   borderTopLeftRadius: type === 'receiver' ? wp(0) : wp(3),
                   height: wp(50),
                   width: wp(50),
-                  resizeMode: 'contain',
                 }}/>
           ))}
         </View>
       )}
-    </View>
+    </Fragment>
   )
 }
 const styles = StyleSheet.create({
@@ -103,20 +101,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontFamily: fonts.RRegular,
-    fontSize: normalize(15),
+    fontSize: 16,
     flex: 1,
-    maxWidth: wp(50),
+    maxWidth: wp(60),
     textAlign: 'left',
     color: colors.whiteColor,
-  },
-  timeContainer: {
-    fontFamily: fonts.RRegular,
-    fontSize: normalize(10),
-    textAlign: 'right',
-    color: colors.userPostTimeColor,
-  },
-  attachmentsContainer: {
-    paddingBottom: hp(2),
   },
 });
 

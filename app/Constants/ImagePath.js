@@ -74,6 +74,7 @@ const images = {
   cancelImage: require('../assets/images/cancel.png'),
   createEventImage: require('../assets/images/create_event_image.png'),
   challengeAvailableImage: require('../assets/images/challenge_available_image.png'),
+  cancelWhite: require('../assets/images/cancelWhite.png'),
   videoPlayerHandle: require('../assets/images/oval.png'),
   tab_home_selected: require('../assets/images/tab_home_selected.png'),
 
@@ -159,6 +160,7 @@ const images = {
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
   imageLoadingGIF: require('../assets/images/image_loading.gif'),
+  imageUploadingGIF: require('../assets/images/imageUploadingLoader.gif'),
 
   // Reservation Component
   requestIn: require('../assets/images/request_in.png'),

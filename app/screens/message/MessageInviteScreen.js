@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { normalize } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
@@ -25,20 +24,51 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../uti
 import { QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
 import * as Utility from '../../utils';
 
-const MessageInviteScreen = ({ navigation }) => {
+const MessageInviteScreen = ({ navigation, route }) => {
   const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [selectedInvitees, setSelectedInvitees] = useState([]);
-  const [inViteeData, setInviteeData] = useState([]);
+  const [inviteeData, setInviteeData] = useState([]);
   const [peopleData, setPeopleData] = useState([]);
   const [teamsData, setTeamsData] = useState([]);
   const [clubsData, setClubsData] = useState([]);
   const [leaguesData, setLeaguesData] = useState([]);
+  const [searchData, setSearchData] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
+    const setParticipants = async () => {
+      if (route?.params?.participants) {
+        const entity = await Utility.getStorage('loggedInEntity');
+        const myUid = entity.QB.id;
+        const participants = route.params.participants.filter((item) => item.id !== myUid);
+        setSelectedInvitees(participants)
+      }
+    }
+    setParticipants();
     getAllUsers();
   }, []);
+
+  useEffect(() => {
+    if (searchText !== '') {
+      const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
+      const data = dataTabList[currentTab]
+
+      const escapeRegExp = (str) => {
+        if (!_.isString(str)) {
+          return '';
+        }
+        return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
+      };
+      const searchStr = escapeRegExp(searchText)
+      const answer = data?.filter((a) => (a.fullName)
+        .toLowerCase()
+        .toString()
+        .match(searchStr.toLowerCase().toString()));
+      setSearchData([...answer])
+    }
+  }, [searchText])
 
   const getAllUsers = () => {
     setLoading(true);
@@ -55,7 +85,7 @@ const MessageInviteScreen = ({ navigation }) => {
   const getAllTypesData = async (AllUsers) => {
     setLoading(true);
     const entity = await Utility.getStorage('loggedInEntity');
-    const myUid = await entity.QB.id;
+    const myUid = entity.QB.id;
     const users = AllUsers.filter((user) => user.id !== myUid);
     setInviteeData(users);
     const personData = [];
@@ -89,7 +119,7 @@ const MessageInviteScreen = ({ navigation }) => {
     const entityType = _.get(customData, ['entity_type'], '');
     const fullName = _.get(customData, ['full_name'], '')
     const fullImage = _.get(customData, ['full_image'], '')
-    const country = _.get(customData, ['country'], '')
+    const city = _.get(customData, ['city'], '')
     const placeHolderImage = entityType === 'player'
       ? images.profilePlaceHolder
       : images.groupUsers;
@@ -99,8 +129,8 @@ const MessageInviteScreen = ({ navigation }) => {
     return (
       <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
         <LinearGradient
-        colors={isChecked ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.whiteColor, colors.whiteColor]}
-        style={[styles.listItems, { marginVertical: hp(0.5), paddingVertical: hp(1.5), paddingRight: wp(2) }]}>
+        colors={isChecked ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.offwhite, colors.offwhite]}
+        style={[styles.listItems, { padding: 10 }]}>
           <View style={{
             flexDirection: 'row',
           }}>
@@ -109,8 +139,8 @@ const MessageInviteScreen = ({ navigation }) => {
               <View style={{
                 flex: 3, justifyContent: 'center', marginLeft: hp(1),
               }}>
-                <Text style={styles.title}>{fullName}</Text>
-                <Text style={styles.subTitle}>{country}</Text>
+                <Text style={{ ...styles.title, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{fullName}</Text>
+                <Text style={{ ...styles.subTitle, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{city}</Text>
               </View>
               {isChecked ? <Image source={images.checkGreen} resizeMode={'contain'} style={ styles.checkboxImg }/>
                 : <Image source={images.whiteUncheck} resizeMode={'contain'} style={ styles.checkboxImg }/>
@@ -145,13 +175,15 @@ const MessageInviteScreen = ({ navigation }) => {
             <TouchableOpacity
               style={styles.selectedContactButtonView}
               onPress={() => toggleSelection(true, item)}>
-              <Image source={images.cancelImage} style={styles.deSelectedContactImage} />
+              <Image source={images.cancelWhite} style={styles.deSelectedContactImage} />
             </TouchableOpacity>
           </View>
           <Text
             ellipsizeMode={'tail'}
             numberOfLines={2}
-            style={{ textAlign: 'center', flex: 1, width: wp(20) }}>
+            style={{
+              fontSize: 10, fontFamily: fonts.RBold, textAlign: 'center', flex: 1, width: wp(20),
+            }}>
             {fullName}
           </Text>
         </View>
@@ -200,15 +232,46 @@ const MessageInviteScreen = ({ navigation }) => {
         />
     </View>
   )
-  const renderTabContain = (tabKey) => (
-    <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
-      {tabKey === 0 && renderSingleTab(inViteeData)}
-      {tabKey === 1 && renderSingleTab(peopleData)}
-      {tabKey === 2 && renderSingleTab(teamsData)}
-      {tabKey === 3 && renderSingleTab(clubsData)}
-      {tabKey === 4 && renderSingleTab(leaguesData)}
-    </View>
-  )
+  const renderTabContain = (tabKey) => {
+    const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
+    return (
+      <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
+        {renderSingleTab(searchText === '' ? dataTabList[tabKey] : searchData)}
+      </View>
+    )
+  }
+  const handlePress = () => {
+    if (route?.params?.dialog) {
+      navigation.replace('MessageNewGroupScreen', {
+        selectedInviteesData: selectedInvitees,
+        participants: route?.params?.participants,
+        dialog: route?.params?.dialog,
+      });
+    } else {
+      const occupantsIds = []
+      selectedInvitees.filter((item) => occupantsIds.push(item.id))
+      if (occupantsIds.length > 0) {
+        if (occupantsIds.length === 1) {
+          QBcreateDialog(occupantsIds).then((res) => {
+            setSelectedInvitees([]);
+            navigation.replace('MessageChat', {
+              screen: 'MessageChatRoom',
+              params: { dialog: res },
+            });
+          }).catch((error) => {
+            console.log(error);
+          })
+        } else {
+          setSelectedInvitees([]);
+          navigation.replace('MessageNewGroupScreen', {
+            selectedInviteesData: selectedInvitees,
+          });
+        }
+      } else {
+        Alert.alert('Select Members')
+      }
+    }
+  }
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Header
@@ -221,30 +284,13 @@ const MessageInviteScreen = ({ navigation }) => {
           <Text style={styles.eventTitleTextStyle}>Invite</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={() => {
-            const occupantsIds = []
-            selectedInvitees.filter((item) => occupantsIds.push(item.id))
-            if (occupantsIds.length > 0) {
-              if (occupantsIds.length === 1) {
-                QBcreateDialog(occupantsIds).then((res) => {
-                  setSelectedInvitees([]);
-                  navigation.navigate('MessageChat', {
-                    screen: 'MessageChatRoom',
-                    params: { dialog: res },
-                  });
-                }).catch((error) => {
-                  console.log(error);
-                })
-              } else {
-                setSelectedInvitees([]);
-                navigation.replace('MessageNewGroupScreen', { selectedInviteesData: selectedInvitees });
-              }
-            } else {
-              Alert.alert('Select Members')
-            }
-          }}>
-            <Text style={styles.eventTextStyle}>
-              {selectedInvitees && selectedInvitees.length > 1 ? 'Next' : 'Create'}
+          <TouchableOpacity style={{ padding: 2 }} onPress={handlePress}>
+            <Text style={{ ...styles.eventTextStyle, fontSize: 14 }}>
+              {
+                selectedInvitees
+                && (selectedInvitees.length > 1 || route?.params?.dialog)
+                  ? 'Next'
+                  : 'Create'}
             </Text>
           </TouchableOpacity>
         }
@@ -263,14 +309,16 @@ const MessageInviteScreen = ({ navigation }) => {
           />
         </View>
       )}
-
-      <TCSearchBox/>
+      <TCSearchBox style={{ marginHorizontal: 15 }}
+        value={searchText}
+        onChangeText={(text) => setSearchText(text)}/>
       <View style={styles.sperateLine}/>
       <TCScrollableProfileTabs
         tabItem={TAB_ITEMS}
         onChangeTab={(ChangeTab) => {
-          setSelectedInvitees([]);
+          // setSelectedInvitees([]);
           setCurrentTab(ChangeTab.i)
+          setSearchText('')
         }}
         customStyle={{ flex: 1 }}
         currentTab={currentTab}
@@ -301,32 +349,32 @@ const styles = StyleSheet.create({
   },
   eventTextStyle: {
     width: wp(12),
-    fontSize: normalize(12),
+    fontSize: 10,
     fontFamily: fonts.RRegular,
     alignSelf: 'center',
   },
 
   imageContainer: {
-    height: wp(12),
-    width: wp(12),
+    height: 45,
+    width: 45,
     borderRadius: wp(6),
   },
 
   title: {
     flexWrap: 'wrap',
     fontFamily: fonts.RBold,
-    fontSize: normalize(14),
+    fontSize: 16,
     color: colors.lightBlackColor,
 
   },
   subTitle: {
     fontFamily: fonts.RLight,
-    fontSize: normalize(14),
+    fontSize: 16,
     color: colors.lightBlackColor,
   },
 
   listItems: {
-    padding: hp(0.5),
+    paddingVertical: 8,
     color: 'black',
     borderRadius: 5,
     shadowColor: colors.googleColor,
@@ -352,11 +400,11 @@ const styles = StyleSheet.create({
   selectedContactButtonView: {
     height: hp(2),
     width: hp(2),
-    backgroundColor: colors.lightgrayColor,
+    backgroundColor: 'rgba(0,0,0,0.7)',
     borderRadius: hp(2),
     position: 'absolute',
     top: 0,
-    right: 20,
+    right: 15,
     alignSelf: 'flex-start',
     alignItems: 'center',
     justifyContent: 'center',

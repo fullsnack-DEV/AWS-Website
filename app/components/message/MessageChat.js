@@ -8,12 +8,13 @@ import {
   Image, Text,
   SafeAreaView,
   KeyboardAvoidingView,
-  FlatList,
+  FlatList, Alert,
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import QB from 'quickblox-react-native-sdk';
 import LinearGradient from 'react-native-linear-gradient';
-import { normalize } from 'react-native-elements';
+import ImagePicker from 'react-native-image-crop-picker';
+import moment from 'moment';
 import ActivityLoader from '../loader/ActivityLoader';
 import Header from '../Home/Header';
 import images from '../../Constants/ImagePath';
@@ -23,9 +24,13 @@ import TCInputBox from '../TCInputBox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
 import TCMessage from '../TCMessage';
 import * as Utility from '../../utils';
+
 import {
+  QB_ACCOUNT_TYPE,
   QB_DIALOG_TYPE, QBgetMessages, QBgetUserDetail, QBsendMessage,
 } from '../../utils/QuickBlox';
+
+const MAX_FILE_SIZE = 104857600;
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
@@ -41,11 +46,16 @@ const MessageChat = ({
   route,
   navigation,
 }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
   const {
     id: dialogId,
-    name: headingTitle,
+    name,
     occupantsIds,
-  } = route.params.dialog
+    type: dialogType,
+    isJoined,
+  } = route?.params?.dialog
   const chatType = occupantsIds.length > 2 ? QB_DIALOG_TYPE.GROUP : QB_DIALOG_TYPE.SINGLE
   const [myUserId, setMyUserId] = useState();
   const [loading, setLoading] = useState(false);
@@ -54,7 +64,12 @@ const MessageChat = ({
   const [occupantsData, setOccupantsData] = useState([]);
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
-
+  let headingTitle = name;
+  if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+    if (name.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
+      headingTitle = name.slice(2, name.length)
+    }
+  }
   const newMessageHandler = (event) => {
     const {
       type,
@@ -67,6 +82,7 @@ const MessageChat = ({
           messages = [...messages, payload]
           refSavedMessagesData.current = messages
           setSavedMessagesData(messages);
+          setTimeout(() => onInputBoxFocus(), 100)
         }
       }
     }
@@ -76,7 +92,10 @@ const MessageChat = ({
     const getUser = async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       setMyUserId(entity.QB.id);
+      setLoading(true);
       await getMessages();
+      setTimeout(() => onInputBoxFocus(), 200)
+      setLoading(false);
     }
     getUser();
     QBgetUserDetail(
@@ -88,7 +107,9 @@ const MessageChat = ({
     }).catch((e) => {
       console.log(e);
     })
-    if (chatType === QB_DIALOG_TYPE.GROUP) QB.chat.joinDialog({ dialogId });
+    if (chatType === QB_DIALOG_TYPE.GROUP && !isJoined) {
+      QB.chat.joinDialog({ dialogId });
+    }
     QbMessageEmitter.addListener(
       QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
       newMessageHandler,
@@ -99,15 +120,17 @@ const MessageChat = ({
     }
   }, [])
 
-  const getMessages = async () => {
+  const getMessages = async (onRefreshCalled = false) => {
     try {
-      setLoading(true);
-      const response = await QBgetMessages(dialogId);
-      if (response) {
+      const response = await QBgetMessages(dialogId, savedMessagesData.length);
+      if (onRefreshCalled) {
+        refSavedMessagesData.current = [...response.message, ...savedMessagesData]
+        setSavedMessagesData((data) => [...response.message, ...data]);
+      } else {
         refSavedMessagesData.current = response.message
         setSavedMessagesData(response.message);
-        // setHasMore(response.messages.length === response.limit);
       }
+      // setHasMore(response.messages.length === response.limit);
     } catch (err) {
       console.log(err);
     } finally {
@@ -116,60 +139,138 @@ const MessageChat = ({
   }
 
   const renderMessages = ({ item, index }) => {
+    const getDateTime = (compareFormat, outputFormat) => {
+      const preveiousDate = index > 0 && savedMessagesData[index - 1].dateSent;
+      const currentDate = item.dateSent;
+      if (
+        moment(currentDate).format(compareFormat)
+          === moment(preveiousDate).format(compareFormat)
+      ) {
+        return null;
+      }
+      return moment(currentDate).format(outputFormat);
+    }
+
     const type = item.senderId === myUserId ? 'sender' : 'receiver';
     const userData = occupantsData && occupantsData.filter((oItem) => oItem.id === item.senderId);
     let isReceiver = index === 0 && item.senderId !== myUserId;
     if (!isReceiver) isReceiver = index > 0 && savedMessagesData[index - 1].senderId !== item.senderId && item.senderId !== myUserId;
+
+    const displayDate = getDateTime('l', 'D MMM')
+    const displayTime = getDateTime('lll', 'hh: mm A')
+    let fullName = userData && userData[0] ? userData[0].fullName : headingTitle;
+    if (fullName.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
+      fullName = fullName.slice(2, fullName.length)
+    }
+    let finalImage = images.profilePlaceHolder;
+    if (isReceiver) {
+      const customData = userData.length > 0 && userData[0]?.customData ? JSON.parse(userData[0].customData) : {};
+      const entityType = customData?.entity_type ?? '';
+      const fullImage = customData?.full_image ?? null;
+      if (fullImage) finalImage = { uri: fullImage }
+      else finalImage = entityType === 'player' ? images.profilePlaceHolder : images.groupUsers;
+    }
     return (
       <View key={index} style={{
         flex: 1,
-        alignSelf: type === 'sender' ? 'flex-end' : 'flex-start',
+        marginTop: hp(1),
       }}>
-        {isReceiver && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: hp(1) }}>
-            <View style={{ ...styles.avatarContainer }}>
-              <Text style={styles.avatarContainerText}>
-                {
-                  userData
-                  && userData[0]
-                    ? userData[0].fullName[0].toUpperCase()
-                    : headingTitle[0].toUpperCase()
-                }
+        {displayDate && <Text style={{
+          ...styles.timeContainer,
+          fontSize: 12,
+          textAlign: 'center',
+        }}>
+          {moment(displayDate, 'D MMM').isSame(moment(), 'D') ? 'Today' : displayDate}
+        </Text>}
+        {displayTime && <Text style={{
+          ...styles.timeContainer,
+          textAlign: type === 'receiver' ? 'center' : 'right',
+        }}>
+          {displayTime}
+        </Text>}
+        <View style={{ flex: 1, alignSelf: type === 'sender' ? 'flex-end' : 'flex-start' }}>
+          {isReceiver && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: hp(1) }}>
+              <View style={{ ...styles.avatarContainer }}>
+                <Image source={finalImage} style={{ height: wp(10), width: wp(10), borderRadius: 25 }}/>
+              </View>
+              <Text style={{
+                alignSelf: 'flex-start',
+                color: colors.userPostTimeColor,
+                fontFamily: fonts.RRegular,
+                fontSize: 12,
+                marginTop: 2,
+                marginLeft: 8,
+              }}>
+                {/* eslint-disable-next-line no-mixed-operators */}
+                {fullName}
               </Text>
             </View>
-            <Text style={{
-              color: colors.userPostTimeColor,
-              fontFamily: fonts.RRegular,
-              fontSize: normalize(12),
-              marginLeft: wp(1),
-            }}>
-              {/* eslint-disable-next-line no-mixed-operators */}
-              {userData
-              && userData[0]
-                ? userData[0].fullName
-                : headingTitle}
-            </Text>
-          </View>
-        )}
+          )}
 
-        <TCMessage
-          attachments={item.attachments}
-          date={new Date(item.dateSent)}
-          body={item.body}
-          type={type}
-          messageStyle={{ paddingLeft: type === 'receiver' ? wp(10) : 0 }}/>
+          <TCMessage
+            attachments={item.attachments}
+            date={new Date(item.dateSent)}
+            body={item.body}
+            type={type}
+            messageStyle={{
+              marginLeft: type === 'receiver' ? wp(12) : 0,
+              marginTop: isReceiver ? hp(-2) : 0,
+            }}
+          />
+        </View>
       </View>
     )
   }
 
   const sendMessage = () => {
-    QBsendMessage(dialogId, messageBody).then(() => {
+    if (!uploadedFile && messageBody === '') {
+      Alert.alert('Enter Message')
+    }
+    const message = (uploadedFile && messageBody === '') ? '[attachment]' : messageBody
+    QBsendMessage(dialogId, message, uploadedFile).then(() => {
       setMessageBody('');
+      setSelectedImage(null);
+      setUploadedFile(null);
+      onInputBoxFocus()
+    })
+  }
+
+  const uploadImage = () => {
+    ImagePicker.openPicker({
+      width: 400,
+      height: 400,
+      cropping: true,
+    }).then((image) => {
+      setUploadImageInProgress(true);
+      setSelectedImage(image?.path ?? null);
+      const imagePath = image?.sourceURL;
+      const validImageSize = image?.size <= MAX_FILE_SIZE;
+
+      if (!validImageSize) {
+        Alert.alert('file image size error')
+      } else {
+        QB.content.subscribeUploadProgress({ url: imagePath });
+        QB.content.upload({ url: imagePath, public: false }).then((file) => {
+          setUploadImageInProgress(false);
+          setUploadedFile(file);
+        }).catch((e) => {
+          setUploadImageInProgress(false);
+          Alert.alert(e.message);
+        });
+      }
     })
   }
 
   const onInputBoxFocus = () => {
     if (scrollRef && scrollRef.current) scrollRef.current.scrollToEnd({ animated: false });
+  }
+  let headingMainTitle = headingTitle;
+  if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+    const firstTwoChar = headingTitle.slice(0, 2);
+    if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
+      headingMainTitle = headingTitle.slice(2, headingTitle.length)
+    }
   }
   return (
     <SafeAreaView style={ styles.mainContainer }>
@@ -180,7 +281,7 @@ const MessageChat = ({
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>{headingTitle}</Text>
+          <Text style={styles.eventTextStyle}>{headingMainTitle}</Text>
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={() => {
@@ -195,7 +296,7 @@ const MessageChat = ({
       <View style={ styles.sperateLine } />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <FlatList
-            onContentSizeChange={() => scrollRef && scrollRef.current && scrollRef.current.scrollToEnd()}
+            // onContentSizeChange={() => scrollRef && scrollRef.current && scrollRef.current.scrollToEnd()}
             ref={scrollRef}
             extraData={savedMessagesData}
             style={styles.messageViewContainer}
@@ -203,21 +304,74 @@ const MessageChat = ({
             data={savedMessagesData}
             renderItem={renderMessages}
             ListEmptyComponent={() => <Text style={styles.noMessagesText}>No Messages</Text>}
+            onRefresh={async () => {
+              await getMessages(true)
+            }}
+            refreshing={loading}
         />
-        <View style={styles.bottomTextInputContainer}>
-          <Image source={images.messageCamera} style={styles.sideButton} />
-          <TCInputBox
+        <View style={{
+          ...styles.bottomTextUpperContainer,
+          height: selectedImage ? hp(18) : hp(8),
+          borderTopWidth: selectedImage ? 1 : 0,
+          borderTopColor: selectedImage ? colors.userPostTimeColor : '',
+        }}>
+          {selectedImage && (
+            <View style={styles.selectedImageContainer}>
+              <FastImage
+                  source={{ uri: selectedImage }}
+                  style={{
+                    height: 50,
+                    width: 50,
+                    marginVertical: hp(2),
+                  }}
+                  resizeMode={'contain'}
+              />
+              <TouchableOpacity onPress={() => {
+                setSelectedImage(null);
+                setUploadImageInProgress(false);
+                setUploadedFile(null);
+              }}>
+                <FastImage
+                  source={ images.cancelImage }
+                  style={{ height: 20, width: 20 }}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+          <View style={styles.bottomTextInputContainer}>
+            <TouchableOpacity onPress={uploadImage}>
+              <Image source={images.messageCamera} style={{
+                ...styles.sideButton,
+                marginHorizontal: wp(3),
+                height: 25,
+                width: 23,
+              }}/>
+            </TouchableOpacity>
+            <TCInputBox
             onFocus={onInputBoxFocus}
             value={messageBody}
             placeHolderText={'Type a message'}
             onChangeText={(text) => setMessageBody(text)}
             style={{ flex: 1 }}
           />
-          <TouchableOpacity onPress={sendMessage}>
-            <GradiantContainer style={styles.sendButtonContainer}>
-              <Image source={images.sendButton} style={styles.sendButton} />
-            </GradiantContainer>
-          </TouchableOpacity>
+            {uploadImageInProgress ? (
+              <FastImage
+                    source={ images.imageUploadingGIF }
+                    style={styles.imageUploadingLoader}
+                    resizeMode={'contain'}
+                />
+            ) : (
+              <TouchableOpacity onPress={sendMessage}>
+                <GradiantContainer style={styles.sendButtonContainer}>
+                  <Image source={images.sendButton} style={styles.sendButton} />
+                </GradiantContainer>
+              </TouchableOpacity>
+            )
+
+          }
+
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -248,8 +402,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   sideButton: {
-    flex: 0.1,
-    marginHorizontal: wp(2),
+    flex: 0.4,
     resizeMode: 'contain',
   },
   sendButtonContainer: {
@@ -270,11 +423,19 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     alignSelf: 'center',
   },
+  bottomTextUpperContainer: {
+
+    backgroundColor: colors.whiteColor,
+    width: wp(100),
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 0,
+    left: 0,
+  },
   bottomTextInputContainer: {
     backgroundColor: colors.whiteColor,
     flexDirection: 'row',
     width: wp(100),
-    height: hp(8),
     justifyContent: 'center',
     alignItems: 'center',
     bottom: 0,
@@ -284,12 +445,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 10,
+    paddingVertical: hp(1),
   },
   messageViewContainer: {
     paddingHorizontal: wp(3),
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.grayBackgroundColor,
     width: wp(100),
     height: hp(70),
+    marginBottom: hp(2),
   },
   messageContentView: {
     marginBottom: hp(2),
@@ -303,16 +466,29 @@ const styles = StyleSheet.create({
     borderRadius: wp(5),
     backgroundColor: colors.writePostSepratorColor,
   },
-  avatarContainerText: {
-    color: colors.blackColor,
-    fontSize: normalize(12),
-    fontFamily: fonts.RBold,
-    textAlign: 'center',
-  },
   noMessagesText: {
     padding: wp(5),
     textAlign: 'center',
     fontFamily: fonts.RLight,
+  },
+  timeContainer: {
+    fontFamily: fonts.RRegular,
+    fontSize: 10,
+    color: colors.userPostTimeColor,
+  },
+  selectedImageContainer: {
+    flex: 1,
+    paddingHorizontal: wp(3),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: wp(100),
+    alignItems: 'center',
+  },
+  imageUploadingLoader: {
+    height: wp(10),
+    alignSelf: 'center',
+    width: wp(10),
+    margin: wp(1),
   },
 });
 
