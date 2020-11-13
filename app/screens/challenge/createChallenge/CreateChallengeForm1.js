@@ -116,7 +116,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
       const minutes = Math.floor(delta / 60) % 60;
       delta -= minutes * 60;
 
-      return `${hours} HOURS ${minutes} MINUTES`;
+      return `${hours} hours ${minutes} minutes`;
     }
   };
   const tConvert = (timeString) => {
@@ -371,7 +371,9 @@ export default function CreateChallengeForm1({ navigation, route }) {
               <TouchableOpacity
                 onPress={() => {
                   setVenue(0);
-                  getLatLongData();
+                  if (route && route.params && route.params.venueObj) {
+                    getLatLongData()
+                  }
                 }}>
                 <Image
                   source={

@@ -15,18 +15,18 @@ export default function MatchFeesCard() {
     <View style={styles.backgroundView}>
       <View style={styles.feesRow}>
         <Text style={styles.matchServiceFeeText}>Match fee <Text style={styles.smallFeeText}>$20 CAD x 2 hours</Text></Text>
-        <Text style={styles.matchServiceFeeText}>$40 CAD</Text>
+        <Text style={styles.matchServiceFeeText}>$0 CAD</Text>
       </View>
       <View style={styles.feesRow}>
         <Text style={styles.matchServiceFeeText}>Service fee</Text>
-        <Text style={styles.matchServiceFeeText}>$40 CAD</Text>
+        <Text style={styles.matchServiceFeeText}>$0 CAD</Text>
       </View>
 
       <View style={{ flex: 1 }}/>
       <TCThinDivider width={'94%'}/>
       <View style={[styles.feesRow, { marginBottom: 5 }]}>
         <Text style={styles.feeStructureText}>Total payment</Text>
-        <Text style={styles.feeStructureText}>$40 CAD</Text>
+        <Text style={styles.feeStructureText}>$0 CAD</Text>
       </View>
 
     </View>

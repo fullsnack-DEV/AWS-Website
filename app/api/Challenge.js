@@ -7,7 +7,8 @@ export const getFeesEstimation = async (entityID, params) => makeAPIRequest({
   data: params,
 })
 
-export const getGroupDetails = async (entityID) => makeAPIRequest({
+export const createChallenge = async (entityID, params) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}challenge/${entityID}/estimateGameFee`,
+  url: `${Config.BASE_URL}teams/${entityID}/challenge`,
+  data: params,
 })
