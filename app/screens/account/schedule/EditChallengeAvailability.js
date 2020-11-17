@@ -32,8 +32,8 @@ const challegeAvailability = [
     id: 0,
     isBlock: false,
     allDay: false,
-    startDateTime: '2020-05-15 05:30:00',
-    endDateTime: '2020-05-15 06:30:00',
+    startDateTime: '2020-05-15 00:00:00',
+    endDateTime: '2020-05-15 23:59:59',
   },
 ];
 
