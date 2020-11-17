@@ -24,7 +24,7 @@ import {
 import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
 import {
   getGroupDetails, getJoinedGroups,
-  followTeam, unfollowTeam, joinTeam, leaveTeam, inviteTeam,
+  followGroup, unfollowGroup, joinTeam, leaveTeam, inviteTeam,
 } from '../../api/Groups';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -123,8 +123,8 @@ export default function HomeScreen({ navigation, route }) {
 
       getData(uid, role).catch((error) => {
         setTimeout(() => {
-          Alert.alert('Towns Cup', error.messages);
-        }, 0.1)
+          Alert.alert(strings.alertmessagetitle, error.messages);
+        }, 0.3)
         setloading(false);
       });
     });
@@ -353,7 +353,7 @@ export default function HomeScreen({ navigation, route }) {
     return <View />
   }
 
-  const callFollowAPIForUser = async () => {
+  const callFollowUser = async () => {
     setloading(true);
     const params = {
       entity_type: 'player',
@@ -364,13 +364,13 @@ export default function HomeScreen({ navigation, route }) {
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callUnfollowAPIForUser = async () => {
+  const callUnfollowUser = async () => {
     setloading(true);
     const params = {
       entity_type: 'player',
@@ -381,13 +381,13 @@ export default function HomeScreen({ navigation, route }) {
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callInviteAPIForUser = async () => {
+  const clubInviteUser = async () => {
     setloading(true);
     const params = {
       entity_type: loggedInEntity.role,
@@ -395,42 +395,41 @@ export default function HomeScreen({ navigation, route }) {
     };
     inviteUser(params, userID).then(() => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
+      }, 0.3)
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callFollowAPIForTeam = async (ignoreLoading = false) => {
-    if (ignoreLoading) { setloading(true); }
+  const callFollowGroup = async () => {
+    setloading(true);
     const params = {
-      entity_type: 'team',
+      entity_type: currentUserData.entity_type,
     };
-    followTeam(params, userID).then(() => {
-      console.log('is_following set to true')
+    followGroup(params, userID).then(() => {
       currentUserData.is_following = true;
       currentUserData.follower_count += 1;
       setCurrentUserData(currentUserData);
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callUnfollowAPIForTeam = async () => {
+  const callUnfollowGroup = async () => {
     setloading(true);
     const params = {
-      entity_type: 'player',
+      entity_type: currentUserData.entity_type,
     };
-    unfollowTeam(params, userID).then(() => {
+    unfollowGroup(params, userID).then(() => {
       currentUserData.is_following = false;
       if (currentUserData.follower_count > 0) {
         currentUserData.follower_count -= 1
@@ -439,39 +438,35 @@ export default function HomeScreen({ navigation, route }) {
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callJoinTeamAPIForUser = async () => {
+  const userJoinGroup = async () => {
     setloading(true);
-    const params = {
-      entity_type: 'team',
-    };
+    const params = {};
     joinTeam(params, userID).then(() => {
       currentUserData.is_joined = true;
       currentUserData.member_count += 1
       if (currentUserData.is_following === false) {
-        callFollowAPIForTeam(true);
+        callFollowGroup();
       } else {
         setCurrentUserData(currentUserData);
         setloading(false);
       }
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callUnjoinTeamAPIForUser = async () => {
+  const userLeaveGroup = async () => {
     setloading(true);
-    const params = {
-      entity_type: 'player',
-    };
+    const params = {};
     leaveTeam(params, userID).then(() => {
       currentUserData.is_joined = false;
       if (currentUserData.member_count > 0) {
@@ -481,73 +476,130 @@ export default function HomeScreen({ navigation, route }) {
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
     });
   };
 
-  const callInviteTeamAPIForClub = async () => {
+  const clubInviteTeam = async () => {
     setloading(true);
     const params = [userID];
     inviteTeam(params, loggedInEntity.uid).then(() => {
+      setloading(false);
       setTimeout(() => {
-        Alert.alert('Towns Cup', `“${currentUserData.group_name}“ is invited successfully`);
-      }, 0.1)
-      currentUserData.is_joined = false;
-      if (currentUserData.member_count > 0) {
-        currentUserData.member_count -= 1
-      }
-      setCurrentUserData(currentUserData);
+        Alert.alert(strings.alertmessagetitle, `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`);
+      }, 0.3)
+    }).catch((error) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
+      setloading(false);
+    });
+  };
+
+  const clubJoinTeam = async () => {
+    setloading(true);
+    const params = {};
+    joinTeam(params, userID).then(() => {
+      loggedInEntity.obj.parent_group_id = currentUserData.group_id;
+      Utility.setStorage('loggedInEntity', loggedInEntity);
+      setLoggedInEntity(loggedInEntity);
       setloading(false);
     }).catch((error) => {
       setTimeout(() => {
-        Alert.alert('Towns Cup', error.messages);
-      }, 0.1)
+        Alert.alert(strings.alertmessagetitle, error.messages);
+      }, 0.3)
       setloading(false);
+    });
+  };
+
+  const clubLeaveTeam = async () => {
+    setloading(true);
+    const params = {};
+    leaveTeam(params, userID).then(() => {
+      delete loggedInEntity.obj.parent_group_id;
+      Utility.setStorage('loggedInEntity', loggedInEntity);
+      setLoggedInEntity(loggedInEntity);
+      setloading(false);
+    }).catch((error) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, error.message);
+      }, 0.3)
     });
   };
 
   const onUserAction = (action) => {
-    console.log('action pressed', action)
-    if (action === 'follow') {
-      callFollowAPIForUser();
-    } else if (action === 'unfollow') {
-      callUnfollowAPIForUser();
-    } else if (action === 'invite') {
-      callInviteAPIForUser();
-    } else if (action === 'edit') {
-      navigation.navigate('EditPersonalProfileScreen')
+    switch (action) {
+      case 'follow':
+        callFollowUser();
+        break;
+      case 'unfollow':
+        callUnfollowUser();
+        break;
+      case 'invite':
+        clubInviteUser();
+        break;
+      case 'edit':
+        navigation.navigate('EditPersonalProfileScreen')
+        break;
+      default:
     }
   }
 
   const onClubAction = (action) => {
-    console.log('action pressed', action)
-    if (action === 'follow') {
-      callFollowAPIForUser();
-    } else if (action === 'unfollow') {
-      callUnfollowAPIForUser();
-    } else if (action === 'invite') {
-      callInviteAPIForUser();
-    } else if (action === 'edit') {
-      navigation.navigate('EditPersonalProfileScreen')
+    switch (action) {
+      case 'follow':
+        callFollowGroup();
+        break;
+      case 'unfollow':
+        callUnfollowGroup();
+        break;
+      case 'join':
+        userJoinGroup();
+        break;
+      case 'leave':
+        userLeaveGroup();
+        break;
+      case 'joinTeam':
+        if (loggedInEntity.obj.parent_group_id) {
+          Alert.alert(strings.alertmessagetitle, strings.alreadyjoinclubmessage)
+        } else {
+          clubJoinTeam();
+        }
+        break;
+      case 'leaveTeam':
+        clubLeaveTeam();
+        break;
+      case 'edit':
+        // edit code here
+        break;
+      default:
     }
   }
 
   const onTeamAction = (action) => {
-    console.log('action pressed', action)
-    if (action === 'follow') {
-      callFollowAPIForTeam();
-    } else if (action === 'unfollow') {
-      callUnfollowAPIForTeam();
-    } else if (action === 'join') {
-      callJoinTeamAPIForUser();
-    } else if (action === 'unjoin') {
-      callUnjoinTeamAPIForUser();
-    } else if (action === 'invite') {
-      callInviteTeamAPIForClub();
-    } else if (action === 'edit') {
-      navigation.navigate('EditPersonalProfileScreen')
+    switch (action) {
+      case 'follow':
+        callFollowGroup();
+        break;
+      case 'unfollow':
+        callUnfollowGroup();
+        break;
+      case 'join':
+        userJoinGroup();
+        break;
+      case 'leave':
+        userLeaveGroup();
+        break;
+      case 'invite':
+        clubInviteTeam();
+        break;
+      case 'edit':
+        // edit code here
+        break;
+      default:
     }
   }
 

@@ -1,5 +1,6 @@
 const strings = {
   townsCupTitle: 'T O W N S C U P',
+  alertmessagetitle: 'Towns Cup',
   titleBasic: 'Townscup',
   townsCupTagLine: 'All Teams in the World.',
   welCome: 'Welcome',
@@ -331,5 +332,7 @@ const strings = {
   responsetimeexpired: 'RESPONSE PERIOD EXPIRED',
   decline: 'DECLINE',
   accept: 'ACCEPT',
+  alreadyjoinclubmessage: 'Your team can’t join this club because a team can join only a club.',
+  isinvitedsuccesfully: 'is invited successfully',
 };
 export default strings;
