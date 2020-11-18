@@ -78,7 +78,7 @@ const makeAPIRequest = async ({
     const response = await axios(options);
     console.log('API Response:', response.data);
     if (!response.data.status) {
-      throw new Error(response.data || response);
+      throw new Error(response.data.messages || response);
     }
     return response.data
   } catch (e) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View, StyleSheet, FlatList,
 } from 'react-native';
@@ -19,8 +19,6 @@ export default function UserHomeTopSection({
   const playin = userDetails.games && userDetails.games.length > 0
   const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
 
-  console.log('isAdmin ', isAdmin)
-
   const renderPlayIn = ({ item }) => (
     <UserInfoPlaysInItem title={item.sport_name}
     totalGames={item.totalGames}
@@ -34,41 +32,18 @@ export default function UserHomeTopSection({
 
   let isMember = false;
 
-  const onFollowPress = () => {
-    onAction('follow')
-  }
-
-  const onUnfollowPress = () => {
-    onAction('unfollow')
-  }
-
-  const onMessgaePress = () => {
-    onAction('message')
-  }
-
-  const onInvitePress = () => {
-    onAction('invite')
-  }
-
-  const onEditProfilePress = () => {
-    onAction('edit')
-  }
-
-  useEffect(() => {
-    // User Status
-    if (loggedInEntity.role === 'club') {
-      const result = userDetails.clubIds.filter((clubID) => clubID === loggedInEntity.uid);
-      if (result.length > 0) {
-        isMember = true
-      }
-    } else if (loggedInEntity.role === 'team') {
-      const result = userDetails.teamIds.filter((teamId) => teamId === loggedInEntity.uid);
-
-      if (result.length > 0) {
-        isMember = true
-      }
+  if (loggedInEntity.role === 'club' && userDetails.clubIds) {
+    const result = userDetails.clubIds.filter((clubID) => clubID === loggedInEntity.uid);
+    if (result.length > 0) {
+      isMember = true
     }
-  }, [isMember])
+  } else if (loggedInEntity.role === 'team' && userDetails.teamIds) {
+    const result = userDetails.teamIds.filter((teamId) => teamId === loggedInEntity.uid);
+
+    if (result.length > 0) {
+      isMember = true
+    }
+  }
 
   return (
     <View>
@@ -76,7 +51,7 @@ export default function UserHomeTopSection({
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
       textStyle={styles.buttonTextStyle}
-      onPressProfile = {onEditProfilePress}
+      onPressProfile = {() => { onAction('edit') }}
       showArrow={false}/>}
       {!isAdmin && <View style={styles.otherUserStyle}>
         {loggedInEntity.role === 'user' && <View style={styles.messageButtonStyle}>
@@ -86,14 +61,14 @@ export default function UserHomeTopSection({
           rightImage = {images.check}
           imageStyle = {styles.checkMarkStyle}
           textStyle={styles.buttonTextStyle}
-          onPressProfile = {onUnfollowPress }
+          onPressProfile = {() => { onAction('unfollow') } }
           /> }
           {(userDetails && !userDetails.is_following) && <TCGradientButton
           outerContainerStyle={styles.firstButtonOuterStyle}
           style={styles.firstButtonStyle}
           textStyle={styles.buttonTextStyle}
           title={strings.follow}
-          onPress = {onFollowPress}/> }
+          onPress = {() => { onAction('follow') }}/> }
         </View>}
         {loggedInEntity.role !== 'user' && <View style={styles.messageButtonStyle}>
           {isMember && <TCProfileButton
@@ -110,7 +85,7 @@ export default function UserHomeTopSection({
           startGradientColor={colors.greenGradientStart}
           endGradientColor={colors.greenGradientEnd}
           title={strings.invite}
-          onPress = {onInvitePress}/> }
+          onPress = {() => { onAction('invite') }}/> }
         </View>}
 
         <TCProfileButton
@@ -118,7 +93,7 @@ export default function UserHomeTopSection({
         style={styles.messageButtonStyle}
         textStyle={styles.buttonTextStyle}
         showArrow={false}
-        onPressProfile = {onMessgaePress}/>
+        onPressProfile = {() => { onAction('message') }}/>
       </View> }
       {/* Play in section */}
       {playin && <View>

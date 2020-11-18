@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View, StyleSheet,
 } from 'react-native';
@@ -14,39 +14,8 @@ export default function UserTeamTopSection({
   teamDetails, isAdmin, loggedInEntity, onAction,
 }) {
   let isMember = false;
-
-  useEffect(() => {
-    if (teamDetails && teamDetails.parent_group_id === loggedInEntity.uid) {
-      isMember = true
-    }
-  }, [isMember])
-
-  const onFollowPress = () => {
-    onAction('follow')
-  }
-
-  const onUnfollowPress = () => {
-    onAction('unfollow')
-  }
-
-  const onMessgaePress = () => {
-    onAction('message')
-  }
-
-  const onJoinPress = () => {
-    onAction('join')
-  }
-
-  const onUnjoinPress = () => {
-    onAction('unjoin')
-  }
-
-  const onEditProfilePress = () => {
-    onAction('edit')
-  }
-
-  const onInvitePress = () => {
-    onAction('invite')
+  if (teamDetails && teamDetails.parent_group_id === loggedInEntity.uid) {
+    isMember = true
   }
 
   return (
@@ -55,7 +24,7 @@ export default function UserTeamTopSection({
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
       textStyle={styles.buttonTextStyle}
-      onPressProfile = {onEditProfilePress}
+      onPressProfile = {() => { onAction('edit') }}
       showArrow={false}/>}
       {!isAdmin && <View style={styles.otherUserStyle}>
         {loggedInEntity.role === 'user' && <View style={styles.joinFollowViewStyle}>
@@ -65,14 +34,14 @@ export default function UserTeamTopSection({
           rightImage = {images.check}
           imageStyle = {styles.checkMarkStyle}
           textStyle={styles.buttonTextStyle}
-          onPressProfile = {onUnjoinPress }
+          onPressProfile = {() => { onAction('leave') } }
           /> }
           {(teamDetails && !teamDetails.is_joined) && <TCGradientButton
           outerContainerStyle={styles.userButtonOuterStyle}
           style={styles.userButtonStyle}
           textStyle={styles.buttonTextStyle}
           title={strings.join}
-          onPress = {onJoinPress}/> }
+          onPress = {() => { onAction('join') }}/> }
 
           {(teamDetails && teamDetails.is_following) && <TCProfileButton
           title={strings.following}
@@ -80,14 +49,14 @@ export default function UserTeamTopSection({
           rightImage = {images.check}
           imageStyle = {styles.checkMarkStyle}
           textStyle={styles.buttonTextStyle}
-          onPressProfile = {onUnfollowPress }
+          onPressProfile = {() => { onAction('unfollow') } }
           /> }
           {(teamDetails && !teamDetails.is_following) && <TCGradientButton
           outerContainerStyle={styles.userButtonOuterStyle}
           style={styles.userButtonStyle}
           textStyle={styles.buttonTextStyle}
           title={strings.follow}
-          onPress = {onFollowPress}/> }
+          onPress = {() => { onAction('follow') }}/> }
         </View>}
         {loggedInEntity.role === 'club' && <View style={styles.messageButtonStyle}>
           {isMember && <TCProfileButton
@@ -102,7 +71,7 @@ export default function UserTeamTopSection({
           style={styles.firstButtonStyle}
           textStyle={styles.buttonTextStyle}
           title={strings.invite}
-          onPress = {onInvitePress}/> }
+          onPress = {() => { onAction('invite') }}/> }
         </View>}
 
         {loggedInEntity.role !== 'team' && <TCProfileButton
@@ -110,13 +79,13 @@ export default function UserTeamTopSection({
         style={[styles.messageButtonStyle, { width: loggedInEntity.role === 'user' ? '32%' : '48%' }]}
         textStyle={styles.buttonTextStyle}
         showArrow={false}
-        onPressProfile = {onMessgaePress}/>}
+        onPressProfile = {() => { onAction('message') }}/>}
         {loggedInEntity.role === 'team' && <TCProfileButton
         title={strings.message}
         style={[styles.messageButtonStyle, { width: '100%' }]}
         textStyle={styles.buttonTextStyle}
         showArrow={false}
-        onPressProfile = {onMessgaePress}/>}
+        onPressProfile = {() => { onAction('message') }}/>}
       </View> }
     </View>
   );
