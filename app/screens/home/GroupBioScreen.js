@@ -13,17 +13,17 @@ import {
 
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
-import { updateUserProfile } from '../../api/Users';
+import { patchGroup } from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function UserAboutScreen({ navigation, route }) {
+export default function GroupBioScreen({ navigation, route }) {
   // For activity indicator
   const [loading, setloading] = useState(false);
-  const [about, setAbout] = useState(route.params.userDetails.about);
+  const [bio, setBio] = useState(route.params.groupDetails.bio);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -38,26 +38,22 @@ export default function UserAboutScreen({ navigation, route }) {
         } }>{strings.done}</Text>
       ),
     });
-  }, [navigation, about]);
+  }, [navigation, bio]);
 
   const onSaveButtonClicked = () => {
     setloading(true);
-    const userProfile = {};
-    userProfile.about = about;
-    updateUserProfile(userProfile).then(async (response) => {
+    const groupProfile = {};
+    groupProfile.bio = bio;
+    patchGroup(route.params.groupDetails.group_id, groupProfile).then(async (response) => {
       setloading(false);
       if (response && response.status === true) {
-        // setTimeout(() => {
-        //   Alert.alert('Towns Cup', 'Profile changed sucessfully');
-        // }, 0.1)
         const entity = await Utility.getStorage('loggedInEntity')
         entity.obj = response.payload;
-        entity.auth.user = response.payload;
         Utility.setStorage('loggedInEntity', entity);
         navigation.goBack();
       } else {
         setTimeout(() => {
-          Alert.alert('Towns Cup', 'Something went wrong');
+          Alert.alert(strings.alertmessagetitle, 'Something went wrong');
         }, 0.1)
       }
     })
@@ -68,13 +64,13 @@ export default function UserAboutScreen({ navigation, route }) {
       <ScrollView style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <View>
-          <TCLabel title= {strings.abouttitle}/>
+          <TCLabel title= {strings.bio}/>
           <TCTextField
-            placeholder={strings.enterAboutPlaceholder}
-            onChangeText={(text) => setAbout(text)}
+            placeholder={strings.enterBioPlaceholder}
+            onChangeText={(text) => setBio(text)}
             multiline
             maxLength={500}
-            value={about}
+            value={bio}
             height={155}
             />
         </View>

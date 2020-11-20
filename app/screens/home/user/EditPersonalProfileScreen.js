@@ -17,17 +17,17 @@ import { useIsFocused } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
 // import TCGradientButton from '../../components/TCGradientButton';
-import TCTouchableLabel from '../../components/TCTouchableLabel';
-import TCTextField from '../../components/TCTextField';
-import TCLabel from '../../components/TCLabel';
-import TCProfileImageControl from '../../components/TCProfileImageControl'
-import { updateUserProfile } from '../../api/Users';
-import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
-import * as Utility from '../../utils';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
-import uploadImages from '../../utils/imageAction';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import TCTextField from '../../../components/TCTextField';
+import TCLabel from '../../../components/TCLabel';
+import TCProfileImageControl from '../../../components/TCProfileImageControl'
+import { updateUserProfile } from '../../../api/Users';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import strings from '../../../Constants/String';
+import * as Utility from '../../../utils';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
+import uploadImages from '../../../utils/imageAction';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const actionSheet = useRef();

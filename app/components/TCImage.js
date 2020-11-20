@@ -17,7 +17,7 @@ export default function TCImage({
     <View style={ containerStyle }>
       <Image
         style={ [{ position: 'absolute' }, imageStyle] }
-        defaultSource={ defaultSource }
+        source={ defaultSource }
         resizeMode={ resizeMode }
       />
       <FastImage

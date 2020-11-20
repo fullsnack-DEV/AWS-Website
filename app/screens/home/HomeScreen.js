@@ -23,7 +23,7 @@ import {
 } from '../../api/Users';
 import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
 import {
-  getGroupDetails, getJoinedGroups,
+  getGroupDetails, getJoinedGroups, getTeamsOfClub, getGroupMembers,
   followGroup, unfollowGroup, joinTeam, leaveTeam, inviteTeam,
 } from '../../api/Groups';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
@@ -37,12 +37,13 @@ import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
+import GroupInfo from '../../components/Home/GroupInfo';
 import ScheduleTabView from '../../components/Home/ScheduleTabView';
 import TouchableIcon from '../../components/Home/TouchableIcon';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
 import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
-import UserClubTopSection from '../../components/Home/User/UserClubTopSection';
-import UserTeamTopSection from '../../components/Home/User/UserTeamTopSection';
+import ClubHomeTopSection from '../../components/Home/Club/ClubHomeTopSection';
+import TeamHomeTopSection from '../../components/Home/Team/TeamHomeTopSection';
 import strings from '../../Constants/String';
 
 export default function HomeScreen({ navigation, route }) {
@@ -85,9 +86,26 @@ export default function HomeScreen({ navigation, route }) {
       });
     } else {
       getGroupDetails(uid).then((res) => {
-        setCurrentUserData(res.payload);
+        const groupDetails = res.payload;
+        setCurrentUserData(groupDetails);
         setClubHome(clubHome)
         setTeamHome(teamHome)
+
+        getGroupMembers(uid).then((response) => {
+          if (response) {
+            groupDetails.joined_members = response.payload;
+            setCurrentUserData(groupDetails);
+          }
+        });
+
+        if (clubHome) {
+          getTeamsOfClub(uid).then((response) => {
+            if (response) {
+              groupDetails.joined_teams = response.payload;
+              setCurrentUserData(groupDetails);
+            }
+          });
+        }
       });
     }
     const params = {
@@ -107,6 +125,7 @@ export default function HomeScreen({ navigation, route }) {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       setLoggedInEntity(entity)
+      console.log('entity', entity)
 
       let uid = entity.uid
       let role = entity.role
@@ -687,11 +706,11 @@ export default function HomeScreen({ navigation, route }) {
                     isAdmin={isAdmin}
                     loggedInEntity={loggedInEntity}
                     onAction={onUserAction}/>}
-          {isClubHome && <UserClubTopSection clubDetails={currentUserData}
+          {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
             isAdmin={isAdmin}
             loggedInEntity={loggedInEntity}
             onAction={onClubAction}/>}
-          {isTeamHome && <UserTeamTopSection teamDetails={currentUserData}
+          {isTeamHome && <TeamHomeTopSection teamDetails={currentUserData}
             isAdmin={isAdmin}
             loggedInEntity={loggedInEntity}
             onAction={onTeamAction}/>}
@@ -720,11 +739,16 @@ export default function HomeScreen({ navigation, route }) {
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >
-                  <UserInfo
+                  {isUserHome && <UserInfo
                     navigation={navigation}
                     userDetails={currentUserData}
-                    userID={userID}
-                  />
+                    isAdmin={isAdmin}
+                  />}
+                  {(isClubHome || isTeamHome) && <GroupInfo
+                    navigation={navigation}
+                    groupDetails={currentUserData}
+                    isAdmin={isAdmin}
+                  />}
                 </View>)}
                 {tabKey === 2 && (<View style={{ flex: 1 }} />)}
                 {tabKey === 3 && (<View style={{ flex: 1 }}>

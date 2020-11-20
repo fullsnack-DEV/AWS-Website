@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, StyleSheet,
+  View, StyleSheet, Platform,
 } from 'react-native';
 
 import colors from '../../../Constants/Colors';
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
   otherUserStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: Platform.OS === 'android' ? 15 : 0,
     marginHorizontal: 15,
     height: 33,
     marginBottom: 14,
