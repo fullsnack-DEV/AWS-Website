@@ -5,15 +5,17 @@ import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
-import EditPersonalProfileScreen from '../screens/home/EditPersonalProfileScreen';
+import EditPersonalProfileScreen from '../screens/home/user/EditPersonalProfileScreen';
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 
 import colors from '../Constants/Colors'
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import strings from '../Constants/String';
-import UserAboutScreen from '../screens/home/UserAboutScreen';
-import UserBasicInfoScreen from '../screens/home/UserBasicInfoScreen';
+import UserAboutScreen from '../screens/home/user/UserAboutScreen';
+import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
+import GroupBioScreen from '../screens/home/GroupBioScreen'
+import EditGroupContactScreen from '../screens/home/EditGroupContactScreen';
 
 // Account's Screens
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
@@ -1089,6 +1091,40 @@ const HomeNavigator = () => (
           },
         } }
       />
+
+    <Stack.Screen
+        name="GroupBioScreen"
+        component={GroupBioScreen}
+        options={{
+          title: strings.editbio,
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+    <Stack.Screen
+        name="EditGroupContactScreen"
+        component={EditGroupContactScreen}
+        options={{
+          title: strings.editcontact,
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+
   </Stack.Navigator>
 );
 

@@ -4,18 +4,18 @@ import {
   View, Text, ScrollView, Alert, StyleSheet,
 } from 'react-native';
 
-import TCTouchableLabel from '../../components/TCTouchableLabel';
-import TCTextField from '../../components/TCTextField';
-import TCLabel from '../../components/TCLabel';
-import TCPhoneNumber from '../../components/TCPhoneNumber';
-import { updateUserProfile } from '../../api/Users';
-import ActivityLoader from '../../components/loader/ActivityLoader';
-import strings from '../../Constants/String';
-import * as Utility from '../../utils';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
-import TCDateTimePicker from '../../components/TCDateTimePicker';
-import TCPicker from '../../components/TCPicker';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import TCTextField from '../../../components/TCTextField';
+import TCLabel from '../../../components/TCLabel';
+import TCPhoneNumber from '../../../components/TCPhoneNumber';
+import { updateUserProfile } from '../../../api/Users';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import strings from '../../../Constants/String';
+import * as Utility from '../../../utils';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
+import TCDateTimePicker from '../../../components/TCDateTimePicker';
+import TCPicker from '../../../components/TCPicker';
 
 export default function UserBasicInfoScreen({ navigation, route }) {
   // For activity indicator

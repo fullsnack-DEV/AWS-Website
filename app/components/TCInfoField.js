@@ -21,7 +21,7 @@ export default function TCInfoField({
 }) {
   return (
     <View style={[styles.fieldView, Props]}>
-      <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={1}>{title}</Text>
+      <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>{title}</Text>
       <Text style={[styles.fieldValue, valueStyle, { color }]} numberOfLines={3} >{value}</Text>
     </View>
 
@@ -39,13 +39,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
-    flex: 0.3,
+    flex: 0.33,
     paddingTop: 4,
   },
   fieldValue: {
+    marginLeft: 10,
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    flex: 0.7,
+    flex: 0.65,
   },
 });

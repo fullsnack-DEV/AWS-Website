@@ -26,7 +26,7 @@ function TCTextField({
         style={ [styles.textInput, textStyle, { height }] }
         placeholder={ placeholder }
         placeholderTextColor={ placeholderTextColor }
-        autoCapitalize={false}
+        autoCapitalize={'none'}
         secureTextEntry={ secureText }
         keyboardType={ keyboardType }
         multiline={multiline}

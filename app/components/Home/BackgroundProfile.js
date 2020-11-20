@@ -57,11 +57,11 @@ function BackgroundProfile({
   }
 
   return (
-    <View style={{ width: wp('100%') }}>
+    <View style={{ width: wp('100%'), margin: 0 }}>
       <View>
         <Image source={bgImage ? { uri: bgImage } : images.profilePlaceHolder} style={[styles.bgImageStyle, bgImageStyle]} />
       </View>
-      <View style={{ backgroundColor: colors.whiteColor }}>
+      <View style={{ backgroundColor: colors.whiteColor }} >
         <View style={{ width: '100%' }}>
           <Image style={[styles.profileImageStyle, profileImageStyle]}
             source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
