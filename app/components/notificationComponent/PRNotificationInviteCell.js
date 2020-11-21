@@ -44,7 +44,7 @@ function PRNotificationInviteCell({
                 outerContainerStyle={styles.acceptBtnStyle}
                 style={styles.acceptButtonInnerStyle}
                 title={strings.accept}
-                onPress={ onAccept}/>
+                onPress={onAccept}/>
               <TouchableOpacity style={styles.declineBtnStyle} onPress={onDecline}>
                 <Text style={[styles.btnTextStyle, { color: colors.lightBlackColor }]}>{strings.decline}</Text>
               </TouchableOpacity>

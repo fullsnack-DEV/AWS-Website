@@ -19,7 +19,7 @@ export default function UserTeamTopSection({
   }
 
   return (
-    <View>
+    <View style={{ marginTop: 15 }}>
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     width: 'auto',
   },
   otherUserStyle: {
+    marginTop: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 15,

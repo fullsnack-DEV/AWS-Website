@@ -46,7 +46,7 @@ export default function UserHomeTopSection({
   }
 
   return (
-    <View>
+    <View style={{ marginTop: 15 }}>
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
@@ -143,9 +143,9 @@ const styles = StyleSheet.create({
   otherUserStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 0,
     marginHorizontal: 15,
     height: 33,
-    marginTop: 1,
     marginBottom: 14,
     flexWrap: 'wrap',
     alignItems: 'center',

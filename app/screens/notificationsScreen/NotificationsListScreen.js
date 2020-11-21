@@ -81,8 +81,16 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const onAccept = (requestId) => {
+    setloading(true)
     if (activeScreen) {
-      acceptRequest(requestId).catch(Alert.alert('Failed to accept request. Try again later'))
+      acceptRequest(requestId).then(() => {
+        callNotificationList();
+      }).catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 0.3)
+      })
     } else {
       const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
       Alert.alert(`Do you want to switch account to ${name}?`, '', [
@@ -97,11 +105,16 @@ function NotificationsListScreen({ navigation }) {
     }
   }
 
-  const onDecline = ({ requestId }) => {
-    console.log('hello dear')
-
+  const onDecline = (requestId) => {
     if (activeScreen) {
-      declineRequest(requestId).catch(Alert.alert('Failed to decline request. Try again later'))
+      declineRequest(requestId).then(() => {
+        callNotificationList();
+      }).catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 0.3)
+      })
     } else {
       const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
       Alert.alert(`Do you want to switch account to ${name}?`, '', [
@@ -169,6 +182,7 @@ function NotificationsListScreen({ navigation }) {
   }
   const activeTab = async (index) => {
     setCurrentTab(index);
+    checkActiveScreen(groupList[index])
     refContainer.current.scrollToIndex({
       animated: true,
       index,
@@ -195,9 +209,11 @@ function NotificationsListScreen({ navigation }) {
         if (response.status === true) {
           const { teams } = response.payload;
           const { clubs } = response.payload;
-          setGroupList([authContext.user, ...clubs, ...teams]);
+          const groups = [authContext.user, ...clubs, ...teams]
+          setGroupList(groups);
           setNotifAPI(1);
           setCurrentTab(0);
+          checkActiveScreen(groups[0]);
         } else {
           // setloading(false)
         }
@@ -214,7 +230,6 @@ function NotificationsListScreen({ navigation }) {
   const callNotificationList = () => {
     setloading(true)
     const entity = groupList[currentTab];
-
     setSelectedEntity({ ...entity });
     const params = {
       mark_read: 'true',
@@ -233,24 +248,13 @@ function NotificationsListScreen({ navigation }) {
             !== Moment(currentDate).format('yyyy-MM-DD'),
         );
 
-        // parseChallengeOfferAlter()
-
         const array = [
           { data: [...pendingReqNotification], section: strings.pendingrequests, type: 'request' },
           { data: [...todayNotifications], section: strings.today, type: 'notification' },
           { data: [...erlierNotifications], section: strings.earlier, type: 'notification' },
         ];
 
-        // console.log('notification array ', array);
-
         setMainNotificationsList([...array.filter((item) => item.data.length !== 0)]);
-        const loggedInEntity = await Utility.getStorage('loggedInEntity');
-        const currentGroupID = selectedEntity.entity_type === 'player' ? entity.user_id : entity.group_id
-        if (loggedInEntity.uid === currentGroupID) {
-          setActiveScreen(true);
-        } else {
-          setActiveScreen(false);
-        }
         setloading(false)
       })
       .catch((e) => {
@@ -280,6 +284,16 @@ function NotificationsListScreen({ navigation }) {
       />
     </TouchableOpacity>
   );
+
+  const checkActiveScreen = async (entity) => {
+    const loggedInEntity = await Utility.getStorage('loggedInEntity');
+    const currentID = entity.entity_type === 'player' ? entity.user_id : entity.group_id
+    if (loggedInEntity.uid === currentID) {
+      setActiveScreen(true);
+    } else {
+      setActiveScreen(false);
+    }
+  }
 
   return (
     <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
