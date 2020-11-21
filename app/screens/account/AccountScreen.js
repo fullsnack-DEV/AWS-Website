@@ -212,18 +212,18 @@ export default function AccountScreen({ navigation }) {
     setloading(true);
 
     let currentEntity = await Utility.getStorage('loggedInEntity');
+    console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
+
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         team.push(currentEntity.obj)
         setGroupList([...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         club.push(currentEntity.obj)
         setGroupList([...club, ...team]);
       }
       currentEntity = {
-        ...currentEntity, uid: item.group_id, role: 'user', obj: item,
+        ...currentEntity, uid: item.user_id, role: 'user', obj: item,
       }
       setParentGroup(null);
       await Utility.setStorage('loggedInEntity', currentEntity);
@@ -231,17 +231,14 @@ export default function AccountScreen({ navigation }) {
       setRole('user')
     } else if (item.entity_type === 'team') {
       if (currentEntity.obj.entity_type === 'player') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = team.indexOf(item);
         team.splice(i, 1);
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'team') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = team.indexOf(item);
         team.splice(i, 1, currentEntity.obj);
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = team.indexOf(item);
         team.splice(i, 1);
         club.push(currentEntity.obj)
@@ -256,18 +253,15 @@ export default function AccountScreen({ navigation }) {
       setRole('team')
     } else if (item.entity_type === 'club') {
       if (currentEntity.obj.entity_type === 'player') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = club.indexOf(item);
         club.splice(i, 1);
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'team') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = club.indexOf(item);
         club.splice(i, 1);
         team.push(currentEntity.obj)
         setGroupList([authUser.auth.user, ...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
-        console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
         const i = club.indexOf(item);
         club.splice(i, 1, currentEntity.obj);
         setGroupList([authUser.auth.user, ...club, ...team]);

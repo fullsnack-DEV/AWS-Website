@@ -72,40 +72,33 @@ export default function HomeScreen({ navigation, route }) {
 
     const user_ID = uid;
     if (userHome) {
-      getUserDetails(uid).then((res) => {
-        const userDetails = res.payload;
-        setCurrentUserData(res.payload);
+      const promises = [getUserDetails(uid), getJoinedGroups(uid)]
+      Promise.all(promises).then(([res1, res2]) => {
+        const userDetails = res1.payload;
+        if (res2) {
+          userDetails.joined_teams = res2.payload.teams;
+          userDetails.joined_clubs = res2.payload.clubs;
+        }
+        setCurrentUserData(userDetails);
+        setClubHome(clubHome)
+        setTeamHome(teamHome)
         setUserHome(userHome)
-        getJoinedGroups(uid).then((response) => {
-          if (response) {
-            userDetails.joined_teams = response.payload.teams;
-            userDetails.joined_clubs = response.payload.clubs;
-            setCurrentUserData(userDetails);
-          }
-        });
       });
     } else {
-      getGroupDetails(uid).then((res) => {
-        const groupDetails = res.payload;
+      const promises = [getGroupDetails(uid), getGroupMembers(uid)]
+      if (clubHome) {
+        promises.push(getTeamsOfClub(uid))
+      }
+      Promise.all(promises).then(([res1, res2, res3]) => {
+        const groupDetails = res1.payload;
+        groupDetails.joined_members = res2.payload;
+        if (res3) {
+          groupDetails.joined_teams = res3.payload;
+        }
         setCurrentUserData(groupDetails);
         setClubHome(clubHome)
         setTeamHome(teamHome)
-
-        getGroupMembers(uid).then((response) => {
-          if (response) {
-            groupDetails.joined_members = response.payload;
-            setCurrentUserData(groupDetails);
-          }
-        });
-
-        if (clubHome) {
-          getTeamsOfClub(uid).then((response) => {
-            if (response) {
-              groupDetails.joined_teams = response.payload;
-              setCurrentUserData(groupDetails);
-            }
-          });
-        }
+        setUserHome(userHome)
       });
     }
     const params = {

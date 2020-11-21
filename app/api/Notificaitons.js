@@ -3,12 +3,12 @@ import makeAPIRequest from '../utils/Global';
 
 export const getUnreadCount = () => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/notifications/unreadcount/`,
+  url: `${Config.BASE_URL}notifications/unreadcount/`,
 });
 
 export const getNotificationsList = (params) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/notifications`,
+  url: `${Config.BASE_URL}notifications`,
   params,
 });
 
@@ -31,11 +31,11 @@ export const acceptRequest = (requestId) => makeAPIRequest({
 
 export const declineRequest = (requestId) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}requests/${requestId}/decline`,
+  url: `${Config.BASE_URL}requests/${requestId}/reject`,
 });
 
 export const getTrash = (params) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/trash`,
+  url: `${Config.BASE_URL}trash`,
   params,
 });

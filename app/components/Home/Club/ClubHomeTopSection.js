@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, StyleSheet, Platform,
+  View, StyleSheet,
 } from 'react-native';
 
 import colors from '../../../Constants/Colors';
@@ -27,7 +27,7 @@ export default function UserHomeTopSection({
   }
 
   return (
-    <View>
+    <View style={{ marginTop: 15 }}>
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
   otherUserStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: Platform.OS === 'android' ? 15 : 0,
     marginHorizontal: 15,
+    marginTop: 0,
     height: 33,
     marginBottom: 14,
     flexWrap: 'wrap',
