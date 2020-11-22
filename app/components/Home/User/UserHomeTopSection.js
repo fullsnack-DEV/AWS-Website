@@ -46,7 +46,7 @@ export default function UserHomeTopSection({
   }
 
   return (
-    <View style={{ marginTop: 15 }}>
+    <View style={{ paddingTop: 20, paddingBottom: 20 }}>
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
@@ -100,7 +100,7 @@ export default function UserHomeTopSection({
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
           <FlatList
-            style={{ marginTop: 15 }}
+            style={{ marginTop: 10, marginBottom: 0 }}
             data={userDetails.games}
             horizontal
             renderItem={renderPlayIn}
@@ -113,7 +113,7 @@ export default function UserHomeTopSection({
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin}/>
           <FlatList
-            style={{ marginTop: 15 }}
+            style={{ marginTop: 10, marginBottom: 0 }}
             data={userDetails.referee_data}
             horizontal
             renderItem={renderRefereesIn}
@@ -129,15 +129,15 @@ export default function UserHomeTopSection({
 const styles = StyleSheet.create({
   sectionStyle: {
     flex: 1,
-    marginBottom: 17,
+    marginTop: 25,
+    marginBottom: 0,
     marginHorizontal: 15,
     backgroundColor: colors.whiteColor,
   },
   editButtonStyle: {
     marginHorizontal: 15,
     height: 28,
-    marginTop: 21,
-    marginBottom: 17,
+    marginVertical: 0,
     width: 'auto',
   },
   otherUserStyle: {
@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 0,
     marginHorizontal: 15,
-    height: 33,
-    marginBottom: 14,
+    height: 28,
+    marginVertical: 0,
     flexWrap: 'wrap',
     alignItems: 'center',
   },

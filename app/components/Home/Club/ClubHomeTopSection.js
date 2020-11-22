@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View, StyleSheet,
 } from 'react-native';
-
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
@@ -10,7 +9,7 @@ import strings from '../../../Constants/String';
 import TCProfileButton from '../../TCProfileButton'
 import TCGradientButton from '../../TCGradientButton'
 
-export default function UserHomeTopSection({
+export default function ClubHomeTopSection({
   clubDetails, isAdmin, loggedInEntity, onAction,
 }) {
   let isMember = false
@@ -27,7 +26,7 @@ export default function UserHomeTopSection({
   }
 
   return (
-    <View style={{ marginTop: 15 }}>
+    <View style={{ paddingTop: 20, paddingBottom: 25 }}>
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
@@ -97,17 +96,15 @@ const styles = StyleSheet.create({
   editButtonStyle: {
     marginHorizontal: 15,
     height: 28,
-    marginTop: 21,
-    marginBottom: 17,
+    marginVertical: 0,
     width: 'auto',
   },
   otherUserStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 15,
-    marginTop: 0,
-    height: 33,
-    marginBottom: 14,
+    marginVertical: 0,
+    height: 28,
     flexWrap: 'wrap',
     alignItems: 'center',
   },

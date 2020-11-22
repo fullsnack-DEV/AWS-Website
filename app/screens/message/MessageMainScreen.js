@@ -59,7 +59,7 @@ const MessageMainScreen = ({ navigation, route }) => {
   const navigateToMessageChat = async (uid) => {
     QBgetUserDetail(
       QB.users.USERS_FILTER.FIELD.LOGIN,
-      QB.users.USERS_FILTER.TYPE.NUMBER,
+      QB.users.USERS_FILTER.TYPE.STRING,
       [uid].join(),
     ).then((userData) => {
       const user = userData.users.filter((item) => item.login === uid)[0];
