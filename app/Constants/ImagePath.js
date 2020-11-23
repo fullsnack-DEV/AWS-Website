@@ -199,6 +199,11 @@ const images = {
   groupUsers: require('../assets/images/groupUsers.png'),
   plus_round_orange: require('../assets/images/plus_round_orange.png'),
   leave_chat_room: require('../assets/images/leave_chat_room.png'),
+  soccerBackground: require('../assets/images/soccerBackground.png'),
+  firstVSTeam: require('../assets/images/firstTeam.png'),
+  secondVSTeam: require('../assets/images/secondTeam.png'),
+  warningIcon: require('../assets/images/warning.png'),
+  popupUpArrow: require('../assets/images/topPopupArrow.png'),
 };
 
 export default images;

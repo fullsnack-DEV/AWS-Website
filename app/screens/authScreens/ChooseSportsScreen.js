@@ -15,7 +15,7 @@ import {
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { createUser, getUserDetails } from '../../api/Users';
-import getSportsList from '../../api/Games';
+import { getSportsList } from '../../api/Games';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import TCButton from '../../components/TCButton';

@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
 
 } from 'react-native';
 
@@ -13,110 +12,143 @@ import {
 } from 'react-native-responsive-screen';
 import Dash from 'react-native-dash';
 
+import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
+import {
+  gamePlayerStatusStats, gamePlayStats, gamePlayStatsImage,
+  getGameConvertMinsToTime,
+  getGameDateTimeInHMSformat,
+  getGameTimeAgo,
+} from '../../utils/gameUtils';
 
-export default function TCGameScoreLeft({ editor }) {
+export default function TCGameScoreLeft(
+  {
+    gameData,
+    editor = false,
+    backgroundColor = colors.offwhite,
+    recordData,
+  },
+) {
+  const getScoreText = (firstTeamScore = recordData?.scoreboard?.home_team, secondTeamScore = recordData?.scoreboard?.away_team) => {
+    const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
+    let firstTeamColor = colors.lightBlackColor
+    let secondTeamColor = colors.lightBlackColor
+    if (firstTeamScore !== secondTeamScore) {
+      if (isGreterTeam === 1) firstTeamColor = colors.themeColor
+      if (isGreterTeam === 2) secondTeamColor = colors.themeColor
+    }
+    return (
+      <Text
+        style={ {
+          textAlign: 'center',
+          fontFamily: fonts.RLight,
+          fontSize: 20,
+          color: colors.lightBlackColor,
+          backgroundColor: 'transparent',
+          alignSelf: 'center',
+          position: 'absolute',
+          bottom: 0,
+        } }>
+        <Text style={{ color: secondTeamColor }}>{recordData?.scoreboard?.away_team ?? 0}</Text>{' : '}
+        <Text style={{ color: firstTeamColor }}>{recordData?.scoreboard?.home_team ?? 0}</Text>
+      </Text>
+    )
+  }
+
   return (
     <View>
       <View
-        style={ {
-          backgroundColor: colors.lightYellowColor,
-        } }>
+            style={{
+              backgroundColor,
+            } }>
         <View
-          style={ [
-            styles.headerView,
-            { backgroundColor: colors.lightYellowColor },
-          ] }>
+              style={ styles.headerView }>
           <View style={ styles.leftView }>
-            <View>
-              <Image
-                source={ images.profilePlaceHolder }
-                style={ styles.leftProfileImg }
-              />
+            <View style={{ width: '22%' }}>
+              <FastImage
+                    source={ images.profilePlaceHolder }
+                    style={ styles.leftProfileImg }
+                />
             </View>
             <Text style={ styles.leftPlayerText } numberOfLines={ 3 }>
-              Kishan Makani () received a yellow card
+              {gameData?.home_team?.group_name ?? ''}
+              <Text style={{ fontFamily: fonts.RMedium }}>
+                {' '}{gamePlayStats[recordData?.verb]}
+              </Text>
             </Text>
-            <View style={ styles.gameRecordButton }>
-              <Image
-                source={ images.gameOwnGoal }
-                style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
-              />
+            <View style={{ width: '25%', alignItems: 'flex-end', right: 10 }}>
+              <View style={styles.gameRecordButton}>
+                <FastImage
+                    resizeMode={'contain'}
+                      source={ gamePlayStatsImage[recordData?.verb] }
+                      style={ styles.gameRecordImg }
+                  />
+              </View>
             </View>
           </View>
           <View style={ styles.centerView }>
             <Dash
-              style={ {
-                width: 1,
-                height: 70,
-                flexDirection: 'column',
-              } }
-              dashColor={ colors.lightgrayColor }
-            />
+                  style={ {
+                    width: 1,
+                    height: 70,
+                    flexDirection: 'column',
+                  } }
+                  dashColor={ colors.lightgrayColor }
+              />
           </View>
           <View style={ styles.rightBlankView }>
-            <Text style={ { fontFamily: fonts.RBold, fontSize: 12 } }>4m</Text>
+            <Text style={ { fontFamily: fonts.RBold, fontSize: 12 } }>
+              {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
+            </Text>
             <Text
-              style={ {
-                fontFamily: fonts.RRegular,
-                fontSize: 13,
-                color: colors.darkGrayColor,
-              } }>
-              10:45 AM
+                  style={ {
+                    fontFamily: fonts.RLight,
+                    fontSize: 12,
+                    color: colors.darkGrayColor,
+                  } }>
+              {getGameDateTimeInHMSformat(recordData?.timestamp)}
             </Text>
           </View>
         </View>
 
         <Dash
-          style={ {
-            width: 1,
-            height: 20,
-            flexDirection: 'column',
-            alignSelf: 'center',
-          } }
-          dashColor={ colors.lightgrayColor }
-        />
-        <Text
-          style={ {
-            textAlign: 'center',
-            fontFamily: fonts.RLight,
-            fontSize: 20,
-            color: colors.darkGrayColor,
-            backgroundColor: 'transparent',
-            position: 'absolute',
-            alignSelf: 'center',
-            bottom: 0,
-          } }>
-          <Text>0</Text> : <Text>0</Text>
-        </Text>
+              style={ {
+                width: 1,
+                height: 20,
+                flexDirection: 'column',
+                alignSelf: 'center',
+              } }
+              dashColor={ colors.lightgrayColor }
+          />
+        {!(recordData?.verb in gamePlayerStatusStats) && getScoreText()}
       </View>
       {editor && (
         <View style={ styles.editorView }>
           <Dash
-            style={ {
-              width: 1,
-              height: 30,
-              flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
-          />
+                  style={ {
+                    width: 1,
+                    height: 30,
+                    flexDirection: 'column',
+                  } }
+                  dashColor={ colors.lightgrayColor }
+              />
           <View
-            style={ {
-              width: '100%',
-              justifyContent: 'space-around',
-              alignItems: 'space-around',
-              position: 'absolute',
-            } }>
+                  style={ {
+                    width: '100%',
+                    justifyContent: 'space-around',
+                    alignItems: 'space-around',
+                    position: 'absolute',
+                  } }>
             <Text style={ styles.recordedBy }>
-              Recorded by Kishan Makani makani (50s ago)
+              Recorded by {recordData?.recorded_by_team_name ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>
       )}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -137,21 +169,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 15,
-
     elevation: 10,
-    height: 30,
+    height: 20,
+    alignSelf: 'flex-end',
     justifyContent: 'center',
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
-
     shadowRadius: 3,
-    width: 30,
+    width: 20,
   },
   gameRecordImg: {
-    resizeMode: 'contain',
+    height: 16,
+    width: 16,
   },
-
+  leftPlayerText: {
+    width: '55%',
+    fontFamily: fonts.RBlack,
+    fontSize: 14,
+  },
   headerView: {
     alignContent: 'center',
     alignItems: 'center',
@@ -159,24 +195,20 @@ const styles = StyleSheet.create({
     height: 70,
     justifyContent: 'flex-start',
     width: '100%',
-    // paddingTop: 10,
   },
 
   leftProfileImg: {
     borderRadius: 3,
-    height: 25,
+    height: 20,
     marginLeft: 15,
-
     marginRight: 10,
     resizeMode: 'contain',
-    width: 25,
+    width: 20,
   },
   leftView: {
-    // backgroundColor: 'green',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-
     width: wp('49%'),
   },
   recordedBy: {

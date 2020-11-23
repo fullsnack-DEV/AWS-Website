@@ -6,8 +6,11 @@ import Dash from 'react-native-dash';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import { gameStats, getGameConvertMinsToTime, getGameDateTimeInHMSformat } from '../../utils/gameUtils';
 
-export default function TCGameState() {
+export default function TCGameState({
+  recordData,
+}) {
   return (
     <View
       style={ {
@@ -27,30 +30,28 @@ export default function TCGameState() {
       />
       <Text
         style={ {
+          fontSize: 12,
+          fontFamily: fonts.RRegular,
           textAlign: 'center',
-
           color: colors.darkGrayColor,
-
           position: 'absolute',
-
           bottom: 0,
         } }>
         <Text
           style={ {
-            fontFamily: fonts.RRegular,
-            fontSize: 12,
+            fontFamily: fonts.RBold,
             color: colors.blackColor,
           } }>
-          0m
+          {getGameConvertMinsToTime(recordData?.minutes) ?? 0}
         </Text>{' '}
-        (11:10 AM){' '}
+        ({getGameDateTimeInHMSformat(recordData?.timestamp ?? new Date())}){' '}
         <Text
           style={ {
-            fontFamily: fonts.RRegular,
+            fontFamily: fonts.RMedium,
             fontSize: 16,
             color: colors.blackColor,
           } }>
-          Match paused
+          Match {recordData?.verb in gameStats && gameStats[recordData?.verb]}
         </Text>
       </Text>
     </View>

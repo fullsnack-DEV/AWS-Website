@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// import HomeScreen from '../screens/home/HomeScreen';
+// import SoccerHome from '../screens/home/SoccerHome';
 
 import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
@@ -32,9 +32,9 @@ const getTabBarVisibility = (route) => {
     : '';
 
   if (
-    routeName === 'GameRecording'
+    routeName === 'SoccerRecording'
     || routeName === 'GameDetailRecord'
-    || routeName === 'GameRecordList'
+    || routeName === 'SoccerRecordList'
     || routeName === 'NewsFeedVideoPlayer'
     || routeName === 'RegisterPlayer'
     || routeName === 'RegisterPlayerForm2'
@@ -79,6 +79,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'InvitationSentScreen'
     || routeName === 'ConnectionReqSentScreen'
     || routeName === 'MessageNewGroupScreen'
+    || routeName === 'SoccerHome'
   ) {
     return false;
   }

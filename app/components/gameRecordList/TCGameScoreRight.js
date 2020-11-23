@@ -3,10 +3,9 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
 
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
 
@@ -16,23 +15,58 @@ import Dash from 'react-native-dash';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import {
+  gamePlayerStatusStats, gamePlayStats, gamePlayStatsImage,
+  getGameConvertMinsToTime,
+  getGameDateTimeInHMSformat,
+  getGameTimeAgo,
+} from '../../utils/gameUtils';
 
-export default function TCGameScoreRight({ editor }) {
+export default function TCGameScoreRight({
+  gameData,
+  backgroundColor = colors.offwhite,
+  editor = false,
+  recordData,
+}) {
+  const getScoreText = (firstTeamScore = recordData?.scoreboard?.home_team, secondTeamScore = recordData?.scoreboard?.away_team) => {
+    const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
+    let firstTeamColor = colors.lightBlackColor
+    let secondTeamColor = colors.lightBlackColor
+    if (firstTeamScore !== secondTeamScore) {
+      if (isGreterTeam === 1) firstTeamColor = colors.themeColor
+      if (isGreterTeam === 2) secondTeamColor = colors.themeColor
+    }
+    return (
+      <Text
+            style={ {
+              textAlign: 'center',
+              fontFamily: fonts.RLight,
+              fontSize: 20,
+              color: colors.lightBlackColor,
+              backgroundColor: 'transparent',
+              alignSelf: 'center',
+              bottom: 0,
+            } }>
+        <Text style={{ color: secondTeamColor }}>{recordData?.scoreboard?.away_team ?? 0}</Text>{' : '}
+        <Text style={{ color: firstTeamColor }}>{recordData?.scoreboard?.home_team ?? 0}</Text>
+      </Text>
+    )
+  }
   return (
     <View>
-      <View style={ styles.headerView }>
+      <View style={{ ...styles.headerView, backgroundColor }}>
         <View style={ styles.leftBlankView }>
           <Text
             style={ { fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right' } }>
-            4m
+            {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
           </Text>
           <Text
             style={ {
-              fontFamily: fonts.RRegular,
-              fontSize: 13,
+              fontFamily: fonts.RLight,
+              fontSize: 12,
               color: colors.darkGrayColor,
             } }>
-            10:45 AM
+            {getGameDateTimeInHMSformat(recordData?.timestamp)}
           </Text>
         </View>
         <View style={ styles.centerView }>
@@ -46,23 +80,33 @@ export default function TCGameScoreRight({ editor }) {
           />
         </View>
         <View style={ styles.rightView }>
-          <View style={ styles.gameRecordButton }>
-            <Image
-              source={ images.gameOwnGoal }
+          <View style={{
+            width: '20%',
+            alignItems: 'flex-start',
+            left: 10,
+          }}>
+            <View style={styles.gameRecordButton}>
+              <FastImage
+              source={ gamePlayStatsImage[recordData?.verb] }
               style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
             />
+            </View>
           </View>
           <Text style={ styles.rightPlayerText } numberOfLines={ 3 }>
-            Kishan Makani () received a yellow card
+            {gameData?.away_team?.group_name ?? ''}
+            <Text style={{ fontFamily: fonts.RMedium }}>
+              {' '}{gamePlayStats[recordData?.verb]}
+            </Text>
           </Text>
-          <View>
-            <Image
+          <View style={{ width: '22%' }}>
+            <FastImage
               source={ images.profilePlaceHolder }
               style={ styles.rightProfileImg }
             />
           </View>
         </View>
       </View>
+      {!(recordData?.verb in gamePlayerStatusStats) && getScoreText()}
       {editor && (
         <View style={ styles.editorView }>
           <Dash
@@ -81,7 +125,7 @@ export default function TCGameScoreRight({ editor }) {
               position: 'absolute',
             } }>
             <Text style={ styles.recordedBy }>
-              Recorded by Kishan Makani makani (50s ago)
+              Recorded by {recordData?.recorded_by_team_name ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
             </Text>
           </View>
         </View>
@@ -109,16 +153,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 15,
-
     elevation: 10,
-    height: 30,
+    height: 20,
     justifyContent: 'center',
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
-
     shadowRadius: 3,
-    width: 30,
+    width: 20,
   },
 
   gameRecordImg: {
@@ -147,27 +189,23 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   rightPlayerText: {
-    color: colors.darkGrayColor,
-    flex: 1,
-    flexWrap: 'wrap',
-    fontFamily: fonts.RRegular,
+    width: '55%',
+    fontFamily: fonts.RBlack,
     fontSize: 14,
     textAlign: 'right',
   },
   rightProfileImg: {
     borderRadius: 3,
-    height: 25,
+    height: 20,
     marginLeft: 10,
-
     marginRight: 15,
     resizeMode: 'contain',
-    width: 25,
+    width: 20,
   },
   rightView: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-
     width: wp('49%'),
   },
 });

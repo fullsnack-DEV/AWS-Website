@@ -19,7 +19,7 @@ import TCGameButton from '../../../components/TCGameButton';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 
-export default function GameRecording({ navigation }) {
+export default function SoccerRecording({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -98,7 +98,7 @@ export default function GameRecording({ navigation }) {
           />
           <TCGameButton
             title="Records"
-            onPress={ () => navigation.navigate('GameRecordList') }
+            onPress={ () => navigation.navigate('SoccerRecordList') }
             buttonColor={ colors.darkGrayColor }
             imageName={ images.gameRecord }
             textColor={ colors.darkGrayColor }
