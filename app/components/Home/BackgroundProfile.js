@@ -11,6 +11,7 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import strings from '../../Constants/String';
 
 function BackgroundProfile({
   profileImagePlaceholder = images.profilePlaceHolder,
@@ -56,10 +57,18 @@ function BackgroundProfile({
     }
   }
 
+  let teamCount = 0;
+  if (currentUserData.joined_teams && currentUserData.joined_teams.length > 0) {
+    teamCount = currentUserData.joined_teams.length;
+  }
+
   return (
     <View style={{ width: wp('100%'), margin: 0 }}>
-      <View>
-        <Image source={bgImage ? { uri: bgImage } : images.profilePlaceHolder} style={[styles.bgImageStyle, bgImageStyle]} />
+      <View style={[styles.bgImageStyle, bgImageStyle]}>
+        <Image
+        source={bgImage ? { uri: bgImage } : images.profilePlaceHolder}
+        style={[styles.bgImageStyle, bgImageStyle]}
+        />
       </View>
       <View style={{ backgroundColor: colors.whiteColor }} >
         <View style={{ width: '100%' }}>
@@ -70,20 +79,36 @@ function BackgroundProfile({
             <Text style={styles.userTextStyle}>{fullName}</Text>
             <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
           </View>
-          <View style={styles.followingMainViewStyle}>
-            {currentUserData.following_count !== undefined ? <View style={styles.followingViewStyle}>
-              <Text style={styles.followingTextStyle}>Following</Text>
+          {currentUserData.entity_type === 'club' && <View style={styles.statusViewStyle}>
+            <View style={styles.statusInnerViewStyle}>
+              <Text style={styles.followingTextStyle}>{strings.teamstitle}</Text>
+              <Text style={styles.followingLengthText}>{teamCount}</Text>
+            </View>
+            <View style={styles.followingSepratorView} />
+            <View style={styles.statusInnerViewStyle}>
+              <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
+              <Text style={styles.followingLengthText}>{memberCount}</Text>
+            </View>
+            <View style={styles.followingSepratorView} />
+            <View style={styles.statusInnerViewStyle}>
+              <Text style={styles.followingTextStyle}>{strings.followersRadio}</Text>
+              <Text style={styles.followingLengthText}>{followersCounter}</Text>
+            </View>
+          </View>}
+          {currentUserData.entity_type !== 'club' && <View style={styles.statusViewStyle}>
+            {currentUserData.following_count !== undefined ? <View style={[styles.statusInnerViewStyle, { width: '47%' }]}>
+              <Text style={styles.followingTextStyle}>{strings.following}</Text>
               <Text style={styles.followingLengthText}>{followingsCounter}</Text>
-            </View> : <View style={styles.followingViewStyle}>
-              <Text style={styles.followingTextStyle}>Members</Text>
+            </View> : <View style={[styles.statusInnerViewStyle, { width: '47%' }]}>
+              <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
               <Text style={styles.followingLengthText}>{memberCount}</Text>
             </View>}
             <View style={styles.followingSepratorView} />
-            <View style={styles.followingViewStyle}>
-              <Text style={styles.followingTextStyle}>Followers</Text>
+            <View style={[styles.statusInnerViewStyle, { width: '47%' }]}>
+              <Text style={styles.followingTextStyle}>{strings.followersRadio}</Text>
               <Text style={styles.followingLengthText}>{followersCounter}</Text>
             </View>
-          </View>
+          </View>}
         </View>
       </View>
     </View>
@@ -103,38 +128,39 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 41,
   },
-  followingMainViewStyle: {
+  statusViewStyle: {
+    paddingHorizontal: 15,
+    height: 24,
     justifyContent: 'space-around',
     flexDirection: 'row',
-    width: '94%',
-    alignSelf: 'center',
+    width: '100%',
+    alignItems: 'center',
+    alignContent: 'center',
   },
-  followingViewStyle: {
-    width: '47%',
+  statusInnerViewStyle: {
+    width: '29%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: wp('1%'),
   },
   followingSepratorView: {
-    height: 22,
+    height: 20,
     width: 1,
+    paddingVertical: 2,
+    marginHorizontal: 3,
     backgroundColor: colors.grayEventColor,
-    marginVertical: 4,
     alignSelf: 'center',
   },
   followingTextStyle: {
-    paddingVertical: 8,
     fontSize: 15,
     fontFamily: fonts.RRegular,
   },
   followingLengthText: {
-    paddingVertical: 8,
     fontSize: 16,
     fontFamily: fonts.RBold,
   },
   userViewStyle: {
-    paddingHorizontal: wp('4%'),
-    paddingVertical: wp('1%'),
+    marginHorizontal: 15,
+    paddingVertical: 5,
     alignItems: 'center',
   },
   userTextStyle: {

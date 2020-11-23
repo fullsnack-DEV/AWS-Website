@@ -19,7 +19,7 @@ export default function UserTeamTopSection({
   }
 
   return (
-    <View style={{ marginTop: 15 }}>
+    <View style={{ paddingTop: 20, paddingBottom: 25 }}>
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
@@ -95,8 +95,7 @@ const styles = StyleSheet.create({
   editButtonStyle: {
     marginHorizontal: 15,
     height: 28,
-    marginTop: 21,
-    marginBottom: 17,
+    marginVertical: 0,
     width: 'auto',
   },
   otherUserStyle: {
@@ -104,8 +103,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 15,
-    height: 33,
-    marginBottom: 14,
+    height: 28,
+    marginVertical: 0,
     flexWrap: 'wrap',
     alignItems: 'center',
   },

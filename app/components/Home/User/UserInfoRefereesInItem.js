@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.29,
     shadowRadius: 3,
     elevation: 3,
     alignItems: 'center',

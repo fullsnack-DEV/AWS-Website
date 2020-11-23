@@ -1,18 +1,12 @@
 import React, {
-  useState, useLayoutEffect, useRef, useEffect,
+  useState, useEffect,
 } from 'react';
 import {
-
   View,
   StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
-  Alert,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
-import * as Utility from '../utils/index';
 
 import TCSearchBox from '../components/TCSearchBox';
 
@@ -25,85 +19,38 @@ import {
 } from '../api/Users';
 
 import ActivityLoader from '../components/loader/ActivityLoader';
-
-import images from '../Constants/ImagePath'
-import colors from '../Constants/Colors'
-
 import TCProfileView from '../components/TCProfileView';
 import TCThinDivider from '../components/TCThinDivider';
 
-let entity = {};
-export default function EntitySearchScreen({ navigation, route }) {
-  const actionSheet = useRef();
-  const isFocused = useIsFocused();
+export default function EntitySearchScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState();
-
   const [groups, setGroups] = useState();
-  const [switchUser, setSwitchUser] = useState({})
 
   let list = []
 
   useEffect(() => {
-    console.log('NAVIGATION:', navigation);
-    const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
-      setSwitchUser(entity)
-    }
     list = [];
-    getMembers()
-    getUsers()
-    getAuthEntity()
-  }, [isFocused])
-
-  const getMembers = async () => {
-    getMyGroups()
-      .then((response) => {
-        list = [...list, ...response.payload]
-        setGroups([...list])
-        setSearchMember(list)
-        setloading(false);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-      });
-  }
-
-  const getUsers = async () => {
-    getUserList()
-      .then((response) => {
-        list = [...list, ...response.payload]
-        setGroups([...list])
-        setSearchMember(list)
-        setloading(false);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-      });
-  }
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        switchUser.uid === route.params.groupID && <TouchableWithoutFeedback
-            onPress={ () => actionSheet.current.show() }>
-          <Image source={ images.horizontal3Dot } style={ styles.navigationRightItem } />
-        </TouchableWithoutFeedback>
-
-      ),
-    });
-  }, [navigation, switchUser]);
+    const promises = [getMyGroups(), getUserList()]
+    Promise.all(promises).then(([res1, res2]) => {
+      list = [...res1.payload, ...res2.payload]
+      setGroups([...list])
+      setSearchMember(list)
+      setloading(false);
+    })
+  }, [])
 
   const searchFilterFunction = (text) => {
     const result = searchMember.filter(
-      (x) => ((x.group_name && x.group_name.includes(text)) || (x.first_name && x.first_name.includes(text))),
+      (x) => (
+        (x.group_name && x.group_name.toLowerCase().includes(text.toLowerCase()))
+      || (x.first_name && x.first_name.toLowerCase().includes(text.toLowerCase()))),
     );
     setGroups(result);
   };
 
   const onProfilePress = (item) => {
-    console.log(item);
     navigation.navigate('HomeScreen', {
       uid: item.group_id ? item.group_id : item.user_id,
       backButtonVisible: true,
@@ -137,25 +84,10 @@ export default function EntitySearchScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  // filterImage: {
-  //   marginLeft: 10,
-  //   alignSelf: 'center',
-  //   height: 25,
-  //   resizeMode: 'contain',
-  //   width: 25,
-  // },
   searchBarView: {
     flexDirection: 'row',
     marginLeft: 20,
     marginTop: 20,
     marginBottom: 20,
   },
-  navigationRightItem: {
-    height: 15,
-    marginRight: 20,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
-  },
-
 });

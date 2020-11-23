@@ -1,6 +1,7 @@
 const strings = {
   townsCupTitle: 'T O W N S C U P',
   alertmessagetitle: 'Towns Cup',
+  defaultError: 'Something went wrong',
   titleBasic: 'Townscup',
   townsCupTagLine: 'All Teams in the World.',
   welCome: 'Welcome',

@@ -47,12 +47,13 @@ import TeamHomeTopSection from '../../components/Home/Team/TeamHomeTopSection';
 import strings from '../../Constants/String';
 
 export default function HomeScreen({ navigation, route }) {
-  const [isUserHome, setUserHome] = useState(false)
-  const [isClubHome, setClubHome] = useState(false)
-  const [isTeamHome, setTeamHome] = useState(false)
+  const [isUserHome, setIsUserHome] = useState(false)
+  const [isClubHome, setIsClubHome] = useState(false)
+  const [isTeamHome, setIsTeamHome] = useState(false)
   const [loggedInEntity, setLoggedInEntity] = useState({})
   const [isAdmin, setIsAdmin] = useState(false)
-
+  const [isRender, setIsRender] = useState(false)
+  const [isRender2, setIsRender2] = useState(false)
   const [postData, setPostData] = useState([]);
   const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
@@ -71,55 +72,76 @@ export default function HomeScreen({ navigation, route }) {
     const teamHome = role === 'team'
 
     const user_ID = uid;
+    const params = {
+      uid: user_ID,
+    };
+    setloading(true);
     if (userHome) {
-      const promises = [getUserDetails(uid), getJoinedGroups(uid)]
-      Promise.all(promises).then(([res1, res2]) => {
+      const promises = [getUserDetails(uid),
+        getJoinedGroups(uid), getUserPosts(params),
+        getGallery(uid)]
+      Promise.all(promises).then(([res1, res2, res3, res4]) => {
         const userDetails = res1.payload;
         if (res2) {
           userDetails.joined_teams = res2.payload.teams;
           userDetails.joined_clubs = res2.payload.clubs;
         }
+        if (res3) {
+          setPostData(res3.payload.results);
+        }
+        if (res4) {
+          setGalleryData(res4.payload);
+        }
         setCurrentUserData(userDetails);
-        setClubHome(clubHome)
-        setTeamHome(teamHome)
-        setUserHome(userHome)
-      });
+        setIsClubHome(clubHome)
+        setIsTeamHome(teamHome)
+        setIsUserHome(userHome)
+        setUserID(uid);
+      }).catch((errResponse) => {
+        console.log('promise error', errResponse)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 0.3)
+        navigation.goBack();
+      }).finally(() => setloading(false));
     } else {
-      const promises = [getGroupDetails(uid), getGroupMembers(uid)]
+      const promises = [getGroupDetails(uid),
+        getGroupMembers(uid), getUserPosts(params),
+        getGallery(uid)]
       if (clubHome) {
         promises.push(getTeamsOfClub(uid))
       }
-      Promise.all(promises).then(([res1, res2, res3]) => {
+      Promise.all(promises).then(([res1, res2, res3, res4, res5]) => {
         const groupDetails = res1.payload;
         groupDetails.joined_members = res2.payload;
         if (res3) {
-          groupDetails.joined_teams = res3.payload;
+          setPostData(res3.payload.results);
+        }
+        if (res4) {
+          setGalleryData(res4.payload);
+        }
+        if (res5) {
+          groupDetails.joined_teams = res5.payload;
         }
         setCurrentUserData(groupDetails);
-        setClubHome(clubHome)
-        setTeamHome(teamHome)
-        setUserHome(userHome)
-      });
+        setIsClubHome(clubHome)
+        setIsTeamHome(teamHome)
+        setIsUserHome(userHome)
+        setUserID(uid);
+      }).catch((errResponse) => {
+        console.log('promise error', errResponse)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, strings.defaultError);
+        }, 0.3)
+        navigation.goBack();
+      }).finally(() => setloading(false));
     }
-    const params = {
-      uid: user_ID,
-    };
-    getUserPosts(params).then((response) => {
-      setPostData(response.payload.results);
-      setloading(false);
-    });
-    getGallery(uid).then((res) => {
-      setGalleryData(res.payload);
-    });
-    setUserID(uid);
   };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       setLoggedInEntity(entity)
-      console.log('entity', entity)
-
       let uid = entity.uid
       let role = entity.role
 
@@ -134,6 +156,7 @@ export default function HomeScreen({ navigation, route }) {
       }
 
       getData(uid, role).catch((error) => {
+        console.log('error', error)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.messages);
         }, 0.3)
@@ -170,7 +193,6 @@ export default function HomeScreen({ navigation, route }) {
             setPostData(response.payload.results)
             setProgressBar(false);
             getGallery(userID).then((res) => {
-              console.log('Gallery Response :::---', res);
               setGalleryData(res.payload);
             });
           })
@@ -366,41 +388,52 @@ export default function HomeScreen({ navigation, route }) {
   }
 
   const callFollowUser = async () => {
-    setloading(true);
+    currentUserData.is_following = true;
+    currentUserData.follower_count += 1;
+    setCurrentUserData(currentUserData);
+    setIsRender(!isRender)
+
     const params = {
       entity_type: 'player',
     };
     followUser(params, userID).then(() => {
-      currentUserData.is_following = true;
-      setCurrentUserData(currentUserData);
-      setloading(false);
+      console.log('follow user')
     }).catch((error) => {
+      currentUserData.is_following = false;
+      currentUserData.follower_count -= 1;
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
     });
   };
 
   const callUnfollowUser = async () => {
-    setloading(true);
+    currentUserData.is_following = false;
+    if (currentUserData.follower_count > 0) {
+      currentUserData.follower_count -= 1
+    }
+    setCurrentUserData(currentUserData);
+    setIsRender(!isRender)
+
     const params = {
       entity_type: 'player',
     };
     unfollowUser(params, userID).then(() => {
-      currentUserData.is_following = false;
-      setCurrentUserData(currentUserData);
-      setloading(false);
+      console.log('unfollow user')
     }).catch((error) => {
+      currentUserData.is_following = true;
+      currentUserData.follower_count += 1
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
     });
   };
 
   const clubInviteUser = async () => {
-    setloading(true);
     const params = {
       entity_type: loggedInEntity.role,
       uid: loggedInEntity.uid,
@@ -409,96 +442,108 @@ export default function HomeScreen({ navigation, route }) {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
       }, 0.3)
-      setloading(false);
     }).catch((error) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
     });
   };
 
-  const callFollowGroup = async () => {
-    setloading(true);
+  const callFollowGroup = async (silentlyCall = false) => {
+    currentUserData.is_following = true;
+    currentUserData.follower_count += 1;
+    setCurrentUserData(currentUserData);
+    setIsRender(!isRender)
+
     const params = {
       entity_type: currentUserData.entity_type,
     };
     followGroup(params, userID).then(() => {
-      currentUserData.is_following = true;
-      currentUserData.follower_count += 1;
-      setCurrentUserData(currentUserData);
-      setloading(false);
+      console.log('follow group')
     }).catch((error) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
-      }, 0.3)
-      setloading(false);
+      currentUserData.is_following = false;
+      currentUserData.follower_count -= 1;
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
+      if (silentlyCall === false) {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.messages);
+        }, 0.3)
+      }
     });
   };
 
   const callUnfollowGroup = async () => {
-    setloading(true);
+    currentUserData.is_following = false;
+    if (currentUserData.follower_count > 0) {
+      currentUserData.follower_count -= 1
+    }
+    setCurrentUserData(currentUserData);
+    setIsRender(!isRender)
+
     const params = {
       entity_type: currentUserData.entity_type,
     };
     unfollowGroup(params, userID).then(() => {
-      currentUserData.is_following = false;
-      if (currentUserData.follower_count > 0) {
-        currentUserData.follower_count -= 1
-      }
-      setCurrentUserData(currentUserData);
-      setloading(false);
+      console.log('unfollow user')
     }).catch((error) => {
+      currentUserData.is_following = true;
+      currentUserData.follower_count += 1
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
     });
   };
 
   const userJoinGroup = async () => {
-    setloading(true);
+    currentUserData.is_joined = true;
+    currentUserData.member_count += 1
+    setCurrentUserData(currentUserData);
+    if (currentUserData.is_following === false) {
+      callFollowGroup(true);
+    }
+    setIsRender(!isRender)
+
     const params = {};
     joinTeam(params, userID).then(() => {
-      currentUserData.is_joined = true;
-      currentUserData.member_count += 1
-      if (currentUserData.is_following === false) {
-        callFollowGroup();
-      } else {
-        setCurrentUserData(currentUserData);
-        setloading(false);
-      }
+      console.log('user join group')
     }).catch((error) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
+      currentUserData.is_joined = false;
+      currentUserData.member_count -= 1
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
     });
   };
 
   const userLeaveGroup = async () => {
-    setloading(true);
+    currentUserData.is_joined = false;
+    if (currentUserData.member_count > 0) {
+      currentUserData.member_count -= 1
+    }
+    setCurrentUserData(currentUserData);
+    setIsRender(!isRender)
     const params = {};
     leaveTeam(params, userID).then(() => {
-      currentUserData.is_joined = false;
-      if (currentUserData.member_count > 0) {
-        currentUserData.member_count -= 1
-      }
-      setCurrentUserData(currentUserData);
-      setloading(false);
+      console.log('user leave group')
     }).catch((error) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
+      currentUserData.is_joined = true;
+      currentUserData.member_count += 1
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
     });
   };
 
   const clubInviteTeam = async () => {
-    setloading(true);
     const params = [userID];
     inviteTeam(params, loggedInEntity.uid).then(() => {
-      setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`);
       }, 0.3)
@@ -506,36 +551,61 @@ export default function HomeScreen({ navigation, route }) {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
     });
   };
 
   const clubJoinTeam = async () => {
-    setloading(true);
+    loggedInEntity.obj.parent_group_id = currentUserData.group_id;
+    Utility.setStorage('loggedInEntity', loggedInEntity);
+    if (currentUserData.joined_teams) {
+      currentUserData.joined_teams.push(loggedInEntity.obj);
+    } else {
+      currentUserData.joined_teams = [loggedInEntity.obj]
+    }
+    setCurrentUserData(currentUserData);
+    setLoggedInEntity(loggedInEntity);
+    setIsRender(!isRender)
     const params = {};
     joinTeam(params, userID).then(() => {
-      loggedInEntity.obj.parent_group_id = currentUserData.group_id;
+      console.log('club join')
+    }).catch((error) => {
+      delete loggedInEntity.obj.parent_group_id;
       Utility.setStorage('loggedInEntity', loggedInEntity);
       setLoggedInEntity(loggedInEntity);
-      setloading(false);
-    }).catch((error) => {
+      if (currentUserData.joined_teams) {
+        currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== loggedInEntity.uid)
+      }
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
-      setloading(false);
     });
   };
 
   const clubLeaveTeam = async () => {
-    setloading(true);
+    loggedInEntity.obj.parent_group_id = '';
+    Utility.setStorage('loggedInEntity', loggedInEntity);
+    setLoggedInEntity(loggedInEntity);
+    if (currentUserData.joined_teams) {
+      currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== loggedInEntity.uid)
+    }
+    setCurrentUserData(currentUserData);
+    setIsRender(!isRender)
     const params = {};
     leaveTeam(params, userID).then(() => {
-      delete loggedInEntity.obj.parent_group_id;
+      console.log('club leave')
+    }).catch((error) => {
+      loggedInEntity.obj.parent_group_id = userID;
       Utility.setStorage('loggedInEntity', loggedInEntity);
       setLoggedInEntity(loggedInEntity);
-      setloading(false);
-    }).catch((error) => {
-      setloading(false);
+      if (currentUserData.joined_teams) {
+        currentUserData.joined_teams.push(loggedInEntity.obj);
+      } else {
+        currentUserData.joined_teams = [loggedInEntity.obj]
+      }
+      setCurrentUserData(currentUserData);
+      setIsRender2(!isRender2)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
@@ -552,6 +622,12 @@ export default function HomeScreen({ navigation, route }) {
         break;
       case 'invite':
         clubInviteUser();
+        break;
+      case 'message':
+        navigation.navigate('Message', {
+          screen: 'MessageMainScreen',
+          params: { userId: currentUserData?.user_id },
+        })
         break;
       case 'edit':
         navigation.navigate('EditPersonalProfileScreen')
@@ -584,6 +660,12 @@ export default function HomeScreen({ navigation, route }) {
       case 'leaveTeam':
         clubLeaveTeam();
         break;
+      case 'message':
+        navigation.navigate('Message', {
+          screen: 'MessageMainScreen',
+          params: { userId: currentUserData?.group_id },
+        })
+        break;
       case 'edit':
         // edit code here
         break;
@@ -607,6 +689,12 @@ export default function HomeScreen({ navigation, route }) {
         break;
       case 'invite':
         clubInviteTeam();
+        break;
+      case 'message':
+        navigation.navigate('Message', {
+          screen: 'MessageMainScreen',
+          params: { userId: currentUserData?.group_id },
+        })
         break;
       case 'edit':
         // edit code here
