@@ -14,7 +14,7 @@ import TCGradientButton from '../../TCGradientButton'
 import fonts from '../../../Constants/Fonts';
 
 export default function UserHomeTopSection({
-  userDetails, isAdmin, loggedInEntity, onAction,
+  userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress,
 }) {
   const playin = userDetails.games && userDetails.games.length > 0
   const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
@@ -26,8 +26,11 @@ export default function UserHomeTopSection({
   );
 
   const renderRefereesIn = ({ item }) => (
-    <UserInfoRefereesInItem title={item.sport_name}
-    thumbURL={images.gameGoal}/>
+    <UserInfoRefereesInItem
+      title={item.sport_name}
+      thumbURL={images.gameGoal}
+      onRefereesInPress={onRefereesInPress}
+    />
   );
 
   let isMember = false;

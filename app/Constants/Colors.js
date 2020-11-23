@@ -13,6 +13,8 @@ const colors = {
   whiteColor: '#FFFFFF',
   parrotColor: '#E8FFB4',
   fbTextColor: '#4574DB',
+  lightgrayPlayInColor: '#ffeddb',
+  matchViewColor: '#fcdfb6',
   blocklightgraycolor: '#C4C4C4',
   googleColor: '#616161',
   blackColor: '#000000',

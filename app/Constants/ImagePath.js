@@ -162,6 +162,8 @@ const images = {
   imageLoadingGIF: require('../assets/images/image_loading.gif'),
   imageUploadingGIF: require('../assets/images/imageUploadingLoader.gif'),
 
+  soccerImage: require('../assets/images/soccerImage.png'),
+
   // Reservation Component
   requestIn: require('../assets/images/request_in.png'),
   requestOut: require('../assets/images/request_out.png'),

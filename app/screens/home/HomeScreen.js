@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Image,
-  StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, Platform,
+  StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, Platform, ScrollView, SafeAreaView,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import Modal from 'react-native-modal';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
@@ -45,11 +46,37 @@ import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
 import ClubHomeTopSection from '../../components/Home/Club/ClubHomeTopSection';
 import TeamHomeTopSection from '../../components/Home/Team/TeamHomeTopSection';
 import strings from '../../Constants/String';
+import ProfileViewSection from '../../components/Home/User/ProfileViewSection';
+import RefereesInItem from '../../components/Home/RefereesInItem';
+import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
+import TeamViewInfoSection from '../../components/Home/TeamViewInfoSection';
+import RecentMatchView from '../../components/Home/RecentMatchView';
+import UpcomingMatchView from '../../components/Home/UpcomingMatchView';
+import StatsView from '../../components/Home/StatsView';
+
+const team_Data_Info = [
+  {
+    id: 0,
+    teamImage: images.commentReport,
+    teamTitle: strings.infoTeamTitle,
+    teamIcon: images.myTeams,
+    teamCity: strings.infoTeamCity,
+  },
+  {
+    id: 1,
+    teamImage: images.commentReport,
+    teamTitle: strings.infoTeamTitle,
+    teamIcon: images.myTeams,
+    teamCity: strings.infoTeamCity,
+  },
+];
 
 export default function HomeScreen({ navigation, route }) {
   const [isUserHome, setIsUserHome] = useState(false)
   const [isClubHome, setIsClubHome] = useState(false)
   const [isTeamHome, setIsTeamHome] = useState(false)
+  const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
+  const [infoModalVisible, setInfoModalVisible] = useState(false)
   const [loggedInEntity, setLoggedInEntity] = useState({})
   const [isAdmin, setIsAdmin] = useState(false)
   const [isRender, setIsRender] = useState(false)
@@ -65,6 +92,7 @@ export default function HomeScreen({ navigation, route }) {
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
+  const [teamDataInfo] = useState(team_Data_Info);
 
   const getData = async (uid, role) => {
     const userHome = role === 'user'
@@ -711,6 +739,14 @@ export default function HomeScreen({ navigation, route }) {
     }
   }
 
+  const refereesInModal = () => {
+    setRefereesInModalVisible(!refereesInModalVisible);
+  };
+
+  const infoModal = () => {
+    setInfoModalVisible(!infoModalVisible);
+  };
+
   return (
     <View style={ styles.mainContainer }>
       {(isTeamHome && loggedInEntity.role === 'team')
@@ -786,6 +822,7 @@ export default function HomeScreen({ navigation, route }) {
           {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                     isAdmin={isAdmin}
                     loggedInEntity={loggedInEntity}
+                    onRefereesInPress={() => refereesInModal()}
                     onAction={onUserAction}/>}
           {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
             isAdmin={isAdmin}
@@ -889,6 +926,183 @@ export default function HomeScreen({ navigation, route }) {
               </View>
             )}/>
         </View>
+        <Modal
+          isVisible={refereesInModalVisible}
+          backdropColor="black"
+          style={{
+            margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+          hasBackdrop
+          onBackdropPress={() => setRefereesInModalVisible(false)}
+          backdropOpacity={0}
+        >
+          <View style={styles.modalContainerViewStyle}>
+            <Image style={ styles.background } source={ images.bgImage } />
+            <SafeAreaView style={{ flex: 1 }}>
+              <Header
+                safeAreaStyle={{ marginTop: 10 }}
+                mainContainerStyle={styles.headerMainContainerStyle}
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Plays in Soccer'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setRefereesInModalVisible(false)}>
+                    <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
+              <ProfileViewSection
+                profileImage={images.profilePlaceHolder}
+                userName={'Christiano Ronaldo'}
+              />
+              <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
+                <RefereesInItem
+                  title={strings.infoTitle}
+                  onItemPress={() => {
+                    infoModal()
+                  }}
+                >
+                  <NewsFeedDescription
+                    character={140}
+                    descriptionTxt={{
+                      padding: 0, marginTop: 3, color: colors.whiteColor, fontFamily: fonts.RRegular,
+                    }}
+                    descText={{ fontSize: 16, color: colors.whiteGradientColor, fontFamily: fonts.RLight }}
+                    descriptions={strings.aboutValue}
+                  />
+                  <Text style={styles.signUpTextStyle}>{strings.signedUpTime}</Text>
+                  <FlatList
+                    data={teamDataInfo}
+                    horizontal={true}
+                    bounces={false}
+                    showsHorizontalScrollIndicator={false}
+                    ItemSeparatorComponent={() => <View style={{
+                      width: 1, backgroundColor: colors.whiteColor, marginVertical: 10, marginHorizontal: 15,
+                    }} />}
+                    renderItem={({ item: attachItem }) => <TeamViewInfoSection
+                    teamImage={attachItem.teamImage}
+                    teamTitle={attachItem.teamTitle}
+                    teamIcon={attachItem.teamIcon}
+                    teamCityName={attachItem.teamCity}
+                  />}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </RefereesInItem>
+
+                <RefereesInItem
+                  title={strings.recentMatchTitle}
+                  onItemPress={() => console.log('Recent Match Press')}
+                >
+                  <RecentMatchView
+                    date={'Sep 25.'}
+                    startTime={'7:00pm - '}
+                    endTime={'9:10pm'}
+                    cityName={'BC Stadium'}
+                    firstTeamImage={images.commentReport}
+                    secondTeamImage={images.usaImage}
+                    firstTeamName={'Vancouver Whitecaps'}
+                    secondTeamName={'Newyork City FC'}
+                  />
+                </RefereesInItem>
+
+                <RefereesInItem
+                  title={strings.upcomingMatchTitle}
+                  onItemPress={() => console.log('Upcoming Match Press')}
+                >
+                  <UpcomingMatchView
+                    date={'Sep 26.'}
+                    startTime={'7:00pm - '}
+                    endTime={'9:10pm'}
+                    cityName={'BC Stadium'}
+                    firstTeamImage={images.commentReport}
+                    secondTeamImage={images.usaImage}
+                    firstTeamName={'Vancouver Whitecaps'}
+                    secondTeamName={'Newyork City FC'}
+                  />
+                </RefereesInItem>
+
+                <RefereesInItem
+                  title={strings.statsTitle}
+                  onItemPress={() => console.log('Stats Press')}
+                >
+                  <StatsView
+                    pastTime={'[ For past 12 months ]'}
+                    TotalGameText={'Total Games'}
+                    totalGameCounter={'140'}
+                    winTitle={'Win'}
+                    winPercentage={50}
+                    winProgress={0.5}
+                    winProgressColor={colors.orangeColor}
+                    winPercentageTextStyle={{ color: colors.orangeColor }}
+                    drawTitle={'Draw'}
+                    drawPercentage={40}
+                    drawProgress={0.4}
+                    drawProgressColor={colors.greeColor}
+                    drawPercentageTextStyle={{ color: colors.greeColor }}
+                    lossTitle={'Loss'}
+                    lossPercentage={10}
+                    lossProgress={0.1}
+                    lossProgressColor={colors.blueColor}
+                    lossPercentageTextStyle={{ color: colors.blueColor }}
+                    sections={[
+                      {
+                        percentage: 50,
+                        color: colors.orangeColor,
+                      },
+                      {
+                        percentage: 40,
+                        color: colors.greeColor,
+                      },
+                      {
+                        percentage: 10,
+                        color: colors.blueColor,
+                      },
+                    ]}
+                  />
+                </RefereesInItem>
+              </ScrollView>
+            </SafeAreaView>
+
+          </View>
+          <Modal
+            isVisible={infoModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+            }}
+            hasBackdrop
+            onBackdropPress={() => setInfoModalVisible(false)}
+            backdropOpacity={0}
+          >
+            <View style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+              <View>
+                <Image style={[styles.background, { borderTopLeftRadius: 10, borderTopRightRadius: 10 }]} source={ images.orangeLayer } />
+                <Header
+                  mainContainerStyle={styles.headerMainContainerStyle}
+                  leftComponent={
+                    <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
+                      <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                  centerComponent={
+                    <View style={styles.headerCenterViewStyle}>
+                      <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                      <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                    </View>
+                  }
+                  rightComponent={
+                    <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
+                      <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                />
+              </View>
+            </View>
+          </Modal>
+        </Modal>
       </ParallaxScrollView>
       {progressBar && <ImageProgress
         numberOfUploaded={doneUploadCount}
@@ -963,5 +1177,48 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: 17,
     fontFamily: fonts.RBold,
+  },
+  modalContainerViewStyle: {
+    height: hp('94%'),
+    backgroundColor: colors.themeColor,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  headerMainContainerStyle: {
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingVertical: 15,
+  },
+  cancelImageStyle: {
+    height: 17,
+    width: 17,
+    tintColor: colors.whiteColor,
+  },
+  soccerImageStyle: {
+    height: 20,
+    width: 20,
+    marginHorizontal: 10,
+  },
+  headerCenterViewStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  playInTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+  },
+  signUpTextStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RLight,
+    color: colors.whiteColor,
+    marginTop: 5,
+  },
+  background: {
+    height: '100%',
+    position: 'absolute',
+    resizeMode: 'stretch',
+    width: '100%',
   },
 });

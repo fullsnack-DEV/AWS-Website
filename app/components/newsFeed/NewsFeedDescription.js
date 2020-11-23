@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-function NewsFeedDescription({ descriptions, character }) {
+function NewsFeedDescription({
+  descriptions,
+  character,
+  descriptionTxt,
+  descText,
+}) {
   const [readMore, setReadMore] = useState();
 
   function toggleNumberOfLines() {
@@ -11,11 +16,11 @@ function NewsFeedDescription({ descriptions, character }) {
   return (
     <View>
       {descriptions.length > 0 && (
-        <Text style={ styles.descriptionTxt }>
+        <Text style={[styles.descriptionTxt, descriptionTxt]}>
           {readMore ? descriptions : descriptions.substring(0, character)}
           {descriptions.length > character && !readMore ? '... ' : ' '}
           {descriptions.length > character && (
-            <Text onPress={ () => toggleNumberOfLines() } style={ styles.descText }>
+            <Text onPress={ () => toggleNumberOfLines() } style={[styles.descText, descText]}>
               {readMore ? 'less' : 'more'}
             </Text>
           )}
