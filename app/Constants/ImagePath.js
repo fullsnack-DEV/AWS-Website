@@ -181,6 +181,8 @@ const images = {
   emailSent4: require('../assets/images/InvitationEmail4.png'),
   emailSent5: require('../assets/images/InvitationEmail5.png'),
 
+  declineChallenge: require('../assets/images/decline_challenge_icon.png'),
+
   // create member profile
   checkGreenBG: require('../assets/images/check_green_bg.png'),
   editButton: require('../assets/images/edit_button.png'),
