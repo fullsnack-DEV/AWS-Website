@@ -36,6 +36,8 @@ module.exports = {
     'no-restricted-syntax': [0],
     "react/jsx-indent": [2, 2, {checkAttributes: true, indentLogicalExpressions: true }],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "one-var-declaration-per-line": [0],
+    "one-var": [0],
     semi: [0, 'never'],
     camelcase: [0],
   },

@@ -42,7 +42,6 @@ import {
 
 export default function AccountScreen({ navigation }) {
   const authContext = useContext(AuthContext);
-  const [role, setRole] = useState('user');
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState(null);
   const [groupList, setGroupList] = useState([]);
@@ -124,23 +123,19 @@ export default function AccountScreen({ navigation }) {
       // ),
     });
   }, [navigation]);
+
   useEffect(() => {
-    console.log('EFFECT CALLED:: ACCOUNT');
     const getData = async () => {
       const entity = await Utility.getStorage('loggedInEntity');
       setAuthUser(entity);
-      if (entity.role === 'user') {
-        setRole('user');
-      } else if (entity.role === 'team') {
-        setRole('team');
-      } else if (entity.role === 'club') {
-        setRole('club');
+
+      const promises = [getOwnGroupList(entity), getTeamsList(entity)]
+
+      if (entity.role !== 'club') {
+        promises.push(getClubList(entity))
       }
-      Promise.all([
-        getOwnGroupList(),
-        getTeamsList(),
-        getClubList(),
-      ]).then(() => {
+
+      Promise.all(promises).then(() => {
         setloading(false);
       });
     }
@@ -159,40 +154,37 @@ export default function AccountScreen({ navigation }) {
         Alert.alert(error)
       })
   };
-  const getOwnGroupList = async () => {
+
+  const getOwnGroupList = async (currentEntity) => {
     getUnreadCount().then((response) => {
       const { teams } = response.payload;
       const { clubs } = response.payload;
-      console.log('ENTITY DATA:::::::', response.payload);
-      // setEntities([...clubs, ...teams]);
       setTeam(teams);
       setClub(clubs);
-      // if (authUser.role === 'user') {
-      setGroupList([...clubs, ...teams]);
-      // } else if (authUser.role === 'team') {
-      //   const updatedTeam = team.filter((item) => item.group_id !== authUser.uid);
-      //   setGroupList([authUser.auth.user, ...club, ...updatedTeam]);
-      // } else if (authUser.role === 'club') {
-      //   const updatedClub = club.filter((item) => item.group_id !== authUser.uid);
-      //   setGroupList([authUser.auth.user, ...updatedClub, ...team]);
-      // }
+      if (currentEntity.role === 'user') {
+        setGroupList([...clubs, ...teams]);
+      } else if (currentEntity.role === 'team') {
+        const updatedTeam = teams.filter((item) => item.group_id !== authUser.uid);
+        setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
+      } else if (authUser.role === 'club') {
+        const updatedClub = clubs.filter((item) => item.group_id !== authUser.uid);
+        setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
+      }
     })
       .catch((error) => {
         Alert.alert(error)
       })
   };
-  const getTeamsList = async () => {
-    const loggedInEntity = await Utility.getStorage('loggedInEntity');
-    if (loggedInEntity.role === 'club') {
-      getTeamsOfClub(loggedInEntity.uid).then((response) => {
+
+  const getTeamsList = async (currentEntity) => {
+    if (currentEntity.role === 'club') {
+      getTeamsOfClub(authUser.uid).then((response) => {
         setTeamList(response.payload);
       }).catch((error) => {
         Alert.alert(error)
       })
     } else {
       getJoinedGroups().then((response) => {
-        console.log('JOINED response::', response)
-
         setTeamList(response.payload.teams);
       }).catch((error) => {
         Alert.alert(error)
@@ -207,86 +199,71 @@ export default function AccountScreen({ navigation }) {
       Alert.alert(error)
     })
   };
-  const switchProfile = async ({ item }) => {
-    console.log('Item :-', item);
-    setloading(true);
 
-    let currentEntity = await Utility.getStorage('loggedInEntity');
-    console.log('Switched:: switch', currentEntity.obj.entity_type, item.entity_type);
+  const onSwitchProfile = async ({ item }) => {
+    setloading(true)
+    switchProfile(item).then((currentEntity) => {
+      switchQBAccount(item, currentEntity)
+    }).catch((error) => { Alert.alert(error) }).finally(() => setloading(false))
+  }
 
+  const switchProfile = async (item) => {
+    let currentEntity = authUser
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
         team.push(currentEntity.obj)
-        setGroupList([...club, ...team]);
       } else if (currentEntity.obj.entity_type === 'club') {
         club.push(currentEntity.obj)
-        setGroupList([...club, ...team]);
       }
+      setGroupList([...club, ...team]);
       currentEntity = {
         ...currentEntity, uid: item.user_id, role: 'user', obj: item,
       }
       setParentGroup(null);
-      await Utility.setStorage('loggedInEntity', currentEntity);
-      setAuthUser(currentEntity)
-      setRole('user')
-    } else if (item.entity_type === 'team') {
-      if (currentEntity.obj.entity_type === 'player') {
+    } else {
+      if (item.entity_type === 'team') {
         const i = team.indexOf(item);
-        team.splice(i, 1);
-        setGroupList([authUser.auth.user, ...club, ...team]);
-      } else if (currentEntity.obj.entity_type === 'team') {
-        const i = team.indexOf(item);
-        team.splice(i, 1, currentEntity.obj);
-        setGroupList([authUser.auth.user, ...club, ...team]);
-      } else if (currentEntity.obj.entity_type === 'club') {
-        const i = team.indexOf(item);
-        team.splice(i, 1);
-        club.push(currentEntity.obj)
-        setGroupList([authUser.auth.user, ...club, ...team]);
-      }
-      currentEntity = {
-        ...currentEntity, uid: item.group_id, role: 'team', obj: item,
-      }
-      getParentClub(item);
-      await Utility.setStorage('loggedInEntity', currentEntity);
-      setAuthUser(currentEntity)
-      setRole('team')
-    } else if (item.entity_type === 'club') {
-      if (currentEntity.obj.entity_type === 'player') {
+        if (currentEntity.obj.entity_type === 'player') {
+          team.splice(i, 1);
+        } else if (currentEntity.obj.entity_type === 'team') {
+          team.splice(i, 1, currentEntity.obj);
+        } else if (currentEntity.obj.entity_type === 'club') {
+          club.push(currentEntity.obj)
+        }
+        currentEntity = {
+          ...currentEntity, uid: item.group_id, role: 'team', obj: item,
+        }
+        getParentClub(item);
+      } else if (item.entity_type === 'club') {
         const i = club.indexOf(item);
-        club.splice(i, 1);
-        setGroupList([authUser.auth.user, ...club, ...team]);
-      } else if (currentEntity.obj.entity_type === 'team') {
-        const i = club.indexOf(item);
-        club.splice(i, 1);
-        team.push(currentEntity.obj)
-        setGroupList([authUser.auth.user, ...club, ...team]);
-      } else if (currentEntity.obj.entity_type === 'club') {
-        const i = club.indexOf(item);
-        club.splice(i, 1, currentEntity.obj);
-        setGroupList([authUser.auth.user, ...club, ...team]);
+        if (currentEntity.obj.entity_type === 'player') {
+          club.splice(i, 1);
+        } else if (currentEntity.obj.entity_type === 'team') {
+          club.splice(i, 1);
+          team.push(currentEntity.obj)
+        } else if (currentEntity.obj.entity_type === 'club') {
+          club.splice(i, 1, currentEntity.obj);
+        }
+        currentEntity = {
+          ...currentEntity, uid: item.group_id, role: 'club', obj: item,
+        }
+        setParentGroup(null)
+        setGroup(item)
       }
-
-      currentEntity = {
-        ...currentEntity, uid: item.group_id, role: 'club', obj: item,
-      }
-      setParentGroup(null);
-      setGroup(item);
-      await Utility.setStorage('loggedInEntity', currentEntity);
-      setAuthUser(currentEntity)
-      setRole('club')
+      setGroupList([authUser.auth.user, ...club, ...team]);
     }
-    await switchQBAccount(item);
+    setAuthUser(currentEntity)
+    Utility.setStorage('loggedInEntity', currentEntity);
+    return currentEntity
   };
 
-  const switchQBAccount = async (accountData) => {
-    setloading(true);
-    let entity = await Utility.getStorage('loggedInEntity')
-    entity = { ...entity, QB: { connected: false } }
-    await Utility.setStorage('loggedInEntity', entity);
-    const entityType = await accountData?.entity_type ?? '';
+  const switchQBAccount = async (accountData, entity) => {
+    let currentEntity = entity
+    setAuthUser(currentEntity)
+    Utility.setStorage('loggedInEntity', currentEntity);
+    const entityType = accountData?.entity_type
     const uid = entityType === 'player' ? 'user_id' : 'group_id'
-    QBLogout().then(async () => {
+    QBLogout().then(() => {
       const {
         USER, CLUB, LEAGUE, TEAM,
       } = QB_ACCOUNT_TYPE;
@@ -294,8 +271,7 @@ export default function AccountScreen({ navigation }) {
       if (entityType === 'club') accountType = CLUB;
       else if (entityType === 'team') accountType = TEAM;
       else if (entityType === 'league') accountType = LEAGUE;
-
-      await QBlogin(
+      QBlogin(
         accountData[uid],
         {
           ...accountData,
@@ -303,13 +279,12 @@ export default function AccountScreen({ navigation }) {
         },
         accountType,
       ).then(async (res) => {
-        entity.QB = { ...res.user, connected: true, token: res?.session?.token }
-        await Utility.setStorage('loggedInEntity', entity);
-        await QBconnectAndSubscribe()
-      }).catch((e) => console.log(e))
-    }).catch((e) => {
-      console.log(e);
-    }).finally(() => setloading(false));
+        currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+        setAuthUser(currentEntity)
+        Utility.setStorage('loggedInEntity', currentEntity);
+        QBconnectAndSubscribe()
+      })
+    })
   }
 
   const handleLogOut = async () => {
@@ -334,6 +309,7 @@ export default function AccountScreen({ navigation }) {
       { cancelable: false },
     );
   };
+
   const handleSections = async (section) => {
     if (section === 'My Schedule') {
       navigation.navigate('ScheduleScreen');
@@ -372,11 +348,12 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('CreateClubForm1');
     }
   };
+
   const renderSwitchProfile = ({ item, index }) => (
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
-        switchProfile({ item, index });
+        onSwitchProfile({ item, index });
       }}>
       <View>
         {item.entity_type === 'player'
@@ -432,11 +409,24 @@ export default function AccountScreen({ navigation }) {
       </View>
     </TouchableWithoutFeedback>
   );
+
+  let placeHolder, badge, background = images.teamSqure
+  if (authUser.role === 'club') {
+    placeHolder = images.team_ph
+    badge = 'C'
+    background = images.clubSqure
+  } else if (authUser.role === 'team') {
+    placeHolder = images.team_ph
+    badge = 'T'
+    background = images.teamSqure
+  } else {
+    placeHolder = images.profilePlaceHolder
+  }
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <ScrollView style={styles.mainContainer}>
-
         <View style={{
           flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, alignItems: 'center',
         }}>
@@ -464,147 +454,80 @@ export default function AccountScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
-
         {authUser.role === 'user' && (
           <View style={styles.profileView}>
             <Image
-                source={authUser.auth.user.thumbnail ? { uri: authUser.auth.user.thumbnail } : images.profilePlaceHolder}
+                source={authUser.obj.thumbnail ? { uri: authUser.obj.thumbnail } : placeHolder}
                 style={[styles.profileImg, { marginTop: 20 }]}
               />
             <Text style={styles.nameText}>{authUser.auth.user.full_name}</Text>
             <Text style={styles.locationText}>
-              {authUser.auth.user.city}, {authUser.auth.user.state_abbr}
+              {authUser.obj.city}, {authUser.obj.state_abbr}
             </Text>
           </View>
         )}
-        {authUser.role === 'team' && (
-          <View style={styles.profileView}>
-            <Image
-                source={authUser.obj.thumbnail ? { uri: authUser.obj.thumbnail } : images.team_ph}
+        {(authUser.role === 'team' || authUser.role === 'club') && (<View style={styles.profileView}>
+          <Image
+                source={authUser.obj.thumbnail ? { uri: authUser.obj.thumbnail } : placeHolder}
                 style={styles.profileImgGroup}
               />
-            <View
+          <View
               style={{
                 flexDirection: 'row',
                 alignSelf: 'center',
                 paddingLeft: 30,
               }}>
-              <Text style={styles.nameText}>{authUser.obj.group_name}</Text>
-              <View style={styles.identityView}>
-                <ImageBackground
-                  source={images.teamSqure}
+            <Text style={styles.nameText}>{authUser.obj.group_name}</Text>
+            <View style={styles.identityView}>
+              <ImageBackground
+                  source={background}
                   style={styles.badgeCounter}
                 />
-                <Text style={styles.badgeCounter}>T</Text>
-              </View>
+              <Text style={styles.badgeCounter}>{badge}</Text>
             </View>
-
-            <Text style={styles.locationText}>
-              {authUser.obj.city}, {authUser.obj.state_abbr}
-            </Text>
           </View>
-        )}
-        {authUser.role === 'club' && (
-          <View style={styles.profileView}>
-            <Image
-                source={authUser.obj.thumbnail ? { uri: authUser.obj.thumbnail } : images.club_ph}
-                style={styles.profileImgGroup}
-              />
-            <View
-              style={{
-                flexDirection: 'row',
-                alignSelf: 'center',
-                paddingLeft: 30,
-              }}>
-              <Text style={styles.nameText}>{authUser.obj.group_name}</Text>
 
-              <View style={styles.identityView}>
-                <ImageBackground
-                  source={images.clubSqure}
-                  style={styles.badgeCounter}
-                />
-                <Text style={styles.badgeCounter}>C</Text>
-              </View>
-            </View>
+          <Text style={styles.locationText}>
+            {authUser.obj.city}, {authUser.obj.state_abbr}
+          </Text>
+        </View>)}
 
-            <Text style={styles.locationText}>
-              {authUser.obj.city}, {authUser.obj.state_abbr}
-            </Text>
-          </View>
-        )}
         <View style={styles.separatorLine}></View>
 
         <ExpanableList
           dataSource={
-            (role === 'team' && teamMenu)
-            || (role === 'club' && clubMenu)
-            || (role === 'user' && userMenu)
+            (authUser.role === 'team' && teamMenu)
+            || (authUser.role === 'club' && clubMenu)
+            || (authUser.role === 'user' && userMenu)
           }
           headerKey={'key'}
           memberKey="member"
           renderRow={(rowItem, rowId, sectionId) => (
             <>
-              {role === 'user' && sectionId === 3 && (
+              {authUser.role === 'user' && (sectionId === 3 || sectionId === 4) && (
                 <FlatList
-                  data={teamList}
+                  data={sectionId === 3 ? teamList : clubList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => (
-                    <TouchableWithoutFeedback
-                      style={styles.listContainer}
-                      onPress={() => {
-                        console.log('Pressed Team..', item);
-                      }}>
+                    <TouchableWithoutFeedback style={styles.listContainer}>
                       <View style={styles.entityTextContainer}>
-                        <Image
+                        {item.entity_type === 'team' && (<Image
                             source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
                             style={styles.smallProfileImg}
-                          />
+                          />)}
+                        {item.entity_type === 'club' && (<Image
+                            source={item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder}
+                            style={styles.smallProfileImg}
+                          />)}
                         <Text style={styles.entityName}>{item.group_name}</Text>
                         <Text style={styles.teamSportView}> {item.sport}</Text>
-
                       </View>
                     </TouchableWithoutFeedback>
                   )}
-                  // ItemSeparatorComponent={() => (
-                  //   <View style={styles.separatorLine}></View>
-                  // )}
                   scrollEnabled={false}
                 />
               )}
-              {role === 'user' && sectionId === 4 && (
-                <FlatList
-                  data={clubList}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableWithoutFeedback
-                      style={styles.listContainer}
-                      onPress={() => {
-                        console.log('Pressed Team..', rowItem.rowId.sectionId);
-                      }}>
-                      <View style={styles.entityTextContainer}>
-
-                        <Image
-                            source={item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder }
-                            style={styles.smallProfileImg}
-                          />
-
-                        <Text style={styles.entityName}>{item.group_name}</Text>
-                        <Text style={styles.clubSportView}> {item.sport}</Text>
-
-                        {/* <Text style={styles.entityLocationText}>
-                {item.city}, {item.state_abbr}, {item.country}
-              </Text> */}
-                      </View>
-                    </TouchableWithoutFeedback>
-                  )}
-                  // ItemSeparatorComponent={() => (
-                  //   <View style={styles.separatorLine}></View>
-                  // )}
-                  scrollEnabled={false}
-                />
-              )}
-
-              {role === 'club' && sectionId === 2 && (
+              {authUser.role === 'club' && sectionId === 2 && (
                 <FlatList
                   data={teamList}
                   keyExtractor={(item, index) => index.toString()}
@@ -622,7 +545,7 @@ export default function AccountScreen({ navigation }) {
                           />
 
                         <Text style={styles.entityName}>{item.group_name}</Text>
-                        <Text style={styles.teamSportView}> {item.sport}</Text>
+                        <Text style={item.entity_type === 'team' ? styles.teamSportView : styles.clubSportView}> {item.sport}</Text>
 
                       </View>
                     </TouchableWithoutFeedback>
