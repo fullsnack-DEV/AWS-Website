@@ -8,9 +8,9 @@ import colors from '../Constants/Colors'
 
 // import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 // import GameDetail from '../screens/account/schedule/GameDetail';
-// import GameRecording from '../screens/account/schedule/GameRecording';
+// import SoccerRecording from '../screens/account/schedule/SoccerRecording';
 // import GameDetailRecord from '../screens/account/schedule/GameDetailRecord';
-// import GameRecordList from '../screens/account/schedule/GameRecordList';
+// import SoccerRecordList from '../screens/account/schedule/SoccerRecordList';
 // import RegisterPlayer from '../screens/account/registerPlayer';
 // import RegisterPlayerForm2 from '../screens/account/registerPlayer/registerPlayerForm2';
 // import RegisterReferee from '../screens/account/registerReferee';

@@ -20,9 +20,9 @@ import EditGroupContactScreen from '../screens/home/EditGroupContactScreen';
 // Account's Screens
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import GameDetail from '../screens/account/schedule/GameDetail';
-import GameRecording from '../screens/account/schedule/GameRecording';
+import SoccerRecording from '../screens/game/soccer/SoccerRecording';
 import GameDetailRecord from '../screens/account/schedule/GameDetailRecord';
-import GameRecordList from '../screens/account/schedule/GameRecordList';
+
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';
 import RegisterReferee from '../screens/account/registerReferee/RegisterReferee';
@@ -90,6 +90,10 @@ import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
 import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
+import SoccerHome from '../screens/game/soccer/SoccerHome';
+import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
+import SoccerApproveDisapproveConfirmation
+  from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
 
 const Stack = createStackNavigator();
 
@@ -316,8 +320,15 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="GameRecording"
-      component={GameRecording}
+          name="SoccerHome"
+          component={SoccerHome}
+          options={{
+            headerShown: false,
+          }}
+      />
+    <Stack.Screen
+      name="SoccerRecording"
+      component={SoccerRecording}
       options={{
         title: 'Match Record',
         headerTintColor: colors.blackColor,
@@ -331,6 +342,38 @@ const HomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+          name="SoccerRecordList"
+          component={ SoccerRecordList }
+          options={ {
+            title: 'Match Record',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
+    <Stack.Screen
+          name="SoccerApproveDisapproveConfirmation"
+          component={ SoccerApproveDisapproveConfirmation }
+          options={ {
+            title: 'Match Record',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
     <Stack.Screen
       name="GameDetailRecord"
       component={GameDetailRecord}
@@ -348,22 +391,6 @@ const HomeNavigator = () => (
       }}
     />
 
-    <Stack.Screen
-        name="GameRecordList"
-        component={ GameRecordList }
-        options={ {
-          title: 'Match Record',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
-      />
     <Stack.Screen
         name="RegisterPlayer"
         component={ RegisterPlayer }

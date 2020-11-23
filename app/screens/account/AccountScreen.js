@@ -78,6 +78,7 @@ export default function AccountScreen({ navigation }) {
       ],
     },
     { key: 'Setting & Privacy' },
+    { key: 'Game(For Test)' },
   ];
   const teamMenu = [
     { key: 'My Schedule' },
@@ -334,6 +335,8 @@ export default function AccountScreen({ navigation }) {
     } else if (section === 'Members') {
       const entity = await Utility.getStorage('loggedInEntity');
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
+    } else if (section === 'Game(For Test)') {
+      navigation.navigate('SoccerHome');
     }
   };
 
@@ -640,6 +643,9 @@ export default function AccountScreen({ navigation }) {
                 )}
                 {section === 'Setting & Privacy' && (
                   <Image source={images.SettingPrivacy} style={styles.menuItem} />
+                )}
+                {section === 'Game(For Test)' && (
+                  <Image source={images.mySports} style={styles.menuItem} />
                 )}
                 {section === 'Members' && (
                   <Image source={images.Members} style={styles.menuItem} />

@@ -205,7 +205,7 @@ export default function GameDetailRecord({ navigation }) {
           />
           <TCGameButton
             title="Records"
-            onPress={ () => navigation.navigate('GameRecordList') }
+            onPress={ () => navigation.navigate('SoccerRecordList') }
             buttonColor={ colors.darkGrayColor }
             imageName={ images.gameRecord }
             textColor={ colors.darkGrayColor }

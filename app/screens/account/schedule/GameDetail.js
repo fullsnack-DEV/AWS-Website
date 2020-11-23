@@ -5,7 +5,7 @@ export default function GameDetail({ navigation }) {
   return (
     <TCButton
       title="NEXT"
-      onPress={ () => navigation.navigate('GameRecording') }
+      onPress={ () => navigation.navigate('SoccerRecording') }
     />
   );
 }

@@ -13,7 +13,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Header from '../../../components/Home/Header';
+import Header from '../../../components/SoccerHome/Header';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
