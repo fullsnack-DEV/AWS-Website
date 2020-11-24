@@ -32,6 +32,8 @@ export default function RecentMatchView({
         firstText={firstTeamName}
         secondUserImage={secondTeamImage}
         secondText={secondTeamName}
+        firstTeamPoint={3}
+        secondTeamPoint={1}
       />
     </View>
   );

@@ -22,10 +22,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     alignItems: 'center',
     borderRadius: 5,
+    borderBottomWidth: 0.3,
+    borderBottomColor: colors.grayColor,
     shadowColor: colors.grayColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.offGrayColor,
     justifyContent: 'center',
   },
   roleTitle: {

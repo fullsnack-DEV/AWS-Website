@@ -139,6 +139,9 @@ const images = {
   clubPlaceholderSmall: require('../assets/images/clubplaceholder.png'),
 
   usaImage: require('../assets/images/NewYorkCityFC.png'),
+  chelseaFCImage: require('../assets/images/chelseaFC.png'),
+  FCBarcelonaImage: require('../assets/images/FCBarcelona.png'),
+  uefaChampionsImage: require('../assets/images/UEFAChampionsLeague.png'),
 
   Payout_method: require('../assets/images/Payout_method.png'),
   Transations: require('../assets/images/Transations.png'),

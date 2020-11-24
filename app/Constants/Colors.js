@@ -37,6 +37,7 @@ const colors = {
   doneButtonColor: '#29bce5',
   actionSheetColor: '#006ff9',
   offwhite: '#FCFCFC',
+  offGrayColor: '#ebebeb',
   radoffwhiteioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
   veryLightBlack: '#616161',

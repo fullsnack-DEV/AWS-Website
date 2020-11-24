@@ -6,10 +6,16 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function MatchBetweenRecentView({
-  firstUserImage, firstText, secondUserImage, secondText,
+  firstUserImage,
+  firstText,
+  secondUserImage,
+  secondText,
+  firstTeamPoint,
+  secondTeamPoint,
+  containerStyle,
 }) {
   return (
-    <View style={styles.containerStyle}>
+    <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
           <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'contain'} />
@@ -17,9 +23,9 @@ function MatchBetweenRecentView({
         <Text style={[styles.textStyle, { marginLeft: 8 }]}>{firstText}</Text>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 20, fontFamily: fonts.RBold, color: colors.themeColor }}>3</Text>
+        <Text style={{ fontSize: 20, fontFamily: fonts.RBold, color: colors.themeColor }}>{firstTeamPoint}</Text>
         <Text style={{ marginHorizontal: 5 }}>:</Text>
-        <Text style={{ fontSize: 20, fontFamily: fonts.RRegular, color: colors.googleColor }}>1</Text>
+        <Text style={{ fontSize: 20, fontFamily: fonts.RRegular, color: colors.googleColor }}>{secondTeamPoint}</Text>
       </View>
       <View style={styles.firstUserViewStyle}>
         <Text style={[styles.textStyle, { textAlign: 'right', marginRight: 8 }]}>{secondText}</Text>

@@ -6,10 +6,14 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function MatchBetweenUpcomingView({
-  firstUserImage, firstText, secondUserImage, secondText,
+  firstUserImage,
+  firstText,
+  secondUserImage,
+  secondText,
+  containerStyle,
 }) {
   return (
-    <View style={styles.containerStyle}>
+    <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
           <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'contain'} />
