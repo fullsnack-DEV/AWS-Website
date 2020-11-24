@@ -20,7 +20,9 @@ export default function CreateChallengeForm2({ navigation, route }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-
+    if (route && route.params && route.params.editable && route.params.body) {
+      setRules(route.params.body.special_rule)
+    }
   }, [isFocused]);
   const checkValidation = () => {
     if (rules === '') {
@@ -55,13 +57,23 @@ export default function CreateChallengeForm2({ navigation, route }) {
       <View style={{ marginBottom: 20 }}>
         <TCGradientButton title={strings.nextTitle} onPress={() => {
           if (checkValidation()) {
-            navigation.navigate('CreateChallengeForm3', {
-              teamData: route.params.teamData,
-              body: {
-                ...route.params.body,
-                special_rule: rules,
-              },
-            })
+            if (route && route.params && route.params.editable && route.params.body) {
+              navigation.navigate('CreateChallengeForm4', {
+                teamData: route.params.teamData,
+                body: {
+                  ...route.params.body,
+                  special_rule: rules,
+                },
+              })
+            } else {
+              navigation.navigate('CreateChallengeForm3', {
+                teamData: route.params.teamData,
+                body: {
+                  ...route.params.body,
+                  special_rule: rules,
+                },
+              })
+            }
           }
         }}/>
       </View>

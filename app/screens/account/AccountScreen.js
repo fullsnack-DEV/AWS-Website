@@ -210,6 +210,7 @@ export default function AccountScreen({ navigation }) {
 
   const switchProfile = async (item) => {
     let currentEntity = authUser
+    console.log('SwitchID::', item.group_id || item.user_id);
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
         team.push(currentEntity.obj)

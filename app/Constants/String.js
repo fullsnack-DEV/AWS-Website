@@ -334,6 +334,7 @@ const strings = {
   decline: 'DECLINE',
   accept: 'ACCEPT',
   calcelRequest: 'CANCEL REQUEST',
+  cancelMatch: 'CANCEL MATCH',
   goToGameHome: 'GO TO GAME HOME',
   alreadyjoinclubmessage: 'Your team can’t join this club because a team can join only a club.',
   isinvitedsuccesfully: 'is invited successfully',

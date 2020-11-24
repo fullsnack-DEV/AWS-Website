@@ -35,7 +35,10 @@ export default function CreateChallengeForm3({ navigation, route }) {
     responsible_team_id: 'none',
   }]);
   useEffect(() => {
-
+    if (route && route.params && route.params.editable && route.params.body) {
+      setReferees([...route.params.body.referee])
+      setScorekeeper([...route.params.body.scorekeeper])
+    }
   }, [isFocused]);
   const addReferee = () => {
     const obj = {
@@ -62,8 +65,7 @@ export default function CreateChallengeForm3({ navigation, route }) {
           setReferees([...referees])
         }}>Delete</Text>}
       </View>
-
-      <View style={styles.viewContainer}>
+      {route && route.params && route.params.teamData && <View style={styles.viewContainer}>
         <View style={styles.radioContainer}>
           <Text style={styles.radioText}>None</Text>
           <TouchableOpacity onPress={() => {
@@ -94,7 +96,8 @@ export default function CreateChallengeForm3({ navigation, route }) {
             <Image source={referees[index].responsible_team_id === route.params.teamData[1].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
           </TouchableOpacity>
         </View>
-      </View>
+      </View>}
+
     </View>
   );
   const renderScorekeeper = ({ index }) => (
@@ -107,7 +110,7 @@ export default function CreateChallengeForm3({ navigation, route }) {
         }}>Delete</Text>
       </View>
 
-      <View style={styles.viewContainer}>
+      {route && route.params && route.params.teamData && <View style={styles.viewContainer}>
         <View style={styles.radioContainer}>
           <Text style={styles.radioText}>None</Text>
           <TouchableOpacity onPress={() => {
@@ -138,7 +141,7 @@ export default function CreateChallengeForm3({ navigation, route }) {
             <Image source={scorekeeper[index].responsible_team_id === route.params.teamData[1].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
           </TouchableOpacity>
         </View>
-      </View>
+      </View>}
     </View>
   );
   return (

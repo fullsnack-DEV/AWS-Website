@@ -1006,6 +1006,7 @@ const HomeNavigator = () => (
           },
         } }
       />
+
     <Stack.Screen
         name="CreateChallengeForm2"
         component={ CreateChallengeForm2 }

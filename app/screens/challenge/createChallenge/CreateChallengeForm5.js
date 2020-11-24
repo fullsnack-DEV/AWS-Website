@@ -21,6 +21,7 @@ import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 let entity = {};
+let body = {};
 export default function CreateChallengeForm5({ navigation, route }) {
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
@@ -40,7 +41,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
       if (route.params.teamData[0].group_id === entity.uid) {
         // setHomeTeam(route.params.teamData[0])
         // setAwayTeam(route.params.teamData[1])
-        const body = {}
+
         body.start_datetime = route.params.body.start_datetime / 1000
         body.end_datetime = route.params.body.end_datetime / 1000
         body.manual_fee = false
@@ -49,7 +50,17 @@ export default function CreateChallengeForm5({ navigation, route }) {
         setloading(true)
         getFeesEstimation(route.params.teamData[1].group_id, body).then((response) => {
           setloading(false)
-          console.log('RESPONSE:', response);
+          console.log('fee data :', response);
+          if (route && route.params && route.params.body) {
+            body = route.params.body;
+            body.total_payout = response.payload.total_payout
+            body.service_fee1_charges = response.payload.service_fee1_charges
+            body.service_fee2_charges = response.payload.service_fee2_charges
+            body.total_charges = response.payload.total_charges
+            body.total_game_charges = response.payload.total_game_charges
+            body.hourly_game_fee = response.payload.hourly_game_fee
+          }
+
           // setPaymentInfo(response.payload)
         }).catch((error) => {
           setloading(false)
@@ -58,10 +69,11 @@ export default function CreateChallengeForm5({ navigation, route }) {
       }
     }
   }
+
   const createChallengeTeam = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
       if (route.params.teamData[0].group_id === entity.uid) {
-        const body = { ...route.params.body }
+        body = route.params.body
         body.userChallenge = false
         body.total_charges = 0.0
         body.total_game_charges = 0.0
@@ -97,7 +109,9 @@ export default function CreateChallengeForm5({ navigation, route }) {
       <View style={styles.viewMarginStyle}>
         <TCLabel title={'Payment'}/>
         {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
-        <MatchFeesCard />
+        <MatchFeesCard
+        challengeObj={body }
+        senderOrReceiver={'sender'}/>
       </View>
 
       <View style={styles.viewMarginStyle}>
