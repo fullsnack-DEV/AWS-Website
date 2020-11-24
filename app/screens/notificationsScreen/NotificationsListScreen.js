@@ -52,8 +52,9 @@ function NotificationsListScreen({ navigation }) {
   const [activeScreen, setActiveScreen] = useState(false);
 
   const [loading, setloading] = useState(true);
-  const navigateFlatList = () => {
-    console.log('cell selected')
+  const navigateFlatList = (item) => {
+    console.log('cell selected', item.activities[0].object)
+    navigation.navigate('AcceptDeclineChallengeScreen', { challengeID: JSON.parse(item.activities[0].object).challengeObject.challenge_id })
   };
 
   const onDelete = ({ item }) => {
@@ -150,7 +151,7 @@ function NotificationsListScreen({ navigation }) {
       {!isInvite(item.activities[0].verb) && (<PRNotificationDetailMessageItem
           item={item}
           selectedEntity={selectedEntity}
-          onDetailPress={navigateFlatList}
+          onDetailPress={() => navigateFlatList(item)}
           onMessagePress={navigateFlatList}
           onPress={navigateFlatList}
         />

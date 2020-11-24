@@ -193,7 +193,7 @@ export default function CreateChallengeForm3({ navigation, route }) {
           onPress={() => addScorekeeper()}/>
 
         <Text style={styles.responsibilityNote}>
-          The match fee doesn’t include the <Text style = {styles.responsibilityNoteMedium}>Match Place Fee, Referee Fee
+          These match fee doesn’t include the <Text style = {styles.responsibilityNoteMedium}>Match Place Fee, Referee Fee
           </Text> and <Text style = {styles.responsibilityNoteMedium}>Scorekeeper Fee.</Text> The match place, referees and
           scorekeepers should be secured by the team who has charge of
           them at its own expense.
