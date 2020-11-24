@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View, Text, StyleSheet, Image,
 } from 'react-native';
-
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath'
@@ -10,19 +10,18 @@ import images from '../../../Constants/ImagePath'
 export default function UserInfoRefereesInItem({
   title,
   thumbURL,
+  onRefereesInPress,
 }) {
   return (
-    <View>
-      <View style={styles.containerStyle}>
-        <Image source={images.myRefereeing} style={styles.refereeIconStyle}/>
-        <Image source={thumbURL} style={styles.imageStyle}/>
-        <View style={{ marginLeft: 10, marginRight: 12 }}>
-          <Text style={styles.titleStyle}>
-            {title}
-          </Text>
-        </View>
+    <TouchableWithoutFeedback style={styles.containerStyle} onPress={onRefereesInPress}>
+      <Image source={images.myRefereeing} style={styles.refereeIconStyle}/>
+      <Image source={thumbURL} style={styles.imageStyle}/>
+      <View style={{ marginLeft: 10, marginRight: 12 }}>
+        <Text style={styles.titleStyle}>
+          {title}
+        </Text>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
