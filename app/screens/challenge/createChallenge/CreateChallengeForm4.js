@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, View, Text, Image, FlatList,
+  StyleSheet, View, Text, Image, FlatList, TouchableOpacity,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -173,7 +173,15 @@ export default function CreateChallengeForm4({ navigation, route }) {
       <TCThinDivider />
       {bodyParams && route && route.params && route.params.teamData && (
         <View>
-          <TCLabel title={`Match · ${bodyParams.sport}`} />
+          <View style={styles.editableView}>
+            <TCLabel title={`Match · ${bodyParams.sport}`} />
+            <TouchableOpacity style={styles.editTouchArea} hitSlop={{
+              top: 15, bottom: 15, left: 15, right: 15,
+            }} onPress={() => navigation.navigate('CreateChallengeForm1', { editable: true, body: bodyParams })}>
+              <Image source={images.editSection} style={styles.editButton}/>
+            </TouchableOpacity>
+          </View>
+
           <TCInfoImageField
             title={'Home'}
             name={route.params.teamData[0].group_name}
@@ -239,27 +247,51 @@ export default function CreateChallengeForm4({ navigation, route }) {
       )}
       {bodyParams && (
         <View>
-          <TCLabel title={'Responsibility  to Secure Venue'} />
-          <View style={styles.viewContainer}>
-            <View style={styles.fieldValue}>
-              <Image source={images.teamPlaceholder} style={styles.imageView} />
-              <Text style={styles.teamNameText} numberOfLines={1}>
-                {bodyParams.responsible_to_secure_venue}
-              </Text>
-            </View>
+          <View style={styles.editableView}>
+            <TCLabel title={'Responsibility  to Secure Venue'} />
+            <TouchableOpacity style={styles.editTouchArea}
+            hitSlop={{
+              top: 15, bottom: 15, left: 15, right: 15,
+            }}
+            onPress={() => navigation.navigate('CreateChallengeForm1', { editable: true, body: bodyParams })}>
+              <Image source={images.editSection} style={styles.editButton}/>
+            </TouchableOpacity>
           </View>
+          <TCInfoImageField
+      title={'Venue'}
+      name={bodyParams.responsible_to_secure_venue}
+      marginLeft={30}
+    />
           <TCThickDivider marginTop={8} />
         </View>
       )}
       {bodyParams && (
         <View>
-          <TCLabel title={'Rules'} />
+          <View style={styles.editableView}>
+            <TCLabel title={'Rules'} />
+            <TouchableOpacity style={styles.editTouchArea}
+            hitSlop={{
+              top: 15, bottom: 15, left: 15, right: 15,
+            }}
+            onPress={() => navigation.navigate('CreateChallengeForm2', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
+              <Image source={images.editSection} style={styles.editButton}/>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
         </View>
       )}
       <TCThickDivider marginTop={20} />
       <View>
-        <TCLabel title={'Responsibility to Secure Referees'} />
+        <View style={styles.editableView}>
+          <TCLabel title={'Responsibility to Secure Referees'} />
+          <TouchableOpacity style={styles.editTouchArea}
+          hitSlop={{
+            top: 15, bottom: 15, left: 15, right: 15,
+          }}
+          onPress={() => navigation.navigate('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
+            <Image source={images.editSection} style={styles.editButton}/>
+          </TouchableOpacity>
+        </View>
         {bodyParams && <FlatList
           data={bodyParams.referee}
           renderItem={renderSecureReferee}
@@ -269,7 +301,17 @@ export default function CreateChallengeForm4({ navigation, route }) {
       </View>
       <TCThickDivider marginTop={10} />
       <View>
-        <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
+        <View style={styles.editableView}>
+          <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
+          <TouchableOpacity style={styles.editTouchArea}
+          hitSlop={{
+            top: 15, bottom: 15, left: 15, right: 15,
+          }}
+            onPress={() => navigation.navigate('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
+            <Image source={images.editSection} style={styles.editButton}/>
+          </TouchableOpacity>
+        </View>
+
         {bodyParams && <FlatList
           data={bodyParams.scorekeeper}
           renderItem={renderSecureScorekeeper}
@@ -331,12 +373,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 15,
   },
-
-  viewContainer: {
-    marginLeft: 15,
-    marginRight: 15,
-  },
-
   map: {
     height: 150,
     marginTop: 15,
@@ -349,21 +385,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
-  },
-
-  fieldValue: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    flex: 0.7,
-    marginRight: 15,
-  },
-  imageView: {
-    width: 25,
-    height: 25,
-    resizeMode: 'cover',
   },
   teamView: {
     flexDirection: 'row',
@@ -403,5 +424,19 @@ const styles = StyleSheet.create({
   },
   challengeeView: {
     flex: 0.5,
+  },
+  editButton: {
+    height: 16,
+    width: 16,
+    resizeMode: 'center',
+    alignSelf: 'center',
+  },
+  editableView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginRight: 15,
+  },
+  editTouchArea: {
+    alignSelf: 'center',
   },
 });

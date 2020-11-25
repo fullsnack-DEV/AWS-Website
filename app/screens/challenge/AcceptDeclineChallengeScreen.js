@@ -65,13 +65,14 @@ export default function CreateChallengeForm4({ navigation, route }) {
     setloading(true)
     acceptDeclineChallenge(teamID, ChallengeId, versionNo, status).then((response) => {
       setloading(false);
-      console.log(JSON.stringify(response.payload));
-      console.log('STATUS::', status);
+      console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
       if (status === 'accept') {
         navigation.navigate('ChallengeAcceptedDeclinedScreen', { teamObj: awayTeam, status: 'accept' })
-      } else {
+      } else if (status === 'decline') {
         navigation.navigate('ChallengeAcceptedDeclinedScreen', { teamObj: awayTeam, status: 'decline' })
+      } else if (status === 'cancel') {
+        navigation.navigate('ChallengeAcceptedDeclinedScreen', { teamObj: awayTeam, status: 'cancel' })
       }
     }).catch((error) => {
       setloading(false)
@@ -191,10 +192,14 @@ export default function CreateChallengeForm4({ navigation, route }) {
         }
         return 'receiver';
       }
-      if (challengeObj.change_requested_by === entity.uid) {
+      if (challengeObj.updated_by.group_id === entity.uid) {
         return 'sender';
       }
       return 'receiver';
+      // if (challengeObj.change_requested_by === entity.uid) {
+      //   return 'sender';
+      // }
+      // return 'receiver';
     }
     console.log('challenge for user to user');
   };
@@ -256,11 +261,13 @@ export default function CreateChallengeForm4({ navigation, route }) {
           </View>
         </View>
         <TCThinDivider />
+
+        {/* status offered */}
         {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.offered ? (
+      && bodyParams.status === ReservationStatus.offered && (
         <View>
           {bodyParams.offer_expiry > new Date().getTime() ? (
-            <Text style={styles.challengeMessage}>OFFER EXPIRED</Text>
+            <Text style={styles.challengeMessage}>RESERVATION REQUEST EXPIRED</Text>
           ) : (
             <Text style={styles.challengeMessage}>
               RESERVATION REQUEST SENT
@@ -268,8 +275,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
           )}
           {bodyParams.offer_expiry > new Date().getTime() ? (
             <Text style={styles.challengeText}>
-              Your team sent a match reservation request to{' '}
-              {getTeamName(bodyParams)}.
+              Your match reservation request
+              has been expired.
             </Text>
           ) : (
             <Text style={styles.challengeText}>
@@ -285,35 +292,121 @@ export default function CreateChallengeForm4({ navigation, route }) {
             </Text>
           )}
         </View>
+        )}
+        {checkSenderOrReceiver(bodyParams) === 'receiver'
+      && bodyParams.status === ReservationStatus.offered
+        && <View>
+          {bodyParams.offer_expiry > new Date().getTime() ? (
+            <Text style={styles.challengeMessage}>RESERVATION REQUEST EXPIRED</Text>
           ) : (
-            <View>
-              {bodyParams.offer_expiry > new Date().getTime() ? (
-                <Text style={styles.challengeMessage}>OFFER EXPIRED</Text>
-              ) : (
-                <Text style={styles.challengeMessage}>
-                  RESERVATION REQUEST RECEIVED
-                </Text>
-              )}
-              {bodyParams.offer_expiry > new Date().getTime() ? (
-                <Text style={styles.challengeText}>
-                  Your team received a match reservation request from{' '}
-                  {getTeamName(bodyParams)}.
-                </Text>
-              ) : (
-                <Text style={styles.challengeText}>
-                  Your team received a match reservation request from{' '}
-                  {getTeamName(bodyParams)}. This request will be expired in{' '}
-                  <Text style={styles.timeText}>
-                    {getDayTimeDifferent(
-                      bodyParams.offer_expiry * 1000,
-                      new Date().getTime(),
-                    )}
-                    .
-                  </Text>
-                </Text>
-              )}
-            </View>
+            <Text style={styles.challengeMessage}>
+              RESERVATION REQUEST RECEIVED
+            </Text>
           )}
+          {bodyParams.offer_expiry > new Date().getTime() ? (
+            <Text style={styles.challengeText}>
+              The match reservation request
+              from {getTeamName(bodyParams)} has been expired.
+            </Text>
+          ) : (
+            <Text style={styles.challengeText}>
+              Your team received a match reservation request from{' '}
+              {getTeamName(bodyParams)}. This request will be expired in{' '}
+              <Text style={styles.timeText}>
+                {getDayTimeDifferent(
+                  bodyParams.offer_expiry * 1000,
+                  new Date().getTime(),
+                )}
+                .
+              </Text>
+            </Text>
+          )}
+        </View>}
+
+        {/* Status accepted */}
+        {checkSenderOrReceiver(bodyParams) === 'sender'
+      && bodyParams.status === ReservationStatus.accepted && (
+        <View>
+          <Text style={[styles.challengeMessage, { color: colors.greenGradientStart }]}>
+            RESERVATION CONFIRMED
+          </Text>
+          <Text style={styles.challengeText}>
+            Your team has the confirmed
+            game reservation against{' '}
+            {getTeamName(bodyParams)}.
+          </Text>
+        </View>
+        )}
+        {checkSenderOrReceiver(bodyParams) === 'receiver'
+      && bodyParams.status === ReservationStatus.accepted && (
+        <View>
+          <Text style={[styles.challengeMessage, { color: colors.greenGradientStart }]}>
+            RESERVATION CONFIRMED
+          </Text>
+          <Text style={styles.challengeText}>
+            {getTeamName(bodyParams)} has the confirmed game reservation against your team.
+          </Text>
+        </View>
+        )}
+
+        {/* Status declined */}
+        {checkSenderOrReceiver(bodyParams) === 'sender'
+      && bodyParams.status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
+            RESERVATION REQUEST DECLINED
+          </Text>
+          <Text style={styles.challengeText}>
+            Your team declined the match
+            reservation request from{' '}
+            {getTeamName(bodyParams)}.
+          </Text>
+        </View>
+        )}
+        {checkSenderOrReceiver(bodyParams) === 'receiver'
+      && bodyParams.status === ReservationStatus.declined && (
+        <View>
+          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
+            RESERVATION REQUEST DECLINED
+          </Text>
+          <Text style={styles.challengeText}>
+            {getTeamName(bodyParams)} declined
+            your match reservation request.
+          </Text>
+        </View>
+        )}
+
+        {/* Status cancelled */}
+        {checkSenderOrReceiver(bodyParams) === 'sender'
+      && bodyParams.status === ReservationStatus.cancelled && (
+        <View>
+          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
+            RESERVATION CANCELLED
+          </Text>
+          <Text style={styles.challengeText}>
+            Your team cancelled the match
+            reservation from{' '}
+            {getTeamName(bodyParams)}.
+          </Text>
+        </View>
+        )}
+        {checkSenderOrReceiver(bodyParams) === 'receiver'
+      && bodyParams.status === ReservationStatus.cancelled && (
+        <View>
+          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
+            RESERVATION CANCELLED
+          </Text>
+          <Text style={styles.challengeText}>
+            {getTeamName(bodyParams)} cancelled
+            your match reservation.
+          </Text>
+        </View>
+        )}
+
+        {!(bodyParams.status === ReservationStatus.offered || bodyParams.status === ReservationStatus.cancelled || bodyParams.status === ReservationStatus.declined) && <TCBorderButton
+        title={'GAME HOME'}
+        onPress={() => console.log('GAME HOME PRESSED')}
+        marginBottom={15}/>}
 
         <TCThickDivider />
         {bodyParams && (
@@ -439,9 +532,13 @@ export default function CreateChallengeForm4({ navigation, route }) {
           them at its own expense.
         </Text>
         {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.offered ? <View>
+      && bodyParams.status === ReservationStatus.offered && bodyParams.offer_expiry < new Date().getTime() && <View>
         <TCBorderButton title={strings.calcelRequest} textColor={colors.grayColor} borderColor={colors.grayColor} height={40} shadow={true}/>
-      </View> : <View style={{ marginTop: 15 }}>
+      </View> }
+
+        {checkSenderOrReceiver(bodyParams) === 'receiver'
+      && bodyParams.status === ReservationStatus.offered && bodyParams.offer_expiry < new Date().getTime()
+      && <View style={{ marginTop: 15 }}>
         <TCBorderButton
         title={strings.decline}
         textColor={colors.grayColor}
@@ -458,7 +555,23 @@ export default function CreateChallengeForm4({ navigation, route }) {
         }
         }
       />
-      </View> }
+      </View>}
+
+        {bodyParams.status === ReservationStatus.accepted && <View>
+          <TCBorderButton
+            title={strings.cancelMatch}
+            textColor={colors.grayColor}
+            borderColor={colors.grayColor}
+            height={40}
+            shadow={true}
+            marginTop={15}
+            marginBottom={15}
+            onPress={() => {
+              // navigation.navigate('Account', { screen: 'HomeScreen' })
+              acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'cancel')
+            }}/>
+        </View> }
+
       </View>}
     </TCKeyboardView>
   );

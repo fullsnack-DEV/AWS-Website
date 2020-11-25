@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   fieldValue: {
-    marginLeft: 10,
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,

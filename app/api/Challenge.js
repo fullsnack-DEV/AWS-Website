@@ -18,8 +18,8 @@ export const getChallenge = async (challengeId) => makeAPIRequest({
   url: `${Config.BASE_URL}teams/challenge/${challengeId}`,
 })
 
-export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, status) => makeAPIRequest({
+export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, status, params = {}) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}teams/${teamId}/challenge/${challengeId}/${status}?version=${versionNo}`,
-
+  data: params,
 })

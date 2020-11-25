@@ -73,7 +73,9 @@ const makeAPIRequest = async ({
     params,
     responseType,
   };
+
   console.log('Options :-', options);
+  console.log('Options headers :-', options.headers);
   try {
     const response = await axios(options);
     console.log('API Response:', response.data);
