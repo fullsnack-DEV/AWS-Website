@@ -6,6 +6,7 @@ function NewsFeedDescription({
   character,
   descriptionTxt,
   descText,
+  containerStyle,
 }) {
   const [readMore, setReadMore] = useState();
 
@@ -14,7 +15,7 @@ function NewsFeedDescription({
   }
 
   return (
-    <View>
+    <View style={[styles.containerStyle, containerStyle]}>
       {descriptions.length > 0 && (
         <Text style={[styles.descriptionTxt, descriptionTxt]}>
           {readMore ? descriptions : descriptions.substring(0, character)}
@@ -31,13 +32,16 @@ function NewsFeedDescription({
 }
 
 const styles = StyleSheet.create({
+  containerStyle: {
+    marginHorizontal: 18,
+  },
   descText: {
     color: 'gray',
     fontSize: 12,
   },
   descriptionTxt: {
     fontSize: 16,
-    padding: '2%',
+    paddingVertical: '2%',
   },
 });
 

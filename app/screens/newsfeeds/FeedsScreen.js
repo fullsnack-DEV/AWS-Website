@@ -15,6 +15,8 @@ export default function FeedsScreen({ navigation }) {
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
+  const [isMoreLoading, setIsMoreLoading] = useState(false);
+  const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [footerLoading, setFooterLoading] = useState(false);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
@@ -24,9 +26,13 @@ export default function FeedsScreen({ navigation }) {
     const unsubscribe = navigation.addListener('focus', async () => {
       getNewsFeed()
         .then((response) => {
+          setloading(false);
           setPostData(response.payload.results)
         })
-        .catch((e) => Alert.alert('', e.messages));
+        .catch((e) => {
+          setloading(false);
+          Alert.alert('', e.messages)
+        });
     });
 
     return () => {
@@ -44,18 +50,6 @@ export default function FeedsScreen({ navigation }) {
       ),
     });
   }, [navigation]);
-
-  useEffect(() => {
-    getNewsFeed()
-      .then((response) => {
-        setPostData(response.payload.results);
-        setloading(false);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-        setloading(false);
-      });
-  }, []);
 
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
@@ -113,23 +107,30 @@ export default function FeedsScreen({ navigation }) {
             navigation={navigation}
             newsFeedData={newsFeedData}
             postData={postData}
-            footerLoading={footerLoading}
+            footerLoading={footerLoading && isNextDataLoading}
             onEndReached={() => {
-              setFooterLoading(true)
+              setIsMoreLoading(true);
+              setFooterLoading(true);
               const params = {
                 id_lt: postData[postData.length - 1].id,
               };
-              getNewsFeedNextList(params).then((response) => {
-                if (response) {
-                  setFooterLoading(false)
-                  const data = [...postData, ...response.payload.results]
-                  setPostData(data);
-                }
-              })
-                .catch((error) => {
-                  setFooterLoading(false)
-                  console.log('Next Data Error :-', error);
+              if (isMoreLoading && isNextDataLoading) {
+                getNewsFeedNextList(params).then((response) => {
+                  if (response) {
+                    if (response.payload.next === '') {
+                      setIsNextDataLoading(false);
+                    }
+                    setIsMoreLoading(false);
+                    setFooterLoading(false)
+                    const data = [...postData, ...response.payload.results]
+                    setPostData(data);
+                  }
                 })
+                  .catch((error) => {
+                    setFooterLoading(false)
+                    console.log('Next Data Error :-', error);
+                  })
+              }
             }}
           />
     </View>
