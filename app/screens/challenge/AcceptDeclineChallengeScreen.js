@@ -405,7 +405,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
         {!(bodyParams.status === ReservationStatus.offered || bodyParams.status === ReservationStatus.cancelled || bodyParams.status === ReservationStatus.declined) && <TCBorderButton
         title={'GAME HOME'}
-        onPress={() => console.log('GAME HOME PRESSED')}
+        onPress={() => navigation.navigate('EditRosterNonRosterScreen', { screen: 'EditRosterNonRosterScreen' })}
         marginBottom={15}/>}
 
         <TCThickDivider />

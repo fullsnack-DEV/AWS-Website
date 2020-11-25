@@ -6,8 +6,9 @@ import {
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
+import TCBorderButton from '../../../components/TCBorderButton';
 
-export default function ChallengeSentScreen() {
+export default function ChallengeSentScreen({ navigation, route }) {
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
@@ -17,9 +18,24 @@ export default function ChallengeSentScreen() {
         <View style={styles.imageContainer}>
           <Image source={images.emailSent1} style={styles.rotateImage}/>
         </View>
-        <Text style={styles.infoText}>When Vancouver Whitecaps FC accepts your
+        <Text style={styles.infoText}>When {route && route.params && route.params.groupObj && route.params.groupObj.group_name} accepts your
           match reservation request, you will be notified.</Text>
       </View>
+      {route && route.params && route.params.groupObj && <TCBorderButton
+      title={`GO TO ${route.params.groupObj.group_name}`}
+      textColor={colors.whiteColor}
+      borderColor={colors.whiteColor}
+      backgroundColor={'transparent'}
+      height={40} shadow={true}
+      marginBottom={20}
+      onPress={() => {
+        navigation.navigate('HomeScreen', {
+          uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
+          backButtonVisible: true,
+          role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
+        })
+      }}/>}
+
     </View>
   );
 }
@@ -40,6 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     alignItems: 'center',
+
   },
   invitationText: {
     fontSize: 25,

@@ -24,6 +24,8 @@ import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
+import TCLabel from '../../../../components/TCLabel';
+import TCThickDivider from '../../../../components/TCThickDivider';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -35,7 +37,7 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [player2, setPlayer2] = useState('');
   const [player1ID, setPlayer1ID] = useState('');
   const [player2ID, setPlayer2ID] = useState('');
-  const [parentGroupID, setParentGroupID] = useState('');
+  const [parentGroupID, setParentGroupID] = useState();
 
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
@@ -131,7 +133,7 @@ export default function CreateTeamForm1({ navigation, route }) {
           <View style={styles.form3}></View>
           <View style={styles.form4}></View>
         </View>
-        {parentGroupID !== '' && (
+        {parentGroupID && (
           <View>
             <View>
               <View
@@ -148,6 +150,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                 ) : (
                   <Image source={images.club_ph} style={styles.profileImgGroup} />
                 )}
+
                 <View
                   style={{
                     flexDirection: 'row',
@@ -157,27 +160,22 @@ export default function CreateTeamForm1({ navigation, route }) {
                   <Text style={styles.nameText}>
                     {route.params.clubObject.group_name}
                   </Text>
-                  <View style={styles.identityViewClub}>
-                    <Text style={styles.badgeCounter}>C</Text>
-                  </View>
+                  <Image source={images.clubC} style={ styles.teamTImage } />
                 </View>
               </View>
             </View>
             <View>
-              <View style={styles.separatorLine}></View>
+              <TCThickDivider marginTop={10}/>
               <Text style={styles.clubBelongText}>
-                {strings.clubBelongText} {route.params.clubObject.group_name}{' '}
-                {strings.clubText}.
+                {strings.clubBelongText} {route.params.clubObject.group_name}.
               </Text>
             </View>
           </View>
         )}
 
         <View>
-          <Text style={styles.fieldTitle}>
-            {strings.SportsTextFieldTitle}
-            <Text style={styles.mendatory}> {strings.star}</Text>
-          </Text>
+
+          <TCLabel title={strings.SportsTextFieldTitle} required={true} />
           <RNPickerSelect
             placeholder={{
               label: strings.selectSportPlaceholder,
@@ -203,11 +201,8 @@ export default function CreateTeamForm1({ navigation, route }) {
           />
         </View>
         <View style={styles.fieldView}>
-          <Text style={styles.fieldTitle}>
-            {strings.teamNameTitle}
-            <Text style={styles.mendatory}> *</Text>
-          </Text>
 
+          <TCLabel title={strings.teamNameTitle} required={true} />
           <TextInput
             placeholder={strings.teamNamePlaceholder}
             style={styles.matchFeeTxt}
@@ -258,7 +253,7 @@ export default function CreateTeamForm1({ navigation, route }) {
         )}
         {sports !== 'tennis' && (
           <View style={styles.fieldView}>
-            <Text style={styles.fieldTitle}>{strings.genderTitle}</Text>
+            <TCLabel title={strings.genderTitle}/>
             <RNPickerSelect
               placeholder={{
                 label: strings.selectGenderPlaceholder,
@@ -284,7 +279,8 @@ export default function CreateTeamForm1({ navigation, route }) {
 
         <View style={styles.fieldView}>
           {sports !== 'tennis' && (
-            <Text style={styles.fieldTitle}>{strings.membersAgeTitle}</Text>
+
+            <TCLabel title={strings.membersAgeTitle}/>
           )}
           {sports !== 'tennis' && (
             <View
@@ -407,10 +403,7 @@ export default function CreateTeamForm1({ navigation, route }) {
           )}
 
           <View style={styles.fieldView}>
-            <Text style={styles.fieldTitle}>
-              {strings.locationTitle}
-              <Text style={styles.mendatory}> {strings.star}</Text>
-            </Text>
+            <TCLabel title={strings.locationTitle} required={true}/>
             <TouchableOpacity
               onPress={() => navigation.navigate('SearchLocationScreen', {
                 comeFrom: 'CreateTeamForm1',
@@ -528,18 +521,17 @@ export default function CreateTeamForm1({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  badgeCounter: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 11,
-    textAlign: 'center',
-    textAlignVertical: 'center',
+  teamTImage: {
+    marginLeft: 5,
+    alignSelf: 'center',
+    height: 15,
+    resizeMode: 'contain',
+    width: 15,
   },
-
   clubBelongText: {
-    color: colors.lightBlackColor,
+    color: colors.googleColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('3.5%'),
+    fontSize: 14,
     marginBottom: 10,
     marginLeft: 15,
     marginTop: 10,
@@ -602,14 +594,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 15,
   },
-  identityViewClub: {
-    alignSelf: 'center',
-    backgroundColor: colors.purpleColor,
-    borderRadius: 3,
-    height: 16,
-    marginLeft: 10,
-    width: 16,
-  },
+
   inputAndroid: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
@@ -774,13 +759,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
 
     width: wp('92%'),
-  },
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.lightgrayColor,
-    height: 1,
-    marginTop: 10,
-    width: wp('100%'),
   },
   smallTxt: {
     color: colors.grayColor,

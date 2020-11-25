@@ -319,8 +319,6 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
       navigation.navigate('RegisterPlayer');
-    } else if (section === 'Create a Team') {
-      navigation.navigate('CreateTeamForm1', { clubObject: group });
     } else if (section === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     } else if (section === 'Setting & Privacy') {
@@ -347,7 +345,12 @@ export default function AccountScreen({ navigation }) {
     } else if (opetions === 'Add a sport') {
       navigation.navigate('RegisterPlayer');
     } else if (opetions === 'Create a Team') {
-      navigation.navigate('CreateTeamForm1', { clubObject: group });
+      const entity = await Utility.getStorage('loggedInEntity');
+      if (entity.role === 'user') {
+        navigation.navigate('CreateTeamForm1');
+      } else {
+        navigation.navigate('CreateTeamForm1', { clubObject: group });
+      }
     } else if (opetions === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     }

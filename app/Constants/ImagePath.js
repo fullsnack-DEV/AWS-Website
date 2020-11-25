@@ -26,6 +26,7 @@ const images = {
   check: require('../assets/images/check.png'),
   checkGreen: require('../assets/images/green_check.png'),
   whiteUncheck: require('../assets/images/white_uncheck.png'),
+  moveButton: require('../assets/images/move_btn.png'),
   uncheckWhite: require('../assets/images/ic_white_uncheck.png'),
   checkEditor: require('../assets/images/ic_check_editor.png'),
   uncheckEditor: require('../assets/images/ic_uncheck_editor.png'),
