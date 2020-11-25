@@ -14,17 +14,20 @@ export default function WinProgressView({
   progress,
   prgressColor,
   percentageTextStyle,
+  textStyle,
+  progressBarStyle,
+  containerStyle,
 }) {
   return (
-    <View style={styles.containerStyle}>
-      <Text style={styles.textStyle}>{titleText}</Text>
+    <View style={[styles.containerStyle, containerStyle]}>
+      <Text style={[styles.textStyle, textStyle]}>{titleText}</Text>
       <Text style={[styles.percentageTextStyle, percentageTextStyle]}>{percentageCount}</Text>
       <Progress.Bar
         progress={progress}
         width={100}
         height={6}
         borderRadius={8}
-        style={{ alignSelf: 'center', borderWidth: 0, backgroundColor: colors.whiteColor }}
+        style={[styles.progressBarStyle, progressBarStyle]}
         color={prgressColor}
         />
     </View>
@@ -45,5 +48,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 12,
     fontFamily: fonts.RMedium,
+  },
+  progressBarStyle: {
+    alignSelf: 'center',
+    borderWidth: 0,
+    backgroundColor: colors.whiteColor,
   },
 });

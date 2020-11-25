@@ -56,6 +56,7 @@ import StatsView from '../../components/Home/StatsView';
 import PersonalSportsInfo from '../../components/Home/PersonalSportsInfo';
 import ScoreboardSportsScreen from './ScoreboardSportsScreen';
 import UpcomingMatchScreen from './UpcomingMatchScreen';
+import StatsScreen from './StatsScreen';
 
 const team_Data_Info = [
   {
@@ -77,6 +78,21 @@ const team_Data_Info = [
 const recent_Match = [
   {
     id: 0,
+    startDate: '2020-11-25 07:00:00',
+    endDate: '2020-11-25 09:10:00',
+    title: 'Soccer',
+    description: 'Champions League/ 2020 Summer Season',
+    location: 'BC Stadium',
+    team1Image: images.commentReport,
+    team1Title: 'Vancouver Whitecaps',
+    team1Point: 3,
+    team2Image: images.usaImage,
+    team2Title: 'Newyork City FC',
+    team2Point: 1,
+    eventColor: colors.yellowColor,
+  },
+  {
+    id: 1,
     startDate: '2020-11-24 07:00:00',
     endDate: '2020-11-24 09:10:00',
     title: 'Soccer',
@@ -91,7 +107,7 @@ const recent_Match = [
     eventColor: colors.yellowColor,
   },
   {
-    id: 1,
+    id: 2,
     startDate: '2020-11-23 07:00:00',
     endDate: '2020-11-23 09:10:00',
     title: 'Soccer',
@@ -106,24 +122,9 @@ const recent_Match = [
     eventColor: colors.yellowColor,
   },
   {
-    id: 2,
-    startDate: '2020-11-22 07:00:00',
-    endDate: '2020-11-22 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
     id: 3,
-    startDate: '2020-11-22 07:00:00',
-    endDate: '2020-11-22 09:10:00',
+    startDate: '2020-11-23 07:00:00',
+    endDate: '2020-11-23 09:10:00',
     title: 'Soccer',
     description: 'Champions League/ 2020 Summer Season',
     location: 'BC Stadium',
@@ -140,21 +141,6 @@ const recent_Match = [
 const upcoming_Match = [
   {
     id: 0,
-    startDate: '2020-11-24 07:00:00',
-    endDate: '2020-11-24 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 1,
     startDate: '2020-11-25 07:00:00',
     endDate: '2020-11-25 09:10:00',
     title: 'Soccer',
@@ -169,7 +155,7 @@ const upcoming_Match = [
     eventColor: colors.yellowColor,
   },
   {
-    id: 2,
+    id: 1,
     startDate: '2020-11-26 07:00:00',
     endDate: '2020-11-26 09:10:00',
     title: 'Soccer',
@@ -184,9 +170,24 @@ const upcoming_Match = [
     eventColor: colors.yellowColor,
   },
   {
+    id: 2,
+    startDate: '2020-11-27 07:00:00',
+    endDate: '2020-11-27 09:10:00',
+    title: 'Soccer',
+    description: 'Champions League/ 2020 Summer Season',
+    location: 'BC Stadium',
+    team1Image: images.commentReport,
+    team1Title: 'Vancouver Whitecaps',
+    team1Point: 3,
+    team2Image: images.usaImage,
+    team2Title: 'Newyork City FC',
+    team2Point: 1,
+    eventColor: colors.yellowColor,
+  },
+  {
     id: 3,
-    startDate: '2020-11-26 07:00:00',
-    endDate: '2020-11-26 09:10:00',
+    startDate: '2020-11-27 07:00:00',
+    endDate: '2020-11-27 09:10:00',
     title: 'Soccer',
     description: 'Champions League/ 2020 Summer Season',
     location: 'BC Stadium',
@@ -207,7 +208,7 @@ export default function HomeScreen({ navigation, route }) {
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
   const [infoModalVisible, setInfoModalVisible] = useState(false)
   const [scoreboardModalVisible, setScoreboardModalVisible] = useState(false)
-  const [upcomingMatchModalVisible, setUpcomingMatchModalVisible] = useState(false)
+  const [statsModalVisible, setStatsModalVisible] = useState(false)
   const [loggedInEntity, setLoggedInEntity] = useState({})
   const [isAdmin, setIsAdmin] = useState(false)
   const [isRender, setIsRender] = useState(false)
@@ -222,6 +223,7 @@ export default function HomeScreen({ navigation, route }) {
   const [currentTab, setCurrentTab] = useState(0);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
+  const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [teamDataInfo] = useState(team_Data_Info);
   const [recentMatchData] = useState(recent_Match);
@@ -884,9 +886,10 @@ export default function HomeScreen({ navigation, route }) {
     setScoreboardModalVisible(!scoreboardModalVisible);
   };
 
-  const upcomingMatchModal = () => {
-    setUpcomingMatchModalVisible(!upcomingMatchModalVisible);
+  const statsModal = () => {
+    setStatsModalVisible(!statsModalVisible);
   };
+
   return (
     <View style={ styles.mainContainer }>
       {(isTeamHome && loggedInEntity.role === 'team')
@@ -950,8 +953,6 @@ export default function HomeScreen({ navigation, route }) {
         renderBackground={() => (
           bgImage ? <Image source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
         )}
-        // onChangeHeaderVisibility={(val) => {
-        // }}
         renderForeground={() => (
           <BackgroundProfile
             currentUserData={currentUserData}
@@ -1016,6 +1017,8 @@ export default function HomeScreen({ navigation, route }) {
                       onItemPress={() => {}}
                     />
                     <ScheduleTabView
+                      firstTabTitle={'Events'}
+                      secondTabTitle={'Calender'}
                       indexCounter={scheduleIndexCounter}
                       onFirstTabPress={() => setScheduleIndexCounter(0)}
                       onSecondTabPress={() => setScheduleIndexCounter(1)}
@@ -1090,7 +1093,7 @@ export default function HomeScreen({ navigation, route }) {
                 }
                 rightComponent={
                   <TouchableOpacity onPress={() => setRefereesInModalVisible(false)}>
-                    <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
                   </TouchableOpacity>
                 }
               />
@@ -1136,6 +1139,7 @@ export default function HomeScreen({ navigation, route }) {
                 <RefereesInItem
                   title={strings.recentMatchTitle}
                   onItemPress={() => {
+                    setScroboardTabNumber(0);
                     scoreboardModal();
                   }}
                 >
@@ -1154,7 +1158,8 @@ export default function HomeScreen({ navigation, route }) {
                 <RefereesInItem
                   title={strings.upcomingMatchTitle}
                   onItemPress={() => {
-                    upcomingMatchModal();
+                    setScroboardTabNumber(1);
+                    scoreboardModal();
                   }}
                 >
                   <UpcomingMatchView
@@ -1171,7 +1176,10 @@ export default function HomeScreen({ navigation, route }) {
 
                 <RefereesInItem
                   title={strings.statsTitle}
-                  onItemPress={() => console.log('Stats Press')}
+                  containerStyle={{ marginBottom: 15 }}
+                  onItemPress={() => {
+                    statsModal();
+                  }}
                 >
                   <StatsView
                     pastTime={'[ For past 12 months ]'}
@@ -1223,28 +1231,25 @@ export default function HomeScreen({ navigation, route }) {
             backdropOpacity={0}
           >
             <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
-              <View>
-                <Image style={[styles.background, { borderTopLeftRadius: 10, borderTopRightRadius: 10 }]} source={ images.orangeLayer } />
-                <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
-                  leftComponent={
-                    <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
-                      <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                    </TouchableOpacity>
-                  }
-                  centerComponent={
-                    <View style={styles.headerCenterViewStyle}>
-                      <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                      <Text style={styles.playInTextStyle}>{'Info'}</Text>
-                    </View>
-                  }
-                  rightComponent={
-                    <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
-                      <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                    </TouchableOpacity>
-                  }
-                />
-              </View>
+              <Header
+                mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
+                    <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
               <PersonalSportsInfo
               />
             </SafeAreaView>
@@ -1264,7 +1269,7 @@ export default function HomeScreen({ navigation, route }) {
               <View>
                 <Image style={[styles.background, { borderTopLeftRadius: 10, borderTopRightRadius: 10 }]} source={ images.orangeLayer } />
                 <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
+                  mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
                   leftComponent={
                     <TouchableOpacity onPress={() => setScoreboardModalVisible(false)}>
                       <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
@@ -1278,53 +1283,59 @@ export default function HomeScreen({ navigation, route }) {
                   }
                   rightComponent={
                     <TouchableOpacity onPress={() => setScoreboardModalVisible(false)}>
-                      <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                      <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
                     </TouchableOpacity>
                   }
                 />
               </View>
-              <ScoreboardSportsScreen
-                sportsData={recentMatchData}
+              <ScheduleTabView
+                firstTabTitle={'Completed'}
+                secondTabTitle={'Upcoming'}
+                indexCounter={scoreboardTabNumber}
+                eventPrivacyContianer={{ width: wp('70%') }}
+                onFirstTabPress={() => setScroboardTabNumber(0)}
+                onSecondTabPress={() => setScroboardTabNumber(1)}
               />
+              {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
+                sportsData={recentMatchData}
+              />}
+              {scoreboardTabNumber === 1 && <UpcomingMatchScreen
+                sportsData={upcomingMatchData}
+              />}
             </SafeAreaView>
           </Modal>
 
           <Modal
-            isVisible={upcomingMatchModalVisible}
+            isVisible={statsModalVisible}
             backdropColor="black"
             style={{
               margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
             }}
             hasBackdrop
-            onBackdropPress={() => setUpcomingMatchModalVisible(false)}
+            onBackdropPress={() => setStatsModalVisible(false)}
             backdropOpacity={0}
           >
             <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
-              <View>
-                <Image style={[styles.background, { borderTopLeftRadius: 10, borderTopRightRadius: 10 }]} source={ images.orangeLayer } />
-                <Header
-                  mainContainerStyle={styles.headerMainContainerStyle}
-                  leftComponent={
-                    <TouchableOpacity onPress={() => setUpcomingMatchModalVisible(false)}>
-                      <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                    </TouchableOpacity>
-                  }
-                  centerComponent={
-                    <View style={styles.headerCenterViewStyle}>
-                      <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                      <Text style={styles.playInTextStyle}>{'Upcoming Games'}</Text>
-                    </View>
-                  }
-                  rightComponent={
-                    <TouchableOpacity onPress={() => setUpcomingMatchModalVisible(false)}>
-                      <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                    </TouchableOpacity>
-                  }
-                />
-              </View>
-              <UpcomingMatchScreen
-                sportsData={upcomingMatchData}
+              <Header
+                mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setStatsModalVisible(false)}>
+                    <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Stats'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setStatsModalVisible(false)}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
               />
+              <StatsScreen/>
             </SafeAreaView>
           </Modal>
         </Modal>
@@ -1410,8 +1421,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
   },
   headerMainContainerStyle: {
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
     paddingVertical: 15,
   },
   cancelImageStyle: {
