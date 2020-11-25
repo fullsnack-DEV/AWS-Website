@@ -828,7 +828,11 @@ export default function HomeScreen({ navigation, route }) {
         })
         break;
       case 'edit':
-        // edit code here
+        navigation.navigate('EditGroupProfileScreen', {
+          placeholder: loggedInEntity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
+          nameTitle: loggedInEntity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
+
+        });
         break;
       default:
     }
@@ -859,12 +863,16 @@ export default function HomeScreen({ navigation, route }) {
         break;
       case 'edit':
         // edit code here
-        break;
+        navigation.navigate('EditGroupProfileScreen', {
+          placeholder: loggedInEntity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
+          nameTitle: loggedInEntity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
+
+        }); break;
       default:
     }
   }
 
-  const onChallengePress = () => {
+  const onChallengePress = async () => {
     if (loggedInEntity.obj.sport === currentUserData.sport) {
       navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
     } else {

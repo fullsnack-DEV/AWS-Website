@@ -40,30 +40,18 @@ export default function EditGroupContactScreen({ navigation, route }) {
 
   const onSaveButtonClicked = () => {
     setloading(true);
-    const groupProfile = {};
-    groupProfile.webSite = groupData.webSite;
-    groupProfile.email = groupData.email;
-    groupProfile.phone = groupData.phone;
-    groupProfile.phone_country = groupData.phone_country;
-    groupProfile.office_address = groupData.office_address
-    groupProfile.homefield_address = groupData.homefield_address;
-
+    const groupProfile = { ...groupData };
     patchGroup(groupData.group_id, groupProfile).then(async (response) => {
       setloading(false);
-      if (response && response.status === true) {
-        console.log('response', response)
-        // setTimeout(() => {
-        //   Alert.alert('Towns Cup', 'Profile changed sucessfully');
-        // }, 0.1)
-        const entity = await Utility.getStorage('loggedInEntity');
-        entity.obj = response.payload;
-        Utility.setStorage('loggedInEntity', entity);
-        navigation.goBack();
-      } else {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, 'Something went wrong');
-        }, 0.1);
-      }
+      console.log('response', response)
+      const entity = await Utility.getStorage('loggedInEntity');
+      entity.obj = response.payload;
+      Utility.setStorage('loggedInEntity', entity);
+      navigation.goBack();
+    }).catch(() => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, 'Something went wrong');
+      }, 0.1);
     });
   };
 

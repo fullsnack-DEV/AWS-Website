@@ -85,6 +85,12 @@ export default function SearchLocationScreen({ navigation, route }) {
         state: item.terms[1].value,
         country: item.terms[2].value,
       });
+    } else if (route.params.comeFrom === 'EditGroupProfileScreen') {
+      navigation.navigate('EditGroupProfileScreen', {
+        city: item.terms[0].value,
+        state: item.terms[1].value,
+        country: item.terms[2].value,
+      });
     }
   };
 

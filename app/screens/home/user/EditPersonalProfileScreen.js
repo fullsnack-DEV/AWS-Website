@@ -28,6 +28,7 @@ import * as Utility from '../../../utils';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import uploadImages from '../../../utils/imageAction';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const actionSheet = useRef();
@@ -35,23 +36,10 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(false);
-
-  const [fName, setFName] = useState('');
-  const [lName, setLName] = useState('');
-
-  const [location, setLocation] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [country, setCountry] = useState('');
-  const [profileImage, setProfileImage] = useState('');
-  const [profileFullImage, setProfileFullImage] = useState('');
-  const [backgroundImage, setBackgroundImage] = useState('');
-  const [backgroundFullImage, setBackgroundFullImage] = useState('');
   const [currentImageSelection, setCurrentImageSelection] = useState(0);
   const [profileImageChanged, setProfileImageChanged] = useState(false);
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
-
-  const [description, setDescription] = useState('');
+  const [profile, setProfile] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -67,9 +55,8 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
         } }>{strings.save}</Text>
       ),
     });
-  }, [navigation, fName, lName, location, city, state, country, description,
-    profileImage, profileFullImage, profileImageChanged,
-    backgroundImage, backgroundFullImage, backgroundImageChanged, currentImageSelection]);
+  }, [navigation, profileImageChanged,
+    backgroundImageChanged, currentImageSelection]);
 
   useEffect(() => {
     getUserInformation();
@@ -78,22 +65,21 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   useEffect(() => {
     if (route.params && route.params.city) {
       const newLocation = `${route.params.city}, ${route.params.state}, ${route.params.country}`;
-      setLocation(newLocation);
-      setCity(route.params.city);
-      setState(route.params.state);
-      setCountry(route.params.country);
+      setProfile({
+        ...profile, location: newLocation, city: route.params.city, state_abbr: route.params.state, country: route.params.country,
+      })
     }
   }, [isFocused]);
 
   // Form Validation
   const checkValidation = () => {
-    if (fName === '') {
+    if (profile.first_name === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
       return false
-    } if (lName === '') {
+    } if (profile.last_name === '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
       return false
-    } if (location === '') {
+    } if (profile.location === '') {
       Alert.alert('Towns Cup', 'Location cannot be blank');
       return false
     }
@@ -103,47 +89,24 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   // Get user information from async store
   const getUserInformation = async () => {
     const entity = await Utility.getStorage('loggedInEntity')
-    if (entity.role !== 'user') {
-      // return previous screen
-    }
     const userDetails = entity.obj;
-    setFName(userDetails.first_name);
-    setLName(userDetails.last_name);
-    setCity(userDetails.city);
-    setState(userDetails.state_abbr);
-    setCountry(userDetails.country);
-    setDescription(userDetails.description);
-    setProfileImage(userDetails.thumbnail);
-    setBackgroundImage(userDetails.background_thumbnail);
-    setProfileFullImage(userDetails.full_image);
-    setBackgroundFullImage(userDetails.background_full_image);
-
-    setLocation(`${userDetails.city}, ${userDetails.state_abbr}, ${userDetails.country}`);
+    setProfile({
+      ...userDetails,
+      location: (`${userDetails.city}, ${userDetails.state_abbr}, ${userDetails.country}`),
+    });
   }
 
   const onSaveButtonClicked = () => {
     if (checkValidation()) {
       setloading(true);
-      const userProfile = {};
-      userProfile.first_name = fName;
-      userProfile.last_name = lName;
-      userProfile.full_name = `${fName} ${lName}`;
-      userProfile.city = city;
-      userProfile.state_abbr = state;
-      userProfile.country = country;
-      userProfile.description = description;
-      userProfile.full_image = profileFullImage;
-      userProfile.thumbnail = profileImage;
-      userProfile.background_full_image = backgroundFullImage;
-      userProfile.background_thumbnail = backgroundImage;
-
+      const userProfile = { ...profile, full_name: `${profile.first_name} ${profile.last_name}` };
       if (profileImageChanged || backgroundImageChanged) {
         const imageArray = []
         if (profileImageChanged) {
-          imageArray.push({ path: profileImage });
+          imageArray.push({ path: profile.thumbnail });
         }
         if (backgroundImageChanged) {
-          imageArray.push({ path: backgroundImage });
+          imageArray.push({ path: profile.background_thumbnail });
         }
         uploadImages(imageArray).then((responses) => {
           const attachments = responses.map((item) => ({
@@ -152,8 +115,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
             thumbnail: item.thumbnail,
           }))
           if (profileImageChanged) {
-            setProfileImage(attachments[0].thumbnail)
-            setProfileFullImage(attachments[0].url)
+            setProfile({ ...profile, thumbnail: attachments[0].thumbnail, full_image: attachments[0].url })
             setProfileImageChanged(false)
             userProfile.full_image = attachments[0].thumbnail;
             userProfile.thumbnail = attachments[0].url;
@@ -164,8 +126,8 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
             if (attachments.length > 1) {
               bgInfo = attachments[1];
             }
-            setBackgroundImage(bgInfo.thumbnail)
-            setBackgroundFullImage(bgInfo.url)
+
+            setProfile({ ...profile, background_thumbnail: bgInfo.thumbnail, background_full_image: bgInfo.url })
             setBackgroundImageChanged(false)
             userProfile.background_full_image = bgInfo.url;
             userProfile.background_thumbnail = bgInfo.thumbnail;
@@ -222,10 +184,10 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        setProfileImage(data.path)
+        setProfile({ ...profile, thumbnail: data.path })
         setProfileImageChanged(true)
       } else {
-        setBackgroundImage(data.path)
+        setProfile({ ...profile, background_thumbnail: data.path })
         setBackgroundImageChanged(true)
       }
     });
@@ -234,13 +196,11 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   const deleteImage = () => {
     if (currentImageSelection) {
       // 1 means profile image
-      setProfileImage('')
-      setProfileFullImage('')
+      setProfile({ ...profile, thumbnail: '', full_image: '' })
       setProfileImageChanged(false)
     } else {
       // 0 means profile image
-      setBackgroundImage('')
-      setBackgroundFullImage('')
+      setProfile({ ...profile, background_thumbnail: '', background_full_image: '' })
       setBackgroundImageChanged(false)
     }
   }
@@ -253,10 +213,10 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        setProfileImage(data.path)
+        setProfile({ ...profile, thumbnail: data.path })
         setProfileImageChanged(true)
       } else {
-        setBackgroundImage(data.path)
+        setProfile({ ...profile, background_thumbnail: data.path })
         setBackgroundImageChanged(true)
       }
     });
@@ -265,18 +225,17 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   const onBGImageClicked = () => {
     setCurrentImageSelection(0);
     setTimeout(() => {
-      if (backgroundImage) {
+      if (profile.background_thumbnail) {
         actionSheetWithDelete.current.show();
       } else {
         actionSheet.current.show();
       }
     }, 0.1)
   }
-
   const onProfileImageClicked = () => {
     setCurrentImageSelection(1);
     setTimeout(() => {
-      if (profileImage) {
+      if (profile.thumbnail) {
         actionSheetWithDelete.current.show();
       } else {
         actionSheet.current.show();
@@ -323,53 +282,59 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
                   }
                 }}
               />
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <TCProfileImageControl
-        profileImage={ profileImage ? { uri: profileImage } : undefined }
-        bgImage={ backgroundImage ? { uri: backgroundImage } : undefined }
+      <TCKeyboardView>
+        <ScrollView style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
+          <TCProfileImageControl
+        profileImage={ profile.thumbnail ? { uri: profile.thumbnail } : undefined }
+        bgImage={ profile.background_thumbnail ? { uri: profile.background_thumbnail } : undefined }
         onPressBGImage={() => onBGImageClicked()}
         onPressProfileImage={() => onProfileImageClicked()}
         showEditButtons />
 
-        <View>
-          <View style={{ flexDirection: 'row' }}>
-            <TCLabel title= {strings.nameText } style={{ marginTop: 37 }}/>
-            <Text style={styles.validationSign}>*</Text>
-          </View>
-          <TCTextField
+          <View>
+            <View style={{ flexDirection: 'row' }}>
+              <TCLabel title= {strings.nameText } style={{ marginTop: 37 }}/>
+              <Text style={styles.validationSign}>*</Text>
+            </View>
+            <TCTextField
             placeholder={strings.enterFirstNamePlaceholder}
-            onChangeText={(text) => setFName(text)}
-            value={fName}/>
-          <TCTextField
+            onChangeText={(text) => setProfile({ ...profile, first_name: text })}
+            value={profile.first_name}/>
+            <TCTextField
             placeholder={strings.enterLastNamePlaceholder}
             style={{ marginTop: 8 }}
-            onChangeText={(text) => setLName(text)}
-            value={lName}/>
-        </View>
+            onChangeText={(text) => setProfile({ ...profile, last_name: text })}
+            value={profile.last_name}/>
+          </View>
 
-        <View>
-          <TCLabel title= {strings.locationTitle}/>
-          <TCTouchableLabel
-           title = {location}
+          <View>
+            <TCLabel
+          title= {strings.currentCity}
+          required = {true}
+          />
+            <TCTouchableLabel
+           title = {profile.location}
            onPress = {() => onLocationClicked()}
            placeholder = {strings.searchCityPlaceholder}
            showNextArrow = {true}
           />
-        </View>
+          </View>
 
-        <View>
-          <TCLabel title= {strings.slogan}/>
-          <TCTextField
+          <View>
+            <TCLabel title= {strings.slogan}/>
+            <TCTextField
             placeholder={strings.enterBioPlaceholder}
-            onChangeText={(text) => setDescription(text)}
+            onChangeText={(text) => setProfile({ ...profile, description: text })}
             multiline
             maxLength={150}
-            value={description}
+            value={profile.description}
             height={120}
+
             />
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      </TCKeyboardView>
     </>
   );
 }
@@ -385,4 +350,5 @@ const styles = StyleSheet.create({
     marginTop: 37,
     color: colors.redColor,
   },
+
 });

@@ -110,3 +110,9 @@ export const inviteTeam = async (params, groupID) => makeAPIRequest({
   url: `${Config.BASE_URL}/groups/${groupID}/inviteTeams`,
   data: params,
 });
+
+export const updateGroupProfile = async (params, groupID) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}/groups/${groupID}`,
+  data: params,
+})

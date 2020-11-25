@@ -111,6 +111,7 @@ const strings = {
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
   locationTitle: 'Location',
+  currentCity: 'Home City',
   birthdateText: 'Choose Date of birth',
   searchCityPlaceholder: 'Search by city or postal code',
   cityText: 'City',
