@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   fieldView: {
     flexDirection: 'row',
     marginTop: 15,
+    alignItems: 'center',
   },
   fieldTitle: {
     fontSize: 14,

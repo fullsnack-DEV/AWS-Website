@@ -4,7 +4,6 @@ import {
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -27,10 +26,7 @@ function EventTextInput({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: wp('96%'),
-    alignSelf: 'center',
-    padding: wp('1.5%'),
-    marginBottom: 20,
+    padding: 20,
   },
   textInputStyle: {
     backgroundColor: colors.offwhite,

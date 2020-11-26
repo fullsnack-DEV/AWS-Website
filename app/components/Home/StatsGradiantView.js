@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
+    textAlign: 'center',
   },
   bottomLinearViewStyle: {
     height: wp('8.5%'),
@@ -81,6 +82,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.orangeColor,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightgrayColor,
   },
   counterTextStyle: {
     fontSize: 16,
