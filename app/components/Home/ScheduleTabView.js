@@ -13,18 +13,21 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function ScheduleTabView({
+  firstTabTitle,
+  secondTabTitle,
   onFirstTabPress,
   onSecondTabPress,
   indexCounter,
+  eventPrivacyContianer,
 }) {
   return (
-    <View style={styles.eventPrivacyContianer}>
+    <View style={[styles.eventPrivacyContianer, eventPrivacyContianer]}>
       <TouchableOpacity
         onPress={onFirstTabPress}
         style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
       >
         <Text style={indexCounter === 0 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
-          {'Events'}
+          {firstTabTitle}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -32,7 +35,7 @@ export default function ScheduleTabView({
         style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
       >
         <Text style={indexCounter === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
-          {'Calender'}
+          {secondTabTitle}
         </Text>
       </TouchableOpacity>
     </View>

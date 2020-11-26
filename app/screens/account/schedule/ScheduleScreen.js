@@ -141,6 +141,8 @@ export default function ScheduleScreen({ navigation }) {
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
             <View style={{ padding: 5, height: 16, width: 16 }} />
             <ScheduleTabView
+              firstTabTitle={'Events'}
+              secondTabTitle={'Calender'}
               indexCounter={scheduleIndexCounter}
               onFirstTabPress={() => setScheduleIndexCounter(0)}
               onSecondTabPress={() => setScheduleIndexCounter(1)}

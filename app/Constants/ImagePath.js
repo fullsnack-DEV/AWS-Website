@@ -30,6 +30,15 @@ const images = {
   checkEditor: require('../assets/images/ic_check_editor.png'),
   uncheckEditor: require('../assets/images/ic_uncheck_editor.png'),
 
+  gamesImage: require('../assets/images/Games_Image.png'),
+  assistsImage: require('../assets/images/Assists_Image.png'),
+  goalsImage: require('../assets/images/Goals_Image.png'),
+  yellowCardImage: require('../assets/images/YellowCard_Image.png'),
+  gamesSelected: require('../assets/images/Games_Select.png'),
+  assistsSelected: require('../assets/images/Assists_Select.png'),
+  goalsSelected: require('../assets/images/Goals_Select.png'),
+  yellowCardSelected: require('../assets/images/Yellow_Card_Select.png'),
+
   groupIcon: require('../assets/images/ic_group.png'),
   club_ph: require('../assets/images/club_profile_placeholder.png'),
   team_ph: require('../assets/images/team_profile_placeholder.png'),
