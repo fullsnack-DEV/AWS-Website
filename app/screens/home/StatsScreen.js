@@ -16,7 +16,7 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import StatsGradiantView from '../../components/Home/StatsGradiantView';
 
-const data = [15, 8, 6, 3, 9, 4, 9, 10, 11, 15, 13, 5]
+const graph_data = [15, 8, 6, 3, 9, 4, 9, 10, 11, 15, 13, 5]
 
 const game_data = [
   {
@@ -25,6 +25,7 @@ const game_data = [
     selectImage: images.gamesSelected,
     title: 'Games',
     total: 139,
+    isSelected: true,
   },
   {
     id: 1,
@@ -32,6 +33,7 @@ const game_data = [
     selectImage: images.assistsSelected,
     title: 'Assists',
     total: 28,
+    isSelected: false,
   },
   {
     id: 2,
@@ -39,6 +41,7 @@ const game_data = [
     selectImage: images.goalsSelected,
     title: 'Goals',
     total: 12,
+    isSelected: false,
   },
   {
     id: 3,
@@ -46,6 +49,7 @@ const game_data = [
     selectImage: images.yellowCardSelected,
     title: 'Yellow card',
     total: 6,
+    isSelected: false,
   },
   {
     id: 4,
@@ -53,12 +57,14 @@ const game_data = [
     selectImage: images.yellowCardSelected,
     title: 'Red card',
     total: 2,
+    isSelected: false,
   },
 ];
 
 export default function StatsScreen() {
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
   const [gameData, setGameData] = useState(game_data);
+  const [graphData, setGraphData] = useState(graph_data);
   return (
     <KeyboardAvoidingView style={styles.mainContainer}>
       <StatsSelectionView
@@ -140,7 +146,7 @@ export default function StatsScreen() {
       <View style={{ height: 250, marginTop: 30 }}>
         <BarChart
             style={{ flex: 1 }}
-            data={data}
+            data={graphData}
             gridMin={0}
             contentInset={{ marginTop: 10 }}
             svg={{ fill: colors.orangeColor }}
@@ -160,7 +166,7 @@ export default function StatsScreen() {
               backgroundColor: colors.whiteColor,
               paddingTop: 5,
             }}
-            data={data}
+            data={graphData}
             formatLabel={(value, index) => {
               if (index === 0) return 'Apr';
               if (index === 1) return 'May';
@@ -199,6 +205,26 @@ export default function StatsScreen() {
             sourceImage={item.isSelected ? item.selectImage : item.image}
             counterNumber={item.total}
             onItemPress={() => {
+              const gameGraph = [15, 8, 6, 3, 9, 4, 9, 10, 11, 15, 13, 5];
+              const assistGraph = [0, 10, 8, 6, 10, 7, 0, 11, 13, 0, 0, 7];
+              const goalGraph = [0, 0, 5, 3, 0, 4, 0, 0, 0, 0, 0, 4];
+              const yellowCardGraph = [0, 5, 3, 0, 2, 0, 0, 0, 0, 0, 0, 0];
+              const redCardGraph = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0];
+              if (item.id === 0) {
+                setGraphData(gameGraph);
+              }
+              if (item.id === 1) {
+                setGraphData(assistGraph);
+              }
+              if (item.id === 2) {
+                setGraphData(goalGraph);
+              }
+              if (item.id === 3) {
+                setGraphData(yellowCardGraph);
+              }
+              if (item.id === 4) {
+                setGraphData(redCardGraph);
+              }
               gameData.map((gameItem) => {
                 const gameValue = gameItem;
                 if (gameValue.id === item.id) {
