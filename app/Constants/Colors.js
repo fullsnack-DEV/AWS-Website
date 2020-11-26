@@ -24,6 +24,7 @@ const colors = {
   grayColor: '#A0A0A0',
   tabBackgroundColor: '#F6F6F6',
   lightgrayColor: '#E1E1E1',
+  medianGrayColor: '#C4C4C4',
   blueColor: '#3166d1',
   lightBlueColor: '#c1d2f2',
   pinkColor: '#FF658E',

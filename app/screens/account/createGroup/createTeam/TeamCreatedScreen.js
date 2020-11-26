@@ -16,7 +16,7 @@ export default function TeamCreatedScreen({ navigation, route }) {
     <View style={ styles.mainContainer }>
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
-      <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
+      <TouchableOpacity onPress={ () => navigation.navigate('HomeScreen') }>
         <Image
           source={ images.backArrow }
           style={ {
@@ -33,12 +33,12 @@ export default function TeamCreatedScreen({ navigation, route }) {
 
         <Text style={ styles.LocationText }>
           <Text style={ styles.foundText }>
-            New Team {route.params.groupName} has been created.
+            {route.params.groupName} has been created.
           </Text>
         </Text>
-        <TouchableOpacity style={ styles.goToProfileButton }>
+        {/* <TouchableOpacity style={ styles.goToProfileButton }>
           <Text style={ styles.goToProfileTitle }>Switch to Team Account</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -63,24 +63,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: wp('6.5%'),
     width: wp('70%'),
-  },
-  goToProfileButton: {
-    alignSelf: 'center',
-    borderColor: colors.whiteColor,
-    borderRadius: 40,
-    borderWidth: 1,
-    height: 50,
-    marginTop: wp('20%'),
-    width: '86%',
-  },
-
-  goToProfileTitle: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 17,
-    height: 50,
-    padding: 12,
-    textAlign: 'center',
   },
   groupsImg: {
     height: 60,

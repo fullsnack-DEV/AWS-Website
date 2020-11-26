@@ -94,6 +94,7 @@ import SoccerHome from '../screens/game/soccer/SoccerHome';
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import SoccerApproveDisapproveConfirmation
   from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
+import EditRosterNonRosterScreen from '../screens/game/soccer/lineUp/EditRosterNonRosterScreen';
 
 const Stack = createStackNavigator();
 
@@ -399,7 +400,22 @@ const HomeNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen
+      name="EditRosterNonRosterScreen"
+      component={EditRosterNonRosterScreen}
+      options={{
+        title: 'Edit Roster',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
         name="RegisterPlayer"
         component={ RegisterPlayer }
@@ -1115,18 +1131,9 @@ const HomeNavigator = () => (
     <Stack.Screen
         name="ChallengeSentScreen"
         component={ ChallengeSentScreen }
-        options={ {
-          title: 'Venue',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        } }
+        options={
+          { headerShown: false }
+         }
       />
 
     <Stack.Screen

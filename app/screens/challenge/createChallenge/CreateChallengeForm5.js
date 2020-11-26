@@ -45,22 +45,24 @@ export default function CreateChallengeForm5({ navigation, route }) {
         body.start_datetime = route.params.body.start_datetime / 1000
         body.end_datetime = route.params.body.end_datetime / 1000
         body.manual_fee = false
-        body.currency_type = 'CAD'
-        body.payment_method_type = 'card'
+
+        console.log('Body data of fee:', body);
         setloading(true)
         getFeesEstimation(route.params.teamData[1].group_id, body).then((response) => {
           setloading(false)
-          console.log('fee data :', response);
+          console.log('fee data :', response.payload);
           if (route && route.params && route.params.body) {
             body = route.params.body;
             body.total_payout = response.payload.total_payout
-            body.service_fee1_charges = response.payload.service_fee1_charges
-            body.service_fee2_charges = response.payload.service_fee2_charges
-            body.total_charges = response.payload.total_charges
-            body.total_game_charges = response.payload.total_game_charges
-            body.hourly_game_fee = response.payload.hourly_game_fee
+            body.service_fee1_charges = response.payload.total_service_fee1
+            body.service_fee2_charges = response.payload.total_service_fee2
+            body.total_charges = response.payload.total_amount
+            body.total_game_charges = response.payload.total_game_fee
+            body.hourly_game_fee = 0
+            body.currency_type = 'CAD'
+            body.payment_method_type = 'card'
           }
-
+          console.log('fee BODY :', body);
           // setPaymentInfo(response.payload)
         }).catch((error) => {
           setloading(false)
@@ -87,7 +89,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
         createChallenge(route.params.teamData[1].group_id, body).then((response) => {
           setloading(false)
           console.log('RESPONSE:', response);
-          navigation.navigate('ChallengeSentScreen')
+          navigation.navigate('ChallengeSentScreen', { groupObj: route.params.teamData[1] })
         }).catch((error) => {
           setloading(false)
           Alert.alert(error.messages)
@@ -110,7 +112,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
         <TCLabel title={'Payment'}/>
         {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
         <MatchFeesCard
-        challengeObj={body }
+        challengeObj={body}
         senderOrReceiver={'sender'}/>
       </View>
 
