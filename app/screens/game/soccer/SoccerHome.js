@@ -21,8 +21,8 @@ import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Review', 'Gallery']
 const gameIds = [
-  'f88963d1-6817-48d6-897f-4edb236ca37d', // 0 -
-  '6f3b91f5-a1c9-4fb7-94a4-6dfae2217469', // 1 -
+  'f88963d1-6817-48d6-897f-4edb236ca37d', // 0 - For Referees
+  '6f3b91f5-a1c9-4fb7-94a4-6dfae2217469', // 1 - For Referees
   '460adeca-f36e-4cb7-9d97-8928a6f77281', // 2 -
   'daeab9de-0af9-4172-ae3e-9d480794effc', // 3 -
   '6b1dd495-9d68-4a8b-8feb-363406d279ba', // 4 - 19-11-2020 9-00

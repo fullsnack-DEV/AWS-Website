@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import fonts from '../../../../../Constants/Fonts';
 import RatingForTeams from './RatingForTeams';
@@ -7,12 +7,18 @@ import RatingForReferees from './RatingForReferees';
 import ReviewsList from './ReviewsList';
 import TCGradientButton from '../../../../TCGradientButton';
 import { heightPercentageToDP as hp } from '../../../../../utils';
+import TCInnerLoader from '../../../../TCInnerLoader';
 
 const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
+  const [loading, setLoading] = useState(true);
+  const [reviewsData, setReviewsData] = useState([]);
   useEffect(() => {
-    getSoccerGameReview(gameData?.game_id).then(() => {
-    }).catch(() => {
-    })
+    setLoading(true);
+    getSoccerGameReview(gameData?.game_id).then((res) => {
+      setReviewsData({ ...res.payload })
+    }).catch((error) => {
+      console.log(error);
+    }).finally(() => setLoading(false));
   }, [])
   const Seperator = () => (
     <View style={styles.separator}/>
@@ -22,7 +28,6 @@ const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
 
       {/*  Leave Review Section */}
       {!isAdmin && (<View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
-
         <View>
           <TCGradientButton
                     startGradientColor={colors.yellowColor}
@@ -41,18 +46,23 @@ const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
       )}
       {!isAdmin && <Seperator/>}
 
-      {/* Rating For Team Section */}
-      <RatingForTeams gameData={gameData}/>
-      <Seperator/>
+      <TCInnerLoader visible={loading} size={50}/>
+      {!loading && (
+        <Fragment>
 
-      {/* Rating For Referees Section */}
-      <RatingForReferees/>
-      <Seperator/>
+          {/* Rating For Team Section */}
+          <RatingForTeams gameData={gameData} reviewsData={reviewsData}/>
+          <Seperator/>
 
-      {/* Review List Section */}
-      <ReviewsList gameData={gameData}/>
-      <Seperator/>
+          {/* Rating For Referees Section */}
+          <RatingForReferees refreeData={gameData?.referees ?? []}/>
+          <Seperator/>
 
+          {/* Review List Section */}
+          <ReviewsList gameData={gameData}/>
+          <Seperator/>
+        </Fragment>
+      )}
     </View>
   )
 }

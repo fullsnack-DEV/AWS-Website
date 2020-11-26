@@ -29,10 +29,14 @@ const Stats = ({ gameData, getGameStatsData }) => {
   const [gameStatsData, setGameStatsData] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    getGameStatsData(gameData?.game_id).then((res) => {
-      setGameStatsData(res?.payload);
-    }).finally(() => setLoading(false));
+    if (gameData?.game_id) {
+      setLoading(true);
+      getGameStatsData(gameData?.game_id).then((res) => {
+        setGameStatsData(res?.payload);
+      })
+        .catch((error) => console.log(error))
+        .finally(() => setLoading(false));
+    }
   }, [isFocused])
 
   const getSectionData = (sectionName, statsData) => {
@@ -56,11 +60,13 @@ const Stats = ({ gameData, getGameStatsData }) => {
     let SectionData;
     let renderSection = renderSingleSection;
     const stats = gameStatsData?.stats?.gameStats ?? null;
-    SectionData = getSectionData(item, stats);
-    if (item === 'Rivalry') SectionData = gameStatsData?.stats?.rivarly;
-    if (item === 'Previous Game') {
-      SectionData = gameStatsData?.games;
-      renderSection = renderPreviousGame
+    if (stats) {
+      SectionData = getSectionData(item, stats);
+      if (item === 'Rivalry') SectionData = gameStatsData?.stats?.rivarly;
+      if (item === 'Previous Game') {
+        SectionData = gameStatsData?.games;
+        renderSection = renderPreviousGame
+      }
     }
     return (
       <View style={styles.subContainer}>

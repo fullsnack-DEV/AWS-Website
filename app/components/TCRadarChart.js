@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   VictoryChart,
   VictoryTheme,
@@ -6,12 +6,14 @@ import {
   VictoryArea,
   VictoryPolarAxis,
 } from 'victory-native'
+import _ from 'lodash';
 import colors from '../Constants/Colors';
 
 const BASE_CHART_COLOR = colors.grayBackgroundColor;
 const BORDER_CHART_COLOR = colors.whiteColor;
-const TEAM1_CHART_COLOR = colors.blueGradiantStart;
-const TEAM2_CHART_COLOR = colors.yellowColor;
+const TEAM1_CHART_COLOR = 'rgba(255, 138, 1, 0.8)';
+const TEAM2_CHART_COLOR = 'rgba(0, 122, 255,0.8)';
+
 const CHART_COLOR = [
   BASE_CHART_COLOR,
   BORDER_CHART_COLOR,
@@ -22,57 +24,24 @@ const CHART_COLOR = [
   BASE_CHART_COLOR,
   BORDER_CHART_COLOR,
   BASE_CHART_COLOR,
-  TEAM1_CHART_COLOR,
   TEAM2_CHART_COLOR,
+  TEAM1_CHART_COLOR,
 ]
-// const GRAPH_POLY_STOP = [5, 4.2, 4, 3.2, 3, 2.2, 2, 1.2, 1];
-const characterData = [
-  {
-    Speed: 5, Physical: 5, Defence: 5, Mental: 5, Aerial: 5, Technical: 5, Attack: 5, Creativity: 5,
-  },
-  {
-    Speed: 4.2, Physical: 4.2, Defence: 4.2, Mental: 4.2, Aerial: 4.2, Technical: 4.2, Attack: 4.2, Creativity: 4.2,
-  },
-  {
-    Speed: 4, Physical: 4, Defence: 4, Mental: 4, Aerial: 4, Technical: 4, Attack: 4, Creativity: 4,
-  },
-  {
-    Speed: 3.2, Physical: 3.2, Defence: 3.2, Mental: 3.2, Aerial: 3.2, Technical: 3.2, Attack: 3.2, Creativity: 3.2,
-  },
-  {
-    Speed: 3, Physical: 3, Defence: 3, Mental: 3, Aerial: 3, Technical: 3, Attack: 3, Creativity: 3,
-  },
-  {
-    Speed: 2.2, Physical: 2.2, Defence: 2.2, Mental: 2.2, Aerial: 2.2, Technical: 2.2, Attack: 2.2, Creativity: 2.2,
-  },
-  {
-    Speed: 2, Physical: 2, Defence: 2, Mental: 2, Aerial: 2, Technical: 2, Attack: 2, Creativity: 2,
-  },
-  {
-    Speed: 1.2, Physical: 1.2, Defence: 1.2, Mental: 1.2, Aerial: 1.2, Technical: 1.2, Attack: 1.2, Creativity: 1.2,
-  },
-  {
-    Speed: 1, Physical: 1, Defence: 1, Mental: 1, Aerial: 1, Technical: 1, Attack: 1, Creativity: 1,
-  },
-  {
-    Speed: 4, Physical: 1, Defence: 4, Mental: 2, Aerial: 3, Technical: 2, Attack: 4, Creativity: 3,
-  },
-  {
-    Speed: 3, Physical: 4, Defence: 2, Mental: 4, Aerial: 1, Technical: 5, Attack: 2, Creativity: 5,
-  },
-];
+const BASE_CHART_POLY = [5, 4.2, 4, 3.2, 3, 2.2, 2, 1.2, 1];
+
 const TCRadarChart = ({
-  radarChartData = characterData,
+  radarChartAttributes,
+  radarChartData = [],
 }) => {
   const getMaxima = (data) => {
     if (data?.length) {
-      const groupedData = Object.keys(data[0]).reduce((memo, key) => {
-        const memoData = memo;
+      const groupedData = Object.keys(data[0]).reduce((obj, key) => {
+        const memoData = obj;
         memoData[key] = data.map((d) => d[key]);
         return memoData;
       }, {});
-      return Object.keys(groupedData).reduce((memo, key) => {
-        const memoData = memo;
+      return Object.keys(groupedData).reduce((obj, key) => {
+        const memoData = obj;
         memoData[key] = Math.max(...groupedData[key]);
         return memoData;
       }, {});
@@ -88,9 +57,33 @@ const TCRadarChart = ({
     }
     return [];
   }
+  const [radarChart, setRadarChart] = useState([]);
+  const [chartData, setChartData] = useState([])
+  const [maxima, setMaximaData] = useState([])
 
-  const [chartData] = useState(processData(radarChartData))
-  const [maxima] = useState(getMaxima(radarChartData))
+  useEffect(() => {
+    if (radarChartData?.length) {
+      let data = [];
+      BASE_CHART_POLY.map((polyRating) => {
+        const attributes = {};
+        if (radarChartAttributes?.length) {
+          radarChartAttributes.map((attr) => {
+            attributes[attr.toString()] = polyRating;
+            return <></>
+          });
+        }
+        data.push(attributes);
+        return <></>
+      });
+      data = [...data, ...radarChartData];
+      setRadarChart([...data]);
+    }
+  }, [radarChartData]);
+
+  useEffect(() => {
+    setChartData(processData(radarChart));
+    setMaximaData(getMaxima(radarChart));
+  }, [radarChart])
 
   return (
     <VictoryChart
@@ -100,7 +93,7 @@ const TCRadarChart = ({
             >
       <VictoryGroup
           colorScale={CHART_COLOR}
-          style={{ data: { fillOpacity: 0.8, strokeWidth: 2 } }}
+          style={{ data: { strokeWidth: 3 } }}
                 >
         {chartData.map((data, i) => (
           <VictoryArea
@@ -114,13 +107,14 @@ const TCRadarChart = ({
             <VictoryPolarAxis key={i}
                 dependentAxis
                 style={{
-                  axisLabel: { padding: 10 },
+                  axisLabel: { padding: 20 },
                   axis: { stroke: 'none' },
                   grid: { stroke: 'none', strokeWidth: 0, opacity: 0 },
                 }}
                 tickLabelComponent={<></>}
                 labelPlacement="perpendicular"
-                axisValue={i + 1} label={key}
+                axisValue={i + 1}
+                label={_.startCase(key)}
                 tickFormat={(t) => Math.ceil(t * maxima[key])}
                 tickValues={[0.20, 0.40, 0.60, 0.80, 1]}
             />

@@ -1,45 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Text, View, StyleSheet, TouchableOpacity,
+  Text, View, StyleSheet, TouchableOpacity, FlatList,
 } from 'react-native';
+import _ from 'lodash';
 import fonts from '../../../../../Constants/Fonts';
 import TCRadarChart from '../../../../TCRadarChart';
 import TCTeamVS from '../../../../TCTeamVS';
 import TCTeamsAttributesRating from '../../../../TCTeamsAttributesRating';
 import colors from '../../../../../Constants/Colors';
 
-const RatingForTeams = ({ gameData }) => (
-  //  title
-  <View style={styles.mainContainer}>
-    <Text style={styles.titleText}>Ratings for teams (10)</Text>
+const RatingForTeams = ({ gameData, reviewsData }) => {
+  const [radarChartData, setRadarChartData] = useState([]);
+  const [radarChartAttributes, setRadarChartAttributes] = useState([]);
+  const [ratings, setRatings] = useState(null);
 
-    {/* Radar Chart */}
-    <TCRadarChart/>
+  useEffect(() => {
+    if (reviewsData) processChartData(reviewsData?.averageReview)
+  }, [reviewsData]);
 
-    {/* Teams Display */}
-    <TCTeamVS
-          firstTeamName={gameData?.home_team?.group_name}
-          secondTeamName={gameData?.away_team?.group_name}
-          firstTeamProfilePic={gameData?.home_team?.background_thumbnail}
-          secondTeamProfilePic={gameData?.away_team?.background_thumbnail}
+  const processChartData = (teamsRatingData) => {
+    let homeTeamRatings = {};
+    let awayTeamRatings = {};
+    if (teamsRatingData.length) {
+      teamsRatingData.map((item) => {
+        if (item.team_id === gameData?.home_team?.group_id) {
+          homeTeamRatings = item.avg_review;
+        } else if (item.team_id === gameData?.away_team?.group_id) {
+          awayTeamRatings = item.avg_review;
+        }
+        return item;
+      });
+      setRatings({ home_team: homeTeamRatings, away_team: awayTeamRatings })
+      if (homeTeamRatings) setRadarChartAttributes([...Object.keys(homeTeamRatings)]);
+      if (homeTeamRatings && awayTeamRatings) setRadarChartData([{ ...awayTeamRatings }, { ...homeTeamRatings }]);
+    }
+  }
+  return (
+    <View style={styles.mainContainer}>
+      {/* title */}
+      <Text style={styles.titleText}>Ratings for teams ({radarChartAttributes?.length ?? 0})</Text>
+
+      {/* Radar Chart */}
+      <TCRadarChart
+          radarChartAttributes={radarChartAttributes}
+            radarChartData={radarChartData}
       />
 
-    {/*  Teams Attribute Rating */}
-    <TCTeamsAttributesRating
-        style={{ marginTop: 15 }}
-        ratingName={'Manner'}
-        firstTeamRating={4}
-        secondTeamRating={1}
-    />
-    <TCTeamsAttributesRating
-          ratingName={'Punctuality'}
-          firstTeamRating={3}
-          secondTeamRating={4}
-      />
-    <TouchableOpacity>
-      <Text style={styles.detailText}>Detail info about ratings</Text>
-    </TouchableOpacity>
-  </View>)
+      {/* Teams Display */}
+      <TCTeamVS
+                firstTeamName={gameData?.home_team?.group_name}
+                secondTeamName={gameData?.away_team?.group_name}
+                firstTeamProfilePic={gameData?.home_team?.background_thumbnail}
+                secondTeamProfilePic={gameData?.away_team?.background_thumbnail}
+            />
+
+      {/*  Teams Attribute Rating */}
+
+      <FlatList
+          scrollEnabled={false}
+          bounces={false}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={({ index }) => index?.toString()}
+          data={radarChartAttributes}
+          renderItem={({ item }) => (
+            <TCTeamsAttributesRating
+                  style={{ marginTop: 15 }}
+                  ratingName={_.startCase(item)}
+                  firstTeamRating={ratings?.home_team[item.toString()] ?? 0}
+                  secondTeamRating={ratings?.away_team[item.toString()] ?? 0}
+              />
+          )}/>
+
+      {/* Detail Info Button */}
+      <TouchableOpacity>
+        <Text style={styles.detailText}>Detail info about ratings</Text>
+      </TouchableOpacity>
+    </View>)
+}
 
 const styles = StyleSheet.create({
   mainContainer: {

@@ -13,7 +13,7 @@ const TCStarRating = ({
 
     {/* Direction : Right */}
     {startingFrom === 'right'
-    && Array(totalRatingCount - rating)
+    && Array(Math.floor(totalRatingCount - rating))
       .fill()
       .map((item, index) => (
         <View key={index?.toString()}>
@@ -21,7 +21,7 @@ const TCStarRating = ({
         </View>
       ))}
     {/*  Rating */}
-    {Array(rating)
+    {Array(Math.floor(rating))
       .fill()
       .map((item, index) => (
         <View key={index?.toString()}>
@@ -31,7 +31,7 @@ const TCStarRating = ({
 
     {/* Direction : LEFT */}
     {startingFrom === 'left'
-    && Array(totalRatingCount - rating)
+    && Array(Math.floor(totalRatingCount - rating))
       .fill()
       .map((item, index) => (
         <View key={index?.toString()}>
