@@ -35,6 +35,11 @@ const getGameStats = (gameId) => makeAPIRequest({
   url: `${Config.BASE_URL}/games/${gameId}/stats`,
 })
 
+const getGameReviews = (gameId) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/games/${gameId}/reviews`,
+})
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -42,4 +47,5 @@ export {
   getGameMatchRecords,
   approveDisapproveGameRecords,
   getGameStats,
+  getGameReviews,
 }

@@ -401,21 +401,21 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="EditRosterNonRosterScreen"
-      component={EditRosterNonRosterScreen}
-      options={{
-        title: 'Edit Roster',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+          name="EditRosterNonRosterScreen"
+          component={EditRosterNonRosterScreen}
+          options={{
+            title: 'Edit Roster',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          }}
+      />
     <Stack.Screen
         name="RegisterPlayer"
         component={ RegisterPlayer }
@@ -1131,9 +1131,18 @@ const HomeNavigator = () => (
     <Stack.Screen
         name="ChallengeSentScreen"
         component={ ChallengeSentScreen }
-        options={
-          { headerShown: false }
-         }
+        options={ {
+          title: 'Venue',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
       />
 
     <Stack.Screen

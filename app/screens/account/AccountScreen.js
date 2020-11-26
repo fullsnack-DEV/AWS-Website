@@ -94,6 +94,7 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
+    { key: 'Game(For Test)' },
 
   ];
   const clubMenu = [

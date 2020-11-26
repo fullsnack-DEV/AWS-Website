@@ -32,18 +32,18 @@ PODS:
     - FBSDKShareKit/Share (= 7.1.1)
   - FBSDKShareKit/Share (7.1.1):
     - FBSDKCoreKit (~> 7.1.1)
-  - Firebase/Auth (6.30.0):
+  - Firebase/Auth (6.34.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 6.8.0)
-  - Firebase/CoreOnly (6.30.0):
-    - FirebaseCore (= 6.10.0)
-  - FirebaseAuth (6.8.0):
+    - FirebaseAuth (~> 6.9.2)
+  - Firebase/CoreOnly (6.34.0):
+    - FirebaseCore (= 6.10.4)
+  - FirebaseAuth (6.9.2):
     - FirebaseCore (~> 6.10)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.7)
     - GoogleUtilities/Environment (~> 6.7)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (6.10.0):
-    - FirebaseCoreDiagnostics (~> 1.3)
+  - FirebaseCore (6.10.4):
+    - FirebaseCoreDiagnostics (~> 1.6)
     - GoogleUtilities/Environment (~> 6.7)
     - GoogleUtilities/Logger (~> 6.7)
   - FirebaseCoreDiagnostics (1.7.0):
@@ -131,11 +131,11 @@ PODS:
   - GTMAppAuth (1.1.0):
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher (~> 1.4)
-  - GTMSessionFetcher (1.4.0):
-    - GTMSessionFetcher/Full (= 1.4.0)
-  - GTMSessionFetcher/Core (1.4.0)
-  - GTMSessionFetcher/Full (1.4.0):
-    - GTMSessionFetcher/Core (= 1.4.0)
+  - GTMSessionFetcher (1.5.0):
+    - GTMSessionFetcher/Full (= 1.5.0)
+  - GTMSessionFetcher/Core (1.5.0)
+  - GTMSessionFetcher/Full (1.5.0):
+    - GTMSessionFetcher/Core (= 1.5.0)
   - libwebp (1.1.0):
     - libwebp/demux (= 1.1.0)
     - libwebp/mux (= 1.1.0)
@@ -145,7 +145,7 @@ PODS:
   - libwebp/mux (1.1.0):
     - libwebp/demux
   - libwebp/webp (1.1.0)
-  - lottie-ios (3.1.8)
+  - lottie-ios (3.1.9)
   - lottie-react-native (3.5.0):
     - lottie-ios (~> 3.1.8)
     - React
@@ -331,10 +331,10 @@ PODS:
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
   - React-jsinspector (0.63.2)
-  - react-native-config (1.3.3):
-    - react-native-config/App (= 1.3.3)
-  - react-native-config/App (1.3.3):
-    - React
+  - react-native-config (1.4.1):
+    - react-native-config/App (= 1.4.1)
+  - react-native-config/App (1.4.1):
+    - React-Core
   - react-native-fbsdk (2.0.0):
     - React
     - react-native-fbsdk/Core (= 2.0.0)
@@ -351,15 +351,15 @@ PODS:
     - React
   - react-native-geolocation (2.0.2):
     - React
-  - react-native-image-resizer (1.3.0):
+  - react-native-image-resizer (1.4.0):
     - React-Core
   - react-native-image-sequence (0.7.0):
     - React
   - react-native-maps (0.27.1):
     - React
-  - react-native-netinfo (5.9.7):
+  - react-native-netinfo (5.9.9):
     - React-Core
-  - react-native-safe-area-context (3.1.8):
+  - react-native-safe-area-context (3.1.9):
     - React-Core
   - react-native-slider (3.0.3):
     - React
@@ -432,29 +432,29 @@ PODS:
     - React-jsi (= 0.63.2)
   - ReactNativeART (1.2.0):
     - React
-  - RNCAsyncStorage (1.12.0):
-    - React
+  - RNCAsyncStorage (1.12.1):
+    - React-Core
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.8.0):
+  - RNCPicker (1.8.1):
     - React-Core
-  - RNDateTimePicker (3.0.4):
+  - RNDateTimePicker (3.0.6):
     - React-Core
-  - RNFastImage (8.3.2):
-    - React
+  - RNFastImage (8.3.4):
+    - React-Core
     - SDWebImage (~> 5.8)
     - SDWebImageWebPCoder (~> 0.6.1)
-  - RNFBApp (8.4.3):
-    - Firebase/CoreOnly (~> 6.30.0)
+  - RNFBApp (8.4.7):
+    - Firebase/CoreOnly (~> 6.34.0)
     - React-Core
-  - RNFBAuth (9.2.3):
-    - Firebase/Auth (~> 6.30.0)
+  - RNFBAuth (9.3.5):
+    - Firebase/Auth (~> 6.34.0)
     - React-Core
     - RNFBApp
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (1.8.0):
-    - React
+  - RNGestureHandler (1.9.0):
+    - React-Core
   - RNGoogleSignin (5.0.0):
     - GoogleSignIn (~> 5.0.0)
     - React-Core
@@ -467,17 +467,19 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
-  - RNReanimated (1.13.0):
-    - React
-  - RNScreens (2.11.0):
-    - React
+  - RNReanimated (1.13.2):
+    - React-Core
+  - RNScreens (2.15.0):
+    - React-Core
   - RNSVG (12.1.0):
+    - React
+  - RNTextGradientView (0.1.7):
     - React
   - RNVectorIcons (7.1.0):
     - React
-  - SDWebImage (5.9.3):
-    - SDWebImage/Core (= 5.9.3)
-  - SDWebImage/Core (5.9.3)
+  - SDWebImage (5.9.4):
+    - SDWebImage/Core (= 5.9.4)
+  - SDWebImage/Core (5.9.4)
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
@@ -562,6 +564,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNTextGradientView (from `../node_modules/react-native-text-gradient`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -711,6 +714,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNTextGradientView:
+    :path: "../node_modules/react-native-text-gradient"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -728,9 +733,9 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: b46507dc8b8cefed31d644e74d7cc30e2a715ef8
   FBSDKLoginKit: 1a61d79e2b25e2fc0d03dccab1e34b38bbdf2546
   FBSDKShareKit: 00a055c1999b099596e00212dd1c0600c6697019
-  Firebase: 210f41ca352067d83b1ba4fd2e7fb49a0c017397
-  FirebaseAuth: 300433de340c1b058dbb8aec224a3f1bcfda5184
-  FirebaseCore: 9a41e2de78fef10f63cee30ab10e2945266bc1fc
+  Firebase: c23a36d9e4cdf7877dfcba8dd0c58add66358999
+  FirebaseAuth: c92d49ada7948d1a23466e3db17bc4c2039dddc3
+  FirebaseCore: d3a978a3cfa3240bf7e4ba7d137fdf5b22b628ec
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
@@ -745,9 +750,9 @@ SPEC CHECKSUMS:
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   GTMAppAuth: 197a8dabfea5d665224aa00d17f164fc2248dab9
-  GTMSessionFetcher: 6f5c8abbab8a9bce4bb3f057e317728ec6182b10
+  GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
-  lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
+  lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
@@ -765,14 +770,14 @@ SPEC CHECKSUMS:
   React-jsi: 54245e1d5f4b690dec614a73a3795964eeef13a8
   React-jsiexecutor: 8ca588cc921e70590820ce72b8789b02c67cce38
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
-  react-native-config: 9a061347e0136fdb32d43a34d60999297d672361
+  react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
   react-native-fbsdk: 00c15d138bba6d4efa628670886fc58cec858c19
   react-native-geolocation: cbd9d6bd06bac411eed2671810f454d4908484a8
-  react-native-image-resizer: b53bf95ad880100e20262687e41f76fdbc9df255
+  react-native-image-resizer: bf422e1e457d7244562d919d11ba9080ccbe329b
   react-native-image-sequence: b4cc7ce0ee9eeec7574b005e06059b3f7f818d96
   react-native-maps: f4b89da81626ad7f151a8bfcb79733295d31ce5c
-  react-native-netinfo: e36c1bb6df27ab84aa933679b3f5bbf9d180b18f
-  react-native-safe-area-context: 01158a92c300895d79dee447e980672dc3fb85a6
+  react-native-netinfo: 77d133105df525d4a11f10fcaa8d0b8883ea6429
+  react-native-safe-area-context: 86612d2c9a9e94e288319262d10b5f93f0b395f5
   react-native-slider: b733e17fdd31186707146debf1f04b5d94aa1a93
   react-native-video: 8d97379f3c2322a569f1e27542ad1a646cad9444
   react-native-viewpager: 118e65d8c65c56fe48d12a35cdcf1fe7e027a366
@@ -787,22 +792,23 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   ReactNativeART: f003b07dfa7098aa419ed95b69560923440b1eee
-  RNCAsyncStorage: 3eea36d9460c5159b592f9ecbe5a77f8aca98006
+  RNCAsyncStorage: cb9a623793918c6699586281f0b51cbc38f046f9
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
-  RNCPicker: a724b3aa22b182697c190a8fd7b060b66119e136
-  RNDateTimePicker: 88dc10d685ce961339bad3353c64db96c5abd19b
-  RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
-  RNFBApp: a74d8259d827c8bf55100e759cffa2e50ba6fe30
-  RNFBAuth: ccae9605207f4a3bc6e03cd0adb5433872ef4418
+  RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
+  RNDateTimePicker: 54bc1830e4e8d99ed00e6b6735b8517e163b2a4a
+  RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
+  RNFBApp: 804b98033f45c3a3e35b56de8c894f85ef5e4388
+  RNFBAuth: 8c4de7a59b563bd399993855aa61183e1f1be4bf
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNGoogleSignin: ad866d4c4af2651e36801dd3b7771d7715353499
   RNImageCropPicker: 16951bc02411f50c4d197488ed6406a23dc3b5f1
-  RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
-  RNScreens: 0e91da98ab26d5d04c7b59a9b6bd694124caf88c
+  RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
+  RNScreens: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNTextGradientView: 3eb4744303f801546fad35ac47a53cc82257cb25
   RNVectorIcons: bc69e6a278b14842063605de32bec61f0b251a59
-  SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
+  SDWebImage: b69257f4ab14e9b6a2ef53e910fdf914d8f757c1
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598

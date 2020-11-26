@@ -12,6 +12,7 @@ import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
 import { getGameMatchRecords } from '../../../../../api/Games';
+import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 
 const Summary = ({
   gameData,
@@ -77,7 +78,9 @@ const Summary = ({
       unFollowSoccerUser={unFollowSoccerUser}
   />
   <Scorekeepers scorekeepersData={gameData?.scorekeepers ?? []} isAdmin={isAdmin} userRole={userRole}/>
-  {/* <Scorekeepers scorekeepersData={gameData?.referees ?? []} isAdmin={isAdmin} userRole={userRole}/> */}
+  <View style={{ backgroundColor: colors.whiteColor }}>
+    <FeedsScreen navigation={navigation}/>
+  </View>
 </View>
 )
 

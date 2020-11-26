@@ -73,5 +73,7 @@ const colors = {
   darkGrayTrashColor: '#707070',
   orangeGradientColor: '#FF6F01',
   greenShadowColor: '#7CCF6B',
+  blueGradiantStart: '#004EFF',
+  blueGradiantEnd: '#00BAFF',
 };
 export default colors;

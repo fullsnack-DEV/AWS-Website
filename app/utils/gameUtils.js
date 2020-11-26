@@ -52,6 +52,7 @@ const gamePlayStatsImage = {
   unforcedError: images.gameGoal,
   footFault: images.gameGoal,
   winner: images.gameGoal,
+  assist: images.assistBy,
 }
 
 const getGameDateTimeInHMSformat = (date = new Date()) => moment(new Date(date * 1000)).format('hh:mm A')

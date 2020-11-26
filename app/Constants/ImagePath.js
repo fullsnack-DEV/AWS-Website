@@ -221,6 +221,11 @@ const images = {
   secondVSTeam: require('../assets/images/secondTeam.png'),
   warningIcon: require('../assets/images/warning.png'),
   popupUpArrow: require('../assets/images/topPopupArrow.png'),
+  assistBy: require('../assets/images/assistBy.png'),
+  blankRatingStar: require('../assets/images/blankRatingStar.png'),
+  yellowRatingStar: require('../assets/images/yellowRatingStar.png'),
+  blueRatingStar: require('../assets/images/blueRatingStar.png'),
+  greenRatingStar: require('../assets/images/greenRatingStar.png'),
 };
 
 export default images;
