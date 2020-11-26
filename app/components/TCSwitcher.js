@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,33 +9,38 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 const TCSwitcher = ({
-  firstTabText,
-  secondTabText,
-  onFirstTabPress,
-  onSecondTabPress,
+  tabs,
+  onTabPress,
   selectedTab, // 1 OR 2
 }) => (
   <View style={styles.eventPrivacyContianer}>
-    <TouchableOpacity
-                onPress={onFirstTabPress}
-                style={selectedTab === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
-            >
-      <Text style={selectedTab === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
-        {firstTabText}
-      </Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-                onPress={onSecondTabPress}
-                style={selectedTab === 2 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
-            >
-      <Text style={selectedTab === 2 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
-        {secondTabText}
-      </Text>
-    </TouchableOpacity>
+    {tabs.map((item, index) => (
+
+      <TouchableOpacity
+          activeOpacity={0.8}
+          key={index}
+            onPress={() => onTabPress(index)}
+          style={{ flex: 1 }}
+        >
+        <LinearGradient
+              key={index?.toString()}
+              colors={
+                selectedTab === index
+                  ? [colors.yellowColor, colors.themeColor]
+                  : [colors.whiteColor, colors.whiteColor]
+              }
+              style={selectedTab === index ? styles.activeEventPricacy : styles.inactiveEventPricacy}>
+          <Text style={selectedTab === index ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+            {item}
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    ))}
   </View>
 )
 
@@ -48,15 +53,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('0.5%'),
     paddingVertical: wp('0.5%'),
     marginVertical: 20,
-    marginHorizontal: 10,
-    // width: wp('60%'),
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
   },
   activeEventPricacy: {
     flex: 1,
-    backgroundColor: colors.activeIndexColor,
     paddingVertical: hp(1.3),
     alignItems: 'center',
     borderRadius: wp('10%'),
@@ -65,6 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: hp(1.3),
     alignItems: 'center',
+    borderRadius: wp('10%'),
   },
   activeEventPrivacyText: {
     color: 'white',
@@ -80,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TCSwitcher;
+export default memo(TCSwitcher);

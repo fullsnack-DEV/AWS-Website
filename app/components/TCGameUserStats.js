@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
   },
   rightIconImage: {
     flex: 0.10,
-    height: 20,
-    width: 20,
+    height: 30,
+    width: 30,
   },
   countText: {
     flex: 0.05,

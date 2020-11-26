@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-const LineUp = () => <Text>Stats</Text>
+const LineUp = () => <Text>Line Up</Text>
 
 export default LineUp;

@@ -1,9 +1,10 @@
 import {
-  Platform, Alert, Dimensions, PixelRatio,
+  Platform, Alert, Dimensions, PixelRatio, LayoutAnimation,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import strings from '../Constants/String'
+import images from '../Constants/ImagePath';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -150,3 +151,39 @@ const backgroundColors = [
 
 // eslint-disable-next-line no-bitwise
 export const getRandomColor = () => backgroundColors[backgroundColors.length * Math.random() | 0]
+
+export const STAR_COLOR = {
+  YELLOW: 'YELLOW',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+  WHITE: 'WHITE',
+}
+
+export const STAR_IMAGE = {
+  YELLOW: images.yellowRatingStar,
+  GREEN: images.greenRatingStar,
+  BLUE: images.blueRatingStar,
+  WHITE: images.blankRatingStar,
+}
+
+export const toggleView = (callbackMethod, duration = 2000) => {
+  const CustomLayoutLinear = {
+    duration,
+    create: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity,
+    },
+    update: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity,
+    },
+    delete: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity,
+    },
+  };
+
+  LayoutAnimation.configureNext(CustomLayoutLinear);
+  // eslint-disable-next-line no-unused-expressions
+  callbackMethod();
+};
