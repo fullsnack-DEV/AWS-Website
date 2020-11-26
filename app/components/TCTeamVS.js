@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 5,
+    marginVertical: 5,
   },
   teamLogoContainer: {
     alignSelf: 'flex-start',

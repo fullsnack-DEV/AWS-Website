@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
@@ -34,6 +34,7 @@ const TCTeamsAttributesRating = ({
     <View style={{ ...styles.singleSectionContainer, flex: 0.26 }}>
       <TCStarRating starColor={starColor} startingFrom={'left'} rating={Number(secondTeamRating)}/>
     </View>
+
     {/*  Second Team Rating Star */}
     <View style={{ ...styles.singleSectionContainer, flex: 0.11 }}>
       <Text style={styles.ratingText}>{Number(secondTeamRating).toFixed(1)}</Text>
@@ -63,4 +64,4 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
 })
-export default memo(TCTeamsAttributesRating);
+export default TCTeamsAttributesRating;
