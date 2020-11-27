@@ -87,14 +87,9 @@ const SoccerHome = ({ navigation, route }) => {
             userId={userId}
         />
       )}
-      {tabKey === 1 && <LineUp/>}
-      {tabKey === 2 && (
-        <Stats
-              getGameStatsData={getSoccerGameStats}
-              gameData={gameData}
-          />
-      )}
-      {tabKey === 3 && <Review getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
+      {tabKey === 1 && <LineUp navigation={navigation}/>}
+      {tabKey === 2 && <Stats gameData={gameData}/>}
+      {tabKey === 3 && <Review/>}
       {tabKey === 4 && <Gallery/>}
     </View>
   )

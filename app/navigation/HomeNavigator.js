@@ -95,6 +95,7 @@ import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import SoccerApproveDisapproveConfirmation
   from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
 import EditRosterNonRosterScreen from '../screens/game/soccer/lineUp/EditRosterNonRosterScreen';
+import EditRosterCoacheScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 
 const Stack = createStackNavigator();
 
@@ -416,6 +417,22 @@ const HomeNavigator = () => (
             },
           }}
       />
+    <Stack.Screen
+      name="EditRosterCoacheScreen"
+      component={EditRosterCoacheScreen}
+      options={{
+        title: 'Edit Roster',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     <Stack.Screen
         name="RegisterPlayer"
         component={ RegisterPlayer }

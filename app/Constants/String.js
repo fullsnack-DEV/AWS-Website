@@ -46,6 +46,7 @@ const strings = {
   cancelTitle: 'CANCEL',
   doneTitle: 'DONE',
   saveTitle: 'SAVE',
+  moveTitle: 'MOVE',
   loginCapTitle: 'LOGIN',
   continueCapTitle: 'CONTINUE',
   signUpCapitalText: 'SIGN UP',
