@@ -1,65 +1,112 @@
-import React, {
-
-} from 'react';
+import React from 'react';
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
+  Text, View, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
-import images from '../../../../../Constants/ImagePath'
-import colors from '../../../../../Constants/Colors'
-import fonts from '../../../../../Constants/Fonts'
+import images from '../../../../../Constants/ImagePath';
+import colors from '../../../../../Constants/Colors';
+import fonts from '../../../../../Constants/Fonts';
 import TCMessageButton from '../../../../TCMessageButton';
 
-export default function LineUpPlayerView({ onMovePress, buttonType = 'move' }) {
+export default function LineUpPlayerView({
+  userData,
+  onButtonPress,
+  buttonType = 'nobutton',
+}) {
   return (
     <TouchableOpacity>
-      <View style={styles.topViewContainer}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.profileView}>
-            <Image source={ images.profilePlaceHolder } style={ styles.profileImage } />
+      {userData && (
+        <View style={styles.topViewContainer}>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={styles.profileView}>
+              <Image
+                source={
+                  userData.profile.thumbnail
+                    ? { uri: userData.profile.thumbnail }
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+              />
+            </View>
+            <View style={styles.topTextContainer}>
+              <Text
+                style={styles.mediumNameText}
+                numberOfLines={
+                1
+                }>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+              <Text style={styles.locationText} numberOfLines={1}>
+                {`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}
+              </Text>
+            </View>
           </View>
-          <View style={styles.topTextContainer}>
-            <Text style={styles.mediumNameText} numberOfLines={1}>{'Kishan Makani'}</Text>
-            <Text style={styles.locationText} numberOfLines={1}>{'2 Forward'}</Text>
-          </View>
+          {buttonType !== 'nobutton' && (
+            //  <TouchableOpacity onPress={onButtonPress} style={styles.buttonStyle}></TouchableOpacity>
+            <View style={styles.buttonStyle}>
+              {buttonType === 'move' && (
+                <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
+                  <LinearGradient
+                  colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+                  style={styles.buttonStyle}>
+                    <Text style={styles.buttonText}>{'MOVE'}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
+              {buttonType === 'moveup' && (
+                <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
+                  <LinearGradient
+                  colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+                  style={styles.buttonStyle}>
+                    <Text style={styles.buttonText}>{'Move up'}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
+              {buttonType === 'movedown' && (
+                <TCMessageButton
+                width={70}
+                height={22}
+                title={'Move down'}
+                onPress={() => onButtonPress(buttonType)}/>
+              )}
+              {buttonType === 'email' && (
+                <TCMessageButton
+                  width={70}
+                  height={22}
+                  color={colors.lightBlackColor}
+                  title={'E-mail'}
+                  onPress={() => onButtonPress(buttonType)}
+                />
+              )}
+              {buttonType === 'message' && (
+                <TCMessageButton
+                width={70}
+                height={22}
+                onPress={() => onButtonPress(buttonType)}/>
+              )}
+              {buttonType === 'review' && (
+                <TouchableOpacity onPress={() => onButtonPress(buttonType)}>
+                  <LinearGradient
+                  colors={[colors.yellowColor, colors.themeColor]}
+                  style={styles.buttonStyle}>
+                    <Text style={styles.buttonText}>{'Review'}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
+
+              {buttonType === 'editreview' && (
+                <TCMessageButton
+                  width={70}
+                  height={22}
+                  color={colors.themeColor}
+                  title={'Edit Review'}
+                  onPress={() => onButtonPress(buttonType)}
+                />
+              )}
+            </View>
+          )}
         </View>
-        <TouchableOpacity onPress={onMovePress} style={styles.buttonStyle}>
-          {buttonType === 'move' && <LinearGradient
-       colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-       style={styles.buttonStyle}
-       >
-            <Text
-          style={styles.buttonText}>
-              {'MOVE'}
-            </Text>
-          </LinearGradient>}
-          {buttonType === 'moveup' && <LinearGradient
-       colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-       style={styles.buttonStyle}
-       >
-            <Text
-          style={styles.buttonText}>
-              {'Move up'}
-            </Text>
-          </LinearGradient>}
-          {buttonType === 'movedown' && <TCMessageButton
-        width={70} height={22} title={'Move down'}/>}
-          {buttonType === 'email' && <TCMessageButton
-        width={70} height={22} color={colors.lightBlackColor} title={'E-mail'}/>}
-          {buttonType === 'message' && <TCMessageButton width={70} height={22}/>}
-          {/* <TCMessageButton width={70} height={22} marginTop={5}/> */}
-        </TouchableOpacity>
-      </View>
+      )}
     </TouchableOpacity>
-    // <LinearGradient
-    // colors={buttonType === 'check' ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.offwhite, colors.offwhite]}
-    // style={styles.topViewContainer}
-    // >
   );
 }
 const styles = StyleSheet.create({
@@ -75,7 +122,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.offwhite,
     height: 60,
-    width: ('90%'),
+    width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingRight: 10,
@@ -131,6 +178,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 12,
     color: colors.whiteColor,
-
   },
 });
