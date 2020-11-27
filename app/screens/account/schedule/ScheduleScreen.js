@@ -55,10 +55,6 @@ export default function ScheduleScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [createEventModal, setCreateEventModal] = useState(false);
 
-  // const toggleModal = () => {
-  //   setCreateEventModal(!createEventModal);
-  // };
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
@@ -71,7 +67,6 @@ export default function ScheduleScreen({ navigation }) {
       getEvents(entityRole, uid).then((response) => {
         getSlots(entityRole, uid).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
-          console.log('Response in Slots :-', res);
           setEventData(eventTimeTableData);
           setTimeTable(eventTimeTableData);
           eventTimeTableData.filter((event_item) => {
@@ -287,9 +282,9 @@ export default function ScheduleScreen({ navigation }) {
                       containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color, width: event.width }}
                       eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
                     />}
-                    {event.cal_type === 'blocked' && <View style={{
-                      width: event.width + 68, height: event.height, backgroundColor: 'rgba(0,0,0,0.3)', position: 'absolute', marginLeft: -59, borderRadius: 10,
-                    }} />}
+                    {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
+                      width: event.width + 68, height: event.height,
+                    }]} />}
                   </View>}
                   styles={{
                     event: styles.eventViewStyle,
@@ -451,5 +446,11 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
     alignSelf: 'flex-end',
     bottom: 6,
+  },
+  blockedViewStyle: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    position: 'absolute',
+    marginLeft: -59,
+    borderRadius: 10,
   },
 });
