@@ -56,7 +56,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
       ),
     });
   }, [navigation, profileImageChanged,
-    backgroundImageChanged, currentImageSelection]);
+    backgroundImageChanged, currentImageSelection, profile]);
 
   useEffect(() => {
     getUserInformation();
