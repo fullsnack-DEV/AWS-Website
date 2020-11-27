@@ -7,12 +7,12 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCMessageButton({
-  title = 'Message', onPress, color = colors.greeColor, width = 75, ...props
+  title = 'Message', onPress, color = colors.greeColor, width = 75, height = 25, ...props
 }) {
   return (
 
     <TouchableWithoutFeedback onPress={onPress}>
-      <View style={[styles.buttonView, { borderColor: color, width }, props]}>
+      <View style={[styles.buttonView, { borderColor: color, width, height }, props]}>
         <Text style={[styles.buttonTitle, { color }]}>{title}</Text>
 
       </View>
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 5,
-    height: 25,
+
     justifyContent: 'center',
 
     backgroundColor: colors.whiteColor,

@@ -477,9 +477,9 @@ PODS:
     - React
   - RNVectorIcons (7.1.0):
     - React
-  - SDWebImage (5.9.4):
-    - SDWebImage/Core (= 5.9.4)
-  - SDWebImage/Core (5.9.4)
+  - SDWebImage (5.10.0):
+    - SDWebImage/Core (= 5.10.0)
+  - SDWebImage/Core (5.10.0)
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
@@ -808,7 +808,7 @@ SPEC CHECKSUMS:
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTextGradientView: 3eb4744303f801546fad35ac47a53cc82257cb25
   RNVectorIcons: bc69e6a278b14842063605de32bec61f0b251a59
-  SDWebImage: b69257f4ab14e9b6a2ef53e910fdf914d8f757c1
+  SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598

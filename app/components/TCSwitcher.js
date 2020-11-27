@@ -22,6 +22,7 @@ const TCSwitcher = ({
   focusedTabTextColor = colors.whiteColor,
   unFocusedTabTextColor = colors.themeColor,
   borderColor = colors.yellowColor,
+  style = {},
 }) => (
   <View style={{ ...styles.eventPrivacyContianer, borderColor }}>
     {tabs.map((item, index) => (
@@ -30,7 +31,7 @@ const TCSwitcher = ({
           activeOpacity={0.8}
           key={index}
             onPress={() => onTabPress(index)}
-          style={{ flex: 1 }}
+          style={{ flex: 1, ...style }}
         >
         <LinearGradient
               key={index?.toString()}
