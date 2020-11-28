@@ -58,13 +58,15 @@ const eventColorData = [
 ];
 
 export default function EditEventScreen({ navigation, route }) {
-  let event_Title = '';
-  let aboutDescription = '';
-  let eventColor = '';
+  let event_Title = 'Game';
+  let aboutDescription = 'Game With';
+  let aboutDescription2 = '';
+  let eventColor = colors.themeColor;
   let fromDate = '';
   let toDate = '';
   let createdAtDate = '';
   let location = '';
+  let venue = '';
   let latValue = null;
   let longValue = null;
   let latLongLocation = {};
@@ -117,16 +119,30 @@ export default function EditEventScreen({ navigation, route }) {
       ownerID = route.params.data.owner_id;
     }
   }
+  if (route && route.params && route.params.gameData) {
+    if (route.params.gameData.game && route.params.gameData.game.away_team) {
+      aboutDescription2 = route.params.gameData.game.away_team.group_name;
+    }
+    if (route.params.gameData.game && route.params.gameData.game.venue) {
+      venue = route.params.gameData.game.venue.address;
+    }
+    if (route.params.gameData.game && route.params.gameData.game.venue) {
+      latLongLocation = {
+        lat: route.params.gameData.game.venue.lat,
+        lng: route.params.gameData.game.venue.long,
+      };
+    }
+  }
 
   const isFocused = useIsFocused();
   const [eventTitle, setEventTitle] = useState(event_Title);
-  const [aboutDesc, setAboutDesc] = useState(aboutDescription);
+  const [aboutDesc, setAboutDesc] = useState(`${aboutDescription} ${aboutDescription2}`);
   const [singleSelectEventColor, setSingleSelectEventColor] = useState(eventColor[0] !== '#' ? `#${eventColor}` : eventColor);
   const [toggle, setToggle] = useState(false);
   const [eventStartDateTime, setEventStartdateTime] = useState(fromDate);
   const [eventEndDateTime, setEventEnddateTime] = useState(toDate);
   const [eventUntilDateTime, setEventUntildateTime] = useState('');
-  const [searchLocation, setSearchLocation] = useState(location);
+  const [searchLocation, setSearchLocation] = useState(location || venue);
   const [locationDetail, setLocationDetail] = useState(latLongLocation);
   const [is_Blocked, setIsBlocked] = useState(blockValue);
   const [loading, setloading] = useState(false);
@@ -216,7 +232,6 @@ export default function EditEventScreen({ navigation, route }) {
               is_recurring: false,
               createdAt: createdAtDate,
             };
-            console.log('Data :-', params);
             editEvent(entityRole, u_id, params)
               .then(() => getEvents(entityRole, u_id))
               .then((response) => {

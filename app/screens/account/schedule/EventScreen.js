@@ -27,16 +27,19 @@ import strings from '../../../Constants/String';
 export default function EventScreen({ navigation, route }) {
   const actionSheet = useRef();
   const editactionsheet = useRef();
-
-  let titleValue = '';
-  let description = '';
-  let eventColor = '';
+  let titleValue = 'Game';
+  let description = 'Game With';
+  let description2 = '';
+  let eventColor = colors.themeColor;
   let startTime = '';
   let endTime = '';
   let location = '';
   let lati = null;
   let longi = null;
+  let gameDataLati = null;
+  let gameDataLongi = null;
   let blocked = false;
+  let venue = '';
   if (route && route.params && route.params.data) {
     if (route.params.data.title) {
       titleValue = route.params.data.title;
@@ -64,6 +67,20 @@ export default function EventScreen({ navigation, route }) {
     }
     if (route.params.data.isBlocked) {
       blocked = route.params.data.isBlocked;
+    }
+  }
+  if (route && route.params && route.params.gameData) {
+    if (route.params.gameData.game && route.params.gameData.game.away_team) {
+      description2 = route.params.gameData.game.away_team.group_name;
+    }
+    if (route.params.gameData.game && route.params.gameData.game.venue) {
+      venue = route.params.gameData.game.venue.address;
+    }
+    if (route.params.gameData.game && route.params.gameData.game.venue) {
+      gameDataLati = route.params.gameData.game.venue.lat;
+    }
+    if (route.params.gameData.game && route.params.gameData.game.venue) {
+      gameDataLongi = route.params.gameData.game.venue.long;
     }
   }
 
@@ -95,7 +112,7 @@ export default function EventScreen({ navigation, route }) {
         <EventItemRender
           title={strings.about}
         >
-          <Text style={styles.textValueStyle}>{description}</Text>
+          <Text style={styles.textValueStyle}>{description} {description2}</Text>
         </EventItemRender>
         <View style={styles.sepratorViewStyle} />
         <EventItemRender
@@ -120,17 +137,17 @@ export default function EventScreen({ navigation, route }) {
         <EventItemRender
           title={strings.place}
         >
-          <Text style={styles.textValueStyle}>{location}</Text>
+          <Text style={styles.textValueStyle}>{location !== '' ? location : venue}</Text>
           <EventMapView
             region={{
-              latitude: Number(lati),
-              longitude: Number(longi),
+              latitude: lati !== null ? Number(lati) : Number(gameDataLati),
+              longitude: longi !== null ? Number(longi) : Number(gameDataLongi),
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
             coordinate={{
-              latitude: Number(lati),
-              longitude: Number(longi),
+              latitude: lati !== null ? Number(lati) : Number(gameDataLati),
+              longitude: longi !== null ? Number(longi) : Number(gameDataLongi),
             }}
           />
         </EventItemRender>
@@ -158,7 +175,7 @@ export default function EventScreen({ navigation, route }) {
           if (index === 0) {
             // editactionsheet.current.show();
             if (route && route.params && route.params.data) {
-              navigation.navigate('EditEventScreen', { data: route.params.data });
+              navigation.navigate('EditEventScreen', { data: route.params.data, gameData: route.params.gameData });
             }
           } else if (index === 1) {
             Alert.alert(

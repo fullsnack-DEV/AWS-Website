@@ -10,6 +10,7 @@ const colors = {
   toggleOnColor: '#31cd44',
   blockZoneText: '#707070',
   activeIndexColor: '#ff9628',
+  eventDefaultColor: '#d3dff6',
   whiteColor: '#FFFFFF',
   parrotColor: '#E8FFB4',
   fbTextColor: '#4574DB',

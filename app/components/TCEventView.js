@@ -14,7 +14,7 @@ import moment from 'moment';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts';
-import EventOfItem from './Schedule/EventOfItem';
+// import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
 
 export default function TCEventView({
@@ -22,7 +22,7 @@ export default function TCEventView({
   data,
   onThreeDotPress,
   eventBetweenSection,
-  eventOfSection,
+  // eventOfSection,
 }) {
   let startDate = '';
   if (data && data.start_datetime) {
@@ -32,7 +32,7 @@ export default function TCEventView({
   if (data && data.end_datetime) {
     endDate = new Date(data.end_datetime * 1000);
   }
-  let eventColor = '';
+  let eventColor = colors.themeColor;
   if (data && data.color) {
     eventColor = data.color;
   }
@@ -40,13 +40,33 @@ export default function TCEventView({
   if (data && data.location) {
     location = data.location;
   }
-  let description = '';
+  let venue = '';
+  if (data && data.game && data.game.venue) {
+    venue = data.game.venue.address;
+  }
+  let description = 'Game With';
   if (data && data.descriptions) {
     description = data.descriptions;
   }
-  let title = '';
+  let description2 = '';
+  if (data && data.game && data.game.away_team) {
+    description2 = data.game.away_team.group_name;
+  }
+  let title = 'Game';
   if (data && data.title) {
     title = data.title;
+  }
+  let homeTeamName = '';
+  let homeTeamImage = null;
+  if (data && data.game && data.game.home_team) {
+    homeTeamName = data.game.home_team.group_name;
+    homeTeamImage = data.game.home_team.entity_type;
+  }
+  let awayTeamName = '';
+  let awayTeamImage = null;
+  if (data && data.game && data.game.away_team) {
+    awayTeamName = data.game.away_team.group_name;
+    awayTeamImage = data.game.away_team.entity_type;
   }
 
   return (
@@ -66,27 +86,27 @@ export default function TCEventView({
             </TouchableOpacity>
           </View>
           <Text style={ styles.eventDescription } numberOfLines={ 2 }>
-            {description}
+            {description} {description2}
           </Text>
           <View style={ styles.bottomView }>
             <Text style={ styles.eventTime }>{`${moment(startDate).format('LT')} - `}</Text>
             <Text style={ styles.eventTime }>{moment(endDate).format('LT')}</Text>
             <Text style={ [styles.eventTime, { marginHorizontal: 5 }] }> | </Text>
-            <Text style={ styles.eventTime }>{location}</Text>
+            <Text style={ styles.eventTime }>{location !== '' ? location : venue}</Text>
           </View>
           {eventBetweenSection && <EventBetweenUserItem
-            firstUserImage={images.commentReport}
-            firstText={'Vancouver Whitecaps'}
-            secondUserImage={images.usaImage}
-            secondText={'Newyork City FC'}
+            firstUserImage={homeTeamImage === 'team' ? images.team_ph : images.club_ph}
+            firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
+            secondUserImage={awayTeamImage === 'team' ? images.team_ph : images.club_ph}
+            secondText={awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'}
           />}
-          {eventOfSection && <EventOfItem
+          {/* {eventOfSection && <EventOfItem
             eventOfText={'Event of'}
             countryIcon={images.commentReport}
             cityName={'Vancouver League'}
             leagueIcon={images.myTeams}
             eventTextStyle={{ color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }}
-          />}
+          />} */}
         </View>
       </View>
     </TouchableWithoutFeedback>

@@ -60,8 +60,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageStyle: {
-    width: 30,
-    height: 30,
+    width: 35,
+    height: 35,
+    borderRadius: 35 / 2,
   },
   textStyle: {
     width: wp('20%'),

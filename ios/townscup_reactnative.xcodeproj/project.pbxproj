@@ -892,7 +892,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.towncupreactnative.app;
 				PRODUCT_NAME = townscup_reactnative;
-				PROVISIONING_PROFILE_SPECIFIER = TowncupReactNativeDevProfile;
+				PROVISIONING_PROFILE_SPECIFIER = TownscupRNProd;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -1134,7 +1134,7 @@ export default function HomeScreen({ navigation, route }) {
                         const uid = entity.uid || entity.auth.user_id;
                         const entityRole = entity.role === 'user' ? 'users' : 'groups';
                         getEventById(entityRole, uid, item.cal_id).then((response) => {
-                          navigation.navigate('EventScreen', { data: response.payload });
+                          navigation.navigate('EventScreen', { data: response.payload, gameData: item });
                         }).catch((e) => {
                           console.log('Error :-', e);
                         })
@@ -1186,12 +1186,12 @@ export default function HomeScreen({ navigation, route }) {
                             const uid = entity.uid || entity.auth.user_id;
                             const entityRole = entity.role === 'user' ? 'users' : 'groups';
                             getEventById(entityRole, uid, itemValue.cal_id).then((response) => {
-                              navigation.navigate('EventScreen', { data: response.payload });
+                              navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
                             }).catch((e) => {
                               console.log('Error :-', e);
                             })
                           }}
-                          eventBetweenSection={false}
+                          eventBetweenSection={itemValue.game}
                           eventOfSection={true}
                           onThreeDotPress={() => {
                             setSelectedEventItem(itemValue);
@@ -1248,17 +1248,41 @@ export default function HomeScreen({ navigation, route }) {
                           width={width}
                           initDate={timeTableSelectionDate}
                           scrollToFirst={true}
-                          renderEvent={(event) => <View style={{ flex: 1 }}>
-                            {event.cal_type === 'event' && <CalendarTimeTableView
-                              title={event.title}
-                              summary={event.descriptions}
-                              containerStyle={{ borderLeftColor: event.color[0] !== '#' ? `#${event.color}` : event.color, width: event.width }}
-                              eventTitleStyle={{ color: event.color[0] !== '#' ? `#${event.color}` : event.color }}
-                            />}
-                            {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
-                              width: event.width + 68, height: event.height,
-                            }]} />}
-                          </View>}
+                          renderEvent={(event) => {
+                            let event_color = colors.themeColor;
+                            let eventTitle = 'Game';
+                            let eventDesc = 'Game With';
+                            let eventDesc2 = '';
+                            if (event.color && event.color.length > 0) {
+                              if (event.color[0] !== '#') {
+                                event_color = `#${event.color}`;
+                              } else {
+                                event_color = event.color;
+                              }
+                            }
+                            if (event && event.title) {
+                              eventTitle = event.title;
+                            }
+                            if (event && event.descriptions) {
+                              eventDesc = event.descriptions;
+                            }
+                            if (event.game && event.game.away_team) {
+                              eventDesc2 = event.game.away_team.group_name;
+                            }
+                            return (
+                              <View style={{ flex: 1 }}>
+                                {event.cal_type === 'event' && <CalendarTimeTableView
+                                  title={eventTitle}
+                                  summary={`${eventDesc} ${eventDesc2}`}
+                                  containerStyle={{ borderLeftColor: event_color, width: event.width }}
+                                  eventTitleStyle={{ color: event_color }}
+                                />}
+                                {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
+                                  width: event.width + 68, height: event.height,
+                                }]} />}
+                              </View>
+                            );
+                          }}
                           styles={{
                             event: styles.eventViewStyle,
                             line: { backgroundColor: colors.lightgrayColor },
@@ -1296,7 +1320,7 @@ export default function HomeScreen({ navigation, route }) {
                     onPress={(index) => {
                       setSelectedEventItem(null);
                       if (index === 0) {
-                        navigation.navigate('EditEventScreen', { data: selectedEventItem });
+                        navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
                       }
                       if (index === 1) {
                         Alert.alert(

@@ -60,7 +60,7 @@ export default function EventScheduleScreen({ onItemPress, eventData, onThreeDot
                 onPress={() => onItemPress(item)}
                 data={item}
                 onThreeDotPress={() => onThreeDotPress(item)}
-                eventBetweenSection={true}
+                eventBetweenSection={item.game}
                 eventOfSection={true}
               />
             ) }
