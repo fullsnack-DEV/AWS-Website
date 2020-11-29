@@ -300,7 +300,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             <Text style={styles.challengeMessage}>RESERVATION REQUEST EXPIRED</Text>
           ) : (
             <Text style={styles.challengeMessage}>
-              RESERVATION REQUEST RECEIVED
+              RESERVATION REQUEST PENDING
             </Text>
           )}
           {bodyParams.offer_expiry > new Date().getTime() ? (
@@ -406,8 +406,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
         {!(bodyParams.status === ReservationStatus.offered || bodyParams.status === ReservationStatus.cancelled || bodyParams.status === ReservationStatus.declined) && <TCBorderButton
         title={'GAME HOME'}
         onPress={() => navigation.navigate('SoccerHome', {
-          screen: 'SoccerHome',
-          params: { gameId: bodyParams.game_id },
+          gameId: bodyParams.game_id,
         })}
         marginBottom={15}/>}
 
@@ -542,6 +541,14 @@ export default function CreateChallengeForm4({ navigation, route }) {
         {checkSenderOrReceiver(bodyParams) === 'receiver'
       && bodyParams.status === ReservationStatus.offered && bodyParams.offer_expiry < new Date().getTime()
       && <View style={{ marginTop: 15 }}>
+
+        <TCGradientButton
+        title={strings.accept}
+        onPress={() => {
+          acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'accept')
+        }
+        }
+      />
         <TCBorderButton
         title={strings.decline}
         textColor={colors.grayColor}
@@ -551,13 +558,6 @@ export default function CreateChallengeForm4({ navigation, route }) {
         onPress={() => {
           acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'decline')
         }}/>
-        <TCGradientButton
-        title={strings.accept}
-        onPress={() => {
-          acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'accept')
-        }
-        }
-      />
       </View>}
 
         {bodyParams.status === ReservationStatus.accepted && <View>

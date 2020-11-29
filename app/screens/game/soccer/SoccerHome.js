@@ -87,7 +87,7 @@ const SoccerHome = ({ navigation, route }) => {
             userId={userId}
         />
       )}
-      {tabKey === 1 && <LineUp navigation={navigation}/>}
+      {tabKey === 1 && <LineUp navigation={navigation} gameData={gameData}/>}
       {tabKey === 2 && <Stats gameData={gameData}/>}
       {tabKey === 3 && <Review/>}
       {tabKey === 4 && <Gallery/>}

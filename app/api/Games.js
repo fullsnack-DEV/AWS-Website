@@ -40,6 +40,11 @@ const getGameReviews = (gameId) => makeAPIRequest({
   url: `${Config.BASE_URL}/games/${gameId}/reviews`,
 })
 
+const getGameLineUp = (teamId, gameId) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/roster?fetchNonRoster=true&reviewStatus=true`,
+})
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -48,4 +53,5 @@ export {
   approveDisapproveGameRecords,
   getGameStats,
   getGameReviews,
+  getGameLineUp,
 }
