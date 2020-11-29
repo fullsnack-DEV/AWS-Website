@@ -96,6 +96,7 @@ import SoccerApproveDisapproveConfirmation
   from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
 import EditRosterNonRosterScreen from '../screens/game/soccer/lineUp/EditRosterNonRosterScreen';
 import EditRosterCoacheScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
+import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
 
 const Stack = createStackNavigator();
 
@@ -305,6 +306,13 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="EditChallengeAvailability"
+      component={EditChallengeAvailability}
       options={{
         headerShown: false,
       }}

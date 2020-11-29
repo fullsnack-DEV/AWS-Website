@@ -29,6 +29,7 @@ export default function EventAgendaSection({
                 }}
                 refreshing={false}
                 loadItemsForMonth={loadItemsForMonth}
+                rowHasChanged={(r1, r2) => r1.text !== r2.text }
                 renderKnob={() => <Image source={images.dropDownArrow2} style={styles.imageStyle} resizeMode={'contain'} />}
                 renderDay={() => {}}
                 scrollEnabled

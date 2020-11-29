@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View, Text, StyleSheet, Image,
 } from 'react-native';
-
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String'
@@ -11,21 +11,20 @@ export default function UserInfoPlaysInItem({
   title,
   totalGames,
   thumbURL,
+  onPlayInPress,
 }) {
   return (
-    <View>
-      <View style={styles.containerStyle}>
-        <Image source={thumbURL} style={styles.imageStyle}/>
-        <View style={{ marginLeft: 10, marginRight: 12 }}>
-          <Text style={styles.titleStyle}>
-            {title}
-          </Text>
-          <Text style={styles.subTitleStyle}>
-            {`${totalGames} ${strings.totalGames}` }
-          </Text>
-        </View>
+    <TouchableWithoutFeedback style={styles.containerStyle} onPress={onPlayInPress}>
+      <Image source={thumbURL} style={styles.imageStyle}/>
+      <View style={{ marginLeft: 10, marginRight: 12 }}>
+        <Text style={styles.titleStyle}>
+          {title}
+        </Text>
+        <Text style={styles.subTitleStyle}>
+          {`${totalGames} ${strings.totalGames}` }
+        </Text>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
