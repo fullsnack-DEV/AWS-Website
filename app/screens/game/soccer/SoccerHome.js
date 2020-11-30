@@ -13,11 +13,12 @@ import Stats from '../../../components/game/soccer/home/stats/Stats';
 import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/soccer/home/gallary/Gallery';
 import {
-  approveDisapproveGameRecords, getGameData, getGameMatchRecords, getGameReviews, getGameStats,
+  approveDisapproveGameRecords, getGameData, getGameGallery, getGameMatchRecords, getGameReviews, getGameStats,
 } from '../../../api/Games';
 import * as Utility from '../../../utils';
 import { followUser, unfollowUser } from '../../../api/Users';
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
+import ImageProgress from '../../../components/newsFeed/ImageProgress';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Review', 'Gallery']
 const gameIds = [
@@ -28,10 +29,9 @@ const gameIds = [
   '6b1dd495-9d68-4a8b-8feb-363406d279ba', // 4 - 19-11-2020 9-00
   '1dd4f109-0a7c-40a3-b616-f0cf055ba61c', // 5 - Admin: Arvind  20-11-2020 6-50
   'fb6e4794-4fdd-4af2-b07a-a109d3f550f7', // 6  Admin: Arvind
-  '433bb585-8488-4b9a-86f2-087a424b2855', // 7 - For Review
-  '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 8 - For Review
+  '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 7 - For Review
 ]
-const globalGameId = gameIds[8];
+const globalGameId = gameIds[7];
 const SoccerHome = ({ navigation, route }) => {
   const isFocused = useIsFocused();
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
@@ -41,6 +41,7 @@ const SoccerHome = ({ navigation, route }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
 
   useEffect(() => {
     getGameDetails();
@@ -68,6 +69,7 @@ const SoccerHome = ({ navigation, route }) => {
   const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params)
   const getSoccerGameStats = (gameId) => getGameStats(gameId)
   const getSoccerGameReview = (gameId) => getGameReviews(gameId)
+  const getSoccerGalleryData = (gameId) => getGameGallery(gameId)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
@@ -88,9 +90,20 @@ const SoccerHome = ({ navigation, route }) => {
         />
       )}
       {tabKey === 1 && <LineUp navigation={navigation} gameData={gameData}/>}
-      {tabKey === 2 && <Stats gameData={gameData}/>}
-      {tabKey === 3 && <Review/>}
-      {tabKey === 4 && <Gallery/>}
+      {tabKey === 2 && (
+        <Stats
+              getGameStatsData={getSoccerGameStats}
+              gameData={gameData}
+          />
+      )}
+      {tabKey === 3 && <Review getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
+      {tabKey === 4 && (
+        <Gallery
+              setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
+              gameData={gameData}
+              getSoccerGalleryData={getSoccerGalleryData}
+              navigation={navigation}/>
+      )}
     </View>
   )
   return (<View style={styles.mainContainer}>
@@ -110,6 +123,16 @@ const SoccerHome = ({ navigation, route }) => {
         renderTabContain={renderTabContain}
     />
     </TopBackgroundHeader>
+    {uploadImageProgressData && (
+      <ImageProgress
+            numberOfUploaded={uploadImageProgressData?.doneUploadCount}
+            totalUpload={uploadImageProgressData?.totalUploadCount}
+            onCancelPress={() => {
+              console.log('Cancel Pressed!');
+            }}
+            postDataItem={uploadImageProgressData?.postData ? uploadImageProgressData?.postData[0] : {}}
+        />
+    )}
   </View>
 
   )
