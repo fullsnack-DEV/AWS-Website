@@ -155,14 +155,20 @@ export default function ScheduleScreen({ navigation }) {
                 setSelectedEventItem(item);
               }}
               onItemPress={async (item) => {
-                const entity = await Utility.getStorage('loggedInEntity');
-                const uid = entity.uid || entity.auth.user_id;
-                const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                getEventById(entityRole, uid, item.cal_id).then((response) => {
-                  navigation.navigate('EventScreen', { data: response.payload, gameData: item });
-                }).catch((e) => {
-                  console.log('Error :-', e);
-                })
+                if (item.game_id) {
+                  navigation.navigate('SoccerHome', {
+                    gameId: item.game_id,
+                  })
+                } else {
+                  const entity = await Utility.getStorage('loggedInEntity');
+                  const uid = entity.uid || entity.auth.user_id;
+                  const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                  getEventById(entityRole, uid, item.cal_id).then((response) => {
+                    navigation.navigate('EventScreen', { data: response.payload, gameData: item });
+                  }).catch((e) => {
+                    console.log('Error :-', e);
+                  })
+                }
               }}
             />
             {!createEventModal && <CreateEventButton
@@ -209,15 +215,20 @@ export default function ScheduleScreen({ navigation }) {
                 data={item}
                 renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
                   onPress={async () => {
-                    console.log('Item Value :-', itemValue);
-                    const entity = await Utility.getStorage('loggedInEntity');
-                    const uid = entity.uid || entity.auth.user_id;
-                    const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                    getEventById(entityRole, uid, itemValue.cal_id).then((response) => {
-                      navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
-                    }).catch((e) => {
-                      console.log('Error :-', e);
-                    })
+                    if (itemValue.game_id) {
+                      navigation.navigate('SoccerHome', {
+                        gameId: itemValue.game_id,
+                      })
+                    } else {
+                      const entity = await Utility.getStorage('loggedInEntity');
+                      const uid = entity.uid || entity.auth.user_id;
+                      const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                      getEventById(entityRole, uid, itemValue.cal_id).then((response) => {
+                        navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
+                      }).catch((e) => {
+                        console.log('Error :-', e);
+                      })
+                    }
                   }}
                   eventBetweenSection={itemValue.game}
                   eventOfSection={true}
