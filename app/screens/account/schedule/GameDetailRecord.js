@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,19 +8,24 @@ import {
   Platform,
   SectionList,
   ScrollView,
+  FlatList,
 } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 import TCGameButton from '../../../components/TCGameButton';
-
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
+import fonts from '../../../Constants/Fonts';
 
+const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out']
 export default function GameDetailRecord({ navigation }) {
+  const [pickerShow, setPickerShow] = useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -31,6 +36,23 @@ export default function GameDetailRecord({ navigation }) {
       ),
     });
   }, [navigation]);
+  const renderGameButton = ({ item }) => (
+    <TCGameButton
+    title={item}
+    onPress={ () => alert('Game Start Presses..') }
+    buttonColor={ colors.whiteColor }
+    imageName={ (item === 'Goal' && images.gameGoal)
+    || (item === 'Own Goal' && images.gameOwnGoal)
+    || (item === 'YC' && images.gameYC)
+    || (item === 'RC' && images.gameRC)
+    || (item === 'In' && images.gameIn)
+    || (item === 'Out' && images.gameOut)
+  }
+    textColor={ colors.googleColor }
+    imageSize={ 32 }
+  />
+
+  );
 
   return (
     <View style={ styles.mainContainer }>
@@ -150,74 +172,58 @@ export default function GameDetailRecord({ navigation }) {
       <View style={ styles.bottomView }>
         <View style={ styles.timeView }>
           <Text style={ styles.timer }>90 : 00 : 00</Text>
-          <View style={ styles.curruentTimeView }>
+          {pickerShow && <View style={ styles.curruentTimeView }>
             <Image source={ images.curruentTime } style={ styles.curruentTimeImg } />
-          </View>
-          <Text style={ styles.startTime }>Game start at now</Text>
+          </View>}
+          <Text
+            style={styles.startTime}
+            onPress={() => {
+              setPickerShow(!pickerShow);
+            }}>Game start at now</Text>
           <Image source={ images.dropDownArrow } style={ styles.downArrow } />
           <View style={ styles.separatorLine }></View>
         </View>
+        {pickerShow && (
+          <View>
+            <RNDateTimePicker value={new Date()} mode={'datetime'} />
+            <View style={styles.separatorLine} />
+          </View>
+        )}
+        <FlatList
+            data={recordButtonList}
+            renderItem={renderGameButton}
+            keyExtractor={(item, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+           horizontal={true}
+           style={{ marginBottom: 5 }}
+          />
 
-        <View style={ styles.buttonsView }>
-          <TCGameButton
-            title="Goal"
-            onPress={ () => alert('Game Start Presses..') }
-            buttonColor={ colors.whiteColor }
-            imageName={ images.gameGoal }
-            textColor={ colors.googleColor }
-            imageSize={ 32 }
-          />
-          <TCGameButton
-            title="Own Goal"
-            onPress={ () => alert('Game Start Presses..') }
-            buttonColor={ colors.whiteColor }
-            imageName={ images.gameOwnGoal }
-            textColor={ colors.googleColor }
-            imageSize={ 32 }
-          />
-          <TCGameButton
-            title="YC"
-            onPress={ () => alert('Game Start Presses..') }
-            buttonColor={ colors.whiteColor }
-            imageName={ images.gameYC }
-            textColor={ colors.googleColor }
-            imageSize={ 32 }
-          />
-          <TCGameButton
-            title="RC"
-            onPress={ () => alert('Game Start Presses..') }
-            buttonColor={ colors.whiteColor }
-            imageName={ images.gameRC }
-            textColor={ colors.googleColor }
-            imageSize={ 32 }
-          />
-        </View>
-
+        <View style={{ flex: 1 }} />
         <View style={ styles.bottomLine }></View>
-        <View style={ styles.gameRecordButtonView }>
+        <View style={styles.gameRecordButtonView}>
           <TCGameButton
-            title="Game Start"
-            onPress={ () => alert('Game Start Presses..') }
-            buttonColor={ colors.themeColor }
-            imageName={ images.gameStart }
-            textColor={ colors.themeColor }
-            imageSize={ 15 }
+            title="Start"
+            onPress={() => alert('Game Start Presses..')}
+            gradientColor={[colors.yellowColor, colors.themeColor]}
+            imageName={images.gameStart}
+            textColor={colors.themeColor}
+            imageSize={15}
           />
           <TCGameButton
             title="Records"
-            onPress={ () => navigation.navigate('SoccerRecordList') }
-            buttonColor={ colors.darkGrayColor }
-            imageName={ images.gameRecord }
-            textColor={ colors.darkGrayColor }
-            imageSize={ 25 }
+            onPress={() => navigation.navigate('SoccerRecordList')}
+            gradientColor={[colors.veryLightBlack, colors.veryLightBlack]}
+            imageName={images.gameRecord}
+            textColor={colors.darkGrayColor}
+            imageSize={25}
           />
           <TCGameButton
-            title="Simple"
-            onPress={ () => alert('Game Details Presses..') }
-            buttonColor={ colors.gameDetailColor }
-            imageName={ images.gameDetail }
-            textColor={ colors.gameDetailColor }
-            imageSize={ 25 }
+            title="Details"
+            onPress={() => navigation.navigate('GameDetailRecord')}
+            gradientColor={[colors.greenGradientStart, colors.greenGradientEnd]}
+            imageName={images.gameDetail}
+            textColor={colors.gameDetailColor}
+            imageSize={30}
             // extraImageStyle={{tintColor: colors.whiteColor}}
           />
         </View>
@@ -232,12 +238,9 @@ const styles = StyleSheet.create({
     width: 20,
     resizeMode: 'contain',
     alignSelf: 'center',
-
-    // marginRight: 15,
     borderRadius: 3,
   },
   bottomLine: {
-    // position: 'absolute',
     backgroundColor: colors.grayColor,
     width: wp('100%'),
     height: 0.5,
@@ -248,8 +251,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     bottom: 0,
-
-    height: hp('34%'),
     position: 'absolute',
     ...Platform.select({
       ios: {
@@ -263,19 +264,11 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  buttonsView: {
-    flexDirection: 'row',
-    // backgroundColor: 'green',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 85,
-  },
   centerText: {
-    // fontFamily: fonts.RLight,
+    fontFamily: fonts.RLight,
     fontSize: 30,
   },
   centerView: {
-    // backgroundColor: 'blue',
     alignItems: 'center',
     width: wp('20%'),
   },
@@ -310,9 +303,9 @@ const styles = StyleSheet.create({
   },
   gameRecordButtonView: {
     flexDirection: 'row',
-    // backgroundColor: 'green',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 5,
   },
   headerRightImg: {
     height: 15,
@@ -340,7 +333,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     flex: 1,
     flexWrap: 'wrap',
-    // fontFamily: fonts.RMedium,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
   },
   leftView: {
@@ -382,11 +375,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     flex: 1,
     flexWrap: 'wrap',
-    // fontFamily: fonts.RMedium,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
   },
   rightView: {
-    // backgroundColor: 'red',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -404,7 +396,7 @@ const styles = StyleSheet.create({
   },
   sectionText: {
     fontSize: wp('3.2%'),
-    // fontFamily: fonts.RRegular,
+    fontFamily: fonts.RRegular,
     color: colors.themeColor,
     marginLeft: 15,
     backgroundColor: colors.whiteColor,
@@ -420,19 +412,16 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap',
     textAlign: 'right',
-    // fontFamily: fonts.RRegular,
+    fontFamily: fonts.RRegular,
     fontSize: 16,
   },
   timeView: {
-    // position: 'absolute',
-    // bottom: 170,
     flexDirection: 'row',
-    // backgroundColor: 'green',
     height: 70,
     alignItems: 'center',
   },
   timer: {
-    // fontFamily: fonts.RMedium,
+    fontFamily: fonts.RMedium,
     fontSize: 30,
     marginLeft: 15,
   },

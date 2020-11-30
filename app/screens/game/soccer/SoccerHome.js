@@ -84,7 +84,7 @@ const SoccerHome = ({ navigation, route }) => {
             followSoccerUser={followSoccerUser}
             navigation={navigation}
             gameData={gameData}
-            isAdmin={isAdmin}
+            isAdmin={true}
             userRole={userRole}
             userId={userId}
         />

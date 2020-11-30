@@ -7,11 +7,12 @@ import {
 
   Image,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors'
 
 export default function TCGameButton({
   title,
-  buttonColor,
+  gradientColor = [colors.offwhite, colors.offwhite],
   onPress,
   imageName,
   buttonTitle,
@@ -21,9 +22,13 @@ export default function TCGameButton({
 }) {
   return (
     <TouchableOpacity onPress={ onPress }>
-      <View style={ [styles.gameRecordButton, { backgroundColor: buttonColor }] }>
-        {imageName && (
-          <Image
+
+      <View style={ styles.gameRecordButton }>
+        <LinearGradient
+          colors={ gradientColor }
+          style={ styles.gameRecordButton }>
+          {imageName && (
+            <Image
             source={ imageName }
             style={ [
               styles.gameRecordImg,
@@ -31,12 +36,13 @@ export default function TCGameButton({
               { height: imageSize, width: imageSize },
             ] }
           />
-        )}
-        {buttonTitle && (
-          <Text style={ [styles.gameRecordButtonTitle, { color: textColor }] }>
-            {buttonTitle}
-          </Text>
-        )}
+          )}
+          {buttonTitle && (
+            <Text style={ [styles.gameRecordButtonTitle, { color: textColor }] }>
+              {buttonTitle}
+            </Text>
+          )}
+        </LinearGradient>
       </View>
 
       <Text style={ [styles.gameRecordTitle, { color: textColor }] }>{title}</Text>
@@ -50,6 +56,7 @@ const styles = StyleSheet.create({
     width: 50,
     borderRadius: 26,
     marginTop: 10,
+    marginBottom: 5,
     marginLeft: 18,
     marginRight: 18,
     // margin: 18,
