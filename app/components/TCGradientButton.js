@@ -17,9 +17,10 @@ function TCGradientButton({
   startGradientColor = colors.orangeGradientColor,
   endGradientColor = colors.yellowColor,
   outerContainerStyle,
+  ...props
 }) {
   return (
-    <TouchableOpacity onPress={ onPress } style={ [styles.outerContainerStyle, outerContainerStyle] }>
+    <TouchableOpacity onPress={ onPress } style={ [styles.outerContainerStyle, outerContainerStyle, props] }>
       <LinearGradient
        colors={[startGradientColor, endGradientColor]}
        style={[styles.containerStyle, style]}>
