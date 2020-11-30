@@ -14,37 +14,52 @@ import images from '../../../../../Constants/ImagePath'
 import colors from '../../../../../Constants/Colors'
 import fonts from '../../../../../Constants/Fonts'
 
-export default function LineUpPlayerMultiSelectionView() {
+export default function LineUpPlayerMultiSelectionView({
+  userData, enable = false, onButtonPress,
+}) {
   return (
-    <TouchableOpacity>
-      <View style={styles.topViewContainer}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.profileView}>
-            <Image source={ images.profilePlaceHolder } style={ styles.profileImage } />
-          </View>
-          <View style={styles.topTextContainer}>
-            <Text style={styles.mediumNameText} numberOfLines={1}>{'Kishan Makani'}</Text>
-            <Text style={styles.locationText} numberOfLines={1}>{'2 Forward'}</Text>
-          </View>
-        </View>
-        <Image source={images.whiteUncheck} style={styles.checkGreenImage}/>
-      </View>
-
-      <LinearGradient
+    <TouchableOpacity disabled={enable} onPress={() => onButtonPress(userData.selected)}>
+      {userData.selected ? <LinearGradient
     colors={[colors.greenGradientStart, colors.greenGradientEnd]}
     style={styles.topViewContainer}
     >
         <View style={{ flexDirection: 'row' }}>
           <View style={styles.profileView}>
-            <Image source={ images.profilePlaceHolder } style={ styles.profileImage } />
+            <Image
+                source={
+                  userData.profile.thumbnail
+                    ? { uri: userData.profile.thumbnail }
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+              />
           </View>
           <View style={styles.topTextContainer}>
-            <Text style={styles.mediumNameTextWhite} numberOfLines={1}>{'Kishan Makani'}</Text>
-            <Text style={styles.locationTextWhite} numberOfLines={1}>{'2 Forward'}</Text>
+            <Text style={styles.mediumNameTextWhite} numberOfLines={1}>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+            <Text style={styles.locationTextWhite} numberOfLines={1}>{`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}</Text>
           </View>
         </View>
         <Image source={images.checkGreen} style={styles.checkGreenImage}/>
-      </LinearGradient>
+      </LinearGradient> : <View style={styles.topViewContainer}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={styles.profileView}>
+            <Image
+                source={
+                  userData.profile.thumbnail
+                    ? { uri: userData.profile.thumbnail }
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileImage}
+              />
+          </View>
+          <View style={styles.topTextContainer}>
+            <Text style={styles.mediumNameText} numberOfLines={1}>{`${userData.profile.first_name} ${userData.profile.last_name}`}</Text>
+            <Text style={styles.locationText} numberOfLines={1}>{`${userData.profile.jersey_number || ''} ${userData.profile.positions || ''}`}</Text>
+          </View>
+        </View>
+        <Image source={images.whiteUncheck} style={styles.checkGreenImage}/>
+      </View>}
+
     </TouchableOpacity>
 
   );

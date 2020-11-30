@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../../loader/ActivityLoader';
 import { getGameLineUp } from '../../../../../api/Games';
 import * as Utility from '../../../../../utils/index';
@@ -22,12 +23,12 @@ import LineUpPlayerView from './LineUpPlayerView';
 
 let entity = {};
 export default function LineUp({ navigation, gameData }) {
+  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [roster, setRoster] = useState([]);
   const [starting, setStarting] = useState([]);
   const [subs, setSubs] = useState([]);
   const [coaches, setCoaches] = useState([]);
-
   const [selected, setSelected] = useState(1);
 
   useEffect(() => {
@@ -39,8 +40,11 @@ export default function LineUp({ navigation, gameData }) {
     if (selected === 1) {
       getLineUpOfTeams(gameData.home_team.group_id, gameData.game_id);
     }
+    if (selected === 2) {
+      getLineUpOfTeams(gameData.away_team.group_id, gameData.game_id);
+    }
     console.log('Roster Array:::', roster);
-  }, []);
+  }, [isFocused]);
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
@@ -72,7 +76,7 @@ export default function LineUp({ navigation, gameData }) {
       );
       setCoaches(
         rosterData.filter(
-          (el) => el.status === 'accepted' && el.role === 'coach',
+          (el) => el.role === 'coach',
         ),
       );
       console.log(JSON.stringify(response.payload));
@@ -188,7 +192,8 @@ export default function LineUp({ navigation, gameData }) {
                 right: 15,
               }}
               onPress={() => navigation.navigate('EditRosterNonRosterScreen', {
-                screen: 'EditRosterNonRosterScreen',
+                gameObj: gameData,
+                selectedTeam: selected === 1 ? 'home' : 'away',
               })
               }>
                   <Image source={images.editSection} style={styles.editButton} />
@@ -288,7 +293,8 @@ export default function LineUp({ navigation, gameData }) {
                 right: 15,
               }}
               onPress={() => navigation.navigate('EditRosterCoacheScreen', {
-                screen: 'EditRosterCoacheScreen',
+                gameObj: gameData,
+                selectedTeam: selected === 1 ? 'home' : 'away',
               })
               }>
                   <Image source={images.editSection} style={styles.editButton} />
