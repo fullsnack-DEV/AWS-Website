@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LinearTextGradient } from 'react-native-text-gradient';
 import { Text } from 'react-native';
 
@@ -8,15 +8,21 @@ const TCTextGradiant = ({
   end = { x: 1, y: 0 },
   textStyle = {},
   text,
-}) => (
-  <LinearTextGradient
-            style={textStyle}
-            locations={[0, 1]}
-            colors={colors}
-            start={start}
-            end={end}>
-    <Text>{text}</Text>
-  </LinearTextGradient>
-)
+}) => {
+  const [gradientText, setGradiantText] = useState('');
+  useEffect(() => setGradiantText(text), [text])
+  return (
+    <LinearTextGradient
+          style={textStyle}
+          useViewFrame={true}
+          colors={colors}
+          start={start}
+          end={end}
+          locations={[0, 1]}
+    >
+      <Text>{gradientText}</Text>
+    </LinearTextGradient>
+  )
+}
 
 export default TCTextGradiant;

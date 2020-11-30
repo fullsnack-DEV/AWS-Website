@@ -13,6 +13,8 @@ target 'townscup_reactnative' do
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
+  pod 'RNTextGradientView', :path => '../node_modules/react-native-text-gradient'
+
   target 'townscup_reactnativeTests' do
     inherit! :complete
     # Pods for testing
