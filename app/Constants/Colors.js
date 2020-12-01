@@ -31,7 +31,7 @@ const colors = {
   pinkColor: '#FF658E',
   yellowColor: '#FFAE01',
   darkGrayColor: '#565656',
-  gameDetailColor: '#10b9b6',
+  gameDetailColor: '#45C188',
   grayBackgroundColor: '#F2F2F2',
   lightYellowColor: '#fff7ee',
   graySeparater: '#e1e1e1',
@@ -64,7 +64,7 @@ const colors = {
   playerBadgeColor: '#50B5FF',
   textFieldBGColor: '#00000029',
   shadowColor: '#00000029',
-
+  smallDividerColor: '#CACACA',
   greenGradientStart: '#45C188',
   greenGradientEnd: '#B0DB4F',
   orangeNotesColor: '#FF4E00',

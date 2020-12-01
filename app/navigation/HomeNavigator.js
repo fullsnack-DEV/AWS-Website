@@ -22,7 +22,7 @@ import EditGroupContactScreen from '../screens/home/EditGroupContactScreen';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import GameDetail from '../screens/account/schedule/GameDetail';
 import SoccerRecording from '../screens/game/soccer/SoccerRecording';
-import GameDetailRecord from '../screens/account/schedule/GameDetailRecord';
+import GameDetailRecord from '../screens/game/soccer/GameDetailRecord';
 
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
 import RegisterPlayerForm2 from '../screens/account/registerPlayer/RegisterPlayerForm2';

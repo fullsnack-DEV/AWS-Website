@@ -58,6 +58,24 @@ const deleteGameLineUp = (teamId, gameId, params) => makeAPIRequest({
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/removeMembers`,
   data: params,
 })
+const getGameByGameID = (gameId) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}games/${gameId}?fetchTeamObject=true&fetchCallerReview=true`,
+})
+const addGameRecord = (gameId, params) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}games/${gameId}/records`,
+  data: params,
+})
+const resetGame = (gameId) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}games/${gameId}/resetGame`,
+  data: {},
+})
+const decreaseGameScore = (teamId, gameId) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/decreaseScore`,
+})
 export {
   GameRecordStatus,
   getSportsList,
@@ -70,4 +88,8 @@ export {
   getGameGallery,
   createGameLineUp,
   deleteGameLineUp,
+  getGameByGameID,
+  addGameRecord,
+  resetGame,
+  decreaseGameScore,
 }
