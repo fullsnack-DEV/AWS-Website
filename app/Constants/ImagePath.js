@@ -227,7 +227,7 @@ const images = {
   blueRatingStar: require('../assets/images/blueRatingStar.png'),
   greenRatingStar: require('../assets/images/greenRatingStar.png'),
   moveFlottyButton: require('../assets/images/move_flotty_btn.png'),
-
+  orangeGradient: require('../assets/images/orangeGradient.png'),
 };
 
 export default images;

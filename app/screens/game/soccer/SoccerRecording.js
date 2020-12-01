@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Image,
   Alert,
   TouchableWithoutFeedback,
+  Platform,
+  TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -13,104 +15,234 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 import TCGameButton from '../../../components/TCGameButton';
 
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors'
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
 
 export default function SoccerRecording({ navigation }) {
+  const [pickerShow, setPickerShow] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-          onPress={ () => Alert.alert('This is a 3 dot button!') }>
-          <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
+          onPress={() => Alert.alert('This is a 3 dot button!')}>
+          <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
     });
   }, [navigation]);
 
+  // const resizeLeftTeamView = () => {
+  //   if (Platform.OS === 'ios') {
+  //     if (!pickerShow) {
+  //       return ([styles.leftEntityView, { height: hp('30%') }])
+  //     }
+  //     return ([styles.leftEntityView, { height: hp('15%') }])
+  //   }
+  //   return (styles.leftEntityView)
+  // }
+  // const resizerightTeamView = () => {
+  //   if (Platform.OS === 'ios') {
+  //     if (!pickerShow) {
+  //       return ([styles.rightEntityView, { height: hp('30%') }])
+  //     }
+  //     return ([styles.rightEntityView, { height: hp('15%') }])
+  //   }
+  //   return (styles.rightEntityView)
+  // }
   return (
-    <View style={ styles.mainContainer }>
-      <View style={ styles.headerView }>
-        <View style={ styles.leftView }>
-          <View style={ styles.profileShadow }>
-            <Image source={ images.team_ph } style={ styles.profileImg } />
+    <View style={styles.mainContainer}>
+      <View>
+        <View style={styles.headerView}>
+          <View style={styles.leftView}>
+            <View style={styles.profileShadow}>
+              <Image
+                source={images.teamPlaceholder}
+                style={styles.profileImg}
+              />
+            </View>
+            <Text style={styles.leftText} numberOfLines={2}>
+              Kishan Makani
+            </Text>
           </View>
-          <Text style={ styles.leftText } numberOfLines={ 2 }>
-            Kishan Makani
-          </Text>
-        </View>
-        <View style={ styles.centerView }>
-          <Text style={ styles.centerText }>0 : 0</Text>
-        </View>
-        <View style={ styles.rightView }>
-          <Text style={ styles.rightText } numberOfLines={ 2 }>
-            Kishan Makani
-          </Text>
-          <View style={ styles.profileShadow }>
-            <Image source={ images.team_ph } style={ styles.profileImg } />
+          <View style={styles.centerView}>
+            <Text style={styles.centerText}>0 : 0</Text>
+          </View>
+          <View style={styles.rightView}>
+            <Text style={styles.rightText} numberOfLines={2}>
+              Kishan Makani
+            </Text>
+            <View style={styles.profileShadow}>
+              <Image
+                source={images.teamPlaceholder}
+                style={styles.profileImg}
+              />
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={ styles.timeView }>
-        <Text style={ styles.timer }>90 : 00 : 00</Text>
-        <View style={ styles.curruentTimeView }>
-          <Image source={ images.curruentTime } style={ styles.curruentTimeImg } />
+        <View style={styles.timeView}>
+          <Text style={styles.timer}>90 : 00 : 00</Text>
+          {pickerShow && (
+            <View style={styles.curruentTimeView}>
+              <Image
+                source={images.curruentTime}
+                style={styles.curruentTimeImg}
+              />
+            </View>
+          )}
+
+          <Text
+            style={styles.startTime}
+            onPress={() => {
+              setPickerShow(!pickerShow);
+            }}>
+            Game start at now
+          </Text>
+          <Image source={images.dropDownArrow} style={styles.downArrow} />
+
+          <View style={styles.separatorLine}></View>
         </View>
-        <Text style={ styles.startTime }>Game start at now</Text>
-        <Image source={ images.dropDownArrow } style={ styles.downArrow } />
-        <View style={ styles.separatorLine }></View>
+        {pickerShow && (
+          <View>
+            <RNDateTimePicker value={new Date()} mode={'datetime'} />
+            <View style={styles.separatorLine} />
+          </View>
+        )}
       </View>
+      <View style={{ flex: 1, justifyContent: 'space-between' }}>
+        <View style={styles.entityView}>
+          <TouchableOpacity onPress={() => setSelectedTeam(1)}>
+            {selectedTeam === 1 ? (
+              <LinearGradient
+                colors={
+                  selectedTeam === 1
+                    ? [colors.yellowColor, colors.themeColor]
+                    : [colors.whiteColor, colors.whiteColor]
+                }
+                style={
+                  // eslint-disable-next-line no-nested-ternary
+                  Platform.OS === 'ios'
+                    ? !pickerShow
+                      ? [styles.leftEntityView, { height: hp('30%') }]
+                      : [styles.leftEntityView, { height: hp('15%') }]
+                    : styles.leftEntityView
+                }>
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.teamProfileView}
+                />
+                <Text style={styles.teamNameText} numberOfLines={2}>
+                  Kishan Makaniiiiiiiiiiiiiii
+                </Text>
+              </LinearGradient>
+            ) : (
+              <View style={
+                // eslint-disable-next-line no-nested-ternary
+                Platform.OS === 'ios'
+                  ? !pickerShow
+                    ? [styles.leftEntityView, { height: hp('30%') }]
+                    : [styles.leftEntityView, { height: hp('15%') }]
+                  : styles.leftEntityView
+              }>
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.teamProfileView}
+                />
+                <Text style={styles.teamNameTextBlack} numberOfLines={2}>
+                  Kishan Makaniiiiiiiiiiiiiii
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
-      <View style={ styles.entityView }>
-        <LinearGradient
-          colors={ [colors.yellowColor, colors.themeColor] }
-          style={ styles.leftEntityView }></LinearGradient>
+          <Text style={styles.vs}>VS</Text>
 
-        <Text style={ styles.vs }>VS</Text>
-        <LinearGradient
-          colors={ [colors.yellowColor, colors.themeColor] }
-          style={ styles.rightEntityView }></LinearGradient>
+          <TouchableOpacity onPress={() => setSelectedTeam(2)}>
+            {selectedTeam === 2 ? <LinearGradient
+              colors={
+                selectedTeam === 2
+                  ? [colors.yellowColor, colors.themeColor]
+                  : [colors.whiteColor, colors.whiteColor]
+              }
+              style={
+                // eslint-disable-next-line no-nested-ternary
+                Platform.OS === 'ios'
+                  ? !pickerShow
+                    ? [styles.rightEntityView, { height: hp('30%') }]
+                    : [styles.rightEntityView, { height: hp('15%') }]
+                  : styles.rightEntityView
+              }>
+              <Image
+                source={images.teamPlaceholder}
+                style={styles.teamProfileView}
+              />
+              <Text style={styles.teamNameText} numberOfLines={2}>
+                Kishan Makani
+              </Text>
+            </LinearGradient> : <View style={
+                // eslint-disable-next-line no-nested-ternary
+                Platform.OS === 'ios'
+                  ? !pickerShow
+                    ? [styles.rightEntityView, { height: hp('30%') }]
+                    : [styles.rightEntityView, { height: hp('15%') }]
+                  : styles.rightEntityView
+              }>
+              <Image
+                  source={images.teamPlaceholder}
+                  style={styles.teamProfileView}
+                />
+              <Text style={styles.teamNameTextBlack} numberOfLines={2}>
+                Kishan Makani
+              </Text>
+            </View>}
+
+          </TouchableOpacity>
+        </View>
+        {!pickerShow && (
+          <View style={styles.plusMinusView}>
+            <LinearGradient
+              colors={[colors.yellowColor, colors.themeColor]}
+              style={styles.plusButton}>
+              <Image source={images.gamePlus} style={styles.gamePlus} />
+            </LinearGradient>
+            <Image source={images.deleteRecentGoal} style={styles.gameMinus} />
+          </View>
+        )}
       </View>
-
-      <View style={ styles.plusMinusView }>
-        <LinearGradient
-          colors={ [colors.yellowColor, colors.themeColor] }
-          style={ styles.plusButton }>
-          <Image source={ images.gamePlus } style={ styles.gamePlus } />
-        </LinearGradient>
-        <Image source={ images.deleteRecentGoal } style={ styles.gameMinus } />
-      </View>
-
-      <View style={ styles.bottomView }>
-        <View style={ styles.bottomLine }></View>
-        <View style={ styles.gameRecordButtonView }>
+      <View>
+        <View style={{ flex: 1 }} />
+        <View style={styles.bottomLine}></View>
+        <View style={styles.gameRecordButtonView}>
           <TCGameButton
             title="Start"
-            onPress={ () => alert('Game Start Presses..') }
-            buttonColor={ colors.themeColor }
-            imageName={ images.gameStart }
-            textColor={ colors.themeColor }
-            imageSize={ 15 }
+            onPress={() => alert('Game Start Presses..')}
+            gradientColor={[colors.yellowColor, colors.themeColor]}
+            imageName={images.gameStart}
+            textColor={colors.themeColor}
+            imageSize={15}
           />
           <TCGameButton
             title="Records"
-            onPress={ () => navigation.navigate('SoccerRecordList') }
-            buttonColor={ colors.darkGrayColor }
-            imageName={ images.gameRecord }
-            textColor={ colors.darkGrayColor }
-            imageSize={ 25 }
+            onPress={() => navigation.navigate('SoccerRecordList')}
+            gradientColor={[colors.veryLightBlack, colors.veryLightBlack]}
+            imageName={images.gameRecord}
+            textColor={colors.darkGrayColor}
+            imageSize={25}
           />
           <TCGameButton
             title="Details"
-            onPress={ () => navigation.navigate('GameDetailRecord') }
-            buttonColor={ colors.gameDetailColor }
-            imageName={ images.gameDetail }
-            textColor={ colors.gameDetailColor }
-            imageSize={ 25 }
+            onPress={() => navigation.navigate('GameDetailRecord')}
+            gradientColor={[colors.greenGradientStart, colors.greenGradientEnd]}
+            imageName={images.gameDetail}
+            textColor={colors.gameDetailColor}
+            imageSize={30}
             // extraImageStyle={{tintColor: colors.whiteColor}}
           />
         </View>
@@ -127,18 +259,12 @@ const styles = StyleSheet.create({
     height: 0.5,
     bottom: 0,
   },
-  bottomView: {
-    bottom: 0,
-    height: hp('15%'),
 
-    position: 'absolute',
-  },
   centerText: {
-    // fontFamily: fonts.RLight,
+    fontFamily: fonts.RLight,
     fontSize: 30,
   },
   centerView: {
-    // backgroundColor: 'blue',
     alignItems: 'center',
     width: wp('20%'),
   },
@@ -175,9 +301,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 30,
-    // paddingBottom: hp('5%'),
-    // paddingTop: hp('5%'),
+    marginTop: '10%',
   },
   gameMinus: {
     height: 35,
@@ -191,15 +315,15 @@ const styles = StyleSheet.create({
   },
   gameRecordButtonView: {
     flexDirection: 'row',
-    // backgroundColor: 'green',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 5,
   },
   headerRightImg: {
     height: 15,
     marginRight: 20,
     resizeMode: 'contain',
-    tintColor: colors.blackColor,
+    tintColor: colors.lightblackColor,
     width: 15,
   },
   headerView: {
@@ -220,24 +344,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
     elevation: 10,
-
-    height: hp('35%'),
+    height: '30%',
     marginLeft: wp('6%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowRadius: 1,
     width: wp('37%'),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   leftText: {
     textAlign: 'left',
     flex: 1,
     flexWrap: 'wrap',
-    // fontFamily: fonts.RMedium,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
   },
   leftView: {
-    // backgroundColor: 'green',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -250,7 +374,6 @@ const styles = StyleSheet.create({
   plusButton: {
     alignItems: 'center',
     alignSelf: 'center',
-
     backgroundColor: colors.whiteColor,
     borderRadius: 40,
 
@@ -269,11 +392,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     flexDirection: 'row',
-    height: hp('14%'),
-
     justifyContent: 'center',
-    marginBottom: 10,
-    marginTop: 10,
+    marginBottom: 20,
   },
   profileImg: {
     borderRadius: 3,
@@ -283,6 +403,12 @@ const styles = StyleSheet.create({
     marginRight: 15,
     resizeMode: 'contain',
     width: 30,
+  },
+  teamProfileView: {
+    borderRadius: 30,
+    height: 60,
+    width: 60,
+    resizeMode: 'contain',
   },
   profileShadow: {
     elevation: 10,
@@ -294,21 +420,22 @@ const styles = StyleSheet.create({
   rightEntityView: {
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
-    elevation: 10,
-
-    height: hp('35%'),
+    elevation: 5,
+    height: '30%',
     marginRight: wp('6%'),
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowRadius: 1,
     width: wp('37%'),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rightText: {
     textAlign: 'right',
     flex: 1,
     flexWrap: 'wrap',
-    // fontFamily: fonts.RMedium,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
   },
   rightView: {
@@ -330,23 +457,36 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap',
     textAlign: 'right',
-    // fontFamily: fonts.RRegular,
+    fontFamily: fonts.RRegular,
     fontSize: 16,
   },
   timeView: {
     flexDirection: 'row',
-    // backgroundColor: 'green',
     height: 70,
     alignItems: 'center',
   },
   timer: {
-    // fontFamily: fonts.RMedium,
+    fontFamily: fonts.RMedium,
     fontSize: 30,
     marginLeft: 15,
+    color: colors.lightBlackColor,
   },
   vs: {
     alignSelf: 'center',
-    // fontFamily: fonts.RLight,
+    fontFamily: fonts.RLight,
     fontSize: 20,
+    color: colors.lightBlackColor,
+  },
+  teamNameText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    textAlign: 'center',
+  },
+  teamNameTextBlack: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    textAlign: 'center',
   },
 });
