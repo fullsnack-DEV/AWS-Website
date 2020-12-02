@@ -4,8 +4,6 @@ import {
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// import SoccerHome from '../screens/home/SoccerHome';
-
 import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
 import * as Utility from '../utils/index';

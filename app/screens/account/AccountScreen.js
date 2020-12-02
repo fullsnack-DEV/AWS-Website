@@ -78,7 +78,8 @@ export default function AccountScreen({ navigation }) {
       ],
     },
     { key: 'Setting & Privacy' },
-    { key: 'Game(For Test)' },
+    { key: 'Tennis Game(For Test)' },
+    { key: 'Soccer Game(For Test)' },
   ];
   const teamMenu = [
     { key: 'My Schedule' },
@@ -94,7 +95,8 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
-    { key: 'Game(For Test)' },
+    { key: 'Tennis Game(For Test)' },
+    { key: 'Soccer Game(For Test)' },
 
   ];
   const clubMenu = [
@@ -335,8 +337,10 @@ export default function AccountScreen({ navigation }) {
     } else if (section === 'Members') {
       const entity = await Utility.getStorage('loggedInEntity');
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
-    } else if (section === 'Game(For Test)') {
+    } else if (section === 'Soccer Game(For Test)') {
       navigation.navigate('SoccerHome');
+    } else if (section === 'Tennis Game(For Test)') {
+      navigation.navigate('TennisHome')
     }
   };
 
@@ -649,7 +653,10 @@ export default function AccountScreen({ navigation }) {
                 {section === 'Setting & Privacy' && (
                   <Image source={images.SettingPrivacy} style={styles.menuItem} />
                 )}
-                {section === 'Game(For Test)' && (
+                {section === 'Tennis Game(For Test)' && (
+                  <Image source={images.mySports} style={styles.menuItem} />
+                )}
+                {section === 'Soccer Game(For Test)' && (
                   <Image source={images.mySports} style={styles.menuItem} />
                 )}
                 {section === 'Members' && (

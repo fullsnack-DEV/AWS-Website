@@ -91,6 +91,7 @@ import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
 import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
 import SoccerHome from '../screens/game/soccer/SoccerHome';
+import TennisHome from '../screens/game/tennis/TennisHome';
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import SoccerApproveDisapproveConfirmation
   from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
@@ -339,6 +340,7 @@ const HomeNavigator = () => (
         headerShown: false,
       }}
     />
+    {/* Soccer */}
     <Stack.Screen
           name="SoccerHome"
           component={SoccerHome}
@@ -426,6 +428,15 @@ const HomeNavigator = () => (
         },
       }}
     />
+
+    {/* Tennis */}
+    <Stack.Screen
+          name="TennisHome"
+          component={TennisHome}
+          options={{
+            headerShown: false,
+          }}
+      />
     <Stack.Screen
           name="EditRosterNonRosterScreen"
           component={EditRosterNonRosterScreen}

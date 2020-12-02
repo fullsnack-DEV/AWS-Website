@@ -12,14 +12,14 @@ import TCGameUserStats from '../../../../TCGameUserStats';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import TCGameCard from '../../../../TCGameCard';
 import Rivalry from './Rivalry';
-import { gamePlayStatsImage } from '../../../../../utils/gameUtils';
+import { soccerGamePlayStatsImage } from '../../../../../utils/gameUtils';
 
 const SECTIONS = ['Goal', 'Assist', 'Yellow Card', 'Red Card', 'Injured', 'Rivalry', 'Previous Game'];
 const SECTION_IMAGE_AND_COLOR = {
-  Goal: { rightIconImage: gamePlayStatsImage.goal, countTextColor: colors.themeColor, emptyListMessage: 'No goal found' },
-  Assist: { rightIconImage: gamePlayStatsImage.assist, countTextColor: colors.themeColor, emptyListMessage: 'No assist found' },
-  'Yellow Card': { rightIconImage: gamePlayStatsImage.yc, countTextColor: colors.yellowColor, emptyListMessage: 'No yellow card found' },
-  'Red Card': { rightIconImage: gamePlayStatsImage.rc, countTextColor: colors.redDelColor, emptyListMessage: 'No red card found' },
+  Goal: { rightIconImage: soccerGamePlayStatsImage.goal, countTextColor: colors.themeColor, emptyListMessage: 'No goal found' },
+  Assist: { rightIconImage: soccerGamePlayStatsImage.assist, countTextColor: colors.themeColor, emptyListMessage: 'No assist found' },
+  'Yellow Card': { rightIconImage: soccerGamePlayStatsImage.yc, countTextColor: colors.yellowColor, emptyListMessage: 'No yellow card found' },
+  'Red Card': { rightIconImage: soccerGamePlayStatsImage.rc, countTextColor: colors.redDelColor, emptyListMessage: 'No red card found' },
   Injured: { rightIconImage: '', countTextColor: colors.redDelColor, emptyListMessage: 'No injured found' },
 }
 const Stats = ({ gameData, getGameStatsData }) => {
