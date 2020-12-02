@@ -9,6 +9,8 @@ import {
   SectionList,
   ScrollView,
   FlatList,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 import {
@@ -16,15 +18,26 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-
+import LinearGradient from 'react-native-linear-gradient';
+// import ActionSheet from 'react-native-actionsheet';
+// import {
+//   getGameByGameID, addGameRecord, resetGame, decreaseGameScore,
+// } from '../../../api/Games';
 import TCGameButton from '../../../components/TCGameButton';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 
+// const entity = {};
+// let lastTimeStamp;
+// let lastVerb;
 const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out']
+const assistButtonList = ['Assist']
 export default function GameDetailRecord({ navigation }) {
   const [pickerShow, setPickerShow] = useState(false);
+  const [selectedMemberID, setSelectedMemberID] = useState();
+  const [isAssist, setIsAssist] = useState(false);
+  const [selectedAssistMemberID, setSelectedAssistMemberID] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -39,7 +52,37 @@ export default function GameDetailRecord({ navigation }) {
   const renderGameButton = ({ item }) => (
     <TCGameButton
     title={item}
-    onPress={ () => alert('Game Start Presses..') }
+    onPress={ () => {
+      if (item === 'Goal') {
+        if (selectedMemberID) {
+          Alert.alert(
+            'Do you want to add an assist?',
+            'If yes, choose a player and click the assist button.',
+            [{
+              text: 'No',
+              style: 'no',
+            },
+            {
+              text: 'Yes',
+              onPress: () => {
+                setIsAssist(true)
+              },
+            },
+            ],
+            { cancelable: false },
+          );
+        } else {
+          Alert.alert('Please select player first.')
+        }
+      }
+      if (item === 'Assist') {
+        if (selectedAssistMemberID) {
+          console.log('OK');
+        } else {
+          Alert.alert('Please select player first.')
+        }
+      }
+    } }
     buttonColor={ colors.whiteColor }
     imageName={ (item === 'Goal' && images.gameGoal)
     || (item === 'Own Goal' && images.gameOwnGoal)
@@ -47,19 +90,86 @@ export default function GameDetailRecord({ navigation }) {
     || (item === 'RC' && images.gameRC)
     || (item === 'In' && images.gameIn)
     || (item === 'Out' && images.gameOut)
+    || (item === 'Assist' && images.assistsImage)
   }
     textColor={ colors.googleColor }
     imageSize={ 32 }
   />
 
   );
+  const renderHomeSectionItems = ({
+    item, index, section,
+  }) => (
+    <TouchableOpacity
+    onPress={() => {
+      if (isAssist) {
+        setSelectedAssistMemberID(item)
+      } else {
+        setSelectedMemberID(item)
+      }
 
+      console.log('Pressed Item::', index, '::', section.data[index], '::', section.title, ':: Home');
+    }}
+     >
+      {selectedMemberID === item || selectedAssistMemberID === item ? <LinearGradient
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={ styles.orangeFieldView }
+                >
+        <Image
+      source={ images.profilePlaceHolder }
+      style={ styles.playerImage }
+    />
+        <View style={[styles.dividerView, { backgroundColor: colors.whiteColor }]}></View>
+        <Text style={styles.whitePlayerName} key={ index }>.{item}</Text>
+      </LinearGradient> : <View style={ styles.normalFieldView }>
+        <Image
+      source={ images.profilePlaceHolder }
+      style={ styles.playerImage }
+    />
+        <View style={[styles.dividerView, { backgroundColor: colors.smallDividerColor }]}></View>
+        <Text style={styles.blackPlayerName} key={ index }>.{item}</Text>
+      </View> }
+    </TouchableOpacity>
+  );
+  const renderAwaySectionItems = ({
+    item, index, section,
+  }) => (
+    <TouchableOpacity
+    onPress={() => {
+      if (isAssist) {
+        setSelectedAssistMemberID(item)
+      } else {
+        setSelectedMemberID(item)
+      }
+      console.log('Pressed Item::', index, '::', section.data[index], '::', section.title, ':: Away');
+    }}
+     >
+      {selectedMemberID === item || selectedAssistMemberID === item ? <LinearGradient
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={ styles.orangeFieldView }
+                >
+        <Image
+      source={ images.profilePlaceHolder }
+      style={ styles.playerImage }
+    />
+        <View style={[styles.dividerView, { backgroundColor: colors.whiteColor }]}></View>
+        <Text style={styles.whitePlayerName} key={ index }>.{item}</Text>
+      </LinearGradient> : <View style={ styles.normalFieldView }>
+        <Image
+      source={ images.profilePlaceHolder }
+      style={ styles.playerImage }
+    />
+        <View style={[styles.dividerView, { backgroundColor: colors.smallDividerColor }]}></View>
+        <Text style={styles.blackPlayerName} key={ index }>.{item}</Text>
+      </View> }
+    </TouchableOpacity>
+  );
   return (
     <View style={ styles.mainContainer }>
       <View style={ styles.headerView }>
         <View style={ styles.leftView }>
           <View style={ styles.profileShadow }>
-            <Image source={ images.team_ph } style={ styles.profileImg } />
+            <Image source={ images.teamPlaceholder } style={ styles.profileImg } />
           </View>
           <Text style={ styles.leftText } numberOfLines={ 2 }>
             Kishan Makani
@@ -73,34 +183,19 @@ export default function GameDetailRecord({ navigation }) {
             Kishan Makani
           </Text>
           <View style={ styles.profileShadow }>
-            <Image source={ images.team_ph } style={ styles.profileImg } />
+            <Image source={ images.teamPlaceholder } style={ styles.profileImg } />
           </View>
         </View>
       </View>
-      <ScrollView horizontal={ true }>
+
+      <ScrollView
+      horizontal={ true }
+      showsHorizontalScrollIndicator={false}>
         <SectionList
-          renderItem={ ({ item, index }) => (
-            <View
-              style={ {
-                backgroundColor: colors.grayBackgroundColor,
-                marginBottom: 8,
-                marginLeft: 30,
-                marginRight: 30,
-                height: 34,
-                borderRadius: 6,
-                flexDirection: 'row',
-                alignItems: 'center',
-              } }>
-              <Image
-                source={ images.deleteRecentGoal }
-                style={ styles.playerImage }
-              />
-              <Text key={ index }>.{item}</Text>
-            </View>
-          ) }
+          renderItem={renderHomeSectionItems}
           renderSectionHeader={ ({ section: { title } }) => (
             <View style={ styles.sectionHeader }>
-              <Image source={ images.team_ph } style={ styles.TeamImage } />
+              <Image source={ images.teamPlaceholder } style={ styles.TeamImage } />
               <Text style={ styles.sectionText }>{title}</Text>
             </View>
           ) }
@@ -120,7 +215,7 @@ export default function GameDetailRecord({ navigation }) {
             },
           ] }
           keyExtractor={(item, index) => index.toString()}
-          style={ { width: wp('72%'), height: hp('46%') } }
+          style={ { width: wp('72%'), height: hp('43%') } }
           showsVerticalScrollIndicator={ false }
         />
         <View
@@ -131,28 +226,10 @@ export default function GameDetailRecord({ navigation }) {
           } }
         />
         <SectionList
-          renderItem={ ({ item, index }) => (
-            <View
-              style={ {
-                backgroundColor: colors.grayBackgroundColor,
-                marginBottom: 8,
-                marginLeft: 30,
-                marginRight: 30,
-                height: 34,
-                borderRadius: 6,
-                flexDirection: 'row',
-                alignItems: 'center',
-              } }>
-              <Image
-                source={ images.deleteRecentGoal }
-                style={ styles.playerImage }
-              />
-              <Text key={ index }>.{item}</Text>
-            </View>
-          ) }
+          renderItem={ renderAwaySectionItems}
           renderSectionHeader={ ({ section: { title } }) => (
             <View style={ styles.sectionHeader }>
-              <Image source={ images.team_ph } style={ styles.TeamImage } />
+              <Image source={ images.teamPlaceholder } style={ styles.TeamImage } />
               <Text style={ styles.sectionText }>{title}</Text>
             </View>
           ) }
@@ -160,11 +237,11 @@ export default function GameDetailRecord({ navigation }) {
             { title: 'ON FIELD', data: ['item1', 'item2', 'item7', 'item8'] },
             {
               title: 'ON BENCH',
-              data: ['item3', 'item4', 'item9', 'item10', 'item11'],
+              data: ['item3', 'item4', 'item9', 'item10', 'item11', 'item12'],
             },
           ] }
           keyExtractor={(item, index) => index.toString()}
-          style={ { width: wp('72%'), height: hp('46%') } }
+          style={ { width: wp('72%'), height: hp('43%') } }
           showsVerticalScrollIndicator={ false }
         />
       </ScrollView>
@@ -190,12 +267,12 @@ export default function GameDetailRecord({ navigation }) {
           </View>
         )}
         <FlatList
-            data={recordButtonList}
+            data={isAssist ? assistButtonList : recordButtonList}
             renderItem={renderGameButton}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
            horizontal={true}
-           style={{ marginBottom: 5 }}
+           style={{ marginBottom: 10, alignSelf: 'center' }}
           />
 
         <View style={{ flex: 1 }} />
@@ -207,7 +284,7 @@ export default function GameDetailRecord({ navigation }) {
             gradientColor={[colors.yellowColor, colors.themeColor]}
             imageName={images.gameStart}
             textColor={colors.themeColor}
-            imageSize={15}
+            imageSize={24}
           />
           <TCGameButton
             title="Records"
@@ -350,7 +427,7 @@ const styles = StyleSheet.create({
   playerImage: {
     height: 20,
     marginLeft: 15,
-    marginRight: 15,
+
     resizeMode: 'contain',
     width: 20,
   },
@@ -424,5 +501,42 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     fontSize: 30,
     marginLeft: 15,
+  },
+  dividerView: {
+    marginLeft: 15,
+    marginRight: 15,
+    height: 15,
+    width: 1,
+
+  },
+  normalFieldView: {
+    backgroundColor: colors.grayBackgroundColor,
+    marginBottom: 8,
+    marginLeft: 30,
+    marginRight: 30,
+    height: 34,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  orangeFieldView: {
+    backgroundColor: colors.grayBackgroundColor,
+    marginBottom: 8,
+    marginLeft: 30,
+    marginRight: 30,
+    height: 34,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  whitePlayerName: {
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.whiteColor,
+  },
+  blackPlayerName: {
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.lightBlackColor,
   },
 });

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors'
+import fonts from '../Constants/Fonts';
 
 export default function TCGameButton({
   title,
@@ -16,6 +17,7 @@ export default function TCGameButton({
   onPress,
   imageName,
   buttonTitle,
+  buttonTextColor,
   extraImageStyle,
   textColor = { color: colors.themeColor },
   imageSize,
@@ -38,7 +40,7 @@ export default function TCGameButton({
           />
           )}
           {buttonTitle && (
-            <Text style={ [styles.gameRecordButtonTitle, { color: textColor }] }>
+            <Text style={ [styles.gameRecordButtonTitle, { color: buttonTextColor }] }>
               {buttonTitle}
             </Text>
           )}
@@ -71,6 +73,8 @@ const styles = StyleSheet.create({
   },
   gameRecordButtonTitle: {
     textAlign: 'center',
+    fontFamily: fonts.RBold,
+    fontSize: 11,
   },
   gameRecordImg: {
     resizeMode: 'contain',

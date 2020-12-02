@@ -4,6 +4,7 @@ const GameStatus = {
   resume: 'resume',
   paused: 'paused',
   ended: 'ended',
+  reset: 'reset',
 };
 
 export default GameStatus
