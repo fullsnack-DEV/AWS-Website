@@ -30,7 +30,7 @@ const gameIds = [
   'fb6e4794-4fdd-4af2-b07a-a109d3f550f7', // 6  Admin: Arvind
   '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 7 - For Review
 ]
-const globalGameId = gameIds[7];
+const globalGameId = gameIds[6];
 const SoccerHome = ({ navigation, route }) => {
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
   const [currentTab, setCurrentTab] = useState(0);
