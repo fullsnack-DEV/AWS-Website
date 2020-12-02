@@ -10,6 +10,7 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
@@ -19,10 +20,11 @@ import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import * as Utility from '../../utils/index';
+import { getGameScoreboardEvents, getGameStatsChartData, getGameStatsData } from '../../api/Games';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
 import {
-  getUserDetails, getGallery, followUser, unfollowUser, inviteUser,
+  getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails,
 } from '../../api/Users';
 import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
 import {
@@ -94,133 +96,8 @@ const team_Data_Info = [
   },
 ];
 
-const recent_Match = [
-  {
-    id: 0,
-    startDate: '2020-11-26 07:00:00',
-    endDate: '2020-11-26 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 1,
-    startDate: '2020-11-25 07:00:00',
-    endDate: '2020-11-25 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 2,
-    startDate: '2020-11-24 07:00:00',
-    endDate: '2020-11-24 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 3,
-    startDate: '2020-11-24 07:00:00',
-    endDate: '2020-11-24 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-];
-
-const upcoming_Match = [
-  {
-    id: 0,
-    startDate: '2020-11-26 07:00:00',
-    endDate: '2020-11-26 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 1,
-    startDate: '2020-11-27 07:00:00',
-    endDate: '2020-11-27 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 2,
-    startDate: '2020-11-28 07:00:00',
-    endDate: '2020-11-28 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-  {
-    id: 3,
-    startDate: '2020-11-28 07:00:00',
-    endDate: '2020-11-28 09:10:00',
-    title: 'Soccer',
-    description: 'Champions League/ 2020 Summer Season',
-    location: 'BC Stadium',
-    team1Image: images.commentReport,
-    team1Title: 'Vancouver Whitecaps',
-    team1Point: 3,
-    team2Image: images.usaImage,
-    team2Title: 'Newyork City FC',
-    team2Point: 1,
-    eventColor: colors.yellowColor,
-  },
-];
-
 export default function HomeScreen({ navigation, route }) {
+  const isFocused = useIsFocused();
   const [isUserHome, setIsUserHome] = useState(false)
   const [isClubHome, setIsClubHome] = useState(false)
   const [isTeamHome, setIsTeamHome] = useState(false)
@@ -245,8 +122,16 @@ export default function HomeScreen({ navigation, route }) {
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [teamDataInfo] = useState(team_Data_Info);
-  const [recentMatchData] = useState(recent_Match);
-  const [upcomingMatchData] = useState(upcoming_Match);
+  const [recentMatchData, setRecentMatchData] = useState([]);
+  const [upcomingMatchData, setUpcomingMatchData] = useState([]);
+  const [gamesChartData, setGamesChartData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const [gameStatsData, setGameStatsData] = useState({
+    from_date: false,
+    total_games: 0,
+    winner: 0,
+    looser: 0,
+    draw: 0,
+  });
 
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
@@ -257,6 +142,10 @@ export default function HomeScreen({ navigation, route }) {
   const [eventSelectDate, setEventSelectDate] = useState(new Date());
   const [createEventModal, setCreateEventModal] = useState(false);
   const [timetableSelectDate, setTimeTableSelectDate] = useState(new Date());
+  const [searchLocation, setSearchLocation] = useState('');
+  const [locationDetail, setLocationDetail] = useState(null);
+  const [entity, setEntity] = useState({});
+  const [sportName, setSportName] = useState('');
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
@@ -265,9 +154,10 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
-      const entity = await Utility.getStorage('loggedInEntity');
-      const entityRole = entity.role === 'user' ? 'users' : 'groups';
-      const uid = entity.uid || entity.auth.user_id;
+      const entityItem = await Utility.getStorage('loggedInEntity');
+      const entityRole = entityItem.role === 'user' ? 'users' : 'groups';
+      const uid = entityItem.uid || entityItem.auth.user_id;
+      setEntity(entityItem);
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
@@ -391,15 +281,16 @@ export default function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      const entity = await Utility.getStorage('loggedInEntity');
-      setLoggedInEntity(entity)
-      let uid = entity.uid
-      let role = entity.role
+      const entityItem = await Utility.getStorage('loggedInEntity');
+      setEntity(entityItem)
+      setLoggedInEntity(entityItem)
+      let uid = entityItem.uid
+      let role = entityItem.role
 
       if (route.params && route.params.uid && route.params.role) {
         uid = route.params.uid;
         role = route.params.role;
-        if (entity.uid === uid) {
+        if (entityItem.uid === uid) {
           setIsAdmin(true)
         }
       } else {
@@ -986,6 +877,15 @@ export default function HomeScreen({ navigation, route }) {
     setStatsModalVisible(!statsModalVisible);
   };
 
+  useEffect(() => {
+    if (route.params && route.params.locationName) {
+      setInfoModalVisible(true);
+      setRefereesInModalVisible(true);
+      setSearchLocation(route.params.locationName);
+      setLocationDetail(route.params.locationDetail);
+    }
+  }, [isFocused]);
+
   return (
     <View style={ styles.mainContainer }>
       {(isTeamHome && loggedInEntity.role === 'team')
@@ -1060,7 +960,63 @@ export default function HomeScreen({ navigation, route }) {
                     isAdmin={isAdmin}
                     loggedInEntity={loggedInEntity}
                     // onRefereesInPress={() => refereesInModal()}
-                    onPlayInPress={() => refereesInModal()}
+                    onPlayInPress={(item) => {
+                      setSportName(item.sport_name);
+                      setGamesChartData([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+                      setGameStatsData({
+                        from_date: false,
+                        total_games: 0,
+                        winner: 0,
+                        looser: 0,
+                        draw: 0,
+                      })
+                      const params = {
+                        sport: item.sport_name,
+                        role: 'player',
+                        status: 'ended',
+                      };
+                      getGameScoreboardEvents(entity.uid || entity.auth.user_id, params).then((res) => {
+                        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                        const recentMatch = [];
+                        const upcomingMatch = [];
+                        res.payload.filter((event_item) => {
+                          const eventStartDate = new Date(event_item.start_datetime * 1000)
+                          if (eventStartDate > date) {
+                            upcomingMatch.push(event_item);
+                            setUpcomingMatchData([...upcomingMatch]);
+                          } else {
+                            recentMatch.push(event_item);
+                            setRecentMatchData([...recentMatch]);
+                          }
+                          return null;
+                        });
+                      })
+                        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+                      refereesInModal()
+                      const parameters = {
+                        sport: item.sport_name,
+                      };
+                      const gameChart = [];
+                      getGameStatsChartData(entity.uid || entity.auth.user_id, parameters).then((response) => {
+                        if (response.payload && response.payload.length > 0) {
+                          response.payload[0].data.map((gameChartItem) => {
+                            gameChart.push(gameChartItem.value);
+                            setGamesChartData([...gameChart]);
+                            return null;
+                          })
+                        }
+                      })
+                        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+                      const paramData = {
+                        sport: item.sport_name,
+                      };
+                      getGameStatsData(entity.uid || entity.auth.user_id, paramData).then((response) => {
+                        if (response.payload && response.payload.length > 0) {
+                          setGameStatsData(response.payload[0].stats)
+                        }
+                      })
+                        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+                    }}
                     onAction={onUserAction}/>}
           {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
             isAdmin={isAdmin}
@@ -1135,10 +1091,7 @@ export default function HomeScreen({ navigation, route }) {
                             gameId: item.game_id,
                           })
                         } else {
-                          const entity = await Utility.getStorage('loggedInEntity');
-                          const uid = entity.uid || entity.auth.user_id;
-                          const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                          getEventById(entityRole, uid, item.cal_id).then((response) => {
+                          getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id).then((response) => {
                             navigation.navigate('EventScreen', { data: response.payload, gameData: item });
                           }).catch((e) => {
                             console.log('Error :-', e);
@@ -1193,10 +1146,7 @@ export default function HomeScreen({ navigation, route }) {
                                 gameId: itemValue.game_id,
                               })
                             } else {
-                              const entity = await Utility.getStorage('loggedInEntity');
-                              const uid = entity.uid || entity.auth.user_id;
-                              const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                              getEventById(entityRole, uid, itemValue.cal_id).then((response) => {
+                              getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
                                 navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
                               }).catch((e) => {
                                 console.log('Error :-', e);
@@ -1343,11 +1293,8 @@ export default function HomeScreen({ navigation, route }) {
                             style: 'destructive',
                             onPress: async () => {
                               setloading(true);
-                              const entity = await Utility.getStorage('loggedInEntity');
-                              const uid = entity.uid || entity.auth.user_id;
-                              const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                              deleteEvent(entityRole, uid, selectedEventItem.cal_id)
-                                .then(() => getEvents(entityRole, uid))
+                              deleteEvent(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, selectedEventItem.cal_id)
+                                .then(() => getEvents(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id))
                                 .then((response) => {
                                   setloading(false);
                                   setEventData(response.payload);
@@ -1495,14 +1442,7 @@ export default function HomeScreen({ navigation, route }) {
                   }}
                 >
                   <RecentMatchView
-                    date={'Sep 25.'}
-                    startTime={'7:00pm - '}
-                    endTime={'9:10pm'}
-                    cityName={'BC Stadium'}
-                    firstTeamImage={images.commentReport}
-                    secondTeamImage={images.usaImage}
-                    firstTeamName={'Vancouver Whitecaps'}
-                    secondTeamName={'Newyork City FC'}
+                    data={recentMatchData.length > 0 ? recentMatchData[0] : []}
                   />
                 </RefereesInItem>
 
@@ -1602,6 +1542,27 @@ export default function HomeScreen({ navigation, route }) {
                 }
               />
               <PersonalSportsInfo
+                data={currentUserData}
+                navigation={navigation}
+                onItemPress={() => {
+                  setInfoModalVisible(false);
+                  setRefereesInModalVisible(false);
+                  navigation.navigate('SearchLocationScreen', {
+                    comeFrom: 'HomeScreen',
+                  })
+                }}
+                onSavePress={(params) => {
+                  patchRegisterRefereeDetails(params).then((res) => {
+                    const changedata = currentUserData;
+                    changedata.registered_sports = res.payload.registered_sports;
+                    setCurrentUserData(changedata);
+                  }).catch((error) => {
+                    Alert.alert(error.messages)
+                  })
+                }}
+                sportName={sportName}
+                searchLocation={searchLocation}
+                locationDetail={locationDetail}
               />
             </SafeAreaView>
           </Modal>
@@ -1686,7 +1647,10 @@ export default function HomeScreen({ navigation, route }) {
                   </TouchableOpacity>
                 }
               />
-              <StatsScreen/>
+              <StatsScreen
+                gameChartData={gamesChartData.length > 0 ? gamesChartData : []}
+                gameStatsData={gameStatsData}
+              />
             </SafeAreaView>
           </Modal>
         </Modal>

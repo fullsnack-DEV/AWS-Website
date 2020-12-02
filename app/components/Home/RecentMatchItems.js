@@ -21,52 +21,48 @@ export default function RecentMatchItems({
   onThreeDotPress,
 }) {
   let startDate = '';
-  if (data && data.startDate) {
-    startDate = data.startDate;
+  if (data && data.actual_startdatetime) {
+    startDate = new Date(data.actual_startdatetime * 1000);
   }
   let endDate = '';
-  if (data && data.endDate) {
-    endDate = data.endDate;
+  if (data && data.actual_enddatetime) {
+    endDate = new Date(data.actual_enddatetime * 1000);
   }
-  let eventColor = '';
+  let eventColor = colors.themeColor;
   if (data && data.eventColor) {
     eventColor = data.eventColor;
   }
   let location = '';
-  if (data && data.location) {
-    location = data.location;
-  }
-  let description = '';
-  if (data && data.description) {
-    description = data.description;
+  if (data && data.venue && data.venue.address) {
+    location = data.venue.address;
   }
   let title = '';
-  if (data && data.title) {
-    title = data.title;
+  if (data && data.sport) {
+    title = data.sport;
   }
   let team1Image = null;
-  if (data && data.team1Image) {
-    team1Image = data.team1Image;
+  if (data && data.home_team && data.home_team.thumbnail) {
+    team1Image = data.home_team.thumbnail;
   }
   let team1Title = '';
-  if (data && data.team1Title) {
-    team1Title = data.team1Title;
+  if (data && data.home_team && (data.home_team.full_name || data.home_team.group_name)) {
+    team1Title = data.home_team.full_name || data.home_team.group_name;
   }
-  let team1Point = '';
-  if (data && data.team1Point) {
-    team1Point = data.team1Point;
+  let team1Point = '0';
+  if (data && data.home_team_goal) {
+    team1Point = data.home_team_goal;
   }
   let team2Image = null;
-  if (data && data.team2Image) {
-    team2Image = data.team2Image;
+  if (data && data.away_team && data.away_team.thumbnail) {
+    team2Image = data.away_team.thumbnail;
   }
   let team2Title = '';
-  if (data && data.team2Title) {
-    team2Title = data.team2Title;
+  if (data && data.away_team && (data.away_team.full_name || data.away_team.group_name)) {
+    team2Title = data.away_team.full_name || data.away_team.group_name;
   }
-  let team2Point = '';
-  if (data && data.team2Point) {
-    team2Point = data.team2Point;
+  let team2Point = '0';
+  if (data && data.away_team_goal) {
+    team2Point = data.away_team_goal;
   }
 
   return (
@@ -85,19 +81,16 @@ export default function RecentMatchItems({
               <Image source={images.vertical3Dot} style={styles.threedot} />
             </TouchableOpacity>
           </View>
-          <Text style={styles.eventDescription} numberOfLines={1}>
-            {description}
-          </Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text style={styles.eventTime}>{location}</Text>
+            <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
           <MatchBetweenRecentView
-            firstUserImage={team1Image}
+            firstUserImage={team1Image ? { uri: team1Image } : images.team_ph}
             firstText={team1Title}
-            secondUserImage={team2Image}
+            secondUserImage={team2Image ? { uri: team2Image } : images.team_ph}
             secondText={team2Title}
             firstTeamPoint={team1Point}
             secondTeamPoint={team2Point}
@@ -125,6 +118,7 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flexDirection: 'row',
+    marginTop: 5,
   },
   colorView: {
     alignItems: 'center',
@@ -145,15 +139,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fonts.RBold,
   },
-  eventDescription: {
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    lineHeight: 15,
-    marginRight: 5,
-    marginTop: 6,
-    marginBottom: 3,
-  },
   eventText: {
     padding: 10,
     width: wp('83%'),
@@ -162,6 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
+    alignSelf: 'center',
   },
   eventTitle: {
     fontSize: 16,

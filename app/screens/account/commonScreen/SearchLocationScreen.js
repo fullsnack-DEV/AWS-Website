@@ -59,6 +59,12 @@ export default function SearchLocationScreen({ navigation, route }) {
             locationDetail: response.result.geometry.location,
           });
         }
+        if (route.params.comeFrom === 'HomeScreen') {
+          navigation.navigate('HomeScreen', {
+            locationName: item.description,
+            locationDetail: response.result.geometry.location,
+          });
+        }
       }
     });
     if (route.params.comeFrom === 'CreateTeamForm1') {

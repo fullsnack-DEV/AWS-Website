@@ -19,8 +19,8 @@ export default function ScoreboardSportsScreen({
     const yesterdayData = [];
     const pastData = [];
     sportsData.filter((item_filter) => {
-    //   const startDate = new Date(item_filter.start_datetime * 1000);
-      const dateFormat = moment(item_filter.startDate).format('YYYY-MM-DD hh:mm:ss');
+      const startDate = new Date(item_filter.start_datetime * 1000);
+      const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
       const dateText = moment(dateFormat).calendar(null, {
         sameDay: '[Today]',
         lastDay: '[Yesterday]',

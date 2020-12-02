@@ -21,44 +21,44 @@ export default function UpcomingMatchItems({
   onThreeDotPress,
 }) {
   let startDate = '';
-  if (data && data.startDate) {
-    startDate = data.startDate;
+  if (data && data.actual_startdatetime) {
+    startDate = new Date(data.actual_startdatetime * 1000);
   }
   let endDate = '';
-  if (data && data.endDate) {
-    endDate = data.endDate;
+  if (data && data.actual_enddatetime) {
+    endDate = new Date(data.actual_enddatetime * 1000);
   }
-  let eventColor = '';
+  let eventColor = colors.themeColor;
   if (data && data.eventColor) {
     eventColor = data.eventColor;
   }
   let location = '';
-  if (data && data.location) {
-    location = data.location;
+  if (data && data.venue && data.venue.address) {
+    location = data.venue.address;
   }
   let description = '';
   if (data && data.description) {
     description = data.description;
   }
   let title = '';
-  if (data && data.title) {
-    title = data.title;
+  if (data && data.sport) {
+    title = data.sport;
   }
   let team1Image = null;
-  if (data && data.team1Image) {
-    team1Image = data.team1Image;
+  if (data && data.home_team && data.home_team.thumbnail) {
+    team1Image = data.home_team.thumbnail;
   }
   let team1Title = '';
-  if (data && data.team1Title) {
-    team1Title = data.team1Title;
+  if (data && data.home_team && (data.home_team.full_name || data.home_team.group_name)) {
+    team1Title = data.home_team.full_name || data.home_team.group_name;
   }
   let team2Image = null;
-  if (data && data.team2Image) {
-    team2Image = data.team2Image;
+  if (data && data.away_team && data.away_team.thumbnail) {
+    team2Image = data.away_team.thumbnail;
   }
   let team2Title = '';
-  if (data && data.team2Title) {
-    team2Title = data.team2Title;
+  if (data && data.away_team && (data.away_team.full_name || data.away_team.group_name)) {
+    team2Title = data.away_team.full_name || data.away_team.group_name;
   }
 
   return (
@@ -84,12 +84,12 @@ export default function UpcomingMatchItems({
             <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text style={styles.eventTime}>{location}</Text>
+            <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
           <MatchBetweenUpcomingView
-            firstUserImage={team1Image}
+            firstUserImage={team1Image ? { uri: team1Image } : images.team_ph}
             firstText={team1Title}
-            secondUserImage={team2Image}
+            secondUserImage={team2Image ? { uri: team2Image } : images.team_ph}
             secondText={team2Title}
             containerStyle={{ marginVertical: 20, marginBottom: 10, marginHorizontal: 8 }}
           />
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flexDirection: 'row',
+    marginTop: 5,
   },
   colorView: {
     alignItems: 'center',
@@ -152,6 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
+    alignSelf: 'center',
   },
   eventTitle: {
     fontSize: 16,
