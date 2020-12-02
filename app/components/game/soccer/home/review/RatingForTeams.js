@@ -9,48 +9,69 @@ import TCTeamVS from '../../../../TCTeamVS';
 import TCTeamsAttributesRating from '../../../../TCTeamsAttributesRating';
 import colors from '../../../../../Constants/Colors';
 
-const RatingForTeams = ({ gameData, reviewsData }) => {
+const RatingForTeams = ({
+  sliderAttributes,
+  starAttributes,
+  gameData,
+  reviewsData,
+}) => {
   const [radarChartData, setRadarChartData] = useState([]);
-  const [radarChartAttributes, setRadarChartAttributes] = useState([]);
-  const [ratings, setRatings] = useState(null);
+  const [radarChartAttributes] = useState(sliderAttributes);
+  const [starRatingData, setStarRatingData] = useState(null);
 
   useEffect(() => {
     if (reviewsData) processChartData(reviewsData?.averageReview)
   }, [reviewsData]);
 
-  const processChartData = async (teamsRatingData) => {
+  const processChartData = (teamsRatingData) => {
     let homeTeamRatings = {};
     let awayTeamRatings = {};
-    if (teamsRatingData.length) {
+    let homeTeamStarRatings = {};
+    let awayTeamStarRatings = {};
+    if (teamsRatingData?.length) {
       const process = new Promise((resolve) => {
         teamsRatingData.map((item) => {
           if (item.team_id === gameData?.home_team?.group_id) {
-            const homeTempRate = item.avg_review;
-            Object.keys(homeTempRate).map((homeTeamItem) => {
-              if (_.isNaN(homeTempRate[homeTeamItem])) {
-                homeTempRate[homeTeamItem] = 0
+            const homeTempRate = {};
+            const homeTeamStar = {};
+            Object.keys(item?.avg_review).map((homeTeamItem) => {
+              if (sliderAttributes.includes(homeTeamItem) && item?.avg_review[homeTeamItem] !== 'NaN') {
+                homeTempRate[homeTeamItem] = item?.avg_review[homeTeamItem];
+              } else if (sliderAttributes.includes(homeTeamItem) && item?.avg_review[homeTeamItem] === 'NaN') {
+                homeTempRate[homeTeamItem] = 0;
+              } else if (starAttributes.includes(homeTeamItem) && item?.avg_review[homeTeamItem] !== 'NaN') {
+                homeTeamStar[homeTeamItem] = item?.avg_review[homeTeamItem];
+              } else if (starAttributes.includes(homeTeamItem) && item?.avg_review[homeTeamItem] === 'NaN') {
+                homeTeamStar[homeTeamItem] = 0;
               }
-              return homeTeamItem;
+              return true;
             });
             homeTeamRatings = homeTempRate;
+            homeTeamStarRatings = homeTeamStar;
           } else if (item.team_id === gameData?.away_team?.group_id) {
-            const awayTempRate = item.avg_review;
-            Object.keys(awayTempRate).map((awayTeamItem) => {
-              if (_.isNaN(awayTempRate[awayTeamItem])) {
-                awayTempRate[awayTeamItem] = 0
+            const awayTempRate = {};
+            const awayTeamStar = {};
+            Object.keys(item.avg_review).map((awayTeamItem) => {
+              if (sliderAttributes.includes(awayTeamItem) && item?.avg_review[awayTeamItem] !== 'NaN') {
+                awayTempRate[awayTeamItem] = item?.avg_review[awayTeamItem];
+              } else if (sliderAttributes.includes(awayTeamItem) && item?.avg_review[awayTeamItem] === 'NaN') {
+                awayTempRate[awayTeamItem] = 0;
+              } else if (starAttributes.includes(awayTeamItem) && item?.avg_review[awayTeamItem] !== 'NaN') {
+                awayTeamStar[awayTeamItem] = item?.avg_review[awayTeamItem];
+              } else if (starAttributes.includes(awayTeamItem) && item?.avg_review[awayTeamItem] === 'NaN') {
+                awayTeamStar[awayTeamItem] = 0;
               }
-              return awayTeamItem;
+              return true;
             });
-
             awayTeamRatings = awayTempRate;
+            awayTeamStarRatings = awayTeamStar;
           }
-          setTimeout(resolve, 100);
-          return item;
+          return true;
         });
+        setTimeout(resolve, 100);
       })
       Promise.all([process]).then(() => {
-        setRatings({ home_team: homeTeamRatings, away_team: awayTeamRatings })
-        if (homeTeamRatings) setRadarChartAttributes([...Object.keys(homeTeamRatings)]);
+        setStarRatingData({ home_team: homeTeamStarRatings, away_team: awayTeamStarRatings })
         if (homeTeamRatings && awayTeamRatings) {
           setRadarChartData([{ ...awayTeamRatings }, { ...homeTeamRatings }]);
         }
@@ -64,8 +85,8 @@ const RatingForTeams = ({ gameData, reviewsData }) => {
 
       {/* Radar Chart */}
       <TCRadarChart
-          radarChartAttributes={radarChartAttributes}
-            radarChartData={radarChartData}
+          radarChartAttributes={sliderAttributes}
+            radarChartData={radarChartData ?? []}
       />
 
       {/* Teams Display */}
@@ -84,13 +105,13 @@ const RatingForTeams = ({ gameData, reviewsData }) => {
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={({ index }) => index?.toString()}
-          data={radarChartAttributes}
+          data={starAttributes}
           renderItem={({ item }) => (
             <TCTeamsAttributesRating
                   style={{ marginTop: 15 }}
                   ratingName={_.startCase(item)}
-                  firstTeamRating={ratings?.home_team[item.toString()] ?? 0}
-                  secondTeamRating={ratings?.away_team[item.toString()] ?? 0}
+                  firstTeamRating={starRatingData?.home_team[item.toString()] ?? 0}
+                  secondTeamRating={starRatingData?.away_team[item.toString()] ?? 0}
               />
           )}/>
 
