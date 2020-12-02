@@ -16,8 +16,6 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import StatsGradiantView from '../../components/Home/StatsGradiantView';
 
-const graph_data = [15, 8, 6, 3, 9, 4, 9, 10, 11, 15, 13, 5]
-
 const game_data = [
   {
     id: 0,
@@ -61,16 +59,21 @@ const game_data = [
   },
 ];
 
-export default function StatsScreen() {
+export default function StatsScreen({
+  gameChartData,
+  gameStatsData,
+}) {
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
   const [gameData, setGameData] = useState(game_data);
-  const [graphData, setGraphData] = useState(graph_data);
+  const [graphData, setGraphData] = useState(gameChartData);
   return (
     <KeyboardAvoidingView style={styles.mainContainer}>
       <StatsSelectionView
         dataSource={[
-          { label: 'Past 6 months', value: 'Past 6 months' },
-          { label: 'Past 12 months', value: 'Past 12 months' },
+          { label: 'Past 3 Months', value: 'Past 3 Months' },
+          { label: 'Past 6 Months', value: 'Past 6 Months' },
+          { label: 'Past 9 Months', value: 'Past 9 Months' },
+          { label: 'Past 12 Months', value: 'Past 12 Months' },
         ]}
         placeholder={strings.selectTimePlaceholder}
         value={selectWeekMonth}
@@ -82,12 +85,12 @@ export default function StatsScreen() {
         <View>
           <View style={styles.totalGameViewStyle}>
             <Text style={styles.totalGameTextStyle}>{'Total Games'}</Text>
-            <Text style={styles.totalGameCounterText}>{139}</Text>
+            <Text style={styles.totalGameCounterText}>{gameStatsData ? gameStatsData.total_games : ''}</Text>
           </View>
           <WinProgressView
               titleText={'Wins'}
-              percentageCount={17}
-              progress={0.7}
+              percentageCount={gameStatsData ? gameStatsData.winner : ''}
+              progress={gameStatsData.winner !== 0 ? (1 * gameStatsData.winner) / gameStatsData.total_games : 0}
               prgressColor={colors.orangeColor}
               percentageTextStyle={[styles.percentageTextStyle, { color: colors.orangeColor }]}
               textStyle={styles.textStyle}
@@ -96,8 +99,8 @@ export default function StatsScreen() {
           />
           <WinProgressView
               titleText={'Draws'}
-              percentageCount={2}
-              progress={0.2}
+              percentageCount={gameStatsData ? gameStatsData.draw : ''}
+              progress={gameStatsData.draw !== 0 ? (1 * gameStatsData.draw) / gameStatsData.total_games : 0}
               prgressColor={colors.greeColor}
               percentageTextStyle={[styles.percentageTextStyle, { color: colors.greeColor }]}
               textStyle={styles.textStyle}
@@ -105,8 +108,8 @@ export default function StatsScreen() {
           />
           <WinProgressView
               titleText={'Losses'}
-              percentageCount={3}
-              progress={0.3 }
+              percentageCount={gameStatsData ? gameStatsData.looser : ''}
+              progress={gameStatsData.looser !== 0 ? (1 * gameStatsData.looser) / gameStatsData.total_games : 0}
               prgressColor={colors.blueColor}
               percentageTextStyle={[styles.percentageTextStyle, { color: colors.blueColor }]}
               textStyle={styles.textStyle}
@@ -117,18 +120,18 @@ export default function StatsScreen() {
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <Pie
             radius={60}
-            innerRadius={50}
+            innerRadius={52}
             sections={[
               {
-                percentage: 50,
+                percentage: gameStatsData.winner !== 0 ? (100 * gameStatsData.winner) / gameStatsData.total_games : 0,
                 color: colors.orangeColor,
               },
               {
-                percentage: 40,
+                percentage: gameStatsData.winner !== 0 ? (100 * gameStatsData.draw) / gameStatsData.total_games : 0,
                 color: colors.greeColor,
               },
               {
-                percentage: 10,
+                percentage: gameStatsData.looser !== 0 ? (100 * gameStatsData.looser) / gameStatsData.total_games : 0,
                 color: colors.blueColor,
               },
             ]}
@@ -136,7 +139,7 @@ export default function StatsScreen() {
           />
           <View style={styles.winPercentageView}>
             <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.percentageStyle}>{50}</Text>
+              <Text style={styles.percentageStyle}>{gameStatsData.winner !== 0 ? (1 * gameStatsData.winner) / gameStatsData.total_games : 0}</Text>
               <Text style={styles.percentIconStyle}>%</Text>
             </View>
             <Text style={styles.winTextStyle}>{'Winning\nPercentage'}</Text>
@@ -168,18 +171,18 @@ export default function StatsScreen() {
             }}
             data={graphData}
             formatLabel={(value, index) => {
-              if (index === 0) return 'Apr';
-              if (index === 1) return 'May';
-              if (index === 2) return 'Jun';
-              if (index === 3) return 'Jul';
-              if (index === 4) return 'Aug';
-              if (index === 5) return 'Sep';
-              if (index === 6) return 'Oct';
-              if (index === 7) return 'Nov';
-              if (index === 8) return 'Dec';
-              if (index === 9) return 'Jan';
-              if (index === 10) return 'Feb';
-              if (index === 11) return 'Mar';
+              if (index === 0) return 'Jan';
+              if (index === 1) return 'Feb';
+              if (index === 2) return 'Mar';
+              if (index === 3) return 'Apr';
+              if (index === 4) return 'May';
+              if (index === 5) return 'Jun';
+              if (index === 6) return 'Jul';
+              if (index === 7) return 'Aug';
+              if (index === 8) return 'Sep';
+              if (index === 9) return 'Oct';
+              if (index === 10) return 'Nov';
+              if (index === 11) return 'Dec';
               return null;
             }}
             contentInset={{ left: 10, right: 10 }}
@@ -205,25 +208,20 @@ export default function StatsScreen() {
             sourceImage={item.isSelected ? item.selectImage : item.image}
             counterNumber={item.total}
             onItemPress={() => {
-              const gameGraph = [15, 8, 6, 3, 9, 4, 9, 10, 11, 15, 13, 5];
-              const assistGraph = [0, 10, 8, 6, 10, 7, 0, 11, 13, 0, 0, 7];
-              const goalGraph = [0, 0, 5, 3, 0, 4, 0, 0, 0, 0, 0, 4];
-              const yellowCardGraph = [0, 5, 3, 0, 2, 0, 0, 0, 0, 0, 0, 0];
-              const redCardGraph = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0];
               if (item.id === 0) {
-                setGraphData(gameGraph);
+                setGraphData(gameChartData);
               }
               if (item.id === 1) {
-                setGraphData(assistGraph);
+                setGraphData(gameChartData);
               }
               if (item.id === 2) {
-                setGraphData(goalGraph);
+                setGraphData(gameChartData);
               }
               if (item.id === 3) {
-                setGraphData(yellowCardGraph);
+                setGraphData(gameChartData);
               }
               if (item.id === 4) {
-                setGraphData(redCardGraph);
+                setGraphData(gameChartData);
               }
               gameData.map((gameItem) => {
                 const gameValue = gameItem;

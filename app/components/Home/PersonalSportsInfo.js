@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import {
   StyleSheet, View, Text, ScrollView, FlatList, SafeAreaView, TouchableOpacity, Image,
 } from 'react-native';
+import moment from 'moment';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import {
@@ -21,40 +22,7 @@ import EventItemRender from '../Schedule/EventItemRender';
 import RadioBtnItem from '../Schedule/RadioBtnItem';
 import EventTextInput from '../Schedule/EventTextInput';
 import TCPicker from '../TCPicker';
-
-const teams_Data = [
-  {
-    id: 0,
-    teamImage: images.commentReport,
-    teamTitle: strings.infoTeamTitle,
-    teamIcon: images.myTeams,
-    teamCity: strings.infoTeamCity,
-  },
-];
-
-const clubs_Data = [
-  {
-    id: 0,
-    teamImage: images.usaImage,
-    teamTitle: strings.clubTeamTitle1,
-    teamIcon: images.myClubs,
-    teamCity: strings.clubTeamCity1,
-  },
-  {
-    id: 1,
-    teamImage: images.chelseaFCImage,
-    teamTitle: strings.clubTeamTitle2,
-    teamIcon: images.myClubs,
-    teamCity: strings.infoTeamCity,
-  },
-  {
-    id: 2,
-    teamImage: images.FCBarcelonaImage,
-    teamTitle: strings.clubTeamTitle3,
-    teamIcon: images.myClubs,
-    teamCity: strings.clubTeamCity1,
-  },
-];
+import SearchLocationTextView from './SearchLocationTextView';
 
 const leagues_Data = [
   {
@@ -89,14 +57,68 @@ const privacy_Data = [
   },
 ];
 
-function PersonalSportsInfo() {
+function PersonalSportsInfo({
+  data,
+  onItemPress,
+  searchLocation,
+  locationDetail,
+  onSavePress,
+  sportName,
+}) {
+  let latVal = null;
+  let longVal = null;
+  if (locationDetail) {
+    latVal = locationDetail.lat;
+    longVal = locationDetail.lng;
+  }
+  let bioDefault = strings.aboutValue;
+  let ntrpDefault = '5.5';
+  let homePlaceDefault = strings.homePlaceValue;
+  let latiDefault = latVal;
+  let longiDefault = longVal;
+  let teams_Data = [];
+  let clubs_Data = [];
+  if (data) {
+    if (data && data.registered_sports && data.registered_sports.length > 0) {
+      bioDefault = data.registered_sports[0].descriptions;
+      ntrpDefault = data.registered_sports[0].ntrp;
+      if (searchLocation) {
+        homePlaceDefault = searchLocation;
+      } else {
+        homePlaceDefault = data.registered_sports[0].homePlace;
+      }
+      if (locationDetail) {
+        latiDefault = locationDetail.lat;
+        longiDefault = locationDetail.lng;
+      } else {
+        latiDefault = data.registered_sports[0].latitude;
+        longiDefault = data.registered_sports[0].longitude;
+      }
+    }
+    if (data && data.joined_teams && data.joined_teams.length > 0) {
+      teams_Data = data.joined_teams;
+    }
+    if (data && data.joined_clubs && data.joined_clubs.length > 0) {
+      clubs_Data = data.joined_clubs;
+    }
+  }
+
   const [teamsData] = useState(teams_Data);
   const [clubsData] = useState(clubs_Data);
   const [leaguesData] = useState(leagues_Data);
   const [editPressTitle, setEditPressTitle] = useState(null);
-  const [bioText, setBioText] = useState(strings.aboutValue);
-  const [homePlaceText, setHomePlaceText] = useState(strings.homePlaceValue);
-  const [ntrpSelect, setNtrpSelect] = useState('');
+  const [info] = useState({
+    genderText: data.gender || 'Male',
+    birthdayText: data.birthday ? new Date(data.birthday * 1000) : '',
+    heightText: data.height || '',
+    weightText: data.weight || '',
+    currentCity: `${data.city || ''} ${data.stateAbbr || ''}`,
+    homePlaceText: homePlaceDefault,
+    latiValue: latiDefault,
+    longiValue: longiDefault,
+  });
+  const [bioText, setBioText] = useState(bioDefault);
+  const [ntrpSelect, setNtrpSelect] = useState(ntrpDefault);
   const [mostusetFootSelect, setMostUsedFootSelect] = useState('');
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -124,7 +146,7 @@ function PersonalSportsInfo() {
         }}
         containerStyle={{ marginTop: 10 }}
       >
-        <Text style={styles.bioTextStyle}>{strings.aboutValue}</Text>
+        <Text style={styles.bioTextStyle}>{bioText}</Text>
         <Text style={styles.signUpTimeStyle}>{strings.signedUpTime}</Text>
         <View style={styles.userCategoryView}>
           <UserCategoryView title='Player' titleColor={colors.blueColor}/>
@@ -145,19 +167,19 @@ function PersonalSportsInfo() {
       >
         <BasicInfoItem
           title={strings.gender}
-          value={'Male'}
+          value={info.genderText}
         />
         <BasicInfoItem
           title={strings.yearOfBirth}
-          value={'1981'}
+          value={moment(info.birthdayText).format('YYYY')}
         />
         <BasicInfoItem
           title={strings.height}
-          value={'187 cm'}
+          value={info.heightText}
         />
         <BasicInfoItem
           title={strings.weight}
-          value={'76 kg'}
+          value={info.weightText}
         />
         <BasicInfoItem
           title={strings.mostUsedFoot}
@@ -165,7 +187,7 @@ function PersonalSportsInfo() {
         />
         <BasicInfoItem
           title={strings.currrentCityTitle}
-          value={'Vancouver BC'}
+          value={info.currentCity}
           fieldView={{ marginBottom: 10 }}
         />
       </EditEventItem>
@@ -180,7 +202,7 @@ function PersonalSportsInfo() {
           }, 200);
         }}
       >
-        <Text style={styles.ntrpValueStyle}>{'5.5'}</Text>
+        <Text style={styles.ntrpValueStyle}>{ntrpSelect}</Text>
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
@@ -192,17 +214,17 @@ function PersonalSportsInfo() {
           }, 200);
         }}
       >
-        <Text style={styles.bioTextStyle}>{strings.homePlaceValue}</Text>
+        <Text style={styles.bioTextStyle}>{info.homePlaceText}</Text>
         <EventMapView
             region={{
-              latitude: 37.78825,
-              longitude: -122.4324,
+              latitude: info.latiValue !== null ? Number(info.latiValue) : 0.0,
+              longitude: info.longiValue !== null ? Number(info.longiValue) : 0.0,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
             coordinate={{
-              latitude: 37.78825,
-              longitude: -122.4324,
+              latitude: info.latiValue !== null ? Number(info.latiValue) : 0.0,
+              longitude: info.longiValue !== null ? Number(info.longiValue) : 0.0,
             }}
             style={{ marginVertical: 15 }}
         />
@@ -226,10 +248,10 @@ function PersonalSportsInfo() {
               height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
             }} />}
             renderItem={({ item: attachItem }) => <TeamClubLeagueView
-            teamImage={attachItem.teamImage}
-            teamTitle={attachItem.teamTitle}
-            teamIcon={attachItem.teamIcon}
-            teamCityName={attachItem.teamCity}
+            teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.team_ph}
+            teamTitle={attachItem.group_name}
+            teamIcon={images.myTeams}
+            teamCityName={`${attachItem.city}, ${attachItem.country}`}
             />}
             keyExtractor={(item, index) => index.toString()}
         />
@@ -253,10 +275,10 @@ function PersonalSportsInfo() {
               height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
             }} />}
             renderItem={({ item: attachItem }) => <TeamClubLeagueView
-            teamImage={attachItem.teamImage}
-            teamTitle={attachItem.teamTitle}
-            teamIcon={attachItem.teamIcon}
-            teamCityName={attachItem.teamCity}
+            teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.club_ph}
+            teamTitle={attachItem.group_name}
+            teamIcon={images.myClubs}
+            teamCityName={`${attachItem.city}, ${attachItem.country}`}
             />}
             keyExtractor={(item, index) => index.toString()}
         />
@@ -386,7 +408,23 @@ function PersonalSportsInfo() {
               </View>
             }
             rightComponent={
-              <TouchableOpacity onPress={() => setEditModal(false)}>
+              <TouchableOpacity onPress={() => {
+                const params = {
+                  registered_sports: [{
+                    cancellation_policy: 'strict',
+                    descriptions: bioText,
+                    fee: 0.0,
+                    ntrp: ntrpSelect,
+                    point: 500,
+                    sport_name: sportName,
+                    latitude: info.latiValue !== null ? Number(info.latiValue) : 0.0,
+                    homePlace: info.homePlaceText,
+                    longitude: info.longiValue !== null ? Number(info.longiValue) : 0.0,
+                  }],
+                }
+                onSavePress(params);
+                setEditModal(false)
+              }}>
                 <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
               </TouchableOpacity>
             }
@@ -405,25 +443,25 @@ function PersonalSportsInfo() {
               title={strings.gender}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{'Male'}</Text>
+              <Text style={styles.basicinfoValueStyle}>{info.genderText}</Text>
             </EventItemRender>
             <EventItemRender
               title={strings.yearOfBirth}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{'1981'}</Text>
+              <Text style={styles.basicinfoValueStyle}>{moment(info.birthdayText).format('YYYY')}</Text>
             </EventItemRender>
             <EventItemRender
               title={strings.height}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{'187 cm'}</Text>
+              <Text style={styles.basicinfoValueStyle}>{info.heightText}</Text>
             </EventItemRender>
             <EventItemRender
               title={strings.weight}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{'76 kg'}</Text>
+              <Text style={styles.basicinfoValueStyle}>{info.weightText}</Text>
             </EventItemRender>
             <EventItemRender
               title={strings.mostUsedFoot}
@@ -448,28 +486,28 @@ function PersonalSportsInfo() {
               title={strings.currrentCityTitle}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{'Vancouver BC'}</Text>
+              <Text style={styles.basicinfoValueStyle}>{info.currentCity}</Text>
             </EventItemRender>
           </View>}
 
           {editPressTitle === strings.ntrpTitle && <View style={{ marginTop: 20 }}>
             <TCPicker
               dataSource={[
-                { label: '0', value: '0' },
-                { label: '0.5', value: '0.5' },
-                { label: '1', value: '1' },
+                { label: '1.0', value: '1.0' },
                 { label: '1.5', value: '1.5' },
-                { label: '2', value: '2' },
+                { label: '2.0', value: '2.0' },
                 { label: '2.5', value: '2.5' },
-                { label: '3', value: '3' },
+                { label: '3.0', value: '3.0' },
                 { label: '3.5', value: '3.5' },
-                { label: '4', value: '4' },
+                { label: '4.0', value: '4.0' },
                 { label: '4.5', value: '4.5' },
-                { label: '5', value: '5' },
+                { label: '5.0', value: '5.0' },
                 { label: '5.5', value: '5.5' },
-                { label: '6', value: '6' },
+                { label: '6.0', value: '6.0' },
+                { label: '6.5', value: '6.5' },
+                { label: '7.0', value: '7.0' },
               ]}
-              placeholder={'Never'}
+              placeholder={ntrpSelect}
               value={ntrpSelect}
               onValueChange={(value) => {
                 setNtrpSelect(value);
@@ -477,12 +515,11 @@ function PersonalSportsInfo() {
             />
           </View>}
 
-          {editPressTitle === strings.homePlaceTitle && <EventTextInput
-            // placeholder={strings.aboutValue}
-            value={homePlaceText}
-            multiline={true}
-            onChangeText={(text) => {
-              setHomePlaceText(text);
+          {editPressTitle === strings.homePlaceTitle && <SearchLocationTextView
+            value={info.homePlaceText}
+            onItemPress={() => {
+              setEditModal(false);
+              onItemPress();
             }}
           />}
         </SafeAreaView>

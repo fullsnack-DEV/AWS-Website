@@ -19,6 +19,24 @@ const getGameData = async (gameId, fetchTeamData = false) => makeAPIRequest({
   url: `${Config.BASE_URL}/games/${gameId}?fetchTeamObject=${fetchTeamData}`,
 })
 
+const getGameScoreboardEvents = async (userID, params) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/games/users/${userID}`,
+  params,
+})
+
+const getGameStatsChartData = async (userID, params) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/teams/${userID}/games/stats/chart`,
+  params,
+})
+
+const getGameStatsData = async (userID, params) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/teams/${userID}/games/stats`,
+  params,
+})
+
 const getGameMatchRecords = async (gameId) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}/records?fetchTeamObject=true`,
@@ -100,4 +118,7 @@ export {
   resetGame,
   decreaseGameScore,
   addGameReview,
+  getGameScoreboardEvents,
+  getGameStatsChartData,
+  getGameStatsData,
 }

@@ -22,7 +22,7 @@ export default function UserHomeTopSection({
   const renderPlayIn = ({ item }) => (
     <UserInfoPlaysInItem title={item.sport_name}
     totalGames={item.totalGames}
-    onPlayInPress={onPlayInPress}
+    onPlayInPress={() => onPlayInPress(item)}
     thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}/>
   );
 

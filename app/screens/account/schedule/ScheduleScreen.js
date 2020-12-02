@@ -54,13 +54,15 @@ export default function ScheduleScreen({ navigation }) {
   const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
   const [loading, setloading] = useState(false);
   const [createEventModal, setCreateEventModal] = useState(false);
+  const [entity, setEntity] = useState({});
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
-      const entity = await Utility.getStorage('loggedInEntity');
-      const entityRole = entity.role === 'user' ? 'users' : 'groups';
-      const uid = entity.uid || entity.auth.user_id;
+      const loggedInEntity = await Utility.getStorage('loggedInEntity');
+      setEntity(loggedInEntity)
+      const entityRole = loggedInEntity.role === 'user' ? 'users' : 'groups';
+      const uid = loggedInEntity.uid || loggedInEntity.auth.user_id;
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
@@ -160,10 +162,7 @@ export default function ScheduleScreen({ navigation }) {
                     gameId: item.game_id,
                   })
                 } else {
-                  const entity = await Utility.getStorage('loggedInEntity');
-                  const uid = entity.uid || entity.auth.user_id;
-                  const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                  getEventById(entityRole, uid, item.cal_id).then((response) => {
+                  getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id).then((response) => {
                     navigation.navigate('EventScreen', { data: response.payload, gameData: item });
                   }).catch((e) => {
                     console.log('Error :-', e);
@@ -220,10 +219,7 @@ export default function ScheduleScreen({ navigation }) {
                         gameId: itemValue.game_id,
                       })
                     } else {
-                      const entity = await Utility.getStorage('loggedInEntity');
-                      const uid = entity.uid || entity.auth.user_id;
-                      const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                      getEventById(entityRole, uid, itemValue.cal_id).then((response) => {
+                      getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
                         navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
                       }).catch((e) => {
                         console.log('Error :-', e);
@@ -404,11 +400,8 @@ export default function ScheduleScreen({ navigation }) {
                 style: 'destructive',
                 onPress: async () => {
                   setloading(true);
-                  const entity = await Utility.getStorage('loggedInEntity');
-                  const uid = entity.uid || entity.auth.user_id;
-                  const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                  deleteEvent(entityRole, uid, selectedEventItem.cal_id)
-                    .then(() => getEvents(entityRole, uid))
+                  deleteEvent(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, selectedEventItem.cal_id)
+                    .then(() => getEvents(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id))
                     .then((response) => {
                       setloading(false);
                       setEventData(response.payload);
