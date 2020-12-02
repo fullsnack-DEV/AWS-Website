@@ -215,6 +215,8 @@ const images = {
   sendButton: require('../assets/images/sendButton.png'),
   groupUsers: require('../assets/images/groupUsers.png'),
   plus_round_orange: require('../assets/images/plus_round_orange.png'),
+
+  // Game Module
   leave_chat_room: require('../assets/images/leave_chat_room.png'),
   soccerBackground: require('../assets/images/soccerBackground.png'),
   firstVSTeam: require('../assets/images/firstTeam.png'),
@@ -228,6 +230,7 @@ const images = {
   greenRatingStar: require('../assets/images/greenRatingStar.png'),
   moveFlottyButton: require('../assets/images/move_flotty_btn.png'),
   orangeGradient: require('../assets/images/orangeGradient.png'),
+  thumbImage: require('../assets/images/thumbImage.png'),
 };
 
 export default images;

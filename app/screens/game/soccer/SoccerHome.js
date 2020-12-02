@@ -4,7 +4,6 @@ import {
   StyleSheet,
   StatusBar, Platform,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -33,7 +32,6 @@ const gameIds = [
 ]
 const globalGameId = gameIds[7];
 const SoccerHome = ({ navigation, route }) => {
-  const isFocused = useIsFocused();
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
@@ -45,7 +43,7 @@ const SoccerHome = ({ navigation, route }) => {
 
   useEffect(() => {
     getGameDetails();
-  }, [isFocused]);
+  }, []);
 
   const getGameDetails = () => {
     setLoading(true)
@@ -54,7 +52,8 @@ const SoccerHome = ({ navigation, route }) => {
         const entity = await Utility.getStorage('loggedInEntity');
         setUserRole(entity?.role);
         setUserId(entity?.uid);
-        setIsAdmin(res?.payload?.home_team?.am_i_admin ?? false)
+        const checkIsAdmin = res?.payload?.home_team?.am_i_admin || res?.payload?.away_team?.am_i_admin;
+        setIsAdmin(checkIsAdmin)
         setGameData(res.payload);
       }
     }).catch((error) => {
@@ -96,7 +95,7 @@ const SoccerHome = ({ navigation, route }) => {
               gameData={gameData}
           />
       )}
-      {tabKey === 3 && <Review getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
+      {tabKey === 3 && <Review navigation={navigation} getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
       {tabKey === 4 && (
         <Gallery
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}

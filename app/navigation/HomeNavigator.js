@@ -97,6 +97,7 @@ import SoccerApproveDisapproveConfirmation
 import EditRosterNonRosterScreen from '../screens/game/soccer/lineUp/EditRosterNonRosterScreen';
 import EditRosterCoacheScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
+import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
 
 const Stack = createStackNavigator();
 
@@ -344,6 +345,22 @@ const HomeNavigator = () => (
           options={{
             headerShown: false,
           }}
+      />
+    <Stack.Screen
+          name="LeaveReview"
+          component={ LeaveReview }
+          options={ {
+            title: 'Leave a game review',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
       />
     <Stack.Screen
       name="SoccerRecording"
