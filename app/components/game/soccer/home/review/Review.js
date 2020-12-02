@@ -35,7 +35,7 @@ const Review = ({
     <View style={styles.mainContainer}>
 
       {/*  Leave Review Section */}
-      {gameData?.status === 'ended' && checkReviewExpired(gameData?.actual_enddatetime) && (
+      {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && (
         <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
           <View>
             <TCGradientButton
