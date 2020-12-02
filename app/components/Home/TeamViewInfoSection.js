@@ -18,7 +18,7 @@ export default function TeamViewInfoSection({
 
     <View style={styles.topViewContainer}>
       <View style={styles.profileView}>
-        <Image source={teamImage} style={ styles.profileImage } />
+        <Image source={teamImage} style={styles.profileImage} resizeMode={'cover'} />
       </View>
       <View style={styles.topTextContainer}>
         <View style={{ flexDirection: 'row' }}>
@@ -37,10 +37,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   profileImage: {
-    alignSelf: 'center',
-    height: 35,
-    resizeMode: 'contain',
-    width: 35,
+    height: 40,
+    width: 40,
+    borderRadius: 20,
   },
   profileView: {
     backgroundColor: colors.whiteColor,

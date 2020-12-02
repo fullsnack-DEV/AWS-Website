@@ -75,6 +75,7 @@ export default function CreateEventScreen({ navigation, route }) {
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
+  const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
   const [eventColors, setEventColors] = useState(eventColorsData);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
@@ -241,6 +242,7 @@ export default function CreateEventScreen({ navigation, route }) {
                   return (
                     <EventColorItem
                       onItemPress={() => {
+                        setAddColorDoneButton(false);
                         colorToggleModal();
                         setSelectedEventColors([])
                       }}
@@ -293,15 +295,15 @@ export default function CreateEventScreen({ navigation, route }) {
             <EventTimeSelectItem
               title={strings.starts}
               toggle={!toggle}
-              date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : strings.date}
-              time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : strings.time}
+              date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : moment(new Date()).format('ll')}
+              time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
               onDatePress={() => setStartDateVisible(!startDateVisible)}
             />
             <EventTimeSelectItem
               title={strings.ends}
               toggle={!toggle}
-              date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : strings.date}
-              time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : strings.time}
+              date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : moment(new Date()).format('ll')}
+              time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
               containerStyle={{ marginBottom: 8 }}
               onDatePress={() => setEndDateVisible(!endDateVisible)}
             />
@@ -317,14 +319,14 @@ export default function CreateEventScreen({ navigation, route }) {
                 setSelectWeekMonth(value);
               }}
             />
-            <EventTimeSelectItem
+            {!selectWeekMonth && <EventTimeSelectItem
               title={strings.until}
               toggle={!toggle}
-              date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : strings.date}
-              time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : strings.time}
+              date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : moment(new Date()).format('ll')}
+              time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
               containerStyle={{ marginBottom: 12 }}
               onDatePress={() => setUntilDateVisible(!untilDateVisible)}
-            />
+            />}
           </EventItemRender>
 
           <EventItemRender
@@ -379,6 +381,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            minimumDate={eventStartDateTime ? new Date(moment(eventStartDateTime).format('YYYY-MM-DD HH:mm:ss')) : new Date()}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
@@ -396,6 +399,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onCancelImagePress={() => setIsColorPickerModal(false)}
             headerCenterText={'Add color'}
             onColorSelected={(selectColor) => {
+              setAddColorDoneButton(true);
               const data = [...selectedEventColors];
               const obj = {
                 id: eventColors.length + data.length,
@@ -415,6 +419,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 }
               }
             }}
+            doneButtonDisplay={addColorDoneButton}
             onDonePress={() => {
               const createdEventAddData = [...eventColors, ...selectedEventColors];
               setEventColors(createdEventAddData);

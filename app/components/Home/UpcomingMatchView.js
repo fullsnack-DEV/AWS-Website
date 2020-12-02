@@ -4,34 +4,39 @@ import {
   View,
   Text,
 } from 'react-native';
+import moment from 'moment';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import MatchBetweenUpcomingView from './MatchBetweenUpcomingView';
+import images from '../../Constants/ImagePath';
 
 export default function UpcomingMatchView({
-  date,
-  startTime,
-  endTime,
-  cityName,
-  firstTeamImage,
-  secondTeamImage,
-  firstTeamName,
-  secondTeamName,
+  data,
 }) {
+  let startDate = '';
+  if (data && data.actual_startdatetime) {
+    startDate = new Date(data.actual_startdatetime * 1000);
+  }
+  let endDate = '';
+  if (data && data.actual_enddatetime) {
+    endDate = new Date(data.actual_enddatetime * 1000);
+  }
   return (
-    <View style={ styles.backgroundView }>
+    data ? <View style={styles.backgroundView}>
+      <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+    </View> : <View style={styles.backgroundView}>
       <View style={styles.timeCityViewStyle}>
-        <Text style={styles.dateTextStyle}>{date}</Text>
-        <Text style={styles.eventTime}>{startTime}</Text>
-        <Text style={styles.eventTime}>{endTime}</Text>
+        <Text style={styles.dateTextStyle}>{moment(startDate).format('MMM DD.')}</Text>
+        <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
+        <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
         <View style={styles.citydeviderStyle} />
-        <Text style={styles.eventTime}>{cityName}</Text>
+        <Text style={[styles.eventTime, { width: '40%' }]}>{data && data.venue ? data.venue.address : ''}</Text>
       </View>
       <MatchBetweenUpcomingView
-        firstUserImage={firstTeamImage}
-        firstText={firstTeamName}
-        secondUserImage={secondTeamImage}
-        secondText={secondTeamName}
+        firstUserImage={data.home_team && data.home_team.thumbnail ? { uri: data.home_team.thumbnail } : images.team_ph}
+        firstText={data.home_team ? data.home_team.full_name || data.home_team.group_name : ''}
+        secondUserImage={data.away_team && data.away_team.thumbnail ? { uri: data.away_team.thumbnail } : images.team_ph}
+        secondText={data.away_team ? data.away_team.full_name || data.away_team.group_name : ''}
       />
     </View>
   );
@@ -70,5 +75,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    marginVertical: 10,
   },
 });

@@ -5,9 +5,9 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -22,22 +22,30 @@ export default function ScheduleTabView({
 }) {
   return (
     <View style={[styles.eventPrivacyContianer, eventPrivacyContianer]}>
-      <TouchableOpacity
-        onPress={onFirstTabPress}
-        style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
-      >
-        <Text style={indexCounter === 0 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
-          {firstTabTitle}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={onSecondTabPress}
-        style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
-      >
-        <Text style={indexCounter === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
-          {secondTabTitle}
-        </Text>
-      </TouchableOpacity>
+      <LinearGradient
+          colors={[indexCounter === 0 ? colors.orangeColor : colors.whiteColor, indexCounter === 0 ? colors.yellowColor : colors.whiteColor]}
+          style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}>
+        <TouchableOpacity
+          onPress={onFirstTabPress}
+          style={indexCounter === 0 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+        >
+          <Text style={indexCounter === 0 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+            {firstTabTitle}
+          </Text>
+        </TouchableOpacity>
+      </LinearGradient>
+      <LinearGradient
+          colors={[indexCounter === 1 ? colors.orangeColor : colors.whiteColor, indexCounter === 1 ? colors.yellowColor : colors.whiteColor]}
+          style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}>
+        <TouchableOpacity
+          onPress={onSecondTabPress}
+          style={indexCounter === 1 ? styles.activeEventPricacy : styles.inactiveEventPricacy}
+        >
+          <Text style={indexCounter === 1 ? styles.activeEventPrivacyText : styles.inactiveEventPrivacyText}>
+            {secondTabTitle}
+          </Text>
+        </TouchableOpacity>
+      </LinearGradient>
     </View>
   );
 }
@@ -56,15 +64,17 @@ const styles = StyleSheet.create({
   },
   activeEventPricacy: {
     flex: 1,
-    backgroundColor: colors.activeIndexColor,
-    paddingVertical: hp('0.8'),
+    height: 35,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: wp('10%'),
   },
   inactiveEventPricacy: {
     flex: 1,
-    paddingVertical: hp('0.8'),
+    height: 35,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: wp('10%'),
   },
   activeEventPrivacyText: {
     color: 'white',

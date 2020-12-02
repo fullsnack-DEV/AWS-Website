@@ -14,6 +14,7 @@ export default function UpcomingMatchScreen({
   sportsData,
 }) {
   let filterData = [];
+  let dataNotFound = true;
   if (sportsData) {
     const todayData = [];
     const tomorrowData = [];
@@ -29,12 +30,15 @@ export default function UpcomingMatchScreen({
       })
       if (dateText === 'Today') {
         todayData.push(item_filter);
+        dataNotFound = false;
       }
       if (dateText === 'Tomorrow') {
         tomorrowData.push(item_filter);
+        dataNotFound = false;
       }
       if (dateText === 'Future') {
         futureData.push(item_filter);
+        dataNotFound = false;
       }
       return null;
     })
@@ -55,20 +59,23 @@ export default function UpcomingMatchScreen({
   }
   return (
     <KeyboardAvoidingView style={ styles.mainContainer }>
-      <SectionList
-        renderItem={ ({ item }) => (
-          <UpcomingMatchItems
-            data={item}
-            onThreeDotPress={() => {}}
-          />
-        ) }
-        renderSectionHeader={ ({ section: { title } }) => (
-          <Text style={ styles.sectionHeader }>{title}</Text>
-        ) }
-        sections={filterData}
-        keyExtractor={(item, index) => index.toString()}
-        bounces={false}
-      />
+      {dataNotFound
+        ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+        : <SectionList
+          renderItem={ ({ item }) => (
+            <UpcomingMatchItems
+              data={item}
+              onThreeDotPress={() => {}}
+            />
+          ) }
+          renderSectionHeader={ ({ section: { title } }) => (
+            <Text style={ styles.sectionHeader }>{title}</Text>
+          ) }
+          sections={filterData}
+          keyExtractor={(item, index) => index.toString()}
+          bounces={false}
+        />
+      }
     </KeyboardAvoidingView>
   );
 }
@@ -85,5 +92,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 12,
     backgroundColor: colors.whiteColor,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
   },
 });

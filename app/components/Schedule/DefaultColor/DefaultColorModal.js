@@ -24,6 +24,7 @@ function DefaultColorModal({
   renderItem,
   onDonePress,
   containerStyle,
+  doneButtonDisplay,
 }) {
   return (
     <Modal
@@ -46,9 +47,9 @@ function DefaultColorModal({
               <Text style={styles.headerCenterStyle}>{headerCenterText}</Text>
             }
             rightComponent={
-              <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
+              (doneButtonDisplay && <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
                 <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.lightBlackColor }}>Done</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>)
             }
           />
         <View style={styles.sepratorStyle} />

@@ -10,7 +10,6 @@ import ProgressBarCircle from './ProgressBarCircle';
 import WinProgressView from './WinProgressView';
 
 export default function StatsView({
-  pastTime,
   TotalGameText,
   totalGameCounter,
   winTitle,
@@ -29,11 +28,11 @@ export default function StatsView({
   lossProgressColor,
   lossPercentageTextStyle,
   sections,
+  progressBarWinPercentage,
 }) {
   return (
     <View style={styles.containerStyle}>
       <View>
-        <Text style={styles.pastTimeText}>{pastTime}</Text>
         <View style={styles.totalGameViewStyle}>
           <Text style={styles.totalGameTextStyle}>{TotalGameText}</Text>
           <Text style={styles.totalGameCounterText}>{totalGameCounter}</Text>
@@ -63,7 +62,7 @@ export default function StatsView({
       <ProgressBarCircle
         sections={sections}
         circleInnerText={'Win'}
-        percentage={50}
+        percentage={progressBarWinPercentage}
       />
     </View>
   );
@@ -83,11 +82,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  pastTimeText: {
-    fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
   },
   totalGameViewStyle: {
     flexDirection: 'row',

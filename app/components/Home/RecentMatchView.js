@@ -22,7 +22,9 @@ export default function RecentMatchView({
     endDate = new Date(data.actual_enddatetime * 1000);
   }
   return (
-    <View style={ styles.backgroundView }>
+    data ? <View style={styles.backgroundView}>
+      <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+    </View> : <View style={styles.backgroundView}>
       <View style={styles.timeCityViewStyle}>
         <Text style={styles.dateTextStyle}>{moment(startDate).format('MMM DD.')}</Text>
         <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
@@ -75,5 +77,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    marginVertical: 10,
   },
 });
