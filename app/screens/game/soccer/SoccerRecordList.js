@@ -26,7 +26,7 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import { getGameData, getGameMatchRecords } from '../../../api/Games';
-import { gameStats } from '../../../utils/gameUtils';
+import { soccerGameStats } from '../../../utils/gameUtils';
 
 export default function SoccerRecordList({ route, navigation }) {
   const [editorChecked, setEditorChecked] = useState(false);
@@ -177,7 +177,7 @@ export default function SoccerRecordList({ route, navigation }) {
               data={matchRecords}
               renderItem={({ item }) => {
                 const isHomeTeam = item?.game?.home_team === item.team_id;
-                const isGameState = item.verb in gameStats;
+                const isGameState = item.verb in soccerGameStats;
                 return (
                   <View>
                     {!isGameState && isHomeTeam && (

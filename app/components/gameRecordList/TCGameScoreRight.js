@@ -16,7 +16,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import {
-  gamePlayerStatusStats, gamePlayStats, gamePlayStatsImage,
+  soccerGamePlayerStatusStats, soccerGamePlayStats, soccerGamePlayStatsImage,
   getGameConvertMinsToTime,
   getGameDateTimeInHMSformat,
   getGameTimeAgo,
@@ -87,7 +87,7 @@ export default function TCGameScoreRight({
           }}>
             <View style={styles.gameRecordButton}>
               <FastImage
-              source={ gamePlayStatsImage[recordData?.verb] }
+              source={ soccerGamePlayStatsImage[recordData?.verb] }
               style={ [styles.gameRecordImg, { height: 16, width: 16 }] }
             />
             </View>
@@ -95,7 +95,7 @@ export default function TCGameScoreRight({
           <Text style={ styles.rightPlayerText } numberOfLines={ 3 }>
             {gameData?.away_team?.group_name ?? ''}
             <Text style={{ fontFamily: fonts.RMedium }}>
-              {' '}{gamePlayStats[recordData?.verb]}
+              {' '}{soccerGamePlayStats[recordData?.verb]}
             </Text>
           </Text>
           <View style={{ width: '22%' }}>
@@ -106,7 +106,7 @@ export default function TCGameScoreRight({
           </View>
         </View>
       </View>
-      {!(recordData?.verb in gamePlayerStatusStats) && getScoreText()}
+      {!(recordData?.verb in soccerGamePlayerStatusStats) && getScoreText()}
       {editor && (
         <View style={ styles.editorView }>
           <Dash

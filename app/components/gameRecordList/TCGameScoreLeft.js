@@ -17,7 +17,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
 import {
-  gamePlayerStatusStats, gamePlayStats, gamePlayStatsImage,
+  soccerGamePlayerStatusStats, soccerGamePlayStats, soccerGamePlayStatsImage,
   getGameConvertMinsToTime,
   getGameDateTimeInHMSformat,
   getGameTimeAgo,
@@ -75,14 +75,14 @@ export default function TCGameScoreLeft(
             <Text style={ styles.leftPlayerText } numberOfLines={ 3 }>
               {gameData?.home_team?.group_name ?? ''}
               <Text style={{ fontFamily: fonts.RMedium }}>
-                {' '}{gamePlayStats[recordData?.verb]}
+                {' '}{soccerGamePlayStats[recordData?.verb]}
               </Text>
             </Text>
             <View style={{ width: '25%', alignItems: 'flex-end', right: 10 }}>
               <View style={styles.gameRecordButton}>
                 <FastImage
                     resizeMode={'contain'}
-                      source={ gamePlayStatsImage[recordData?.verb] }
+                      source={ soccerGamePlayStatsImage[recordData?.verb] }
                       style={ styles.gameRecordImg }
                   />
               </View>
@@ -122,7 +122,7 @@ export default function TCGameScoreLeft(
               } }
               dashColor={ colors.lightgrayColor }
           />
-        {!(recordData?.verb in gamePlayerStatusStats) && getScoreText()}
+        {!(recordData?.verb in soccerGamePlayerStatusStats) && getScoreText()}
       </View>
       {editor && (
         <View style={ styles.editorView }>

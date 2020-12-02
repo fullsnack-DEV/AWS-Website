@@ -6,7 +6,7 @@ import Dash from 'react-native-dash';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import { gameStats, getGameConvertMinsToTime, getGameDateTimeInHMSformat } from '../../utils/gameUtils';
+import { soccerGameStats, getGameConvertMinsToTime, getGameDateTimeInHMSformat } from '../../utils/gameUtils';
 
 export default function TCGameState({
   recordData,
@@ -51,7 +51,7 @@ export default function TCGameState({
             fontSize: 16,
             color: colors.blackColor,
           } }>
-          Match {recordData?.verb in gameStats && gameStats[recordData?.verb]}
+          Match {recordData?.verb in soccerGameStats && soccerGameStats[recordData?.verb]}
         </Text>
       </Text>
     </View>

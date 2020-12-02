@@ -231,6 +231,7 @@ const images = {
   moveFlottyButton: require('../assets/images/move_flotty_btn.png'),
   orangeGradient: require('../assets/images/orangeGradient.png'),
   thumbImage: require('../assets/images/thumbImage.png'),
+  tennisBackground: require('../assets/images/tennisBackground.png'),
 };
 
 export default images;

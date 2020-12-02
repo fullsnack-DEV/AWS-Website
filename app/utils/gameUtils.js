@@ -3,21 +3,22 @@ import images from '../Constants/ImagePath';
 
 const REVIEW_EXPIRY_DAYS = 5;
 
-const gameStats = {
+// Soccer
+const soccerGameStats = {
   start: 'started',
   end: 'ended',
   resume: 'resumed',
   pause: 'paused',
 }
 
-const gamePlayerStatusStats = {
+const soccerGamePlayerStatusStats = {
   yc: 'received a yellow card',
   rc: 'received a red card',
   in: 'was in',
   out: 'was out',
 }
 
-const gamePlayStats = {
+const soccerGamePlayStats = {
   goal: 'scored a goal',
   ownGoal: 'scored a own goal',
   yc: 'received a yellow card',
@@ -37,7 +38,7 @@ const gamePlayStats = {
   winner: 'was winner',
 }
 
-const gamePlayStatsImage = {
+const soccerGamePlayStatsImage = {
   goal: images.gameGoal,
   yc: images.gameYC,
   rc: images.gameRC,
@@ -96,12 +97,13 @@ export {
   REVIEW_EXPIRY_DAYS,
   checkReviewExpired,
   getDiffDays,
-  gameStats,
-  gamePlayStats,
-  gamePlayStatsImage,
+  soccerGameStats,
+  soccerGamePlayStats,
+  soccerGamePlayStatsImage,
+  soccerGamePlayerStatusStats,
   getGameDateTimeInHMSformat,
   getGameDateTimeInDHMformat,
   getGameTimeAgo,
   getGameConvertMinsToTime,
-  gamePlayerStatusStats,
+
 }
