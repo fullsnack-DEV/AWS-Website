@@ -210,45 +210,52 @@ export default function ScheduleScreen({ navigation }) {
                 setFilterEventData(data);
                 return null;
               }}
-              renderItem={(item) => <FlatList
-                data={item}
-                renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
-                  onPress={async () => {
-                    if (itemValue.game_id) {
-                      navigation.navigate('SoccerHome', {
-                        gameId: itemValue.game_id,
-                      })
-                    } else {
-                      getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
-                        navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
-                      }).catch((e) => {
-                        console.log('Error :-', e);
-                      })
-                    }
-                  }}
-                  eventBetweenSection={itemValue.game}
-                  eventOfSection={true}
-                  onThreeDotPress={() => {
-                    setSelectedEventItem(itemValue);
-                  }}
-                  data={itemValue}
-                />)}
-                ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
-                  <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
-                  <Text style={styles.headerTodayText}>
-                    {moment(selectionDate).calendar(null, {
-                      lastWeek: '[Last] dddd',
-                      lastDay: '[Yesterday]',
-                      sameDay: '[Today]',
-                      nextDay: '[Tomorrow]',
-                      nextWeek: 'dddd',
-                    })}
-                  </Text>
-                </View>}
-                bounces={false}
-                style={{ flex: 1 }}
-                keyExtractor={(itemValueKey, index) => index.toString()}
-              />}
+              renderItem={(item) => {
+                if (item.length > 0) {
+                  return (
+                    <FlatList
+                      data={item}
+                      renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
+                        onPress={async () => {
+                          if (itemValue.game_id) {
+                            navigation.navigate('SoccerHome', {
+                              gameId: itemValue.game_id,
+                            })
+                          } else {
+                            getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
+                              navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
+                            }).catch((e) => {
+                              console.log('Error :-', e);
+                            })
+                          }
+                        }}
+                        eventBetweenSection={itemValue.game}
+                        eventOfSection={true}
+                        onThreeDotPress={() => {
+                          setSelectedEventItem(itemValue);
+                        }}
+                        data={itemValue}
+                      />)}
+                      ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
+                        <Text style={styles.headerTodayText}>
+                          {moment(selectionDate).calendar(null, {
+                            lastWeek: '[Last] dddd',
+                            lastDay: '[Yesterday]',
+                            sameDay: '[Today]',
+                            nextDay: '[Tomorrow]',
+                            nextWeek: 'dddd',
+                          })}
+                        </Text>
+                      </View>}
+                      bounces={false}
+                      style={{ flex: 1 }}
+                      keyExtractor={(itemValueKey, index) => index.toString()}
+                    />
+                  );
+                }
+                return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
+              }}
             />}
 
             {calenderInnerIndexCounter === 1 && <EventAgendaSection
@@ -481,5 +488,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginLeft: -59,
     borderRadius: 10,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    marginTop: 10,
   },
 });

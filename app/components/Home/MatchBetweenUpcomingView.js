@@ -16,7 +16,7 @@ function MatchBetweenUpcomingView({
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'contain'} />
+          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
         <Text style={[styles.textStyle, { marginLeft: 8 }]}>{firstText}</Text>
       </View>
@@ -24,7 +24,7 @@ function MatchBetweenUpcomingView({
       <View style={styles.firstUserViewStyle}>
         <Text style={[styles.textStyle, { textAlign: 'right', marginRight: 8 }]}>{secondText}</Text>
         <View style={styles.eventImageViewStyle}>
-          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'contain'} />
+          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
       </View>
     </View>
@@ -58,8 +58,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageStyle: {
-    width: 30,
-    height: 30,
+    width: 35,
+    height: 35,
+    borderRadius: 35 / 2,
   },
   textStyle: {
     width: 70,

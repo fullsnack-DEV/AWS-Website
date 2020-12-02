@@ -8,15 +8,17 @@ export default function DateTimePickerView({
   onHide,
   date,
   mode,
+  minimumDate,
 }) {
   return (
     <DateTimePickerModal
-        isVisible={visible}
-        mode={mode}
-        onConfirm={onDone}
-        onCancel={onCancel}
-        onHide={onHide}
-        date={date}
+      isVisible={visible}
+      mode={mode}
+      onConfirm={onDone}
+      onCancel={onCancel}
+      onHide={onHide}
+      date={date}
+      minimumDate={minimumDate || new Date()}
     />
   );
 }

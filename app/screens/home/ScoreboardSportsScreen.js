@@ -14,6 +14,7 @@ export default function ScoreboardSportsScreen({
   sportsData,
 }) {
   let filterData = [];
+  let dataNotFound = true;
   if (sportsData) {
     const todayData = [];
     const yesterdayData = [];
@@ -29,12 +30,15 @@ export default function ScoreboardSportsScreen({
       })
       if (dateText === 'Today') {
         todayData.push(item_filter);
+        dataNotFound = false;
       }
       if (dateText === 'Yesterday') {
         yesterdayData.push(item_filter);
+        dataNotFound = false;
       }
       if (dateText === 'Past') {
         pastData.push(item_filter);
+        dataNotFound = false;
       }
       return null;
     })
@@ -55,20 +59,23 @@ export default function ScoreboardSportsScreen({
   }
   return (
     <KeyboardAvoidingView style={ styles.mainContainer }>
-      <SectionList
-        renderItem={ ({ item }) => (
-          <RecentMatchItems
-            data={item}
-            onThreeDotPress={() => {}}
-          />
-        ) }
-        renderSectionHeader={ ({ section: { title } }) => (
-          <Text style={ styles.sectionHeader }>{title}</Text>
-        ) }
-        sections={filterData}
-        keyExtractor={(item, index) => index.toString()}
-        bounces={false}
-      />
+      {dataNotFound
+        ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
+        : <SectionList
+          renderItem={ ({ item }) => (
+            <RecentMatchItems
+              data={item}
+              onThreeDotPress={() => {}}
+            />
+          ) }
+          renderSectionHeader={ ({ section }) => (
+            section.data.length > 0 && <Text style={ styles.sectionHeader }>{section.title}</Text>
+          ) }
+          sections={filterData}
+          keyExtractor={(item, index) => index.toString()}
+          bounces={false}
+        />
+      }
     </KeyboardAvoidingView>
   );
 }
@@ -85,5 +92,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 12,
     backgroundColor: colors.whiteColor,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
   },
 });

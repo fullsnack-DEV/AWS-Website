@@ -25,7 +25,7 @@ const strings = {
   thisEvent: 'This event',
   thisAndFollowingEvent: 'This and all following events',
   recurringEventTitle: 'Update Recurring Event',
-  selectTimePlaceholder: 'Never',
+  selectTimePlaceholder: 'Select Repeat',
   addressPlaceholder: 'Address',
   positionPlaceholder: 'Position',
   birthDatePlaceholder: 'Birthday',

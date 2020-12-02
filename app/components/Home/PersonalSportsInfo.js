@@ -8,6 +8,7 @@ import ActionSheet from 'react-native-actionsheet';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -233,81 +234,72 @@ function PersonalSportsInfo({
       <EditEventItem
         title={strings.teamstitle}
         onEditPress={() => {
-          setEditPressTitle(strings.teamstitle);
-          setTimeout(() => {
-            actionSheet.current.show();
-          }, 200);
+          setPrivacyModal(true);
         }}
       >
         <FlatList
-            data={teamsData}
-            bounces={false}
-            style={{ paddingHorizontal: 2 }}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={{
-              height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
-            }} />}
-            renderItem={({ item: attachItem }) => <TeamClubLeagueView
-            teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.team_ph}
-            teamTitle={attachItem.group_name}
-            teamIcon={images.myTeams}
-            teamCityName={`${attachItem.city}, ${attachItem.country}`}
-            />}
-            keyExtractor={(item, index) => index.toString()}
+          data={teamsData}
+          bounces={false}
+          style={{ paddingHorizontal: 2 }}
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{
+            height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
+          }} />}
+          renderItem={({ item: attachItem }) => <TeamClubLeagueView
+          teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.team_ph}
+          teamTitle={attachItem.group_name}
+          teamIcon={images.myTeams}
+          teamCityName={`${attachItem.city}, ${attachItem.country}`}
+          />}
+          keyExtractor={(item, index) => index.toString()}
         />
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
         title={strings.clubstitle}
         onEditPress={() => {
-          setEditPressTitle(strings.clubstitle);
-          setTimeout(() => {
-            actionSheet.current.show();
-          }, 200);
+          setPrivacyModal(true);
         }}
       >
         <FlatList
-            data={clubsData}
-            bounces={false}
-            style={{ paddingHorizontal: 2 }}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={{
-              height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
-            }} />}
-            renderItem={({ item: attachItem }) => <TeamClubLeagueView
-            teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.club_ph}
-            teamTitle={attachItem.group_name}
-            teamIcon={images.myClubs}
-            teamCityName={`${attachItem.city}, ${attachItem.country}`}
-            />}
-            keyExtractor={(item, index) => index.toString()}
+          data={clubsData}
+          bounces={false}
+          style={{ paddingHorizontal: 2 }}
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{
+            height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
+          }} />}
+          renderItem={({ item: attachItem }) => <TeamClubLeagueView
+          teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.club_ph}
+          teamTitle={attachItem.group_name}
+          teamIcon={images.myClubs}
+          teamCityName={`${attachItem.city}, ${attachItem.country}`}
+          />}
+          keyExtractor={(item, index) => index.toString()}
         />
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
         title={strings.leaguesTitle}
         onEditPress={() => {
-          setEditPressTitle(strings.leaguesTitle);
-          setTimeout(() => {
-            actionSheet.current.show();
-          }, 200);
+          setPrivacyModal(true);
         }}
       >
         <FlatList
-            data={leaguesData}
-            bounces={false}
-            style={{ paddingHorizontal: 2 }}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={{
-              height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
-            }} />}
-            renderItem={({ item: attachItem }) => <TeamClubLeagueView
-            teamImage={attachItem.teamImage}
-            teamTitle={attachItem.teamTitle}
-            teamIcon={attachItem.teamIcon}
-            teamCityName={attachItem.teamCity}
-            />}
-            keyExtractor={(item, index) => index.toString()}
+          data={leaguesData}
+          bounces={false}
+          style={{ paddingHorizontal: 2 }}
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{
+            height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
+          }} />}
+          renderItem={({ item: attachItem }) => <TeamClubLeagueView
+          teamImage={attachItem.teamImage}
+          teamTitle={attachItem.teamTitle}
+          teamIcon={attachItem.teamIcon}
+          teamCityName={attachItem.teamCity}
+          />}
+          keyExtractor={(item, index) => index.toString()}
         />
       </EditEventItem>
 
@@ -315,15 +307,21 @@ function PersonalSportsInfo({
         isVisible={privacyModal}
         backdropColor="black"
         style={{
-          margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+          margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0)',
         }}
         hasBackdrop
         onBackdropPress={() => setPrivacyModal(false)}
         backdropOpacity={0}
       >
         <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+          <LinearGradient
+            colors={[colors.orangeColor, colors.yellowColor]}
+            end={{ x: 0.0, y: 0.25 }}
+            start={{ x: 1, y: 0.5 }}
+            style={styles.gradiantHeaderViewStyle}>
+          </LinearGradient>
           <Header
-            mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+            mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
               <TouchableOpacity onPress={() => setPrivacyModal(false)}>
                 <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
@@ -344,10 +342,7 @@ function PersonalSportsInfo({
           <EventItemRender
             title={(editPressTitle === strings.bio && strings.bioPrivacyTitle)
             || (editPressTitle === strings.ntrpTitle && strings.ntrpPrivacyTitle)
-            || (editPressTitle === strings.homePlaceTitle && strings.homePlacePrivacyTitle)
-            || (editPressTitle === strings.teamstitle && strings.teamPrivacyTitle)
-            || (editPressTitle === strings.clubstitle && strings.clubPrivacyTitle)
-            || (editPressTitle === strings.leaguesTitle && strings.leaguePrivacyTitle)}
+            || (editPressTitle === strings.homePlaceTitle && strings.homePlacePrivacyTitle)}
             containerStyle={{ marginTop: 10 }}
           >
             <FlatList
@@ -389,8 +384,14 @@ function PersonalSportsInfo({
         backdropOpacity={0}
       >
         <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+          <LinearGradient
+            colors={[colors.orangeColor, colors.yellowColor]}
+            end={{ x: 0.0, y: 0.25 }}
+            start={{ x: 1, y: 0.5 }}
+            style={styles.gradiantHeaderViewStyle}>
+          </LinearGradient>
           <Header
-            mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+            mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
               <TouchableOpacity onPress={() => setEditModal(false)}>
                 <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
@@ -430,7 +431,6 @@ function PersonalSportsInfo({
             }
           />
           {editPressTitle === strings.bio && <EventTextInput
-            // placeholder={strings.aboutValue}
             value={bioText}
             multiline={true}
             onChangeText={(text) => {
@@ -531,10 +531,7 @@ function PersonalSportsInfo({
           (editPressTitle === strings.bio && 'Edit Bio')
           || (editPressTitle === strings.basicinfotitle && 'Edit Basic Info')
           || (editPressTitle === strings.ntrpTitle && 'Edit NTRP')
-          || (editPressTitle === strings.homePlaceTitle && 'Edit Home Place')
-          || (editPressTitle === strings.teamstitle && ' ')
-          || (editPressTitle === strings.clubstitle && ' ')
-          || (editPressTitle === strings.leaguesTitle && ' '),
+          || (editPressTitle === strings.homePlaceTitle && 'Edit Home Place'),
           'Privacy Setting',
           'Cancel',
         ]}
@@ -551,9 +548,6 @@ function PersonalSportsInfo({
             editPressTitle === strings.bio
             || editPressTitle === strings.ntrpTitle
             || editPressTitle === strings.homePlaceTitle
-            || editPressTitle === strings.teamstitle
-            || editPressTitle === strings.clubstitle
-            || editPressTitle === strings.leaguesTitle
           )) {
             privacySettingModal();
           } else if (index === 2) {
@@ -633,6 +627,13 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     paddingLeft: 15,
     marginTop: 5,
+  },
+  gradiantHeaderViewStyle: {
+    position: 'absolute',
+    width: '100%',
+    height: 50,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
 });
 

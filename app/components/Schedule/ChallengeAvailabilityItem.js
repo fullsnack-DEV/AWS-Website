@@ -94,16 +94,16 @@ function ChallengeAvailabilityItem({
         title={strings.starts}
         toggle={!toggle}
         headerTextStyle={{ paddingLeft: 0 }}
-        date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : moment(data.startDateTime).format('ll')}
-        time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : moment(data.startDateTime).format('h:mm a')}
+        date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : moment(new Date()).format('ll')}
+        time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
         onDatePress={() => setStartDateVisible(!startDateVisible)}
       />
       <EventTimeSelectItem
         title={strings.ends}
         toggle={!toggle}
         headerTextStyle={{ paddingLeft: 0 }}
-        date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : moment(data.endDateTime).format('ll')}
-        time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : moment(data.endDateTime).format('h:mm a')}
+        date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : moment(new Date()).format('ll')}
+        time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
         containerStyle={{ marginBottom: 8 }}
         onDatePress={() => setEndDateVisible(!endDateVisible)}
       />
@@ -122,6 +122,7 @@ function ChallengeAvailabilityItem({
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            minimumDate={eventStartDateTime ? new Date(moment(eventStartDateTime).format('YYYY-MM-DD HH:mm:ss')) : new Date()}
             mode={toggle ? 'date' : 'datetime'}
       />
     </View>

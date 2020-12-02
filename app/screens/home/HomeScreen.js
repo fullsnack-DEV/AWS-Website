@@ -10,7 +10,6 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
-import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
@@ -76,31 +75,15 @@ import CreateEventBtnModal from '../../components/Schedule/CreateEventBtnModal';
 import EventCalendar from '../../components/Schedule/EventCalendar/EventCalendar';
 import CalendarTimeTableView from '../../components/Schedule/CalendarTimeTableView';
 import EventBlockTimeTableView from '../../components/Schedule/EventBlockTimeTableView';
+import RefereesProfileSection from '../../components/Home/User/RefereesProfileSection';
 
 const { width } = Dimensions.get('window');
 
-const team_Data_Info = [
-  {
-    id: 0,
-    teamImage: images.commentReport,
-    teamTitle: strings.infoTeamTitle,
-    teamIcon: images.myTeams,
-    teamCity: strings.infoTeamCity,
-  },
-  {
-    id: 1,
-    teamImage: images.commentReport,
-    teamTitle: strings.infoTeamTitle,
-    teamIcon: images.myTeams,
-    teamCity: strings.infoTeamCity,
-  },
-];
-
 export default function HomeScreen({ navigation, route }) {
-  const isFocused = useIsFocused();
   const [isUserHome, setIsUserHome] = useState(false)
   const [isClubHome, setIsClubHome] = useState(false)
   const [isTeamHome, setIsTeamHome] = useState(false)
+  const [playsInModalVisible, setPlaysInModalVisible] = useState(false)
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
   const [infoModalVisible, setInfoModalVisible] = useState(false)
   const [scoreboardModalVisible, setScoreboardModalVisible] = useState(false)
@@ -121,7 +104,6 @@ export default function HomeScreen({ navigation, route }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
-  const [teamDataInfo] = useState(team_Data_Info);
   const [recentMatchData, setRecentMatchData] = useState([]);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [gamesChartData, setGamesChartData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -368,12 +350,24 @@ export default function HomeScreen({ navigation, route }) {
   if (currentUserData && currentUserData.full_name) {
     fullName = currentUserData.full_name;
   }
+  let bioDescription = '';
+  if (currentUserData && currentUserData.registered_sports && currentUserData.registered_sports.length > 0) {
+    bioDescription = currentUserData.registered_sports[0].descriptions ? currentUserData.registered_sports[0].descriptions : '';
+  }
   if (currentUserData && currentUserData.full_name === undefined) {
     fullName = currentUserData.group_name;
   }
   let bgImage = '';
   if (currentUserData && currentUserData.background_full_image) {
     bgImage = currentUserData.background_full_image;
+  }
+  let userThumbnail = null;
+  if (currentUserData && currentUserData.thumbnail) {
+    userThumbnail = currentUserData.thumbnail;
+  }
+  let teamData = [];
+  if (currentUserData && currentUserData.joined_teams) {
+    teamData = currentUserData.joined_teams;
   }
 
   const allGalleryRenderItem = (item, index) => {
@@ -861,6 +855,10 @@ export default function HomeScreen({ navigation, route }) {
     }
   }
 
+  const playsInModal = () => {
+    setPlaysInModalVisible(!playsInModalVisible);
+  };
+
   const refereesInModal = () => {
     setRefereesInModalVisible(!refereesInModalVisible);
   };
@@ -880,11 +878,11 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     if (route.params && route.params.locationName) {
       setInfoModalVisible(true);
-      setRefereesInModalVisible(true);
+      setPlaysInModalVisible(true);
       setSearchLocation(route.params.locationName);
       setLocationDetail(route.params.locationDetail);
     }
-  }, [isFocused]);
+  }, [route.params]);
 
   return (
     <View style={ styles.mainContainer }>
@@ -959,7 +957,9 @@ export default function HomeScreen({ navigation, route }) {
           {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                     isAdmin={isAdmin}
                     loggedInEntity={loggedInEntity}
-                    // onRefereesInPress={() => refereesInModal()}
+                    onRefereesInPress={() => {
+                      refereesInModal()
+                    }}
                     onPlayInPress={(item) => {
                       setSportName(item.sport_name);
                       setGamesChartData([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -992,7 +992,7 @@ export default function HomeScreen({ navigation, route }) {
                         });
                       })
                         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
-                      refereesInModal()
+                      playsInModal()
                       const parameters = {
                         sport: item.sport_name,
                       };
@@ -1137,45 +1137,52 @@ export default function HomeScreen({ navigation, route }) {
                         setFilterEventData(data);
                         return null;
                       }}
-                      renderItem={(item) => <FlatList
-                        data={item}
-                        renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
-                          onPress={async () => {
-                            if (itemValue.game_id) {
-                              navigation.navigate('SoccerHome', {
-                                gameId: itemValue.game_id,
-                              })
-                            } else {
-                              getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
-                                navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
-                              }).catch((e) => {
-                                console.log('Error :-', e);
-                              })
-                            }
-                          }}
-                          eventBetweenSection={itemValue.game}
-                          eventOfSection={true}
-                          onThreeDotPress={() => {
-                            setSelectedEventItem(itemValue);
-                          }}
-                          data={itemValue}
-                        />)}
-                        ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
-                          <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
-                          <Text style={styles.headerTodayText}>
-                            {moment(selectionDate).calendar(null, {
-                              lastWeek: '[Last] dddd',
-                              lastDay: '[Yesterday]',
-                              sameDay: '[Today]',
-                              nextDay: '[Tomorrow]',
-                              nextWeek: 'dddd',
-                            })}
-                          </Text>
-                        </View>}
-                        bounces={false}
-                        style={{ flex: 1 }}
-                        keyExtractor={(itemValueKey, index) => index.toString()}
-                      />}
+                      renderItem={(item) => {
+                        if (item.length > 0) {
+                          return (
+                            <FlatList
+                              data={item}
+                              renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
+                                onPress={async () => {
+                                  if (itemValue.game_id) {
+                                    navigation.navigate('SoccerHome', {
+                                      gameId: itemValue.game_id,
+                                    })
+                                  } else {
+                                    getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
+                                      navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
+                                    }).catch((e) => {
+                                      console.log('Error :-', e);
+                                    })
+                                  }
+                                }}
+                                eventBetweenSection={itemValue.game}
+                                eventOfSection={true}
+                                onThreeDotPress={() => {
+                                  setSelectedEventItem(itemValue);
+                                }}
+                                data={itemValue}
+                              />)}
+                              ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
+                                <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
+                                <Text style={styles.headerTodayText}>
+                                  {moment(selectionDate).calendar(null, {
+                                    lastWeek: '[Last] dddd',
+                                    lastDay: '[Yesterday]',
+                                    sameDay: '[Today]',
+                                    nextDay: '[Tomorrow]',
+                                    nextWeek: 'dddd',
+                                  })}
+                                </Text>
+                              </View>}
+                              bounces={false}
+                              style={{ flex: 1 }}
+                              keyExtractor={(itemValueKey, index) => index.toString()}
+                            />
+                          );
+                        }
+                        return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
+                      }}
                     />}
 
                     {calenderInnerIndexCounter === 1 && <EventAgendaSection
@@ -1368,17 +1375,18 @@ export default function HomeScreen({ navigation, route }) {
             )}/>
         </View>
         <Modal
-          isVisible={refereesInModalVisible}
+          isVisible={playsInModalVisible}
           backdropColor="black"
           style={{
             margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
           }}
           hasBackdrop
-          onBackdropPress={() => setRefereesInModalVisible(false)}
+          onBackdropPress={() => setPlaysInModalVisible(false)}
           backdropOpacity={0}
         >
           <View style={styles.modalContainerViewStyle}>
-            <Image style={ styles.background } source={ images.bgImage } />
+            <Image style={styles.background} source={images.bgImage} />
+            <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} />
             <SafeAreaView style={{ flex: 1 }}>
               <Header
                 safeAreaStyle={{ marginTop: 10 }}
@@ -1390,14 +1398,14 @@ export default function HomeScreen({ navigation, route }) {
                   </View>
                 }
                 rightComponent={
-                  <TouchableOpacity onPress={() => setRefereesInModalVisible(false)}>
+                  <TouchableOpacity onPress={() => setPlaysInModalVisible(false)}>
                     <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
                   </TouchableOpacity>
                 }
               />
               <ProfileViewSection
-                profileImage={images.profilePlaceHolder}
-                userName={'Christiano Ronaldo'}
+                profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
+                userName={fullName}
               />
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem
@@ -1413,23 +1421,23 @@ export default function HomeScreen({ navigation, route }) {
                       padding: 0, marginTop: 3, color: colors.whiteColor, fontFamily: fonts.RRegular,
                     }}
                     descText={{ fontSize: 16, color: colors.whiteGradientColor, fontFamily: fonts.RLight }}
-                    descriptions={strings.aboutValue}
+                    descriptions={bioDescription}
                   />
                   <Text style={styles.signUpTextStyle}>{strings.signedUpTime}</Text>
                   <FlatList
-                    data={teamDataInfo}
-                    horizontal={true}
+                    data={teamData}
                     bounces={false}
+                    horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={{
                       width: 1, backgroundColor: colors.whiteColor, marginVertical: 10, marginHorizontal: 15,
                     }} />}
                     renderItem={({ item: attachItem }) => <TeamViewInfoSection
-                    teamImage={attachItem.teamImage}
-                    teamTitle={attachItem.teamTitle}
-                    teamIcon={attachItem.teamIcon}
-                    teamCityName={attachItem.teamCity}
-                  />}
+                    teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.team_ph}
+                    teamTitle={attachItem.group_name}
+                    teamIcon={images.myTeams}
+                    teamCityName={`${attachItem.city}, ${attachItem.country}`}
+                    />}
                     keyExtractor={(item, index) => index.toString()}
                   />
                 </RefereesInItem>
@@ -1442,7 +1450,7 @@ export default function HomeScreen({ navigation, route }) {
                   }}
                 >
                   <RecentMatchView
-                    data={recentMatchData.length > 0 ? recentMatchData[0] : []}
+                    data={recentMatchData.length > 0 ? recentMatchData[0] : null}
                   />
                 </RefereesInItem>
 
@@ -1454,14 +1462,7 @@ export default function HomeScreen({ navigation, route }) {
                   }}
                 >
                   <UpcomingMatchView
-                    date={'Sep 26.'}
-                    startTime={'7:00pm - '}
-                    endTime={'9:10pm'}
-                    cityName={'BC Stadium'}
-                    firstTeamImage={images.commentReport}
-                    secondTeamImage={images.usaImage}
-                    firstTeamName={'Vancouver Whitecaps'}
-                    secondTeamName={'Newyork City FC'}
+                    data={upcomingMatchData.length > 0 ? upcomingMatchData[0] : null}
                   />
                 </RefereesInItem>
 
@@ -1473,38 +1474,38 @@ export default function HomeScreen({ navigation, route }) {
                   }}
                 >
                   <StatsView
-                    pastTime={'[ For past 12 months ]'}
                     TotalGameText={'Total Games'}
-                    totalGameCounter={'140'}
+                    totalGameCounter={gameStatsData ? gameStatsData.total_games : ''}
                     winTitle={'Win'}
-                    winPercentage={50}
-                    winProgress={0.5}
+                    winPercentage={gameStatsData ? gameStatsData.winner : ''}
+                    winProgress={gameStatsData.winner !== 0 ? (1 * gameStatsData.winner) / gameStatsData.total_games : 0}
                     winProgressColor={colors.orangeColor}
                     winPercentageTextStyle={{ color: colors.orangeColor }}
                     drawTitle={'Draw'}
-                    drawPercentage={40}
-                    drawProgress={0.4}
+                    drawPercentage={gameStatsData ? gameStatsData.draw : ''}
+                    drawProgress={gameStatsData.draw !== 0 ? (1 * gameStatsData.draw) / gameStatsData.total_games : 0}
                     drawProgressColor={colors.greeColor}
                     drawPercentageTextStyle={{ color: colors.greeColor }}
                     lossTitle={'Loss'}
-                    lossPercentage={10}
-                    lossProgress={0.1}
+                    lossPercentage={gameStatsData ? gameStatsData.looser : ''}
+                    lossProgress={gameStatsData.looser !== 0 ? (1 * gameStatsData.looser) / gameStatsData.total_games : 0}
                     lossProgressColor={colors.blueColor}
                     lossPercentageTextStyle={{ color: colors.blueColor }}
                     sections={[
                       {
-                        percentage: 50,
+                        percentage: gameStatsData.winner !== 0 ? (100 * gameStatsData.winner) / gameStatsData.total_games : 0,
                         color: colors.orangeColor,
                       },
                       {
-                        percentage: 40,
+                        percentage: gameStatsData.draw !== 0 ? (100 * gameStatsData.draw) / gameStatsData.total_games : 0,
                         color: colors.greeColor,
                       },
                       {
-                        percentage: 10,
+                        percentage: gameStatsData.looser !== 0 ? (100 * gameStatsData.looser) / gameStatsData.total_games : 0,
                         color: colors.blueColor,
                       },
                     ]}
+                    progressBarWinPercentage={gameStatsData.winner !== 0 ? (1 * gameStatsData.winner) / gameStatsData.total_games : 0}
                   />
                 </RefereesInItem>
               </ScrollView>
@@ -1522,8 +1523,14 @@ export default function HomeScreen({ navigation, route }) {
             backdropOpacity={0}
           >
             <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+              <LinearGradient
+                  colors={[colors.orangeColor, colors.yellowColor]}
+                  end={{ x: 0.0, y: 0.25 }}
+                  start={{ x: 1, y: 0.5 }}
+                  style={styles.gradiantHeaderViewStyle}>
+              </LinearGradient>
               <Header
-                mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+                mainContainerStyle={styles.headerMainContainerStyle}
                 leftComponent={
                   <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
                     <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
@@ -1546,7 +1553,7 @@ export default function HomeScreen({ navigation, route }) {
                 navigation={navigation}
                 onItemPress={() => {
                   setInfoModalVisible(false);
-                  setRefereesInModalVisible(false);
+                  setPlaysInModalVisible(false);
                   navigation.navigate('SearchLocationScreen', {
                     comeFrom: 'HomeScreen',
                   })
@@ -1580,8 +1587,14 @@ export default function HomeScreen({ navigation, route }) {
             <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
               <View>
                 <Image style={[styles.background, { borderTopLeftRadius: 10, borderTopRightRadius: 10 }]} source={ images.orangeLayer } />
+                <LinearGradient
+                  colors={[colors.orangeColor, colors.yellowColor]}
+                  end={{ x: 0.0, y: 0.25 }}
+                  start={{ x: 1, y: 0.5 }}
+                  style={styles.gradiantHeaderViewStyle}>
+                </LinearGradient>
                 <Header
-                  mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+                  mainContainerStyle={styles.headerMainContainerStyle}
                   leftComponent={
                     <TouchableOpacity onPress={() => setScoreboardModalVisible(false)}>
                       <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
@@ -1628,8 +1641,14 @@ export default function HomeScreen({ navigation, route }) {
             backdropOpacity={0}
           >
             <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+              <LinearGradient
+                colors={[colors.orangeColor, colors.yellowColor]}
+                end={{ x: 0.0, y: 0.25 }}
+                start={{ x: 1, y: 0.5 }}
+                style={styles.gradiantHeaderViewStyle}>
+              </LinearGradient>
               <Header
-                mainContainerStyle={[styles.headerMainContainerStyle, { backgroundColor: colors.orangeColor }]}
+                mainContainerStyle={styles.headerMainContainerStyle}
                 leftComponent={
                   <TouchableOpacity onPress={() => setStatsModalVisible(false)}>
                     <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
@@ -1653,6 +1672,44 @@ export default function HomeScreen({ navigation, route }) {
               />
             </SafeAreaView>
           </Modal>
+        </Modal>
+
+        <Modal
+          isVisible={refereesInModalVisible}
+          backdropColor="black"
+          style={{
+            margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+          hasBackdrop
+          onBackdropPress={() => setRefereesInModalVisible(false)}
+          backdropOpacity={0}
+        >
+          <View style={styles.modalContainerViewStyle}>
+            <Image style={ styles.background } source={ images.bgImage } />
+            <SafeAreaView style={{ flex: 1 }}>
+              <Header
+                safeAreaStyle={{ marginTop: 10 }}
+                mainContainerStyle={styles.headerMainContainerStyle}
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Referees in Soccer'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setRefereesInModalVisible(false)}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
+              <RefereesProfileSection
+                profileImage={images.profilePlaceHolder}
+                userName={'Christiano Ronaldo'}
+              />
+              <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
+              </ScrollView>
+            </SafeAreaView>
+          </View>
         </Modal>
       </ParallaxScrollView>
       {!createEventModal && currentTab === 3 && <CreateEventButton
@@ -1754,6 +1811,11 @@ const styles = StyleSheet.create({
     width: 20,
     marginHorizontal: 10,
   },
+  refereesImageStyle: {
+    height: 30,
+    width: 30,
+    marginHorizontal: 10,
+  },
   headerCenterViewStyle: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -1818,5 +1880,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginLeft: -59,
     borderRadius: 10,
+  },
+  dataNotFoundText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
+  gradiantHeaderViewStyle: {
+    position: 'absolute',
+    width: '100%',
+    height: 50,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
 });

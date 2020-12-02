@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 const images = {
   orangeLayer: require('../assets/images/orange_layer.png'),
+  headerGradiantImage: require('../assets/images/Header_Image.png'),
   signUpBg1: require('../assets/images/ic_signup_bg_1.png'),
   signUpBg2: require('../assets/images/ic_signup_bg_2.png'),
   signUpBg3: require('../assets/images/ic_signup_bg_3.png'),
@@ -133,6 +134,8 @@ const images = {
   myLeagues: require('../assets/images/My_Leagues.png'),
   paymentPayout: require('../assets/images/PaymentPayout.png'),
   SettingPrivacy: require('../assets/images/SettingPrivacy.png'),
+  settingImage: require('../assets/images/Setting_Image.png'),
+  refereesInImage: require('../assets/images/referees_in_image.png'),
   Members: require('../assets/images/members.png'),
 
   createTeam: require('../assets/images/Create_a_team.png'),

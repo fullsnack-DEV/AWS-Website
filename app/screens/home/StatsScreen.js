@@ -127,7 +127,7 @@ export default function StatsScreen({
                 color: colors.orangeColor,
               },
               {
-                percentage: gameStatsData.winner !== 0 ? (100 * gameStatsData.draw) / gameStatsData.total_games : 0,
+                percentage: gameStatsData.draw !== 0 ? (100 * gameStatsData.draw) / gameStatsData.total_games : 0,
                 color: colors.greeColor,
               },
               {

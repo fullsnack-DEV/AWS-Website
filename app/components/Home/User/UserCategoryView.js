@@ -6,10 +6,10 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
 export default function UserCategoryView({
-  title = 'Admin', titleColor = colors.themeColor,
+  title = 'Admin', titleColor = colors.themeColor, badgeView,
 }) {
   return (
-    <View style={styles.badgeView}>
+    <View style={[styles.badgeView, badgeView]}>
       <Text style={[styles.roleTitle, { color: titleColor }]}>{title}</Text>
     </View>
   );

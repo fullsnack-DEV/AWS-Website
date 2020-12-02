@@ -45,21 +45,6 @@ const createdEventData = [
     color: colors.eventBlueColor,
     isSelected: false,
   },
-  {
-    id: 4,
-    color: colors.themeColor,
-    isSelected: false,
-  },
-  {
-    id: 5,
-    color: colors.yellowColor,
-    isSelected: false,
-  },
-  {
-    id: 6,
-    color: colors.greeColor,
-    isSelected: false,
-  },
 ];
 
 const importedEventData = [
@@ -116,6 +101,7 @@ export default function DefaultColorScreen({ navigation }) {
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
   const [pressAddEventColor, setPressAddEventColor] = useState('');
+  const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -153,6 +139,7 @@ export default function DefaultColorScreen({ navigation }) {
                 return (
                   <EventColorItem
                     onItemPress={() => {
+                      setAddColorDoneButton(false);
                       toggleModal();
                       setSelectedEventColors([])
                       setPressAddEventColor('Created Events');
@@ -203,6 +190,7 @@ export default function DefaultColorScreen({ navigation }) {
                 return (
                   <EventColorItem
                     onItemPress={() => {
+                      setAddColorDoneButton(false);
                       toggleModal();
                       setSelectedEventColors([])
                       setPressAddEventColor('Imported Events');
@@ -253,6 +241,7 @@ export default function DefaultColorScreen({ navigation }) {
                 return (
                   <EventColorItem
                     onItemPress={() => {
+                      setAddColorDoneButton(false);
                       toggleModal();
                       setSelectedEventColors([])
                       setPressAddEventColor('Game Events');
@@ -298,6 +287,7 @@ export default function DefaultColorScreen({ navigation }) {
         onCancelImagePress={() => setModalVisible(false)}
         headerCenterText={'Add color'}
         onColorSelected={(selectColor) => {
+          setAddColorDoneButton(true);
           const data = [...selectedEventColors];
           let obj = {};
           if (pressAddEventColor === 'Created Events') {
@@ -334,6 +324,7 @@ export default function DefaultColorScreen({ navigation }) {
             }
           }
         }}
+        doneButtonDisplay={addColorDoneButton}
         onDonePress={() => {
           if (pressAddEventColor === 'Created Events') {
             const createdEventAddData = [...createdEventColors, ...selectedEventColors];
