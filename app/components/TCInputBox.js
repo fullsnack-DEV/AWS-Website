@@ -19,11 +19,14 @@ const TCInputBox = ({
   onFocus,
   style,
   value,
+  multiline = false,
+  textInputStyle,
 }) => (
   <View style={{ ...styles.sectionStyle, ...style }} >
     <TextInput
+        multiline={multiline}
         value={value}
-        style={ styles.textInput }
+        style={{ ...styles.textInput, ...textInputStyle }}
         placeholder={placeHolderText}
         clearButtonMode="always"
         placeholderTextColor={ colors.userPostTimeColor }

@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
+import moment from 'moment';
 import fonts from '../../../../../Constants/Fonts';
 import RatingForTeams from './RatingForTeams';
 import colors from '../../../../../Constants/Colors';
@@ -8,10 +9,17 @@ import ReviewsList from './ReviewsList';
 import TCGradientButton from '../../../../TCGradientButton';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import TCInnerLoader from '../../../../TCInnerLoader';
+import {
+  checkReviewExpired,
+  getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS,
+} from '../../../../../utils/gameUtils';
 
-const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
+const Review = ({
+  navigation, gameData, isAdmin, getSoccerGameReview,
+}) => {
   const [loading, setLoading] = useState(true);
   const [reviewsData, setReviewsData] = useState([]);
+
   useEffect(() => {
     setLoading(true);
     getSoccerGameReview(gameData?.game_id).then((res) => {
@@ -19,7 +27,7 @@ const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
     }).catch((error) => {
       console.log(error);
     }).finally(() => setLoading(false));
-  }, [])
+  }, [navigation])
   const Seperator = () => (
     <View style={styles.separator}/>
   )
@@ -27,9 +35,16 @@ const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
     <View style={styles.mainContainer}>
 
       {/*  Leave Review Section */}
-      {!isAdmin && (<View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
-        <View>
-          <TCGradientButton
+      {gameData?.status === 'ended' && checkReviewExpired(gameData?.actual_enddatetime) && (
+        <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
+          <View>
+            <TCGradientButton
+              onPress={() => {
+                navigation.navigate('LeaveReview',
+                  {
+                    gameData,
+                  })
+              }}
                     startGradientColor={colors.yellowColor}
                     endGradientColor={colors.themeColor}
                     title={'LEAVE REVIEW'}
@@ -38,11 +53,35 @@ const Review = ({ gameData, isAdmin, getSoccerGameReview }) => {
                     }}
                     outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
                 />
-          <Text style={styles.reviewPeriod}>
-            The review period will be expired within  <Text style={{ fontFamily: fonts.RBold }}>4d 23h 59m left</Text>
-          </Text>
+
+          </View>
         </View>
-      </View>
+      )}
+      {gameData?.status === 'ended' && (
+        <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
+          {!checkReviewExpired(gameData?.actual_enddatetime) ? (
+            <Text style={styles.reviewPeriod}>
+              The review period will be expired within
+              <Text style={{ fontFamily: fonts.RBold }}>
+                {getGameDateTimeInDHMformat(
+                  (moment(gameData?.actual_enddatetime * 1000)
+                    .add(REVIEW_EXPIRY_DAYS, 'days')) / 1000,
+                )}
+              </Text>
+            </Text>
+          ) : (
+            <Text style={{
+              ...styles.reviewPeriod,
+              marginVertical: 10,
+            }}>
+              The review period is{' '}
+              <Text style={{ fontFamily: fonts.RBold }}>
+                expired
+              </Text>
+            </Text>
+          )}
+
+        </View>
       )}
       {!isAdmin && <Seperator/>}
 
@@ -79,7 +118,7 @@ const styles = StyleSheet.create({
   },
   reviewPeriod: {
     marginHorizontal: 5,
-    fontSize: 12,
+    fontSize: 16,
     color: colors.themeColor,
     fontFamily: fonts.RRegular,
   },

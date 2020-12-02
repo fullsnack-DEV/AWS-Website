@@ -76,6 +76,13 @@ const decreaseGameScore = (teamId, gameId) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/decreaseScore`,
 })
+
+const addGameReview = (gameId, params) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/games/${gameId}/reviews`,
+  data: params,
+})
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -92,4 +99,5 @@ export {
   addGameRecord,
   resetGame,
   decreaseGameScore,
+  addGameReview,
 }

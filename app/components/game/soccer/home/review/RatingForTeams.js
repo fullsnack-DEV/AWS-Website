@@ -18,21 +18,43 @@ const RatingForTeams = ({ gameData, reviewsData }) => {
     if (reviewsData) processChartData(reviewsData?.averageReview)
   }, [reviewsData]);
 
-  const processChartData = (teamsRatingData) => {
+  const processChartData = async (teamsRatingData) => {
     let homeTeamRatings = {};
     let awayTeamRatings = {};
     if (teamsRatingData.length) {
-      teamsRatingData.map((item) => {
-        if (item.team_id === gameData?.home_team?.group_id) {
-          homeTeamRatings = item.avg_review;
-        } else if (item.team_id === gameData?.away_team?.group_id) {
-          awayTeamRatings = item.avg_review;
+      const process = new Promise((resolve) => {
+        teamsRatingData.map((item) => {
+          if (item.team_id === gameData?.home_team?.group_id) {
+            const homeTempRate = item.avg_review;
+            Object.keys(homeTempRate).map((homeTeamItem) => {
+              if (_.isNaN(homeTempRate[homeTeamItem])) {
+                homeTempRate[homeTeamItem] = 0
+              }
+              return homeTeamItem;
+            });
+            homeTeamRatings = homeTempRate;
+          } else if (item.team_id === gameData?.away_team?.group_id) {
+            const awayTempRate = item.avg_review;
+            Object.keys(awayTempRate).map((awayTeamItem) => {
+              if (_.isNaN(awayTempRate[awayTeamItem])) {
+                awayTempRate[awayTeamItem] = 0
+              }
+              return awayTeamItem;
+            });
+
+            awayTeamRatings = awayTempRate;
+          }
+          setTimeout(resolve, 100);
+          return item;
+        });
+      })
+      Promise.all([process]).then(() => {
+        setRatings({ home_team: homeTeamRatings, away_team: awayTeamRatings })
+        if (homeTeamRatings) setRadarChartAttributes([...Object.keys(homeTeamRatings)]);
+        if (homeTeamRatings && awayTeamRatings) {
+          setRadarChartData([{ ...awayTeamRatings }, { ...homeTeamRatings }]);
         }
-        return item;
-      });
-      setRatings({ home_team: homeTeamRatings, away_team: awayTeamRatings })
-      if (homeTeamRatings) setRadarChartAttributes([...Object.keys(homeTeamRatings)]);
-      if (homeTeamRatings && awayTeamRatings) setRadarChartData([{ ...awayTeamRatings }, { ...homeTeamRatings }]);
+      })
     }
   }
   return (
