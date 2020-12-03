@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -19,7 +19,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import Separator from '../../components/Separator';
-
+import AuthContext from '../../auth/context'
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
@@ -27,6 +27,7 @@ import { searchGroups } from '../../api/Groups';
 import searchLocation from '../../api/External';
 
 export default function ChooseLocationScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -37,7 +38,7 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocation(searchLocationText).then((response) => {
+      searchLocation(searchLocationText, authContext).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       }).catch((error) => {
@@ -55,7 +56,7 @@ export default function ChooseLocationScreen({ navigation }) {
       city: item.terms[0].value,
     };
 
-    searchGroups(queryParams).then((response) => {
+    searchGroups(queryParams, authContext).then((response) => {
       if (response.payload.length > 0) {
         navigation.navigate('TotalTeamsScreen', {
           city: item.terms[0].value,

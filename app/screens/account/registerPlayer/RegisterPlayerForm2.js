@@ -54,7 +54,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
       const body = {
         registered_sports: registerdPlayerData,
       }
-      patchPlayer(body).then(async (response) => {
+      patchPlayer(body, authContext).then(async (response) => {
         if (response.status === true) {
           // FIXME:
           await Utility.setStorage('user', response.payload);

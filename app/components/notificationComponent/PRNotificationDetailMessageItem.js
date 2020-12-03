@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View, StyleSheet, Text, TouchableOpacity,
 } from 'react-native';
@@ -6,15 +6,17 @@ import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String'
 import TCProfileImage from '../TCProfileImage'
 import colors from '../../Constants/Colors'
+import AuthContext from '../../auth/context'
 import { parseRequest } from '../../screens/notificationsScreen/PRNotificationParser';
 
 function PRNotificationDetailMessageItem({
   item, selectedEntity, onPress, onDetailPress, onMessagePress,
 }) {
+  const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState()
 
   useEffect(() => {
-    parseRequest(item, selectedEntity).then((data) => {
+    parseRequest(item, selectedEntity, authContext.entity).then((data) => {
       setDataDictionary(data)
     })
   }, []);

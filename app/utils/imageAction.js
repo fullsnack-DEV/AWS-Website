@@ -35,7 +35,7 @@ const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
   throw new Error('upoad-failed')
 };
 
-const uploadImage = (data) => {
+const uploadImage = (data, authContext) => {
   const image = {
     ...data,
     thumbURL: '',
@@ -43,7 +43,7 @@ const uploadImage = (data) => {
   };
   return getImagePreSignedURL({
     count: 2,
-  }).then((response) => {
+  }, authContext).then((response) => {
     const preSignedUrls = response.payload.preSignedUrls || [];
     if (preSignedUrls.length !== 2) {
       throw new Error('failed-presigned-url')
@@ -64,10 +64,10 @@ const uploadImage = (data) => {
   });
 };
 
-const uploadImages = async (images, cb = () => {}) => {
+const uploadImages = async (images, authContext, cb = () => {}) => {
   let completed = 0;
   const promises = [];
-  images.forEach((item) => promises.push(uploadImage(item)));
+  images.forEach((item) => promises.push(uploadImage(item, authContext)));
   cb(0, images.length);
   for (const promise of promises) {
     // eslint-disable-next-line no-loop-func

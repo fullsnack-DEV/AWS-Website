@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import React, {
+  useEffect, useState, useLayoutEffect, useContext,
+} from 'react';
 import {
   View, StyleSheet, FlatList, Alert, Text,
 } from 'react-native';
@@ -7,7 +9,7 @@ import PRNotificationDetailMessageItem from '../../components/notificationCompon
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
-
+import AuthContext from '../../auth/context'
 import { getTrash, restoreNotification } from '../../api/Notificaitons';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -19,6 +21,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 
 function TrashScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(true);
   const [mainNotificationsList, setMainNotificationsList] = useState();
   const [selectedEntity, setSelectedEntity] = useState();
@@ -38,7 +41,7 @@ function TrashScreen({ navigation, route }) {
           ? route.params.selectedGroup.user_id
           : route.params.selectedGroup.group_id,
     };
-    getTrash(params)
+    getTrash(params, authContext)
       .then((response) => {
         const requests = response.payload.requests.map((obj) => ({ ...obj, type: 'request', createdDate: new Date(`${obj.created_at}+0000`) }))
         const notifications = response.payload.notifications.map((obj) => ({ ...obj, type: 'notification', createdDate: new Date(`${obj.updated_at}+0000`) }))
@@ -58,7 +61,7 @@ function TrashScreen({ navigation, route }) {
     for (const temData of item.activities) {
       ids.push(temData.id);
     }
-    restoreNotification(ids, item.type).then(() => {
+    restoreNotification(ids, item.type, authContext).then(() => {
       callTrashApi()
     })
       .catch((e) => {

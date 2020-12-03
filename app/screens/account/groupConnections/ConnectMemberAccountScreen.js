@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useEffect,
+  useState, useLayoutEffect, useEffect, useContext,
 } from 'react';
 import {
   View,
@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
-import LinearGradient from 'react-native-linear-gradient';
-import * as Utility from '../../../utils/index';
-import TCSearchBox from '../../../components/TCSearchBox';
+import LinearGradient from 'react-native-linear-gradient'
+import TCSearchBox from '../../../components/TCSearchBox'
 
 import { getGroupMembers, connectProfile } from '../../../api/Groups';
 
@@ -22,10 +21,12 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import AuthContext from '../../../auth/context'
 
 let entity = {};
 export default function ConnectMemberAccountScreen({ navigation, route }) {
   const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext)
   // For activity indigator
   const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState([]);
@@ -34,7 +35,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
     }
     getMembers()
@@ -51,7 +52,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
 
   const getMembers = async () => {
     setloading(true)
-    getGroupMembers(route.params.groupID)
+    getGroupMembers(route.params.groupID, authContext)
       .then((response) => {
         // eslint-disable-next-line array-callback-return
         response.payload.map((e) => {
@@ -71,7 +72,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
     const obj = result[0]
     if (result.length > 0) {
       setloading(true)
-      connectProfile(switchUser.uid, obj.user_id).then(() => {
+      connectProfile(switchUser.uid, obj.user_id, authContext).then(() => {
         setloading(false)
         navigation.navigate('ConnectionReqSentScreen', { memberObj: obj });
       })

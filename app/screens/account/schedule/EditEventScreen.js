@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -16,7 +16,7 @@ import {
 } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
 import Header from '../../../components/Home/Header';
-import * as Utility from '../../../utils/index';
+import AuthContext from '../../../auth/context'
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
@@ -58,6 +58,7 @@ const eventColorData = [
 ];
 
 export default function EditEventScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   let event_Title = 'Game';
   let aboutDescription = 'Game With';
   let aboutDescription2 = '';
@@ -208,7 +209,7 @@ export default function EditEventScreen({ navigation, route }) {
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
             setloading(true);
-            const entity = await Utility.getStorage('loggedInEntity');
+            const entity = authContext.entity
             const u_id = entity.uid || entity.auth.user_id;
             const entityRole = entity.role === 'user' ? 'users' : 'groups';
             const params = {
@@ -233,8 +234,8 @@ export default function EditEventScreen({ navigation, route }) {
               is_recurring: false,
               createdAt: createdAtDate,
             };
-            editEvent(entityRole, u_id, params)
-              .then(() => getEvents(entityRole, u_id))
+            editEvent(entityRole, u_id, params, authContext)
+              .then(() => getEvents(entityRole, u_id, authContext))
               .then((response) => {
                 setloading(false);
                 navigation.goBack();

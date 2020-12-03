@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Alert, FlatList, View,
 } from 'react-native';
@@ -11,11 +11,13 @@ import MultipleVideoRender from '../../../../Home/MultipleVideoRender';
 import uploadImages from '../../../../../utils/imageAction';
 import { createPost, getNewsFeed } from '../../../../../api/NewsFeeds';
 import ActivityLoader from '../../../../loader/ActivityLoader';
+import AuthContext from '../../../../../auth/context'
 
 const Gallery = ({
   setUploadImageProgressData, navigation, gameData, getSoccerGalleryData,
 }) => {
   const [allData, setAllData] = useState([]);
+  const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
@@ -49,7 +51,7 @@ const Gallery = ({
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, progressStatus).then((responses) => {
+      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
         const attachments = responses.map((item) => ({
           type: 'image',
           url: item.fullImage,
@@ -61,8 +63,8 @@ const Gallery = ({
           text: postDesc && postDesc,
           attachments,
         };
-        createPost(dataParams)
-          .then(() => getNewsFeed())
+        createPost(dataParams, authContext)
+          .then(() => getNewsFeed(authContext))
           .then((response) => {
             setPostData(response?.payload?.results ?? [])
             setProgressBar(false);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -21,15 +21,17 @@ import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import AuthContext from '../../auth/context'
 
 export default function TagUserScreen({ backBtnPress, onItemPress }) {
   const [searchUser, setSearchUser] = useState('');
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [filteredUserData, setFilteredUserData] = useState([]);
+  const authContext = useContext(AuthContext)
 
   useEffect(() => {
-    getUserList()
+    getUserList(authContext)
       .then((response) => {
         setUserData(response.payload);
       })
@@ -40,7 +42,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
   }, []);
 
   useEffect(() => {
-    getMyGroups()
+    getMyGroups(authContext)
       .then((response) => {
         setGroupData(response.payload);
       })

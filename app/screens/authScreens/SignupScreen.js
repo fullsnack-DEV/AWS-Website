@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -28,6 +28,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
+import AuthContext from '../../auth/context'
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -41,6 +42,7 @@ const config = {
 };
 
 export default function SignupScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [fName, setFName] = useState('');
   const [lName, setLName] = useState('');
   const [email, setEmail] = useState('');
@@ -126,7 +128,7 @@ export default function SignupScreen({ navigation }) {
           user.sendEmailVerification();
         });
         return saveUserDetails().then((user) => {
-          getUserDetails(user.uid)
+          getUserDetails(user.uid, authContext)
             .then(() => {
               setloading(false);
               Alert.alert('This user is already registered!');

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -18,16 +18,17 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 
-import * as Utility from '../../../../utils/index';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import { createGroup } from '../../../../api/Groups';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
+import AuthContext from '../../../../auth/context'
 
 export default function CreateClubForm3({ navigation, route }) {
   const [membershipFee, setMembershipFee] = useState(0);
+  const authContext = useContext(AuthContext)
   const [feeCycle, setFeeCycle] = useState('');
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
   const [loading, setloading] = useState(false);
@@ -59,9 +60,10 @@ export default function CreateClubForm3({ navigation, route }) {
     (bodyParams.entity_type = 'club');
     bodyParams.unread = 0;
 
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     // FIXME
     createGroup(
+      authContext,
       bodyParams,
       entity.role === 'team' && entity.uid,
       entity.role === 'team' && 'club',

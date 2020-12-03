@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import React, {
+  useEffect, useState, useLayoutEffect, useContext,
+} from 'react';
 import {
   StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
 } from 'react-native';
@@ -10,8 +12,10 @@ import { createPost, getNewsFeed, getNewsFeedNextList } from '../../api/NewsFeed
 import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
+import AuthContext from '../../auth/context'
 
 export default function FeedsScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(true);
@@ -24,7 +28,7 @@ export default function FeedsScreen({ navigation }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      getNewsFeed()
+      getNewsFeed(authContext)
         .then((response) => {
           setloading(false);
           setPostData(response.payload.results)
@@ -60,7 +64,7 @@ export default function FeedsScreen({ navigation }) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, progressStatus).then((responses) => {
+      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
         const attachments = responses.map((item) => ({
           type: 'image',
           url: item.fullImage,
@@ -70,8 +74,8 @@ export default function FeedsScreen({ navigation }) {
           text: postDesc && postDesc,
           attachments,
         };
-        createPost(dataParams)
-          .then(() => getNewsFeed())
+        createPost(dataParams, authContext)
+          .then(() => getNewsFeed(authContext))
           .then((response) => {
             setPostData(response.payload.results)
             setProgressBar(false);
@@ -115,7 +119,7 @@ export default function FeedsScreen({ navigation }) {
                 id_lt: postData[postData.length - 1].id,
               };
               if (isMoreLoading && isNextDataLoading) {
-                getNewsFeedNextList(params).then((response) => {
+                getNewsFeedNextList(params, authContext).then((response) => {
                   if (response) {
                     if (response.payload.next === '') {
                       setIsNextDataLoading(false);

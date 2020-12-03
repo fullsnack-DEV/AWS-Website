@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useContext,
+} from 'react';
 import {
   View,
   Platform,
@@ -23,8 +25,7 @@ import fonts from '../../Constants/Fonts';
 import TCInputBox from '../TCInputBox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
 import TCMessage from '../TCMessage';
-import * as Utility from '../../utils';
-
+import AuthContext from '../../auth/context'
 import {
   QB_ACCOUNT_TYPE,
   QB_DIALOG_TYPE, QBgetMessages, QBgetUserDetail, QBsendMessage,
@@ -46,6 +47,7 @@ const MessageChat = ({
   route,
   navigation,
 }) => {
+  const authContext = useContext(AuthContext)
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -90,8 +92,7 @@ const MessageChat = ({
 
   useEffect(() => {
     const getUser = async () => {
-      const entity = await Utility.getStorage('loggedInEntity');
-      setMyUserId(entity.QB.id);
+      setMyUserId(authContext.entity.QB.id);
       setLoading(true);
       await getMessages();
       setTimeout(() => onInputBoxFocus(), 200)
@@ -159,9 +160,9 @@ const MessageChat = ({
     const displayDate = getDateTime('l', 'D MMM')
     const displayTime = getDateTime('lll', 'hh: mm A')
     let fullName = userData && userData[0] ? userData[0].fullName : headingTitle;
-    if (fullName.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
-      fullName = fullName.slice(2, fullName.length)
-    }
+    // if (fullName.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
+    fullName = fullName.slice(2, fullName.length)
+    // }
     let finalImage = images.profilePlaceHolder;
     if (isReceiver) {
       const customData = userData.length > 0 && userData[0]?.customData ? JSON.parse(userData[0].customData) : {};

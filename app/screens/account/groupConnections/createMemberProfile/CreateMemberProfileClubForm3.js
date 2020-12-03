@@ -1,4 +1,6 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, {
+  useState, useLayoutEffect, useEffect, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,13 +17,14 @@ import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
-import * as Utility from '../../../../utils/index';
 import TCTextField from '../../../../components/TCTextField';
+import AuthContext from '../../../../auth/context'
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 
 let entity = {};
 export default function CreateMemberProfileClubForm3({ navigation, route }) {
   const [note, setNote] = useState('');
+  const authContext = useContext(AuthContext)
   const [auth, setAuth] = useState({})
   const [loading, setloading] = useState(false);
   const [groups, setGroups] = useState({
@@ -62,7 +65,7 @@ export default function CreateMemberProfileClubForm3({ navigation, route }) {
   //   navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
   // }
   const getAuthEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
+    entity = authContext.entity
     setAuth(entity);
     setGroups({ ...groups, entity_type: entity.role })
   }
@@ -73,7 +76,7 @@ export default function CreateMemberProfileClubForm3({ navigation, route }) {
       const imageArray = []
 
       imageArray.push({ path: route.params.form2.full_image });
-      uploadImages(imageArray).then((responses) => {
+      uploadImages(imageArray, authContext).then((responses) => {
         const attachments = responses.map((item) => ({
           type: 'image',
           url: item.fullImage,
@@ -101,7 +104,7 @@ export default function CreateMemberProfileClubForm3({ navigation, route }) {
     }
   }
   const createProfile = (params) => {
-    createMemberProfile(entity.uid, params).then((response) => {
+    createMemberProfile(entity.uid, params, authContext).then((response) => {
       setloading(false);
       console.log('Response :', response.payload);
 

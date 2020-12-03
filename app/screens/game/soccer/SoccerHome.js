@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,7 +14,7 @@ import Gallery from '../../../components/game/soccer/home/gallary/Gallery';
 import {
   approveDisapproveGameRecords, getGameData, getGameGallery, getGameMatchRecords, getGameReviews, getGameStats,
 } from '../../../api/Games';
-import * as Utility from '../../../utils';
+import AuthContext from '../../../auth/context'
 import { followUser, unfollowUser } from '../../../api/Users';
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
@@ -32,6 +32,7 @@ const gameIds = [
 ]
 const globalGameId = gameIds[6];
 const SoccerHome = ({ navigation, route }) => {
+  const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
@@ -49,7 +50,7 @@ const SoccerHome = ({ navigation, route }) => {
     setLoading(true)
     getSoccerGameData(soccerGameId).then(async (res) => {
       if (res.status) {
-        const entity = await Utility.getStorage('loggedInEntity');
+        const entity = authContext.entity
         setUserRole(entity?.role);
         setUserId(entity?.uid);
         const checkIsAdmin = res?.payload?.home_team?.am_i_admin || res?.payload?.away_team?.am_i_admin;
@@ -61,14 +62,14 @@ const SoccerHome = ({ navigation, route }) => {
     }).finally(() => setLoading(false));
   }
 
-  const getSoccerGameData = (gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData);
-  const followSoccerUser = (params, userID) => followUser(params, userID);
-  const unFollowSoccerUser = (params, userID) => unfollowUser(params, userID);
-  const getSoccerGameMatchRecords = (gameId) => getGameMatchRecords(gameId);
-  const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params)
-  const getSoccerGameStats = (gameId) => getGameStats(gameId)
-  const getSoccerGameReview = (gameId) => getGameReviews(gameId)
-  const getSoccerGalleryData = (gameId) => getGameGallery(gameId)
+  const getSoccerGameData = (gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext);
+  const followSoccerUser = (params, userID) => followUser(params, userID, authContext);
+  const unFollowSoccerUser = (params, userID) => unfollowUser(params, userID, authContext);
+  const getSoccerGameMatchRecords = (gameId) => getGameMatchRecords(gameId, authContext);
+  const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext)
+  const getSoccerGameStats = (gameId) => getGameStats(gameId, authContext)
+  const getSoccerGameReview = (gameId) => getGameReviews(gameId, authContext)
+  const getSoccerGalleryData = (gameId) => getGameGallery(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>

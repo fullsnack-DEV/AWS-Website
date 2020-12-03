@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,8 +19,8 @@ import {
 } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
+import AuthContext from '../../../auth/context'
 import Header from '../../../components/Home/Header';
-import * as Utility from '../../../utils/index';
 import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -64,6 +64,7 @@ const eventColorsData = [
 
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext)
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [singleSelectEventColor, setSingleSelectEventColor] = useState(colors.orangeColor);
@@ -128,7 +129,7 @@ export default function CreateEventScreen({ navigation, route }) {
             lng: longValue,
           };
           setLocationDetail(obj);
-          getLocationNameWithLatLong(latValue, longValue).then((res) => {
+          getLocationNameWithLatLong(latValue, longValue, authContext).then((res) => {
             setSearchLocation(res.results[0].formatted_address);
           })
         },
@@ -161,7 +162,7 @@ export default function CreateEventScreen({ navigation, route }) {
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
-            const entity = await Utility.getStorage('loggedInEntity');
+            const entity = authContext.entity
             const uid = entity.uid || entity.auth.user_id;
             const entityRole = entity.role === 'user' ? 'users' : 'groups';
 
@@ -191,8 +192,8 @@ export default function CreateEventScreen({ navigation, route }) {
                 longitude: locationDetail.lng,
                 isBlocked: is_Blocked,
               }]
-              createEvent(entityRole, uid, data)
-                .then(() => getEvents(entityRole, uid))
+              createEvent(entityRole, uid, data, authContext)
+                .then(() => getEvents(entityRole, uid, authContext))
                 .then((response) => {
                   setloading(false);
                   navigation.goBack();

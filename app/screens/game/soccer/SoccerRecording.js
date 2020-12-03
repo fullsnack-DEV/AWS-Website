@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect, useState, useEffect, useRef,
+  useLayoutEffect, useState, useEffect, useRef, useContext,
 } from 'react';
 import {
   View,
@@ -19,12 +19,12 @@ import {
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
 import ReservationStatus from '../../../Constants/ReservationStatus';
 import TCGameButton from '../../../components/TCGameButton';
+import AuthContext from '../../../auth/context'
 import {
   getGameByGameID, addGameRecord, resetGame, decreaseGameScore,
 } from '../../../api/Games';
@@ -37,6 +37,7 @@ let lastTimeStamp;
 let lastVerb;
 export default function SoccerRecording({ navigation, route }) {
   const actionSheet = useRef();
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [actionByTeamID, setActionByTeamID] = useState();
   const [pickerShow, setPickerShow] = useState(false);
@@ -45,7 +46,7 @@ export default function SoccerRecording({ navigation, route }) {
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
     };
     getAuthEntity();
     if (route && route.params && route.params.gameId) {

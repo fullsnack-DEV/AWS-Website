@@ -1,14 +1,14 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
 import React, {
-  useState,
+  useState, useContext,
 } from 'react';
 import {
   Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,
 } from 'react-native';
 
 import { patchGroup } from '../../../api/Groups';
-import * as Utility from '../../../utils/index';
+import AuthContext from '../../../auth/context'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
@@ -19,15 +19,15 @@ import TCGradientButton from '../../../components/TCGradientButton';
 export default function ClubSettingScreen({ navigation }) {
   const [selected, setSelected] = useState(0);
   const [loading, setloading] = useState(false);
-
+  const authContext = useContext(AuthContext)
   const sendClubSetting = async () => {
     setloading(true)
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     const bodyParams = {
       allclubmembermannually_sync: selected === 0,
       allclubmemberautomatically_sync: selected === 1,
     }
-    patchGroup(entity.uid, bodyParams).then((response) => {
+    patchGroup(entity.uid, bodyParams, authContext).then((response) => {
       setloading(false)
       console.log('Response :', response.payload);
       navigation.goBack()

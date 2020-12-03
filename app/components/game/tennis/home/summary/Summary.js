@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View, StyleSheet,
 } from 'react-native';
@@ -11,6 +11,8 @@ import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import { getGameMatchRecords } from '../../../../../api/Games';
 import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
+import AuthContext from '../../../../../auth/context'
+
 import Scores from './Scores';
 
 const Summary = ({
@@ -20,11 +22,13 @@ const Summary = ({
   navigation,
   followSoccerUser,
   unFollowSoccerUser,
-}) => (
-  <View style={styles.mainContainer}>
-    {isAdmin && (
-      <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
-        <TCGradientButton
+}) => {
+  const authContext = useContext(AuthContext)
+  return (
+    <View style={styles.mainContainer}>
+      {isAdmin && (
+        <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
+          <TCGradientButton
           onPress={() => navigation.navigate('SoccerRecording')}
               startGradientColor={colors.yellowColor}
               endGradientColor={colors.themeColor}
@@ -34,41 +38,41 @@ const Summary = ({
               }}
               outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
           />
-        {/* {gameData?.status === 'ended' && !isAdmin && ( */}
-        {/*  <View> */}
-        {/*    <TCGradientButton */}
-        {/*      startGradientColor={colors.yellowColor} */}
-        {/*      endGradientColor={colors.themeColor} */}
-        {/*      title={'LEAVE REVIEW'} */}
-        {/*      style={{ */}
-        {/*        borderRadius: 5, */}
-        {/*      }} */}
-        {/*      outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }} */}
-        {/*    /> */}
-        {/*    <Text style={styles.reviewPeriod}> */}
-        {/*      Review period: <Text style={{ fontFamily: fonts.RBold }}>4d 23h 59m left</Text> */}
-        {/*    </Text> */}
-        {/*  </View> */}
-        {/* )} */}
-      </View>
-    )}
+          {/* {gameData?.status === 'ended' && !isAdmin && ( */}
+          {/*  <View> */}
+          {/*    <TCGradientButton */}
+          {/*      startGradientColor={colors.yellowColor} */}
+          {/*      endGradientColor={colors.themeColor} */}
+          {/*      title={'LEAVE REVIEW'} */}
+          {/*      style={{ */}
+          {/*        borderRadius: 5, */}
+          {/*      }} */}
+          {/*      outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }} */}
+          {/*    /> */}
+          {/*    <Text style={styles.reviewPeriod}> */}
+          {/*      Review period: <Text style={{ fontFamily: fonts.RBold }}>4d 23h 59m left</Text> */}
+          {/*    </Text> */}
+          {/*  </View> */}
+          {/* )} */}
+        </View>
+      )}
 
-    {/* Scores */}
-    <Scores />
+      {/* Scores */}
+      <Scores />
 
-    {/* Match Records */}
-    <MatchRecords
+      {/* Match Records */}
+      <MatchRecords
       navigation={navigation}
       gameId={gameData?.game_id}
       gameData={gameData}
-      getGameMatchRecords={getGameMatchRecords}
+      getGameMatchRecords={() => getGameMatchRecords(authContext)}
   />
 
-    {/* Special Rules */}
-    <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
+      {/* Special Rules */}
+      <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
 
-    {/* Regerees */}
-    <Referees
+      {/* Regerees */}
+      <Referees
       refereesData={gameData?.referees ?? []}
       isAdmin={isAdmin}
       userRole={userRole}
@@ -76,15 +80,16 @@ const Summary = ({
       unFollowSoccerUser={unFollowSoccerUser}
   />
 
-    {/* Scorekeepers */}
-    <Scorekeepers scorekeepersData={gameData?.scorekeepers ?? []} isAdmin={isAdmin} userRole={userRole}/>
+      {/* Scorekeepers */}
+      <Scorekeepers scorekeepersData={gameData?.scorekeepers ?? []} isAdmin={isAdmin} userRole={userRole}/>
 
-    {/* Feed Screen */}
-    <View style={{ backgroundColor: colors.whiteColor }}>
-      <FeedsScreen navigation={navigation}/>
+      {/* Feed Screen */}
+      <View style={{ backgroundColor: colors.whiteColor }}>
+        <FeedsScreen navigation={navigation}/>
+      </View>
     </View>
-  </View>
-)
+  )
+}
 
 const styles = StyleSheet.create({
   mainContainer: {

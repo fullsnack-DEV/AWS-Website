@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect, useEffect, useState, useRef,
+  useLayoutEffect, useEffect, useState, useRef, useContext,
 } from 'react';
 import {
   Text,
@@ -16,9 +16,9 @@ import { useIsFocused } from '@react-navigation/native';
 
 import ActionSheet from 'react-native-actionsheet';
 import { getGroupMembersInfo, deleteMember } from '../../../api/Groups';
-import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath'
+import AuthContext from '../../../auth/context'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import TCProfileView from '../../../components/TCProfileView';
@@ -36,6 +36,7 @@ export default function MembersProfileScreen({ navigation, route }) {
     'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
   const actionSheet = useRef();
+  const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(true);
   // const [editable, setEditable] = useState(true);
@@ -71,7 +72,7 @@ export default function MembersProfileScreen({ navigation, route }) {
   }
   const getMemberInformation = async () => {
     setloading(true)
-    entity = await Utility.getStorage('loggedInEntity');
+    entity = authContext.entity
     setSwitchUser(entity)
 
     // Setting of Edit option
@@ -85,7 +86,7 @@ export default function MembersProfileScreen({ navigation, route }) {
       setEditBasicInfo(true)
     }
 
-    getGroupMembersInfo(route.params.groupID, route.params.memberID).then((response) => {
+    getGroupMembersInfo(route.params.groupID, route.params.memberID, authContext).then((response) => {
       console.log('PROFILE RESPONSE::', response.payload);
       setMemberDetail(response.payload);
       setloading(false)
@@ -97,7 +98,7 @@ export default function MembersProfileScreen({ navigation, route }) {
   }
   const deleteMemberProfile = (groupID, memberID) => {
     setloading(true)
-    deleteMember(groupID, memberID).then((response) => {
+    deleteMember(groupID, memberID, authContext).then((response) => {
       setloading(false)
       console.log('PROFILE RESPONSE::', response.payload);
       navigation.goBack()

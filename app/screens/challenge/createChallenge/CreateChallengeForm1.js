@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,7 +13,6 @@ import {
 
 import TimePicker from 'react-native-24h-timepicker';
 import { getLatLong } from '../../../api/External';
-import * as Utility from '../../../utils/index';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -23,10 +24,12 @@ import TCLabel from '../../../components/TCLabel';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
 import EventMapView from '../../../components/Schedule/EventMapView';
+import AuthContext from '../../../auth/context'
 
 let entity = {};
 let bodyParams = {};
 export default function CreateChallengeForm1({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const monthNames = [
     'Jan',
     'Feb',
@@ -58,7 +61,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       if (route && route.params && route.params.groupObj) {
         teams.push(entity.obj);
         teams.push(route.params.groupObj);
@@ -84,7 +87,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
   }, []);
 
   const getLatLongData = () => {
-    getLatLong(route.params.venueObj.description).then((response) => {
+    getLatLong(route.params.venueObj.description, authContext).then((response) => {
       setCordinate({
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   FlatList,
   Image,
@@ -10,7 +10,6 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../../loader/ActivityLoader';
 import { getGameLineUp } from '../../../../../api/Games';
-import * as Utility from '../../../../../utils/index';
 import GameStatus from '../../../../../Constants/GameStatus';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
@@ -20,10 +19,12 @@ import TCMessageButton from '../../../../TCMessageButton';
 import TCSwitcher from '../../../../TCSwitcher';
 import TCThickDivider from '../../../../TCThickDivider';
 import LineUpPlayerView from './LineUpPlayerView';
+import AuthContext from '../../../../../auth/context'
 
 let entity = {};
 export default function LineUp({ navigation, gameData }) {
   const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(false);
   const [roster, setRoster] = useState([]);
   const [starting, setStarting] = useState([]);
@@ -32,10 +33,7 @@ export default function LineUp({ navigation, gameData }) {
   const [selected, setSelected] = useState(1);
 
   useEffect(() => {
-    const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
-    };
-    getAuthEntity();
+    entity = authContext.entity
     console.log('Game Object:::', gameData);
     if (selected === 1) {
       getLineUpOfTeams(gameData.home_team.group_id, gameData.game_id);
@@ -62,7 +60,7 @@ export default function LineUp({ navigation, gameData }) {
   };
   const getLineUpOfTeams = (teamID, gameID) => {
     setLoading(true);
-    getGameLineUp(teamID, gameID).then((response) => {
+    getGameLineUp(teamID, gameID, authContext).then((response) => {
       const rosterData = response.payload.roster;
       setLoading(false);
       setRoster(rosterData);

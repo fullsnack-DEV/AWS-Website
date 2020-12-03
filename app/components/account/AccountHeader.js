@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState,
+  useEffect, useState, useContext,
 } from 'react';
 import {
   View,
@@ -21,22 +21,22 @@ import {
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-
+import AuthContext from '../../auth/context'
 import {
   getGroupDetails,
-
 } from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
 
 export default function AccountHeader({ authEntity, entityRole }) {
   const [parentGroup, setParentGroup] = useState(null);
+  const authContext = useContext(AuthContext)
   useEffect(() => {
     getParentClub();
     console.log('AUTH DATA::', authEntity);
   }, [])
   const getParentClub = (item) => {
-    getGroupDetails(item.group_id).then((response) => {
+    getGroupDetails(item.group_id, authContext).then((response) => {
       if (response.payload.club !== undefined) {
         setParentGroup(response.payload.club);
       } else {

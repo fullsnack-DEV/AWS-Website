@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
@@ -6,19 +6,15 @@ import {
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import * as Utility from '../../utils/index';
+import AuthContext from '../../auth/context'
 
-let entity
 let uid = '';
 export default function ChallengerInOutView({ data }) {
+  const authContext = useContext(AuthContext)
   useEffect(() => {
-    getLoggedInEntity();
+    uid = authContext.entity
   }, []);
 
-  const getLoggedInEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
-    uid = entity.uid
-  };
   return (
     <>
       {data.responsible_to_secure_venue

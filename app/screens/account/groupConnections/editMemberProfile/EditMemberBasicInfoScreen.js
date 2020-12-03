@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useLayoutEffect,
+  useState, useEffect, useLayoutEffect, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -12,7 +12,6 @@ import {
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import { patchMember } from '../../../../api/Groups';
-import * as Utility from '../../../../utils/index';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import TCPicker from '../../../../components/TCPicker';
@@ -23,6 +22,7 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import AuthContext from '../../../../auth/context'
 
 let entity = {};
 
@@ -30,6 +30,7 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
   const [role, setRole] = useState('');
@@ -60,7 +61,7 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
   };
 
   const getAuthEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
+    entity = authContext.entity
     setRole(entity.role);
   }
   useLayoutEffect(() => {
@@ -125,7 +126,7 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
     }
 
     console.log('BODY PARAMS::', bodyParams);
-    patchMember(memberInfo.group.group_id, memberInfo.user_id, bodyParams).then((response) => {
+    patchMember(memberInfo.group.group_id, memberInfo.user_id, bodyParams, authContext).then((response) => {
       if (response.status) {
         console.log('EDIT INFO RESPONSE::', response);
         setloading(false)

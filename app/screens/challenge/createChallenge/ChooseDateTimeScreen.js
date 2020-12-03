@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useRef, useState, useLayoutEffect,
+  useEffect, useRef, useState, useLayoutEffect, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -17,6 +17,7 @@ import { Calendar } from 'react-native-calendars';
 import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import AuthContext from '../../../auth/context'
 import { blockedSlots } from '../../../api/Schedule';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -41,6 +42,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     'Dec',
   ];
   const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const authContext = useContext(AuthContext)
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
@@ -97,7 +99,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getSlots = () => {
     setloading(true);
-    blockedSlots(route.params.otherTeam.group_id)
+    blockedSlots(route.params.otherTeam.group_id, authContext)
       .then((response) => {
         setloading(false);
         setSlots(response.payload);

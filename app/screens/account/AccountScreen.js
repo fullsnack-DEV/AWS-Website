@@ -48,7 +48,6 @@ export default function AccountScreen({ navigation }) {
   const [team, setTeam] = useState([]);
   const [club, setClub] = useState([]);
 
-  const [authUser, setAuthUser] = useState({});
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
   // for set/get clubs
@@ -117,22 +116,12 @@ export default function AccountScreen({ navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      // headerRight: () => (
-      //   <TouchableWithoutFeedback onPress={() => connectChat()}>
-      //     <Image
-      //       source={PATH.messageBox_account}
-      //       style={styles.headerRightImg}
-      //     />
-      //   </TouchableWithoutFeedback>
-      // ),
     });
   }, [navigation]);
 
   useEffect(() => {
     const getData = async () => {
-      const entity = await Utility.getStorage('loggedInEntity');
-      setAuthUser(entity);
-
+      const entity = authContext.entity
       const promises = [getOwnGroupList(entity), getTeamsList(entity)]
 
       if (entity.role !== 'club') {
@@ -144,10 +133,10 @@ export default function AccountScreen({ navigation }) {
       });
     }
     getData()
-  }, []);
+  }, [authContext.entity]);
 
   const getParentClub = (item) => {
-    getGroupDetails(item.group_id).then((response) => {
+    getGroupDetails(item.group_id, authContext).then((response) => {
       if (response.payload.club !== undefined) {
         setParentGroup(response.payload.club);
       } else {
@@ -160,7 +149,7 @@ export default function AccountScreen({ navigation }) {
   };
 
   const getOwnGroupList = async (currentEntity) => {
-    getUnreadCount().then((response) => {
+    getUnreadCount(authContext).then((response) => {
       const { teams } = response.payload;
       const { clubs } = response.payload;
       setTeam(teams);
@@ -168,10 +157,10 @@ export default function AccountScreen({ navigation }) {
       if (currentEntity.role === 'user') {
         setGroupList([...clubs, ...teams]);
       } else if (currentEntity.role === 'team') {
-        const updatedTeam = teams.filter((item) => item.group_id !== authUser.uid);
+        const updatedTeam = teams.filter((item) => item.group_id !== authContext.entity.uid);
         setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
-      } else if (authUser.role === 'club') {
-        const updatedClub = clubs.filter((item) => item.group_id !== authUser.uid);
+      } else if (authContext.entity.role === 'club') {
+        const updatedClub = clubs.filter((item) => item.group_id !== authContext.entity.uid);
         setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
       }
     })
@@ -182,13 +171,13 @@ export default function AccountScreen({ navigation }) {
 
   const getTeamsList = async (currentEntity) => {
     if (currentEntity.role === 'club') {
-      getTeamsOfClub(authUser.uid).then((response) => {
+      getTeamsOfClub(authContext.entity.uid, authContext).then((response) => {
         setTeamList(response.payload);
       }).catch((error) => {
         Alert.alert(error)
       })
     } else {
-      getJoinedGroups().then((response) => {
+      getJoinedGroups(authContext).then((response) => {
         setTeamList(response.payload.teams);
       }).catch((error) => {
         Alert.alert(error)
@@ -197,7 +186,7 @@ export default function AccountScreen({ navigation }) {
   };
 
   const getClubList = async () => {
-    getJoinedGroups().then((response) => {
+    getJoinedGroups(authContext).then((response) => {
       setClubList(response.payload.clubs);
     }).catch((error) => {
       Alert.alert(error)
@@ -212,8 +201,7 @@ export default function AccountScreen({ navigation }) {
   }
 
   const switchProfile = async (item) => {
-    let currentEntity = authUser
-    console.log('SwitchID::', item.group_id || item.user_id);
+    let currentEntity = authContext.entity
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
         team.push(currentEntity.obj)
@@ -255,17 +243,15 @@ export default function AccountScreen({ navigation }) {
         setParentGroup(null)
         setGroup(item)
       }
-      setGroupList([authUser.auth.user, ...club, ...team]);
+      setGroupList([authContext.entity.auth.user, ...club, ...team]);
     }
-    setAuthUser(currentEntity)
-    Utility.setStorage('loggedInEntity', currentEntity);
+    authContext.setEntity({ ...currentEntity })
     return currentEntity
   };
 
   const switchQBAccount = async (accountData, entity) => {
     let currentEntity = entity
-    setAuthUser(currentEntity)
-    Utility.setStorage('loggedInEntity', currentEntity);
+    authContext.setEntity({ ...currentEntity })
     const entityType = accountData?.entity_type
     const uid = entityType === 'player' ? 'user_id' : 'group_id'
     QBLogout().then(() => {
@@ -285,9 +271,8 @@ export default function AccountScreen({ navigation }) {
         accountType,
       ).then(async (res) => {
         currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-        setAuthUser(currentEntity)
-        Utility.setStorage('loggedInEntity', currentEntity);
-        QBconnectAndSubscribe()
+        authContext.setEntity({ ...currentEntity })
+        QBconnectAndSubscribe(currentEntity)
       })
     })
   }
@@ -302,6 +287,7 @@ export default function AccountScreen({ navigation }) {
           QBLogout();
           await firebase.auth().signOut();
           await Utility.clearStorage();
+          authContext.setEntity(null)
           authContext.setUser(null);
         },
       },
@@ -325,7 +311,7 @@ export default function AccountScreen({ navigation }) {
     } else if (section === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     } else if (section === 'Setting & Privacy') {
-      const entity = await Utility.getStorage('loggedInEntity');
+      const entity = authContext.entity
       if (entity.role === 'user') {
         console.log('GO to UserSettingPrivacyScreen')
         navigation.navigate('UserSettingPrivacyScreen');
@@ -335,7 +321,7 @@ export default function AccountScreen({ navigation }) {
         });
       }
     } else if (section === 'Members') {
-      const entity = await Utility.getStorage('loggedInEntity');
+      const entity = authContext.entity
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     } else if (section === 'Soccer Game(For Test)') {
       navigation.navigate('SoccerHome');
@@ -350,7 +336,7 @@ export default function AccountScreen({ navigation }) {
     } else if (opetions === 'Add a sport') {
       navigation.navigate('RegisterPlayer');
     } else if (opetions === 'Create a Team') {
-      const entity = await Utility.getStorage('loggedInEntity');
+      const entity = authContext.entity
       if (entity.role === 'user') {
         navigation.navigate('CreateTeamForm1');
       } else {
@@ -423,11 +409,11 @@ export default function AccountScreen({ navigation }) {
   );
 
   let placeHolder, badge, background = images.teamSqure
-  if (authUser.role === 'club') {
+  if (authContext.entity.role === 'club') {
     placeHolder = images.team_ph
     badge = 'C'
     background = images.clubSqure
-  } else if (authUser.role === 'team') {
+  } else if (authContext.entity.role === 'team') {
     placeHolder = images.team_ph
     badge = 'T'
     background = images.teamSqure
@@ -466,21 +452,21 @@ export default function AccountScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
-        {authUser.role === 'user' && (
+        {authContext.entity.role === 'user' && (
           <View style={styles.profileView}>
             <Image
-                source={authUser.obj.thumbnail ? { uri: authUser.obj.thumbnail } : placeHolder}
+                source={authContext.entity.obj.thumbnail ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
                 style={[styles.profileImg, { marginTop: 20 }]}
               />
-            <Text style={styles.nameText}>{authUser.auth.user.full_name}</Text>
+            <Text style={styles.nameText}>{authContext.entity.auth.user.full_name}</Text>
             <Text style={styles.locationText}>
-              {authUser.obj.city}, {authUser.obj.state_abbr}
+              {authContext.entity.obj.city}, {authContext.entity.obj.state_abbr}
             </Text>
           </View>
         )}
-        {(authUser.role === 'team' || authUser.role === 'club') && (<View style={styles.profileView}>
+        {(authContext.entity.role === 'team' || authContext.entity.role === 'club') && (<View style={styles.profileView}>
           <Image
-                source={authUser.obj.thumbnail ? { uri: authUser.obj.thumbnail } : placeHolder}
+                source={authContext.entity.obj.thumbnail ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
                 style={styles.profileImgGroup}
               />
           <View
@@ -489,7 +475,7 @@ export default function AccountScreen({ navigation }) {
                 alignSelf: 'center',
                 paddingLeft: 30,
               }}>
-            <Text style={styles.nameText}>{authUser.obj.group_name}</Text>
+            <Text style={styles.nameText}>{authContext.entity.obj.group_name}</Text>
             <View style={styles.identityView}>
               <ImageBackground
                   source={background}
@@ -500,7 +486,7 @@ export default function AccountScreen({ navigation }) {
           </View>
 
           <Text style={styles.locationText}>
-            {authUser.obj.city}, {authUser.obj.state_abbr}
+            {authContext.entity.obj.city}, {authContext.entity.obj.state_abbr}
           </Text>
         </View>)}
 
@@ -508,15 +494,15 @@ export default function AccountScreen({ navigation }) {
 
         <ExpanableList
           dataSource={
-            (authUser.role === 'team' && teamMenu)
-            || (authUser.role === 'club' && clubMenu)
-            || (authUser.role === 'user' && userMenu)
+            (authContext.entity.role === 'team' && teamMenu)
+            || (authContext.entity.role === 'club' && clubMenu)
+            || (authContext.entity.role === 'user' && userMenu)
           }
           headerKey={'key'}
           memberKey="member"
           renderRow={(rowItem, rowId, sectionId) => (
             <>
-              {authUser.role === 'user' && (sectionId === 3 || sectionId === 4) && (
+              {authContext.entity.role === 'user' && (sectionId === 3 || sectionId === 4) && (
                 <FlatList
                   data={sectionId === 3 ? teamList : clubList}
                   keyExtractor={(item, index) => index.toString()}
@@ -539,7 +525,7 @@ export default function AccountScreen({ navigation }) {
                   scrollEnabled={false}
                 />
               )}
-              {authUser.role === 'club' && sectionId === 2 && (
+              {authContext.entity.role === 'club' && sectionId === 2 && (
                 <FlatList
                   data={teamList}
                   keyExtractor={(item, index) => index.toString()}

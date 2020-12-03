@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View, Text, Image, TouchableOpacity, Alert, StyleSheet,
 } from 'react-native';
@@ -11,7 +11,7 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin } from '@react-native-community/google-signin';
-
+import AuthContext from '../../auth/context'
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -37,7 +37,7 @@ const config = {
 export default function WelcomeScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
-
+  const authContext = useContext(AuthContext)
   useEffect(() => {
     if (firebase.apps.length === 0) {
       firebase.initializeApp(config);
@@ -93,7 +93,7 @@ export default function WelcomeScreen({ navigation }) {
             await Utility.setStorage('userInfo', userDetail);
             await Utility.setStorage('loggedInEntity', entity);
 
-            getUserDetails(user.uid).then((response) => {
+            getUserDetails(user.uid, authContext).then((response) => {
               setloading(false);
               if (response.status === true) {
                 Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
@@ -159,7 +159,7 @@ export default function WelcomeScreen({ navigation }) {
 
             await Utility.setStorage('userInfo', userDetail);
 
-            getUserDetails(user.uid).then((response) => {
+            getUserDetails(user.uid, authContext).then((response) => {
               setloading(false);
               if (response.status === true) {
                 Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')

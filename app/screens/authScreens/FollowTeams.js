@@ -65,7 +65,7 @@ export default function FollowTeams({ route }) {
       club_ids: followed,
     };
 
-    createUser(data).then((response) => {
+    createUser(data, authContext).then((response) => {
       if (response.status === true) {
         getUserInfo();
       } else {
@@ -91,9 +91,9 @@ export default function FollowTeams({ route }) {
     console.log('Followed Team:::', followedTeam);
   };
   const getUserInfo = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     console.log('USER ENTITY:', entity);
-    const response = await getUserDetails(entity.auth.user_id);
+    const response = await getUserDetails(entity.auth.user_id, authContext);
 
     if (response.status) {
       entity.obj = response.payload

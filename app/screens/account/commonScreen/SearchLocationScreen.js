@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -18,12 +18,13 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import Separator from '../../../components/Separator';
-
+import AuthContext from '../../../auth/context'
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts'
 import { searchLocationPlaceDetail, searchLocations } from '../../../api/External';
 
 export default function SearchLocationScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const [cityData, setCityData] = useState([]);
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -34,7 +35,7 @@ export default function SearchLocationScreen({ navigation, route }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText).then((response) => {
+      searchLocations(searchLocationText, authContext).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -45,7 +46,7 @@ export default function SearchLocationScreen({ navigation, route }) {
   };
 
   const getTeamsData = async (item) => {
-    searchLocationPlaceDetail(item.place_id).then((response) => {
+    searchLocationPlaceDetail(item.place_id, authContext).then((response) => {
       if (response) {
         if (route.params.comeFrom === 'CreateEventScreen') {
           navigation.navigate('CreateEventScreen', {

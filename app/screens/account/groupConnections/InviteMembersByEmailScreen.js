@@ -1,18 +1,19 @@
 import React, {
-  useState, useLayoutEffect,
+  useState, useLayoutEffect, useContext,
 } from 'react';
 import {
   Text, View, StyleSheet, FlatList, Alert,
 } from 'react-native';
 import { sendInvitationInGroup } from '../../../api/Users';
-import * as Utility from '../../../utils/index';
 import TCTextField from '../../../components/TCTextField';
 import TCMessageButton from '../../../components/TCMessageButton';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
+import AuthContext from '../../../auth/context'
 
 export default function InviteMembersByEmailScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [email, setEmail] = useState([{
     id: 0,
     email: '',
@@ -35,7 +36,7 @@ export default function InviteMembersByEmailScreen({ navigation }) {
   }, [navigation, email]);
 
   const sendInvitation = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
 
     const emails = email.map((i) => i.email);
     const obj = {
@@ -44,7 +45,7 @@ export default function InviteMembersByEmailScreen({ navigation }) {
       uid: entity.uid,
     }
     console.log('body params:', obj);
-    sendInvitationInGroup(obj).then(() => {
+    sendInvitationInGroup(obj, authContext).then(() => {
       setEmail([{
         id: 0,
         email: '',

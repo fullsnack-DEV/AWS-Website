@@ -1,7 +1,6 @@
 import moment from 'moment';
 import strings from '../../Constants/String'
 import toShortTimeFromString from '../../utils/Time';
-import * as Utility from '../../utils/index';
 import NotificationType from '../../Constants/NotificationType';
 
 const offsetFrom = (expiryDate) => {
@@ -36,7 +35,7 @@ const offsetFrom = (expiryDate) => {
   return finalText
 }
 
-const parseChallengeRequestNotification = async (data, selectedEntity) => {
+const parseChallengeRequestNotification = async (data, selectedEntity, loggedInEntity) => {
   const activity = data.activities[0]
   let notificationObject
   let challengeObject
@@ -82,7 +81,6 @@ const parseChallengeRequestNotification = async (data, selectedEntity) => {
       }
     }
   } else {
-    const loggedInEntity = await Utility.getStorage('loggedInEntity');
     if (team.user_id === loggedInEntity.auth.user_id) {
       team = challengeObject.home_team;
     }
@@ -116,11 +114,9 @@ const parseChallengeRequestNotification = async (data, selectedEntity) => {
   return finalString
 }
 
-const parseRefereeRequestNotification = async (data) => {
+const parseRefereeRequestNotification = async (data, loggedInEntity) => {
   const activity = data.activities[0]
   let notificationObject
-  const loggedInEntity = await Utility.getStorage('loggedInEntity');
-
   const finalString = {}
 
   if (activity.object) {
@@ -185,7 +181,7 @@ const parseRefereeRequestNotification = async (data) => {
   return finalString
 }
 
-const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEntity) => {
+const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEntity, loggedInEntity) => {
   const activity = data.activities[0]
   let notificationObject
   let challengeObject
@@ -210,7 +206,6 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
     }
     finalString.firstTitle = team.group_name
   } else {
-    const loggedInEntity = await Utility.getStorage('loggedInEntity');
     if (team.user_id === loggedInEntity.auth.user_id) {
       team = challengeObject.home_team;
     }
@@ -228,11 +223,9 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
   return finalString
 }
 
-const parseRefereeAwaitingPaymentRequestNotification = async (data) => {
+const parseRefereeAwaitingPaymentRequestNotification = async (data, loggedInEntity) => {
   const activity = data.activities[0]
   let notificationObject
-  const loggedInEntity = await Utility.getStorage('loggedInEntity');
-
   const finalString = {}
 
   if (activity.object) {
@@ -274,11 +267,10 @@ const parseRefereeAwaitingPaymentRequestNotification = async (data) => {
 
   return finalString
 }
-
-export const parseRequest = async (data, selectedEntity) => {
+export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
   if (data.activities[0].verb.includes(NotificationType.challengeOffered)
     || data.activities[0].verb.includes(NotificationType.challengeAltered)) {
-    return parseChallengeRequestNotification(data, selectedEntity)
+    return parseChallengeRequestNotification(data, selectedEntity, loggedInEntity)
   }
   if (data.activities[0].verb.includes(NotificationType.initialChallengePaymentFail)
     || data.activities[0].verb.includes(NotificationType.alterChallengePaymentFail)
@@ -287,7 +279,7 @@ export const parseRequest = async (data, selectedEntity) => {
     || data.activities[0].verb.includes(NotificationType.gameAutoRestoredDueToAlterPaymentFailed)
     || data.activities[0].verb.includes(NotificationType.gameCanceledDuringAwaitingPayment)
     || data.activities[0].verb.includes(NotificationType.gameRestoredDuringAwaitingPayment)) {
-    return parseChallengeAwaitingPaymentRequestNotification(data, selectedEntity)
+    return parseChallengeAwaitingPaymentRequestNotification(data, selectedEntity, loggedInEntity)
   } if (data.activities[0].verb.includes(NotificationType.refereeRequest)
     || data.activities[0].verb.includes(NotificationType.changeRefereeRequest)
     || data.activities[0].verb.includes(NotificationType.scorekeeperRequest)) {
@@ -299,7 +291,7 @@ export const parseRequest = async (data, selectedEntity) => {
     || data.activities[0].verb.includes(NotificationType.refereeReservationAutoRestoredDueToAlterPaymentFailed)
     || data.activities[0].verb.includes(NotificationType.refereeReservationCanceledDuringAwaitingPayment)
     || data.activities[0].verb.includes(NotificationType.refereeReservationRestoredDuringAwaitingPayment)) {
-    return parseRefereeAwaitingPaymentRequestNotification(data, selectedEntity)
+    return parseRefereeAwaitingPaymentRequestNotification(data, loggedInEntity)
   }
   return {}
 }

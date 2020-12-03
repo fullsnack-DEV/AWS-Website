@@ -1,4 +1,6 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, {
+  useState, useLayoutEffect, useEffect, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,9 +12,7 @@ import {
 
 } from 'react-native';
 
-import * as Utility from '../../../../utils/index';
 import { patchMember } from '../../../../api/Groups';
-
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
@@ -21,7 +21,7 @@ import colors from '../../../../Constants/Colors';
 
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
-
+import AuthContext from '../../../../auth/context'
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCNavigationHeader from '../../../../components/TCNavigationHeader';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
@@ -29,6 +29,7 @@ import TCKeyboardView from '../../../../components/TCKeyboardView';
 let entity = {};
 export default function EditMemberTeamInfoScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext)
   const [playerStatus, setPlayerStatus] = useState([]);
   const [role, setRole] = useState('');
   const [switchUser, setSwitchUser] = useState({})
@@ -45,7 +46,7 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
 
     console.log('MEMBER DETAIL ::', groupMemberDetail);
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
       setRole(entity.role);
     }
@@ -92,7 +93,7 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
       group_member_detail: bodyParams,
     }
 
-    patchMember(groupMemberDetail.group_id, groupMemberDetail.user_id, body).then(() => {
+    patchMember(groupMemberDetail.group_id, groupMemberDetail.user_id, body, authContext).then(() => {
       setloading(false);
       navigation.goBack()
     }).catch((error) => {
