@@ -13,12 +13,15 @@ import {
   checkReviewExpired,
   getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS,
 } from '../../../../../utils/gameUtils';
+import { getSportsList } from '../../../../../api/Games';
 
 const Review = ({
   navigation, gameData, isAdmin, getSoccerGameReview,
 }) => {
   const [loading, setLoading] = useState(true);
   const [reviewsData, setReviewsData] = useState([]);
+  const [sliderAttributes, setSliderAttributes] = useState([]);
+  const [starAttributes, starStarAttributes] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -26,6 +29,21 @@ const Review = ({
       setReviewsData({ ...res.payload })
     }).catch((error) => {
       console.log(error);
+    });
+    getSportsList().then((sports) => {
+      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name === 'Soccer')[0]
+      const teamReviewProp = soccerSportData?.team_review_properties ?? []
+      const sliderReviewProp = [];
+      const starReviewProp = [];
+      if (teamReviewProp?.length) {
+        teamReviewProp.filter((item) => {
+          if (item.type === 'slider') sliderReviewProp.push(item?.name.toLowerCase())
+          else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
+          return true;
+        })
+        setSliderAttributes(sliderReviewProp);
+        starStarAttributes(starReviewProp);
+      }
     }).finally(() => setLoading(false));
   }, [navigation])
   const Seperator = () => (
@@ -35,7 +53,7 @@ const Review = ({
     <View style={styles.mainContainer}>
 
       {/*  Leave Review Section */}
-      {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && (
+      {gameData?.status === 'ended' && checkReviewExpired(gameData?.actual_enddatetime) && (
         <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
           <View>
             <TCGradientButton
@@ -43,6 +61,8 @@ const Review = ({
                 navigation.navigate('LeaveReview',
                   {
                     gameData,
+                    sliderAttributes,
+                    starAttributes,
                   })
               }}
                     startGradientColor={colors.yellowColor}
@@ -90,7 +110,12 @@ const Review = ({
         <Fragment>
 
           {/* Rating For Team Section */}
-          <RatingForTeams gameData={gameData} reviewsData={reviewsData}/>
+          <RatingForTeams
+              sliderAttributes={sliderAttributes}
+              starAttributes={starAttributes}
+              gameData={gameData}
+              reviewsData={reviewsData}
+          />
           <Seperator/>
 
           {/* Rating For Referees Section */}

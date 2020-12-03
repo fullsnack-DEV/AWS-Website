@@ -21,16 +21,12 @@ import ImageProgress from '../../../components/newsFeed/ImageProgress';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Review', 'Gallery']
 const gameIds = [
-  'f88963d1-6817-48d6-897f-4edb236ca37d', // 0 - For Referees
-  '6f3b91f5-a1c9-4fb7-94a4-6dfae2217469', // 1 - For Referees
-  '460adeca-f36e-4cb7-9d97-8928a6f77281', // 2 -
-  'daeab9de-0af9-4172-ae3e-9d480794effc', // 3 -
-  '6b1dd495-9d68-4a8b-8feb-363406d279ba', // 4 - 19-11-2020 9-00
-  '1dd4f109-0a7c-40a3-b616-f0cf055ba61c', // 5 - Admin: Arvind  20-11-2020 6-50
-  'fb6e4794-4fdd-4af2-b07a-a109d3f550f7', // 6  Admin: Arvind
-  '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 7 - For Review
+  '265b7834-6bbf-40cc-8729-372f3b706331', // 0
+  '049b0c20-f9c6-473d-aab8-76b2430efa68', // 1
+  '0750bda5-942e-4de2-bb65-386aec7cf6c3', // 2
+  '13f4cde8-6a90-4236-8cdd-5ede92e94d5b', // 3
 ]
-const globalGameId = gameIds[7];
+const globalGameId = gameIds[0];
 const TennisHome = ({ navigation, route }) => {
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
   const [currentTab, setCurrentTab] = useState(0);

@@ -6,9 +6,9 @@ import TCAttributeRatingWithSlider from '../../../../../TCAttributeRatingWithSli
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 
 const QUSTIONS = [
-  'Did the players arrive at the match place on time?',
-  'Did the players keep good manners for the other players, officials and spectators during the match?',
-  'Did the players respect the referees and their decisions?',
+  { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
+  { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
+  { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
 ]
 const RatePerformance = ({
   teamNo,
@@ -51,8 +51,12 @@ const RatePerformance = ({
     {/* Questions */}
     {QUSTIONS.map((item, index) => (
       <View style={{ marginVertical: 5 }} key={index}>
-        <Text style={styles.questionText}>{item}</Text>
+        <Text style={styles.questionText}>{item.desc}</Text>
         <TCRatingStarSlider
+            currentRating={reviewsData?.team_reviews[teamNo][item.attrName]}
+            onPress={(star) => {
+              setTeamReview(item.attrName, star)
+            }}
               style={{ alignSelf: 'flex-end' }}
               starColor={starColor}/>
       </View>
