@@ -64,7 +64,7 @@ export default function SoccerRecordList({ route, navigation }) {
       }).finally(() => setLoading(false));
     }
   }
-  const getScoreText = (firstTeamScore, secondTeamScore, teamNumber = 1) => {
+  const getScoreText = (firstTeamScore = 0, secondTeamScore = 0, teamNumber = 1) => {
     const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
     let color = colors.lightBlackColor
     if (firstTeamScore !== secondTeamScore) {

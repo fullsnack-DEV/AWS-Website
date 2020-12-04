@@ -63,6 +63,7 @@ const RatingForTeams = ({
               }
               return true;
             });
+
             awayTeamRatings = awayTempRate;
             awayTeamStarRatings = awayTeamStar;
           }
@@ -84,10 +85,12 @@ const RatingForTeams = ({
       <Text style={styles.titleText}>Ratings for teams ({radarChartAttributes?.length ?? 0})</Text>
 
       {/* Radar Chart */}
-      <TCRadarChart
-          radarChartAttributes={sliderAttributes}
-            radarChartData={radarChartData ?? []}
-      />
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <TCRadarChart
+           radarChartAttributes={sliderAttributes}
+             radarChartData={radarChartData ?? []}
+         />
+      </View>
 
       {/* Teams Display */}
       <TCTeamVS

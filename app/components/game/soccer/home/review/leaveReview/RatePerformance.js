@@ -6,7 +6,7 @@ import TCAttributeRatingWithSlider from '../../../../../TCAttributeRatingWithSli
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 
 const QUSTIONS = [
-  { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
+  // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
   { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
   { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
 ]

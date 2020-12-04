@@ -3,16 +3,16 @@ import {
   View, StyleSheet, FlatList, Text,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import colors from '../../../../../Constants/Colors';
-import TCSwitcher from '../../../../TCSwitcher';
-import { heightPercentageToDP as hp } from '../../../../../utils';
-import fonts from '../../../../../Constants/Fonts';
-import images from '../../../../../Constants/ImagePath';
-import TCGameUserStats from '../../../../TCGameUserStats';
-import TCInnerLoader from '../../../../TCInnerLoader';
-import TCGameCard from '../../../../TCGameCard';
+import colors from '../../../../Constants/Colors';
+import TCSwitcher from '../../../TCSwitcher';
+import { heightPercentageToDP as hp } from '../../../../utils';
+import fonts from '../../../../Constants/Fonts';
+import images from '../../../../Constants/ImagePath';
+import TCGameUserStats from '../../../TCGameUserStats';
+import TCInnerLoader from '../../../TCInnerLoader';
+import TCGameCard from '../../../TCGameCard';
 import Rivalry from './Rivalry';
-import { soccerGamePlayStatsImage } from '../../../../../utils/gameUtils';
+import { soccerGamePlayStatsImage } from '../../../../utils/gameUtils';
 
 const SECTIONS = ['Goal', 'Assist', 'Yellow Card', 'Red Card', 'Injured', 'Rivalry', 'Previous Game'];
 const SECTION_IMAGE_AND_COLOR = {
@@ -22,7 +22,12 @@ const SECTION_IMAGE_AND_COLOR = {
   'Red Card': { rightIconImage: soccerGamePlayStatsImage.rc, countTextColor: colors.redDelColor, emptyListMessage: 'No red card found' },
   Injured: { rightIconImage: '', countTextColor: colors.redDelColor, emptyListMessage: 'No injured found' },
 }
-const Stats = ({ gameData, getGameStatsData }) => {
+const Stats = ({
+  gameData,
+  getGameStatsData,
+  homeTeamName,
+  awayTeamName,
+}) => {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [selectedTeamTab, setSelectedTeamTab] = useState(0);
@@ -109,7 +114,7 @@ const Stats = ({ gameData, getGameStatsData }) => {
           ...styles.subContainer, marginBottom: 0, paddingVertical: 0,
         }}>
           <TCSwitcher
-              tabs={[gameData?.home_team?.group_name, gameData?.away_team?.group_name]}
+              tabs={[homeTeamName, awayTeamName]}
               onTabPress={(tabIndex) => setSelectedTeamTab(tabIndex)}
               selectedTab={selectedTeamTab}
             />

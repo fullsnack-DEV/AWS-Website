@@ -1,16 +1,44 @@
-import React from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Text,
   View,
-  StyleSheet,
+  StyleSheet, ScrollView,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { useIsFocused } from '@react-navigation/native';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import images from '../../../../../Constants/ImagePath';
+import TCInnerLoader from '../../../../TCInnerLoader';
 
-const Scores = () => {
+const Scores = ({ gameId, getTennisGameData }) => {
+  const isFocused = useIsFocused();
+  const [gameData, setGameData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [teamIds, setTeamIds] = useState(null);
+  useEffect(() => {
+    getGameData();
+  }, [isFocused]);
+
+  const getGameData = () => {
+    setLoading(true);
+    getTennisGameData(gameId).then((res) => {
+      setGameData(res?.payload);
+      if (res?.payload?.singlePlayerGame) {
+        setTeamIds({
+          home_team: { group_id: res?.payload?.home_team?.user_id },
+          away_team: { group_id: res?.payload?.away_team?.user_id },
+        })
+      } else {
+        setTeamIds({
+          home_team: { group_id: res?.payload?.home_team?.group_id },
+          away_team: { group_id: res?.payload?.away_team?.group_id },
+        })
+      }
+    }).finally(() => setLoading(false))
+  }
+
   const SingleColumn = ({
     headerText = '-',
     firstRowText = '-',
@@ -53,68 +81,92 @@ const Scores = () => {
     </View>
   )
 
+  const getTextGreterScoreTeamColor = (teamOneScore = 0, teamTwoScore = 0, teamNo = 1) => {
+    let color = colors.lightBlackColor;
+    if (teamOneScore !== teamTwoScore) {
+      if (teamNo === 1 && teamOneScore > teamTwoScore) {
+        color = colors.themeColor;
+      } else if (teamNo === 2 && teamTwoScore > teamOneScore) {
+        color = colors.themeColor;
+      }
+    }
+    return color;
+  }
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.title}>
         Scores
       </Text>
-      <View style={styles.contentContainer}>
+      <TCInnerLoader visible={loading}/>
+      {!loading && (
+        <View style={styles.contentContainer}>
 
-        {/* Previous Games */}
-        <SingleColumn
-            headerText={1}
-            firstRowText={2}
-            secondRowText={3}
-        />
-        <SingleColumn
-            headerText={2}
-            firstRowText={2}
-            secondRowText={3}
-        />
-        <SingleColumn
-            headerText={3}
-            firstRowText={2}
-            secondRowText={3}
-        />
+          {/* Previous Games */}
+          <ScrollView
+              style={{ maxWidth: '45%', flexWrap: 1 }}
+              bounces={false}
+              bouncesZoom={false}
+              horizontal={true}>
+            {Array(gameData?.scoreboard?.sets?.length < 4 ? 4 : gameData?.scoreboard?.sets?.length).fill(0).map((item, index) => (
+              <Fragment key={index}>
+                <SingleColumn
+                  headerText={index + 1}
+                  firstRowText={gameData?.scoreboard?.sets?.[index]?.home_team_win_count ?? 0}
+                  secondRowText={gameData?.scoreboard?.sets?.[index]?.away_team_win_count ?? 0}
+                  rowTextContainerStyle={{ width: 35 }}
+              />
+              </Fragment>
+            ))}
+          </ScrollView>
 
-        {/* Player  */}
-        <SingleColumn
+          {/* Player  */}
+          <SingleColumn
             headerText={'Player'}
             isImageContainer={true}
+            firstRowImage={gameData?.home_team?.background_thumbnail}
+            secondRowImage={gameData?.away_team?.background_thumbnail}
         />
 
-        {/* Sets */}
-        <SingleColumn
-            headerTextStyle={{ fontFamily: fonts.RRegular, fontSize: 13, color: colors.themeColor }}
-            headerText={'Sets'}
-            firstRowText={1}
-            secondRowText={0}
-            rowTextContainerStyle={{ backgroundColor: 'rgba(255,138,1, 0.15)' }}
-            firstRowTextStyle={{ color: colors.themeColor }}
-        />
+          {/* Sets */}
+          <SingleColumn
+              headerTextStyle={{ fontFamily: fonts.RRegular, fontSize: 13, color: colors.themeColor }}
+              headerText={'Sets'}
+              firstRowText={
+                gameData?.scoreboard?.sets?.length > 0
+                  ? gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.home_team_win_count
+                  : 0}
+              secondRowText={
+                gameData?.scoreboard?.sets?.length > 0
+                  ? gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.away_team_win_count
+                  : 0}
+              rowTextContainerStyle={{ backgroundColor: 'rgba(255,138,1, 0.15)' }}
+              firstRowTextStyle={{ color: getTextGreterScoreTeamColor(gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.home_team_win_count, gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.away_team_win_count, 1) }}
+              secondRowTextStyle={{ color: getTextGreterScoreTeamColor(gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.home_team_win_count, gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.away_team_win_count, 2) }}
+          />
 
-        {/* Games */}
-        <SingleColumn
-            headerTextStyle={{ fontFamily: fonts.RRegular, fontSize: 13, color: colors.yellowColor }}
-            headerText={'Games'}
-            firstRowText={1}
-            secondRowText={0}
-            rowTextContainerStyle={{ backgroundColor: 'rgba(255,138,1, 0.15)' }}
-            firstRowTextStyle={{ color: colors.themeColor }}
-            secondRowTextStyle={{ color: colors.lightBlackColor }}
-        />
+          {/* Games */}
+          <SingleColumn
+              headerTextStyle={{ fontFamily: fonts.RRegular, fontSize: 13, color: colors.yellowColor }}
+              headerText={'Games'}
+              firstRowText={gameData?.scoreboard?.game_inprogress?.winner === teamIds?.home_team?.group_id ? 1 : 0}
+              secondRowText={gameData?.scoreboard?.game_inprogress?.winner === teamIds?.away_team?.group_id ? 1 : 0}
+              rowTextContainerStyle={{ backgroundColor: 'rgba(255,138,1, 0.15)' }}
+              firstRowTextStyle={{ color: colors.themeColor }}
+              secondRowTextStyle={{ color: colors.lightBlackColor }}
+          />
 
-        {/* Points */}
-        <SingleColumn
+          {/* Points */}
+          <SingleColumn
             headerTextStyle={{ fontSize: 13 }}
             headerText={'points'}
-            firstRowText={40}
+            firstRowText={gameData?.scoreboard?.game_inprogress?.home_team_point ?? 0}
+            secondRowText={gameData?.scoreboard?.game_inprogress?.away_team_point ?? 0}
             firstRowTextStyle={{ color: colors.themeColor }}
             secondRowTextStyle={{ color: colors.lightBlackColor }}
-            secondRowText={15}
         />
 
-      </View>
+        </View>
+      )}
     </View>)
 }
 
@@ -135,6 +187,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     padding: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   singleColumnContainer: {
     padding: 3,

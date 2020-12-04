@@ -18,7 +18,7 @@ const TCSlider = ({
           style={{ height: 20, width: 20 }}/>
   ), []);
 
-  const handleValueChange = (low) => setValue(low);
+  const handleValueChange = useCallback((low) => setValue(low), [selectedTrackColors]);
 
   const renderRail = useCallback(() => (
     <View

@@ -99,6 +99,7 @@ import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
 import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
 import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import TennisRecordList from '../screens/game/tennis/TennisRecordList';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 
 const Stack = createStackNavigator();
@@ -353,17 +354,18 @@ const HomeNavigator = () => (
           name="LeaveReview"
           component={ LeaveReview }
           options={ {
-            title: 'Leave a game review',
-            headerTintColor: colors.blackColor,
-            headerTitleStyle: {
-              fontWeight: '500',
-            },
-            headerStyle: {
-              backgroundColor: colors.whiteColor,
-              borderBottomColor: colors.grayColor,
-              borderBottomWidth: 0.3,
-            },
-          } }
+            headerShown: false,
+            // title: 'Leave a game review',
+            // headerTintColor: colors.blackColor,
+            // headerTitleStyle: {
+            //   fontWeight: '500',
+            // },
+            // headerStyle: {
+            //   backgroundColor: colors.whiteColor,
+            //   borderBottomColor: colors.grayColor,
+            //   borderBottomWidth: 0.3,
+            // },
+          }}
       />
     <Stack.Screen
       name="SoccerRecording"
@@ -437,6 +439,23 @@ const HomeNavigator = () => (
           options={{
             headerShown: false,
           }}
+      />
+
+    <Stack.Screen
+          name="TennisRecordList"
+          component={ TennisRecordList }
+          options={ {
+            title: 'Match Record',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
       />
     <Stack.Screen
           name="EditLineUpScreen"

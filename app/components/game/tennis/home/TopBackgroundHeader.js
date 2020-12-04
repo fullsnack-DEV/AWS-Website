@@ -26,22 +26,26 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
             <View style={{ ...styles.teamLogoContainer, marginRight: wp(2) }}>
               <FastImage
                 resizeMode={'cover'}
-                source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.teamPlaceholder }
+                source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.profilePlaceHolder }
               style={{ height: 22, width: 22, borderRadius: 50 }}
             />
             </View>
             <Text style={{ ...styles.teamTextContainer }}>
-              {gameData?.home_team?.group_name ?? ''}
+              {gameData?.singlePlayerGame
+                ? gameData?.home_team?.full_name
+                : gameData?.home_team?.group_name}
             </Text>
           </View>
           <View style={styles.rightTeamContainer}>
             <Text style={{ ...styles.teamTextContainer, textAlign: 'right' }}>
-              {gameData?.away_team?.group_name ?? ''}
+              {gameData?.singlePlayerGame
+                ? gameData?.away_team?.full_name
+                : gameData?.away_team?.group_name}
             </Text>
             <View style={{ ...styles.teamLogoContainer, marginLeft: wp(2) }}>
               <FastImage
                 resizeMode={'cover'}
-                    source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.teamPlaceholder }
+                    source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.profilePlaceHolder }
                     style={{ height: 22, width: 22, borderRadius: 50 }}
                 />
             </View>
@@ -65,7 +69,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
     </LinearGradient>
   )
 
-  const getScoreText = (firstTeamScore, secondTeamScore, teamNumber = 1) => {
+  const getScoreText = (firstTeamScore = 0, secondTeamScore = 0, teamNumber = 1) => {
     const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
     let color = colors.whiteColor
     if (firstTeamScore !== secondTeamScore) {
@@ -153,22 +157,20 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                               width: 25,
                             }}>
                               <FastImage
-                                  resizeMode={'contain'}
-                                  source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.teamPlaceholder }
+                                  source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.profilePlaceHolder }
                                   style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
                               />
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                              {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal ?? 0, 1)}
+                              {getScoreText(gameData?.scoreboard?.game_inprogress?.home_team_point, gameData?.scoreboard?.game_inprogress?.away_team_point, 1)}
                               <Text style={styles.topCloseHeaderText}>:</Text>
-                              {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal ?? 0, 2)}
+                              {getScoreText(gameData?.scoreboard?.game_inprogress?.home_team_point, gameData?.scoreboard?.game_inprogress?.away_team_point, 2)}
                             </View>
                             <View style={{
                               ...styles.teamLogoContainer, height: 25, width: 25, marginRight: wp(2),
                             }}>
                               <FastImage
-                                  resizeMode={'contain'}
-                                  source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.teamPlaceholder }
+                                  source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.profilePlaceHolder }
                                   style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
                               />
                             </View>

@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import moment from 'moment';
+import { useIsFocused } from '@react-navigation/native';
 import fonts from '../../../../../Constants/Fonts';
 import RatingForTeams from './RatingForTeams';
 import colors from '../../../../../Constants/Colors';
@@ -21,6 +22,8 @@ import { getSportsList } from '../../../../../api/Games';
 const Review = ({
   navigation, gameData, isAdmin, getSoccerGameReview,
 }) => {
+  const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(true);
   const [reviewsData, setReviewsData] = useState([]);
   const [sliderAttributes, setSliderAttributes] = useState([]);
@@ -28,14 +31,13 @@ const Review = ({
 
   useEffect(() => {
     setLoading(true);
-    const authContext = useContext(AuthContext)
     getSoccerGameReview(gameData?.game_id).then((res) => {
       setReviewsData({ ...res.payload })
     }).catch((error) => {
       console.log(error);
     });
     getSportsList(authContext).then((sports) => {
-      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name === 'Soccer')[0]
+      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name === gameData?.sport)[0]
       const teamReviewProp = soccerSportData?.team_review_properties ?? []
       const sliderReviewProp = [];
       const starReviewProp = [];
@@ -49,7 +51,7 @@ const Review = ({
         starStarAttributes(starReviewProp);
       }
     }).finally(() => setLoading(false));
-  }, [navigation])
+  }, [navigation, isFocused])
   const Seperator = () => (
     <View style={styles.separator}/>
   )
@@ -57,7 +59,7 @@ const Review = ({
     <View style={styles.mainContainer}>
 
       {/*  Leave Review Section */}
-      {gameData?.status === 'ended' && checkReviewExpired(gameData?.actual_enddatetime) && (
+      {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && (
         <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
           <View>
             <TCGradientButton
@@ -85,7 +87,7 @@ const Review = ({
         <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
           {!checkReviewExpired(gameData?.actual_enddatetime) ? (
             <Text style={styles.reviewPeriod}>
-              The review period will be expired within
+              The review period will be expired within{' '}
               <Text style={{ fontFamily: fonts.RBold }}>
                 {getGameDateTimeInDHMformat(
                   (moment(gameData?.actual_enddatetime * 1000)
