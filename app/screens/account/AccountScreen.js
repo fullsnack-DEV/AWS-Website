@@ -120,7 +120,6 @@ export default function AccountScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    console.log('AUTH::', JSON.stringify(authContext));
     const getData = async () => {
       const entity = authContext.entity
       const promises = [getOwnGroupList(entity), getTeamsList(entity)]
@@ -137,15 +136,17 @@ export default function AccountScreen({ navigation }) {
   }, [authContext.entity]);
 
   const getParentClub = (item) => {
+    setloading(true)
     getGroupDetails(item.group_id, authContext).then((response) => {
       if (response.payload.club !== undefined) {
         setParentGroup(response.payload.club);
       } else {
         setParentGroup(null);
       }
+      setloading(false)
     })
       .catch((error) => {
-        Alert.alert(error)
+        Alert.alert(error.messages)
       })
   };
 
@@ -166,7 +167,7 @@ export default function AccountScreen({ navigation }) {
       }
     })
       .catch((error) => {
-        Alert.alert(error)
+        Alert.alert(error.messages)
       })
   };
 
@@ -175,13 +176,13 @@ export default function AccountScreen({ navigation }) {
       getTeamsOfClub(authContext.entity.uid, authContext).then((response) => {
         setTeamList(response.payload);
       }).catch((error) => {
-        Alert.alert(error)
+        Alert.alert(error.messages)
       })
     } else {
       getJoinedGroups(authContext).then((response) => {
         setTeamList(response.payload.teams);
       }).catch((error) => {
-        Alert.alert(error)
+        Alert.alert(error.messages)
       })
     }
   };
@@ -190,7 +191,7 @@ export default function AccountScreen({ navigation }) {
     getJoinedGroups(authContext).then((response) => {
       setClubList(response.payload.clubs);
     }).catch((error) => {
-      Alert.alert(error)
+      Alert.alert(error.messages)
     })
   };
 
@@ -198,11 +199,14 @@ export default function AccountScreen({ navigation }) {
     setloading(true)
     switchProfile(item).then((currentEntity) => {
       switchQBAccount(item, currentEntity)
-    }).catch((error) => { Alert.alert(error) }).finally(() => setloading(false))
+    }).catch((error) => {
+      Alert.alert(error.messages)
+    }).finally(() => setloading(false))
   }
 
   const switchProfile = async (item) => {
     let currentEntity = authContext.entity
+
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
         team.push(currentEntity.obj)
@@ -219,6 +223,7 @@ export default function AccountScreen({ navigation }) {
         const i = team.indexOf(item);
         if (currentEntity.obj.entity_type === 'player') {
           team.splice(i, 1);
+          console.log('Team List::', team);
         } else if (currentEntity.obj.entity_type === 'team') {
           team.splice(i, 1, currentEntity.obj);
         } else if (currentEntity.obj.entity_type === 'club') {

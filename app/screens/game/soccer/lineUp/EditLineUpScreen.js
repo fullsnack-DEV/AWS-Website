@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect, useState, useRef, useEffect,
+  useLayoutEffect, useState, useRef, useEffect, useContext,
 } from 'react';
 import {
   View,
@@ -24,6 +24,7 @@ import {
   createGameLineUp,
   deleteGameLineUp,
 } from '../../../../api/Games';
+import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import TCSearchBox from '../../../../components/TCSearchBox';
@@ -38,6 +39,7 @@ import LineUpPlayerMultiSelectionView from '../../../../components/game/soccer/h
 const moveToData = ['Starting', 'Subs', 'Non-roster'];
 export default function EditLineUpScreen({ navigation, route }) {
   const actionSheet = useRef();
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [roster, setRoster] = useState([]);
   const [nonRoster, setNonRoster] = useState([]);
@@ -69,7 +71,7 @@ export default function EditLineUpScreen({ navigation, route }) {
   }, []);
   const getLineUpOfTeams = (teamID, gameID) => {
     setLoading(true);
-    getGameLineUp(teamID, gameID).then((response) => {
+    getGameLineUp(teamID, gameID, authContext).then((response) => {
       const nonRosterData = response.payload.non_roster.map((el) => {
         const o = { ...el };
         o.modified = false;
@@ -323,6 +325,7 @@ export default function EditLineUpScreen({ navigation, route }) {
             : route.params.gameObj.away_team.group_id,
           route.params.gameObj.game_id,
           tempArray,
+          authContext,
         ).then((response) => {
           console.log('Response:::', response.payload);
 
@@ -333,6 +336,7 @@ export default function EditLineUpScreen({ navigation, route }) {
                 : route.params.gameObj.away_team.group_id,
               route.params.gameObj.game_id,
               tempNonRosterArray,
+              authContext,
             ).then(() => {
               setLoading(false);
               navigation.goBack();
@@ -350,6 +354,7 @@ export default function EditLineUpScreen({ navigation, route }) {
           : route.params.gameObj.away_team.group_id,
         route.params.gameObj.game_id,
         tempNonRosterArray,
+        authContext,
       ).then(() => {
         setLoading(false);
         navigation.goBack();
