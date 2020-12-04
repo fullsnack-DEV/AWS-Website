@@ -177,10 +177,10 @@ export default function LineUp({ navigation, gameData }) {
           <TCLabel title={'Roster'} />
           {((selected === 1
             && gameData.home_team.group_id === entity.uid
-            && gameData.status === GameStatus.accepted)
+            && (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset))
             || (selected === 2
               && gameData.away_team.group_id === entity.uid
-              && gameData.status === GameStatus.accepted)) && (
+              && (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset))) && (
                 <TouchableOpacity
               style={styles.editTouchArea}
               hitSlop={{
@@ -189,7 +189,7 @@ export default function LineUp({ navigation, gameData }) {
                 left: 15,
                 right: 15,
               }}
-              onPress={() => navigation.navigate('EditRosterNonRosterScreen', {
+              onPress={() => navigation.navigate('EditLineUpScreen', {
                 gameObj: gameData,
                 selectedTeam: selected === 1 ? 'home' : 'away',
               })
@@ -278,10 +278,10 @@ export default function LineUp({ navigation, gameData }) {
           <TCLabel title={'Coaches'} />
           {((selected === 1
             && gameData.home_team.group_id === entity.uid
-            && gameData.status === GameStatus.accepted)
+            && (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset))
             || (selected === 2
               && gameData.away_team.group_id === entity.uid
-              && gameData.status === GameStatus.accepted)) && (
+              && (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset))) && (
                 <TouchableOpacity
               style={styles.editTouchArea}
               hitSlop={{
@@ -290,7 +290,7 @@ export default function LineUp({ navigation, gameData }) {
                 left: 15,
                 right: 15,
               }}
-              onPress={() => navigation.navigate('EditRosterCoacheScreen', {
+              onPress={() => navigation.navigate('EditLineUpCoachScreen', {
                 gameObj: gameData,
                 selectedTeam: selected === 1 ? 'home' : 'away',
               })

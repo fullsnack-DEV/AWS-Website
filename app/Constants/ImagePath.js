@@ -66,6 +66,7 @@ const images = {
   gamePause: require('../assets/images/ic_game_pause.png'),
   gameStart: require('../assets/images/ic_game_start.png'),
   gameDetail: require('../assets/images/ic_details.png'),
+  gameSimple: require('../assets/images/ic_game_simple.png'),
   deleteRecentGoal: require('../assets/images/ic_delete_recent_goal.png'),
   deleteIcon: require('../assets/images/delete.png'),
   roundArrow: require('../assets/images/roundArrow.png'),
@@ -146,6 +147,7 @@ const images = {
 
   switchAccount: require('../assets/images/switch_account.png'),
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
+  noSpecicPlayer: require('../assets/images/ic_no_specific.png'),
   clubPlaceholder: require('../assets/images/club_placeholder.png'),
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
   teamPlaceholderSmall: require('../assets/images/teamplaceholder.png'),

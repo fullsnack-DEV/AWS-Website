@@ -41,6 +41,7 @@ const makeAPIRequest = async ({
   // if (!entity) {
   //   entity = await Utility.getStorage('loggedInEntity');
   // }
+  console.log('entity::456', entity);
   let authToken = entity.auth.token.token;
   const currentDate = new Date();
   const expiryDate = new Date(entity.auth.token.expirationTime);

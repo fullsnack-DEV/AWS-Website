@@ -35,11 +35,8 @@ import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import LineUpPlayerMultiSelectionView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerMultiSelectionView';
 
-// newMember["member_id"] = item.memberID
-//                 newMember["role"] = GameMemberRole.Player.rawValue
-//                 newMember["lineup"] = PlayerStatus.Starting.rawValue
 const moveToData = ['Starting', 'Subs', 'Non-roster'];
-export default function EditRosterNonRosterScreen({ navigation, route }) {
+export default function EditLineUpScreen({ navigation, route }) {
   const actionSheet = useRef();
   const [loading, setLoading] = useState(false);
   const [roster, setRoster] = useState([]);
@@ -616,19 +613,27 @@ export default function EditRosterNonRosterScreen({ navigation, route }) {
                 if (selected === 2) {
                   if (enabledSection === 1 || enabledSection === 2) {
                     if (selectedPosition === 3) {
+                      const tempArray = [];
                       // eslint-disable-next-line array-callback-return
-                      roster.map((e, index) => {
-                        if (e.selected) {
+                      roster.map((e) => {
+                        if (e.selected === true) {
                           e.modified = true;
                           e.selected = false;
                           e.lineup = undefined;
                           nonRoster.unshift(e);
-                          roster.splice(index, 1);
+                          tempArray.push(e)
                         }
                       })
-                      setEnabledSection(0)
                       setNonRoster([...nonRoster]);
+                      // eslint-disable-next-line array-callback-return
+                      tempArray.map((e) => {
+                        const index = roster.findIndex(
+                          (obj) => obj === e,
+                        );
+                        roster.splice(index, 1);
+                      })
                       setRoster([...roster]);
+                      setEnabledSection(0)
                       setStarting(
                         roster.filter((el) => el.lineup === 'starting'),
                       );
@@ -651,19 +656,27 @@ export default function EditRosterNonRosterScreen({ navigation, route }) {
                       setSubs(roster.filter((el) => el.lineup === 'subs'));
                     }
                   } else {
+                    const tempArray = [];
                     // eslint-disable-next-line array-callback-return
-                    nonRoster.map((e, index) => {
+                    nonRoster.map((e) => {
                       if (e.selected) {
                         e.modified = true;
                         e.selected = false;
                         e.lineup = (selectedPosition === 1 && 'starting')
                           || (selectedPosition === 2 && 'subs');
                         roster.unshift(e);
-                        nonRoster.splice(index, 1);
+                        tempArray.push(e)
                       }
                     })
-                    setEnabledSection(0)
                     setRoster([...roster]);
+                    // eslint-disable-next-line array-callback-return
+                    tempArray.map((e) => {
+                      const index = nonRoster.findIndex(
+                        (obj) => obj === e,
+                      );
+                      nonRoster.splice(index, 1);
+                    })
+                    setEnabledSection(0)
                     setNonRoster([...nonRoster])
                     setStarting(
                       roster.filter((el) => el.lineup === 'starting'),
