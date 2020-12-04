@@ -76,28 +76,27 @@ export default function LoginScreen({ navigation }) {
     return true;
   };
 
-  const onAuthStateChanged = async (user) => {
-    if (user) {
-      user.getIdTokenResult().then(async (idTokenResult) => {
-        const token = {
-          token: idTokenResult.token,
-          expirationTime: idTokenResult.expirationTime,
-        };
-        const entity = {
-          uid: user.uid,
-          role: 'user',
-          auth: {
-            token,
-            user_id: user.uid,
-          },
-        }
-        authContext.setEntity({ ...entity })
-        console.log('authContext111', entity)
-        await Utility.setStorage('loggedInEntity', entity)
-        await getUserInfo(entity);
-      });
+  const onAuthStateChanged = (user) => user.getIdTokenResult().then((idTokenResult) => {
+    const token = {
+      token: idTokenResult.token,
+      expirationTime: idTokenResult.expirationTime,
+    };
+    const entity = {
+      uid: user.uid,
+      role: 'user',
+      auth: {
+        token,
+        user_id: user.uid,
+      },
     }
-  };
+    authContext.setEntity({ ...entity })
+    console.log('authContext111', entity)
+    return getUserInfo(entity).then((data) => {
+      console.log('Function data', data);
+    }).catch((e) => {
+      console.log('Function catch', e);
+    })
+  });
 
   const login = async (_email, _password) => {
     setloading(true);
@@ -114,31 +113,28 @@ export default function LoginScreen({ navigation }) {
         setloading(false);
       });
   };
-  const getUserInfo = async (e) => {
+  const getUserInfo = (e) => {
+    const ac = authContext
     let entity = e
-    const response = await getUserDetails(entity.auth.user_id, authContext);
-    if (response.status) {
-      entity = {
-        ...entity,
-      }
+    ac.entity = entity
+
+    return getUserDetails(entity.auth.user_id, ac).then((response) => {
       entity.auth.user = response.payload;
       entity.obj = response.payload;
       authContext.setEntity({ ...entity })
-      console.log('authContext22', authContext)
-      QBlogin(entity.uid, response.payload).then(async (res) => {
+      authContext.setUser({ ...response.payload });
+
+      QBlogin(entity.uid, response.payload).then((res) => {
         entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-        await Utility.setStorage('loggedInEntity', entity)
+
         authContext.setEntity({ ...entity })
-        console.log('LOGIN USER ENTITY:::::', entity);
-        await QBconnectAndSubscribe(entity)
-        authContext.setUser(response.payload);
-      }).catch(async (error) => {
+
+        QBconnectAndSubscribe(entity)
+      }).catch((error) => {
         console.log(error.message);
       });
-    } else {
-      throw new Error(response);
-    }
-    setloading(false);
+      return setloading(false);
+    })
   }
   // Psaaword Hide/Show function for setState
   const hideShowPassword = () => {

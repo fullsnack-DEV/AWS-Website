@@ -11,7 +11,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import LineUpPlayerView from '../../../../components/game/soccer/home/lineUp/LineUpPlayerView';
 import colors from '../../../../Constants/Colors';
 
-export default function EditRosterCoacheScreen({ navigation, route }) {
+export default function EditLineUpCoachScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [nonRoster, setNonRoster] = useState([]);
   const [searchRoster, setSearchRoster] = useState([]);

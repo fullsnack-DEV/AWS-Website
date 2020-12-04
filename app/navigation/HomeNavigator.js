@@ -95,10 +95,11 @@ import TennisHome from '../screens/game/tennis/TennisHome';
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import SoccerApproveDisapproveConfirmation
   from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
-import EditRosterNonRosterScreen from '../screens/game/soccer/lineUp/EditRosterNonRosterScreen';
-import EditRosterCoacheScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
+import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
+import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
 import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 
 const Stack = createStackNavigator();
 
@@ -438,10 +439,10 @@ const HomeNavigator = () => (
           }}
       />
     <Stack.Screen
-          name="EditRosterNonRosterScreen"
-          component={EditRosterNonRosterScreen}
+          name="EditLineUpScreen"
+          component={EditLineUpScreen}
           options={{
-            title: 'Edit Roster',
+            title: 'Edit Lineup',
             headerTintColor: colors.blackColor,
             headerTitleStyle: {
               fontWeight: '500',
@@ -454,8 +455,25 @@ const HomeNavigator = () => (
           }}
       />
     <Stack.Screen
-      name="EditRosterCoacheScreen"
-      component={EditRosterCoacheScreen}
+      name="EditLineUpCoachScreen"
+      component={EditLineUpCoachScreen}
+      options={{
+        title: 'Edit Lineup',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="EditRosterScreen"
+      component={EditRosterScreen}
       options={{
         title: 'Edit Roster',
         headerTintColor: colors.blackColor,

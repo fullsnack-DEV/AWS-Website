@@ -120,6 +120,7 @@ export default function AccountScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
+    console.log('AUTH::', JSON.stringify(authContext));
     const getData = async () => {
       const entity = authContext.entity
       const promises = [getOwnGroupList(entity), getTeamsList(entity)]
@@ -455,18 +456,18 @@ export default function AccountScreen({ navigation }) {
         {authContext.entity.role === 'user' && (
           <View style={styles.profileView}>
             <Image
-                source={authContext.entity.obj.thumbnail ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
+                source={authContext?.entity?.obj?.thumbnail || '' ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
                 style={[styles.profileImg, { marginTop: 20 }]}
               />
-            <Text style={styles.nameText}>{authContext.entity.auth.user.full_name}</Text>
+            <Text style={styles.nameText}>{authContext?.entity?.auth?.user?.full_name || ''}</Text>
             <Text style={styles.locationText}>
-              {authContext.entity.obj.city}, {authContext.entity.obj.state_abbr}
+              {authContext?.entity?.obj?.city || ''}, {authContext?.entity?.obj?.state_abbr || ''}
             </Text>
           </View>
         )}
         {(authContext.entity.role === 'team' || authContext.entity.role === 'club') && (<View style={styles.profileView}>
           <Image
-                source={authContext.entity.obj.thumbnail ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
+                source={authContext?.entity?.obj?.thumbnail || '' ? { uri: authContext?.entity?.obj?.thumbnail || '' } : placeHolder}
                 style={styles.profileImgGroup}
               />
           <View

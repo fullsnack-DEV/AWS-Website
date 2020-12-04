@@ -119,7 +119,10 @@ const addGameReview = (gameId, params, authContext) => makeAPIRequest({
   data: params,
   authContext,
 })
-
+const getGameRoster = (gameId) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}games/${gameId}/roster`,
+})
 export {
   GameRecordStatus,
   getSportsList,
@@ -140,4 +143,5 @@ export {
   getGameScoreboardEvents,
   getGameStatsChartData,
   getGameStatsData,
+  getGameRoster,
 }
