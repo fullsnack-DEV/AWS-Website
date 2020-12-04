@@ -1,8 +1,7 @@
 import axios from 'axios';
 import firebase from '@react-native-firebase/app';
-import NetInfo from '@react-native-community/netinfo'
+import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
-import * as Utility from './index';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
   let apiHeaders = {
@@ -32,13 +31,16 @@ const makeAPIRequest = async ({
   headers,
   params,
   responseType,
-}) => {
-  const netStat = await NetInfo.fetch()
+  authContext,
+}) => NetInfo.fetch().then(async (netStat) => {
   if (!netStat || !netStat.isConnected) {
-    Alert.alert('Error: Internet not available')
-    throw new Error('no-internet')
+    Alert.alert('Error: Internet not available');
+    throw new Error('no-internet');
   }
-  const entity = await Utility.getStorage('loggedInEntity');
+  const entity = authContext?.entity;
+  // if (!entity) {
+  //   entity = await Utility.getStorage('loggedInEntity');
+  // }
   let authToken = entity.auth.token.token;
   const currentDate = new Date();
   const expiryDate = new Date(entity.auth.token.expirationTime);
@@ -52,17 +54,18 @@ const makeAPIRequest = async ({
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
-          entity.auth.token = token
-          await Utility.setStorage('loggedInEntity', entity)
+          entity.auth.token = token;
+          authContext.setEntity({ ...entity });
         });
       }
     });
   }
-  let caller_id
-  let caller
+  let caller_id;
+  let caller;
+  console.log('entity.role', entity.role);
   if (entity.role === 'team' || entity.role === 'club') {
-    caller_id = entity.uid
-    caller = entity.role
+    caller_id = entity.uid;
+    caller = entity.role;
   }
   const headersParams = prepareHeader(headers, authToken, caller_id, caller);
   const options = {
@@ -73,19 +76,15 @@ const makeAPIRequest = async ({
     params,
     responseType,
   };
-
-  console.log('Options :-', options);
-  console.log('Options headers :-', options.headers);
   try {
     const response = await axios(options);
-    console.log('API Response:', response.data);
     if (!response.data.status) {
       throw new Error(response.data.messages || response);
     }
-    return response.data
+    return response.data;
   } catch (e) {
     throw new Error(e);
   }
-}
+});
 
 export default makeAPIRequest;

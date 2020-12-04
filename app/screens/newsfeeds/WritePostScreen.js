@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -27,9 +27,10 @@ import TagUserScreen from './TagUserScreen';
 import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
 import images from '../../Constants/ImagePath';
+import AuthContext from '../../auth/context'
 
 export default function WritePostScreen({ navigation, route }) {
-  console.log('Route :-', route);
+  const authContext = useContext(AuthContext)
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState(route.params.selectedImageList);
@@ -71,8 +72,8 @@ export default function WritePostScreen({ navigation, route }) {
                   const data = {
                     text: searchText,
                   };
-                  createPost(data)
-                    .then(() => getNewsFeed())
+                  createPost(data, authContext)
+                    .then(() => getNewsFeed(authContext))
                     .then(() => {
                       navigation.goBack()
                       setloading(false);

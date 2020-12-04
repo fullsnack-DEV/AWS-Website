@@ -1,4 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, {
+  Fragment, useEffect, useState, useContext,
+} from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import moment from 'moment';
 import fonts from '../../../../../Constants/Fonts';
@@ -9,6 +11,7 @@ import ReviewsList from './ReviewsList';
 import TCGradientButton from '../../../../TCGradientButton';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import TCInnerLoader from '../../../../TCInnerLoader';
+import AuthContext from '../../../../../auth/context'
 import {
   checkReviewExpired,
   getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS,
@@ -25,12 +28,13 @@ const Review = ({
 
   useEffect(() => {
     setLoading(true);
+    const authContext = useContext(AuthContext)
     getSoccerGameReview(gameData?.game_id).then((res) => {
       setReviewsData({ ...res.payload })
     }).catch((error) => {
       console.log(error);
     });
-    getSportsList().then((sports) => {
+    getSportsList(authContext).then((sports) => {
       const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name === 'Soccer')[0]
       const teamReviewProp = soccerSportData?.team_review_properties ?? []
       const sliderReviewProp = [];

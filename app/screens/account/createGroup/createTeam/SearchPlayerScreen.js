@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState, useEffect, useLayoutEffect, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -20,13 +22,14 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
-
+import AuthContext from '../../../../auth/context'
 import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
 
 import { getUserList } from '../../../../api/Users';
 
 export default function SearchPlayerScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const [players, setPlayers] = useState([]);
   const [searchPlayers, setSearchPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState({});
@@ -40,7 +43,7 @@ export default function SearchPlayerScreen({ navigation, route }) {
     });
   }, [navigation]);
   const getPlayerList = async () => {
-    getUserList().then((response) => {
+    getUserList(authContext).then((response) => {
       const arr = [];
       for (const tempData of response.payload) {
         tempData.isChecked = false;

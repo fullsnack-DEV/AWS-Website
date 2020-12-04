@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image, FlatList, Alert,
 } from 'react-native';
@@ -6,10 +6,10 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import { getChallenge, acceptDeclineChallenge } from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import * as Utility from '../../utils/index';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
+import AuthContext from '../../auth/context'
 import TCGradientButton from '../../components/TCGradientButton';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import TCThickDivider from '../../components/TCThickDivider';
@@ -25,6 +25,7 @@ import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const monthNames = [
     'Jan',
     'Feb',
@@ -47,7 +48,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       if (route && route.params && route.params.challengeID) {
         getChallengeDetail(route.params.challengeID);
 
@@ -63,7 +64,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
   const acceptDeclineChallengeOperation = (teamID, ChallengeId, versionNo, status) => {
     setloading(true)
-    acceptDeclineChallenge(teamID, ChallengeId, versionNo, status).then((response) => {
+    acceptDeclineChallenge(teamID, ChallengeId, versionNo, status, {}, authContext).then((response) => {
       setloading(false);
       console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
@@ -80,7 +81,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
     })
   }
   const getChallengeDetail = (challengeID) => {
-    getChallenge(challengeID).then((response) => {
+    getChallenge(challengeID, authContext).then((response) => {
       setbodyParams(response.payload[0]);
       console.log(JSON.stringify(response.payload));
       setloading(false);

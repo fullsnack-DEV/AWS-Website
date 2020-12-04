@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useRef, useEffect,
+  useState, useLayoutEffect, useRef, useEffect, useContext,
 } from 'react';
 import {
   Dimensions,
@@ -18,8 +18,7 @@ import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
-
-import * as Utility from '../../../utils/index';
+import AuthContext from '../../../auth/context'
 import UserRoleView from '../../../components/groupConnections/UserRoleView';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCNoDataView from '../../../components/TCNoDataView';
@@ -87,6 +86,7 @@ const filterArray = [
 let entity = {};
 export default function GroupMembersScreen({ navigation, route }) {
   const actionSheet = useRef();
+  const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(true);
@@ -101,7 +101,7 @@ export default function GroupMembersScreen({ navigation, route }) {
   useEffect(() => {
     console.log('NAVIGATION:', navigation);
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
     }
     getMembers()
@@ -109,7 +109,7 @@ export default function GroupMembersScreen({ navigation, route }) {
   }, [isFocused])
 
   const getMembers = async () => {
-    getGroupMembers(route.params.groupID)
+    getGroupMembers(route.params.groupID, authContext)
       .then((response) => {
         setMembers(response.payload)
         setSearchMember(response.payload)

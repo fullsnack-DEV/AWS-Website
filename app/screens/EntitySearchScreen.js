@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect,
+  useState, useEffect, useContext,
 } from 'react';
 import {
   View,
@@ -18,11 +18,13 @@ import {
   getUserList,
 } from '../api/Users';
 
+import AuthContext from '../auth/context'
 import ActivityLoader from '../components/loader/ActivityLoader';
 import TCProfileView from '../components/TCProfileView';
 import TCThinDivider from '../components/TCThinDivider';
 
 export default function EntitySearchScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   // For activity indigator
   const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState();
@@ -32,7 +34,7 @@ export default function EntitySearchScreen({ navigation }) {
 
   useEffect(() => {
     list = [];
-    const promises = [getMyGroups(), getUserList()]
+    const promises = [getMyGroups(authContext), getUserList(authContext)]
     Promise.all(promises).then(([res1, res2]) => {
       list = [...res1.payload, ...res2.payload]
       setGroups([...list])

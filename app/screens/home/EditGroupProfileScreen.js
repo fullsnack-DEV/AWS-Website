@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useRef,
+  useContext,
 } from 'react';
 
 import {
@@ -22,7 +23,7 @@ import TCProfileImageControl from '../../components/TCProfileImageControl'
 import { updateGroupProfile } from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
-import * as Utility from '../../utils';
+import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import uploadImages from '../../utils/imageAction';
@@ -30,6 +31,7 @@ import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
 
 export default function EditGroupProfileScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
@@ -87,7 +89,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
 
   // Get user information from async store
   const getUserInformation = async () => {
-    const entity = await Utility.getStorage('loggedInEntity')
+    const entity = authContext.entity
     setGroupProfile({
       ...entity.obj,
       location: (`${entity.obj.city}, ${entity.obj.state_abbr}, ${entity.obj.country}`),
@@ -106,7 +108,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
         if (backgroundImageChanged) {
           imageArray.push({ path: groupProfile.background_thumbnail });
         }
-        uploadImages(imageArray).then((responses) => {
+        uploadImages(imageArray, authContext).then((responses) => {
           const attachments = responses.map((item) => ({
             type: 'image',
             url: item.fullImage,
@@ -145,15 +147,15 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   }
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
-    updateGroupProfile(userProfile, paramGroupID).then(async (response) => {
+    updateGroupProfile(userProfile, paramGroupID, authContext).then(async (response) => {
       setloading(true);
       setTimeout(() => {
         Alert.alert('Towns Cup', 'Profile changed sucessfully');
       }, 0.1)
-      const entity = await Utility.getStorage('loggedInEntity')
+      const entity = authContext.entity
       entity.obj = response.payload;
       entity.auth.user = response.payload;
-      Utility.setStorage('loggedInEntity', entity);
+      authContext.setEntity({ ...entity })
     }).catch(() => {
       setTimeout(() => {
         Alert.alert('Towns Cup', 'Something went wrong');

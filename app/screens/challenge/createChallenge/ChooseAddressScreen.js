@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState, useEffect, useLayoutEffect, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +17,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import AuthContext from '../../../auth/context'
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import { searchVenue } from '../../../api/External';
@@ -24,6 +27,7 @@ import fonts from '../../../Constants/Fonts'
 import TCNoDataView from '../../../components/TCNoDataView';
 
 export default function ChooseAddressScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const [cityData, setCityData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [selectedVenue, setSelectedVenue] = useState()
@@ -46,7 +50,7 @@ export default function ChooseAddressScreen({ navigation, route }) {
   }, [navigation, selectedVenue, cityData]);
 
   const getLocationData = async (searchLocationText) => {
-    searchVenue(searchLocationText).then((response) => {
+    searchVenue(searchLocationText, authContext).then((response) => {
       // eslint-disable-next-line array-callback-return
       response.predictions.map((e) => {
         e.isSelected = false;

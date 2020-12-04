@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -16,7 +16,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import * as Utility from '../../../utils/index';
+import AuthContext from '../../../auth/context'
 import Header from '../../../components/Home/Header';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
@@ -38,6 +38,7 @@ const challegeAvailability = [
 ];
 
 export default function EditChallengeAvailability({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [challengeAvailable, setChallengeAvailable] = useState(challegeAvailability);
 
   const deleteItemById = (id) => {
@@ -58,7 +59,7 @@ export default function EditChallengeAvailability({ navigation }) {
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
-            const entity = await Utility.getStorage('loggedInEntity');
+            const entity = authContext.entity
             const uid = entity.uid || entity.auth.user_id;
             const entityRole = entity.role === 'user' ? 'users' : 'groups';
             const filterData = [];
@@ -73,7 +74,7 @@ export default function EditChallengeAvailability({ navigation }) {
               filterData.push(obj);
               return null;
             })
-            editSlots(entityRole, uid, filterData).then(() => {
+            editSlots(entityRole, uid, filterData, authContext).then(() => {
               navigation.goBack();
             }).catch((error) => {
               console.log('Error ::--', error);

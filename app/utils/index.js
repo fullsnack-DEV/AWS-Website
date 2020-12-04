@@ -98,6 +98,7 @@ export const showAlertWithCallBack = (msg, onOkClick) => {
 export const removeAuthKey = async () => {};
 // New Utility Method for set any kind of value
 export const setStorage = async (key, value) => {
+  console.log('storing in storage')
   const valueString = typeof value === 'object' ? JSON.stringify(value) : value.toString();
   await AsyncStorage.setItem(key, valueString);
 };

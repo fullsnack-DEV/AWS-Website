@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
+import AuthContext from '../../auth/context'
 import ImageButton from '../../components/WritePost/ImageButton';
 import { updatePost, getNewsFeed } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -41,7 +42,7 @@ export default function EditPostScreen({
     postText = JSON.parse(data.object).text;
     postAttachments = JSON.parse(data.object).attachments;
   }
-
+  const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState(postText);
   const [selectImage, setSelectImage] = useState(postAttachments);
   const [loading, setloading] = useState(false);
@@ -105,8 +106,8 @@ export default function EditPostScreen({
                     text: searchText,
                     attachments,
                   };
-                  updatePost(params)
-                    .then(() => getNewsFeed())
+                  updatePost(params, authContext)
+                    .then(() => getNewsFeed(authContext))
                     .then(() => {
                       navigation.goBack();
                       setloading(false);

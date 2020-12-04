@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useContext,
+} from 'react';
 import {
   Image,
   StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, Platform, ScrollView, SafeAreaView, Dimensions,
@@ -18,8 +20,8 @@ import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import * as Utility from '../../utils/index';
 import { getGameScoreboardEvents, getGameStatsChartData, getGameStatsData } from '../../api/Games';
+import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
 import {
@@ -80,6 +82,7 @@ import RefereesProfileSection from '../../components/Home/User/RefereesProfileSe
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext);
   const [isUserHome, setIsUserHome] = useState(false)
   const [isClubHome, setIsClubHome] = useState(false)
   const [isTeamHome, setIsTeamHome] = useState(false)
@@ -88,7 +91,6 @@ export default function HomeScreen({ navigation, route }) {
   const [infoModalVisible, setInfoModalVisible] = useState(false)
   const [scoreboardModalVisible, setScoreboardModalVisible] = useState(false)
   const [statsModalVisible, setStatsModalVisible] = useState(false)
-  const [loggedInEntity, setLoggedInEntity] = useState({})
   const [isAdmin, setIsAdmin] = useState(false)
   const [isRender, setIsRender] = useState(false)
   const [isRender2, setIsRender2] = useState(false)
@@ -126,7 +128,6 @@ export default function HomeScreen({ navigation, route }) {
   const [timetableSelectDate, setTimeTableSelectDate] = useState(new Date());
   const [searchLocation, setSearchLocation] = useState('');
   const [locationDetail, setLocationDetail] = useState(null);
-  const [entity, setEntity] = useState({});
   const [sportName, setSportName] = useState('');
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
@@ -136,10 +137,9 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
-      const entityItem = await Utility.getStorage('loggedInEntity');
-      const entityRole = entityItem.role === 'user' ? 'users' : 'groups';
-      const uid = entityItem.uid || entityItem.auth.user_id;
-      setEntity(entityItem);
+      const entity = authContext.entity
+      const entityRole = entity.role === 'user' ? 'users' : 'groups';
+      const uid = entity.uid || entity.auth.user_id;
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
@@ -200,9 +200,9 @@ export default function HomeScreen({ navigation, route }) {
     };
     setloading(true);
     if (userHome) {
-      const promises = [getUserDetails(uid),
-        getJoinedGroups(uid), getUserPosts(params),
-        getGallery(uid)]
+      const promises = [getUserDetails(uid, authContext),
+        getJoinedGroups(uid, authContext), getUserPosts(params, authContext),
+        getGallery(uid, authContext)]
       Promise.all(promises).then(([res1, res2, res3, res4]) => {
         const userDetails = res1.payload;
         if (res2) {
@@ -228,11 +228,11 @@ export default function HomeScreen({ navigation, route }) {
         navigation.goBack();
       }).finally(() => setloading(false));
     } else {
-      const promises = [getGroupDetails(uid),
-        getGroupMembers(uid), getUserPosts(params),
-        getGallery(uid)]
+      const promises = [getGroupDetails(uid, authContext),
+        getGroupMembers(uid, authContext), getUserPosts(params, authContext),
+        getGallery(uid, authContext)]
       if (clubHome) {
-        promises.push(getTeamsOfClub(uid))
+        promises.push(getTeamsOfClub(uid, authContext))
       }
       Promise.all(promises).then(([res1, res2, res3, res4, res5]) => {
         const groupDetails = res1.payload;
@@ -263,16 +263,15 @@ export default function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      const entityItem = await Utility.getStorage('loggedInEntity');
-      setEntity(entityItem)
-      setLoggedInEntity(entityItem)
-      let uid = entityItem.uid
-      let role = entityItem.role
+      const entity = authContext.entity
+      console.log('authContext.entity', entity)
+      let uid = entity.uid
+      let role = entity.role
 
       if (route.params && route.params.uid && route.params.role) {
         uid = route.params.uid;
         role = route.params.role;
-        if (entityItem.uid === uid) {
+        if (entity.uid === uid) {
           setIsAdmin(true)
         }
       } else {
@@ -290,7 +289,7 @@ export default function HomeScreen({ navigation, route }) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [authContext.entity]);
 
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
@@ -301,7 +300,7 @@ export default function HomeScreen({ navigation, route }) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, progressStatus).then((responses) => {
+      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
         const attachments = responses.map((item) => ({
           type: 'image',
           url: item.fullImage,
@@ -311,12 +310,12 @@ export default function HomeScreen({ navigation, route }) {
           text: postDesc && postDesc,
           attachments,
         };
-        createPost(dataParams)
-          .then(() => getNewsFeed())
+        createPost(dataParams, authContext)
+          .then(() => getNewsFeed(authContext))
           .then((response) => {
             setPostData(response.payload.results)
             setProgressBar(false);
-            getGallery(userID).then((res) => {
+            getGallery(userID, authContext).then((res) => {
               setGalleryData(res.payload);
             });
           })
@@ -532,7 +531,7 @@ export default function HomeScreen({ navigation, route }) {
     const params = {
       entity_type: 'player',
     };
-    followUser(params, userID).then(() => {
+    followUser(params, userID, authContext).then(() => {
       console.log('follow user')
     }).catch((error) => {
       currentUserData.is_following = false;
@@ -556,7 +555,7 @@ export default function HomeScreen({ navigation, route }) {
     const params = {
       entity_type: 'player',
     };
-    unfollowUser(params, userID).then(() => {
+    unfollowUser(params, userID, authContext).then(() => {
       console.log('unfollow user')
     }).catch((error) => {
       currentUserData.is_following = true;
@@ -571,10 +570,10 @@ export default function HomeScreen({ navigation, route }) {
 
   const clubInviteUser = async () => {
     const params = {
-      entity_type: loggedInEntity.role,
-      uid: loggedInEntity.uid,
+      entity_type: authContext.entity.role,
+      uid: authContext.entity.uid,
     };
-    inviteUser(params, userID).then(() => {
+    inviteUser(params, userID, authContext).then(() => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
       }, 0.3)
@@ -594,7 +593,7 @@ export default function HomeScreen({ navigation, route }) {
     const params = {
       entity_type: currentUserData.entity_type,
     };
-    followGroup(params, userID).then(() => {
+    followGroup(params, userID, authContext).then(() => {
       console.log('follow group')
     }).catch((error) => {
       currentUserData.is_following = false;
@@ -620,7 +619,7 @@ export default function HomeScreen({ navigation, route }) {
     const params = {
       entity_type: currentUserData.entity_type,
     };
-    unfollowGroup(params, userID).then(() => {
+    unfollowGroup(params, userID, authContext).then(() => {
       console.log('unfollow user')
     }).catch((error) => {
       currentUserData.is_following = true;
@@ -643,7 +642,7 @@ export default function HomeScreen({ navigation, route }) {
     setIsRender(!isRender)
 
     const params = {};
-    joinTeam(params, userID).then(() => {
+    joinTeam(params, userID, authContext).then(() => {
       console.log('user join group')
     }).catch((error) => {
       setTimeout(() => {
@@ -664,7 +663,7 @@ export default function HomeScreen({ navigation, route }) {
     setCurrentUserData(currentUserData);
     setIsRender(!isRender)
     const params = {};
-    leaveTeam(params, userID).then(() => {
+    leaveTeam(params, userID, authContext).then(() => {
       console.log('user leave group')
     }).catch((error) => {
       setTimeout(() => {
@@ -679,7 +678,7 @@ export default function HomeScreen({ navigation, route }) {
 
   const clubInviteTeam = async () => {
     const params = [userID];
-    inviteTeam(params, loggedInEntity.uid).then(() => {
+    inviteTeam(params, authContext.entity.uid, authContext).then(() => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`);
       }, 0.3)
@@ -691,54 +690,49 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   const clubJoinTeam = async () => {
-    loggedInEntity.obj.parent_group_id = currentUserData.group_id;
-    Utility.setStorage('loggedInEntity', loggedInEntity);
+    const e = authContext.entity
+    e.obj.parent_group_id = currentUserData.group_id;
     if (currentUserData.joined_teams) {
-      currentUserData.joined_teams.push(loggedInEntity.obj);
+      currentUserData.joined_teams.push(e.obj);
     } else {
-      currentUserData.joined_teams = [loggedInEntity.obj]
+      currentUserData.joined_teams = [e.obj]
     }
-    setCurrentUserData(currentUserData);
-    setLoggedInEntity(loggedInEntity);
     setIsRender(!isRender)
-    const params = {};
-    joinTeam(params, userID).then(() => {
-      console.log('club join')
+    joinTeam({}, userID, authContext).then(() => {
     }).catch((error) => {
-      delete loggedInEntity.obj.parent_group_id;
-      Utility.setStorage('loggedInEntity', loggedInEntity);
-      setLoggedInEntity(loggedInEntity);
+      delete e.obj.parent_group_id;
       if (currentUserData.joined_teams) {
-        currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== loggedInEntity.uid)
+        currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== e.uid)
       }
-      setCurrentUserData(currentUserData);
       setIsRender2(!isRender2)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.messages);
       }, 0.3)
+    }).finally(() => {
+      setCurrentUserData(currentUserData);
+      authContext.setEntity({ ...e })
     });
   };
 
   const clubLeaveTeam = async () => {
-    loggedInEntity.obj.parent_group_id = '';
-    Utility.setStorage('loggedInEntity', loggedInEntity);
-    setLoggedInEntity(loggedInEntity);
+    const e = authContext.entity
+    e.obj.parent_group_id = '';
+    authContext.setEntity({ ...e })
     if (currentUserData.joined_teams) {
-      currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== loggedInEntity.uid)
+      currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== e.uid)
     }
     setCurrentUserData(currentUserData);
     setIsRender(!isRender)
     const params = {};
-    leaveTeam(params, userID).then(() => {
+    leaveTeam(params, userID, authContext).then(() => {
       console.log('club leave')
     }).catch((error) => {
-      loggedInEntity.obj.parent_group_id = userID;
-      Utility.setStorage('loggedInEntity', loggedInEntity);
-      setLoggedInEntity(loggedInEntity);
+      e.obj.parent_group_id = userID;
+      authContext.setEntity({ ...e })
       if (currentUserData.joined_teams) {
-        currentUserData.joined_teams.push(loggedInEntity.obj);
+        currentUserData.joined_teams.push(e.obj);
       } else {
-        currentUserData.joined_teams = [loggedInEntity.obj]
+        currentUserData.joined_teams = [e.obj]
       }
       setCurrentUserData(currentUserData);
       setIsRender2(!isRender2)
@@ -787,7 +781,7 @@ export default function HomeScreen({ navigation, route }) {
         userLeaveGroup();
         break;
       case 'joinTeam':
-        if (loggedInEntity.obj.parent_group_id) {
+        if (authContext.entity.obj.parent_group_id) {
           Alert.alert(strings.alertmessagetitle, strings.alreadyjoinclubmessage)
         } else {
           clubJoinTeam();
@@ -804,8 +798,8 @@ export default function HomeScreen({ navigation, route }) {
         break;
       case 'edit':
         navigation.navigate('EditGroupProfileScreen', {
-          placeholder: loggedInEntity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
-          nameTitle: loggedInEntity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
+          placeholder: authContext.entity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
+          nameTitle: authContext.entity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
 
         });
         break;
@@ -839,8 +833,8 @@ export default function HomeScreen({ navigation, route }) {
       case 'edit':
         // edit code here
         navigation.navigate('EditGroupProfileScreen', {
-          placeholder: loggedInEntity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
-          nameTitle: loggedInEntity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
+          placeholder: authContext.entity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
+          nameTitle: authContext.entity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
 
         }); break;
       default:
@@ -848,7 +842,7 @@ export default function HomeScreen({ navigation, route }) {
   }
 
   const onChallengePress = async () => {
-    if (loggedInEntity.obj.sport === currentUserData.sport) {
+    if (authContext.entity.obj.sport === currentUserData.sport) {
       navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
     } else {
       Alert.alert('Sport must be same for both teams')
@@ -886,9 +880,9 @@ export default function HomeScreen({ navigation, route }) {
 
   return (
     <View style={ styles.mainContainer }>
-      {(isTeamHome && loggedInEntity.role === 'team')
+      {(isTeamHome && authContext.entity.role === 'team')
       && <View style={ styles.challengeButtonStyle }>
-        {loggedInEntity.obj.group_id !== currentUserData.group_id && <TouchableOpacity onPress={ onChallengePress } styles={styles.outerContainerStyle}>
+        {authContext.entity.obj.group_id !== currentUserData.group_id && <TouchableOpacity onPress={ onChallengePress } styles={styles.outerContainerStyle}>
           <LinearGradient
        colors={[colors.greenGradientStart, colors.greenGradientEnd]}
        style={styles.containerStyle}>
@@ -956,11 +950,12 @@ export default function HomeScreen({ navigation, route }) {
         <View style={{ flex: 1 }}>
           {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                     isAdmin={isAdmin}
-                    loggedInEntity={loggedInEntity}
+                    loggedInEntity={authContext.entity}
                     onRefereesInPress={() => {
                       refereesInModal()
                     }}
                     onPlayInPress={(item) => {
+                      const entity = authContext.entity
                       setSportName(item.sport_name);
                       setGamesChartData([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
                       setGameStatsData({
@@ -1020,11 +1015,11 @@ export default function HomeScreen({ navigation, route }) {
                     onAction={onUserAction}/>}
           {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
             isAdmin={isAdmin}
-            loggedInEntity={loggedInEntity}
+            loggedInEntity={authContext.entity}
             onAction={onClubAction}/>}
           {isTeamHome && <TeamHomeTopSection teamDetails={currentUserData}
             isAdmin={isAdmin}
-            loggedInEntity={loggedInEntity}
+            loggedInEntity={authContext.entity}
             onAction={onTeamAction}/>}
           <View style={styles.sepratorStyle}/>
           <TCScrollableProfileTabs
@@ -1086,6 +1081,7 @@ export default function HomeScreen({ navigation, route }) {
                         setSelectedEventItem(item);
                       }}
                       onItemPress={async (item) => {
+                        const entity = authContext.entity;
                         if (item.game_id) {
                           navigation.navigate('SoccerHome', {
                             gameId: item.game_id,
@@ -1138,6 +1134,7 @@ export default function HomeScreen({ navigation, route }) {
                         return null;
                       }}
                       renderItem={(item) => {
+                        const entity = authContext.entity
                         if (item.length > 0) {
                           return (
                             <FlatList
@@ -1299,6 +1296,7 @@ export default function HomeScreen({ navigation, route }) {
                             text: 'Delete',
                             style: 'destructive',
                             onPress: async () => {
+                              const entity = authContext.entity
                               setloading(true);
                               deleteEvent(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, selectedEventItem.cal_id)
                                 .then(() => getEvents(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id))

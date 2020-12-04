@@ -1,4 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, {
+  Fragment, useEffect, useState, useContext,
+} from 'react';
 import {
   Text, View, StyleSheet, TouchableOpacity,
 } from 'react-native';
@@ -9,11 +11,11 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../
 import images from '../../../../../../Constants/ImagePath';
 import TCGradientButton from '../../../../../TCGradientButton';
 import { getGameDateTimeInDHMformat } from '../../../../../../utils/gameUtils';
-import * as Utility from '../../../../../../utils';
 import { GameRecordStatus } from '../../../../../../api/Games';
 import TCInnerLoader from '../../../../../TCInnerLoader';
 import TCInlineImage from '../../../../../TCInlineImage';
 import TCPopupMessage from '../../../../../TCPopupMessage';
+import AuthContext from '../../../../../../auth/context'
 
 const MESSAGE = 'If the both teams don’t approved the winner and scores before the match-result-approving period, the game will be a RDG (Result-Disapproved-game). The total number of RDGs of each team will be displayed in its Stats.'
 const DISAPPROVE_GAME = 'Disapproved';
@@ -25,6 +27,7 @@ const ApproveDisapprove = ({
   approveDisapproveGameScore,
   getGameData,
 }) => {
+  const authContext = useContext(AuthContext)
   const [approvalGameData, setApprovalGameData] = useState(null);
   const [myTeamId, setMyTeamId] = useState(null);
   const [loadingTeam, setLoadingTeam] = useState(null);
@@ -35,8 +38,7 @@ const ApproveDisapprove = ({
   }, [gameData])
 
   const getApprovalData = async (data) => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    setMyTeamId(entity?.uid);
+    setMyTeamId(authContext.entity?.uid);
     if (data) setApprovalGameData({ ...data });
   }
 

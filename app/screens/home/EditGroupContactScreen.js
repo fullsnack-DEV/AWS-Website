@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 
 import {
   View, Text, ScrollView, Alert, StyleSheet,
@@ -10,12 +10,13 @@ import TCPhoneNumber from '../../components/TCPhoneNumber';
 import { patchGroup } from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
-import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import AuthContext from '../../auth/context';
 
 export default function EditGroupContactScreen({ navigation, route }) {
   // For activity indicator
+  const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [groupData, setGroupData] = useState(route.params.groupDetails);
 
@@ -41,12 +42,12 @@ export default function EditGroupContactScreen({ navigation, route }) {
   const onSaveButtonClicked = () => {
     setloading(true);
     const groupProfile = { ...groupData };
-    patchGroup(groupData.group_id, groupProfile).then(async (response) => {
+    patchGroup(groupData.group_id, groupProfile, authContext).then(async (response) => {
       setloading(false);
       console.log('response', response)
-      const entity = await Utility.getStorage('loggedInEntity');
+      const entity = authContext.entity
       entity.obj = response.payload;
-      Utility.setStorage('loggedInEntity', entity);
+      authContext.setEntity({ ...entity })
       navigation.goBack();
     }).catch(() => {
       setTimeout(() => {

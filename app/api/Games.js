@@ -9,96 +9,115 @@ const GameRecordStatus = {
   ApprovedByAll: 'approvedByAll',
   DisApprovedByAll: 'disapprovedByAll',
 }
-const getSportsList = async () => makeAPIRequest({
+const getSportsList = async (authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/sports/`,
+  authContext,
 })
 
-const getGameData = async (gameId, fetchTeamData = false) => makeAPIRequest({
+const getGameData = async (gameId, fetchTeamData = false, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}?fetchTeamObject=${fetchTeamData}`,
+  authContext,
 })
 
-const getGameScoreboardEvents = async (userID, params) => makeAPIRequest({
+const getGameScoreboardEvents = async (userID, params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/users/${userID}`,
   params,
+  authContext,
 })
 
-const getGameStatsChartData = async (userID, params) => makeAPIRequest({
+const getGameStatsChartData = async (userID, params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/teams/${userID}/games/stats/chart`,
   params,
+  authContext,
 })
 
-const getGameStatsData = async (userID, params) => makeAPIRequest({
+const getGameStatsData = async (userID, params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/teams/${userID}/games/stats`,
   params,
+  authContext,
 })
 
-const getGameMatchRecords = async (gameId) => makeAPIRequest({
+const getGameMatchRecords = async (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}/records?fetchTeamObject=true`,
+  authContext,
 })
 
-const approveDisapproveGameRecords = (gameId, teamId, type = 'approve', params) => makeAPIRequest({
+const approveDisapproveGameRecords = (gameId, teamId, type = 'approve', params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}/teams/${teamId}/games/${gameId}/${type}`,
   data: params,
+  authContext,
 })
 
-const getGameStats = (gameId) => makeAPIRequest({
+const getGameStats = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}/stats`,
+  authContext,
 })
 
-const getGameReviews = (gameId) => makeAPIRequest({
+const getGameReviews = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}/reviews`,
+  authContext,
 })
 
-const getGameLineUp = (teamId, gameId) => makeAPIRequest({
+const getGameLineUp = (teamId, gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/roster?fetchNonRoster=true&reviewStatus=true`,
+  authContext,
 })
-const getGameGallery = (gameId) => makeAPIRequest({
+
+const getGameGallery = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/games/${gameId}/gallery`,
+  authContext,
 })
-const createGameLineUp = (teamId, gameId, params) => makeAPIRequest({
+const createGameLineUp = (teamId, gameId, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/roster`,
   data: params,
+  authContext,
 })
-const deleteGameLineUp = (teamId, gameId, params) => makeAPIRequest({
+const deleteGameLineUp = (teamId, gameId, params, authContext) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/removeMembers`,
   data: params,
+  authContext,
 })
-const getGameByGameID = (gameId) => makeAPIRequest({
+const getGameByGameID = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}games/${gameId}?fetchTeamObject=true&fetchCallerReview=true`,
+  authContext,
 })
-const addGameRecord = (gameId, params) => makeAPIRequest({
+const addGameRecord = (gameId, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}games/${gameId}/records`,
   data: params,
+  authContext,
 })
-const resetGame = (gameId) => makeAPIRequest({
+const resetGame = (gameId, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}games/${gameId}/resetGame`,
   data: {},
+  authContext,
 })
-const decreaseGameScore = (teamId, gameId) => makeAPIRequest({
+const decreaseGameScore = (teamId, gameId, authContext) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/decreaseScore`,
+  authContext,
 })
 
-const addGameReview = (gameId, params) => makeAPIRequest({
+const addGameReview = (gameId, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}/games/${gameId}/reviews`,
   data: params,
+  authContext,
 })
 
 export {

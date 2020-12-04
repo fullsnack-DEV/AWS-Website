@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Alert,
   FlatList,
@@ -22,9 +22,10 @@ import fonts from '../../Constants/Fonts';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import { QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
-import * as Utility from '../../utils';
+import AuthContext from '../../auth/context'
 
 const MessageInviteScreen = ({ navigation, route }) => {
+  const authContext = useContext(AuthContext)
   const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
   useEffect(() => {
     const setParticipants = async () => {
       if (route?.params?.participants) {
-        const entity = await Utility.getStorage('loggedInEntity');
+        const entity = authContext.entity
         const myUid = entity.QB.id;
         const participants = route.params.participants.filter((item) => item.id !== myUid);
         setSelectedInvitees(participants)
@@ -84,7 +85,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
 
   const getAllTypesData = async (AllUsers) => {
     setLoading(true);
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     const myUid = entity.QB.id;
     const users = AllUsers.filter((user) => user.id !== myUid);
     setInviteeData(users);

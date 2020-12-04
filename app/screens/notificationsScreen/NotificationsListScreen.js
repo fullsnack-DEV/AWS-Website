@@ -37,7 +37,6 @@ import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
-import * as Utility from '../../utils/index';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -61,7 +60,7 @@ function NotificationsListScreen({ navigation }) {
     if (activeScreen) {
       setloading(true);
       const ids = item.activities.map((activity) => activity.id)
-      deleteNotification(ids, item.type).then(() => {
+      deleteNotification(ids, item.type, authContext).then(() => {
         callNotificationList()
       }).catch(() => {
         setloading(false);
@@ -84,7 +83,7 @@ function NotificationsListScreen({ navigation }) {
   const onAccept = (requestId) => {
     setloading(true)
     if (activeScreen) {
-      acceptRequest(requestId).then(() => {
+      acceptRequest(requestId, authContext).then(() => {
         callNotificationList();
       }).catch((error) => {
         setloading(false);
@@ -108,7 +107,7 @@ function NotificationsListScreen({ navigation }) {
 
   const onDecline = (requestId) => {
     if (activeScreen) {
-      declineRequest(requestId).then(() => {
+      declineRequest(requestId, authContext).then(() => {
         callNotificationList();
       }).catch((error) => {
         setloading(false);
@@ -206,11 +205,11 @@ function NotificationsListScreen({ navigation }) {
 
   useEffect(() => {
     if (notifAPI !== 1) {
-      getUnreadCount().then((response) => {
+      getUnreadCount(authContext).then((response) => {
         if (response.status === true) {
           const { teams } = response.payload;
           const { clubs } = response.payload;
-          const groups = [authContext.user, ...clubs, ...teams]
+          const groups = [authContext.entity.auth, ...clubs, ...teams]
           setGroupList(groups);
           setNotifAPI(1);
           setCurrentTab(0);
@@ -237,7 +236,7 @@ function NotificationsListScreen({ navigation }) {
       mark_seen: 'true',
       uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
     };
-    getNotificationsList(params)
+    getNotificationsList(params, authContext)
       .then(async (response) => {
         const pendingReqNotification = response.payload.requests;
         const todayNotifications = response.payload.notifications.filter(
@@ -287,7 +286,7 @@ function NotificationsListScreen({ navigation }) {
   );
 
   const checkActiveScreen = async (entity) => {
-    const loggedInEntity = await Utility.getStorage('loggedInEntity');
+    const loggedInEntity = authContext.entity
     const currentID = entity.entity_type === 'player' ? entity.user_id : entity.group_id
     if (loggedInEntity.uid === currentID) {
       setActiveScreen(true);

@@ -1,6 +1,7 @@
 import React, {
   useState,
   useLayoutEffect,
+  useContext,
 } from 'react';
 
 import {
@@ -16,15 +17,15 @@ import TCLabel from '../../components/TCLabel';
 import { patchGroup } from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
-import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import AuthContext from '../../auth/context';
 
 export default function GroupBioScreen({ navigation, route }) {
   // For activity indicator
   const [loading, setloading] = useState(false);
   const [bio, setBio] = useState(route.params.groupDetails.bio);
-
+  const authContext = useContext(AuthContext);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -44,12 +45,12 @@ export default function GroupBioScreen({ navigation, route }) {
     setloading(true);
     const groupProfile = {};
     groupProfile.bio = bio;
-    patchGroup(route.params.groupDetails.group_id, groupProfile).then(async (response) => {
+    patchGroup(route.params.groupDetails.group_id, groupProfile, authContext).then(async (response) => {
       setloading(false);
       if (response && response.status === true) {
-        const entity = await Utility.getStorage('loggedInEntity')
+        const entity = authContext.entity
         entity.obj = response.payload;
-        Utility.setStorage('loggedInEntity', entity);
+        authContext.setEtity({ ...entity })
         navigation.goBack();
       } else {
         setTimeout(() => {

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Text, View, StyleSheet, Image, Alert, Linking,
 } from 'react-native';
 
-import * as Utility from '../../../utils/index';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { connectProfile } from '../../../api/Groups';
 import images from '../../../Constants/ImagePath';
@@ -11,16 +10,17 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import strings from '../../../Constants/String';
 import TCBorderButton from '../../../components/TCBorderButton';
+import AuthContext from '../../../auth/context'
 
 let entity = {};
 export default function MemberProfileCreatedScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext)
   const [switchUser, setSwitchUser] = useState({})
 
   useEffect(() => {
-    console.log('NAVIGATION:', navigation);
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
     }
     navigation.dispatch({
@@ -31,7 +31,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
   }, [])
   const connectMemberProfile = () => {
     setloading(true)
-    connectProfile(switchUser.uid, route.params.memberObj.user_id).then((response) => {
+    connectProfile(switchUser.uid, route.params.memberObj.user_id, authContext).then((response) => {
       setloading(false)
       Alert.alert('Towns Cup', response.messages)
       navigation.navigate('ConnectionReqSentScreen', { memberObj: route.params.memberObj });

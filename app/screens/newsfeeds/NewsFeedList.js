@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View, FlatList, Alert, ActivityIndicator,
 } from 'react-native';
@@ -10,6 +10,7 @@ import { createReaction, deletePost, getNewsFeed } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
+import AuthContext from '../../auth/context'
 
 export default function NewsFeedList({
   navigation, postData, onEndReached, footerLoading = false,
@@ -19,7 +20,7 @@ export default function NewsFeedList({
   const [data, setData] = useState(postData);
   const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
-
+  const authContext = useContext(AuthContext)
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const currentUserID = await AsyncStorage.getItem('CurrentUserId');
@@ -75,8 +76,8 @@ export default function NewsFeedList({
                 reaction_type: 'clap',
                 activity_id: item.id,
               };
-              createReaction(bodyParams)
-                .then(() => getNewsFeed())
+              createReaction(bodyParams, authContext)
+                .then(() => getNewsFeed(authContext))
                 .then((response) => {
                   setData(response.payload.results);
                 })
@@ -89,8 +90,8 @@ export default function NewsFeedList({
               const params = {
                 activity_id: item.id,
               };
-              deletePost(params)
-                .then(() => getNewsFeed())
+              deletePost(params, authContext)
+                .then(() => getNewsFeed(authContext))
                 .then((response) => {
                   setloading(false);
                   setData(response.payload.results);
@@ -107,7 +108,7 @@ export default function NewsFeedList({
         refreshing={pullRefresh}
         onRefresh={() => {
           setPullRefresh(true);
-          getNewsFeed()
+          getNewsFeed(authContext)
             .then((response) => {
               setData(response.payload.results);
               setPullRefresh(false);

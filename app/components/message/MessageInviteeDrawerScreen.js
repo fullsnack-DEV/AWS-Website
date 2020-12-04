@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,19 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../uti
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
+import AuthContext from '../../auth/context'
 import { QBleaveDialog } from '../../utils/QuickBlox';
-import * as Utility from '../../utils';
 
 const MessageInviteeDrawerScreen = ({
   navigation,
   participants = [],
   dialog = null,
 }) => {
+  const authContext = useContext(AuthContext)
   const [myUserId, setMyUserId] = useState(null);
   useEffect(() => {
     const getUser = async () => {
-      const entity = await Utility.getStorage('loggedInEntity');
-      setMyUserId(entity.QB.id);
+      setMyUserId(authContext.entity.QB.id);
     }
     getUser();
   }, []);

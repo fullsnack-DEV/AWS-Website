@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,7 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
-
+import AuthContext from '../../../auth/context'
 import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
@@ -27,7 +27,7 @@ import fonts from '../../../Constants/Fonts'
 export default function RegisterRefereeForm2({ navigation, route }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
-
+  const authContext = useContext(AuthContext)
   const [matchFee, onMatchFeeChanged] = React.useState('');
   const [selected, setSelected] = useState(0);
 
@@ -43,7 +43,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
       } else {
         bodyParams.referee_data[0].cancellation_policy = 'flexible';
       }
-      patchRegisterRefereeDetails(bodyParams).then(() => {
+      patchRegisterRefereeDetails(bodyParams, authContext).then(() => {
         navigation.navigate('AccountScreen');
         Alert.alert('Towns Cup', 'Referee sucessfully registered');
 

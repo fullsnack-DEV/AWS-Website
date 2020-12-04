@@ -1,4 +1,6 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, {
+  useState, useLayoutEffect, useEffect, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,7 +12,6 @@ import {
 
 } from 'react-native';
 
-import * as Utility from '../../../../utils/index';
 import { createMemberProfile } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -21,13 +22,14 @@ import colors from '../../../../Constants/Colors';
 
 import TCLable from '../../../../components/TCLabel';
 import TCTextField from '../../../../components/TCTextField';
-
+import AuthContext from '../../../../auth/context'
 import TCMessageButton from '../../../../components/TCMessageButton';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 let entity = {};
 export default function CreateMemberProfileTeamForm2({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [playerStatus, setPlayerStatus] = useState([]);
   const [role, setRole] = useState('');
@@ -65,7 +67,7 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
       setGroups({ ...groups, entity_type: entity.role })
       setRole(entity.role);
@@ -96,7 +98,7 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
       const imageArray = []
 
       imageArray.push({ path: route.params.form1.full_image });
-      uploadImages(imageArray).then((responses) => {
+      uploadImages(imageArray, authContext).then((responses) => {
         const attachments = responses.map((item) => ({
           type: 'image',
           url: item.fullImage,
@@ -124,7 +126,7 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
     }
   }
   const createProfile = (params) => {
-    createMemberProfile(entity.uid, params).then((response) => {
+    createMemberProfile(entity.uid, params, authContext).then((response) => {
       setloading(false);
       console.log('Response :', response.payload);
 

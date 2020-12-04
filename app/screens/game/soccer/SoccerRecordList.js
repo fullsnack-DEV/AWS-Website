@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useEffect, Fragment,
+  useState, useLayoutEffect, useEffect, Fragment, useContext,
 } from 'react';
 import {
   View,
@@ -16,8 +16,8 @@ import {
 } from 'react-native-responsive-screen';
 
 import Dash from 'react-native-dash';
-
 import FastImage from 'react-native-fast-image';
+import AuthContext from '../../../auth/context'
 import TCGameScoreLeft from '../../../components/gameRecordList/TCGameScoreLeft';
 import TCGameScoreRight from '../../../components/gameRecordList/TCGameScoreRight';
 import TCGameState from '../../../components/gameRecordList/TCGameState';
@@ -29,6 +29,7 @@ import { getGameData, getGameMatchRecords } from '../../../api/Games';
 import { soccerGameStats } from '../../../utils/gameUtils';
 
 export default function SoccerRecordList({ route, navigation }) {
+  const authContext = useContext(AuthContext)
   const [editorChecked, setEditorChecked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [matchRecords, setMatchRecords] = useState([]);
@@ -53,12 +54,12 @@ export default function SoccerRecordList({ route, navigation }) {
     if (gameId) {
       setLoading(true);
       setGameData(route?.params?.gameData ?? null);
-      getGameData(gameId, true).then(async (res) => {
+      getGameData(gameId, true, authContext).then(async (res) => {
         if (res.status) {
           setGameData(res.payload ?? 0);
         }
       })
-      getGameMatchRecords(gameId).then((res) => {
+      getGameMatchRecords(gameId, authContext).then((res) => {
         setMatchRecords(res.payload);
       }).finally(() => setLoading(false));
     }

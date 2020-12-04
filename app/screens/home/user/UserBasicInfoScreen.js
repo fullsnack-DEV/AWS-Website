@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 
 import {
   View, Text, ScrollView, Alert, StyleSheet,
@@ -16,8 +16,10 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCDateTimePicker from '../../../components/TCDateTimePicker';
 import TCPicker from '../../../components/TCPicker';
+import AuthContext from '../../../auth/context';
 
 export default function UserBasicInfoScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext);
   // For activity indicator
   const [loading, setloading] = useState(false);
 
@@ -57,16 +59,16 @@ export default function UserBasicInfoScreen({ navigation, route }) {
 
     console.log('user profile object', userProfile);
 
-    updateUserProfile(userProfile).then(async (response) => {
+    updateUserProfile(userProfile, authContext).then(async (response) => {
       setloading(false);
       if (response && response.status === true) {
         // setTimeout(() => {
         //   Alert.alert('Towns Cup', 'Profile changed sucessfully');
         // }, 0.1)
-        const entity = await Utility.getStorage('loggedInEntity');
+        const entity = authContext.entity
         entity.obj = response.payload;
         entity.auth.user = response.payload;
-        Utility.setStorage('loggedInEntity', entity);
+        authContext.setEtity({ ...entity })
         navigation.goBack();
       } else {
         setTimeout(() => {

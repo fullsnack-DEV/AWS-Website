@@ -1,7 +1,6 @@
 import QB from 'quickblox-react-native-sdk';
 import _ from 'lodash';
 import { QB_Auth_Password } from './constant';
-import * as Utility from './index';
 
 const MESSAGE_LIMIT = 50;
 const DIALOG_LIST_LIMIT = 200;
@@ -242,8 +241,7 @@ export const QBuploadFile = (image) => QBChatConnected().then(async (connected) 
   throw new Error('server-not-connected');
 })
 
-export const QBconnectAndSubscribe = async () => {
-  const entity = await Utility.getStorage('loggedInEntity');
+export const QBconnectAndSubscribe = async (entity) => {
   const connected = await QBChatConnected();
   if (entity.QB) {
     const { id } = entity.QB

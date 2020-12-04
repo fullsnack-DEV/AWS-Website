@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useLayoutEffect, useRef,
+  useState, useEffect, useLayoutEffect, useRef, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -15,7 +15,6 @@ import {
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 
-import * as Utility from '../../../../utils/index';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -28,10 +27,12 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import AuthContext from '../../../../auth/context'
 
 let entity = {};
 
 export default function CreateMemberProfileForm1({ navigation }) {
+  const authContext = useContext(AuthContext)
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
@@ -54,7 +55,7 @@ export default function CreateMemberProfileForm1({ navigation }) {
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setRole(entity.role);
     }
     getAuthEntity();

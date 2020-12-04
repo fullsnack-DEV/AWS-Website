@@ -1,4 +1,6 @@
-import React, { useLayoutEffect, useState, useEffect } from 'react';
+import React, {
+  useLayoutEffect, useState, useEffect, useContext,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,14 +14,15 @@ import {
 import images from '../../../../Constants/ImagePath';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
+import AuthContext from '../../../../auth/context'
 import { getTeamsOfClub } from '../../../../api/Groups';
-import * as Utility from '../../../../utils/index';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
 
 let entity = {};
 export default function CreateMemberProfileClubForm2({ navigation, route }) {
   const [auth, setAuth] = useState({})
+  const authContext = useContext(AuthContext)
   const [teamList, setTeamList] = useState([]);
   const [groupAdmin, setGroupAdmin] = useState(false);
   // const [memberDetail, setMemberDetail] = useState({
@@ -31,7 +34,7 @@ export default function CreateMemberProfileClubForm2({ navigation, route }) {
     getAuthEntity()
   }, [])
   const getAuthEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
+    entity = authContext.entity
     setAuth(entity);
     getTeamsList()
   }
@@ -48,7 +51,7 @@ export default function CreateMemberProfileClubForm2({ navigation, route }) {
     navigation.navigate('CreateMemberProfileClubForm3', { form2: membersAuthority })
   }
   const getTeamsList = async () => {
-    getTeamsOfClub(entity.uid).then((response) => {
+    getTeamsOfClub(entity.uid, authContext).then((response) => {
       // eslint-disable-next-line array-callback-return
       response.payload.map((e) => {
         e.is_admin = false;

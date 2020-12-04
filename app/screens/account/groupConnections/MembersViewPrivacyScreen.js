@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
 import React, {
-  useState, useEffect,
+  useState, useEffect, useContext,
 } from 'react';
 import {
   Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, Alert,
@@ -11,11 +11,11 @@ import {
   patchGroup,
 } from '../../../api/Groups';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import * as Utility from '../../../utils/index';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import strings from '../../../Constants/String';
+import AuthContext from '../../../auth/context'
 import TCGradientButton from '../../../components/TCGradientButton';
 
 let entity = {};
@@ -26,10 +26,11 @@ export default function MembersViewPrivacyScreen({ navigation }) {
   const [member, setMember] = useState(0);
   const [follower, setFollower] = useState(0);
   const [profile, setProfile] = useState(0);
+  const authContext = useContext(AuthContext)
 
   useEffect(() => {
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
     }
     getAuthEntity()
@@ -43,7 +44,7 @@ export default function MembersViewPrivacyScreen({ navigation }) {
       privacy_profile: (profile === 0 && 'members') || (profile === 1 && 'admins'),
     }
     console.log('BODY :', bodyParams);
-    patchGroup(switchUser.uid, bodyParams).then((response) => {
+    patchGroup(switchUser.uid, bodyParams, authContext).then((response) => {
       setloading(false)
       console.log('Response :', response.payload);
       navigation.goBack()

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,10 +14,10 @@ import Gallery from '../../../components/game/soccer/home/gallary/Gallery';
 import {
   approveDisapproveGameRecords, getGameData, getGameGallery, getGameMatchRecords, getGameReviews, getGameStats,
 } from '../../../api/Games';
-import * as Utility from '../../../utils';
 import { followUser, unfollowUser } from '../../../api/Users';
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
+import AuthContext from '../../../auth/context'
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Review', 'Gallery']
 const gameIds = [
@@ -28,6 +28,7 @@ const gameIds = [
 ]
 const globalGameId = gameIds[0];
 const TennisHome = ({ navigation, route }) => {
+  const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
@@ -45,7 +46,7 @@ const TennisHome = ({ navigation, route }) => {
     setLoading(true)
     getSoccerGameData(soccerGameId).then(async (res) => {
       if (res.status) {
-        const entity = await Utility.getStorage('loggedInEntity');
+        const entity = authContext.entity
         setUserRole(entity?.role);
         setUserId(entity?.uid);
         const checkIsAdmin = res?.payload?.home_team?.am_i_admin || res?.payload?.away_team?.am_i_admin;

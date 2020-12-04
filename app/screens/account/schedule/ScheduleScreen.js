@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useRef, useEffect,
+  useState, useLayoutEffect, useRef, useEffect, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -18,7 +18,6 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
-import * as Utility from '../../../utils/index';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
@@ -32,6 +31,7 @@ import BackForwardView from '../../../components/Schedule/BackForwardView';
 import EventInCalender from '../../../components/Schedule/EventInCalender';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
+import AuthContext from '../../../auth/context'
 import {
   deleteEvent, getEventById, getEvents, getSlots,
 } from '../../../api/Schedule';
@@ -43,6 +43,7 @@ import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTime
 const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
@@ -54,20 +55,18 @@ export default function ScheduleScreen({ navigation }) {
   const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
   const [loading, setloading] = useState(false);
   const [createEventModal, setCreateEventModal] = useState(false);
-  const [entity, setEntity] = useState({});
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
-      const loggedInEntity = await Utility.getStorage('loggedInEntity');
-      setEntity(loggedInEntity)
-      const entityRole = loggedInEntity.role === 'user' ? 'users' : 'groups';
-      const uid = loggedInEntity.uid || loggedInEntity.auth.user_id;
+      const entity = authContext.entity
+      const entityRole = entity.role === 'user' ? 'users' : 'groups';
+      const uid = entity.uid || entity.auth.user_id;
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
-      getEvents(entityRole, uid).then((response) => {
-        getSlots(entityRole, uid).then((res) => {
+      getEvents(entityRole, uid, authContext).then((response) => {
+        getSlots(entityRole, uid, authContext).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
           setEventData(eventTimeTableData);
           setTimeTable(eventTimeTableData);
@@ -157,17 +156,25 @@ export default function ScheduleScreen({ navigation }) {
                 setSelectedEventItem(item);
               }}
               onItemPress={async (item) => {
+                const entity = authContext.entity
+                const uid = entity.uid || entity.auth.user_id;
+                const entityRole = entity.role === 'user' ? 'users' : 'groups';
                 if (item.game_id) {
                   navigation.navigate('SoccerHome', {
                     gameId: item.game_id,
                   })
                 } else {
-                  getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id).then((response) => {
+                  getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
                     navigation.navigate('EventScreen', { data: response.payload, gameData: item });
                   }).catch((e) => {
                     console.log('Error :-', e);
                   })
                 }
+                getEventById(entityRole, uid, item.cal_id, authContext).then((response) => {
+                  navigation.navigate('EventScreen', { data: response.payload, gameData: item });
+                }).catch((e) => {
+                  console.log('Error :-', e);
+                })
               }}
             />
             {!createEventModal && <CreateEventButton
@@ -211,6 +218,7 @@ export default function ScheduleScreen({ navigation }) {
                 return null;
               }}
               renderItem={(item) => {
+                const entity = authContext.entity
                 if (item.length > 0) {
                   return (
                     <FlatList
@@ -222,7 +230,7 @@ export default function ScheduleScreen({ navigation }) {
                               gameId: itemValue.game_id,
                             })
                           } else {
-                            getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id).then((response) => {
+                            getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
                               navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
                             }).catch((e) => {
                               console.log('Error :-', e);
@@ -407,8 +415,11 @@ export default function ScheduleScreen({ navigation }) {
                 style: 'destructive',
                 onPress: async () => {
                   setloading(true);
-                  deleteEvent(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, selectedEventItem.cal_id)
-                    .then(() => getEvents(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id))
+                  const entity = authContext.entity
+                  const uid = entity.uid || entity.auth.user_id;
+                  const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                  deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
+                    .then(() => getEvents(entityRole, uid, authContext))
                     .then((response) => {
                       setloading(false);
                       setEventData(response.payload);

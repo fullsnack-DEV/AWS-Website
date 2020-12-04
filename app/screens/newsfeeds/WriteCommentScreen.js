@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import WriteCommentItems from '../../components/newsFeed/WriteCommentItems';
 
 import { createReaction, getReactions } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-
+import AuthContext from '../../auth/context'
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -34,13 +34,13 @@ export default function WriteCommentScreen({
   const [commentTxt, setCommentText] = useState('');
   const [commentData, setCommentData] = useState([]);
   const [loading, setloading] = useState(true);
-
+  const authContext = useContext(AuthContext)
   useEffect(() => {
     const params = {
       activity_id: data.id,
       reaction_type: 'comment',
     };
-    getReactions(params)
+    getReactions(params, authContext)
       .then((response) => {
         setCommentData(response.payload);
         setloading(false);
@@ -129,7 +129,7 @@ export default function WriteCommentScreen({
                   text: commentTxt,
                 },
               }
-              createReaction(bodyParams)
+              createReaction(bodyParams, authContext)
                 .then((response) => {
                   const dataOfComment = [...commentData];
                   dataOfComment.push(response.payload);

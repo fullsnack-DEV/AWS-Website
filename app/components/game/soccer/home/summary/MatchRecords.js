@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Text, View, StyleSheet, TouchableOpacity,
 } from 'react-native';
@@ -9,18 +9,21 @@ import images from '../../../../../Constants/ImagePath';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecordsList from './MatchRecordsList';
 import { getGameMatchRecords } from '../../../../../api/Games';
+import AuthContext from '../../../../../auth/context';
 
-const MatchRecords = ({ gameData, gameId, navigation }) => (
-  <View style={styles.mainContainer}>
-    {/*      Match Records Sections */}
-    <View style={styles.contentContainer}>
-      <TouchableOpacity style={{ flexDirection: 'row', padding: 10 }} onPress={() => {
-        navigation.navigate('SoccerRecordList', { gameId, gameData })
-      }}>
-        <Text style={styles.title}>
-          Match records
-        </Text>
-        <FastImage
+const MatchRecords = ({ gameData, gameId, navigation }) => {
+  const authContext = useContext(AuthContext)
+  return (
+    <View style={styles.mainContainer}>
+      {/*      Match Records Sections */}
+      <View style={styles.contentContainer}>
+        <TouchableOpacity style={{ flexDirection: 'row', padding: 10 }} onPress={() => {
+          navigation.navigate('SoccerRecordList', { gameId, gameData })
+        }}>
+          <Text style={styles.title}>
+            Match records
+          </Text>
+          <FastImage
                 resizeMode={'contain'}
                 source={images.arrowGraterthan}
                 style={{
@@ -29,15 +32,16 @@ const MatchRecords = ({ gameData, gameId, navigation }) => (
                   alignSelf: 'center',
                   marginLeft: wp(1),
                 }}/>
-      </TouchableOpacity>
-      <MatchRecordsList
+        </TouchableOpacity>
+        <MatchRecordsList
           gameData={gameData}
           gameId={gameId}
-          getGameMatchRecords={getGameMatchRecords}
+          getGameMatchRecords={() => { getGameMatchRecords(authContext) }}
       />
+      </View>
     </View>
-  </View>
-)
+  )
+}
 
 const styles = StyleSheet.create({
   mainContainer: {

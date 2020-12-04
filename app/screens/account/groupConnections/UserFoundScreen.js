@@ -1,5 +1,5 @@
 import React, {
-  useState,
+  useState, useContext,
 } from 'react';
 import {
   Text, View, StyleSheet, Image, SafeAreaView, Alert,
@@ -7,7 +7,7 @@ import {
 import {
   ScrollView,
 } from 'react-native-gesture-handler';
-
+import AuthContext from '../../../auth/context'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
@@ -18,11 +18,12 @@ import TCBorderButton from '../../../components/TCBorderButton';
 import { connectProfile } from '../../../api/Groups';
 
 export default function UserFoundScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
 
   const connectMemberProfile = () => {
     setloading(true)
-    connectProfile(route.params.groupID, route.params.memberObj.user_id).then((response) => {
+    connectProfile(route.params.groupID, route.params.memberObj.user_id, authContext).then((response) => {
       setloading(false)
       Alert.alert('Towns Cup', response.messages)
       navigation.goBack();

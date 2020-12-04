@@ -1,5 +1,5 @@
 import React, {
-  useState,
+  useState, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -19,10 +19,9 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import * as Utility from '../../../../utils/index';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import { createGroup } from '../../../../api/Groups';
-
+import AuthContext from '../../../../auth/context'
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors'
@@ -30,6 +29,7 @@ import fonts from '../../../../Constants/Fonts'
 
 export default function CreateTeamForm4({ navigation, route }) {
   const [selected, setSelected] = useState(0);
+  const authContext = useContext(AuthContext)
   const [matchFee, setMatchFee] = useState(0.0);
   const [loading, setloading] = useState(false);
 
@@ -65,9 +65,10 @@ export default function CreateTeamForm4({ navigation, route }) {
     bodyParams.should_hide = false;
     console.log('bodyPARAMS:: ', bodyParams);
 
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     // FIXME
     createGroup(
+      authContext,
       bodyParams,
       entity.role === 'club' && entity.uid,
       entity.role === 'club' && 'club',

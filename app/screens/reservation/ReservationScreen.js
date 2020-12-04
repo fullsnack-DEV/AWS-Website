@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,12 +13,14 @@ import MatchReservation from '../../components/reservations/MatchReservation';
 import TCNoDataView from '../../components/TCNoDataView';
 import strings from '../../Constants/String';
 import TCScrollableTabs from '../../components/TCScrollableTabs';
+import AuthContext from '../../auth/context'
 
 export default function ReservationScreen({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
+  const authContext = useContext(AuthContext)
 
   useEffect(() => {
     setloading(true);
@@ -26,7 +28,7 @@ export default function ReservationScreen({ navigation }) {
   }, [isFocused]);
 
   const getReservationListByCaller = async () => {
-    getReservationList().then((response) => {
+    getReservationList(authContext).then((response) => {
       setloading(false);
       const upcomingData = [];
       const pastData = [];

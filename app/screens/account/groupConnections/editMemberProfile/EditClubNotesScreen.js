@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useLayoutEffect,
+  useState, useEffect, useLayoutEffect, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -12,23 +12,24 @@ import {
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import { patchMember } from '../../../../api/Groups';
-import * as Utility from '../../../../utils/index';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import TCTextField from '../../../../components/TCTextField';
 import TCNavigationHeader from '../../../../components/TCNavigationHeader';
 import TCLabel from '../../../../components/TCLabel';
+import AuthContext from '../../../../auth/context'
 
 let entity = {};
 
 export default function EditClubNotesScreen({ navigation, route }) {
   const [switchUser, setSwitchUser] = useState({})
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [memberInfo, setMemberInfo] = useState({});
   useEffect(() => {
     setMemberInfo(route.params.memberInfo)
     const getAuthEntity = async () => {
-      entity = await Utility.getStorage('loggedInEntity');
+      entity = authContext.entity
       setSwitchUser(entity)
     }
     getAuthEntity()
@@ -53,7 +54,7 @@ export default function EditClubNotesScreen({ navigation, route }) {
     const body = {
       group_member_detail: bodyParams,
     }
-    patchMember(memberInfo.group_id, memberInfo.user_id, body).then(() => {
+    patchMember(memberInfo.group_id, memberInfo.user_id, body, authContext).then(() => {
       setloading(false)
       navigation.goBack()
     })

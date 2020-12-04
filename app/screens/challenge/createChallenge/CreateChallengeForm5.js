@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,9 +7,8 @@ import {
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-
+import AuthContext from '../../../auth/context'
 import { getFeesEstimation, createChallenge } from '../../../api/Challenge'
-import * as Utility from '../../../utils/index';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -23,6 +22,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 let entity = {};
 let body = {};
 export default function CreateChallengeForm5({ navigation, route }) {
+  const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   // const [paymentInfo, setPaymentInfo] = useState();
@@ -34,7 +34,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
     getFeeDetail()
   }, [isFocused]);
   const getAuthEntity = async () => {
-    entity = await Utility.getStorage('loggedInEntity');
+    entity = authContext.entity
   };
   const getFeeDetail = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
@@ -48,7 +48,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
 
         console.log('Body data of fee:', body);
         setloading(true)
-        getFeesEstimation(route.params.teamData[1].group_id, body).then((response) => {
+        getFeesEstimation(route.params.teamData[1].group_id, body, authContext).then((response) => {
           setloading(false)
           console.log('fee data :', response.payload);
           if (route && route.params && route.params.body) {
@@ -86,7 +86,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
         body.currency_type = 'CAD'
         body.payment_method_type = 'card'
         setloading(true)
-        createChallenge(route.params.teamData[1].group_id, body).then((response) => {
+        createChallenge(route.params.teamData[1].group_id, body, authContext).then((response) => {
           setloading(false)
           console.log('RESPONSE:', response);
           navigation.navigate('ChallengeSentScreen', { groupObj: route.params.teamData[1] })

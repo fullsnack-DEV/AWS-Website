@@ -36,7 +36,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
   const selectedSports = [];
 
   useEffect(() => {
-    getSportsList().then((response) => {
+    getSportsList(authContext).then((response) => {
       setloading(true);
       const arr = [];
       for (const tempData of response.payload) {
@@ -84,7 +84,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
       country: route.params.country,
     };
 
-    createUser(data).then(() => {
+    createUser(data, authContext).then(() => {
       getUserInfo();
     }).catch((error) => {
       setloading(false)
@@ -92,9 +92,9 @@ export default function ChooseSportsScreen({ navigation, route }) {
     })
   };
   const getUserInfo = async () => {
-    let entity = await Utility.getStorage('loggedInEntity');
+    let entity = authContext.entity
     console.log('USER ENTITY:', entity);
-    const response = await getUserDetails(entity.auth.user_id);
+    const response = await getUserDetails(entity.auth.user_id, authContext);
 
     if (response.status) {
       entity.obj = response.payload
@@ -103,11 +103,11 @@ export default function ChooseSportsScreen({ navigation, route }) {
       await authContext.setUser(response.payload);
       QBlogin(entity.uid, response.payload).then(async (res) => {
         entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-        await Utility.setStorage('loggedInEntity', entity);
-        await QBconnectAndSubscribe();
+        authContext.setEntity({ ...entity })
+        await QBconnectAndSubscribe(entity);
       }).catch(async () => {
         entity = { ...entity, QB: { connected: false } }
-        await Utility.setStorage('loggedInEntity', entity);
+        authContext.setEntity({ ...entity })
       });
       setloading(false);
     } else {

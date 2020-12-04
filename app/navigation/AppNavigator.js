@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Image, Platform, StyleSheet, NativeEventEmitter, View,
 } from 'react-native';
@@ -6,7 +6,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
-import * as Utility from '../utils/index';
 
 import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
@@ -21,6 +20,7 @@ import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import TCBadge from '../components/TCBadge';
 import { widthPercentageToDP as wp } from '../utils/index';
+import AuthContext from '../auth/context'
 
 const Tab = createBottomTabNavigator();
 
@@ -87,6 +87,7 @@ const getTabBarVisibility = (route) => {
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 function AppNavigator({ navigation }) {
+  const authContext = useContext(AuthContext)
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
@@ -94,10 +95,7 @@ function AppNavigator({ navigation }) {
     QBeventListeners();
   }, [navigation]);
 
-  const getQBToken = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    return entity?.QB?.token ?? null;
-  }
+  const getQBToken = async () => authContext.entity?.QB?.token ?? null
 
   const QBeventListeners = () => {
     QbMessageEmitter.addListener(
@@ -122,8 +120,7 @@ function AppNavigator({ navigation }) {
   }
 
   const changeRole = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    setRole(entity.role);
+    setRole(authContext.entity.role);
   };
 
   return (

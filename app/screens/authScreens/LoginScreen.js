@@ -91,8 +91,10 @@ export default function LoginScreen({ navigation }) {
             user_id: user.uid,
           },
         }
-        await Utility.setStorage('loggedInEntity', entity);
-        await getUserInfo(user.uid);
+        authContext.setEntity({ ...entity })
+        console.log('authContext111', entity)
+        await Utility.setStorage('loggedInEntity', entity)
+        await getUserInfo(entity);
       });
     }
   };
@@ -112,21 +114,23 @@ export default function LoginScreen({ navigation }) {
         setloading(false);
       });
   };
-  const getUserInfo = async () => {
-    let entity = await Utility.getStorage('loggedInEntity');
-    const response = await getUserDetails(entity.auth.user_id);
+  const getUserInfo = async (e) => {
+    let entity = e
+    const response = await getUserDetails(entity.auth.user_id, authContext);
     if (response.status) {
       entity = {
         ...entity,
       }
       entity.auth.user = response.payload;
       entity.obj = response.payload;
-
+      authContext.setEntity({ ...entity })
+      console.log('authContext22', authContext)
       QBlogin(entity.uid, response.payload).then(async (res) => {
         entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-        await Utility.setStorage('loggedInEntity', entity);
+        await Utility.setStorage('loggedInEntity', entity)
+        authContext.setEntity({ ...entity })
         console.log('LOGIN USER ENTITY:::::', entity);
-        await QBconnectAndSubscribe()
+        await QBconnectAndSubscribe(entity)
         authContext.setUser(response.payload);
       }).catch(async (error) => {
         console.log(error.message);
@@ -168,7 +172,7 @@ export default function LoginScreen({ navigation }) {
                 expirationTime: idTokenResult.expirationTime,
               };
 
-              return getUserDetails(user.uid).then(async (response) => {
+              return getUserDetails(user.uid, authContext).then(async (response) => {
                 if (response.status) {
                   const entity = {
                     uid: user.uid,
@@ -181,7 +185,8 @@ export default function LoginScreen({ navigation }) {
                     },
                   }
                   await Utility.setStorage('loggedInEntity', entity)
-                  await authContext.setUser(response.payload);
+                  authContext.setEntity({ ...entity })
+                  authContext.setUser(response.payload)
                 } else {
                   Alert.alert(response.messages);
                 }
@@ -218,7 +223,7 @@ export default function LoginScreen({ navigation }) {
                 expirationTime: idTokenResult.expirationTime,
               };
 
-              return getUserDetails(user.uid).then(async (response) => {
+              return getUserDetails(user.uid, authContext).then(async (response) => {
                 if (response.status) {
                   const entity = {
                     uid: user.uid,
@@ -231,6 +236,7 @@ export default function LoginScreen({ navigation }) {
                     },
                   }
                   await Utility.setStorage('loggedInEntity', entity)
+                  authContext.setEntity({ ...entity })
                   await authContext.setUser(response.payload);
                 } else {
                   Alert.alert(response.messages);

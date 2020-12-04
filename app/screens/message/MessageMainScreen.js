@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -28,10 +28,12 @@ import {
   QBsetupSettings,
 } from '../../utils/QuickBlox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
+import AuthContext from '../../auth/context';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 const MessageMainScreen = ({ navigation, route }) => {
+  const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [endReachedCalled, setEndReachedCalled] = useState(false);
@@ -103,7 +105,7 @@ const MessageMainScreen = ({ navigation, route }) => {
 
   const connectAndSubscribe = async () => {
     setLoading(true);
-    await QBconnectAndSubscribe();
+    await QBconnectAndSubscribe(authContext);
     await QBsetupSettings();
     await getDialogs();
     setLoading(false)

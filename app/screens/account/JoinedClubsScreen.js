@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState,
+  useEffect, useState, useContext,
 } from 'react';
 import {
   View, Text, Image, TouchableWithoutFeedback,
@@ -13,6 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+import AuthContext from '../../auth/context'
 import { getJoinedGroups } from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
@@ -20,10 +21,11 @@ import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
 
 export default function JoinedClubsScreen() {
+  const authContext = useContext(AuthContext)
   const [clubList, setClubList] = useState([]);
 
   useEffect(() => {
-    getJoinedGroups().then((response) => {
+    getJoinedGroups(authContext).then((response) => {
       setClubList(response.payload.clubs);
     }).catch((error) => {
       Alert.alert(error)

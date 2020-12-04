@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useLayoutEffect, useRef,
+  useState, useEffect, useLayoutEffect, useRef, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -13,7 +13,7 @@ import {
 
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
-
+import AuthContext from '../../../../auth/context'
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import { patchMember } from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
@@ -26,6 +26,7 @@ import TCTextField from '../../../../components/TCTextField';
 
 export default function EditMemberInfoScreen({ navigation, route }) {
   const actionSheet = useRef();
+  const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [editPhoto, setEditPhoto] = useState(false);
 
@@ -62,7 +63,7 @@ export default function EditMemberInfoScreen({ navigation, route }) {
       const imageArray = []
 
       imageArray.push({ path: memberInfo.full_image });
-      uploadImages(imageArray).then((responses) => {
+      uploadImages(imageArray, authContext).then((responses) => {
         const attachments = responses.map((item) => ({
           type: 'image',
           url: item.fullImage,
@@ -88,7 +89,7 @@ export default function EditMemberInfoScreen({ navigation, route }) {
     }
   }
   const editMemberInfo = (groupID, memberID, param) => {
-    patchMember(groupID, memberID, param).then(() => {
+    patchMember(groupID, memberID, param, authContext).then(() => {
       setloading(false)
       navigation.goBack()
     })

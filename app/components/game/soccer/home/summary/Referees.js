@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Text, View, StyleSheet, FlatList,
 } from 'react-native';
@@ -8,7 +8,7 @@ import colors from '../../../../../Constants/Colors';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../../utils';
 import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../../TCGradientButton';
-import * as Utility from '../../../../../utils';
+import AuthContext from '../../../../../auth/context'
 
 const Referees = ({
   refereesData,
@@ -17,7 +17,8 @@ const Referees = ({
   followSoccerUser,
   unFollowSoccerUser,
 }) => {
-  const [refree, setRefree] = useState([]);
+  const authContext = useContext(AuthContext)
+  const [refree, setRefree] = useState([])
   const [myUserId, setMyUserId] = useState(null);
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => setRefree(refereesData), [refereesData])
@@ -29,8 +30,7 @@ const Referees = ({
   };
 
   const getMyUserId = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
-    setMyUserId(entity.uid);
+    setMyUserId(authContext.entity.uid);
   }
 
   const renderReferees = ({ item }) => (

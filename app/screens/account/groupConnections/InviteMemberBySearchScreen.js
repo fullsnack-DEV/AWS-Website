@@ -2,7 +2,7 @@ import React, {
   useLayoutEffect, useState, useEffect,
 } from 'react';
 import {
-  Text, View, StyleSheet, FlatList, Alert,
+  Text, View, StyleSheet, FlatList, Alert, useContext,
 } from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -11,12 +11,13 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import TCSearchBox from '../../../components/TCSearchBox';
 import { getUserList, sendInvitationInGroup } from '../../../api/Users';
-import * as Utility from '../../../utils/index';
+import AuthContext from '../../../auth/context'
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
 import TCTags from '../../../components/TCTags';
 
 export default function InviteMembersBySearchScreen({ navigation }) {
   const [loading, setloading] = useState(true);
+  const authContext = useContext(AuthContext)
   const [players, setPlayers] = useState([])
   const [searchPlayers, setSearchPlayers] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
@@ -34,13 +35,13 @@ export default function InviteMembersBySearchScreen({ navigation }) {
   }, [navigation]);
 
   const sendInvitation = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     const obj = {
       entity_type: entity.role,
       userIds: [...selectedList],
       uid: entity.uid,
     }
-    sendInvitationInGroup(obj).then((response) => {
+    sendInvitationInGroup(obj, authContext).then((response) => {
       console.log('Response of Invitation sent:', response);
       navigation.navigate('InvitationSentScreen');
     })
@@ -49,7 +50,7 @@ export default function InviteMembersBySearchScreen({ navigation }) {
       })
   }
   const getUsers = async () => {
-    getUserList().then((response) => {
+    getUserList(authContext).then((response) => {
       setloading(false);
       const result = response.payload.map((obj) => {
         // eslint-disable-next-line no-param-reassign

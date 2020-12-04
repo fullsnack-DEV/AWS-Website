@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState,
+  useEffect, useState, useContext,
 } from 'react';
 import {
   View, Text, Image, TouchableWithoutFeedback,
@@ -15,30 +15,28 @@ import {
 } from 'react-native-responsive-screen';
 
 import { getJoinedGroups, getTeamsOfClub } from '../../api/Groups';
-
-import * as Utility from '../../utils/index';
-
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import images from '../../Constants/ImagePath';
+import images from '../../Constants/ImagePath'
+import AuthContext from '../../auth/context'
 
 export default function JoinedTeamsScreen() {
   const [teamList, setTeamList] = useState([]);
-
+  const authContext = useContext(AuthContext)
   useEffect(() => {
     getTeamsList();
   }, []);
 
   const getTeamsList = async () => {
-    const entity = await Utility.getStorage('loggedInEntity');
+    const entity = authContext.entity
     if (entity.role === 'club') {
-      getTeamsOfClub(entity.uid).then((response) => {
+      getTeamsOfClub(entity.uid, authContext).then((response) => {
         setTeamList(response.payload);
       }).catch((error) => {
         Alert.alert(error)
       })
     } else {
-      getJoinedGroups().then((response) => {
+      getJoinedGroups(authContext).then((response) => {
         setTeamList(response.payload.teams);
       }).catch((error) => {
         Alert.alert(error)
