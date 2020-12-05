@@ -20,6 +20,7 @@ import {
 } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
+import { useIsFocused } from '@react-navigation/native';
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
@@ -49,6 +50,7 @@ function NotificationsListScreen({ navigation }) {
   const currentDate = new Date();
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(false);
+  const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(true);
   const navigateFlatList = (item) => {
@@ -220,9 +222,10 @@ function NotificationsListScreen({ navigation }) {
       });
     }
     if (notifAPI === 1) {
+      checkActiveScreen(groupList[currentTab]);
       callNotificationList();
     }
-  }, [currentTab]);
+  }, [currentTab, isFocused]);
 
   useEffect(() => {
   }, [mainNotificationsList]);

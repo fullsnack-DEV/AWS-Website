@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   StyleSheet,
-
   TextInput,
   View,
 } from 'react-native';
@@ -18,27 +17,31 @@ function TCTextField({
   textStyle,
   height = 40,
   multiline = false,
+  leftView,
   ...otherProps
 }) {
   return (
     <View style={[styles.textContainer, style, { height }]}>
       <TextInput
-        style={ [styles.textInput, textStyle, { height }] }
-        placeholder={ placeholder }
-        placeholderTextColor={ placeholderTextColor }
-        autoCapitalize={'none'}
-        secureTextEntry={ secureText }
-        keyboardType={ keyboardType }
-        multiline={multiline}
-        { ...otherProps }
-    />
+      style={ [styles.textInput, textStyle, { height }] }
+      placeholder={ placeholder }
+      placeholderTextColor={ placeholderTextColor }
+      autoCapitalize={'none'}
+      secureTextEntry={ secureText }
+      keyboardType={ keyboardType }
+      multiline={multiline}
+      { ...otherProps }
+  />
+      {leftView}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   textContainer: {
-
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    alignContent: 'center',
     marginHorizontal: 15,
     backgroundColor: colors.offwhite,
     borderRadius: 5,
@@ -47,10 +50,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,
-
+    flex: 1,
   },
   textInput: {
     height: '100%',
+    flex: 1,
     fontFamily: fonts.RRegular,
     fontSize: 16,
     paddingHorizontal: 10,

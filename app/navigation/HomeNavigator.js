@@ -5,6 +5,7 @@ import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
+import GroupListScreen from '../screens/home/GroupListScreen';
 import EditPersonalProfileScreen from '../screens/home/user/EditPersonalProfileScreen';
 import EditGroupProfileScreen from '../screens/home/EditGroupProfileScreen';
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
@@ -15,8 +16,10 @@ import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import strings from '../Constants/String';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
-import GroupBioScreen from '../screens/home/GroupBioScreen'
+import GroupLongTextScreen from '../screens/home/GroupLongTextScreen'
+import GameFeeEditScreen from '../screens/home/GameFeeEditScreen'
 import EditGroupContactScreen from '../screens/home/EditGroupContactScreen';
+import EditGroupBasicInfoScreen from '../screens/home/EditGroupBasicInfoScreen';
 
 // Account's Screens
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
@@ -122,6 +125,23 @@ const HomeNavigator = () => (
             fontWeight: '500',
           },
           headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+
+    <Stack.Screen
+        name="GroupListScreen"
+        component={GroupListScreen}
+        options={{
+          title: 'Club',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,
@@ -1217,8 +1237,8 @@ const HomeNavigator = () => (
       />
 
     <Stack.Screen
-        name="GroupBioScreen"
-        component={GroupBioScreen}
+        name="GroupLongTextScreen"
+        component={GroupLongTextScreen}
         options={{
           title: strings.editbio,
           headerTintColor: colors.blackColor,
@@ -1232,11 +1252,46 @@ const HomeNavigator = () => (
           },
         }}
       />
+
     <Stack.Screen
         name="EditGroupContactScreen"
         component={EditGroupContactScreen}
         options={{
           title: strings.editcontact,
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+
+    <Stack.Screen
+        name="EditGroupBasicInfoScreen"
+        component={EditGroupBasicInfoScreen}
+        options={{
+          title: strings.editbasicinfotitle,
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+
+    <Stack.Screen
+        name="GameFeeEditScreen"
+        component={GameFeeEditScreen}
+        options={{
+          title: strings.gamefeetitle,
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

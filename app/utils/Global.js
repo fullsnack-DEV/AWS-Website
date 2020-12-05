@@ -80,7 +80,7 @@ const makeAPIRequest = async ({
   try {
     const response = await axios(options);
     if (!response.data.status) {
-      throw new Error(response.data.messages || response);
+      throw (response.data.messages || response);
     }
     return response.data;
   } catch (e) {

@@ -12,28 +12,101 @@ import UserInfoRefereesInItem from './UserInfoRefereesInItem';
 import TCProfileButton from '../../TCProfileButton'
 import TCGradientButton from '../../TCGradientButton'
 import fonts from '../../../Constants/Fonts';
+import UserInfoAddRole from './UserInfoAddRole';
 
 export default function UserHomeTopSection({
-  userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onPlayInPress,
+  userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onPlayInPress, onAddRolePress,
 }) {
-  const playin = userDetails.games && userDetails.games.length > 0
-  const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
+  let playin = userDetails.games && userDetails.games.length > 0
+  let refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
+  const userRole = userDetails.roles && userDetails.roles.length > 0
+  if (userRole) {
+    playin = false
+    refereesIn = false
+  }
 
-  const renderPlayIn = ({ item }) => (
-    <UserInfoPlaysInItem title={item.sport_name}
-    totalGames={item.totalGames}
-    onPlayInPress={() => onPlayInPress(item)}
-    thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}/>
-  );
+  const renderPlayIn = ({ item }) => {
+    if (item.item_type) {
+      return renderAddPlayInRole({ item })
+    }
 
-  const renderRefereesIn = ({ item }) => (
-    <UserInfoRefereesInItem
-      title={item.sport_name}
-      thumbURL={images.gameGoal}
-      onRefereesInPress={onRefereesInPress}
+    return (<UserInfoPlaysInItem title={item.sport_name}
+        totalGames={item.totalGames}
+        thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
+        onPlayInPress={() => {
+          console.log('renderPlayIn', item)
+          if (onPlayInPress) {
+            onPlayInPress(item)
+          }
+        }}/>)
+  }
+
+  const renderRefereesIn = ({ item }) => {
+    if (item.item_type) {
+      return renderAddRefereeRole({ item })
+    }
+
+    return (<UserInfoRefereesInItem
+        title={item.sport_name}
+        thumbURL={images.gameGoal}
+        onRefereesInPress={() => {
+          console.log('renderRefereesIn')
+          if (onRefereesInPress) {
+            onRefereesInPress(item)
+          }
+        }}
+      />)
+  }
+
+  const renderAddRole = () => (
+    <UserInfoAddRole
+      title={strings.addrole}
+      thumbURL={images.addRole}
+      onPress={() => {
+        if (onAddRolePress) {
+          onAddRolePress();
+        }
+      }}
     />
   );
 
+  const renderAddRefereeRole = ({ item }) => (
+    <UserInfoAddRole
+      title={item.sport_name}
+      thumbURL={images.addRole}
+      onPress={() => {
+        if (onRefereesInPress) {
+          onRefereesInPress()
+        }
+      }}
+    />
+  );
+
+  const renderAddPlayInRole = ({ item }) => (
+    <UserInfoAddRole
+      title={item.sport_name}
+      thumbURL={images.addRole}
+      onPress={() => {
+        if (onPlayInPress) {
+          onPlayInPress()
+        }
+      }}
+    />
+  );
+
+  const renderUserRole = ({ item }) => {
+    if (item.item_type) {
+      return renderAddRole()
+    }
+
+    if (item.sport_type) {
+      return renderPlayIn({ item })
+    }
+
+    return renderRefereesIn({ item })
+  }
+
+  // check member status
   let isMember = false;
 
   if (loggedInEntity.role === 'club' && userDetails.clubIds) {
@@ -121,6 +194,18 @@ export default function UserHomeTopSection({
             data={userDetails.referee_data}
             horizontal
             renderItem={renderRefereesIn}
+            keyExtractor={(item, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </View>}
+      {userRole && <View>
+        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+          <FlatList
+            style={{ marginTop: 10, marginBottom: 0 }}
+            data={userDetails.roles}
+            horizontal
+            renderItem={renderUserRole}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />

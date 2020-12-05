@@ -237,6 +237,10 @@ const images = {
   orangeGradient: require('../assets/images/orangeGradient.png'),
   thumbImage: require('../assets/images/thumbImage.png'),
   tennisBackground: require('../assets/images/tennisBackground.png'),
+  leagueDemo: require('../assets/images/leaguedemo.png'),
+  whiteTrophySmall: require('../assets/images/minitropy.png'),
+  editPencil: require('../assets/images/editPencil.png'),
+  addRole: require('../assets/images/add.png'),
 };
 
 export default images;

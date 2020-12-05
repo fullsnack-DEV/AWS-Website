@@ -15,7 +15,7 @@ import UserInfoPlaysInItem from './UserInfoPlaysInItem';
 import UserInfoRefereesInItem from './UserInfoRefereesInItem';
 
 export default function UserInfo({
-  navigation, userDetails, isAdmin,
+  navigation, userDetails, isAdmin, onGroupPress, onRefereesInPress, onPlayInPress, onGroupListPress,
 }) {
   const playin = userDetails.games && userDetails.games.length > 0
   const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
@@ -23,23 +23,47 @@ export default function UserInfo({
   const renderTeam = ({ item }) => (
     <UserInfoGroupItem title={item.group_name}
     imageData={item.thumbnail ? { uri: item.thumbnail } : undefined}
-    entityType={'team'} />
+    entityType={'team'}
+    onGroupPress={() => {
+      console.log('user team', navigation)
+      if (onGroupPress) {
+        onGroupPress(item)
+      }
+    }} />
   );
 
   const renderClub = ({ item }) => (
     <UserInfoGroupItem title={item.group_name}
-    imageData={item.thumbnail ? { uri: item.thumbnail } : undefined}/>
+    imageData={item.thumbnail ? { uri: item.thumbnail } : undefined}
+    onGroupPress={() => {
+      console.log('user club', navigation)
+      if (onGroupPress) {
+        onGroupPress(item)
+      }
+    }}/>
   );
 
   const renderPlayIn = ({ item }) => (
     <UserInfoPlaysInItem title={item.sport_name}
     totalGames={item.totalGames}
-    thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}/>
+    thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
+    onPlayInPress={() => {
+      console.log('renderPlayIn', navigation)
+      if (onPlayInPress) {
+        onPlayInPress(item)
+      }
+    }}/>
   );
 
   const renderRefereesIn = ({ item }) => (
     <UserInfoRefereesInItem title={item.sport_name}
-    thumbURL={images.gameGoal}/>
+    thumbURL={images.gameGoal}
+    onRefereesInPress= {() => {
+      console.log('renderPlayIn', navigation)
+      if (onRefereesInPress) {
+        onRefereesInPress(item)
+      }
+    }}/>
   );
 
   const birthdayInString = (birthDate) => `${Utility.monthNames[new Date(birthDate * 1000).getMonth()]} ${new Date(birthDate * 1000).getDate()}, ${new Date(birthDate * 1000).getFullYear()}`
@@ -72,6 +96,18 @@ export default function UserInfo({
   }
   if (!userDetails.weight) {
     weight = isAdmin ? strings.addweight : strings.NA
+  }
+
+  const onTeamListPress = () => {
+    if (onGroupListPress) {
+      onGroupListPress(userDetails.joined_teams, 'team')
+    }
+  }
+
+  const onClubListPress = () => {
+    if (onGroupListPress) {
+      onGroupListPress(userDetails.joined_clubs, 'club')
+    }
   }
 
   return (
@@ -155,7 +191,10 @@ export default function UserInfo({
 
       {/* Team section */}
       <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-        <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.teamstitle} showNextArrow={true}/>
+        <TCEditHeader containerStyle={{ marginHorizontal: 15 }}
+        title= {strings.teamstitle}
+        showNextArrow={true}
+        onNextArrowPress={onTeamListPress}/>
         <FlatList
           style={{ marginTop: 15, backgroundColor: colors.whiteColor }}
             data={userDetails.joined_teams}
@@ -169,7 +208,10 @@ export default function UserInfo({
       <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
       {/* Club section */}
       <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-        <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.clubstitle} showNextArrow={true}/>
+        <TCEditHeader containerStyle={{ marginHorizontal: 15 }}
+        title= {strings.clubstitle} showNextArrow={true}
+        onNextArrowPress={onClubListPress}
+        />
         <FlatList
           style={{ marginTop: 15, backgroundColor: colors.whiteColor }}
             data={userDetails.joined_clubs}

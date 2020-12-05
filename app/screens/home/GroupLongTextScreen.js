@@ -21,13 +21,14 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 
-export default function GroupBioScreen({ navigation, route }) {
+export default function GroupLongTextScreen({ navigation, route }) {
   // For activity indicator
   const [loading, setloading] = useState(false);
-  const [bio, setBio] = useState(route.params.groupDetails.bio);
+  const [textData, setTextData] = useState(route.params.isBylaw ? route.params.groupDetails.bylaw : route.params.groupDetails.bio);
   const authContext = useContext(AuthContext);
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: route.params.isBylaw ? strings.editbylaw : strings.editbio,
       headerRight: () => (
         <Text style={ {
           marginEnd: 16,
@@ -39,12 +40,16 @@ export default function GroupBioScreen({ navigation, route }) {
         } }>{strings.done}</Text>
       ),
     });
-  }, [navigation, bio]);
+  }, [navigation, textData]);
 
   const onSaveButtonClicked = () => {
     setloading(true);
     const groupProfile = {};
-    groupProfile.bio = bio;
+    if (route.params.isBylaw) {
+      groupProfile.bylaw = textData;
+    } else {
+      groupProfile.bio = textData;
+    }
     patchGroup(route.params.groupDetails.group_id, groupProfile, authContext).then(async (response) => {
       setloading(false);
       if (response && response.status === true) {
@@ -65,13 +70,13 @@ export default function GroupBioScreen({ navigation, route }) {
       <ScrollView style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <View>
-          <TCLabel title= {strings.bio}/>
+          <TCLabel title= {route.params.isBylaw ? strings.bylaw : strings.bio}/>
           <TCTextField
-            placeholder={strings.enterBioPlaceholder}
-            onChangeText={(text) => setBio(text)}
+            placeholder={route.params.isBylaw ? strings.enterBylawPlaceholder : strings.enterBioPlaceholder}
+            onChangeText={(text) => setTextData(text)}
             multiline
             maxLength={500}
-            value={bio}
+            value={textData}
             height={155}
             />
         </View>
@@ -83,6 +88,5 @@ export default function GroupBioScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
   },
 });

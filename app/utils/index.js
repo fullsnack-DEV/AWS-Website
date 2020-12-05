@@ -15,6 +15,30 @@ export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
   'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
+export const groupMemberGenderItems = [
+  { label: 'Male', value: 'male' },
+  { label: 'Female', value: 'female' },
+  { label: 'All', value: 'all' },
+];
+
+export const groupMembershipFeeTypes = [
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'Biweekly', value: 'biweekly' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' },
+]
+
+export const languages = [
+  { language: 'English', id: 1 },
+  { language: 'English(Canada)', id: 2 },
+  { language: 'English(Singapore)', id: 3 },
+  { language: 'English(UK)', id: 4 },
+  { language: 'English(US)', id: 5 },
+  { language: 'Deutsch', id: 6 },
+  { language: 'Italiano', id: 7 },
+  { language: 'Korean', id: 8 },
+];
+
 export const isFieldEmpty = (text) => {
   console.log('text', text);
   if (text === '') {
@@ -29,6 +53,8 @@ export const passwordPattern = (password) => {
   }
   return false;
 };
+
+export const capitalize = (word) => word[0].toUpperCase() + word.slice(1).toLowerCase()
 
 export const isValidEmail = (email) => {
   // var reg = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;

@@ -81,6 +81,35 @@ import RefereesProfileSection from '../../components/Home/User/RefereesProfileSe
 
 const { width } = Dimensions.get('window');
 
+const league_Data = [{
+  group_name: 'Premiereague League',
+  thumbnail: 'image',
+},
+{
+  group_name: 'Premiereague League',
+}, {
+  group_name: 'La Liga',
+  thumbnail: 'image',
+},
+{
+  group_name: 'Premier League',
+}]
+
+const history_Data = [{
+  name: 'TownsCup',
+  year: '2013',
+  winner: true,
+},
+{
+  name: 'Premier League',
+  year: '2009-2010',
+  winner: false,
+},
+{
+  name: 'Established',
+  year: '2002',
+}]
+
 export default function HomeScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [isUserHome, setIsUserHome] = useState(false)
@@ -92,8 +121,6 @@ export default function HomeScreen({ navigation, route }) {
   const [scoreboardModalVisible, setScoreboardModalVisible] = useState(false)
   const [statsModalVisible, setStatsModalVisible] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [isRender, setIsRender] = useState(false)
-  const [isRender2, setIsRender2] = useState(false)
   const [postData, setPostData] = useState([]);
   const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
@@ -133,6 +160,7 @@ export default function HomeScreen({ navigation, route }) {
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
   const eventEditDeleteAction = useRef();
+  const addRoleActionSheet = useRef();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -143,8 +171,8 @@ export default function HomeScreen({ navigation, route }) {
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];
-      getEvents(entityRole, uid).then((response) => {
-        getSlots(entityRole, uid).then((res) => {
+      getEvents(entityRole, uid, authContext).then((response) => {
+        getSlots(entityRole, uid, authContext).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
           setEventData(eventTimeTableData);
           setTimeTable(eventTimeTableData);
@@ -174,7 +202,9 @@ export default function HomeScreen({ navigation, route }) {
           setFilterTimeTable(timetabledata);
         })
       }).catch((e) => {
-        Alert.alert('', e.messages)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message)
+        }, 0.3)
       })
       return null;
     });
@@ -189,45 +219,76 @@ export default function HomeScreen({ navigation, route }) {
     }
   }, [selectedEventItem]);
 
-  const getData = async (uid, role) => {
+  const getUserData = async (uid, admin) => {
+    const params = {
+      uid,
+    };
+    setloading(true);
+    const promises = [getUserDetails(uid, authContext),
+      getJoinedGroups(uid, authContext), getUserPosts(params, authContext),
+      getGallery(uid, authContext)]
+    Promise.all(promises).then(([res1, res2, res3, res4]) => {
+      const userDetails = res1.payload;
+
+      if (!userDetails.games) {
+        userDetails.games = []
+      }
+
+      if (!userDetails.referee_data) {
+        userDetails.referee_data = []
+      }
+
+      let count = 0
+      count = userDetails.games && userDetails.games.length + userDetails.referee_data.length
+
+      if (count < 5) {
+        const userRoles = [...userDetails.games, ...userDetails.referee_data]
+        if (admin) {
+          const addrole = { sport_name: strings.addrole, item_type: 'add_new' }
+          userRoles.push(addrole)
+        }
+        userDetails.roles = userRoles
+      } else if (admin) {
+        userDetails.games.push({ sport_name: strings.addPlaying, item_type: 'add_new' })
+        userDetails.referee_data.push({ sport_name: strings.addRefereeing, item_type: 'add_new' })
+      }
+
+      if (res2) {
+        userDetails.joined_teams = res2.payload.teams;
+        userDetails.joined_clubs = res2.payload.clubs;
+      }
+      if (res3) {
+        setPostData(res3.payload.results);
+      }
+      if (res4) {
+        setGalleryData(res4.payload);
+      }
+      setCurrentUserData({ ...userDetails });
+      setIsClubHome(false)
+      setIsTeamHome(false)
+      setIsUserHome(true)
+      setUserID(uid);
+    }).catch((errResponse) => {
+      console.log('promise error', errResponse)
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, strings.defaultError);
+      }, 0.3)
+      navigation.goBack();
+    }).finally(() => setloading(false));
+  }
+
+  const getData = async (uid, role, admin) => {
     const userHome = role === 'user'
     const clubHome = role === 'club'
     const teamHome = role === 'team'
 
-    const user_ID = uid;
-    const params = {
-      uid: user_ID,
-    };
     setloading(true);
     if (userHome) {
-      const promises = [getUserDetails(uid, authContext),
-        getJoinedGroups(uid, authContext), getUserPosts(params, authContext),
-        getGallery(uid, authContext)]
-      Promise.all(promises).then(([res1, res2, res3, res4]) => {
-        const userDetails = res1.payload;
-        if (res2) {
-          userDetails.joined_teams = res2.payload.teams;
-          userDetails.joined_clubs = res2.payload.clubs;
-        }
-        if (res3) {
-          setPostData(res3.payload.results);
-        }
-        if (res4) {
-          setGalleryData(res4.payload);
-        }
-        setCurrentUserData(userDetails);
-        setIsClubHome(clubHome)
-        setIsTeamHome(teamHome)
-        setIsUserHome(userHome)
-        setUserID(uid);
-      }).catch((errResponse) => {
-        console.log('promise error', errResponse)
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, strings.defaultError);
-        }, 0.3)
-        navigation.goBack();
-      }).finally(() => setloading(false));
+      getUserData(uid, admin)
     } else {
+      const params = {
+        uid,
+      };
       const promises = [getGroupDetails(uid, authContext),
         getGroupMembers(uid, authContext), getUserPosts(params, authContext),
         getGallery(uid, authContext)]
@@ -236,6 +297,10 @@ export default function HomeScreen({ navigation, route }) {
       }
       Promise.all(promises).then(([res1, res2, res3, res4, res5]) => {
         const groupDetails = res1.payload;
+        console.log('groupDetails', groupDetails)
+
+        groupDetails.joined_leagues = league_Data
+        groupDetails.history = history_Data
         groupDetails.joined_members = res2.payload;
         if (res3) {
           setPostData(res3.payload.results);
@@ -263,25 +328,26 @@ export default function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      const entity = authContext.entity
-      console.log('authContext.entity', entity)
-      let uid = entity.uid
-      let role = entity.role
-
+      const loginEntity = authContext.entity
+      let uid = loginEntity.uid
+      let role = loginEntity.role
+      let admin = false
       if (route.params && route.params.uid && route.params.role) {
         uid = route.params.uid;
         role = route.params.role;
-        if (entity.uid === uid) {
+        if (loginEntity.uid === uid) {
+          admin = true
           setIsAdmin(true)
         }
       } else {
+        admin = true
         setIsAdmin(true)
       }
 
-      getData(uid, role).catch((error) => {
+      getData(uid, role, admin).catch((error) => {
         console.log('error', error)
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.messages);
+          Alert.alert(strings.alertmessagetitle, error.message);
         }, 0.3)
         setloading(false);
       });
@@ -321,7 +387,10 @@ export default function HomeScreen({ navigation, route }) {
           })
           .catch((error) => {
             setloading(false)
-            Alert.alert(error)
+            console.log('error coming', error)
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, error.message)
+            }, 0.3)
           })
       })
     }
@@ -525,8 +594,7 @@ export default function HomeScreen({ navigation, route }) {
   const callFollowUser = async () => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
-    setCurrentUserData(currentUserData);
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
 
     const params = {
       entity_type: 'player',
@@ -534,12 +602,12 @@ export default function HomeScreen({ navigation, route }) {
     followUser(params, userID, authContext).then(() => {
       console.log('follow user')
     }).catch((error) => {
+      console.log('callFollowUser error with userID', error, userID)
       currentUserData.is_following = false;
       currentUserData.follower_count -= 1;
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
+        Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
     });
   };
@@ -549,8 +617,7 @@ export default function HomeScreen({ navigation, route }) {
     if (currentUserData.follower_count > 0) {
       currentUserData.follower_count -= 1
     }
-    setCurrentUserData(currentUserData);
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
 
     const params = {
       entity_type: 'player',
@@ -558,12 +625,12 @@ export default function HomeScreen({ navigation, route }) {
     unfollowUser(params, userID, authContext).then(() => {
       console.log('unfollow user')
     }).catch((error) => {
+      console.log('callUnfollowUser error with userID', error, userID)
       currentUserData.is_following = true;
       currentUserData.follower_count += 1
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
+        Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
     });
   };
@@ -578,8 +645,9 @@ export default function HomeScreen({ navigation, route }) {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
       }, 0.3)
     }).catch((error) => {
+      console.log('clubInviteUser error with userID', error, userID)
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
+        Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
     });
   };
@@ -587,8 +655,7 @@ export default function HomeScreen({ navigation, route }) {
   const callFollowGroup = async (silentlyCall = false) => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
-    setCurrentUserData(currentUserData);
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
 
     const params = {
       entity_type: currentUserData.entity_type,
@@ -596,13 +663,13 @@ export default function HomeScreen({ navigation, route }) {
     followGroup(params, userID, authContext).then(() => {
       console.log('follow group')
     }).catch((error) => {
+      console.log('callFollowGroup error with userID', error, userID)
       currentUserData.is_following = false;
       currentUserData.follower_count -= 1;
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
       if (silentlyCall === false) {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.messages);
+          Alert.alert(strings.alertmessagetitle, error.message);
         }, 0.3)
       }
     });
@@ -613,8 +680,7 @@ export default function HomeScreen({ navigation, route }) {
     if (currentUserData.follower_count > 0) {
       currentUserData.follower_count -= 1
     }
-    setCurrentUserData(currentUserData);
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
 
     const params = {
       entity_type: currentUserData.entity_type,
@@ -622,12 +688,12 @@ export default function HomeScreen({ navigation, route }) {
     unfollowGroup(params, userID, authContext).then(() => {
       console.log('unfollow user')
     }).catch((error) => {
+      console.log('callUnfollowGroup error with userID', error, userID)
       currentUserData.is_following = true;
       currentUserData.follower_count += 1
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
+        Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
     });
   };
@@ -635,23 +701,21 @@ export default function HomeScreen({ navigation, route }) {
   const userJoinGroup = async () => {
     currentUserData.is_joined = true;
     currentUserData.member_count += 1
-    setCurrentUserData(currentUserData);
     if (currentUserData.is_following === false) {
       callFollowGroup(true);
     }
-    setIsRender(!isRender)
-
+    setCurrentUserData({ ...currentUserData });
     const params = {};
     joinTeam(params, userID, authContext).then(() => {
       console.log('user join group')
     }).catch((error) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
-      }, 0.3)
+      console.log('userJoinGroup error with userID', error, userID)
       currentUserData.is_joined = false;
       currentUserData.member_count -= 1
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, error.message);
+      }, 0.3)
     });
   };
 
@@ -660,19 +724,18 @@ export default function HomeScreen({ navigation, route }) {
     if (currentUserData.member_count > 0) {
       currentUserData.member_count -= 1
     }
-    setCurrentUserData(currentUserData);
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
     const params = {};
     leaveTeam(params, userID, authContext).then(() => {
       console.log('user leave group')
     }).catch((error) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
-      }, 0.3)
+      console.log('userLeaveGroup error with userID', error, userID)
       currentUserData.is_joined = true;
       currentUserData.member_count += 1
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, error.message);
+      }, 0.3)
     });
   };
 
@@ -683,8 +746,9 @@ export default function HomeScreen({ navigation, route }) {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`);
       }, 0.3)
     }).catch((error) => {
+      console.log('clubInviteTeam error with userID', error, authContext.entity.uid)
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
+        Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
     });
   };
@@ -697,20 +761,21 @@ export default function HomeScreen({ navigation, route }) {
     } else {
       currentUserData.joined_teams = [e.obj]
     }
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
     joinTeam({}, userID, authContext).then(() => {
+      console.log('club join')
     }).catch((error) => {
+      console.log('clubJoinTeam error with userID', error, userID)
       delete e.obj.parent_group_id;
       if (currentUserData.joined_teams) {
         currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== e.uid)
       }
-      setIsRender2(!isRender2)
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.messages);
+        Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
     }).finally(() => {
-      setCurrentUserData(currentUserData);
       authContext.setEntity({ ...e })
+      setCurrentUserData({ ...currentUserData });
     });
   };
 
@@ -721,12 +786,12 @@ export default function HomeScreen({ navigation, route }) {
     if (currentUserData.joined_teams) {
       currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== e.uid)
     }
-    setCurrentUserData(currentUserData);
-    setIsRender(!isRender)
+    setCurrentUserData({ ...currentUserData });
     const params = {};
     leaveTeam(params, userID, authContext).then(() => {
       console.log('club leave')
     }).catch((error) => {
+      console.log('clubLeaveTeam error with userID', error, userID)
       e.obj.parent_group_id = userID;
       authContext.setEntity({ ...e })
       if (currentUserData.joined_teams) {
@@ -734,8 +799,7 @@ export default function HomeScreen({ navigation, route }) {
       } else {
         currentUserData.joined_teams = [e.obj]
       }
-      setCurrentUserData(currentUserData);
-      setIsRender2(!isRender2)
+      setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
       }, 0.3)
@@ -835,27 +899,65 @@ export default function HomeScreen({ navigation, route }) {
         navigation.navigate('EditGroupProfileScreen', {
           placeholder: authContext.entity.role === 'team' ? strings.teamNamePlaceholder : strings.clubNameplaceholder,
           nameTitle: authContext.entity.role === 'team' ? strings.teamNameTitle : strings.clubNameTitle,
-
         }); break;
       default:
     }
+  }
+
+  const onTeamPress = (groupObject) => {
+    console.log('groupObject', groupObject)
+    navigation.push('HomeScreen', {
+      uid: groupObject.group_id,
+      backButtonVisible: true,
+      role: groupObject.entity_type,
+    })
+  }
+
+  const onMemberPress = (memberObject) => {
+    console.log('memberObject', memberObject)
+  }
+
+  const onGroupListPress = (groupList, entityType) => {
+    navigation.push('GroupListScreen', {
+      groups: groupList,
+      entity_type: entityType,
+    })
   }
 
   const onChallengePress = async () => {
     if (authContext.entity.obj.sport === currentUserData.sport) {
       navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
     } else {
-      Alert.alert('Sport must be same for both teams')
+      Alert.alert(strings.alertmessagetitle, 'Sport must be same for both teams')
     }
   }
 
-  const playsInModal = () => {
-    setPlaysInModalVisible(!playsInModalVisible);
+  const refereesInModal = (refereeInObject) => {
+    console.log('refereeInObject', refereeInObject)
+    if (refereeInObject) {
+      // Edit Refree Here
+    } else {
+      setRefereesInModalVisible(!refereesInModalVisible);
+    }
   };
 
-  const refereesInModal = () => {
-    setRefereesInModalVisible(!refereesInModalVisible);
+  const onAddRolePress = () => {
+    addRoleActionSheet.current.show()
   };
+
+  const playInModel = (playInObject) => {
+    console.log('playInObject now', playInObject)
+    if (playInObject) {
+      // Edit Refree Here
+    } else {
+      // in case add new
+
+    }
+  };
+
+  const playsInModal = () => {
+    setPlaysInModalVisible(!playsInModalVisible);
+  }
 
   const infoModal = () => {
     setInfoModalVisible(!infoModalVisible);
@@ -880,15 +982,36 @@ export default function HomeScreen({ navigation, route }) {
 
   return (
     <View style={ styles.mainContainer }>
+      <ActionSheet
+                    ref={addRoleActionSheet}
+                    options={[strings.addPlaying, strings.addRefereeing, strings.cancel]}
+                    cancelButtonIndex={2}
+                    onPress={(index) => {
+                      if (index === 0) {
+                        // Add Playing
+                        console.log('add playing')
+                      } else if (index === 1) {
+                        // Add Refereeing
+                        console.log('add refereeing')
+                        setRefereesInModalVisible(!refereesInModalVisible);
+                      }
+                    }}
+                  />
       {(isTeamHome && authContext.entity.role === 'team')
       && <View style={ styles.challengeButtonStyle }>
-        {authContext.entity.obj.group_id !== currentUserData.group_id && <TouchableOpacity onPress={ onChallengePress } styles={styles.outerContainerStyle}>
+        {authContext.entity.obj.group_id !== currentUserData.group_id && <View styles={[styles.outerContainerStyle, { height: 50 }]}><TouchableOpacity onPress={ onChallengePress }>
           <LinearGradient
-       colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-       style={styles.containerStyle}>
-            <Text style={ styles.buttonText }>{strings.challenge.toUpperCase()}</Text>
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+          style={[styles.containerStyle, { justifyContent: currentUserData.game_fee ? 'space-between' : 'center' }]}>
+            {currentUserData.game_fee && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee} ${currentUserData.currency_type}`}</Text>
+              <Text style={styles.buttonTextSmall}> {strings.perHourText}</Text>
+            </View>}
+            <Text style={ [styles.buttonText, { marginRight: currentUserData.game_fee ? 26 : 0 }] }>{strings.challenge.toUpperCase()}</Text>
           </LinearGradient>
-        </TouchableOpacity>}
+        </TouchableOpacity></View>}
       </View>}
       <ActivityLoader visible={loading} />
       <Header
@@ -951,9 +1074,8 @@ export default function HomeScreen({ navigation, route }) {
           {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                     isAdmin={isAdmin}
                     loggedInEntity={authContext.entity}
-                    onRefereesInPress={() => {
-                      refereesInModal()
-                    }}
+                    onAddRolePress={onAddRolePress}
+                    onRefereesInPress={refereesInModal}
                     onPlayInPress={(item) => {
                       const entity = authContext.entity
                       setSportName(item.sport_name);
@@ -1011,7 +1133,8 @@ export default function HomeScreen({ navigation, route }) {
                         }
                       })
                         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
-                    }}
+                    }
+                    }
                     onAction={onUserAction}/>}
           {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
             isAdmin={isAdmin}
@@ -1050,11 +1173,18 @@ export default function HomeScreen({ navigation, route }) {
                     navigation={navigation}
                     userDetails={currentUserData}
                     isAdmin={isAdmin}
+                    onGroupListPress={onGroupListPress}
+                    onGroupPress={onTeamPress}
+                    onRefereesInPress={refereesInModal}
+                    onPlayInPress={playInModel}
                   />}
                   {(isClubHome || isTeamHome) && <GroupInfo
                     navigation={navigation}
                     groupDetails={currentUserData}
                     isAdmin={isAdmin}
+                    onGroupListPress={onGroupListPress}
+                    onGroupPress={onTeamPress}
+                    onMemberPress={onMemberPress}
                   />}
                 </View>)}
                 {tabKey === 2 && (<View style={{ flex: 1 }} />)}
@@ -1307,7 +1437,10 @@ export default function HomeScreen({ navigation, route }) {
                                 })
                                 .catch((e) => {
                                   setloading(false);
-                                  Alert.alert('', e.messages)
+                                  console.log('error coming', e)
+                                  setTimeout(() => {
+                                    Alert.alert(strings.alertmessagetitle, e.message)
+                                  }, 0.3)
                                 });
                             },
                           },
@@ -1562,7 +1695,8 @@ export default function HomeScreen({ navigation, route }) {
                     changedata.registered_sports = res.payload.registered_sports;
                     setCurrentUserData(changedata);
                   }).catch((error) => {
-                    Alert.alert(error.messages)
+                    console.log('error coming', error)
+                    Alert.alert(strings.alertmessagetitle, error.message)
                   })
                 }}
                 sportName={sportName}
@@ -1763,29 +1897,38 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     zIndex: 1001,
     bottom: 40,
+    height: 60,
   },
   outerContainerStyle: {
-    shadowColor: colors.greenShadowColor,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
+    height: 45,
+    width: '100%',
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 1.0,
     shadowRadius: 4,
     elevation: 2,
   },
   containerStyle: {
-    height: 40,
+    flexDirection: 'row',
+    height: 45,
     borderRadius: 4,
-    justifyContent: 'center',
-    shadowColor: colors.greenShadowColor,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 2,
+    alignItems: 'center',
+  },
+  buttonLeftText: {
+    color: colors.whiteColor,
+    fontSize: 16,
+    marginLeft: 26,
+    fontFamily: fonts.RBold,
+  },
+  buttonTextSmall: {
+    color: colors.whiteColor,
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
   },
   buttonText: {
-    justifyContent: 'center',
-    alignSelf: 'center',
     color: colors.whiteColor,
-    fontSize: 17,
+    fontSize: 16,
+    marginRight: 26,
     fontFamily: fonts.RBold,
   },
   modalContainerViewStyle: {

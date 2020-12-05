@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, Image,
+  View, Text, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
 
 import fonts from '../../../Constants/Fonts';
@@ -12,28 +12,43 @@ export default function UserInfoGroupItem({
   title,
   imageData,
   entityType = 'club',
+  onGroupPress,
 }) {
+  let logoImage = images.clubC
+  let placeholder = images.clubPlaceholderSmall
+  switch (entityType) {
+    case 'team':
+      placeholder = images.teamPlaceholderSmall
+      logoImage = images.teamT
+      break;
+    case 'league':
+      placeholder = images.teamPlaceholderSmall
+      logoImage = images.clubC
+      break;
+    default:
+  }
+
   return (
-    <View style={{ width: 55, height: 'auto', marginLeft: 26 }}>
+    <TouchableOpacity onPress={ onGroupPress } style={{ width: 55, height: 'auto', marginLeft: 26 }}>
       <View style={styles.imageContainerStyle}>
         <Image style={styles.placeHolderImage}
-        source={entityType === 'club' ? images.clubPlaceholderSmall : images.teamPlaceholderSmall}>
+        source={placeholder}>
         </Image>
         <View style={styles.placeholderTextContainer}>
           <Text style={styles.placeholderText}>{title.charAt(0).toUpperCase()}</Text>
         </View>
         <TCImage
         containerStyle={styles.mainImageStyle}
-        resizeMode={'cover'}
+        resizeMode={'contain'}
         imageStyle={styles.mainImageStyle}
         source={imageData}/>
         <View style={styles.logoContainerStyle}>
           <Image
-        style={styles.logoImageStyle} source={entityType === 'club' ? images.clubC : images.teamT}/>
+        style={styles.logoImageStyle} source={logoImage}/>
         </View>
       </View>
-      <Text style={styles.titleStyle} numberOfLines={ 2 }>{title}</Text>
-    </View>
+      <Text style={styles.titleStyle} ellipsizeMode={'middle'} numberOfLines={ 2 }>{title}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -78,6 +93,7 @@ const styles = StyleSheet.create({
     marginLeft: 0.5,
     borderRadius: 25,
     alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
   },
   logoContainerStyle: {
     marginLeft: 35,

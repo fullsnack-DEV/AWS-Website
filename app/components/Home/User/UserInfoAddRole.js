@@ -2,23 +2,24 @@ import React from 'react';
 import {
   View, Text, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
+
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
-import images from '../../../Constants/ImagePath'
 
-export default function UserInfoRefereesInItem({
+export default function UserInfoAddRole({
   title,
   thumbURL,
-  onRefereesInPress,
+  onPress,
 }) {
   return (
-    <TouchableOpacity style={styles.containerStyle} onPress={onRefereesInPress}>
-      <Image source={images.myRefereeing} style={styles.refereeIconStyle}/>
-      <Image source={thumbURL} style={styles.imageStyle}/>
-      <View style={{ marginLeft: 10, marginRight: 12 }}>
-        <Text style={styles.titleStyle}>
-          {title}
-        </Text>
+    <TouchableOpacity onPress={ onPress }>
+      <View style={styles.containerStyle}>
+        <Image source={thumbURL} style={styles.imageStyle}/>
+        <View style={{ marginLeft: 10, marginRight: 12 }}>
+          <Text style={styles.titleStyle}>
+            {title}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -35,18 +36,9 @@ const styles = StyleSheet.create({
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.29,
-    shadowRadius: 3,
+    shadowRadius: 4,
     elevation: 3,
     alignItems: 'center',
-  },
-  refereeIconStyle: {
-    height: 24,
-    width: 24,
-    alignSelf: 'flex-start',
-    marginLeft: 2,
-    marginTop: 2,
-    position: 'absolute',
-    zIndex: 1001,
   },
   imageStyle: {
     height: 24,
