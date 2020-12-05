@@ -119,9 +119,10 @@ const addGameReview = (gameId, params, authContext) => makeAPIRequest({
   data: params,
   authContext,
 })
-const getGameRoster = (gameId) => makeAPIRequest({
+const getGameRoster = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}games/${gameId}/roster`,
+  authContext,
 })
 export {
   GameRecordStatus,

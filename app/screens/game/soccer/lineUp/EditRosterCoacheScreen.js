@@ -1,8 +1,10 @@
-import React, { useLayoutEffect, useState, useEffect } from 'react';
+import React, {
+  useLayoutEffect, useState, useEffect, useContext,
+} from 'react';
 import {
   View, StyleSheet, Text, ScrollView, FlatList, Alert,
 } from 'react-native';
-
+import AuthContext from '../../../../auth/context';
 import fonts from '../../../../Constants/Fonts'
 import TCSearchBox from '../../../../components/TCSearchBox';
 import { getGameLineUp, createGameLineUp, deleteGameLineUp } from '../../../../api/Games';
@@ -12,6 +14,7 @@ import LineUpPlayerView from '../../../../components/game/soccer/home/lineUp/Lin
 import colors from '../../../../Constants/Colors';
 
 export default function EditLineUpCoachScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [nonRoster, setNonRoster] = useState([]);
   const [searchRoster, setSearchRoster] = useState([]);
@@ -44,11 +47,11 @@ export default function EditLineUpCoachScreen({ navigation, route }) {
 
           if (tempArray.length > 0) {
             if (route && route.params && route.params.gameObj && route.params.selectedTeam) {
-              createGameLineUp(route.params.selectedTeam === 'home' ? route.params.gameObj.home_team.group_id : route.params.gameObj.away_team.group_id, route.params.gameObj.game_id, tempArray).then((response) => {
+              createGameLineUp(route.params.selectedTeam === 'home' ? route.params.gameObj.home_team.group_id : route.params.gameObj.away_team.group_id, route.params.gameObj.game_id, tempArray, authContext).then((response) => {
                 console.log('Response:::', response.payload);
 
                 if (tempNonRosterArray.length > 0) {
-                  deleteGameLineUp(route.params.selectedTeam === 'home' ? route.params.gameObj.home_team.group_id : route.params.gameObj.away_team.group_id, route.params.gameObj.game_id, tempNonRosterArray).then(() => {
+                  deleteGameLineUp(route.params.selectedTeam === 'home' ? route.params.gameObj.home_team.group_id : route.params.gameObj.away_team.group_id, route.params.gameObj.game_id, tempNonRosterArray, authContext).then(() => {
                     setLoading(false)
                     navigation.goBack()
                   })
@@ -59,7 +62,7 @@ export default function EditLineUpCoachScreen({ navigation, route }) {
               })
             }
           } else if (tempNonRosterArray.length > 0) {
-            deleteGameLineUp(route.params.selectedTeam === 'home' ? route.params.gameObj.home_team.group_id : route.params.gameObj.away_team.group_id, route.params.gameObj.game_id, tempNonRosterArray).then(() => {
+            deleteGameLineUp(route.params.selectedTeam === 'home' ? route.params.gameObj.home_team.group_id : route.params.gameObj.away_team.group_id, route.params.gameObj.game_id, tempNonRosterArray, authContext).then(() => {
               setLoading(false)
               navigation.goBack()
             })
@@ -78,7 +81,7 @@ export default function EditLineUpCoachScreen({ navigation, route }) {
   }, []);
   const getLineUpOfTeams = (teamID, gameID) => {
     setLoading(true);
-    getGameLineUp(teamID, gameID).then((response) => {
+    getGameLineUp(teamID, gameID, authContext).then((response) => {
       const nonRosterData = response.payload.non_roster.map((el) => {
         const o = { ...el };
         o.modified = false;

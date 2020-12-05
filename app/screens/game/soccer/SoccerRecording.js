@@ -8,13 +8,11 @@ import {
   Image,
   Alert,
   TouchableWithoutFeedback,
-  Platform,
   TouchableOpacity,
 } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import moment from 'moment';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
@@ -54,16 +52,13 @@ export default function SoccerRecording({ navigation, route }) {
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
 
   useEffect(() => {
-    const getAuthEntity = async () => {
-      entity = authContext.entity
-    };
-    getAuthEntity();
-    if (route && route.params && route.params.gameId) {
-      getGameDetail(route.params.gameId, true);
-    }
+    entity = authContext.entity
+    const { gameId } = route.params ?? {};
+    getGameDetail(gameId, true);
   }, [isFocused]);
   const startStopTimerTimeline = () => {
-    clearInterval(timer, timerForTimeline)
+    clearInterval(timer)
+    clearInterval(timerForTimeline)
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(getTimeDifferent(gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime, gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
     } else if ((gameObj && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status === GameStatus.reset)) {
@@ -87,7 +82,8 @@ export default function SoccerRecording({ navigation, route }) {
     }, 3000);
 
     return () => {
-      clearInterval(timer, timerForTimeline)
+      clearInterval(timer)
+      clearInterval(timerForTimeline)
     }
   }, [])
 
@@ -149,7 +145,7 @@ export default function SoccerRecording({ navigation, route }) {
     if (isLoading) {
       setloading(true);
     }
-    getGameByGameID(gameId)
+    getGameByGameID(gameId, authContext)
       .then((response) => {
         if (response.payload.status === GameStatus.reset) {
           setGameObj({
@@ -181,7 +177,7 @@ export default function SoccerRecording({ navigation, route }) {
   };
   const resetGameDetail = (gameId) => {
     setloading(true);
-    resetGame(gameId)
+    resetGame(gameId, authContext)
       .then((response) => {
         setGameObj({
           ...gameObj,
@@ -204,7 +200,7 @@ export default function SoccerRecording({ navigation, route }) {
   };
   const decreaseGameScoreRecord = (teamId, gameId) => {
     setloading(true)
-    decreaseGameScore(teamId, gameId)
+    decreaseGameScore(teamId, gameId, authContext)
       .then((response) => {
         if (selectedTeam === gameObj.home_team.group_id) {
           setGameObj({
@@ -227,7 +223,7 @@ export default function SoccerRecording({ navigation, route }) {
   };
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);
-    addGameRecord(gameId, params)
+    addGameRecord(gameId, params, authContext)
       .then((response) => {
         setloading(false);
         if (lastVerb === GameVerb.Goal) {
@@ -393,26 +389,25 @@ export default function SoccerRecording({ navigation, route }) {
               </View>
             )}
           </View>
-          <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            <View style={styles.entityView}>
-              <TouchableOpacity
+          <View style={{
+            flex: 1, justifyContent: 'center',
+          }}>
+            <View >
+              <View style={pickerShow ? styles.entityView : [styles.entityView, { marginBottom: 30 }]}>
+                <TouchableOpacity
                 onPress={() => setSelectedTeam(gameObj.home_team.group_id)}>
-                {selectedTeam === gameObj.home_team.group_id ? (
-                  <LinearGradient
+                  {selectedTeam === gameObj.home_team.group_id ? (
+                    <LinearGradient
                     colors={
                       selectedTeam === gameObj.home_team.group_id
                         ? [colors.yellowColor, colors.themeColor]
                         : [colors.whiteColor, colors.whiteColor]
                     }
                     style={
-                      // eslint-disable-next-line no-nested-ternary
-                      Platform.OS === 'ios'
-                        ? !pickerShow
-                          ? [styles.leftEntityView, { height: hp('30%') }]
-                          : [styles.leftEntityView, { height: hp('15%') }]
-                        : styles.leftEntityView
+
+                         styles.leftEntityView
                     }>
-                    <Image
+                      <Image
                       source={
                         gameObj
                         && gameObj.home_team
@@ -422,21 +417,17 @@ export default function SoccerRecording({ navigation, route }) {
                       }
                       style={styles.teamProfileView}
                     />
-                    <Text style={styles.teamNameText} numberOfLines={2}>
-                      {gameObj.home_team.group_name}
-                    </Text>
-                  </LinearGradient>
-                ) : (
-                  <View
+                      <Text style={styles.teamNameText} numberOfLines={2}>
+                        {gameObj.home_team.group_name}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <View
                     style={
-                      // eslint-disable-next-line no-nested-ternary
-                      Platform.OS === 'ios'
-                        ? !pickerShow
-                          ? [styles.leftEntityView, { height: hp('30%') }]
-                          : [styles.leftEntityView, { height: hp('15%') }]
-                        : styles.leftEntityView
+
+                       styles.leftEntityView
                     }>
-                    <Image
+                      <Image
                       source={
                         gameObj
                         && gameObj.home_team
@@ -446,33 +437,29 @@ export default function SoccerRecording({ navigation, route }) {
                       }
                       style={styles.teamProfileView}
                     />
-                    <Text style={styles.teamNameTextBlack} numberOfLines={2}>
-                      {gameObj.home_team.group_name}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
+                      <Text style={styles.teamNameTextBlack} numberOfLines={2}>
+                        {gameObj.home_team.group_name}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
 
-              <Text style={styles.vs}>VS</Text>
+                <Text style={styles.vs}>VS</Text>
 
-              <TouchableOpacity
+                <TouchableOpacity
                 onPress={() => setSelectedTeam(gameObj.away_team.group_id)}>
-                {selectedTeam === gameObj.away_team.group_id ? (
-                  <LinearGradient
+                  {selectedTeam === gameObj.away_team.group_id ? (
+                    <LinearGradient
                     colors={
                       selectedTeam === gameObj.away_team.group_id
                         ? [colors.yellowColor, colors.themeColor]
                         : [colors.whiteColor, colors.whiteColor]
                     }
                     style={
-                      // eslint-disable-next-line no-nested-ternary
-                      Platform.OS === 'ios'
-                        ? !pickerShow
-                          ? [styles.rightEntityView, { height: hp('30%') }]
-                          : [styles.rightEntityView, { height: hp('15%') }]
-                        : styles.rightEntityView
+
+                    styles.rightEntityView
                     }>
-                    <Image
+                      <Image
                       source={
                         gameObj
                         && gameObj.away_team
@@ -482,21 +469,16 @@ export default function SoccerRecording({ navigation, route }) {
                       }
                       style={styles.teamProfileView}
                     />
-                    <Text style={styles.teamNameText} numberOfLines={2}>
-                      {gameObj.away_team.group_name}
-                    </Text>
-                  </LinearGradient>
-                ) : (
-                  <View
+                      <Text style={styles.teamNameText} numberOfLines={2}>
+                        {gameObj.away_team.group_name}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <View
                     style={
-                      // eslint-disable-next-line no-nested-ternary
-                      Platform.OS === 'ios'
-                        ? !pickerShow
-                          ? [styles.rightEntityView, { height: hp('30%') }]
-                          : [styles.rightEntityView, { height: hp('15%') }]
-                        : styles.rightEntityView
+                        styles.rightEntityView
                     }>
-                    <Image
+                      <Image
                       source={
                         gameObj
                         && gameObj.away_team
@@ -506,16 +488,16 @@ export default function SoccerRecording({ navigation, route }) {
                       }
                       style={styles.teamProfileView}
                     />
-                    <Text style={styles.teamNameTextBlack} numberOfLines={2}>
-                      {gameObj.away_team.group_name}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            </View>
-            {!pickerShow && (
-              <View style={styles.plusMinusView}>
-                <TouchableOpacity
+                      <Text style={styles.teamNameTextBlack} numberOfLines={2}>
+                        {gameObj.away_team.group_name}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
+              {!pickerShow && (
+                <View style={styles.plusMinusView}>
+                  <TouchableOpacity
                   onPress={() => {
                     if (gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset) {
                       Alert.alert('Game not started yet.');
@@ -536,13 +518,13 @@ export default function SoccerRecording({ navigation, route }) {
                       addGameRecordDetail(gameObj.game_id, body);
                     }
                   }}>
-                  <LinearGradient
+                    <LinearGradient
                     colors={[colors.yellowColor, colors.themeColor]}
                     style={styles.plusButton}>
-                    <Image source={images.gamePlus} style={styles.gamePlus} />
-                  </LinearGradient>
-                </TouchableOpacity>
-                <TouchableOpacity
+                      <Image source={images.gamePlus} style={styles.gamePlus} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                  <TouchableOpacity
                   onPress={() => {
                     if (gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset) {
                       Alert.alert('Game not started yet.');
@@ -584,13 +566,15 @@ export default function SoccerRecording({ navigation, route }) {
                       );
                     }
                   }}>
-                  <Image
+                    <Image
                     source={images.deleteRecentGoal}
                     style={styles.gameMinus}
                   />
-                </TouchableOpacity>
-              </View>
-            )}
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+
           </View>
           <View>
             <View style={{ flex: 1 }} />
@@ -803,7 +787,7 @@ const styles = StyleSheet.create({
   },
   centerView: {
     alignItems: 'center',
-    width: wp('20%'),
+    width: wp('22%'),
   },
   curruentTimeImg: {
     height: 15,
@@ -838,7 +822,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '10%',
   },
   gameMinus: {
     height: 35,
@@ -881,7 +864,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
     elevation: 10,
-    height: '70%',
+    height: 183,
     marginLeft: wp('6%'),
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
@@ -930,7 +913,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+
   },
   profileImg: {
     borderRadius: 15,
@@ -943,6 +926,7 @@ const styles = StyleSheet.create({
   },
   teamProfileView: {
     borderRadius: 30,
+    marginBottom: 15,
     height: 60,
     width: 60,
     resizeMode: 'cover',
@@ -959,7 +943,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
     elevation: 5,
-    height: '70%',
+    height: 183,
     marginRight: wp('6%'),
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },

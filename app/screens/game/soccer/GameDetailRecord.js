@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect, useState, useRef, useEffect,
+  useLayoutEffect, useState, useRef, useEffect, useContext,
 } from 'react';
 import {
   View,
@@ -13,18 +13,20 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+
 } from 'react-native';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import * as Animatable from 'react-native-animatable';
 import moment from 'moment';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
 import { useFocusEffect } from '@react-navigation/native';
+import AuthContext from '../../../auth/context';
 import { addGameRecord, resetGame, getGameRoster } from '../../../api/Games';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
@@ -42,6 +44,7 @@ const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out'];
 const assistButtonList = ['Assist'];
 export default function GameDetailRecord({ navigation, route }) {
   const actionSheet = useRef();
+  const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [pickerShow, setPickerShow] = useState(false);
   const [selectedMemberID, setSelectedMemberID] = useState();
@@ -58,13 +61,8 @@ export default function GameDetailRecord({ navigation, route }) {
   const [awayBench, setAwayBench] = useState([]);
 
   useEffect(() => {
-    const { gameObject, gameId } = route.params ?? {};
-    console.log('GAME OOOBBBJJJECT::', gameObject);
-    // setGameObj(gameObject)
+    const { gameId } = route.params ?? {};
     getGameRosterDetail(gameId, true);
-    // if (route && route.params && route.params.gameId) {
-    //   getGameDetail(route.params.gameId)
-    // }
     return () => {};
   }, []);
   useLayoutEffect(() => {
@@ -75,7 +73,7 @@ export default function GameDetailRecord({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation, gameObj, selectedMemberID, selectedAssistMemberID, isAssist]);
+  }, [navigation, gameObj, selectedMemberID, selectedAssistMemberID, isAssist, messageText, messageToast]);
 
   useFocusEffect(() => {
     startStopTimerTimeline()
@@ -171,7 +169,7 @@ export default function GameDetailRecord({ navigation, route }) {
     if (isLoading) {
       setloading(true);
     }
-    getGameRoster(gameId)
+    getGameRoster(gameId, authContext)
       .then((res2) => {
         setloading(false);
         console.log('ROSTER RESPONSE::', JSON.stringify(res2.payload));
@@ -213,7 +211,7 @@ export default function GameDetailRecord({ navigation, route }) {
   };
   const resetGameDetail = (gameId) => {
     setloading(true);
-    resetGame(gameId)
+    resetGame(gameId, authContext)
       .then((response) => {
         setGameObj({
           ...gameObj,
@@ -313,7 +311,7 @@ export default function GameDetailRecord({ navigation, route }) {
   }
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);
-    addGameRecord(gameId, params)
+    addGameRecord(gameId, params, authContext)
       .then((response) => {
         console.log(lastVerb);
         if (lastVerb === GameVerb.Start) {
@@ -360,7 +358,8 @@ export default function GameDetailRecord({ navigation, route }) {
           setloading(false);
 
           setMessageText(
-            (lastVerb === GameVerb.Goal && !isAssist ? `Goal, ${getMemberName(selectedMemberID)}` : `Goal, ${getMemberName(selectedMemberID)} /Assist, ${getMemberName(selectedAssistMemberID)}`)
+            (lastVerb === GameVerb.Goal && !isAssist && `Goal, ${getMemberName(selectedMemberID)}`)
+            || (lastVerb === GameVerb.Goal && isAssist && `Goal, ${getMemberName(selectedMemberID)} /Assist, ${getMemberName(selectedAssistMemberID)}`)
               || (lastVerb === GameVerb.OwnGoal && `Goal, ${getMemberName(selectedMemberID)}`)
               || (lastVerb === GameVerb.YC && `YC, ${getMemberName(selectedMemberID)}`)
               || (lastVerb === GameVerb.RC && `RC, ${getMemberName(selectedMemberID)}`)
@@ -368,6 +367,7 @@ export default function GameDetailRecord({ navigation, route }) {
               || (lastVerb === GameVerb.Out && `Out, ${getMemberName(selectedMemberID)}`),
           );
           setMessageToast(true);
+
           setIsAssist(false);
           setSelectedMemberID();
           setSelectedAssistMemberID();
@@ -871,51 +871,72 @@ export default function GameDetailRecord({ navigation, route }) {
             )}
           </View>
           {messageToast && (
+            <Animatable.View
+            useNativeDriver={true}
+            animation={'fadeInDown'}
+             easing="ease-in-out">
+              <LinearGradient
+                    colors={[colors.yellowColor, colors.themeColor]}
+                    style={styles.messageToast}>
+                <View style={{
 
-            <LinearGradient
-              colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.messageToast}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.gameRecordButton}>
-                  <View
-                    colors={colors.whiteColor}
-                    style={styles.gameRecordButton}>
-                    <Image
-                      source={(lastVerb === GameVerb.Goal && images.gameGoal)
-                    || (lastVerb === GameVerb.YC && images.gameYC)
-                  || (lastVerb === GameVerb.RC && images.gameRC)
-                || (lastVerb === GameVerb.In && images.gameIn)
-              || (lastVerb === GameVerb.Out && images.gameOut)}
-                      style={styles.gameRecordImg}
-                    />
+                  flexDirection: 'row',
+                  width: '100%',
+                  marginLeft: 15,
+                  marginRight: 15,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flex: 1,
+                }}>
+                  <View style={{
+                    flex: 1, flexDirection: 'row', alignItems: 'center', width: '100%',
+                  }}>
+
+                    <View style={styles.gameRecordButton}>
+                      <View
+                          colors={colors.whiteColor}
+                          style={styles.gameRecordButton}>
+                        <Image
+                            source={(lastVerb === GameVerb.Goal && images.gameGoal)
+                          || (lastVerb === GameVerb.YC && images.gameYC)
+                        || (lastVerb === GameVerb.RC && images.gameRC)
+                      || (lastVerb === GameVerb.In && images.gameIn)
+                    || (lastVerb === GameVerb.Out && images.gameOut)}
+                            style={styles.gameRecordImg}
+                          />
+                      </View>
+                    </View>
+                    <Text numberOfLines={1} style={styles.messageText}>{(messageText.split('/')[1] && `${messageText.split('/')[0]}`) || messageText}</Text>
+                    {messageText.split('/')[1] && <>
+                      <Text style={{ color: colors.whiteColor }}>/ </Text>
+                      <View
+                          colors={colors.whiteColor}
+                          style={styles.gameRecordButton}>
+
+                        <Image
+                            source={images.assistsImage}
+                            style={styles.gameRecordImg}
+                          />
+                      </View>
+                      <Text numberOfLines={1} style={[styles.messageText, { width: 130 }]}>  {(messageText.split('/') && messageText.split('/')[1])}</Text>
+                    </>}
                   </View>
-                </View>
-                <Text numberOfLines={1} style={styles.messageText}> {(messageText.split('/')[1] && `${messageText.split('/')[0]} / `) || messageText} </Text>
-                {messageText.split('/')[1] && <>
-                  <View
-                    colors={colors.whiteColor}
-                    style={styles.gameRecordButton}>
+                  <TouchableOpacity onPress={() => {
+                    setMessageToast(false)
+                  }}>
                     <Image
-                      source={images.assistsImage}
-                      style={styles.gameRecordImg}
-                    />
-                  </View>
-                  <Text numberOfLines={1} style={[styles.messageText, { width: 160 }]}>  {(messageText.split('/') && messageText.split('/')[1])} </Text>
-                </>}
-
-              </View>
-
-              <TouchableOpacity onPress={() => {
-                setMessageToast(false)
-              }}>
-                <Image
                   source={images.cancelImage}
                   style={{
-                    width: 13, height: 13, tintColor: colors.whiteColor,
+                    width: 13,
+                    height: 13,
+                    tintColor: colors.whiteColor,
+                    marginRight: 1,
                   }}
                 />
-              </TouchableOpacity>
-            </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              </LinearGradient>
+            </Animatable.View>
           )}
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <SectionList
@@ -1013,7 +1034,9 @@ export default function GameDetailRecord({ navigation, route }) {
 
           <View style={styles.bottomView}>
             <View style={styles.timeView}>
+
               <Text style={styles.timer}>{timelineTimer}</Text>
+
               {pickerShow && (
                 <View style={styles.curruentTimeView}>
                   <Image
@@ -1279,7 +1302,8 @@ const styles = StyleSheet.create({
   },
   centerView: {
     alignItems: 'center',
-    width: wp('20%'),
+    width: wp('22%'),
+
   },
   curruentTimeImg: {
     height: 15,
@@ -1477,8 +1501,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   messageToast: {
-    paddingLeft: 15,
-    paddingRight: 15,
     flexDirection: 'row',
     height: 45,
     width: '100%',
@@ -1488,11 +1510,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   messageText: {
-    marginLeft: 5,
+    marginLeft: 2,
     fontSize: 14,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
-
   },
   gameRecordButton: {
     height: 20,
