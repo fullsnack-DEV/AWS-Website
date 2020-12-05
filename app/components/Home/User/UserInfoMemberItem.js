@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet,
+  View, Text, StyleSheet, TouchableOpacity,
 } from 'react-native';
 
 import fonts from '../../../Constants/Fonts';
@@ -11,9 +11,10 @@ import TCImage from '../../TCImage';
 export default function UserInfoMemberItem({
   title,
   imageData,
+  onMemberPress,
 }) {
   return (
-    <View style={{ width: 55, height: 'auto', marginLeft: 26 }}>
+    <TouchableOpacity onPress={ onMemberPress } style={{ width: 55, height: 'auto', marginLeft: 26 }}>
       <View style={styles.imageContainerStyle}>
         <TCImage
         containerStyle={styles.mainImageStyle}
@@ -23,7 +24,7 @@ export default function UserInfoMemberItem({
         source={imageData}/>
       </View>
       <Text style={styles.titleStyle} numberOfLines={ 2 }>{title}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

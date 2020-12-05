@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -14,6 +15,8 @@ function TCGradientButton({
   onPress,
   style,
   textStyle,
+  rightIcon,
+  rightIconStyle,
   startGradientColor = colors.orangeGradientColor,
   endGradientColor = colors.yellowColor,
   outerContainerStyle,
@@ -25,6 +28,7 @@ function TCGradientButton({
        colors={[startGradientColor, endGradientColor]}
        style={[styles.containerStyle, style]}>
         <Text style={ [styles.buttonText, textStyle] }>{title}</Text>
+        {rightIcon && <Image style={[styles.rightIconStyle, rightIconStyle]} source={rightIcon} />}
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -35,16 +39,19 @@ const styles = StyleSheet.create({
     margin: 15,
   },
   containerStyle: {
+    flexDirection: 'row',
     height: 40,
     borderRadius: 20,
     justifyContent: 'center',
   },
   buttonText: {
-    justifyContent: 'center',
     alignSelf: 'center',
     color: colors.whiteColor,
     fontSize: 17,
     fontFamily: fonts.RBold,
+  },
+  rightIconStyle: {
+    alignSelf: 'center',
   },
 });
 

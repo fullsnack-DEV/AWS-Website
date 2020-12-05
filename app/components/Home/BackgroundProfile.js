@@ -12,6 +12,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
+import * as Utility from '../../utils';
 
 function BackgroundProfile({
   profileImagePlaceholder = images.profilePlaceHolder,
@@ -77,7 +78,20 @@ function BackgroundProfile({
           />
           <View style={styles.userViewStyle}>
             <Text style={styles.userTextStyle}>{fullName}</Text>
-            <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
+            {currentUserData.description && <Text style={styles.sloganTextStyle}>{currentUserData.description}</Text>}
+            <View style={{
+              flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+            }}>
+              {(currentUserData.entity_type === 'team' && currentUserData.entity_type === 'club') && <View style={{
+                flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+              }}>
+                <Text style={styles.cityTextStyle}>{currentUserData.sport ? Utility.capitalize(currentUserData.sport) : ''}</Text>
+                <View style={{
+                  backgroundColor: colors.lightBlackColor, marginHorizontal: 5, borderRadius: 2, height: 4, width: 4,
+                }}/>
+              </View>}
+              <Text style={styles.cityTextStyle}>{`${city}, ${country}`}</Text>
+            </View>
           </View>
           {currentUserData.entity_type === 'club' && <View style={styles.statusViewStyle}>
             <View style={styles.statusInnerViewStyle}>
@@ -163,14 +177,23 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     alignItems: 'center',
   },
+  sloganTextStyle: {
+    textAlign: 'center',
+    fontFamily: fonts.RMedium,
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    fontStyle: 'italic',
+    marginTop: 2,
+    marginBottom: 5,
+  },
   userTextStyle: {
     fontSize: 22,
     fontFamily: fonts.RBold,
   },
   cityTextStyle: {
     fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.grayEventColor,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
   },
 });
 

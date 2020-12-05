@@ -9,22 +9,38 @@ import ImageButton from './WritePost/ImageButton'
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 import images from '../Constants/ImagePath'
+// import TCPopupMessage from './TCPopupMessage';
 
 function TCEditHeader({
   title,
+  iconImage,
+  iconStyle,
+  subTitle,
   containerStyle,
   textStyle,
+  subTitleTextStyle,
   imageContainerStyle,
   imageStyle,
   onEditPress,
+  onIconPress,
   onNextArrowPress,
   showNextArrow,
   showEditButton,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         <Text style={[styles.textStyle, textStyle]}>{title}</Text>
+        {/* <TCPopupMessage
+              visible={true}
+              message={'this tc warning message'}
+              arrowFromLeft={85}
+          /> */}
+        {iconImage && <ImageButton style={[{
+          height: 32,
+          width: 32,
+        }, iconStyle]} source={iconImage} onImagePress={onIconPress} />}
+        {subTitle && <Text style={[styles.subTitleTextStyle, subTitleTextStyle]}>{subTitle}</Text>}
         {showNextArrow && <ImageButton source={images.nextArrow}
         style={{
           paddingTop: 2,
@@ -39,7 +55,7 @@ function TCEditHeader({
       }
       </View>
       {showEditButton
-      && <ImageButton source={images.editButton}
+      && <ImageButton source={images.editPencil}
       style={[styles.imageContainerStyle, imageContainerStyle]}
       imageStyle={ [styles.imageStyle, imageStyle]}
       onImagePress={onEditPress}/>
@@ -60,6 +76,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
+  subTitleTextStyle: {
+    paddingLeft: 12,
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+  },
   imageContainerStyle: {
     width: 20,
     flexDirection: 'row',
@@ -67,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   imageStyle: {
-    height: 11, width: 11,
+    height: 20, width: 18,
   },
 });
 

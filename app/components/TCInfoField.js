@@ -10,10 +10,11 @@ import {
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
+import strings from '../Constants/String';
 
 export default function TCInfoField({
-  title = 'N/A',
-  value = 'N/A',
+  title = strings.NA,
+  value = strings.NA,
   color = colors.lightBlackColor,
   titleStyle,
   valueStyle,
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   fieldTitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     flex: 0.33,
