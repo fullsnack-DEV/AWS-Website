@@ -4,6 +4,8 @@ import {
   View, Text, ScrollView, Alert, StyleSheet,
 } from 'react-native';
 
+import Geocoder from 'react-native-geocoding';
+import MapView, { Marker } from 'react-native-maps';
 import TCTextField from '../../components/TCTextField';
 import TCLabel from '../../components/TCLabel';
 import TCPhoneNumber from '../../components/TCPhoneNumber';
@@ -13,6 +15,8 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
+import { Google_API_Key } from '../../utils/constant';
+import * as Utility from '../../utils';
 
 export default function EditGroupContactScreen({ navigation, route }) {
   // For activity indicator
@@ -44,7 +48,6 @@ export default function EditGroupContactScreen({ navigation, route }) {
     const groupProfile = { ...groupData };
     patchGroup(groupData.group_id, groupProfile, authContext).then(async (response) => {
       setloading(false);
-      console.log('response', response)
       const entity = authContext.entity
       entity.obj = response.payload;
       authContext.setEntity({ ...entity })
@@ -55,6 +58,79 @@ export default function EditGroupContactScreen({ navigation, route }) {
       }, 0.1);
     });
   };
+
+  const onHomeFieldExist = () => {
+    // setloading(true)
+    Geocoder.init(Google_API_Key);
+    Geocoder.from(groupData.homefield_address)
+      .then((json) => {
+        const location = json.results[0].geometry.location;
+        groupData.homefield_address_latitude = location.lat;
+        groupData.homefield_address_longitude = location.lng;
+        setGroupData({ ...groupData })
+      })
+      .catch((error) => {
+        console.log(error)
+        delete groupData.homefield_address_latitude;
+        delete groupData.homefield_address_longitude;
+        setGroupData({ ...groupData })
+      })
+      // .finally(() => setloading(false));
+  }
+
+  const onOfficeFieldExist = () => {
+    // setloading(true)
+    Geocoder.init(Google_API_Key);
+    Geocoder.from(groupData.office_address)
+      .then((json) => {
+        const location = json.results[0].geometry.location;
+        groupData.office_address_latitude = location.lat;
+        groupData.office_address_longitude = location.lng;
+        setGroupData({ ...groupData })
+      })
+      .catch((error) => {
+        console.log(error)
+        delete groupData.office_address_latitude;
+        delete groupData.office_address_longitude;
+        setGroupData({ ...groupData })
+      })
+      // .finally(() => setloading(false));
+  }
+
+  const coordinates = []
+  const markers = []
+
+  if (groupData.homefield_address_latitude && groupData.homefield_address_longitude) {
+    coordinates.push({
+      latitude: Number(groupData.homefield_address_latitude),
+      longitude: Number(groupData.homefield_address_longitude),
+    })
+    markers.push({
+      id: '1',
+      latitude: groupData.homefield_address_latitude,
+      longitude: groupData.homefield_address_longitude,
+      name: strings.homeaddress,
+      adddress: groupData.homefield_address,
+      pinColor: 'red',
+    })
+  }
+
+  if (groupData.office_address_latitude && groupData.office_address_longitude) {
+    coordinates.push({
+      latitude: Number(groupData.office_address_latitude),
+      longitude: Number(groupData.office_address_longitude),
+    })
+    markers.push({
+      id: '2',
+      latitude: Number(groupData.office_address_latitude),
+      longitude: Number(groupData.office_address_longitude),
+      name: strings.officeaddress,
+      adddress: groupData.office_address,
+      pinColor: 'green',
+    })
+  }
+
+  const region = Utility.getRegionFromMarkers(coordinates)
 
   return (
     <>
@@ -96,18 +172,39 @@ export default function EditGroupContactScreen({ navigation, route }) {
         <View>
           <TCLabel title={strings.office} />
           <TCTextField placeholder={strings.officeaddress}
-          onChangeText={(text) => setGroupData({ ...groupData, office_address: text })}
+            onChangeText={(text) => setGroupData({ ...groupData, office_address: text })}
             value={groupData.office_address}
+            onBlur={onOfficeFieldExist}
             />
         </View>
 
         <View>
           <TCLabel title={strings.homefield} />
           <TCTextField placeholder={strings.homeaddress}
-          onChangeText={(text) => setGroupData({ ...groupData, homefield_address: text })}
+            onChangeText={(text) => setGroupData({ ...groupData, homefield_address: text })}
             value={groupData.homefield_address}
+            onBlur={onHomeFieldExist}
             />
         </View>
+
+        {coordinates.length > 0 && <MapView
+          region={region}
+          style={styles.mapViewStyle}>
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              identifier={marker.id}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              description={marker.adddress}
+              title={marker.name}
+              pinColor={marker.pinColor}
+            />
+          ))}
+        </MapView>
+        }
 
         <View style={{ height: 50 }} />
       </ScrollView>
@@ -119,5 +216,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
+  },
+  mapViewStyle: {
+    height: 150,
+    marginHorizontal: 15,
+    marginTop: 25,
+    borderRadius: 5,
   },
 });
