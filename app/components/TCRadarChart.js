@@ -62,22 +62,20 @@ const TCRadarChart = ({
   const [maxima, setMaximaData] = useState([])
 
   useEffect(() => {
-    if (radarChartData?.length) {
-      let data = [];
-      BASE_CHART_POLY.map((polyRating) => {
-        const attributes = {};
-        if (radarChartAttributes?.length) {
-          radarChartAttributes.map((attr) => {
-            attributes[attr.toString()] = polyRating;
-            return <></>
-          });
-        }
-        data.push(attributes);
-        return <></>
-      });
-      data = [...data, ...radarChartData];
-      setRadarChart([...data]);
-    }
+    let data = [];
+    BASE_CHART_POLY.map((polyRating) => {
+      const attributes = {};
+      if (radarChartAttributes?.length) {
+        radarChartAttributes.map((attr) => {
+          attributes[attr.toString()] = polyRating;
+          return <></>
+        });
+      }
+      data.push(attributes);
+      return <></>
+    });
+    data = [...data, ...radarChartData];
+    setRadarChart([...data]);
   }, [radarChartData]);
 
   useEffect(() => {
@@ -88,7 +86,7 @@ const TCRadarChart = ({
   return (
     <VictoryChart
         polar
-        theme={VictoryTheme.grayscale}
+        theme={VictoryTheme.material}
         domain={{ y: [0, 1] }}
             >
       <VictoryGroup

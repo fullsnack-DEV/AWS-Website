@@ -8,9 +8,9 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/soccer/home/summary/Summary';
-import Stats from '../../../components/game/soccer/home/stats/Stats';
+import Stats from '../../../components/game/common/stats/Stats';
 import Review from '../../../components/game/soccer/home/review/Review';
-import Gallery from '../../../components/game/soccer/home/gallary/Gallery';
+import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
   approveDisapproveGameRecords, getGameData, getGameGallery, getGameMatchRecords, getGameReviews, getGameStats,
 } from '../../../api/Games';
@@ -84,7 +84,7 @@ const SoccerHome = ({ navigation, route }) => {
             followSoccerUser={followSoccerUser}
             navigation={navigation}
             gameData={gameData}
-            isAdmin={true}
+            isAdmin={isAdmin}
             userRole={userRole}
             userId={userId}
         />
@@ -92,6 +92,8 @@ const SoccerHome = ({ navigation, route }) => {
       {tabKey === 1 && <LineUp navigation={navigation} gameData={gameData}/>}
       {tabKey === 2 && (
         <Stats
+              homeTeamName={gameData?.home_team?.group_name}
+              awayTeamName={gameData?.away_team?.group_name}
               getGameStatsData={getSoccerGameStats}
               gameData={gameData}
           />

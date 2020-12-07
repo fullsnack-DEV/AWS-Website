@@ -8,28 +8,27 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/tennis/home/summary/Summary';
-import Stats from '../../../components/game/soccer/home/stats/Stats';
+import Stats from '../../../components/game/common/stats/Stats';
 import Review from '../../../components/game/soccer/home/review/Review';
-import Gallery from '../../../components/game/soccer/home/gallary/Gallery';
+import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
   approveDisapproveGameRecords, getGameData, getGameGallery, getGameMatchRecords, getGameReviews, getGameStats,
 } from '../../../api/Games';
 import { followUser, unfollowUser } from '../../../api/Users';
-import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import AuthContext from '../../../auth/context'
 
-const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Review', 'Gallery']
+const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery']
 const gameIds = [
   '265b7834-6bbf-40cc-8729-372f3b706331', // 0
   '049b0c20-f9c6-473d-aab8-76b2430efa68', // 1
   '0750bda5-942e-4de2-bb65-386aec7cf6c3', // 2
   '13f4cde8-6a90-4236-8cdd-5ede92e94d5b', // 3
 ]
-const globalGameId = gameIds[0];
+const globalGameId = gameIds[3];
 const TennisHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
-  const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
+  const [tennisGameId] = useState(route?.params?.gameId ?? globalGameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,12 +43,12 @@ const TennisHome = ({ navigation, route }) => {
 
   const getGameDetails = () => {
     setLoading(true)
-    getSoccerGameData(soccerGameId).then(async (res) => {
+    getTennisGameData(tennisGameId).then(async (res) => {
       if (res.status) {
         const entity = authContext.entity
         setUserRole(entity?.role);
         setUserId(entity?.uid);
-        const checkIsAdmin = res?.payload?.home_team?.am_i_admin || res?.payload?.away_team?.am_i_admin;
+        const checkIsAdmin = [res?.payload?.home_team?.user_id, res?.payload?.away_team?.user_id].includes(entity?.uid);
         setIsAdmin(checkIsAdmin)
         setGameData(res.payload);
       }
@@ -58,46 +57,51 @@ const TennisHome = ({ navigation, route }) => {
     }).finally(() => setLoading(false));
   }
 
-  const getSoccerGameData = (gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData);
-  const followSoccerUser = (params, userID) => followUser(params, userID);
-  const unFollowSoccerUser = (params, userID) => unfollowUser(params, userID);
-  const getSoccerGameMatchRecords = (gameId) => getGameMatchRecords(gameId);
-  const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params)
-  const getSoccerGameStats = (gameId) => getGameStats(gameId)
-  const getSoccerGameReview = (gameId) => getGameReviews(gameId)
-  const getSoccerGalleryData = (gameId) => getGameGallery(gameId)
+  const getTennisGameData = (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext);
+  const followSoccerUser = (params, userID) => followUser(params, userID, authContext);
+  const unFollowSoccerUser = (params, userID) => unfollowUser(params, userID, authContext);
+  const getTennisGameMatchRecords = (gameId) => getGameMatchRecords(gameId, authContext);
+  const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext)
+  const getTennisGameStats = (gameId) => getGameStats(gameId, authContext)
+  const getTennisGameReview = (gameId) => getGameReviews(gameId, authContext)
+  const getTennisGalleryData = (gameId) => getGameGallery(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
       {tabKey === 0 && (
         <Summary
-            getSoccerGameReview={getSoccerGameReview}
-            getSoccerGameStats={getSoccerGameStats}
-            getGameData={getSoccerGameData}
+            getSoccerGameReview={getTennisGameReview}
+            getSoccerGameStats={getTennisGameStats}
+            getGameData={getTennisGameData}
             approveDisapproveGameScore={approveDisapproveGameScore}
-            getGameMatchRecords={getSoccerGameMatchRecords}
+            getGameMatchRecords={getTennisGameMatchRecords}
             unFollowSoccerUser={unFollowSoccerUser}
             followSoccerUser={followSoccerUser}
             navigation={navigation}
             gameData={gameData}
-            isAdmin={true}
+            isAdmin={isAdmin}
             userRole={userRole}
             userId={userId}
         />
       )}
-      {tabKey === 1 && <LineUp navigation={navigation} gameData={gameData}/>}
-      {tabKey === 2 && (
+      {tabKey === 1 && (
         <Stats
-              getGameStatsData={getSoccerGameStats}
+            homeTeamName={gameData?.singlePlayerGame
+              ? gameData?.home_team?.full_name
+              : gameData?.home_team?.group_name}
+            awayTeamName={gameData?.singlePlayerGame
+              ? gameData?.away_team?.full_name
+              : gameData?.away_team?.group_name}
+              getGameStatsData={getTennisGameStats}
               gameData={gameData}
           />
       )}
-      {tabKey === 3 && <Review navigation={navigation} getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
-      {tabKey === 4 && (
+      {tabKey === 2 && <Review navigation={navigation} getSoccerGameReview={getTennisGameReview} isAdmin={isAdmin} gameData={gameData}/>}
+      {tabKey === 3 && (
         <Gallery
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
               gameData={gameData}
-              getSoccerGalleryData={getSoccerGalleryData}
+              getSoccerGalleryData={getTennisGalleryData}
               navigation={navigation}/>
       )}
     </View>

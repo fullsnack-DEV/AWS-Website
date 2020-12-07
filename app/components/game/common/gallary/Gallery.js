@@ -3,18 +3,21 @@ import {
   Alert, FlatList, View,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import AddPhotoItem from '../../../../Home/AddPhotoItem';
-import SingleImageRender from '../../../../Home/SingleImageRender';
-import MultipleImageRender from '../../../../Home/MultipleImageRender';
-import SingleVideoRender from '../../../../Home/SingleVideoRender';
-import MultipleVideoRender from '../../../../Home/MultipleVideoRender';
-import uploadImages from '../../../../../utils/imageAction';
-import { createPost, getNewsFeed } from '../../../../../api/NewsFeeds';
-import ActivityLoader from '../../../../loader/ActivityLoader';
-import AuthContext from '../../../../../auth/context'
+import AddPhotoItem from '../../../Home/AddPhotoItem';
+import SingleImageRender from '../../../Home/SingleImageRender';
+import MultipleImageRender from '../../../Home/MultipleImageRender';
+import SingleVideoRender from '../../../Home/SingleVideoRender';
+import MultipleVideoRender from '../../../Home/MultipleVideoRender';
+import uploadImages from '../../../../utils/imageAction';
+import { createPost, getNewsFeed } from '../../../../api/NewsFeeds';
+import ActivityLoader from '../../../loader/ActivityLoader';
+import AuthContext from '../../../../context/auth';
 
 const Gallery = ({
-  setUploadImageProgressData, navigation, gameData, getSoccerGalleryData,
+  setUploadImageProgressData,
+  navigation,
+  gameData,
+  getSoccerGalleryData,
 }) => {
   const [allData, setAllData] = useState([]);
   const authContext = useContext(AuthContext)
