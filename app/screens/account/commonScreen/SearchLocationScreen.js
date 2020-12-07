@@ -64,6 +64,7 @@ export default function SearchLocationScreen({ navigation, route }) {
           navigation.navigate('HomeScreen', {
             locationName: item.description,
             locationDetail: response.result.geometry.location,
+            locationCity: item.structured_formatting.main_text,
           });
         }
       }

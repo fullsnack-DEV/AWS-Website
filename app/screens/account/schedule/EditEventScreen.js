@@ -33,29 +33,7 @@ import { editEvent, getEvents } from '../../../api/Schedule';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
-
-const eventColorData = [
-  {
-    id: 0,
-    color: colors.themeColor,
-    isSelected: true,
-  },
-  {
-    id: 1,
-    color: colors.yellowColor,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    color: colors.greeColor,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    color: colors.eventBlueColor,
-    isSelected: false,
-  },
-];
+import * as Utility from '../../../utils/index';
 
 export default function EditEventScreen({ navigation, route }) {
   const authContext = useContext(AuthContext)
@@ -151,13 +129,23 @@ export default function EditEventScreen({ navigation, route }) {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isColorPickerModal, setIsColorPickerModal] = useState(false);
-  const [eventColors, setEventColors] = useState(eventColorData);
+  const [eventColors, setEventColors] = useState([]);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const eventColorData = await Utility.getStorage('eventColor');
+      setEventColors(eventColorData);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (route.params && route.params.locationName !== undefined) {
@@ -298,7 +286,7 @@ export default function EditEventScreen({ navigation, route }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    eventColors.map(async (createEventItem) => {
+                    eventColors.map((createEventItem) => {
                       const createEventData = createEventItem;
                       if (createEventData.id === item.id) {
                         createEventData.isSelected = true;
@@ -308,6 +296,7 @@ export default function EditEventScreen({ navigation, route }) {
                       }
                       return null;
                     })
+                    Utility.setStorage('eventColor', eventColors);
                     setEventColors([...eventColors])
                   }}
                   eventColorViewStyle={{
@@ -442,6 +431,7 @@ export default function EditEventScreen({ navigation, route }) {
           doneButtonDisplay={addColorDoneButton}
           onDonePress={() => {
             const createdEventAddData = [...eventColors, ...selectedEventColors];
+            Utility.setStorage('eventColor', createdEventAddData);
             setEventColors(createdEventAddData);
             setIsColorPickerModal(false);
           }}
@@ -482,7 +472,7 @@ export default function EditEventScreen({ navigation, route }) {
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
           date={eventEndDateTime}
-          minimumDate={eventStartDateTime ? new Date(moment(eventStartDateTime).format('YYYY-MM-DD HH:mm:ss')) : new Date()}
+          minimumDate={eventStartDateTime || new Date()}
           mode={toggle ? 'date' : 'datetime'}
         />
         <DateTimePickerView

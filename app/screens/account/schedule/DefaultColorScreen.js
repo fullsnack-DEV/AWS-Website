@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -23,29 +23,6 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import DefaultColorModal from '../../../components/Schedule/DefaultColor/DefaultColorModal';
-
-const createdEventData = [
-  {
-    id: 0,
-    color: colors.themeColor,
-    isSelected: true,
-  },
-  {
-    id: 1,
-    color: colors.yellowColor,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    color: colors.greeColor,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    color: colors.eventBlueColor,
-    isSelected: false,
-  },
-];
 
 const importedEventData = [
   {
@@ -95,13 +72,25 @@ const gamesData = [
 
 export default function DefaultColorScreen({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [createdEventColors, setCreatedEventColors] = useState(createdEventData);
+  const [createdEventColors, setCreatedEventColors] = useState([]);
   const [importedEventColors, setImportedEventColors] = useState(importedEventData);
   const [gamesEventColors, setGamesEventColor] = useState(gamesData);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
   const [pressAddEventColor, setPressAddEventColor] = useState('');
   const [addColorDoneButton, setAddColorDoneButton] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const eventColorData = await Utility.getStorage('eventColor');
+      setCreatedEventColors(eventColorData);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  console.log('Created Event section Event Color ::--', createdEventColors);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -111,7 +100,7 @@ export default function DefaultColorScreen({ navigation }) {
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack() }>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }
@@ -119,7 +108,7 @@ export default function DefaultColorScreen({ navigation }) {
           <Text style={styles.eventTextStyle}>Default Color Setting</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={() => navigation.goBack()}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
@@ -153,16 +142,17 @@ export default function DefaultColorScreen({ navigation }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    createdEventColors.map(async (createEventItem) => {
+                    createdEventColors.map((createEventItem) => {
                       const createEventData = createEventItem;
                       if (createEventData.id === item.id) {
                         createEventData.isSelected = true;
-                        await Utility.setStorage('createdEventColor', item);
+                        Utility.setStorage('createdEventColor', item);
                       } else {
                         createEventData.isSelected = false;
                       }
                       return null;
                     })
+                    Utility.setStorage('eventColor', createdEventColors);
                     setCreatedEventColors([...createdEventColors])
                   }}
                   eventColorViewStyle={{
@@ -204,11 +194,11 @@ export default function DefaultColorScreen({ navigation }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    importedEventColors.map(async (importedEventItem) => {
+                    importedEventColors.map((importedEventItem) => {
                       const importedEvent = importedEventItem;
                       if (importedEvent.id === item.id) {
                         importedEvent.isSelected = true;
-                        await Utility.setStorage('importedEventColor', item);
+                        Utility.setStorage('importedEventColor', item);
                       } else {
                         importedEvent.isSelected = false;
                       }
@@ -229,7 +219,7 @@ export default function DefaultColorScreen({ navigation }) {
           />
         </EventItemRender>
         <EventItemRender
-          title={strings.games}
+          title={strings.scheduleMatchTitle}
         >
           <FlatList
             data={[...gamesEventColors, '0']}
@@ -255,11 +245,11 @@ export default function DefaultColorScreen({ navigation }) {
                   source={item.isSelected ? images.check : null}
                   imageStyle={{ tintColor: colors.whiteColor }}
                   onItemPress={() => {
-                    gamesEventColors.map(async (gamesEventItem) => {
+                    gamesEventColors.map((gamesEventItem) => {
                       const gamesEvent = gamesEventItem;
                       if (gamesEvent.id === item.id) {
                         gamesEvent.isSelected = true;
-                        await Utility.setStorage('gameEventColor', item);
+                        Utility.setStorage('gameEventColor', item);
                       } else {
                         gamesEvent.isSelected = false;
                       }
@@ -328,6 +318,7 @@ export default function DefaultColorScreen({ navigation }) {
         onDonePress={() => {
           if (pressAddEventColor === 'Created Events') {
             const createdEventAddData = [...createdEventColors, ...selectedEventColors];
+            Utility.setStorage('eventColor', createdEventAddData);
             setCreatedEventColors(createdEventAddData);
             setModalVisible(false);
           }

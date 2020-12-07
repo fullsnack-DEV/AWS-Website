@@ -104,6 +104,8 @@ const images = {
   tab_account_group_selected: require('../assets/images/tab_account_group_selected.png'),
 
   certificateUpload: require('../assets/images/ic_img_upload.png'),
+  certificateImage: require('../assets/images/Certificate_Image.png'),
+  certiImagePick: require('../assets/images/certi_image_pick.png'),
   noImagePH: require('../assets/images/no_image.png'),
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
@@ -192,7 +194,7 @@ const images = {
   arrowGraterthan: require('../assets/images/arrow_graterthan.png'),
   teamT: require('../assets/images/team_T.png'),
   clubC: require('../assets/images/club_C.png'),
-  editSection: require('../assets/images/ic_edit.png'),
+  editSection: require('../assets/images/edit_button.png'),
   tagDivider: require('../assets/images/tag_divider.png'),
   chain: require('../assets/images/chain.png'),
   emailSent1: require('../assets/images/InvitationEmail1.png'),
@@ -229,6 +231,7 @@ const images = {
   warningIcon: require('../assets/images/warning.png'),
   popupUpArrow: require('../assets/images/topPopupArrow.png'),
   assistBy: require('../assets/images/assistBy.png'),
+  assistReferee: require('../assets/images/Assist_Referee.png'),
   blankRatingStar: require('../assets/images/blankRatingStar.png'),
   yellowRatingStar: require('../assets/images/yellowRatingStar.png'),
   blueRatingStar: require('../assets/images/blueRatingStar.png'),

@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import images from '../../../Constants/ImagePath';
 import UserCategoryView from './UserCategoryView';
 
 export default function RefereesProfileSection({
@@ -15,34 +14,29 @@ export default function RefereesProfileSection({
   userName,
 }) {
   return (
-
     <View style={styles.topViewContainer}>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.profileView}>
           <Image source={profileImage} style={ styles.profileImage } />
         </View>
         <View style={styles.topTextContainer}>
-          <View style={styles.userViewStyle}>
-            <Text style={styles.userNameTextStyle}>{userName}</Text>
-            <Image source={images.settingImage} style={styles.settingImageStyle} />
-          </View>
+          <Text style={styles.userNameTextStyle}>{userName}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <UserCategoryView title='Player' titleColor={colors.userPostTimeColor}/>
-            <UserCategoryView title='Coach' titleColor={colors.userPostTimeColor}/>
-            <UserCategoryView title='Tainer' titleColor={colors.userPostTimeColor}/>
-            <UserCategoryView title='scorekeeper' titleColor={colors.userPostTimeColor}/>
-            <UserCategoryView title='Referees' titleColor={colors.redDelColor} badgeView={{
-              borderWidth: 1, borderColor: colors.themeColor, borderBottomWidth: 1, borderBottomColor: colors.themeColor,
-            }}/>
+            <UserCategoryView title='Player' titleColor={colors.blueColor}/>
+            <UserCategoryView title='Coach' titleColor={colors.greeColor}/>
+            <UserCategoryView title='Tainer' titleColor={colors.yellowColor}/>
+            <UserCategoryView title='scorekeeper' titleColor={colors.playerBadgeColor}/>
+            <UserCategoryView title='Referees' titleColor={colors.redDelColor}/>
           </View>
         </View>
       </View>
       <View style={styles.editViewStyle}>
-        <Text>{'$20 CAD'}<Text>{'(per hours)'}</Text></Text>
-        <Text>{'EDIT'}</Text>
+        <Text style={styles.editTextStyle}>{'$20 CAD'}
+          <Text style={styles.perHourTextStyle}>{' (per hours)'}</Text>
+        </Text>
+        <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
       </View>
     </View>
-
   );
 }
 const styles = StyleSheet.create({
@@ -80,17 +74,29 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.themeColor,
   },
-  userViewStyle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '82%',
-  },
-  settingImageStyle: {
-    height: 30,
-    width: 30,
-  },
   editViewStyle: {
     marginTop: 10,
     flexDirection: 'row',
+    backgroundColor: colors.whiteColor,
+    paddingVertical: 10,
+    justifyContent: 'space-around',
+    borderRadius: 10,
+    shadowOpacity: 0.3,
+    shadowOffset: {
+      height: 5,
+      width: 1,
+    },
+    elevation: 10,
+    shadowColor: colors.orangeColor,
+  },
+  editTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.redDelColor,
+  },
+  perHourTextStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.redDelColor,
   },
 });

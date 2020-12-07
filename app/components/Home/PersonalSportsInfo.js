@@ -24,16 +24,8 @@ import RadioBtnItem from '../Schedule/RadioBtnItem';
 import EventTextInput from '../Schedule/EventTextInput';
 import TCPicker from '../TCPicker';
 import SearchLocationTextView from './SearchLocationTextView';
-
-const leagues_Data = [
-  {
-    id: 0,
-    teamImage: images.uefaChampionsImage,
-    teamTitle: strings.leagueTeamTitle,
-    teamIcon: images.myLeagues,
-    teamCity: strings.infoTeamCity,
-  },
-];
+import BirthSelectItem from './BirthSelectItem';
+import DateTimePickerView from '../Schedule/DateTimePickerModal';
 
 const privacy_Data = [
   {
@@ -106,14 +98,13 @@ function PersonalSportsInfo({
 
   const [teamsData] = useState(teams_Data);
   const [clubsData] = useState(clubs_Data);
-  const [leaguesData] = useState(leagues_Data);
   const [editPressTitle, setEditPressTitle] = useState(null);
-  const [info] = useState({
+  const [info, setInfo] = useState({
     genderText: data.gender || 'Male',
     birthdayText: data.birthday ? new Date(data.birthday * 1000) : '',
-    heightText: data.height || '',
-    weightText: data.weight || '',
-    currentCity: `${data.city || ''} ${data.stateAbbr || ''}`,
+    heightText: data.height.substring(0, data.height.indexOf(' ')) || '',
+    weightText: data.weight.substring(0, data.weight.indexOf(' ')) || '',
+    currentCity: `${data.city || ''}`,
     homePlaceText: homePlaceDefault,
     latiValue: latiDefault,
     longiValue: longiDefault,
@@ -124,6 +115,7 @@ function PersonalSportsInfo({
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [privacyData, setPrivacyData] = useState(privacy_Data);
+  const [dateModalVisible, setDateModalVisible] = useState(false);
 
   const actionSheet = useRef();
 
@@ -134,6 +126,14 @@ function PersonalSportsInfo({
   const editInfoModal = () => {
     setEditModal(!editModal);
   };
+
+  const handleDatePress = (date) => {
+    setInfo({ ...info, birthdayText: date });
+    setDateModalVisible(!dateModalVisible)
+  }
+  const handleCancelPress = () => {
+    setDateModalVisible(false)
+  }
 
   return (
     <ScrollView style={styles.containerStyle}>
@@ -176,11 +176,11 @@ function PersonalSportsInfo({
         />
         <BasicInfoItem
           title={strings.height}
-          value={info.heightText}
+          value={info.heightText ? `${info.heightText} cm` : ''}
         />
         <BasicInfoItem
           title={strings.weight}
-          value={info.weightText}
+          value={info.weightText ? `${info.weightText} kg` : ''}
         />
         <BasicInfoItem
           title={strings.mostUsedFoot}
@@ -274,30 +274,6 @@ function PersonalSportsInfo({
           teamTitle={attachItem.group_name}
           teamIcon={images.myClubs}
           teamCityName={`${attachItem.city}, ${attachItem.country}`}
-          />}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </EditEventItem>
-      <View style={styles.dividerStyle} />
-      <EditEventItem
-        title={strings.leaguesTitle}
-        onEditPress={() => {
-          setPrivacyModal(true);
-        }}
-      >
-        <FlatList
-          data={leaguesData}
-          bounces={false}
-          style={{ paddingHorizontal: 2 }}
-          showsHorizontalScrollIndicator={false}
-          ItemSeparatorComponent={() => <View style={{
-            height: 1, backgroundColor: colors.grayBackgroundColor, marginVertical: 10,
-          }} />}
-          renderItem={({ item: attachItem }) => <TeamClubLeagueView
-          teamImage={attachItem.teamImage}
-          teamTitle={attachItem.teamTitle}
-          teamIcon={attachItem.teamIcon}
-          teamCityName={attachItem.teamCity}
           />}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -422,6 +398,10 @@ function PersonalSportsInfo({
                     homePlace: info.homePlaceText,
                     longitude: info.longiValue !== null ? Number(info.longiValue) : 0.0,
                   }],
+                  gender: info.genderText,
+                  birthday: (info.birthdayText / 1000),
+                  height: info.heightText ? `${info.heightText} cm` : '',
+                  weight: info.weightText ? `${info.weightText} kg` : '',
                 }
                 onSavePress(params);
                 setEditModal(false)
@@ -443,25 +423,66 @@ function PersonalSportsInfo({
               title={strings.gender}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{info.genderText}</Text>
+              <View style={{ marginTop: 8 }}>
+                <TCPicker
+                  dataSource={[
+                    { label: 'Male', value: 'Male' },
+                    { label: 'Female', value: 'Female' },
+                  ]}
+                  placeholder={'Select Gender'}
+                  value={info.genderText}
+                  onValueChange={(value) => {
+                    setInfo({ ...info, genderText: value });
+                  }}
+                />
+              </View>
             </EventItemRender>
             <EventItemRender
               title={strings.yearOfBirth}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{moment(info.birthdayText).format('YYYY')}</Text>
+              <BirthSelectItem
+                title={moment(info.birthdayText).format('YYYY')}
+                onItemPress={() => setDateModalVisible(!dateModalVisible)}
+              />
+              <DateTimePickerView
+                visible={dateModalVisible}
+                onDone={handleDatePress}
+                onCancel={handleCancelPress}
+                onHide={handleCancelPress}
+                mode={'date'}
+                maximumDate={new Date()}
+              />
             </EventItemRender>
             <EventItemRender
               title={strings.height}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{info.heightText}</Text>
+              <EventTextInput
+                value={info.heightText}
+                placeholder={'Enter Height'}
+                onChangeText={(text) => {
+                  setInfo({ ...info, heightText: text });
+                }}
+                displayLastTitle={true}
+                keyboardType={'numeric'}
+                valueEndTitle={info.heightText.trim().length > 0 ? ' cm' : ''}
+              />
             </EventItemRender>
             <EventItemRender
               title={strings.weight}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{info.weightText}</Text>
+              <EventTextInput
+                value={info.weightText}
+                placeholder={'Enter Weight'}
+                onChangeText={(text) => {
+                  setInfo({ ...info, weightText: text });
+                }}
+                displayLastTitle={true}
+                keyboardType={'numeric'}
+                valueEndTitle={info.weightText.trim().length > 0 ? ' kg' : ''}
+              />
             </EventItemRender>
             <EventItemRender
               title={strings.mostUsedFoot}
@@ -470,11 +491,11 @@ function PersonalSportsInfo({
               <View style={{ marginTop: 8 }}>
                 <TCPicker
                   dataSource={[
-                    { label: 'Male', value: 'Male' },
-                    { label: 'Female', value: 'Female' },
-                    { label: 'Both', value: 'Both' },
+                    { label: 'Right', value: 'Right' },
+                    { label: 'Left', value: 'Left' },
+                    { label: 'Pose', value: 'Pose' },
                   ]}
-                  placeholder={'Never'}
+                  placeholder={'Select Most Used Foot'}
                   value={mostusetFootSelect}
                   onValueChange={(value) => {
                     setMostUsedFootSelect(value);
@@ -486,7 +507,12 @@ function PersonalSportsInfo({
               title={strings.currrentCityTitle}
               containerStyle={{ marginTop: 15 }}
             >
-              <Text style={styles.basicinfoValueStyle}>{info.currentCity}</Text>
+              <BirthSelectItem
+                title={info.currentCity}
+                onItemPress={() => {
+                  // onItemPress();
+                }}
+              />
             </EventItemRender>
           </View>}
 
@@ -620,13 +646,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
-  },
-  basicinfoValueStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    paddingLeft: 15,
-    marginTop: 5,
   },
   gradiantHeaderViewStyle: {
     position: 'absolute',

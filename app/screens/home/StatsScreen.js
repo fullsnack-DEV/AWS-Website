@@ -15,6 +15,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import StatsGradiantView from '../../components/Home/StatsGradiantView';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const game_data = [
   {
@@ -62,12 +63,16 @@ const game_data = [
 export default function StatsScreen({
   gameChartData,
   gameStatsData,
+  onDonePress,
+  isLoading,
 }) {
+  console.log('Game Stats Data ::--', gameStatsData);
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
   const [gameData, setGameData] = useState(game_data);
   const [graphData, setGraphData] = useState(gameChartData);
   return (
     <KeyboardAvoidingView style={styles.mainContainer}>
+      <ActivityLoader visible={isLoading} />
       <StatsSelectionView
         dataSource={[
           { label: 'Past 3 Months', value: 'Past 3 Months' },
@@ -80,6 +85,7 @@ export default function StatsScreen({
         onValueChange={(value) => {
           setSelectWeekMonth(value);
         }}
+        onDonePress={() => onDonePress(selectWeekMonth)}
       />
       <View style={styles.containerStyle}>
         <View>
