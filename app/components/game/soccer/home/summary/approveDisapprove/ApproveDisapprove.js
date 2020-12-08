@@ -134,7 +134,7 @@ const ApproveDisapprove = ({
 
   return (
     <View style={styles.mainContainer}>
-      {/*      Match Records Sections */}
+      {/*      Match Records Approval Section */}
       <View style={styles.contentContainer}>
         <View style={{ padding: 10 }}>
           <Text style={styles.title}>

@@ -10,7 +10,7 @@ import colors from '../../../../../Constants/Colors';
 import TCGameScoreRight from '../../../../gameRecordList/TCGameScoreRight';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import TCGameState from '../../../../gameRecordList/TCGameState';
-import { soccerGameStats } from '../../../../../utils/gameUtils';
+import { tennisGameStats } from '../../../../../utils/gameUtils';
 
 const MIN_MATCH_RECORD_TO_DISPLAY = 5;
 const MatchRecordsList = ({
@@ -20,11 +20,23 @@ const MatchRecordsList = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [matchRecords, setMatchRecords] = useState([]);
+  const [teamIds, setTeamIds] = useState(null);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (gameId) {
       setLoading(true);
+      if (gameData?.singlePlayerGame) {
+        setTeamIds({
+          home_team: { group_id: gameData?.home_team?.user_id },
+          away_team: { group_id: gameData?.away_team?.user_id },
+        })
+      } else {
+        setTeamIds({
+          home_team: { group_id: gameData?.home_team?.group_id },
+          away_team: { group_id: gameData?.away_team?.group_id },
+        })
+      }
       getGameMatchRecords(gameId).then((res) => {
         setMatchRecords(res.payload);
       }).finally(() => setLoading(false));
@@ -39,8 +51,8 @@ const MatchRecordsList = ({
         bounces={false}
         data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY)}
         renderItem={({ item, index }) => {
-          const isHomeTeam = item?.game?.home_team === item.team_id;
-          const isGameState = item.verb in soccerGameStats;
+          const isHomeTeam = teamIds?.home_team?.group_id === item.team_id;
+          const isGameState = item.verb in tennisGameStats;
           return (
             <View key={index}>
               {!isGameState && isHomeTeam && (
@@ -58,7 +70,7 @@ const MatchRecordsList = ({
                     editor={true}
                 />
               )}
-              {isGameState && <TCGameState recordData={item}/>}
+              {isGameState && <TCGameState gameStats={tennisGameStats} recordData={item}/>}
             </View>
           )
         }}
