@@ -9,6 +9,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 
 import {
@@ -50,6 +51,7 @@ export default function SoccerRecording({ navigation, route }) {
   const [gameObj, setGameObj] = useState();
   const [selectedTeam, setSelectedTeam] = useState();
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
+  const [date, setDate] = useState();
 
   useEffect(() => {
     entity = authContext.entity
@@ -65,6 +67,8 @@ export default function SoccerRecording({ navigation, route }) {
       setTimelineTimer(getTimeDifferent(new Date().getTime(), new Date().getTime()))
     } else if (gameObj && gameObj.status === GameStatus.paused) {
       setTimelineTimer(getTimeDifferent(gameObj && gameObj.pause_datetime && gameObj.pause_datetime, gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
+    } else if (date) {
+      setTimelineTimer(getTimeDifferent(gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime, new Date(date).getTime()))
     } else {
       timerForTimeline = setInterval(() => {
         if (gameObj) {
@@ -93,6 +97,11 @@ export default function SoccerRecording({ navigation, route }) {
     if (gameObj && gameObj.breakTime) {
       breakTime = gameObj.breakTime / 1000
     }
+    if (date) {
+      // eslint-disable-next-line no-param-reassign
+      eDate = date
+    }
+
     const tempDate = new Date(eDate)
     tempDate.setMinutes(tempDate.getMinutes() + breakTime)
     let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
@@ -135,7 +144,7 @@ export default function SoccerRecording({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation]);
+  }, [navigation, date]);
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
@@ -191,6 +200,7 @@ export default function SoccerRecording({ navigation, route }) {
         });
         startStopTimerTimeline()
         setloading(false);
+        setDate();
         console.log('RESET GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -226,6 +236,7 @@ export default function SoccerRecording({ navigation, route }) {
     addGameRecord(gameId, params, authContext)
       .then((response) => {
         setloading(false);
+        setDate();
         if (lastVerb === GameVerb.Goal) {
           if (selectedTeam === gameObj.home_team.group_id) {
             setGameObj({
@@ -270,7 +281,12 @@ export default function SoccerRecording({ navigation, route }) {
         Alert.alert(e.messages);
       });
   };
-
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setPickerShow(Platform.OS === 'ios');
+    startStopTimerTimeline()
+    setDate(currentDate);
+  };
   return (
     <>
       {gameObj && (
@@ -362,12 +378,16 @@ export default function SoccerRecording({ navigation, route }) {
 
             <View style={styles.timeView}>
               <Text style={styles.timer}>{timelineTimer}</Text>
-              {pickerShow && (
+              {pickerShow && date && (
                 <View style={styles.curruentTimeView}>
-                  <Image
+                  <TouchableOpacity onPress={() => {
+                    setDate()
+                  }}>
+                    <Image
                     source={images.curruentTime}
                     style={styles.curruentTimeImg}
                   />
+                  </TouchableOpacity>
                 </View>
               )}
 
@@ -376,7 +396,7 @@ export default function SoccerRecording({ navigation, route }) {
                 onPress={() => {
                   setPickerShow(!pickerShow);
                 }}>
-                {((gameObj && gameObj.status && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status && gameObj.status === GameStatus.reset)) ? 'Game start at now' : getDateFormat(gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime) }
+                {((gameObj && gameObj.status && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status && gameObj.status === GameStatus.reset)) ? 'Game start at now' : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
               <Image source={images.dropDownArrow} style={styles.downArrow} />
 
@@ -384,7 +404,15 @@ export default function SoccerRecording({ navigation, route }) {
             </View>
             {pickerShow && (
               <View>
-                <RNDateTimePicker value={new Date()} mode={'datetime'} />
+                <RNDateTimePicker
+                locale={'en'}
+                default = 'spinner'
+                value={date || new Date()}
+                onChange={onChange}
+                mode={'datetime'}
+                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime)}
+                maximumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()}
+                />
                 <View style={styles.separatorLine} />
               </View>
             )}
@@ -506,7 +534,7 @@ export default function SoccerRecording({ navigation, route }) {
                     } else if (!selectedTeam) {
                       Alert.alert('Select Team');
                     } else {
-                      lastTimeStamp = new Date().getTime();
+                      lastTimeStamp = date ? date.getTime() : new Date().getTime()
                       lastVerb = GameVerb.Goal;
                       const body = [
                         {
@@ -593,7 +621,7 @@ export default function SoccerRecording({ navigation, route }) {
                         'Game cannot be start unless the payment goes through',
                       );
                     } else {
-                      lastTimeStamp = new Date().getTime();
+                      lastTimeStamp = date ? date.getTime() : new Date().getTime();
                       lastVerb = GameVerb.Start;
                       const body = [
                         {

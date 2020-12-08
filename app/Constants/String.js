@@ -56,7 +56,6 @@ const strings = {
   nameText: 'Name',
   save: 'Save',
   done: 'Done',
-  cancel: 'Cancel',
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
 
@@ -102,6 +101,7 @@ const strings = {
 
   // CreateTeam Screen 1
   star: '*',
+  newText: 'new',
   SportsTextFieldTitle: 'Sports',
   selectSportPlaceholder: 'Select Sport',
   teamNameTitle: 'Team Name',
@@ -368,6 +368,9 @@ const strings = {
   accept: 'ACCEPT',
   calcelRequest: 'CANCEL REQUEST',
   cancelMatch: 'CANCEL MATCH',
+  alterReservation: 'CHANGE RESERVATION',
+  sendAlterRequest: 'SEND ALTERATION REQUEST',
+  cancel: 'CANCEL',
   goToGameHome: 'GO TO GAME HOME',
   alreadyjoinclubmessage: 'Your team can’t join this club because a team can join only a club.',
   isinvitedsuccesfully: 'is invited successfully',

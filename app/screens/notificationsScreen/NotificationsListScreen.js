@@ -38,6 +38,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
+import * as Utils from '../challenge/ChallengeUtility';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -55,7 +56,20 @@ function NotificationsListScreen({ navigation }) {
   const [loading, setloading] = useState(true);
   const navigateFlatList = (item) => {
     console.log('cell selected', item.activities[0].object)
-    navigation.navigate('AcceptDeclineChallengeScreen', { challengeID: JSON.parse(item.activities[0].object).challengeObject.challenge_id })
+    const a = JSON.parse(item.activities[0].object).challengeObject.challenge_id
+    setloading(true)
+    Utils.getChallengeDetail(a, authContext).then((obj) => {
+      console.log('kkkk:', obj.challengeObj);
+      console.log('Screen name kkkk:', obj.screenName);
+      navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj })
+      setloading(false)
+    })
+    // const { Obj } = Utils.getChallengeDetail(a, authContext)
+    // console.log('kkkk:', Obj);
+
+    // console.log('Response:', challengeObj);
+    //   console.log('Screen Name:', screenName);
+    // navigation.navigate('AcceptDeclineChallengeScreen', { challengeID: JSON.parse(item.activities[0].object).challengeObject.challenge_id })
   };
 
   const onDelete = ({ item }) => {

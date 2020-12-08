@@ -88,6 +88,7 @@ import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateCha
 import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
 
+import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
@@ -104,6 +105,9 @@ import EditChallengeAvailability from '../screens/account/schedule/EditChallenge
 import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
 import TennisRecordList from '../screens/game/tennis/TennisRecordList';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
+import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
+import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
+import CurruentReservationScreen from '../screens/challenge/alterChallenge/CurruentReservationScreen';
 
 const Stack = createStackNavigator();
 
@@ -1254,7 +1258,61 @@ const HomeNavigator = () => (
           },
         } }
       />
-
+    <Stack.Screen
+        name="AlterAcceptDeclineScreen"
+        component={ AlterAcceptDeclineScreen }
+        options={ {
+          title: 'Change Match Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CurruentReservationScreen"
+        component={ CurruentReservationScreen }
+        options={ {
+          title: 'Curruent Match Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="EditFeeScreen"
+        component={ EditFeeScreen }
+        options={ {
+          title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="AlterRequestSent"
+        component={ AlterRequestSent }
+        options={ {
+          headerShown: false,
+        } }
+      />
     <Stack.Screen
         name="GroupLongTextScreen"
         component={GroupLongTextScreen}

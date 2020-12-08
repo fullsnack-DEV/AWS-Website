@@ -25,7 +25,7 @@ import moment from 'moment';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import { addGameRecord, resetGame, getGameRoster } from '../../../api/Games';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -44,10 +44,12 @@ const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out'];
 const assistButtonList = ['Assist'];
 export default function GameDetailRecord({ navigation, route }) {
   const actionSheet = useRef();
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [pickerShow, setPickerShow] = useState(false);
   const [selectedMemberID, setSelectedMemberID] = useState();
+  const [date, setDate] = useState();
   const [isAssist, setIsAssist] = useState(false);
   const [selectedAssistMemberID, setSelectedAssistMemberID] = useState();
   const [gameObj, setGameObj] = useState();
@@ -64,7 +66,7 @@ export default function GameDetailRecord({ navigation, route }) {
     const { gameId } = route.params ?? {};
     getGameRosterDetail(gameId, true);
     return () => {};
-  }, []);
+  }, [isFocused]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -73,7 +75,7 @@ export default function GameDetailRecord({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation, gameObj, selectedMemberID, selectedAssistMemberID, isAssist, messageText, messageToast]);
+  }, [navigation, date, gameObj, selectedMemberID, selectedAssistMemberID, isAssist, messageText, messageToast]);
 
   useFocusEffect(() => {
     startStopTimerTimeline()
@@ -83,18 +85,22 @@ export default function GameDetailRecord({ navigation, route }) {
       }
     }, 3000);
     return () => {
-      clearInterval(timer, timelineTimer)
+      clearInterval(timer)
+      clearInterval(timerForTimeline)
     }
   }, [])
 
   const startStopTimerTimeline = () => {
-    clearInterval(timer, timerForTimeline)
+    clearInterval(timer)
+    clearInterval(timerForTimeline)
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(getTimeDifferent(gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime, gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
     } else if ((gameObj && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status === GameStatus.reset)) {
       setTimelineTimer(getTimeDifferent(new Date().getTime(), new Date().getTime()))
     } else if (gameObj && gameObj.status === GameStatus.paused) {
       setTimelineTimer(getTimeDifferent(gameObj && gameObj.pause_datetime && gameObj.pause_datetime, gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
+    } else if (date) {
+      setTimelineTimer(getTimeDifferent(gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime, new Date(date).getTime()))
     } else {
       timerForTimeline = setInterval(() => {
         if (gameObj) {
@@ -109,7 +115,10 @@ export default function GameDetailRecord({ navigation, route }) {
     if (gameObj && gameObj.breakTime) {
       breakTime = gameObj.breakTime / 1000
     }
-    console.log('Breack time:;', gameObj.breakTime);
+    if (date) {
+      // eslint-disable-next-line no-param-reassign
+      eDate = date
+    }
     const tempDate = new Date(eDate)
     tempDate.setMinutes(tempDate.getMinutes() + breakTime)
     let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
@@ -225,6 +234,7 @@ export default function GameDetailRecord({ navigation, route }) {
         });
         startStopTimerTimeline()
         setloading(false);
+        setDate();
         console.log('RESET GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -314,6 +324,7 @@ export default function GameDetailRecord({ navigation, route }) {
     addGameRecord(gameId, params, authContext)
       .then((response) => {
         console.log(lastVerb);
+        setDate();
         if (lastVerb === GameVerb.Start) {
           setGameObj({
             ...gameObj,
@@ -356,7 +367,6 @@ export default function GameDetailRecord({ navigation, route }) {
           console.log('GAME RESPONSE::', response.payload);
         } else {
           setloading(false);
-
           setMessageText(
             (lastVerb === GameVerb.Goal && !isAssist && `Goal, ${getMemberName(selectedMemberID)}`)
             || (lastVerb === GameVerb.Goal && isAssist && `Goal, ${getMemberName(selectedMemberID)} /Assist, ${getMemberName(selectedAssistMemberID)}`)
@@ -400,7 +410,7 @@ export default function GameDetailRecord({ navigation, route }) {
                     {
                       text: 'No',
                       onPress: () => {
-                        lastTimeStamp = new Date().getTime();
+                        lastTimeStamp = date ? date.getTime() : new Date().getTime()
                         lastVerb = GameVerb.Goal;
                         let body = [{}];
                         if (
@@ -446,7 +456,7 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'Assist') {
             if (selectedAssistMemberID) {
-              lastTimeStamp = new Date().getTime();
+              lastTimeStamp = date ? date.getTime() : new Date().getTime()
               lastVerb = GameVerb.Goal;
               let body = [{}];
               if (selectedMemberID === '0' || selectedMemberID === '1') {
@@ -500,7 +510,7 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'Own Goal') {
             if (!checkMemberOnBench(selectedMemberID)) {
-              lastTimeStamp = new Date().getTime();
+              lastTimeStamp = date ? date.getTime() : new Date().getTime()
               lastVerb = GameVerb.Goal;
               let body = [{}];
               const tempActionTeamID = (actionByTeamID === gameObj.home_team.group_id
@@ -532,7 +542,7 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'YC') {
             if (!checkMemberOnBench(selectedMemberID)) {
-              lastTimeStamp = new Date().getTime();
+              lastTimeStamp = date ? date.getTime() : new Date().getTime()
               lastVerb = GameVerb.YC;
               const body = [
                 {
@@ -548,7 +558,7 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'RC') {
             if (!checkMemberOnBench(selectedMemberID)) {
-              lastTimeStamp = new Date().getTime();
+              lastTimeStamp = date ? date.getTime() : new Date().getTime()
               lastVerb = GameVerb.RC;
               const body = [
                 {
@@ -568,7 +578,7 @@ export default function GameDetailRecord({ navigation, route }) {
             } else if (checkMemberOnField(selectedMemberID)) {
               Alert.alert('This player is already on field');
             } else {
-              lastTimeStamp = new Date().getTime();
+              lastTimeStamp = date ? date.getTime() : new Date().getTime()
               lastVerb = GameVerb.In;
               const body = [
                 {
@@ -586,7 +596,7 @@ export default function GameDetailRecord({ navigation, route }) {
             } else if (checkMemberOnBench(selectedMemberID)) {
               Alert.alert('This player is already on bench');
             } else {
-              lastTimeStamp = new Date().getTime();
+              lastTimeStamp = date ? date.getTime() : new Date().getTime()
               lastVerb = GameVerb.Out;
               const body = [
                 {
@@ -782,6 +792,14 @@ export default function GameDetailRecord({ navigation, route }) {
       )}
     </>
   );
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setPickerShow(Platform.OS === 'ios');
+    startStopTimerTimeline()
+    setDate(currentDate);
+  };
+
   return (
     <>
       {gameObj && (
@@ -1037,12 +1055,16 @@ export default function GameDetailRecord({ navigation, route }) {
 
               <Text style={styles.timer}>{timelineTimer}</Text>
 
-              {pickerShow && (
+              {pickerShow && date && (
                 <View style={styles.curruentTimeView}>
-                  <Image
+                  <TouchableOpacity onPress={() => {
+                    setDate()
+                  }}>
+                    <Image
                     source={images.curruentTime}
                     style={styles.curruentTimeImg}
                   />
+                  </TouchableOpacity>
                 </View>
               )}
               <Text
@@ -1050,14 +1072,22 @@ export default function GameDetailRecord({ navigation, route }) {
                 onPress={() => {
                   setPickerShow(!pickerShow);
                 }}>
-                {((gameObj.status === GameStatus.accepted) || (gameObj.status === GameStatus.reset)) ? 'Game start at now' : getDateFormat(gameObj.actual_startdatetime) }
+                {((gameObj && gameObj.status && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status && gameObj.status === GameStatus.reset)) ? 'Game start at now' : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
               <Image source={images.dropDownArrow} style={styles.downArrow} />
               <View style={styles.separatorLine}></View>
             </View>
             {pickerShow && (
               <View>
-                <RNDateTimePicker value={new Date()} mode={'datetime'} />
+                <RNDateTimePicker
+                locale={'en'}
+                default = 'spinner'
+                value={date || new Date()}
+                onChange={onChange}
+                mode={'datetime'}
+                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime)}
+                maximumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()}
+                />
                 <View style={styles.separatorLine} />
               </View>
             )}
@@ -1092,7 +1122,7 @@ export default function GameDetailRecord({ navigation, route }) {
                         'Game cannot be start unless the payment goes through',
                       );
                     } else {
-                      lastTimeStamp = new Date().getTime();
+                      lastTimeStamp = date ? date.getTime() : new Date().getTime()
                       lastVerb = GameVerb.Start;
                       const body = [
                         {
@@ -1185,6 +1215,7 @@ export default function GameDetailRecord({ navigation, route }) {
                   <TCGameButton
                   title="Records"
                   onPress={() => {
+                    clearInterval(timer)
                     navigation.navigate('SoccerRecordList', {
                       gameId: gameObj.game_id,
                       gameData: gameObj,
