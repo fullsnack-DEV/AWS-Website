@@ -12,6 +12,7 @@ import fonts from '../../Constants/Fonts';
 
 export default function UpcomingMatchScreen({
   sportsData,
+  showEventNumbers,
 }) {
   let filterData = [];
   let dataNotFound = true;
@@ -66,6 +67,7 @@ export default function UpcomingMatchScreen({
             <UpcomingMatchItems
               data={item}
               onThreeDotPress={() => {}}
+              showEventNumbers={showEventNumbers}
             />
           ) }
           renderSectionHeader={ ({ section: { title } }) => (

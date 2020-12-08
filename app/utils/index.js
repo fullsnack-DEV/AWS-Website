@@ -214,3 +214,28 @@ export const toggleView = (callbackMethod, duration = 2000) => {
   // eslint-disable-next-line no-unused-expressions
   callbackMethod();
 };
+
+export const getRegionFromMarkers = (markers, delta = 0.025, offset = 2.5) => {
+  let minLat = 0, maxLat = 0, minLng = 0, maxLng = 0;
+  for (let i = 0; i < markers.length; i++) {
+    const marker = markers[i];
+    if (i === 0) {
+      minLat = marker.latitude;
+      maxLat = marker.latitude;
+      minLng = marker.longitude;
+      maxLng = marker.longitude;
+    } else {
+      if (marker.latitude <= minLat) minLat = marker.latitude;
+      if (marker.latitude >= maxLat) maxLat = marker.latitude;
+      if (marker.longitude <= minLng) minLng = marker.longitude;
+      if (marker.longitude >= maxLng) maxLng = marker.longitude;
+    }
+  }
+  const latitude = (minLat + maxLat) / 2;
+  const longitude = (minLng + maxLng) / 2;
+  const latDelta = (Math.abs(minLat - maxLat) || delta) * offset;
+  const lngDelta = (Math.abs(minLng - maxLng) || delta) * offset;
+  return {
+    latitude, longitude, latitudeDelta: latDelta, longitudeDelta: lngDelta,
+  };
+}

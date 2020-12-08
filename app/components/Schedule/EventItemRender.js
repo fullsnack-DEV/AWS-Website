@@ -8,10 +8,15 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-function EventItemRender({ title, children, containerStyle }) {
+function EventItemRender({
+  title,
+  children,
+  containerStyle,
+  headerTextStyle,
+}) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <Text style={styles.headerTextStyle}>{title}</Text>
+      <Text style={[styles.headerTextStyle, headerTextStyle]}>{title}</Text>
       {children}
     </View>
   );

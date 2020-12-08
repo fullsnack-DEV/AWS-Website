@@ -19,6 +19,7 @@ import MatchBetweenUpcomingView from './MatchBetweenUpcomingView';
 export default function UpcomingMatchItems({
   data,
   onThreeDotPress,
+  showEventNumbers,
 }) {
   let startDate = '';
   if (data && data.actual_startdatetime) {
@@ -70,9 +71,12 @@ export default function UpcomingMatchItems({
         </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
-            <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
-              {title}
-            </Text>
+            <View style={styles.eventNumbersTitleView}>
+              <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
+                {title}
+              </Text>
+              {showEventNumbers && <Text style={styles.eventNumberStyle}>{'(1/3)'}</Text>}
+            </View>
             <TouchableOpacity onPress={onThreeDotPress}>
               <Image source={images.vertical3Dot} style={styles.threedot} />
             </TouchableOpacity>
@@ -155,10 +159,20 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     alignSelf: 'center',
   },
+  eventNumbersTitleView: {
+    flexDirection: 'row',
+    width: wp('70%'),
+    alignItems: 'center',
+  },
+  eventNumberStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginLeft: 8,
+  },
   eventTitle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    width: wp('70%'),
     color: colors.googleColor,
   },
   eventTitlewithDot: {

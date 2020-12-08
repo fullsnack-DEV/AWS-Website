@@ -15,10 +15,13 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import MatchBetweenRecentView from './MatchBetweenRecentView';
+import strings from '../../Constants/String';
 
 export default function RecentMatchItems({
   data,
   onThreeDotPress,
+  showEventNumbers,
+  showAssistReferee,
 }) {
   let startDate = '';
   if (data && data.actual_startdatetime) {
@@ -74,11 +77,14 @@ export default function RecentMatchItems({
         </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
-            <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
-              {title}
-            </Text>
+            <View style={styles.eventNumbersTitleView}>
+              <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
+                {title}
+              </Text>
+              {showEventNumbers && <Text style={styles.eventNumberStyle}>{'(1/3)'}</Text>}
+            </View>
             <TouchableOpacity onPress={onThreeDotPress}>
-              <Image source={images.vertical3Dot} style={styles.threedot} />
+              <Image source={images.vertical3Dot} style={styles.threedot} resizeMode={'contain'} />
             </TouchableOpacity>
           </View>
           <View style={styles.bottomView}>
@@ -87,6 +93,10 @@ export default function RecentMatchItems({
             <View style={styles.timeCityDividerStyle} />
             <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
+          {showAssistReferee && <View style={styles.assistRefereeViewStyle}>
+            <Image source={images.assistReferee} style={styles.assistRefereeStyle} />
+            <Text style={styles.assistTitleStyle}>{strings.assistRefereeTitle}</Text>
+          </View>}
           <MatchBetweenRecentView
             firstUserImage={team1Image ? { uri: team1Image } : images.team_ph}
             firstText={team1Title}
@@ -149,10 +159,20 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     alignSelf: 'center',
   },
+  eventNumbersTitleView: {
+    flexDirection: 'row',
+    width: wp('70%'),
+    alignItems: 'center',
+  },
+  eventNumberStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginLeft: 8,
+  },
   eventTitle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    width: wp('70%'),
     color: colors.googleColor,
   },
   eventTitlewithDot: {
@@ -172,5 +192,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.linesepratorColor,
     marginHorizontal: 12,
     marginVertical: 1,
+  },
+  assistRefereeStyle: {
+    height: 15,
+    width: 15,
+  },
+  assistTitleStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.assistTextColor,
+    marginLeft: 5,
+  },
+  assistRefereeViewStyle: {
+    flexDirection: 'row',
+    backgroundColor: colors.blackGradientColor,
+    padding: 5,
+    marginLeft: 8,
+    marginTop: 15,
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
 });

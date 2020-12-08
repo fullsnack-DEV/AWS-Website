@@ -38,29 +38,7 @@ import { createEvent, getEvents } from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { getLocationNameWithLatLong } from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
-
-const eventColorsData = [
-  {
-    id: 0,
-    color: colors.themeColor,
-    isSelected: true,
-  },
-  {
-    id: 1,
-    color: colors.yellowColor,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    color: colors.greeColor,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    color: colors.eventBlueColor,
-    isSelected: false,
-  },
-];
+import * as Utility from '../../../utils/index';
 
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -78,7 +56,7 @@ export default function CreateEventScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
-  const [eventColors, setEventColors] = useState(eventColorsData);
+  const [eventColors, setEventColors] = useState([]);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [counter, setcounter] = useState(0);
   const [isColorPickerModal, setIsColorPickerModal] = useState(false);
@@ -86,6 +64,16 @@ export default function CreateEventScreen({ navigation, route }) {
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [selectWeekMonth, setSelectWeekMonth] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const eventColorData = await Utility.getStorage('eventColor');
+      setEventColors(eventColorData);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handleStateDatePress = (date) => {
     setEventStartdateTime(date);
@@ -266,6 +254,7 @@ export default function CreateEventScreen({ navigation, route }) {
                         }
                         return null;
                       })
+                      Utility.setStorage('eventColor', eventColors);
                       setEventColors([...eventColors])
                     }}
                     eventColorViewStyle={{
@@ -344,14 +333,14 @@ export default function CreateEventScreen({ navigation, route }) {
             />
             <EventMapView
               region={{
-                latitude: locationDetail ? locationDetail.lat : 37.78825,
-                longitude: locationDetail ? locationDetail.lng : -122.4324,
+                latitude: locationDetail ? locationDetail.lat : 0.0,
+                longitude: locationDetail ? locationDetail.lng : 0.0,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
               coordinate={{
-                latitude: locationDetail ? locationDetail.lat : 37.78825,
-                longitude: locationDetail ? locationDetail.lng : -122.4324,
+                latitude: locationDetail ? locationDetail.lat : 0.0,
+                longitude: locationDetail ? locationDetail.lng : 0.0,
               }}
             />
           </EventItemRender>
@@ -382,7 +371,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventStartDateTime ? new Date(moment(eventStartDateTime).format('YYYY-MM-DD HH:mm:ss')) : new Date()}
+            minimumDate={eventStartDateTime || new Date()}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
@@ -423,6 +412,7 @@ export default function CreateEventScreen({ navigation, route }) {
             doneButtonDisplay={addColorDoneButton}
             onDonePress={() => {
               const createdEventAddData = [...eventColors, ...selectedEventColors];
+              Utility.setStorage('eventColor', createdEventAddData);
               setEventColors(createdEventAddData);
               setIsColorPickerModal(false);
             }}

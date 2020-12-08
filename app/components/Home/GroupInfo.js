@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View, Text, StyleSheet, FlatList,
 } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import strings from '../../Constants/String';
 import TCEditHeader from '../TCEditHeader'
 
@@ -15,6 +16,7 @@ import TCClubClipView from '../TCClubClipView'
 import NewsFeedDescription from '../newsFeed/NewsFeedDescription'
 import images from '../../Constants/ImagePath';
 import TCGradientButton from '../TCGradientButton';
+// import MapMarkerAutoZoom from './MapMarkerAutoZoom';
 
 export default function GroupInfo({
   navigation, groupDetails, isAdmin, onGroupPress, onMemberPress, onGroupListPress,
@@ -97,6 +99,39 @@ export default function GroupInfo({
     homefield = isAdmin ? strings.addhomefield : strings.NA
   }
 
+  const coordinates = []
+  const markers = []
+
+  if (groupDetails.homefield_address_latitude && groupDetails.homefield_address_longitude) {
+    coordinates.push({
+      latitude: Number(groupDetails.homefield_address_latitude),
+      longitude: Number(groupDetails.homefield_address_longitude),
+    })
+    markers.push({
+      id: '1',
+      latitude: groupDetails.homefield_address_latitude,
+      longitude: groupDetails.homefield_address_longitude,
+      name: strings.homeaddress,
+      adddress: homefield,
+      pinColor: 'red',
+    })
+  }
+
+  if (groupDetails.office_address_latitude && groupDetails.office_address_longitude) {
+    coordinates.push({
+      latitude: Number(groupDetails.office_address_latitude),
+      longitude: Number(groupDetails.office_address_longitude),
+    })
+    markers.push({
+      id: '2',
+      latitude: Number(groupDetails.office_address_latitude),
+      longitude: Number(groupDetails.office_address_longitude),
+      name: strings.officeaddress,
+      adddress: office,
+      pinColor: 'green',
+    })
+  }
+
   if (groupDetails.min_age && groupDetails.max_age) {
     memberage = `${strings.minPlaceholder} ${groupDetails.min_age} ${strings.maxPlaceholder} ${groupDetails.max_age}`
   } else if (groupDetails.max_age) {
@@ -130,7 +165,7 @@ export default function GroupInfo({
 
   const signUpString = (signUpDate) => `${Utility.monthNames[new Date(signUpDate * 1000).getMonth()]} ${new Date(signUpDate * 1000).getDate()}, ${new Date(signUpDate * 1000).getFullYear()}`
 
-  console.log('groupDetails', groupDetails)
+  const region = Utility.getRegionFromMarkers(coordinates)
 
   return (
     <View>
@@ -202,6 +237,25 @@ export default function GroupInfo({
         <TCInfoField titleStyle={styles.infoFieldTitle} title={strings.phone} value={phone} marginLeft={10}/>
         <TCInfoField titleStyle={styles.infoFieldTitle} title={strings.office} value={office} marginLeft={10}/>
         <TCInfoField titleStyle={styles.infoFieldTitle} title={strings.homefield} value={homefield} marginLeft={10}/>
+        {/* {coordinates.length > 0 && <MapMarkerAutoZoom style={styles.mapViewStyle} markers={markers}/>} */}
+        {coordinates.length > 0 && <MapView
+          region={region}
+          style={styles.mapViewStyle}>
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              identifier={marker.id}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              description={marker.adddress}
+              title={marker.name}
+              pinColor={marker.pinColor}
+            />
+          ))}
+        </MapView>
+        }
       </View>
       {/* Gray divider */}
       <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>
@@ -394,5 +448,9 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: 12,
     fontFamily: fonts.RMedium,
+  },
+  mapViewStyle: {
+    height: 150,
+    borderRadius: 5,
   },
 })

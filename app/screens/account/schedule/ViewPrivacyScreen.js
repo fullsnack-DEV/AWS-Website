@@ -46,7 +46,7 @@ export default function ViewPrivacyScreen({ navigation }) {
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack() }>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }
@@ -54,7 +54,7 @@ export default function ViewPrivacyScreen({ navigation }) {
           <Text style={styles.eventTextStyle}>View Privacy</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={() => navigation.goBack()}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
@@ -62,13 +62,12 @@ export default function ViewPrivacyScreen({ navigation }) {
       <View style={ styles.sperateLine } />
       <SafeAreaView>
         <EventItemRender
-            title={strings.scheduleTitle}
+            title={strings.whoCanSeeShcedule}
             containerStyle={{ marginTop: 10 }}
           >
-          <Text style={styles.scheduleSeenText}>{strings.whoCanSeeShcedule}</Text>
           <FlatList
               data={scheduleData}
-              style={{ marginTop: 10 }}
+              style={{ marginTop: 20 }}
               ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
               renderItem={ ({ item }) => <RadioBtnItem
                 titleName={item.title}
@@ -115,10 +114,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
-  },
-  scheduleSeenText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
   },
 });

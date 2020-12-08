@@ -12,6 +12,8 @@ import RecentMatchItems from '../../components/Home/RecentMatchItems';
 
 export default function ScoreboardSportsScreen({
   sportsData,
+  showEventNumbers,
+  showAssistReferee,
 }) {
   let filterData = [];
   let dataNotFound = true;
@@ -66,6 +68,8 @@ export default function ScoreboardSportsScreen({
             <RecentMatchItems
               data={item}
               onThreeDotPress={() => {}}
+              showEventNumbers={showEventNumbers}
+              showAssistReferee={showAssistReferee}
             />
           ) }
           renderSectionHeader={ ({ section }) => (

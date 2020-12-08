@@ -16,6 +16,7 @@ export default function StatsSelectionView({
   value,
   onValueChange,
   containerStyle,
+  onDonePress,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
@@ -26,6 +27,7 @@ export default function StatsSelectionView({
         }}
         items={dataSource}
         onValueChange={onValueChange}
+        onDonePress={onDonePress}
         useNativeAndroidPickerStyle={false}
         // eslint-disable-next-line no-sequences
         style={ (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), { ...styles } }
