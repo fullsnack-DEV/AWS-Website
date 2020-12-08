@@ -9,9 +9,10 @@ function AddTimeItem({
   source,
   addTimeText,
   onAddTimePress,
+  containerStyle,
 }) {
   return (
-    <TouchableOpacity style={styles.containerStyle} onPress={onAddTimePress}>
+    <TouchableOpacity style={[styles.containerStyle, containerStyle]} onPress={onAddTimePress}>
       <Image source={source} style={styles.imageStyle} resizeMode={'contain'} />
       <Text style={styles.addTimeTextStyle}>{addTimeText}</Text>
     </TouchableOpacity>

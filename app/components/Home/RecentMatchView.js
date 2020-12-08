@@ -22,7 +22,7 @@ export default function RecentMatchView({
     endDate = new Date(data.actual_enddatetime * 1000);
   }
   return (
-    data ? <View style={styles.backgroundView}>
+    data === null ? <View style={styles.backgroundView}>
       <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
     </View> : <View style={styles.backgroundView}>
       <View style={styles.timeCityViewStyle}>

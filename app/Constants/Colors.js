@@ -11,6 +11,8 @@ const colors = {
   blockZoneText: '#707070',
   activeIndexColor: '#ff9628',
   eventDefaultColor: '#d3dff6',
+  searchGrayColor: '#f0f0f0',
+  assistTextColor: '#FF6A01',
   whiteColor: '#FFFFFF',
   parrotColor: '#E8FFB4',
   fbTextColor: '#4574DB',

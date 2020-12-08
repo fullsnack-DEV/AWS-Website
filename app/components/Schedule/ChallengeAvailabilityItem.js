@@ -122,7 +122,7 @@ function ChallengeAvailabilityItem({
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventStartDateTime ? new Date(moment(eventStartDateTime).format('YYYY-MM-DD HH:mm:ss')) : new Date()}
+            minimumDate={eventStartDateTime || new Date()}
             mode={toggle ? 'date' : 'datetime'}
       />
     </View>

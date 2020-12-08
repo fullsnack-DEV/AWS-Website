@@ -21,7 +21,6 @@ import ActionSheet from 'react-native-actionsheet';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
-import TCScrollableTabs from '../../../components/TCScrollableTabs';
 import TouchableIcon from '../../../components/Home/TouchableIcon';
 import ScheduleTabView from '../../../components/Home/ScheduleTabView';
 import EventScheduleScreen from './EventScheduleScreen';
@@ -39,6 +38,8 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
+import SearchView from '../../../components/Schedule/SearchView';
+import strings from '../../../Constants/String';
 
 const { width } = Dimensions.get('window');
 
@@ -49,6 +50,7 @@ export default function ScheduleScreen({ navigation }) {
   const [timeTable, setTimeTable] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [eventSelectDate, setEventSelectDate] = useState(new Date());
+  const [searchText, setSearchText] = useState('');
   const [timetableSelectDate, setTimeTableSelectDate] = useState(new Date());
   const [filterEventData, setFilterEventData] = useState([]);
   const [filterTimeTable, setFilterTimeTable] = useState([]);
@@ -58,6 +60,7 @@ export default function ScheduleScreen({ navigation }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
+      setloading(true);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
@@ -66,6 +69,7 @@ export default function ScheduleScreen({ navigation }) {
       const timetabledata = [];
       let eventTimeTableData = [];
       getEvents(entityRole, uid, authContext).then((response) => {
+        setloading(false);
         getSlots(entityRole, uid, authContext).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
           setEventData(eventTimeTableData);
@@ -96,6 +100,7 @@ export default function ScheduleScreen({ navigation }) {
           setFilterTimeTable(timetabledata);
         })
       }).catch((e) => {
+        setloading(false);
         Alert.alert('', e.messages)
       })
       return null;
@@ -130,245 +135,246 @@ export default function ScheduleScreen({ navigation }) {
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
-      <TCScrollableTabs initialPage={2}>
-        <View tabLabel='Info' style={{ flex: 1 }}></View>
-        <View tabLabel='Scoreboard' style={{ flex: 1 }}></View>
-        <View tabLabel='Schedule' style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-            <View style={{ padding: 5, height: 16, width: 16 }} />
-            <ScheduleTabView
-              firstTabTitle={'Events'}
-              secondTabTitle={'Calender'}
-              indexCounter={scheduleIndexCounter}
-              onFirstTabPress={() => setScheduleIndexCounter(0)}
-              onSecondTabPress={() => setScheduleIndexCounter(1)}
-            />
-            <TouchableIcon
-              source={images.searchLocation}
-              onItemPress={() => {}}
-            />
-          </View>
-          {scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
-            <EventScheduleScreen
-              eventData={eventData}
-              navigation={navigation}
-              onThreeDotPress={(item) => {
-                setSelectedEventItem(item);
-              }}
-              onItemPress={async (item) => {
-                const entity = authContext.entity
-                const uid = entity.uid || entity.auth.user_id;
-                const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                if (item.game_id) {
-                  navigation.navigate('SoccerHome', {
-                    gameId: item.game_id,
-                  })
-                } else {
-                  getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
-                    navigation.navigate('EventScreen', { data: response.payload, gameData: item });
-                  }).catch((e) => {
-                    console.log('Error :-', e);
-                  })
-                }
-                getEventById(entityRole, uid, item.cal_id, authContext).then((response) => {
+      <SearchView
+        placeholder={strings.searchText}
+        onChangeText={(text) => {
+          setSearchText(text);
+        }}
+        value={searchText}
+        sectionStyle={{ width: searchText.trim().length > 0 ? wp('84%') : wp('92%') }}
+        cancelViewShow={searchText.trim().length > 0}
+        onCancelPress={() => {
+          setSearchText('');
+        }}
+      />
+      <View style={styles.seapratorViewStyle} />
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+          <View style={{ padding: 5, height: 16, width: 16 }} />
+          <ScheduleTabView
+            firstTabTitle={'Events'}
+            secondTabTitle={'Calender'}
+            indexCounter={scheduleIndexCounter}
+            onFirstTabPress={() => setScheduleIndexCounter(0)}
+            onSecondTabPress={() => setScheduleIndexCounter(1)}
+          />
+          <TouchableIcon
+            source={images.searchLocation}
+            onItemPress={() => {}}
+          />
+        </View>
+        {scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+          <EventScheduleScreen
+            eventData={eventData}
+            navigation={navigation}
+            onThreeDotPress={(item) => {
+              setSelectedEventItem(item);
+            }}
+            onItemPress={async (item) => {
+              const entity = authContext.entity
+              if (item.game_id) {
+                navigation.navigate('SoccerHome', {
+                  gameId: item.game_id,
+                })
+              } else {
+                getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
                   navigation.navigate('EventScreen', { data: response.payload, gameData: item });
                 }).catch((e) => {
                   console.log('Error :-', e);
                 })
-              }}
+              }
+            }}
+          />
+          {!createEventModal && <CreateEventButton
+            source={images.plus}
+            onPress={() => setCreateEventModal(true) }
+          />}
+        </View>}
+        {scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
+          <View style={styles.shceduleCalenderView}>
+            <BackForwardView
+              textValue={moment(selectionDate).format('MMMM YYYY')}
             />
-            {!createEventModal && <CreateEventButton
-              source={images.plus}
-              onPress={() => setCreateEventModal(true) }
-            />}
-          </View>}
-          {scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
-            <View style={styles.shceduleCalenderView}>
-              <BackForwardView
-                textValue={moment(selectionDate).format('MMMM YYYY')}
+            <View>
+              <TwoTabView
+                firstTabTitle={'Events'}
+                secondTabTitle={'Timetable'}
+                indexCounter={calenderInnerIndexCounter}
+                onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
+                onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
               />
-              <View>
-                <TwoTabView
-                  firstTabTitle={'Events'}
-                  secondTabTitle={'Timetable'}
-                  indexCounter={calenderInnerIndexCounter}
-                  onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
-                  onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
-                />
-              </View>
             </View>
-            {calenderInnerIndexCounter === 0 && <EventAgendaSection
-              items={{
-                [selectionDate.toString()]: [filterEventData],
-              }}
-              selected={selectionDate}
-              onDayPress={(day) => {
-                setEventSelectDate(day.dateString);
-                const date = moment(day.dateString).format('YYYY-MM-DD');
-                const data = [];
-                eventData.filter((event_item) => {
-                  const startDate = new Date(event_item.start_datetime * 1000);
-                  const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-                  if (eventDateSelect === date) {
-                    data.push(event_item);
-                  }
-                  return null;
-                });
-                setFilterEventData(data);
-                return null;
-              }}
-              renderItem={(item) => {
-                const entity = authContext.entity
-                if (item.length > 0) {
-                  return (
-                    <FlatList
-                      data={item}
-                      renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
-                        onPress={async () => {
-                          if (itemValue.game_id) {
-                            navigation.navigate('SoccerHome', {
-                              gameId: itemValue.game_id,
-                            })
-                          } else {
-                            getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
-                              navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
-                            }).catch((e) => {
-                              console.log('Error :-', e);
-                            })
-                          }
-                        }}
-                        eventBetweenSection={itemValue.game}
-                        eventOfSection={true}
-                        onThreeDotPress={() => {
-                          setSelectedEventItem(itemValue);
-                        }}
-                        data={itemValue}
-                      />)}
-                      ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
-                        <Text style={styles.headerTodayText}>
-                          {moment(selectionDate).calendar(null, {
-                            lastWeek: '[Last] dddd',
-                            lastDay: '[Yesterday]',
-                            sameDay: '[Today]',
-                            nextDay: '[Tomorrow]',
-                            nextWeek: 'dddd',
-                          })}
-                        </Text>
-                      </View>}
-                      bounces={false}
-                      style={{ flex: 1 }}
-                      keyExtractor={(itemValueKey, index) => index.toString()}
-                    />
-                  );
+          </View>
+          {calenderInnerIndexCounter === 0 && <EventAgendaSection
+            items={{
+              [selectionDate.toString()]: [filterEventData],
+            }}
+            selected={selectionDate}
+            onDayPress={(day) => {
+              setEventSelectDate(day.dateString);
+              const date = moment(day.dateString).format('YYYY-MM-DD');
+              const data = [];
+              eventData.filter((event_item) => {
+                const startDate = new Date(event_item.start_datetime * 1000);
+                const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+                if (eventDateSelect === date) {
+                  data.push(event_item);
                 }
-                return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
-              }}
-            />}
-
-            {calenderInnerIndexCounter === 1 && <EventAgendaSection
-              items={{
-                [timeTableSelectionDate.toString()]: [filterTimeTable],
-              }}
-              onDayPress={(day) => {
-                setTimeTableSelectDate(day.dateString);
-                const date = moment(day.dateString).format('YYYY-MM-DD');
-                const dataItem = [];
-                timeTable.filter((time_table_item) => {
-                  const startDate = new Date(time_table_item.start_datetime * 1000);
-                  const endDate = new Date(time_table_item.end_datetime * 1000);
-                  const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-                  if (eventDateSelect === date) {
-                    const obj = {
-                      ...time_table_item,
-                      start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
-                      end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-                    };
-                    dataItem.push(obj);
-                  }
-                  return null;
-                });
-                setFilterTimeTable(dataItem);
                 return null;
-              }}
-              renderItem={(item) => <View>
-                <EventCalendar
-                  eventTapped={(event) => { console.log('Event ::--', event) }}
-                  events={item}
-                  width={width}
-                  initDate={timeTableSelectionDate}
-                  scrollToFirst={true}
-                  renderEvent={(event) => {
-                    let event_color = colors.themeColor;
-                    let eventTitle = 'Game';
-                    let eventDesc = 'Game With';
-                    let eventDesc2 = '';
-                    if (event.color && event.color.length > 0) {
-                      if (event.color[0] !== '#') {
-                        event_color = `#${event.color}`;
-                      } else {
-                        event_color = event.color;
-                      }
+              });
+              setFilterEventData(data);
+              return null;
+            }}
+            renderItem={(item) => {
+              if (item.length > 0) {
+                return (
+                  <FlatList
+                    data={item}
+                    renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
+                      onPress={async () => {
+                        const entity = authContext.entity
+                        if (itemValue.game_id) {
+                          navigation.navigate('SoccerHome', {
+                            gameId: itemValue.game_id,
+                          })
+                        } else {
+                          getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
+                            navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
+                          }).catch((e) => {
+                            console.log('Error :-', e);
+                          })
+                        }
+                      }}
+                      eventBetweenSection={itemValue.game}
+                      eventOfSection={true}
+                      onThreeDotPress={() => {
+                        setSelectedEventItem(itemValue);
+                      }}
+                      data={itemValue}
+                    />)}
+                    ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
+                      <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
+                      <Text style={styles.headerTodayText}>
+                        {moment(selectionDate).calendar(null, {
+                          lastWeek: '[Last] dddd',
+                          lastDay: '[Yesterday]',
+                          sameDay: '[Today]',
+                          nextDay: '[Tomorrow]',
+                          nextWeek: 'dddd',
+                        })}
+                      </Text>
+                    </View>}
+                    bounces={false}
+                    style={{ flex: 1 }}
+                    keyExtractor={(itemValueKey, index) => index.toString()}
+                  />
+                );
+              }
+              return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
+            }}
+          />}
+
+          {calenderInnerIndexCounter === 1 && <EventAgendaSection
+            items={{
+              [timeTableSelectionDate.toString()]: [filterTimeTable],
+            }}
+            onDayPress={(day) => {
+              setTimeTableSelectDate(day.dateString);
+              const date = moment(day.dateString).format('YYYY-MM-DD');
+              const dataItem = [];
+              timeTable.filter((time_table_item) => {
+                const startDate = new Date(time_table_item.start_datetime * 1000);
+                const endDate = new Date(time_table_item.end_datetime * 1000);
+                const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+                if (eventDateSelect === date) {
+                  const obj = {
+                    ...time_table_item,
+                    start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
+                    end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+                  };
+                  dataItem.push(obj);
+                }
+                return null;
+              });
+              setFilterTimeTable(dataItem);
+              return null;
+            }}
+            renderItem={(item) => <View>
+              <EventCalendar
+                eventTapped={(event) => { console.log('Event ::--', event) }}
+                events={item}
+                width={width}
+                initDate={timeTableSelectionDate}
+                scrollToFirst={true}
+                renderEvent={(event) => {
+                  let event_color = colors.themeColor;
+                  let eventTitle = 'Game';
+                  let eventDesc = 'Game With';
+                  let eventDesc2 = '';
+                  if (event.color && event.color.length > 0) {
+                    if (event.color[0] !== '#') {
+                      event_color = `#${event.color}`;
+                    } else {
+                      event_color = event.color;
                     }
-                    if (event && event.title) {
-                      eventTitle = event.title;
-                    }
-                    if (event && event.descriptions) {
-                      eventDesc = event.descriptions;
-                    }
-                    if (event.game && event.game.away_team) {
-                      eventDesc2 = event.game.away_team.group_name;
-                    }
+                  }
+                  if (event && event.title) {
+                    eventTitle = event.title;
+                  }
+                  if (event && event.descriptions) {
+                    eventDesc = event.descriptions;
+                  }
+                  if (event.game && event.game.away_team) {
+                    eventDesc2 = event.game.away_team.group_name;
+                  }
+                  return (
+                    <View style={{ flex: 1 }}>
+                      {event.cal_type === 'event' && <CalendarTimeTableView
+                        title={eventTitle}
+                        summary={`${eventDesc} ${eventDesc2}`}
+                        containerStyle={{ borderLeftColor: event_color, width: event.width }}
+                        eventTitleStyle={{ color: event_color }}
+                      />}
+                      {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
+                        width: event.width + 68, height: event.height,
+                      }]} />}
+                    </View>
+                  );
+                }}
+                styles={{
+                  event: styles.eventViewStyle,
+                  line: { backgroundColor: colors.lightgrayColor },
+                }}
+              />
+              {item.length > 0 && <FlatList
+                data={item}
+                scrollEnabled={false}
+                showsHorizontalScrollIndicator={false}
+                renderItem={ ({ item: blockItem }) => {
+                  if (blockItem.cal_type === 'blocked') {
                     return (
-                      <View style={{ flex: 1 }}>
-                        {event.cal_type === 'event' && <CalendarTimeTableView
-                          title={eventTitle}
-                          summary={`${eventDesc} ${eventDesc2}`}
-                          containerStyle={{ borderLeftColor: event_color, width: event.width }}
-                          eventTitleStyle={{ color: event_color }}
-                        />}
-                        {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
-                          width: event.width + 68, height: event.height,
-                        }]} />}
-                      </View>
+                      <EventBlockTimeTableView
+                        blockText={'Blocked Zone'}
+                        blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
+                      />
                     );
-                  }}
-                  styles={{
-                    event: styles.eventViewStyle,
-                    line: { backgroundColor: colors.lightgrayColor },
-                  }}
-                />
-                {item.length > 0 && <FlatList
-                  data={item}
-                  scrollEnabled={false}
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={ ({ item: blockItem }) => {
-                    if (blockItem.cal_type === 'blocked') {
-                      return (
-                        <EventBlockTimeTableView
-                          blockText={'Blocked Zone'}
-                          blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
-                        />
-                      );
-                    }
-                    return <View />;
-                  }}
-                  ItemSeparatorComponent={ () => (
-                    <View style={ { height: wp('3%') } } />
-                  ) }
-                  style={ { marginVertical: wp('4%') } }
-                  keyExtractor={(itemValue, index) => index.toString() }
-                />}
-              </View>}
-            />}
-            {!createEventModal && <CreateEventButton
-              source={images.plus}
-              onPress={() => setCreateEventModal(true)}
-            />}
-          </View>}
-        </View>
-        <View tabLabel='Gallery' style={{ flex: 1 }}></View>
-      </TCScrollableTabs>
+                  }
+                  return <View />;
+                }}
+                ItemSeparatorComponent={ () => (
+                  <View style={ { height: wp('3%') } } />
+                ) }
+                style={ { marginVertical: wp('4%') } }
+                keyExtractor={(itemValue, index) => index.toString() }
+              />}
+            </View>}
+          />}
+          {!createEventModal && <CreateEventButton
+            source={images.plus}
+            onPress={() => setCreateEventModal(true)}
+          />}
+        </View>}
+      </View>
       <CreateEventBtnModal
         visible={createEventModal}
         onCancelPress={() => setCreateEventModal(false)}
@@ -383,7 +389,7 @@ export default function ScheduleScreen({ navigation }) {
       />
       <ActionSheet
         ref={actionSheet}
-        options={['Default Color', 'Group Events', 'View Privacy', 'Cancel']}
+        options={['Default Color', 'Group Events Display', 'View Privacy', 'Cancel']}
         cancelButtonIndex={3}
         destructiveButtonIndex={3}
         onPress={(index) => {
@@ -506,5 +512,10 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
     marginTop: 10,
+  },
+  seapratorViewStyle: {
+    backgroundColor: colors.graySeparater,
+    height: 0.5,
+    width: wp('100%'),
   },
 });

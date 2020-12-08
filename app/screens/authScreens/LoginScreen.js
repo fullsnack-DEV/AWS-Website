@@ -33,6 +33,7 @@ import { getUserDetails } from '../../api/Users';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
+import { eventDefaultColorsData } from '../../Constants/LoaderImages';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -89,6 +90,8 @@ export default function LoginScreen({ navigation }) {
         user_id: user.uid,
       },
     }
+    Utility.setStorage('eventColor', eventDefaultColorsData);
+    Utility.setStorage('groupEventValue', true)
     authContext.setEntity({ ...entity })
     console.log('authContext111', entity)
     return getUserInfo(entity).then((data) => {

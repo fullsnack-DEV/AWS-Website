@@ -9,6 +9,7 @@ export default function DateTimePickerView({
   date,
   mode,
   minimumDate,
+  maximumDate,
 }) {
   return (
     <DateTimePickerModal
@@ -18,7 +19,8 @@ export default function DateTimePickerView({
       onCancel={onCancel}
       onHide={onHide}
       date={date}
-      minimumDate={minimumDate || new Date()}
+      minimumDate={minimumDate}
+      maximumDate={maximumDate}
     />
   );
 }
