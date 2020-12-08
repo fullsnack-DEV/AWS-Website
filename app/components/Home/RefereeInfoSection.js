@@ -1,4 +1,9 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   StyleSheet, View, Text, ScrollView, FlatList, SafeAreaView, TouchableOpacity, Image, Alert,
 } from 'react-native';
@@ -10,6 +15,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-crop-picker';
 import colors from '../../Constants/Colors';
@@ -30,6 +36,8 @@ import AddTimeItem from '../Schedule/AddTimeItem';
 import AddCertiPhotoTitleView from './AddCertiPhotoTitleView';
 import uploadImages from '../../utils/imageAction';
 import AuthContext from '../../auth/context';
+import TCSearchBox from '../TCSearchBox';
+import TCTags from '../TCTags';
 
 const privacy_Data = [
   {
@@ -159,6 +167,49 @@ const certificate_data = [
   },
 ];
 
+const language_list = [
+  {
+    id: 0,
+    title: 'English',
+    isChecked: false,
+  },
+  {
+    id: 1,
+    title: 'Korean',
+    isChecked: false,
+  },
+  {
+    id: 2,
+    title: 'Australian Football',
+    isChecked: false,
+  },
+  {
+    id: 3,
+    title: 'Rumantsch',
+    isChecked: false,
+  },
+  {
+    id: 4,
+    title: 'Deutsch',
+    isChecked: false,
+  },
+  {
+    id: 5,
+    title: 'Australian Football',
+    isChecked: false,
+  },
+  {
+    id: 6,
+    title: 'Rumantsch',
+    isChecked: false,
+  },
+  {
+    id: 7,
+    title: 'Korean',
+    isChecked: false,
+  },
+];
+
 function RefereeInfoSection({
   data,
   searchLocation,
@@ -190,6 +241,7 @@ function RefereeInfoSection({
   const [certificatesData] = useState(certificate_data);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [editLanguageModal, setEditLanguageModal] = useState(false);
   const [privacyData, setPrivacyData] = useState(privacy_Data);
   const [genderPrivacy, setGenderPrivacy] = useState(gender_privacy);
   const [yearOfBirthPrivacy, setYearOfBirthPrivacy] = useState(yearOfBirth_privacy);
@@ -199,6 +251,9 @@ function RefereeInfoSection({
   const [addCertificateData, setAddCertificateData] = useState([]);
   const [selectedCerti, setSelectedCerti] = useState([]);
   const [addCertiTitle, setAddCertiTitle] = useState('');
+  const [searchLanguageText, setSearchLanguageText] = useState('');
+  const [languageList, setLanguageList] = useState(language_list);
+  const [selectedLanguage, setSelectedLanguage] = useState([]);
 
   const actionSheet = useRef();
 
@@ -208,6 +263,10 @@ function RefereeInfoSection({
 
   const editInfoModal = () => {
     setEditModal(!editModal);
+  };
+
+  const editLanguage = () => {
+    setEditLanguageModal(!editLanguageModal);
   };
 
   const handleDatePress = (date) => {
@@ -221,6 +280,89 @@ function RefereeInfoSection({
   const deleteItemById = (id) => {
     const filteredData = addCertificateData.filter((item) => item.id !== id);
     setAddCertificateData(filteredData);
+  };
+
+  const Item = ({
+    item, onPress, style, isChecked,
+  }) => {
+    const title = item.title;
+    return (
+      <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
+        <LinearGradient
+        colors={isChecked ? [colors.yellowColor, colors.orangeColor] : [colors.offwhite, colors.offwhite]}
+        style={[styles.listItems, { paddingHorizontal: 10, paddingVertical: 0 }]}>
+          <View style={{
+            flexDirection: 'row',
+          }}>
+            <View style={styles.selectUnSelectViewStyle}>
+              <Text style={{ ...styles.title, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{title}</Text>
+              {isChecked ? <Image source={images.checkWhite} resizeMode={'contain'} style={styles.checkboxImg}/>
+                : <Image source={images.whiteUncheck} resizeMode={'contain'} style={styles.checkboxImg}/>
+              }
+            </View>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>)
+  }
+
+  useEffect(() => {
+    if (searchLanguageText !== '') {
+      const escapeRegExp = (str) => {
+        if (!_.isString(str)) {
+          return '';
+        }
+        return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
+      };
+      const searchStr = escapeRegExp(searchLanguageText)
+      const answer = languageList?.filter((a) => (a.title)
+        .toLowerCase()
+        .toString()
+        .match(searchStr.toLowerCase().toString()));
+      setLanguageList([...answer])
+    }
+  }, [searchLanguageText])
+
+  useEffect(() => {
+    const selectData = [];
+    if (languageList.length > 0) {
+      languageList.filter((val) => {
+        if (val.isChecked) {
+          selectData.push(val);
+        }
+        return null;
+      })
+      setSelectedLanguage([...selectData]);
+    }
+  }, [languageList])
+
+  const renderItem = ({ item }) => {
+    const selectVal = item;
+    return (
+      <Item
+        item={item}
+        onPress={() => {
+          languageList.map((val) => {
+            if (val.id === item.id) {
+              selectVal.isChecked = !selectVal.isChecked;
+            }
+            return null;
+          });
+          setLanguageList([...languageList]);
+        }}
+        isChecked={item.isChecked}
+      />
+    );
+  };
+
+  const handleTagPress = ({ item }) => {
+    const selectVal = item;
+    languageList.map((val) => {
+      if (val.id === item.id) {
+        selectVal.isChecked = !selectVal.isChecked;
+      }
+      return null;
+    });
+    setLanguageList([...languageList]);
   };
 
   return (
@@ -589,7 +731,7 @@ function RefereeInfoSection({
               <BirthSelectItem
                 title={strings.languagesName}
                 onItemPress={() => {
-                  // onItemPress();
+                  editLanguage();
                 }}
               />
             </EventItemRender>
@@ -701,6 +843,77 @@ function RefereeInfoSection({
             containerStyle={{ justifyContent: 'space-between' }}
           />}
         </SafeAreaView>
+
+        <Modal
+          isVisible={editLanguageModal}
+          backdropColor="black"
+          style={{
+            margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0)',
+          }}
+          hasBackdrop
+          onBackdropPress={() => setEditLanguageModal(false)}
+          backdropOpacity={0}
+        >
+          <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+            <LinearGradient
+              colors={[colors.orangeColor, colors.yellowColor]}
+              end={{ x: 0.0, y: 0.25 }}
+              start={{ x: 1, y: 0.5 }}
+              style={styles.gradiantHeaderViewStyle}>
+            </LinearGradient>
+            <Header
+              mainContainerStyle={styles.headerMainContainerStyle}
+              leftComponent={
+                <TouchableOpacity onPress={() => setEditLanguageModal(false)}>
+                  <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                </TouchableOpacity>
+              }
+              centerComponent={
+                <View style={styles.headerCenterViewStyle}>
+                  <Image source={images.refereesInImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                  <Text style={styles.playInTextStyle}>{'Edit Languages'}</Text>
+                </View>
+              }
+              rightComponent={
+                <TouchableOpacity onPress={() => {
+                  setEditLanguageModal(false)
+                }}>
+                  <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
+                </TouchableOpacity>
+              }
+            />
+            <TCSearchBox
+              style={{ margin: 15 }}
+              value={searchLanguageText}
+              onChangeText={(text) => {
+                if (text.length === 0) {
+                  setLanguageList(language_list);
+                }
+                setSearchLanguageText(text)
+              }}
+            />
+            {selectedLanguage.length > 0 && (
+              <TCTags
+                dataSource={selectedLanguage}
+                titleKey={'title'}
+                onTagCancelPress={handleTagPress}
+              />
+            )}
+            <View style={{ margin: wp(3) }}>
+              <FlatList
+                ListEmptyComponent={
+                  <Text style={{
+                    textAlign: 'center',
+                    marginTop: hp(2),
+                    color: colors.userPostTimeColor,
+                  }}>No Records Found</Text>}
+                data={languageList}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id.toString()}
+              />
+            </View>
+          </SafeAreaView>
+        </Modal>
       </Modal>
 
       <ActionSheet
@@ -819,6 +1032,33 @@ const styles = StyleSheet.create({
     height: 100,
     marginBottom: 10,
     borderRadius: 10,
+  },
+  listItems: {
+    paddingVertical: 6,
+    color: 'black',
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 0,
+  },
+  title: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  checkboxImg: {
+    width: wp('7%'),
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  selectUnSelectViewStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+    height: 50,
   },
 });
 
