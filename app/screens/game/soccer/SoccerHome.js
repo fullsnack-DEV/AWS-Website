@@ -12,7 +12,13 @@ import Stats from '../../../components/game/common/stats/Stats';
 import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
-  approveDisapproveGameRecords, getGameData, getGameGallery, getGameMatchRecords, getGameReviews, getGameStats,
+  approveDisapproveGameRecords,
+  getGameData,
+  getGameGallery,
+  getGameMatchRecords,
+  getGameReviews,
+  getGameStats,
+  getSportsList,
 } from '../../../api/Games';
 import AuthContext from '../../../auth/context'
 import { followUser, unfollowUser } from '../../../api/Users';
@@ -70,11 +76,13 @@ const SoccerHome = ({ navigation, route }) => {
   const getSoccerGameStats = (gameId) => getGameStats(gameId, authContext)
   const getSoccerGameReview = (gameId) => getGameReviews(gameId, authContext)
   const getSoccerGalleryData = (gameId) => getGameGallery(gameId, authContext)
+  const getGameSportsList = () => getSportsList(authContext)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
       {tabKey === 0 && (
         <Summary
+            getSportsList={getGameSportsList}
             getSoccerGameReview={getSoccerGameReview}
             getSoccerGameStats={getSoccerGameStats}
             getGameData={getSoccerGameData}
@@ -101,6 +109,7 @@ const SoccerHome = ({ navigation, route }) => {
       {tabKey === 3 && <Review navigation={navigation} getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
       {tabKey === 4 && (
         <Gallery
+            authContext={authContext}
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
               gameData={gameData}
               getSoccerGalleryData={getSoccerGalleryData}

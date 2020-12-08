@@ -11,7 +11,6 @@ import Scorekeepers from './Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
-import { getSportsList } from '../../../../../api/Games';
 import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
@@ -27,6 +26,7 @@ const Summary = ({
   approveDisapproveGameScore,
   getGameData,
   getGameMatchRecords,
+  getSportsList,
 }) => {
   const [loading, setLoading] = useState(true);
   const [sliderAttributes, setSliderAttributes] = useState([]);

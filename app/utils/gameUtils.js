@@ -62,16 +62,16 @@ const soccerGamePlayStatsImage = {
 
 const tennisGamePlayStatsImage = {
   score: images.tennisScore,
-  setStart: images.gameGoal,
+  setStart: images.gameStart,
   setEnd: images.gameGoal,
   gameStart: images.gameStart,
   gameEnd: images.gameGoal,
   ace: images.tennisAce,
   fault: images.tennisFault,
-  let: images.gameGoal,
-  unforcedError: images.gameGoal,
+  let: images.tennisLet,
+  unforcedError: images.tennisUnForced,
   footFault: images.tennisFootFault,
-  winner: images.gameGoal,
+  winner: images.tennisWinner,
   assist: images.assistBy,
 }
 

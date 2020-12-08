@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View, StyleSheet, Text,
 } from 'react-native';
 import moment from 'moment';
+
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
@@ -10,13 +11,13 @@ import Referees from './Referees';
 import Scorekeepers from './Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
-import { getSportsList } from '../../../../../api/Games';
 import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 
 import Scores from './Scores';
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import TCInnerLoader from '../../../../TCInnerLoader';
+import AuthContext from '../../../../../context/auth';
 
 const Summary = ({
   gameData,
@@ -27,13 +28,15 @@ const Summary = ({
   unFollowSoccerUser,
   getGameData,
   getGameMatchRecords,
+  getSportsList,
 }) => {
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [sliderAttributes, setSliderAttributes] = useState([]);
   const [starAttributes, starStarAttributes] = useState([]);
   useEffect(() => {
     setLoading(true);
-    getSportsList().then((sports) => {
+    getSportsList(authContext).then((sports) => {
       const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name === gameData?.sport)[0]
       const teamReviewProp = soccerSportData?.team_review_properties ?? []
       const sliderReviewProp = [];
