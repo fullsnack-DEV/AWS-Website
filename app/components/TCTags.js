@@ -16,10 +16,10 @@ import images from '../Constants/ImagePath'
 export default function TCTags({ dataSource, titleKey, onTagCancelPress }) {
   const renderTags = ({ item, index }) => (
     <>
-      {item.isChecked && <View style={styles.textContainer} onPress={() => onTagCancelPress({ index })}>
+      {item.isChecked && <View style={styles.textContainer} onPress={() => onTagCancelPress({ item, index })}>
         <Text style={styles.tagTitleText}>{item[titleKey]}</Text>
         <Image source={images.tagDivider} style={styles.dividerImage}/>
-        <TouchableOpacity style={styles.closeButton} onPress={() => onTagCancelPress({ index })}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => onTagCancelPress({ item, index })}>
           <Image source={images.cancelImage} style={styles.closeButton}/>
         </TouchableOpacity>
       </View>}
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     shadowRadius: 1,
     elevation: 3,
-
+    flex: 1,
   },
 
   closeButton: {

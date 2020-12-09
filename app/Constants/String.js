@@ -61,6 +61,7 @@ const strings = {
 
   infoTitle: 'Info',
   recentMatchTitle: 'Recentest Match',
+  aboutRatingTitle: 'Detail info about ratings',
   refereeRecentMatchTitle: 'Recentest Refereed Match',
   reviewsTitle: 'Reviews',
   upcomingMatchTitle: 'Upcoming Match',

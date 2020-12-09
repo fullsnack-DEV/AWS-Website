@@ -204,12 +204,14 @@ const MessageInviteScreen = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item }) => {
+    console.log('item :-', item);
     const isChecked = selectedInvitees.some((val) => {
       if (val.id === item.id) {
         return true;
       }
       return false
     })
+    console.log('is CHecled :-', isChecked);
     return (
       <Item
         item={item}

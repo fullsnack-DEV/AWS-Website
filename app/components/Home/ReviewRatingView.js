@@ -11,10 +11,12 @@ function ReviewRatingView({
   rating,
   ratingCount,
   rateStarSize,
+  containerStyle,
+  titleStyle,
 }) {
   return (
-    <View style={styles.containerStyle}>
-      <Text style={styles.titleStyle}>{title}</Text>
+    <View style={[styles.containerStyle, containerStyle]}>
+      <Text style={[styles.titleStyle, titleStyle]}>{title}</Text>
       <View style={styles.ratingCountViewStyle}>
         <AirbnbRating
           count={5}
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 15,
-    // marginVertical: 5,
     justifyContent: 'space-between',
   },
   titleStyle: {

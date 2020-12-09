@@ -83,6 +83,7 @@ import CertificatesItemView from '../../components/Home/CertificatesItemView';
 import LanguageViewInInfo from '../../components/Home/LanguageViewInInfo';
 import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
 import ReviewRatingView from '../../components/Home/ReviewRatingView';
+import ReviewSection from '../../components/Home/ReviewSection';
 
 const certificate_data = [
   {
@@ -218,7 +219,6 @@ export default function HomeScreen({ navigation, route }) {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
-      console.log('Entity :-', entity);
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
       const uid = entity.uid || entity.auth.user_id;
       const eventdata = [];
@@ -2189,6 +2189,9 @@ export default function HomeScreen({ navigation, route }) {
                       <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
                     </TouchableOpacity>
                   }
+                />
+                <ReviewSection
+                  reviewsData={reviewsData}
                 />
               </View>
             </SafeAreaView>
