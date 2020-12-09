@@ -249,6 +249,9 @@ const images = {
   tennisFault: require('../assets/images/tennisFault.png'),
   tennisFootFault: require('../assets/images/tennisFootFault.png'),
   tennisScore: require('../assets/images/tennisScore.png'),
+  tennisLet: require('../assets/images/tennisLet.png'),
+  tennisUnForced: require('../assets/images/tennisUnForced.png'),
+  tennisWinner: require('../assets/images/tennisWinner.png'),
   yellowDownArrow: require('../assets/images/yellowDownArrow.png'),
 };
 

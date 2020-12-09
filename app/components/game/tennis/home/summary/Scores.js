@@ -103,7 +103,7 @@ const Scores = ({ gameId, getTennisGameData }) => {
 
           {/* Previous Games */}
           <ScrollView
-              style={{ maxWidth: '45%', flexWrap: 1 }}
+              style={{ maxWidth: '45%', flexWrap: 'wrap' }}
               bounces={false}
               bouncesZoom={false}
               horizontal={true}>
@@ -126,9 +126,13 @@ const Scores = ({ gameId, getTennisGameData }) => {
             firstRowImage={gameData?.home_team?.background_thumbnail}
             secondRowImage={gameData?.away_team?.background_thumbnail}
         />
-
-          {/* Sets */}
-          <SingleColumn
+          <ScrollView
+              style={{ maxWidth: '40%', flexWrap: 'wrap' }}
+              bounces={false}
+              bouncesZoom={false}
+              horizontal={true}>
+            {/* Sets */}
+            <SingleColumn
               headerTextStyle={{ fontFamily: fonts.RRegular, fontSize: 13, color: colors.themeColor }}
               headerText={'Sets'}
               firstRowText={
@@ -144,8 +148,8 @@ const Scores = ({ gameId, getTennisGameData }) => {
               secondRowTextStyle={{ color: getTextGreterScoreTeamColor(gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.home_team_win_count, gameData?.scoreboard?.sets?.[gameData?.scoreboard?.sets?.length - 1]?.away_team_win_count, 2) }}
           />
 
-          {/* Games */}
-          <SingleColumn
+            {/* Games */}
+            <SingleColumn
               headerTextStyle={{ fontFamily: fonts.RRegular, fontSize: 13, color: colors.yellowColor }}
               headerText={'Games'}
               firstRowText={gameData?.scoreboard?.game_inprogress?.winner === teamIds?.home_team?.group_id ? 1 : 0}
@@ -155,16 +159,17 @@ const Scores = ({ gameId, getTennisGameData }) => {
               secondRowTextStyle={{ color: colors.lightBlackColor }}
           />
 
-          {/* Points */}
-          <SingleColumn
+            {/* Points */}
+            <SingleColumn
             headerTextStyle={{ fontSize: 13 }}
             headerText={'points'}
             firstRowText={gameData?.scoreboard?.game_inprogress?.home_team_point ?? 0}
             secondRowText={gameData?.scoreboard?.game_inprogress?.away_team_point ?? 0}
             firstRowTextStyle={{ color: colors.themeColor }}
+            rowTextContainerStyle={{ backgroundColor: 'rgba(255,138,1, 0.2)' }}
             secondRowTextStyle={{ color: colors.lightBlackColor }}
         />
-
+          </ScrollView>
         </View>
       )}
     </View>)
@@ -198,10 +203,9 @@ const styles = StyleSheet.create({
   },
   innerColumnContainer: {
     marginTop: 5,
-    padding: 5,
-    flex: 1,
+    padding: 10,
     backgroundColor: '#F9F9F9',
-    width: '95%',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
@@ -220,7 +224,7 @@ const styles = StyleSheet.create({
   contentSeperator: {
     height: 2,
     backgroundColor: colors.whiteColor,
-    width: '80%',
+    width: 22,
   },
 
 })

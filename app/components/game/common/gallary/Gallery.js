@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert, FlatList, View,
 } from 'react-native';
@@ -11,16 +11,15 @@ import MultipleVideoRender from '../../../Home/MultipleVideoRender';
 import uploadImages from '../../../../utils/imageAction';
 import { createPost, getNewsFeed } from '../../../../api/NewsFeeds';
 import ActivityLoader from '../../../loader/ActivityLoader';
-import AuthContext from '../../../../context/auth';
 
 const Gallery = ({
   setUploadImageProgressData,
   navigation,
   gameData,
   getSoccerGalleryData,
+  authContext,
 }) => {
   const [allData, setAllData] = useState([]);
-  const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);

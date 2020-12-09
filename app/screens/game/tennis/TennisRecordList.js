@@ -22,7 +22,7 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import { getGameData, getGameMatchRecords } from '../../../api/Games';
-import { getNumberSuffix, tennisGameStats } from '../../../utils/gameUtils';
+import { getGameDateTimeInHMSformat, getNumberSuffix, tennisGameStats } from '../../../utils/gameUtils';
 import TennisGameScoreRight from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreRight';
 import TennisGameState from '../../../components/game/tennis/home/gameRecordList/TennisGameState';
 import TennisGameScoreLeft from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreLeft';
@@ -35,6 +35,7 @@ export default function TennisRecordList({ route, navigation }) {
   const [matchRecords, setMatchRecords] = useState([]);
   const [gameData, setGameData] = useState(null);
   const [teamIds, setTeamIds] = useState(null);
+  const [currentScore, setCurrentScore] = useState(null)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -48,7 +49,6 @@ export default function TennisRecordList({ route, navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(route?.params?.gameData);
     loadAtOnce()
   }, [])
 
@@ -70,14 +70,17 @@ export default function TennisRecordList({ route, navigation }) {
       setGameData(route?.params?.gameData ?? null);
       getGameData(gameId, true, authContext).then(async (res) => {
         if (res.status) {
-          setGameData(res.payload ?? 0);
+          setGameData({ ...res.payload });
+          const home_team_score = res?.payload?.scoreboard?.game_inprogress?.home_team_point;
+          const away_team_score = res?.payload?.scoreboard?.game_inprogress?.home_team_point;
+          setCurrentScore({ ...currentScore, home_team_score, away_team_score })
         }
+        getGameMatchRecords(gameId, authContext).then((matchRes) => {
+          setMatchRecords(matchRes.payload);
+          const records = matchRes.payload;
+          processModifiedMatchRecords(records.reverse());
+        })
       })
-      getGameMatchRecords(gameId, authContext).then((res) => {
-        setMatchRecords(res.payload);
-        const records = res.payload;
-        processModifiedMatchRecords(records.reverse());
-      }).finally(() => setLoading(false));
     }
   }
 
@@ -95,11 +98,21 @@ export default function TennisRecordList({ route, navigation }) {
           if (recordData?.verb === 'setStart') {
             set_number += 1
             game_number = 1;
+            const win_count = gameData?.scoreboard?.sets.filter((item) => item?.s_id === recordData?.s_id)[0];
             wholeRecords.push({
-              type: 'set', set_number, setId: recordData?.s_id, isOpen: false, setGames: [],
+              type: 'set',
+              set_number,
+              setId: recordData?.s_id,
+              isOpen: false,
+              start_date: getGameDateTimeInHMSformat(recordData?.timestamp),
+              end_date: '-',
+              setGames: [],
+              home_team_win_count: win_count?.home_team_win_count ?? '-',
+              away_team_win_count: win_count?.away_team_win_count ?? '-',
             })
             wholeRecords[wholeRecords?.length - 1].setGames.push({ type: 'set_stats', data: recordData })
           } else {
+            wholeRecords[wholeRecords?.length - 1].end_date = getGameDateTimeInHMSformat(recordData?.timestamp)
             wholeRecords[wholeRecords?.length - 1].setGames.push({ type: 'set_stats', data: recordData })
           }
         } else {
@@ -111,7 +124,15 @@ export default function TennisRecordList({ route, navigation }) {
               const set_game_index = wholeRecords[set_index].setGames.findIndex((item) => item.setGameId === recordData?.g_id)
               if (set_game_index === -1) {
                 wholeRecords[set_index].setGames.push({
-                  type: 'set_games', game_number, isOpen: false, setGameId: recordData?.g_id, setGamesRecords: [],
+                  type: 'set_games',
+                  game_number,
+                  start_date: getGameDateTimeInHMSformat(recordData?.timestamp),
+                  end_date: '-',
+                  isOpen: false,
+                  setGameId: recordData?.g_id,
+                  home_team_score: '-',
+                  away_team_score: '-',
+                  setGamesRecords: [],
                 })
                 game_number += 1
                 const setGamesnew_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id);
@@ -119,6 +140,9 @@ export default function TennisRecordList({ route, navigation }) {
               }
             } else {
               const setGamesnew_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id);
+              wholeRecords[set_index].setGames[setGamesnew_index].home_team_score = recordData?.game_score?.home_team_point ?? '-';
+              wholeRecords[set_index].setGames[setGamesnew_index].away_team_score = recordData?.game_score?.away_team_point ?? '-';
+              wholeRecords[set_index].setGames[setGamesnew_index].end_date = getGameDateTimeInHMSformat(recordData?.timestamp) ?? '-';
               wholeRecords[set_index].setGames[setGamesnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
             }
           } else {
@@ -145,7 +169,9 @@ export default function TennisRecordList({ route, navigation }) {
       return true;
     })
     setMatchRecords(wholeRecords);
+    setLoading(false)
   }
+
   const getScoreText = (firstTeamScore = 0, secondTeamScore = 0, teamNumber = 1) => {
     const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
     let color = colors.lightBlackColor
@@ -228,9 +254,9 @@ export default function TennisRecordList({ route, navigation }) {
           item={item}
           index={index}
           set_number={item?.set_number}
-          home_team_score={7}
-          away_team_score={5}
-          timeString={'08:00 - 09:50 pm (1h50m)'}
+          home_team_score={item?.home_team_win_count}
+          away_team_score={item?.away_team_win_count}
+          timeString={`${item.start_date} - ${item.end_date === '-' ? 'Not Ended' : item.end_date}`}
       />
         {/* Inner Set Records */}
 
@@ -247,28 +273,6 @@ export default function TennisRecordList({ route, navigation }) {
 
       </View>
     )
-
-    // const isHomeTeam = teamIds?.home_team?.group_id === item.team_id;
-    // const isGameState = item.verb in tennisGameStats;
-    // return (
-    //   <View>
-    //     {!isGameState && isHomeTeam && (
-    //       <TennisGameScoreLeft
-    //                 gameData={gameData}
-    //                 recordData={item}
-    //                 editor={editorChecked}
-    //             />
-    //     )}
-    //     {!isGameState && !isHomeTeam && (
-    //       <TennisGameScoreRight
-    //                 gameData={gameData}
-    //                 recordData={item}
-    //                 editor={editorChecked}
-    //             />
-    //     )}
-    //     {isGameState && <TennisGameState gameStats={tennisGameStats} recordData={item}/>}
-    //   </View>
-    // )
   }
 
   const toggleGameRecords = (parentIndex, index) => {
@@ -309,7 +313,9 @@ export default function TennisRecordList({ route, navigation }) {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>{0}</Text>
+            <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>
+              {item?.home_team_score}
+            </Text>
           </View>
 
           {/* Set Number */}
@@ -318,7 +324,12 @@ export default function TennisRecordList({ route, navigation }) {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <Text style={{ ...styles.setNumberText, color: colors.googleColor, fontSize: 17 }}>{getNumberSuffix(item?.game_number)} game</Text>
+            <Text style={{ ...styles.setNumberText, color: colors.googleColor, fontSize: 17 }}>
+              {getNumberSuffix(item?.game_number)} game
+            </Text>
+            <Text style={styles.setTimeDurationText}>
+              {`${item.start_date} - ${item.end_date === '-' ? 'Not Ended' : item.end_date}`}
+            </Text>
           </View>
 
           {/* Right Score */}
@@ -327,7 +338,9 @@ export default function TennisRecordList({ route, navigation }) {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>{0}</Text>
+            <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>
+              {item?.away_team_score}
+            </Text>
           </View>
         </View>
 
@@ -377,24 +390,19 @@ export default function TennisRecordList({ route, navigation }) {
   }
   return (
     <View style={ styles.mainContainer }>
-      <View style={ { flexDirection: 'row' } }>
-        <View
+      <Dash
           style={ {
             alignSelf: 'center',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            flexDirection: 'row',
             flex: 1,
-          } }>
-          <Dash
-            style={ {
-              width: 1,
-              height: 36,
-              flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
-          />
-        </View>
+            height: '100%',
+            position: 'absolute',
+            zIndex: 1,
+            flexDirection: 'column',
+          } }
+          dashColor={ colors.lightgrayColor }
+        />
+
+      <View style={ { flexDirection: 'row' } }>
         <View style={ styles.editorView }>
           <Text style={{ fontSize: 12, fontFamily: fonts.RRegular }}>Show editors</Text>
           <TouchableWithoutFeedback
@@ -402,9 +410,9 @@ export default function TennisRecordList({ route, navigation }) {
               setEditorChecked(!editorChecked);
             } }>
             {editorChecked === true ? (
-              <Image source={ images.checkEditor } style={ styles.checkboxImg } />
+              <FastImage resizeMode={'contain'} source={ images.checkEditor } style={ styles.checkboxImg } />
             ) : (
-              <Image source={ images.uncheckEditor } style={ styles.checkboxImg } />
+              <FastImage resizeMode={'contain'} source={ images.uncheckEditor } style={ styles.checkboxImg } />
             )}
           </TouchableWithoutFeedback>
         </View>
@@ -432,21 +440,11 @@ export default function TennisRecordList({ route, navigation }) {
               : gameData?.home_team?.group_name}
           </Text>
         </View>
+
         <View style={ styles.centerView }>
-          {getScoreText(gameData?.scoreboard?.game_inprogress?.home_team_point, gameData?.scoreboard?.game_inprogress?.away_team_point, 1)}
-          <Dash
-            style={ {
-              width: 1,
-              height: 70,
-              flexDirection: 'column',
-              paddingLeft: 10,
-              paddingRight: 10,
-            } }
-            dashColor={ colors.lightgrayColor }
-          />
-          <Text style={ styles.centerText }>
-            {getScoreText(gameData?.scoreboard?.game_inprogress?.home_team_point, gameData?.scoreboard?.game_inprogress?.away_team_point, 2)}
-          </Text>
+          {getScoreText(currentScore?.home_team_score, currentScore?.home_team_score?.away_team_score, 1)}
+          <Text style={ styles.centerText }> : </Text>
+          {getScoreText(currentScore?.home_team_score, currentScore?.home_team_score?.away_team_score, 2)}
         </View>
         <View style={ styles.rightView }>
           <Text style={{
@@ -467,11 +465,10 @@ export default function TennisRecordList({ route, navigation }) {
           </View>
         </View>
       </View>
-      {/* {!loading && ( */}
-
       <Fragment>
         <FlatList
-                keyExtractor={({ index }) => index}
+            listKey={'matchRecordList'}
+                keyExtractor={({ index }) => index?.toString()}
                 style={{ height: hp(30) }}
                 data={matchRecords}
                 renderItem={renderMatchRecords}
@@ -485,8 +482,6 @@ export default function TennisRecordList({ route, navigation }) {
                   </View>
                 )}/>
       </Fragment>
-      {/* )} */}
-
     </View>
   );
 }
@@ -494,7 +489,7 @@ export default function TennisRecordList({ route, navigation }) {
 const styles = StyleSheet.create({
   centerText: {
     fontFamily: fonts.RRegular,
-    fontSize: 35,
+    fontSize: 30,
     color: colors.lightBlackColor,
   },
   centerView: {
@@ -591,7 +586,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,138,1,0.15)',
+    backgroundColor: 'rgba(255,138,1,0.1)',
     borderTopWidth: 1.5,
     borderTopColor: colors.themeColor,
     marginBottom: 27,

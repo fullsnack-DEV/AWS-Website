@@ -10,7 +10,6 @@ import {
   widthPercentageToDP as wp,
 
 } from 'react-native-responsive-screen';
-import Dash from 'react-native-dash';
 
 import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
@@ -46,16 +45,6 @@ export default function TennisGameScoreRight({
             {getGameDateTimeInHMSformat(recordData?.timestamp)}
           </Text>
         </View>
-        <View style={ styles.centerView }>
-          <Dash
-            style={ {
-              width: 1,
-              height: 70,
-              flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
-          />
-        </View>
         <View style={ styles.rightView }>
           <View style={{
             width: '20%',
@@ -85,20 +74,11 @@ export default function TennisGameScoreRight({
       </View>
       {editor && (
         <View style={ styles.editorView }>
-          <Dash
-            style={ {
-              width: 1,
-              height: 30,
-              flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
-          />
           <View
             style={ {
               width: '100%',
               justifyContent: 'space-around',
               alignItems: 'space-around',
-              position: 'absolute',
             } }>
             <Text style={ styles.recordedBy }>
               Recorded by {recordData?.recorded_by_team_name ?? ''} ({getGameTimeAgo(recordData?.timestamp)})
@@ -111,14 +91,6 @@ export default function TennisGameScoreRight({
 }
 
 const styles = StyleSheet.create({
-
-  centerView: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: wp('2%'),
-  },
-
   editorView: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -147,10 +119,10 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    height: 70,
+    marginVertical: 15,
     justifyContent: 'flex-end',
     width: '100%',
-    // paddingTop: 10,
+
   },
   leftBlankView: {
     marginRight: 10,

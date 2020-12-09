@@ -10,7 +10,6 @@ import {
   widthPercentageToDP as wp,
 
 } from 'react-native-responsive-screen';
-import Dash from 'react-native-dash';
 
 import FastImage from 'react-native-fast-image';
 import colors from '../../../../../Constants/Colors';
@@ -62,16 +61,6 @@ export default function TennisGameScoreLeft(
               </View>
             </View>
           </View>
-          <View style={ styles.centerView }>
-            <Dash
-                  style={ {
-                    width: 1,
-                    height: 70,
-                    flexDirection: 'column',
-                  } }
-                  dashColor={ colors.lightgrayColor }
-              />
-          </View>
           <View style={ styles.rightBlankView }>
             <Text style={ { fontFamily: fonts.RBold, fontSize: 12 } }>
               {getGameConvertMinsToTime(recordData?.minutes ?? 0)}
@@ -87,32 +76,14 @@ export default function TennisGameScoreLeft(
           </View>
         </View>
 
-        <Dash
-              style={ {
-                width: 1,
-                height: 20,
-                flexDirection: 'column',
-                alignSelf: 'center',
-              } }
-              dashColor={ colors.lightgrayColor }
-          />
       </View>
       {editor && (
         <View style={ styles.editorView }>
-          <Dash
-                  style={ {
-                    width: 1,
-                    height: 30,
-                    flexDirection: 'column',
-                  } }
-                  dashColor={ colors.lightgrayColor }
-              />
           <View
                   style={ {
                     width: '100%',
                     justifyContent: 'space-around',
                     alignItems: 'space-around',
-                    position: 'absolute',
                   } }>
             <Text style={ styles.recordedBy }>
               Recorded by {`${recordData?.recorded_by?.first_name} ${recordData?.recorded_by?.last_name}` ?? ''}
@@ -125,14 +96,6 @@ export default function TennisGameScoreLeft(
 }
 
 const styles = StyleSheet.create({
-
-  centerView: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: wp('2%'),
-  },
-
   editorView: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -165,7 +128,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    height: 70,
+    marginVertical: 15,
     justifyContent: 'flex-start',
     width: '100%',
   },

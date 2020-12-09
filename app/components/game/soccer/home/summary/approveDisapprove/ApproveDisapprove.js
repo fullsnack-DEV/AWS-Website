@@ -142,19 +142,32 @@ const ApproveDisapprove = ({
           </Text>
           <Text style={styles.subTitle}>
             Do you want to approve the winner and scores of this game?{' '}
-            <TouchableOpacity onPress={() => setShowWarningPopup(!showWarningPopup)}>
+            <TouchableOpacity onPress={() => setShowWarningPopup(!showWarningPopup)} style={{ alignItems: 'center', justifyContent: 'center' }}>
               <TCInlineImage
                 resizeMode={'contain'}
                 source={images.warningIcon}
-                style={{ width: 15, height: 15 }}
-             />
+                style={{
+                  width: 20,
+                  height: 20,
+                }}
+              />
+              {showWarningPopup && (
+                <TCInlineImage
+                      resizeMode={'contain'}
+                      source={images.popupUpArrow}
+                      style={{
+                        position: 'absolute',
+                        width: 20,
+                        height: 20,
+                        top: 20,
+                      }}
+                  />
+              )}
             </TouchableOpacity>
           </Text>
-          <TCPopupMessage
-              visible={showWarningPopup}
-              message={MESSAGE}
-              arrowFromLeft={85}
-          />
+          {showWarningPopup && (
+            <TCPopupMessage message={MESSAGE} />
+          )}
           <View style={styles.teamVSContainer}>
             <View style={styles.teamVSContentContainer}>
               <View style={styles.teamLogoAndNameContainer}>
