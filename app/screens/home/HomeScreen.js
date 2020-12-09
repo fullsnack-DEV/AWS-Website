@@ -84,6 +84,7 @@ import LanguageViewInInfo from '../../components/Home/LanguageViewInInfo';
 import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
 import ReviewRatingView from '../../components/Home/ReviewRatingView';
 import ReviewSection from '../../components/Home/ReviewSection';
+import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 
 const certificate_data = [
   {
@@ -170,6 +171,7 @@ export default function HomeScreen({ navigation, route }) {
   const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(false)
   const [statsModalVisible, setStatsModalVisible] = useState(false)
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false)
+  const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [postData, setPostData] = useState([]);
   const [galleryData, setGalleryData] = useState([]);
@@ -989,9 +991,31 @@ export default function HomeScreen({ navigation, route }) {
     console.log('refereeInObject', refereeInObject)
     if (refereeInObject) {
       setRefereesInModalVisible(!refereesInModalVisible);
+    } else {
+      // add New Referee
+    }
+  };
+
+  const onAddRolePress = () => {
+    addRoleActionSheet.current.show()
+  };
+
+  const playInModel = (playInObject) => {
+    console.log('playInObject now', playInObject)
+    if (playInObject) {
+      setPlaysInModalVisible(!playsInModalVisible);
       const entity = authContext.entity
+      setSportName(playInObject.sport_name);
+      setGamesChartData([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+      setGameStatsData({
+        from_date: false,
+        total_games: 0,
+        winner: 0,
+        looser: 0,
+        draw: 0,
+      })
       const params = {
-        sport: refereeInObject.sport_name,
+        sport: playInObject.sport_name,
         role: 'player',
         status: 'ended',
       };
@@ -1012,28 +1036,37 @@ export default function HomeScreen({ navigation, route }) {
         });
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
-    } else {
-      // add New Referee
-    }
-  };
-
-  const onAddRolePress = () => {
-    addRoleActionSheet.current.show()
-  };
-
-  const playInModel = (playInObject) => {
-    console.log('playInObject now', playInObject)
-    if (playInObject) {
-      // Edit Refree Here
+      const parameters = {
+        sport: playInObject.sport_name,
+      };
+      const gameChart = [];
+      getGameStatsChartData(entity.uid || entity.auth.user_id, parameters, authContext).then((response) => {
+        if (response.payload && response.payload.length > 0) {
+          response.payload[0].data.map((gameChartItem) => {
+            gameChart.push(gameChartItem.value);
+            setGamesChartData([...gameChart]);
+            return null;
+          })
+        }
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+      const paramData = {
+        sport: playInObject.sport_name,
+      };
+      getGameStatsData(entity.uid || entity.auth.user_id, paramData, authContext).then((response) => {
+        if (response.payload && response.payload.length > 0) {
+          setGameStatsData(response.payload[0].stats)
+        }
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
     } else {
       // in case add new
-
     }
   };
 
-  const playsInModal = () => {
-    setPlaysInModalVisible(!playsInModalVisible);
-  }
+  // const playsInModal = () => {
+  //   setPlaysInModalVisible(!playsInModalVisible);
+  // }
 
   const infoModal = () => {
     setInfoModalVisible(!infoModalVisible);
@@ -1057,6 +1090,10 @@ export default function HomeScreen({ navigation, route }) {
 
   const reviewsModal = () => {
     setReviewsModalVisible(!reviewsModalVisible);
+  };
+
+  const reviewerDetailModal = () => {
+    setReviewerDetailModalVisible(!reviewerDetailModalVisible);
   };
 
   useEffect(() => {
@@ -1164,65 +1201,7 @@ export default function HomeScreen({ navigation, route }) {
                     loggedInEntity={authContext.entity}
                     onAddRolePress={onAddRolePress}
                     onRefereesInPress={refereesInModal}
-                    onPlayInPress={(item) => {
-                      const entity = authContext.entity
-                      setSportName(item.sport_name);
-                      setGamesChartData([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-                      setGameStatsData({
-                        from_date: false,
-                        total_games: 0,
-                        winner: 0,
-                        looser: 0,
-                        draw: 0,
-                      })
-                      const params = {
-                        sport: item.sport_name,
-                        role: 'player',
-                        status: 'ended',
-                      };
-                      getGameScoreboardEvents(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
-                        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-                        const recentMatch = [];
-                        const upcomingMatch = [];
-                        res.payload.filter((event_item) => {
-                          const eventStartDate = new Date(event_item.start_datetime * 1000)
-                          if (eventStartDate > date) {
-                            upcomingMatch.push(event_item);
-                            setUpcomingMatchData([...upcomingMatch]);
-                          } else {
-                            recentMatch.push(event_item);
-                            setRecentMatchData([...recentMatch]);
-                          }
-                          return null;
-                        });
-                      })
-                        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
-                      playsInModal()
-                      const parameters = {
-                        sport: item.sport_name,
-                      };
-                      const gameChart = [];
-                      getGameStatsChartData(entity.uid || entity.auth.user_id, parameters, authContext).then((response) => {
-                        if (response.payload && response.payload.length > 0) {
-                          response.payload[0].data.map((gameChartItem) => {
-                            gameChart.push(gameChartItem.value);
-                            setGamesChartData([...gameChart]);
-                            return null;
-                          })
-                        }
-                      })
-                        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
-                      const paramData = {
-                        sport: item.sport_name,
-                      };
-                      getGameStatsData(entity.uid || entity.auth.user_id, paramData, authContext).then((response) => {
-                        if (response.payload && response.payload.length > 0) {
-                          setGameStatsData(response.payload[0].stats)
-                        }
-                      })
-                        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
-                    }
-                    }
+                    onPlayInPress={playInModel}
                     onAction={onUserAction}/>}
           {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
             isAdmin={isAdmin}
@@ -2190,11 +2169,72 @@ export default function HomeScreen({ navigation, route }) {
                     </TouchableOpacity>
                   }
                 />
-                <ReviewSection
-                  reviewsData={reviewsData}
-                />
               </View>
+              <ReviewSection
+                reviewsData={reviewsData}
+                onReadMorePress={() => {
+                  reviewerDetailModal();
+                }}
+              />
             </SafeAreaView>
+
+            <Modal
+              isVisible={reviewerDetailModalVisible}
+              backdropColor="black"
+              style={{
+                margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              }}
+              hasBackdrop
+              onBackdropPress={() => setReviewerDetailModalVisible(false)}
+              backdropOpacity={0}
+            >
+              <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+                <View>
+                  <LinearGradient
+                    colors={[colors.orangeColor, colors.yellowColor]}
+                    end={{ x: 0.0, y: 0.25 }}
+                    start={{ x: 1, y: 0.5 }}
+                    style={styles.gradiantHeaderViewStyle}>
+                  </LinearGradient>
+                  <Header
+                    mainContainerStyle={styles.headerMainContainerStyle}
+                    leftComponent={
+                      <TouchableOpacity onPress={() => setReviewerDetailModalVisible(false)}>
+                        <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                      </TouchableOpacity>
+                    }
+                    centerComponent={
+                      <View style={styles.headerCenterViewStyle}>
+                        <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                        <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                      </View>
+                    }
+                    rightComponent={
+                      <TouchableOpacity onPress={() => setReviewerDetailModalVisible(false)}>
+                        <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                      </TouchableOpacity>
+                    }
+                  />
+                </View>
+                <View>
+                  <ReviewRecentMatch
+                    eventColor={colors.yellowColor}
+                    startDate1={'Sep'}
+                    startDate2={'25'}
+                    title={'Soccer'}
+                    startTime={'7:00pm -'}
+                    endTime={'9:10pm'}
+                    location={'BC Stadium'}
+                    firstUserImage={images.team_ph}
+                    firstTeamText={'Vancouver Whitecaps'}
+                    secondUserImage={images.team_ph}
+                    secondTeamText={'Newyork City FC'}
+                    firstTeamPoint={3}
+                    secondTeamPoint={1}
+                  />
+                </View>
+              </SafeAreaView>
+            </Modal>
           </Modal>
         </Modal>
       </ParallaxScrollView>

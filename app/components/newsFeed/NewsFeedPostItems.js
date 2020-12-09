@@ -193,9 +193,9 @@ function NewsFeedPostItems({
                 }}
                 style={styles.imageTouchStyle}>
                 <Image
-                  style={styles.commentImage}
-                  source={images.comment}
-                  resizeMode={'contain'}
+                  style={[styles.commentImage, { top: 2 }]}
+                  source={images.commentImage}
+                  resizeMode={'cover'}
                 />
               </TouchableOpacity>
               {item.reaction_counts
@@ -220,7 +220,7 @@ function NewsFeedPostItems({
                 style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
-                  source={images.share}
+                  source={images.shareImage}
                   resizeMode={'contain'}
                 />
               </TouchableOpacity>
@@ -259,14 +259,14 @@ function NewsFeedPostItems({
               style={styles.imageTouchStyle}>
               {like === true ? (
                 <Image
-                  style={[styles.commentImage, { tintColor: '#FF8A01' }]}
-                  source={images.feedLike}
+                  style={styles.commentImage}
+                  source={images.likeImage}
                   resizeMode={'contain'}
                 />
               ) : (
                 <Image
                   style={styles.commentImage}
-                  source={images.feedLike}
+                  source={images.unlikeImage}
                   resizeMode={'contain'}
                 />
               )}
@@ -305,9 +305,9 @@ const styles = StyleSheet.create({
     width: hp('5%'),
   },
   commentImage: {
-    height: hp('2.5%'),
-    tintColor: colors.reactionCountColor,
-    width: hp('2.5%'),
+    height: 32,
+    width: 32,
+    alignSelf: 'flex-end',
   },
   commentShareLikeView: {
     flexDirection: 'row',
@@ -334,9 +334,7 @@ const styles = StyleSheet.create({
   },
   imageTouchStyle: {
     alignItems: 'center',
-    height: hp('3%'),
     justifyContent: 'center',
-    width: hp('3%'),
   },
   mainContainer: {
     flexDirection: 'row',

@@ -127,6 +127,10 @@ const images = {
   bagTick: require('../assets/images/bagTick.png'),
   attatchmentGrey: require('../assets/images/attachmentGrey.png'),
   // likeOrange: require('../assets/images/orangeLike.png'),
+  commentImage: require('../assets/images/msg_icon.png'),
+  shareImage: require('../assets/images/share_icon.png'),
+  likeImage: require('../assets/images/like_icon.png'),
+  unlikeImage: require('../assets/images/unlike_icon.png'),
 
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
@@ -239,6 +243,7 @@ const images = {
   greenRatingStar: require('../assets/images/greenRatingStar.png'),
   moveFlottyButton: require('../assets/images/move_flotty_btn.png'),
   orangeGradient: require('../assets/images/orangeGradient.png'),
+  themeGradientImage: require('../assets/images/theme_gradient.png'),
   thumbImage: require('../assets/images/thumbImage.png'),
   tennisBackground: require('../assets/images/tennisBackground.png'),
   leagueDemo: require('../assets/images/leaguedemo.png'),

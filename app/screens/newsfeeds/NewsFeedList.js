@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View, FlatList, Alert, ActivityIndicator,
@@ -23,9 +22,9 @@ export default function NewsFeedList({
   const authContext = useContext(AuthContext)
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      const currentUserID = await AsyncStorage.getItem('CurrentUserId');
-      if (currentUserID) {
-        setUserID(currentUserID);
+      const entity = authContext.entity
+      if (entity) {
+        setUserID(entity.uid || entity.auth.user_id);
       }
     });
     return () => {

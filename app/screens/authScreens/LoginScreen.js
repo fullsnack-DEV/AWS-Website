@@ -47,8 +47,8 @@ const config = {
 };
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('vineet@gmail.com');
-  const [password, setPassword] = useState('Vineet@123');
+  const [email, setEmail] = useState('kishan@gmail.com');
+  const [password, setPassword] = useState('Kishan@123');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
   // For activity indigator

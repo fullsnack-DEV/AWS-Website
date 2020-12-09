@@ -23,7 +23,7 @@ function ReviewRatingView({
           showRating={false}
           defaultRating={rating}
           size={rateStarSize}
-          isDisabled={false}
+          isDisabled={true}
           selectedColor={'#f49c20'}
         />
         <Text style={styles.ratingCountTextStyle}>{ratingCount}</Text>

@@ -19,60 +19,187 @@ import ReviewerItemView from './ReviewerItemView';
 import ReviewRatingView from './ReviewRatingView';
 import ReviewRecentMatch from './ReviewRecentMatch';
 
-const reviewer_data = [
+const review_all_data = [
   {
-    userImage: images.team_ph,
-    userName: 'Christiano Ronaldo',
-    created_date: 'Apr 23',
-    description: strings.aboutValue,
-    attachments: [
+    color: colors.yellowColor,
+    startDate1: 'Sep',
+    startDate2: '25',
+    title: 'Soccer',
+    startTime: '7:00pm -',
+    endTime: '9:10pm',
+    location: 'BC Stadium',
+    firstUserImage: images.team_ph,
+    firstTeamText: 'Vancouver Whitecaps',
+    secondUserImage: images.team_ph,
+    secondTeamText: 'Newyork City FC',
+    firstTeamPoint: 3,
+    secondTeamPoint: 1,
+    reviewData: [
       {
-        thumbnail: images.orangeGradient,
-        type: 'image',
+        userImage: images.team_ph,
+        userName: 'Christiano Ronaldo',
+        created_date: 'Apr 23',
+        description: strings.aboutValue,
+        attachments: [
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+        ],
+        commentCount: 1,
+        shareCount: 2,
+        likeCount: 9,
       },
       {
-        thumbnail: images.orangeGradient,
-        type: 'image',
+        userImage: images.team_ph,
+        userName: 'Christiano Ronaldo',
+        created_date: 'Apr 23',
+        description: strings.aboutValue,
+        attachments: [
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+        ],
+        commentCount: 1,
+        shareCount: 2,
+        likeCount: 9,
       },
       {
-        thumbnail: images.orangeGradient,
-        type: 'image',
+        userImage: images.team_ph,
+        userName: 'Christiano Ronaldo',
+        created_date: 'Apr 23',
+        description: strings.aboutValue,
+        attachments: [
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+        ],
+        commentCount: 1,
+        shareCount: 2,
+        likeCount: 9,
       },
       {
-        thumbnail: images.orangeGradient,
-        type: 'image',
-      },
-      {
-        thumbnail: images.orangeGradient,
-        type: 'image',
+        userImage: images.team_ph,
+        userName: 'Christiano Ronaldo',
+        created_date: 'Apr 23',
+        description: strings.aboutValue,
+        attachments: [
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+        ],
+        commentCount: 1,
+        shareCount: 2,
+        likeCount: 9,
       },
     ],
-    commentCount: 1,
-    shareCount: 2,
-    likeCount: 9,
   },
   {
-    userImage: images.team_ph,
-    userName: 'Christiano Ronaldo',
-    created_date: 'Apr 23',
-    description: strings.aboutValue,
-    attachments: [
+    color: colors.blueColor,
+    startDate1: 'Sep',
+    startDate2: '25',
+    title: 'Soccer',
+    startTime: '7:00pm -',
+    endTime: '9:10pm',
+    location: 'BC Stadium',
+    firstUserImage: images.team_ph,
+    firstTeamText: 'Vancouver Whitecaps',
+    secondUserImage: images.team_ph,
+    secondTeamText: 'Newyork City FC',
+    firstTeamPoint: 3,
+    secondTeamPoint: 1,
+    reviewData: [
       {
-        thumbnail: images.orangeGradient,
-        type: 'image',
+        userImage: images.team_ph,
+        userName: 'Christiano Ronaldo',
+        created_date: 'Apr 23',
+        description: strings.aboutValue,
+        attachments: [
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+        ],
+        commentCount: 1,
+        shareCount: 2,
+        likeCount: 9,
+      },
+      {
+        userImage: images.team_ph,
+        userName: 'Christiano Ronaldo',
+        created_date: 'Apr 23',
+        description: strings.aboutValue,
+        attachments: [
+          {
+            thumbnail: images.orangeGradient,
+            type: 'image',
+          },
+        ],
+        commentCount: 1,
+        shareCount: 2,
+        likeCount: 9,
       },
     ],
-    commentCount: 1,
-    shareCount: 2,
-    likeCount: 9,
   },
 ];
 
 function ReviewSection({
   reviewsData,
   onAboutRatingPress,
+  onReadMorePress,
 }) {
-  const [reviewerData] = useState(reviewer_data);
+  const [reviewAllData] = useState(review_all_data);
 
   return (
     <ScrollView>
@@ -80,33 +207,33 @@ function ReviewSection({
         title={'Rating for teams (0)'}
       >
         <FlatList
-            data={reviewsData}
-            bounces={false}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={{
-              marginVertical: 6,
-            }} />}
-            style={{ marginVertical: 15 }}
-            renderItem={({ item: reviewItem }) => <ReviewRatingView
-            title={reviewItem.title}
-            rating={Number(reviewItem.rating)}
-            ratingCount={reviewItem.rating}
-            rateStarSize={20}
-            titleStyle={{ fontFamily: fonts.RMedium }}
-            containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
-            />}
-            ListFooterComponent={() => <View style={{ marginTop: 6 }}>
-              <View style={styles.lastReviewItemSeprator} />
-              <ReviewRatingView
-                title={'Punctuality'}
-                rating={Number(4.0)}
-                ratingCount={'4.0'}
-                rateStarSize={20}
-                titleStyle={{ fontFamily: fonts.RMedium }}
-                containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
-              />
-            </View>}
-            keyExtractor={(item, index) => index.toString()}
+          data={reviewsData}
+          bounces={false}
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{
+            marginVertical: 6,
+          }} />}
+          style={{ marginVertical: 15 }}
+          renderItem={({ item: reviewItem }) => <ReviewRatingView
+          title={reviewItem.title}
+          rating={Number(reviewItem.rating)}
+          ratingCount={reviewItem.rating}
+          rateStarSize={20}
+          titleStyle={{ fontFamily: fonts.RMedium }}
+          containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
+          />}
+          ListFooterComponent={() => <View style={{ marginTop: 6 }}>
+            <View style={styles.lastReviewItemSeprator} />
+            <ReviewRatingView
+              title={'Punctuality'}
+              rating={Number(4.0)}
+              ratingCount={'4.0'}
+              rateStarSize={20}
+              titleStyle={{ fontFamily: fonts.RMedium }}
+              containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
+            />
+          </View>}
+          keyExtractor={(item, index) => index.toString()}
         />
         <Text
           style={styles.detailRatingTextStyle}
@@ -119,34 +246,50 @@ function ReviewSection({
         containerStyle={{ width: wp('100%'), padding: 0 }}
         headerTextStyle={{ paddingLeft: 12 }}
       >
-        <ReviewRecentMatch
-          eventColor={colors.yellowColor}
-          startDate1={'Sep'}
-          startDate2={'25'}
-          title={'Soccer'}
-          startTime={'7:00pm -'}
-          endTime={'9:10pm'}
-          location={'BC Stadium'}
-          firstUserImage={images.team_ph}
-          firstTeamText={'Vancouver Whitecaps'}
-          secondUserImage={images.team_ph}
-          secondTeamText={'Newyork City FC'}
-          firstTeamPoint={3}
-          secondTeamPoint={1}
-        />
-        <Carousel
-            data={reviewerData}
-            renderItem={({ item }) => <ReviewerItemView
-                item={item}
-            />}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            sliderWidth={wp(100)}
-            nestedScrollEnabled={true}
-            itemWidth={wp(94)}
+        <FlatList
+            data={reviewAllData}
+            bounces={false}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={{
+              marginVertical: 6,
+            }} />}
+            style={{ marginVertical: 15 }}
+            renderItem={({ item: reviewAllItem }) => (
+              <View>
+                <ReviewRecentMatch
+                  eventColor={reviewAllItem.color}
+                  startDate1={reviewAllItem.startDate1}
+                  startDate2={reviewAllItem.startDate2}
+                  title={reviewAllItem.title}
+                  startTime={reviewAllItem.startTime}
+                  endTime={reviewAllItem.endTime}
+                  location={reviewAllItem.location}
+                  firstUserImage={reviewAllItem.firstUserImage}
+                  firstTeamText={reviewAllItem.firstTeamText}
+                  secondUserImage={reviewAllItem.secondUserImage}
+                  secondTeamText={reviewAllItem.secondTeamText}
+                  firstTeamPoint={reviewAllItem.firstTeamPoint}
+                  secondTeamPoint={reviewAllItem.secondTeamPoint}
+                />
+                <Carousel
+                  data={reviewAllItem.reviewData.slice(0, 3)}
+                  renderItem={({ item, index }) => <ReviewerItemView
+                      item={item}
+                      indexNumber={index}
+                      totalData={reviewAllItem.reviewData}
+                      onReadMorePress={onReadMorePress}
+                  />}
+                  inactiveSlideScale={1}
+                  inactiveSlideOpacity={1}
+                  sliderWidth={wp(100)}
+                  nestedScrollEnabled={true}
+                  itemWidth={wp(94)}
+                />
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
         />
       </EventItemRender>
-      <View style={{ marginBottom: 50 }} />
     </ScrollView>
   );
 }
