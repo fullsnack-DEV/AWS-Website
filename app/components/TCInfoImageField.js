@@ -17,6 +17,7 @@ export default function TCInfoImageField({
   title,
   image,
   name,
+  color = colors.lightBlackColor,
   ...Props
 }) {
   return (
@@ -25,7 +26,7 @@ export default function TCInfoImageField({
       <View style={styles.fieldValue}>
         <Image source={image ? { uri: image } : images.teamPlaceholder} style={styles.imageView}/>
         <Text style={{
-          marginLeft: 5, fontFamily: fonts.RMedium, fontSize: 16, color: colors.lightBlackColor,
+          marginLeft: 5, fontFamily: fonts.RMedium, fontSize: 16, color,
         }} numberOfLines={1}>{name}</Text>
       </View>
     </View>

@@ -18,9 +18,13 @@ import TCTextField from '../../../components/TCTextField';
 export default function CreateChallengeForm2({ navigation, route }) {
   const [rules, setRules] = useState('')
   const isFocused = useIsFocused();
-
+  const [editableAlter, setEditableAlter] = useState(false);
   useEffect(() => {
     if (route && route.params && route.params.editable && route.params.body) {
+      setRules(route.params.body.special_rule)
+    }
+    if (route && route.params && route.params.editableAlter && route.params.body) {
+      setEditableAlter(true)
       setRules(route.params.body.special_rule)
     }
   }, [isFocused]);
@@ -33,33 +37,43 @@ export default function CreateChallengeForm2({ navigation, route }) {
   };
   return (
     <View>
-      <View style={styles.formSteps}>
+      {editableAlter === false && <View style={styles.formSteps}>
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
         <View style={styles.form3}></View>
         <View style={styles.form4}></View>
         <View style={styles.form5}></View>
-      </View>
+      </View>}
+
       <View>
 
         <TCLabel title={'Rules'}/>
         <Text style={styles.responsibilityText}>Please, add the rules of the match.</Text>
-        <TCTextField
+        <View style={{ height: 100 }}>
+          <TCTextField
         height={100}
         multiline={true}
         placeholder={strings.writedownRulesPlaceholder}
         keyboardType={'default'}
         value={rules}
         onChangeText={(text) => setRules(text)}/>
+        </View>
 
       </View>
       <View style={{ flex: 1 }}/>
       <View style={{ marginBottom: 20 }}>
-        <TCGradientButton title={strings.nextTitle} onPress={() => {
+        <TCGradientButton title={editableAlter === true ? strings.doneTitle : strings.nextTitle} onPress={() => {
           if (checkValidation()) {
             if (route && route.params && route.params.editable && route.params.body) {
               navigation.navigate('CreateChallengeForm4', {
                 teamData: route.params.teamData,
+                body: {
+                  ...route.params.body,
+                  special_rule: rules,
+                },
+              })
+            } else if (editableAlter === true) {
+              navigation.navigate('AlterAcceptDeclineScreen', {
                 body: {
                   ...route.params.body,
                   special_rule: rules,

@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   buttonText: {
     alignSelf: 'center',
     color: colors.whiteColor,
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: fonts.RBold,
   },
   rightIconStyle: {

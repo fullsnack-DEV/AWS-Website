@@ -23,6 +23,7 @@ import TCMessageButton from '../../../components/TCMessageButton';
 
 export default function CreateChallengeForm3({ navigation, route }) {
   const isFocused = useIsFocused();
+  const [editableAlter, setEditableAlter] = useState(false);
   const [referees, setReferees] = useState([{
     id: 0,
     is_chief: true,
@@ -38,6 +39,11 @@ export default function CreateChallengeForm3({ navigation, route }) {
     if (route && route.params && route.params.editable && route.params.body) {
       setReferees([...route.params.body.referee])
       setScorekeeper([...route.params.body.scorekeeper])
+    }
+    if (route && route.params && route.params.editableAlter && route.params.body) {
+      setReferees([...route.params.body.referee])
+      setScorekeeper([...route.params.body.scorekeeper])
+      setEditableAlter(true)
     }
   }, [isFocused]);
   const addReferee = () => {
@@ -147,13 +153,13 @@ export default function CreateChallengeForm3({ navigation, route }) {
   return (
 
     <TCKeyboardView>
-      <View style={styles.formSteps}>
+      {!editableAlter && <View style={styles.formSteps}>
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
         <View style={styles.form3}></View>
         <View style={styles.form4}></View>
         <View style={styles.form5}></View>
-      </View>
+      </View>}
 
       <View>
         <TCLabel title={'Responsibility To Secure Referees'} />
@@ -203,15 +209,25 @@ export default function CreateChallengeForm3({ navigation, route }) {
         </Text>
       </View>
 
-      <TCGradientButton title={strings.nextTitle} onPress={() => {
-        navigation.navigate('CreateChallengeForm4', {
-          teamData: route.params.teamData,
-          body: {
-            ...route.params.body,
-            referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
-            scorekeeper: scorekeeper.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
-          },
-        })
+      <TCGradientButton title={editableAlter ? strings.doneTitle : strings.nextTitle} onPress={() => {
+        if (editableAlter) {
+          navigation.navigate('AlterAcceptDeclineScreen', {
+            body: {
+              ...route.params.body,
+              referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
+              scorekeeper: scorekeeper.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
+            },
+          })
+        } else {
+          navigation.navigate('CreateChallengeForm4', {
+            teamData: route.params.teamData,
+            body: {
+              ...route.params.body,
+              referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
+              scorekeeper: scorekeeper.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
+            },
+          })
+        }
       }}/>
     </TCKeyboardView>
   );

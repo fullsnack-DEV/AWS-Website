@@ -82,6 +82,7 @@ const makeAPIRequest = async ({
     if (!response.data.status) {
       throw (response.data.messages || response);
     }
+    console.log('RESPONSE ::', response.data);
     return response.data;
   } catch (e) {
     throw new Error(e);

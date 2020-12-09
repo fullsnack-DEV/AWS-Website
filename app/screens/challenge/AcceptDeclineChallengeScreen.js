@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image, FlatList, Alert,
 } from 'react-native';
-
+import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
 import { getChallenge, acceptDeclineChallenge } from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -20,26 +20,15 @@ import TCInfoImageField from '../../components/TCInfoImageField';
 import TCInfoField from '../../components/TCInfoField';
 import EventMapView from '../../components/Schedule/EventMapView';
 import ReservationStatus from '../../Constants/ReservationStatus';
+import GameStatus from '../../Constants/GameStatus';
 import TCBorderButton from '../../components/TCBorderButton';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
+import ReservationNumber from '../../components/reservations/ReservationNumber';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
   const authContext = useContext(AuthContext)
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(true);
   const [homeTeam, setHomeTeam] = useState();
@@ -47,19 +36,11 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const [bodyParams, setbodyParams] = useState();
 
   useEffect(() => {
-    const getAuthEntity = async () => {
-      entity = authContext.entity
-      if (route && route.params && route.params.challengeID) {
-        getChallengeDetail(route.params.challengeID);
-
-        console.log('TEams::', route.params.challengeID);
-      }
-    };
-    getAuthEntity();
-    if (route && route.params && route.params.body) {
-      console.log('BODY PARAMS:', route.params.body);
-      setbodyParams(route.params.body);
-    }
+    entity = authContext.entity
+    const { challengeObj } = route.params ?? {};
+    getChallengeDetail(challengeObj.challenge_id);
+    console.log('BODY PARAMS:', challengeObj);
+    setbodyParams(challengeObj);
   }, [isFocused]);
 
   const acceptDeclineChallengeOperation = (teamID, ChallengeId, versionNo, status) => {
@@ -101,27 +82,11 @@ export default function CreateChallengeForm4({ navigation, route }) {
     })
   };
 
-  const tConvert = (timeString) => {
-    const timeString12hr = new Date(
-      `1970-01-01T${timeString}Z`,
-    ).toLocaleTimeString(
-      {},
-      {
-        timeZone: 'UTC',
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      },
-    );
-    return timeString12hr;
-  };
-  const time_format = (d) => {
-    const hours = format_two_digits(d.getHours());
-    const minutes = format_two_digits(d.getMinutes());
-    const seconds = format_two_digits(d.getSeconds());
-    return tConvert(`${hours}:${minutes}:${seconds}`);
-  };
-  const format_two_digits = (n) => (n < 10 ? `0${n}` : n);
+  const getDateFormat = (dateValue) => {
+    moment.locale('en');
+    return moment(new Date(dateValue)).format('MMM DD, yy hh:mm a')
+  }
+
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
@@ -220,6 +185,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
       {homeTeam && awayTeam && bodyParams && <View>
+        <ReservationNumber reservationNumber={bodyParams.challenge_id}/>
         <View
         style={{
           flex: 1,
@@ -227,6 +193,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           justifyContent: 'space-between',
           margin: 15,
         }}>
+
           <View style={styles.challengerView}>
             <View style={styles.teamView}>
               <Image source={images.requestOut} style={styles.reqOutImage} />
@@ -236,7 +203,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             <View style={styles.teamView}>
               <Image source={images.teamPlaceholder} style={styles.teamImage} />
               <Text style={styles.teamNameText}>
-                {awayTeam && awayTeam.group_name}
+                {bodyParams.invited_by === bodyParams.home_team.group_id ? bodyParams.home_team.group_name : bodyParams.away_team.group_name}
 
               </Text>
             </View>
@@ -256,7 +223,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 fontSize: 16,
                 color: colors.lightBlackColor,
               }}>
-                {homeTeam && homeTeam.group_name}
+                {bodyParams.invited_by === bodyParams.home_team.group_id ? bodyParams.away_team.group_name : bodyParams.home_team.group_name}
               </Text>
             </View>
           </View>
@@ -429,24 +396,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
             <TCThinDivider />
             <TCInfoField
             title={'Time'}
-            value={`${
-              monthNames[new Date(bodyParams.start_datetime * 1000).getMonth()]
-            } ${new Date(
-              bodyParams.start_datetime * 1000,
-            ).getDate()}, ${new Date(
-              bodyParams.start_datetime * 1000,
-            ).getFullYear()} ${time_format(
-              new Date(new Date(bodyParams.start_datetime * 1000)),
-            )} - \n${
-              monthNames[new Date(bodyParams.end_datetime * 1000).getMonth()]
-            } ${new Date(bodyParams.end_datetime * 1000).getDate()}, ${new Date(
-              bodyParams.end_datetime * 1000,
-            ).getFullYear()} ${time_format(
-              new Date(new Date(bodyParams.end_datetime * 1000)),
-            )}\n( ${getTimeDifferent(
-              new Date(bodyParams.start_datetime * 1000),
-              new Date(bodyParams.end_datetime * 1000),
-            )} )`}
+            value={`${getDateFormat(bodyParams.start_datetime)} -\n${getDateFormat(bodyParams.end_datetime)}\n${getTimeDifferent(
+              new Date(bodyParams.start_datetime),
+              new Date(bodyParams.end_datetime),
+            )}`}
             marginLeft={30}
             titleStyle={{ fontSize: 16 }}
           />
@@ -563,17 +516,33 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
         {bodyParams.status === ReservationStatus.accepted && <View>
           <TCBorderButton
-            title={strings.cancelMatch}
+            title={strings.alterReservation}
             textColor={colors.grayColor}
             borderColor={colors.grayColor}
             height={40}
             shadow={true}
             marginTop={15}
+            onPress={() => {
+              if ((bodyParams.game_status === GameStatus.accepted || bodyParams.game_status === GameStatus.reset) && bodyParams.start_datetime > new Date().getTime()) {
+                navigation.navigate('AlterAcceptDeclineScreen', { body: bodyParams })
+              } else {
+                Alert.alert('Reservation cannot be change after game time passed or offer expired.')
+              }
+            }}/>
+          <TCBorderButton
+            title={strings.cancelMatch}
+            textColor={colors.whiteColor}
+            borderColor={colors.grayColor}
+            backgroundColor={colors.grayColor}
+            height={40}
+            shadow={true}
             marginBottom={15}
+            marginTop={15}
             onPress={() => {
               // navigation.navigate('Account', { screen: 'HomeScreen' })
               acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'cancel')
             }}/>
+
         </View> }
 
       </View>}

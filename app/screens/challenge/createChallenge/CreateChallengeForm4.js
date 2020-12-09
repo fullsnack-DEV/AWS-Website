@@ -56,7 +56,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
     };
     getAuthEntity();
     if (route && route.params && route.params.body) {
-      console.log('BODY PARAMS:', route.params.body);
+      console.log('BODY PARAMS of FORM 4:', route.params.body);
       setbodyParams(route.params.body);
     }
   }, [isFocused]);
