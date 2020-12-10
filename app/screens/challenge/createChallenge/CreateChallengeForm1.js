@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useRef, useState, useContext,
+  useEffect, useState, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -11,7 +11,6 @@ import {
   TextInput,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import TimePicker from 'react-native-24h-timepicker';
 import { getLatLong } from '../../../api/External';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -44,10 +43,13 @@ export default function CreateChallengeForm1({ navigation, route }) {
     'Nov',
     'Dec',
   ];
-  const timePicker = useRef();
+
   const isFocused = useIsFocused();
   const [venue, setVenue] = useState(0);
-  const [cordinate, setCordinate] = useState();
+  const [cordinate, setCordinate] = useState({
+    latitude: 0.0,
+    longitude: 0.0,
+  });
   const [teams, setteams] = useState([]);
   const [region, setRegion] = useState();
   const [secureVenue, setsecureVenue] = useState(0);
@@ -69,13 +71,15 @@ export default function CreateChallengeForm1({ navigation, route }) {
       setteams([{ ...entity.obj }, { ...route.params.groupObj }])
       setTeamData([{ ...entity.obj }, { ...route.params.groupObj }])
     }
-    if (route && route.params && route.params.body) {
-      console.log('Route Data of Form 1::', route.params.body);
+    if ((route && route.params && route.params.body) && ((route && route.params && route.params.editableAlter) || (route && route.params && route.params.editable))) {
+      if (route && route.params && route.params.editableAlter) {
+        setEditableAlter(true)
+      }
       bodyParams = route.params.body
       setteams([{ ...route.params.body.home_team }, { ...route.params.body.away_team }])
       setVenueData(route.params.body.venue)
-      setVenue((route.params.body.venue.venueType === 'HomeTeam' && 2) || (route.params.body.venue.venueType === 'AwayTeam' && 1) || (route.params.body.venue.venueType === 'other' && 0))
-
+      setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_name ? 0 : 1)
+      setVenue((route.params.body.venue.venueType === 'HomeTeam' && 1) || (route.params.body.venue.venueType === 'AwayTeam' && 2) || (route.params.body.venue.venueType === 'other' && 0))
       if (route.params.body.home_team.group_id === entity.obj.group_id) {
         setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }])
       } else {
@@ -83,14 +87,6 @@ export default function CreateChallengeForm1({ navigation, route }) {
       }
     }
 
-    if (route && route.params && route.params.editableAlter) {
-      setEditableAlter(true)
-    }
-
-    if ((route && route.params && route.params.editableAlter) || (route && route.params && route.params.editable)) {
-      setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_id ? 0 : 1)
-      setVenue((route.params.body.venue.venueType === 'HomeTeam' && 2) || (route.params.body.venue.venueType === 'AwayTeam' && 1) || (route.params.body.venue.venueType === 'other' && 0))
-    }
     if (route && route.params && route.params.venueObj) {
       getLatLongData()
       setVenue(0)
@@ -276,16 +272,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
         <View>
           <TCLabel title={'Date & Time'} required={true} />
           <View style={styles.viewContainer}>
-            <TimePicker
-              ref={timePicker}
-              onCancel={() => timePicker.current.close()}
-              onConfirm={(hour, minute) => {
-                console.log('HHMM', hour, minute);
-                timePicker.current.close();
-              }}
-              minuteInterval={5}
-              minuteUnit={' min'}
-            />
+
             {/* <TCTouchableLabel
           title={route && route.params && route.params.from ? `${route.params.from}` : 'Choose Date & Time'}
           showNextArrow={true}
@@ -293,10 +280,12 @@ export default function CreateChallengeForm1({ navigation, route }) {
           onPress={() => navigation.navigate('ChooseDateTimeScreen', { otherTeam: route.params.groupObj })}/> */}
             <View>
               <TouchableOpacity
-                onPress={() => navigation.navigate('ChooseDateTimeScreen', {
-                  otherTeam: route.params.groupObj || bodyParams,
-                })
-                }
+                onPress={() => {
+                  console.log('Form 1 body:', bodyParams);
+                  navigation.navigate('ChooseDateTimeScreen', {
+                    otherTeam: route.params.groupObj || bodyParams,
+                  })
+                }}
                 style={styles.containerStyle}>
                 <TextInput
                   placeholder={'Choose Date & Time'}
@@ -304,11 +293,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   style={styles.textInput}
                   value={
                     (bodyParams && bodyParams.start_datetime && bodyParams.end_datetime
-                      && `${getTimeDifferent(bodyParams.start_datetime, bodyParams.end_datetime)}\n${
-                        monthNames[new Date(bodyParams.start_datetime).getMonth()]
-                      } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
-                        bodyParams.start_datetime,
-                      ).getFullYear()}  ${time_format(new Date(bodyParams.start_datetime))} - ${time_format(new Date(bodyParams.end_datetime))}`)
+                      && `${getTimeDifferent(bodyParams.start_datetime * 1000, bodyParams.end_datetime * 1000)}\n${
+                        monthNames[new Date(bodyParams.start_datetime * 1000).getMonth()]
+                      } ${new Date(bodyParams.start_datetime * 1000).getDate()}, ${new Date(
+                        bodyParams.start_datetime * 1000,
+                      ).getFullYear()}  ${time_format(new Date(bodyParams.start_datetime * 1000))} - ${time_format(new Date(bodyParams.end_datetime * 1000))}`)
                   }
                   editable={false}
                   pointerEvents="none"
@@ -432,10 +421,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
             )}
             {venue === 0 && (
               <TCTouchableLabel
+              placeholder={'Address'}
                 title={
                   route && route.params && route.params.venueObj
-                    ? route.params.venueObj.description
-                    : 'Address'
+                    && route.params.venueObj.description
+
                 }
                 style={{ marginTop: 10, marginBottom: 10 }}
                 onPress={() => navigation.navigate('ChooseAddressScreen', {

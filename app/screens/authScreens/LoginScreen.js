@@ -112,7 +112,15 @@ export default function LoginScreen({ navigation }) {
         auth().onAuthStateChanged(onAuthStateChanged);
       })
       .catch((error) => {
-        Alert.alert(error.messages || error.code || JSON.stringify(error))
+        if (error.code === 'auth/user-not-found') {
+          Alert.alert('This email address is not registerd');
+        }
+        if (error.code === 'auth/email-already-in-use') {
+          Alert.alert('That email address is already in use!');
+        }
+        if (error.code === 'auth/invalid-email') {
+          Alert.alert('That email address is invalid!');
+        }
         setloading(false);
       });
   };

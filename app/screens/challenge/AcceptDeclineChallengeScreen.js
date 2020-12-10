@@ -9,7 +9,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import AuthContext from '../../auth/context'
+import AuthContext from '../../auth/context';
 import TCGradientButton from '../../components/TCGradientButton';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import TCThickDivider from '../../components/TCThickDivider';
@@ -27,7 +27,7 @@ import ReservationNumber from '../../components/reservations/ReservationNumber';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(true);
@@ -36,56 +36,81 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const [bodyParams, setbodyParams] = useState();
 
   useEffect(() => {
-    entity = authContext.entity
+    entity = authContext.entity;
     const { challengeObj } = route.params ?? {};
     getChallengeDetail(challengeObj.challenge_id);
     console.log('BODY PARAMS:', challengeObj);
     setbodyParams(challengeObj);
   }, [isFocused]);
 
-  const acceptDeclineChallengeOperation = (teamID, ChallengeId, versionNo, status) => {
-    setloading(true)
-    acceptDeclineChallenge(teamID, ChallengeId, versionNo, status, {}, authContext).then((response) => {
-      setloading(false);
-      console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
+  const acceptDeclineChallengeOperation = (
+    teamID,
+    ChallengeId,
+    versionNo,
+    status,
+  ) => {
+    setloading(true);
+    acceptDeclineChallenge(
+      teamID,
+      ChallengeId,
+      versionNo,
+      status,
+      {},
+      authContext,
+    )
+      .then((response) => {
+        setloading(false);
+        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
-      if (status === 'accept') {
-        navigation.navigate('ChallengeAcceptedDeclinedScreen', { teamObj: awayTeam, status: 'accept' })
-      } else if (status === 'decline') {
-        navigation.navigate('ChallengeAcceptedDeclinedScreen', { teamObj: awayTeam, status: 'decline' })
-      } else if (status === 'cancel') {
-        navigation.navigate('ChallengeAcceptedDeclinedScreen', { teamObj: awayTeam, status: 'cancel' })
-      }
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error.messages)
-    })
-  }
+        if (status === 'accept') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: awayTeam,
+            status: 'accept',
+          });
+        } else if (status === 'decline') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: awayTeam,
+            status: 'decline',
+          });
+        } else if (status === 'cancel') {
+          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            teamObj: awayTeam,
+            status: 'cancel',
+          });
+        }
+      })
+      .catch((error) => {
+        setloading(false);
+        Alert.alert(error.messages);
+      });
+  };
   const getChallengeDetail = (challengeID) => {
-    getChallenge(challengeID, authContext).then((response) => {
-      setbodyParams(response.payload[0]);
-      console.log(JSON.stringify(response.payload));
-      setloading(false);
-      if (response.payload[0].away_team.group_id === entity.uid) {
-        setHomeTeam(response.payload[0].away_team);
-        setAwayTeam(response.payload[0].home_team);
-        console.log('HOME::', homeTeam);
-      } else {
-        setHomeTeam(response.payload[0].home_team);
-        setAwayTeam(response.payload[0].away_team);
-        console.log('HOME::', homeTeam);
-        console.log('AWAY::', awayTeam);
-      }
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error.messages)
-    })
+    getChallenge(challengeID, authContext)
+      .then((response) => {
+        setbodyParams(response.payload[0]);
+        console.log(JSON.stringify(response.payload));
+        setloading(false);
+        if (response.payload[0].away_team.group_id === entity.uid) {
+          setHomeTeam(response.payload[0].away_team);
+          setAwayTeam(response.payload[0].home_team);
+          console.log('HOME::', homeTeam);
+        } else {
+          setHomeTeam(response.payload[0].home_team);
+          setAwayTeam(response.payload[0].away_team);
+          console.log('HOME::', homeTeam);
+          console.log('AWAY::', awayTeam);
+        }
+      })
+      .catch((error) => {
+        setloading(false);
+        Alert.alert(error.messages);
+      });
   };
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    return moment(new Date(dateValue)).format('MMM DD, yy hh:mm a')
-  }
+    return moment(new Date(dateValue)).format('MMM DD, yy hh:mm a');
+  };
 
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -181,371 +206,490 @@ export default function CreateChallengeForm4({ navigation, route }) {
     console.log('user challenge');
   };
   return (
-
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
-      {homeTeam && awayTeam && bodyParams && <View>
-        <ReservationNumber reservationNumber={bodyParams.challenge_id}/>
-        <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          margin: 15,
-        }}>
-
-          <View style={styles.challengerView}>
-            <View style={styles.teamView}>
-              <Image source={images.requestOut} style={styles.reqOutImage} />
-              <Text style={styles.challengerText}>Challenger</Text>
-            </View>
-
-            <View style={styles.teamView}>
-              <Image source={images.teamPlaceholder} style={styles.teamImage} />
-              <Text style={styles.teamNameText}>
-                {bodyParams.invited_by === bodyParams.home_team.group_id ? bodyParams.home_team.group_name : bodyParams.away_team.group_name}
-
-              </Text>
-            </View>
-          </View>
-          <View style={styles.challengeeView}>
-            <View style={styles.teamView}>
-              <Image source={images.requestIn} style={styles.reqOutImage} />
-              <Text style={styles.challengeeText}>Challengee</Text>
-            </View>
-
-            <View style={styles.teamView}>
-              <Image source={images.teamPlaceholder} style={styles.teamImage} />
-              <Text
-              style={{
-                marginLeft: 5,
-                fontFamily: fonts.RMedium,
-                fontSize: 16,
-                color: colors.lightBlackColor,
-              }}>
-                {bodyParams.invited_by === bodyParams.home_team.group_id ? bodyParams.away_team.group_name : bodyParams.home_team.group_name}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <TCThinDivider />
-
-        {/* status offered */}
-        {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.offered && (
+      {homeTeam && awayTeam && bodyParams && (
         <View>
-          {bodyParams.offer_expiry > new Date().getTime() ? (
-            <Text style={styles.challengeMessage}>RESERVATION REQUEST EXPIRED</Text>
-          ) : (
-            <Text style={styles.challengeMessage}>
-              RESERVATION REQUEST SENT
-            </Text>
-          )}
-          {bodyParams.offer_expiry > new Date().getTime() ? (
-            <Text style={styles.challengeText}>
-              Your match reservation request
-              has been expired.
-            </Text>
-          ) : (
-            <Text style={styles.challengeText}>
-              Your team sent a match reservation request to{' '}
-              {getTeamName(bodyParams)}. This request will be expired in{' '}
-              <Text style={styles.timeText}>
-                {getDayTimeDifferent(
-                  bodyParams.offer_expiry * 1000,
-                  new Date().getTime(),
-                )}
-                .
-              </Text>
-            </Text>
-          )}
-        </View>
-        )}
-        {checkSenderOrReceiver(bodyParams) === 'receiver'
-      && bodyParams.status === ReservationStatus.offered
-        && <View>
-          {bodyParams.offer_expiry > new Date().getTime() ? (
-            <Text style={styles.challengeMessage}>RESERVATION REQUEST EXPIRED</Text>
-          ) : (
-            <Text style={styles.challengeMessage}>
-              RESERVATION REQUEST PENDING
-            </Text>
-          )}
-          {bodyParams.offer_expiry > new Date().getTime() ? (
-            <Text style={styles.challengeText}>
-              The match reservation request
-              from {getTeamName(bodyParams)} has been expired.
-            </Text>
-          ) : (
-            <Text style={styles.challengeText}>
-              Your team received a match reservation request from{' '}
-              {getTeamName(bodyParams)}. This request will be expired in{' '}
-              <Text style={styles.timeText}>
-                {getDayTimeDifferent(
-                  bodyParams.offer_expiry * 1000,
-                  new Date().getTime(),
-                )}
-                .
-              </Text>
-            </Text>
-          )}
-        </View>}
+          <ReservationNumber reservationNumber={bodyParams.challenge_id} />
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 15,
+            }}>
+            <View style={styles.challengerView}>
+              <View style={styles.teamView}>
+                <Image source={images.requestOut} style={styles.reqOutImage} />
+                <Text style={styles.challengerText}>Challenger</Text>
+              </View>
 
-        {/* Status accepted */}
-        {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.accepted && (
-        <View>
-          <Text style={[styles.challengeMessage, { color: colors.greenGradientStart }]}>
-            RESERVATION CONFIRMED
-          </Text>
-          <Text style={styles.challengeText}>
-            Your team has the confirmed
-            game reservation against{' '}
-            {getTeamName(bodyParams)}.
-          </Text>
-        </View>
-        )}
-        {checkSenderOrReceiver(bodyParams) === 'receiver'
-      && bodyParams.status === ReservationStatus.accepted && (
-        <View>
-          <Text style={[styles.challengeMessage, { color: colors.greenGradientStart }]}>
-            RESERVATION CONFIRMED
-          </Text>
-          <Text style={styles.challengeText}>
-            {getTeamName(bodyParams)} has the confirmed game reservation against your team.
-          </Text>
-        </View>
-        )}
-
-        {/* Status declined */}
-        {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.declined && (
-        <View>
-          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
-            RESERVATION REQUEST DECLINED
-          </Text>
-          <Text style={styles.challengeText}>
-            Your team declined the match
-            reservation request from{' '}
-            {getTeamName(bodyParams)}.
-          </Text>
-        </View>
-        )}
-        {checkSenderOrReceiver(bodyParams) === 'receiver'
-      && bodyParams.status === ReservationStatus.declined && (
-        <View>
-          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
-            RESERVATION REQUEST DECLINED
-          </Text>
-          <Text style={styles.challengeText}>
-            {getTeamName(bodyParams)} declined
-            your match reservation request.
-          </Text>
-        </View>
-        )}
-
-        {/* Status cancelled */}
-        {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.cancelled && (
-        <View>
-          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
-            RESERVATION CANCELLED
-          </Text>
-          <Text style={styles.challengeText}>
-            Your team cancelled the match
-            reservation from{' '}
-            {getTeamName(bodyParams)}.
-          </Text>
-        </View>
-        )}
-        {checkSenderOrReceiver(bodyParams) === 'receiver'
-      && bodyParams.status === ReservationStatus.cancelled && (
-        <View>
-          <Text style={[styles.challengeMessage, { color: colors.googleColor }]}>
-            RESERVATION CANCELLED
-          </Text>
-          <Text style={styles.challengeText}>
-            {getTeamName(bodyParams)} cancelled
-            your match reservation.
-          </Text>
-        </View>
-        )}
-
-        {!(bodyParams.status === ReservationStatus.offered || bodyParams.status === ReservationStatus.cancelled || bodyParams.status === ReservationStatus.declined) && <TCBorderButton
-        title={'GAME HOME'}
-        onPress={() => navigation.navigate('SoccerHome', {
-          gameId: bodyParams.game_id,
-        })}
-        marginBottom={15}/>}
-
-        <TCThickDivider />
-        {bodyParams && (
-          <View>
-            <TCLabel title={`Match · ${bodyParams.sport}`} />
-            <TCInfoImageField
-            title={'Home'}
-            name={bodyParams.home_team.group_name}
-            marginLeft={30}
-          />
-            <TCThinDivider />
-            <TCInfoImageField
-            title={'Away'}
-            name={bodyParams.away_team.group_name}
-            marginLeft={30}
-          />
-            <TCThinDivider />
-            <TCInfoField
-            title={'Time'}
-            value={`${getDateFormat(bodyParams.start_datetime)} -\n${getDateFormat(bodyParams.end_datetime)}\n${getTimeDifferent(
-              new Date(bodyParams.start_datetime),
-              new Date(bodyParams.end_datetime),
-            )}`}
-            marginLeft={30}
-            titleStyle={{ fontSize: 16 }}
-          />
-            <TCThinDivider />
-            <TCInfoField
-            title={'Venue'}
-            value={bodyParams.venue.title}
-            marginLeft={30}
-            titleStyle={{ fontSize: 16 }}
-          />
-            <TCThinDivider />
-            <TCInfoField
-            title={'Address'}
-            value={bodyParams.venue.address}
-            marginLeft={30}
-            titleStyle={{ fontSize: 16 }}
-          />
-            <EventMapView
-            coordinate={{
-              latitude: bodyParams.venue.lat,
-              longitude: bodyParams.venue.long,
-            }}
-            region={{
-              latitude: bodyParams.venue.lat,
-              longitude: bodyParams.venue.long,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            style={styles.map}
-          />
-            <TCThickDivider marginTop={20} />
-          </View>
-        )}
-
-        {bodyParams && (
-          <View>
-            <TCLabel title={'Responsibility  to Secure Venue'} />
-            <View style={styles.viewContainer}>
-              <View style={styles.fieldValue}>
-                <Image source={images.teamPlaceholder} style={styles.imageView} />
-                <Text style={styles.teamNameText} numberOfLines={1}>
-                  {bodyParams.responsible_to_secure_venue}
+              <View style={styles.teamView}>
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.teamImage}
+                />
+                <Text style={styles.teamNameText}>
+                  {bodyParams.invited_by === bodyParams.home_team.group_id
+                    ? bodyParams.home_team.group_name
+                    : bodyParams.away_team.group_name}
                 </Text>
               </View>
             </View>
-            <TCThickDivider marginTop={8} />
+            <View style={styles.challengeeView}>
+              <View style={styles.teamView}>
+                <Image source={images.requestIn} style={styles.reqOutImage} />
+                <Text style={styles.challengeeText}>Challengee</Text>
+              </View>
+
+              <View style={styles.teamView}>
+                <Image
+                  source={images.teamPlaceholder}
+                  style={styles.teamImage}
+                />
+                <Text
+                  style={{
+                    marginLeft: 5,
+                    fontFamily: fonts.RMedium,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {bodyParams.invited_by === bodyParams.home_team.group_id
+                    ? bodyParams.away_team.group_name
+                    : bodyParams.home_team.group_name}
+                </Text>
+              </View>
+            </View>
           </View>
-        )}
-        {bodyParams && (
-          <View>
-            <TCLabel title={'Rules'} />
-            <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
-          </View>
-        )}
-        <TCThickDivider marginTop={20} />
-        <View>
-          <TCLabel title={'Responsibility to Secure Referees'} />
-          {bodyParams && (
-            <FlatList
-            data={bodyParams.referee}
-            renderItem={renderSecureReferee}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <TCThinDivider />}
-          />
+          <TCThinDivider />
+
+          {/* status offered */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.offered && (
+              <View>
+                {bodyParams.offer_expiry > new Date().getTime() ? (
+                  <Text style={styles.challengeMessage}>
+                    RESERVATION REQUEST EXPIRED
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeMessage}>
+                    RESERVATION REQUEST SENT
+                  </Text>
+                )}
+                {bodyParams.offer_expiry > new Date().getTime() ? (
+                  <Text style={styles.challengeText}>
+                    Your match reservation request has been expired.
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeText}>
+                    Your team sent a match reservation request to{' '}
+                    {getTeamName(bodyParams)}. This request will be expired in{' '}
+                    <Text style={styles.timeText}>
+                      {getDayTimeDifferent(
+                        bodyParams.offer_expiry * 1000,
+                        new Date().getTime(),
+                      )}
+                      .
+                    </Text>
+                  </Text>
+                )}
+              </View>
           )}
-        </View>
-        <TCThickDivider marginTop={10} />
-        <View>
-          <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
-          {bodyParams && (
-            <FlatList
-            data={bodyParams.scorekeeper}
-            renderItem={renderSecureScorekeeper}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <TCThinDivider />}
-          />
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.offered && (
+              <View>
+                {bodyParams.offer_expiry > new Date().getTime() ? (
+                  <Text style={styles.challengeMessage}>
+                    RESERVATION REQUEST EXPIRED
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeMessage}>
+                    RESERVATION REQUEST PENDING
+                  </Text>
+                )}
+                {bodyParams.offer_expiry > new Date().getTime() ? (
+                  <Text style={styles.challengeText}>
+                    The match reservation request from {getTeamName(bodyParams)}{' '}
+                    has been expired.
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeText}>
+                    Your team received a match reservation request from{' '}
+                    {getTeamName(bodyParams)}. This request will be expired in{' '}
+                    <Text style={styles.timeText}>
+                      {getDayTimeDifferent(
+                        bodyParams.offer_expiry * 1000,
+                        new Date().getTime(),
+                      )}
+                      .
+                    </Text>
+                  </Text>
+                )}
+              </View>
           )}
-        </View>
-        <TCThickDivider marginTop={10} />
-        <TCLabel title={checkSenderOrReceiver(bodyParams) === 'sender' ? 'Payment' : 'Earning'} />
-        <MatchFeesCard challengeObj={bodyParams} senderOrReceiver={checkSenderOrReceiver(bodyParams) === 'sender' ? 'sender' : 'receiver'}/>
-        <Text style={styles.responsibilityNote}>
-          These match fee doesn’t include the <Text style = {styles.responsibilityNoteMedium}>Match Place Fee, Referee Fee
-          </Text> and <Text style = {styles.responsibilityNoteMedium}>Scorekeeper Fee.</Text> The match place, referees and
-          scorekeepers should be secured by the team who has charge of
-          them at its own expense.
-        </Text>
-        {checkSenderOrReceiver(bodyParams) === 'sender'
-      && bodyParams.status === ReservationStatus.offered && bodyParams.offer_expiry < new Date().getTime() && <View>
-        <TCBorderButton title={strings.calcelRequest} textColor={colors.grayColor} borderColor={colors.grayColor} height={40} shadow={true}/>
-      </View> }
 
-        {checkSenderOrReceiver(bodyParams) === 'receiver'
-      && bodyParams.status === ReservationStatus.offered && bodyParams.offer_expiry < new Date().getTime()
-      && <View style={{ marginTop: 15 }}>
+          {/* Status accepted */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.accepted && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.greenGradientStart },
+                  ]}>
+                  RESERVATION CONFIRMED
+                </Text>
+                <Text style={styles.challengeText}>
+                  Your team has the confirmed game reservation against{' '}
+                  {getTeamName(bodyParams)}.
+                </Text>
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.accepted && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.greenGradientStart },
+                  ]}>
+                  RESERVATION CONFIRMED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {getTeamName(bodyParams)} has the confirmed game reservation
+                  against your team.
+                </Text>
+              </View>
+          )}
 
-        <TCGradientButton
-        title={strings.accept}
-        onPress={() => {
-          acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'accept')
-        }
-        }
-      />
-        <TCBorderButton
-        title={strings.decline}
-        textColor={colors.grayColor}
-        borderColor={colors.grayColor}
-        height={40}
-        shadow={true}
-        onPress={() => {
-          acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'decline')
-        }}/>
-      </View>}
+          {/* Status declined */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.declined && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.googleColor },
+                  ]}>
+                  RESERVATION REQUEST DECLINED
+                </Text>
+                <Text style={styles.challengeText}>
+                  Your team declined the match reservation request from{' '}
+                  {getTeamName(bodyParams)}.
+                </Text>
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.declined && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.googleColor },
+                  ]}>
+                  RESERVATION REQUEST DECLINED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {getTeamName(bodyParams)} declined your match reservation
+                  request.
+                </Text>
+              </View>
+          )}
 
-        {bodyParams.status === ReservationStatus.accepted && <View>
-          <TCBorderButton
-            title={strings.alterReservation}
-            textColor={colors.grayColor}
-            borderColor={colors.grayColor}
-            height={40}
-            shadow={true}
-            marginTop={15}
-            onPress={() => {
-              if ((bodyParams.game_status === GameStatus.accepted || bodyParams.game_status === GameStatus.reset) && bodyParams.start_datetime > new Date().getTime()) {
-                navigation.navigate('AlterAcceptDeclineScreen', { body: bodyParams })
-              } else {
-                Alert.alert('Reservation cannot be change after game time passed or offer expired.')
+          {/* Status cancelled */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.cancelled && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.googleColor },
+                  ]}>
+                  RESERVATION CANCELLED
+                </Text>
+                <Text style={styles.challengeText}>
+                  Your team cancelled the match reservation from{' '}
+                  {getTeamName(bodyParams)}.
+                </Text>
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.cancelled && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.googleColor },
+                  ]}>
+                  RESERVATION CANCELLED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {getTeamName(bodyParams)} cancelled your match reservation.
+                </Text>
+              </View>
+          )}
+
+          {!(
+            bodyParams.status === ReservationStatus.offered
+            || bodyParams.status === ReservationStatus.cancelled
+            || bodyParams.status === ReservationStatus.declined
+          ) && (
+            <TCBorderButton
+              title={'GAME HOME'}
+              onPress={() => navigation.navigate('SoccerHome', {
+                gameId: bodyParams.game_id,
+              })
               }
-            }}/>
-          <TCBorderButton
-            title={strings.cancelMatch}
-            textColor={colors.whiteColor}
-            borderColor={colors.grayColor}
-            backgroundColor={colors.grayColor}
-            height={40}
-            shadow={true}
-            marginBottom={15}
-            marginTop={15}
-            onPress={() => {
-              // navigation.navigate('Account', { screen: 'HomeScreen' })
-              acceptDeclineChallengeOperation(entity.uid, bodyParams.challenge_id, bodyParams.version, 'cancel')
-            }}/>
+              marginBottom={15}
+            />
+          )}
 
-        </View> }
+          <TCThickDivider />
+          {bodyParams && (
+            <View>
+              <TCLabel title={`Match · ${bodyParams.sport}`} />
+              <TCInfoImageField
+                title={'Home'}
+                name={bodyParams.home_team.group_name}
+                marginLeft={30}
+              />
+              <TCThinDivider />
+              <TCInfoImageField
+                title={'Away'}
+                name={bodyParams.away_team.group_name}
+                marginLeft={30}
+              />
+              <TCThinDivider />
+              <TCInfoField
+                title={'Time'}
+                value={`${getDateFormat(
+                  bodyParams.start_datetime * 1000,
+                )} -\n${getDateFormat(
+                  bodyParams.end_datetime * 1000,
+                )}\n${getTimeDifferent(
+                  new Date(bodyParams.start_datetime * 1000),
+                  new Date(bodyParams.end_datetime * 1000),
+                )}`}
+                marginLeft={30}
+                titleStyle={{ fontSize: 16 }}
+              />
+              <TCThinDivider />
+              <TCInfoField
+                title={'Venue'}
+                value={bodyParams.venue.title}
+                marginLeft={30}
+                titleStyle={{ fontSize: 16 }}
+              />
+              <TCThinDivider />
+              <TCInfoField
+                title={'Address'}
+                value={bodyParams.venue.address}
+                marginLeft={30}
+                titleStyle={{ fontSize: 16 }}
+              />
+              <EventMapView
+                coordinate={{
+                  latitude: bodyParams.venue.lat,
+                  longitude: bodyParams.venue.long,
+                }}
+                region={{
+                  latitude: bodyParams.venue.lat,
+                  longitude: bodyParams.venue.long,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                style={styles.map}
+              />
+              <TCThickDivider marginTop={20} />
+            </View>
+          )}
 
-      </View>}
+          {bodyParams && (
+            <View>
+              <TCLabel title={'Responsibility  to Secure Venue'} />
+              <View style={styles.viewContainer}>
+                <View style={styles.fieldValue}>
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.imageView}
+                  />
+                  <Text style={styles.teamNameText} numberOfLines={1}>
+                    {bodyParams.responsible_to_secure_venue}
+                  </Text>
+                </View>
+              </View>
+              <TCThickDivider marginTop={8} />
+            </View>
+          )}
+          {bodyParams && (
+            <View>
+              <TCLabel title={'Rules'} />
+              <Text style={styles.rulesText}>{bodyParams.special_rule}</Text>
+            </View>
+          )}
+          <TCThickDivider marginTop={20} />
+          <View>
+            <TCLabel title={'Responsibility to Secure Referees'} />
+            {bodyParams && (
+              <FlatList
+                data={bodyParams.referee}
+                renderItem={renderSecureReferee}
+                keyExtractor={(item, index) => index.toString()}
+                ItemSeparatorComponent={() => <TCThinDivider />}
+              />
+            )}
+          </View>
+          <TCThickDivider marginTop={10} />
+          <View>
+            <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
+            {bodyParams && (
+              <FlatList
+                data={bodyParams.scorekeeper}
+                renderItem={renderSecureScorekeeper}
+                keyExtractor={(item, index) => index.toString()}
+                ItemSeparatorComponent={() => <TCThinDivider />}
+              />
+            )}
+          </View>
+          <TCThickDivider marginTop={10} />
+          <TCLabel
+            title={
+              checkSenderOrReceiver(bodyParams) === 'sender'
+                ? 'Payment'
+                : 'Earning'
+            }
+          />
+          <MatchFeesCard
+            challengeObj={bodyParams}
+            senderOrReceiver={
+              checkSenderOrReceiver(bodyParams) === 'sender'
+                ? 'sender'
+                : 'receiver'
+            }
+          />
+          <Text style={styles.responsibilityNote}>
+            These match fee doesn’t include the{' '}
+            <Text style={styles.responsibilityNoteMedium}>
+              Match Place Fee, Referee Fee
+            </Text>{' '}
+            and{' '}
+            <Text style={styles.responsibilityNoteMedium}>
+              Scorekeeper Fee.
+            </Text>{' '}
+            The match place, referees and scorekeepers should be secured by the
+            team who has charge of them at its own expense.
+          </Text>
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.offered
+            && bodyParams.offer_expiry < new Date().getTime() && (
+              <View>
+                <TCBorderButton
+                  title={strings.calcelRequest}
+                  textColor={colors.grayColor}
+                  borderColor={colors.grayColor}
+                  marginBottom={15}
+                  height={40}
+                  shadow={true}
+                />
+              </View>
+          )}
+
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.offered
+            && bodyParams.offer_expiry < new Date().getTime() && (
+              <View style={{ marginTop: 15 }}>
+                <TCGradientButton
+                  title={strings.accept}
+                  onPress={() => {
+                    acceptDeclineChallengeOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'accept',
+                    );
+                  }}
+                />
+                <TCBorderButton
+                  title={strings.decline}
+                  textColor={colors.grayColor}
+                  borderColor={colors.grayColor}
+                  height={40}
+                  marginBottom={15}
+                  shadow={true}
+                  onPress={() => {
+                    acceptDeclineChallengeOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'decline',
+                    );
+                  }}
+                />
+              </View>
+          )}
+
+          {bodyParams.status === ReservationStatus.accepted && (
+            <View>
+              <TCBorderButton
+                title={strings.alterReservation}
+                textColor={colors.grayColor}
+                borderColor={colors.grayColor}
+                height={40}
+                shadow={true}
+                marginTop={15}
+                onPress={() => {
+                  if (
+                    (bodyParams.game_status === GameStatus.accepted
+                      || bodyParams.game_status === GameStatus.reset)
+                    && bodyParams.start_datetime * 1000 > new Date().getTime()
+                  ) {
+                    navigation.navigate('ChangeReservationInfoScreen', {
+                      screen: 'change',
+                      body: bodyParams,
+                    });
+                  } else {
+                    Alert.alert(
+                      'Reservation cannot be change after game time passed or offer expired.',
+                    );
+                  }
+                }}
+              />
+              <TCBorderButton
+                title={strings.cancelMatch}
+                textColor={colors.whiteColor}
+                borderColor={colors.grayColor}
+                backgroundColor={colors.grayColor}
+                height={40}
+                shadow={true}
+                marginBottom={15}
+                marginTop={15}
+                onPress={() => {
+                  if (
+                    (bodyParams.game_status === GameStatus.accepted
+                      || bodyParams.game_status === GameStatus.reset)
+                    && bodyParams.start_datetime * 1000 > new Date().getTime()
+                  ) {
+                    navigation.navigate('ChangeReservationInfoScreen', {
+                      screen: 'cancel',
+                      body: bodyParams,
+                    });
+                  } else {
+                    Alert.alert(
+                      'Reservation cannot be cancel after game time passed or offer expired.',
+                    );
+                  }
+                  acceptDeclineChallengeOperation(
+                    entity.uid,
+                    bodyParams.challenge_id,
+                    bodyParams.version,
+                    'cancel',
+                  );
+                }}
+              />
+            </View>
+          )}
+        </View>
+      )}
     </TCKeyboardView>
   );
 }

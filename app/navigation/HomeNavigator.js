@@ -25,6 +25,7 @@ import EditGroupBasicInfoScreen from '../screens/home/EditGroupBasicInfoScreen';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import GameDetail from '../screens/account/schedule/GameDetail';
 import SoccerRecording from '../screens/game/soccer/SoccerRecording';
+import TennisRecording from '../screens/game/tennis/TennisRecording';
 import GameDetailRecord from '../screens/game/soccer/GameDetailRecord';
 
 import RegisterPlayer from '../screens/account/registerPlayer/RegisterPlayer';
@@ -108,6 +109,7 @@ import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import CurruentReservationScreen from '../screens/challenge/alterChallenge/CurruentReservationScreen';
+import ChangeReservationInfoScreen from '../screens/challenge/alterChallenge/ChangeReservationInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -395,7 +397,23 @@ const HomeNavigator = () => (
       name="SoccerRecording"
       component={SoccerRecording}
       options={{
-        title: 'Match Record',
+        title: 'Match Records',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="TennisRecording"
+      component={TennisRecording}
+      options={{
+        title: 'Match Records',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1246,7 +1264,14 @@ const HomeNavigator = () => (
         name="ChallengeSentScreen"
         component={ ChallengeSentScreen }
         options={ {
-          title: 'Venue',
+          headerShown: false,
+        } }
+      />
+    <Stack.Screen
+        name="AlterAcceptDeclineScreen"
+        component={ AlterAcceptDeclineScreen }
+        options={ {
+          title: 'Change Match Reservation',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -1259,8 +1284,8 @@ const HomeNavigator = () => (
         } }
       />
     <Stack.Screen
-        name="AlterAcceptDeclineScreen"
-        component={ AlterAcceptDeclineScreen }
+        name="ChangeReservationInfoScreen"
+        component={ ChangeReservationInfoScreen }
         options={ {
           title: 'Change Match Reservation',
           headerTintColor: colors.blackColor,

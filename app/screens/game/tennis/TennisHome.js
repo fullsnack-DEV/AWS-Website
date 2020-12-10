@@ -50,6 +50,7 @@ const TennisHome = ({ navigation, route }) => {
   const getGameDetails = () => {
     setLoading(true)
     getTennisGameData(tennisGameId).then(async (res) => {
+      console.log('GET GAME DETAIL::', res.payload);
       if (res.status) {
         const entity = authContext.entity
         setUserRole(entity?.role);
@@ -57,6 +58,7 @@ const TennisHome = ({ navigation, route }) => {
         const checkIsAdmin = [res?.payload?.home_team?.user_id, res?.payload?.away_team?.user_id].includes(entity?.uid);
         setIsAdmin(checkIsAdmin)
         setGameData(res.payload);
+        console.log('GET GAME DETAIL::', res.payload);
       }
     }).catch((error) => {
       console.log(error);
@@ -87,7 +89,7 @@ const TennisHome = ({ navigation, route }) => {
             followSoccerUser={followSoccerUser}
             navigation={navigation}
             gameData={gameData}
-            isAdmin={isAdmin}
+            isAdmin={true}
             userRole={userRole}
             userId={userId}
         />

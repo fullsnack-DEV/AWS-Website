@@ -338,7 +338,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     console.log('challenge for user to user');
   };
   const updateChallengeDetail = () => {
-    // setloading(true)
+    setloading(true)
     delete bodyParams.created_at;
     delete bodyParams.created_by;
     delete bodyParams.entity_id;
@@ -360,13 +360,16 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     bodyParams.home_team = home_id;
     bodyParams.away_team = away_id;
 
-    setbodyParams({ ...bodyParams });
+    // setbodyParams({ ...bodyParams });
 
     console.log('FINAL BODY PARAMS::', bodyParams);
     updateChallenge(bodyParams.challenge_id, bodyParams, authContext).then((response) => {
       setloading(false)
       console.log('response of alter challenge::', response.payload);
       navigation.navigate('AlterRequestSent')
+    }).catch((e) => {
+      console.log(e);
+      Alert.alert(e.messages)
     })
   };
   return (
@@ -507,12 +510,12 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <TCInfoField
                 title={'Time'}
                 value={`${getDateFormat(
-                  bodyParams.start_datetime,
+                  bodyParams.start_datetime * 1000,
                 )} -\n${getDateFormat(
-                  bodyParams.end_datetime,
+                  bodyParams.end_datetime * 1000,
                 )}\n${getTimeDifferent(
-                  new Date(bodyParams.start_datetime),
-                  new Date(bodyParams.end_datetime),
+                  new Date(bodyParams.start_datetime * 1000),
+                  new Date(bodyParams.end_datetime * 1000),
                 )}`}
                 color={
                   `${getDateFormat(
@@ -810,7 +813,8 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <View
                 style={styles.differeceView}>
                 <Text style={styles.differenceTextTitle}>Difference</Text>
-                <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text>
+                <Text style={styles.diffenceAmount}>{'$10 CAD'}</Text>
+                {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
             </View>
           )}
@@ -884,7 +888,11 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 shadow={true}
                 marginTop={15}
                 onPress={() => {
-                  updateChallengeDetail();
+                  if (editInfo || editVenue || editRules || editReferee || editScorekeeper || editPayment) {
+                    updateChallengeDetail();
+                  } else {
+                    Alert.alert('Please modify atleast one field for alter request.')
+                  }
                 }}
               />
               <TCBorderButton

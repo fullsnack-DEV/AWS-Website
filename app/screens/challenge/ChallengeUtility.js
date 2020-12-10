@@ -5,8 +5,9 @@ import { getChallenge } from '../../api/Challenge';
 import ReservationStatus from '../../Constants/ReservationStatus';
 
 // eslint-disable-next-line import/prefer-default-export
-export const getChallengeDetail = async (challengeID, authContext) => {
+export const getChallengeDetail = (challengeID, authContext) => {
   const Obj = {}
+  // eslint-disable-next-line consistent-return
   return getChallenge(challengeID, authContext).then((response) => {
     console.log('Challenge Utils:', response.payload);
     if (response.payload.length > 0) {
@@ -35,8 +36,6 @@ export const getChallengeDetail = async (challengeID, authContext) => {
         return Obj
       }
     }
-    Obj.screenName = 'screen3'
-    return Obj
   }).catch((error) => {
     Alert.alert(error.messages)
   })

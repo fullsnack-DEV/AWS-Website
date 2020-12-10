@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, Text, StyleSheet,
 } from 'react-native';
@@ -10,6 +10,9 @@ import fonts from '../../Constants/Fonts'
 import TCThinDivider from '../TCThinDivider';
 
 export default function MatchFeesCard({ senderOrReceiver = 'sender', challengeObj }) {
+  useEffect(() => {
+    console.log('Challenge Obj:', challengeObj);
+  }, [])
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;

@@ -94,18 +94,18 @@ export default function CreateChallengeForm5({ navigation, route }) {
       setloading(true);
       createChallenge(
         route.params.teamData[0].group_id === entity.uid
-          ? route.params.teamData[0].group_id
-          : route.params.teamData[1].group_id,
+          ? route.params.teamData[1].group_id
+          : route.params.teamData[0].group_id,
         body,
         authContext,
       )
         .then((response) => {
           setloading(false);
-          console.log('RESPONSE:', response);
+          console.log('RESPONSE OF CREATE CHALLENGE:', response);
           navigation.navigate('ChallengeSentScreen', {
             groupObj: route.params.teamData[0].group_id === entity.uid
-              ? route.params.teamData[0]
-              : route.params.teamData[1],
+              ? route.params.teamData[1]
+              : route.params.teamData[0],
           });
         })
         .catch((error) => {
