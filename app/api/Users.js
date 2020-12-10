@@ -80,3 +80,23 @@ export const inviteUser = async (params, userID, authContext) => makeAPIRequest(
   data: params,
   authContext,
 });
+
+export const createPaymentMethod = async (params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/payments/cards`,
+  data: params,
+  authContext,
+});
+
+export const paymentMethods = async (authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/payments/cards`,
+  authContext,
+});
+
+export const attachPaymentMethod = async (params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/payments/attachPaymentMethod`,
+  data: params,
+  authContext,
+});

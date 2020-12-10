@@ -43,6 +43,9 @@ import CreateClubForm2 from '../screens/account/createGroup/createClub/CreateClu
 import CreateClubForm3 from '../screens/account/createGroup/createClub/CreateClubForm3';
 import ClubCreatedScreen from '../screens/account/createGroup/createClub/ClubCreatedScreen';
 
+import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
+import AddCardScreen from '../screens/account/payment/AddCardScreen';
+
 // import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 
 import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
@@ -1379,6 +1382,40 @@ const HomeNavigator = () => (
             borderBottomWidth: 0.3,
           },
         }}
+      />
+
+    <Stack.Screen
+        name="PaymentMethodsScreen"
+        component={ PaymentMethodsScreen }
+        options={ {
+          title: 'Payment Methods',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
+        name="AddCardScreen"
+        component={ AddCardScreen }
+        options={ {
+          title: 'Add a Card',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
       />
 
   </Stack.Navigator>

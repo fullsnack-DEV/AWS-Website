@@ -336,20 +336,23 @@ export default function AccountScreen({ navigation }) {
     }
   };
 
-  const handleOpetions = async (opetions) => {
-    if (opetions === 'Register as a referee') {
+  const handleOptions = async (options) => {
+    console.log('options', options)
+    if (options === 'Register as a referee') {
       navigation.navigate('RegisterReferee');
-    } else if (opetions === 'Add a sport') {
+    } else if (options === 'Add a sport') {
       navigation.navigate('RegisterPlayer');
-    } else if (opetions === 'Create a Team') {
+    } else if (options === 'Create a Team') {
       const entity = authContext.entity
       if (entity.role === 'user') {
         navigation.navigate('CreateTeamForm1');
       } else {
         navigation.navigate('CreateTeamForm1', { clubObject: group });
       }
-    } else if (opetions === 'Create a Club') {
+    } else if (options === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
+    } else if (options === 'Payment Method') {
+      navigation.navigate('PaymentMethodsScreen');
     }
   };
 
@@ -566,7 +569,7 @@ export default function AccountScreen({ navigation }) {
               <TouchableWithoutFeedback
                 style={styles.listContainer}
                 onPress={() => {
-                  handleOpetions(rowItem.opetions);
+                  handleOptions(rowItem.opetions);
                 }}>
                 {rowItem.opetions === 'Add a sport' && (
                   <Image source={images.addSport} style={styles.subMenuItem} />

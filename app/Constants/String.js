@@ -441,5 +441,9 @@ const strings = {
   addrole: 'Add Role',
   addPlaying: 'Add playing',
   addRefereeing: 'Add refereeing',
+  cards: 'Cards',
+  addcard: 'Add New Card...',
+  endingin: ' Ending in ',
+  addacard: 'Add a Card',
 };
 export default strings;
