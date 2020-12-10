@@ -154,19 +154,6 @@ const currentCity_privacy = [
   },
 ];
 
-const certificate_data = [
-  {
-    id: 0,
-    image: images.certificateImage,
-    title: 'FIFA Field Certificate',
-  },
-  {
-    id: 1,
-    image: images.certificateImage,
-    title: 'joinKFA Certificate',
-  },
-];
-
 const language_list = [
   {
     id: 0,
@@ -212,33 +199,21 @@ const language_list = [
 
 function RefereeInfoSection({
   data,
-  searchLocation,
+  selectRefereeData,
+  languagesName,
 }) {
-  let bioDefault = strings.aboutValue;
-  let homePlaceDefault = strings.homePlaceValue;
-  if (data) {
-    if (data && data.registered_sports && data.registered_sports.length > 0) {
-      bioDefault = data.registered_sports[0].descriptions;
-      if (searchLocation) {
-        homePlaceDefault = searchLocation;
-      } else {
-        homePlaceDefault = data.registered_sports[0].homePlace;
-      }
-    }
-  }
+  console.log('Select Referee Data :-', selectRefereeData);
 
   const authContext = useContext(AuthContext)
   const [editPressTitle, setEditPressTitle] = useState(null);
   const [info, setInfo] = useState({
     genderText: data.gender || 'Male',
     birthdayText: data.birthday ? new Date(data.birthday * 1000) : '',
-    heightText: data.height.substring(0, data.height.indexOf(' ')) || '',
-    weightText: data.weight.substring(0, data.weight.indexOf(' ')) || '',
     currentCity: `${data.city || ''}`,
-    homePlaceText: homePlaceDefault,
   });
-  const [bioText, setBioText] = useState(bioDefault);
-  const [certificatesData] = useState(certificate_data);
+  const [bioText, setBioText] = useState(selectRefereeData.descriptions);
+  const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates);
+  const [refereeFeeCount, setRefereeFeeCount] = useState(selectRefereeData.fee);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [editLanguageModal, setEditLanguageModal] = useState(false);
@@ -248,7 +223,6 @@ function RefereeInfoSection({
   const [languagePrivacy, setLanguagePrivacy] = useState(language_privacy);
   const [currentCityPrivacy, setCurrentCityPrivacy] = useState(currentCity_privacy);
   const [dateModalVisible, setDateModalVisible] = useState(false);
-  const [addCertificateData, setAddCertificateData] = useState([]);
   const [selectedCerti, setSelectedCerti] = useState([]);
   const [addCertiTitle, setAddCertiTitle] = useState('');
   const [searchLanguageText, setSearchLanguageText] = useState('');
@@ -278,32 +252,28 @@ function RefereeInfoSection({
   }
 
   const deleteItemById = (id) => {
-    const filteredData = addCertificateData.filter((item) => item.id !== id);
-    setAddCertificateData(filteredData);
+    const filteredData = certificatesData.filter((item, index) => index !== id);
+    setCertificatesData(filteredData);
   };
 
   const Item = ({
     item, onPress, style, isChecked,
-  }) => {
-    const title = item.title;
-    return (
-      <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
-        <LinearGradient
-        colors={isChecked ? [colors.yellowColor, colors.orangeColor] : [colors.offwhite, colors.offwhite]}
-        style={[styles.listItems, { paddingHorizontal: 10, paddingVertical: 0 }]}>
-          <View style={{
-            flexDirection: 'row',
-          }}>
-            <View style={styles.selectUnSelectViewStyle}>
-              <Text style={{ ...styles.title, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{title}</Text>
-              {isChecked ? <Image source={images.checkWhite} resizeMode={'contain'} style={styles.checkboxImg}/>
-                : <Image source={images.whiteUncheck} resizeMode={'contain'} style={styles.checkboxImg}/>
-              }
-            </View>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>)
-  }
+  }) => (<TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
+    <LinearGradient
+    colors={isChecked ? [colors.yellowColor, colors.orangeColor] : [colors.offwhite, colors.offwhite]}
+    style={[styles.listItems, { paddingHorizontal: 10, paddingVertical: 0 }]}>
+      <View style={{
+        flexDirection: 'row',
+      }}>
+        <View style={styles.selectUnSelectViewStyle}>
+          <Text style={{ ...styles.title, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{item.title}</Text>
+          {isChecked ? <Image source={images.checkWhite} resizeMode={'contain'} style={styles.checkboxImg}/>
+            : <Image source={images.whiteUncheck} resizeMode={'contain'} style={styles.checkboxImg}/>
+          }
+        </View>
+      </View>
+    </LinearGradient>
+  </TouchableOpacity>)
 
   useEffect(() => {
     if (searchLanguageText !== '') {
@@ -400,7 +370,7 @@ function RefereeInfoSection({
         />
         <BasicInfoItem
           title={strings.language}
-          value={strings.languagesName}
+          value={languagesName}
         />
         <BasicInfoItem
           title={strings.currrentCityTitle}
@@ -429,7 +399,7 @@ function RefereeInfoSection({
           }} />}
           style={{ marginTop: 5, marginBottom: 15 }}
           renderItem={({ item: certItem }) => <CertificatesItemView
-              certificateImage={certItem.image}
+              certificateImage={{ uri: certItem.thumbnail }}
               certificateName={certItem.title}
               teamTitleTextStyle={{ color: colors.lightBlackColor, fontFamily: fonts.RBold }}
               profileImage={{ borderWidth: 0.5, borderColor: colors.linesepratorColor, borderRadius: 8 }}
@@ -448,7 +418,7 @@ function RefereeInfoSection({
           }, 200);
         }}
       >
-        <Text style={styles.ntrpValueStyle}>{'$20 CAD/match'}</Text>
+        <Text style={styles.ntrpValueStyle}>{`$${refereeFeeCount} CAD/match`}</Text>
       </EditEventItem>
 
       <Modal
@@ -748,97 +718,106 @@ function RefereeInfoSection({
             </EventItemRender>
           </View>}
 
-          {editPressTitle === strings.certificateTitle && <EventItemRender
-            title={strings.addCertiMainTitle}
-            headerTextStyle={{ fontSize: 16 }}
-          >
-            <FlatList
-              data={[...addCertificateData, '0']}
-              scrollEnabled={false}
-              showsHorizontalScrollIndicator={ false }
-              renderItem={ ({ item, index }) => {
-                if (index === addCertificateData.length) {
+          {editPressTitle === strings.certificateTitle && <KeyboardAwareScrollView>
+            <EventItemRender
+              title={strings.addCertiMainTitle}
+              headerTextStyle={{ fontSize: 16 }}
+            >
+              <FlatList
+                data={[...certificatesData, '0']}
+                scrollEnabled={true}
+                showsHorizontalScrollIndicator={ false }
+                renderItem={ ({ item, index }) => {
+                  if (index === certificatesData.length) {
+                    return (
+                      <AddCertiPhotoTitleView
+                        placeholder={'Title and photos'}
+                        value={addCertiTitle}
+                        onChangeText={(text) => {
+                          setAddCertiTitle(text);
+                        }}
+                        onPickImagePress={() => {
+                          const selectData = [];
+                          ImagePicker.openPicker({
+                            width: 300,
+                            height: 400,
+                            cropping: true,
+                          }).then((pickData) => {
+                            selectData.push(pickData);
+                            setSelectedCerti(selectData);
+                          });
+                        }}
+                      />
+                    );
+                  }
                   return (
-                    <AddCertiPhotoTitleView
-                      placeholder={'Title and photos'}
-                      value={addCertiTitle}
-                      onChangeText={(text) => {
-                        setAddCertiTitle(text);
-                      }}
-                      onPickImagePress={() => {
-                        const selectData = [];
-                        ImagePicker.openPicker({
-                          width: 300,
-                          height: 400,
-                          cropping: true,
-                        }).then((pickData) => {
-                          selectData.push(pickData);
-                          setSelectedCerti(selectData);
-                        });
-                      }}
-                    />
-                  );
-                }
-                return (
-                  <View style={{ marginTop: 15 }}>
-                    <EventTextInput
-                      value={item.title}
-                      onChangeText={() => {}}
-                      containerStyle={{ alignSelf: 'flex-start', width: wp(92), marginLeft: 2 }}
-                    />
-                    <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-                      <Image source={{ uri: item.image }} style={{ width: 195, height: 150, borderRadius: 10 }} resizeMode={'cover'} />
-                      <Text style={{
-                        marginRight: 5,
-                        fontSize: 14,
-                        fontFamily: fonts.RRegular,
-                        color: colors.redDelColor,
-                      }} onPress={() => { deleteItemById(item.id) }}>Delete</Text>
+                    <View style={{ marginTop: 15 }}>
+                      <EventTextInput
+                        value={item.title}
+                        onChangeText={() => {}}
+                        containerStyle={{ alignSelf: 'flex-start', width: wp(92), marginLeft: 2 }}
+                      />
+                      <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Image source={{ uri: item.thumbnail }} style={{ width: 195, height: 150, borderRadius: 10 }} resizeMode={'cover'} />
+                        <Text style={{
+                          marginRight: 5,
+                          fontSize: 14,
+                          fontFamily: fonts.RRegular,
+                          color: colors.redDelColor,
+                        }} onPress={() => { deleteItemById(index) }}>Delete</Text>
+                      </View>
                     </View>
-                  </View>
-                );
-              }}
-              ListFooterComponent={() => <View>
-                {selectedCerti.length > 0 && <Image
-                  source={{ uri: selectedCerti[0].path }}
-                  style={styles.staticSelectImageStyle}
-                  resizeMode={'cover'}
-                />}
-                <AddTimeItem
-                  addTimeText={strings.addCertiTitle}
-                  source={images.plus}
-                  onAddTimePress={() => {
-                    if (addCertiTitle === '') {
-                      Alert.alert('Please Enter Certificate Name!')
-                    } else if (selectedCerti.length === 0) {
-                      Alert.alert('Please Select Certificate Image!')
-                    } else {
-                      const imageArray = selectedCerti.map((dataItem) => (dataItem))
-                      uploadImages(imageArray, authContext).then((responses) => {
-                        const certiAddData = [...addCertificateData];
-                        const obj = {
-                          id: certiAddData.length,
-                          image: responses[0].thumbnail,
-                          title: addCertiTitle,
-                        };
-                        certiAddData.push(obj);
-                        setAddCertificateData(certiAddData);
-                        setSelectedCerti([]);
-                        setAddCertiTitle('');
-                      })
-                    }
-                  }}
-                />
-              </View>}
-              ListFooterComponentStyle={{ marginTop: 20 }}
-              keyExtractor={(itemValue, index) => index.toString() }
-            />
-          </EventItemRender>}
+                  );
+                }}
+                ListFooterComponent={() => <View>
+                  {selectedCerti.length > 0 && <Image
+                    source={{ uri: selectedCerti[0].path }}
+                    style={styles.staticSelectImageStyle}
+                    resizeMode={'cover'}
+                  />}
+                  <AddTimeItem
+                    addTimeText={strings.addCertiTitle}
+                    source={images.plus}
+                    onAddTimePress={() => {
+                      if (addCertiTitle === '') {
+                        Alert.alert('Please Enter Certificate Name!')
+                      } else if (selectedCerti.length === 0) {
+                        Alert.alert('Please Select Certificate Image!')
+                      } else {
+                        const imageArray = selectedCerti.map((dataItem) => (dataItem))
+                        uploadImages(imageArray, authContext).then((responses) => {
+                          console.log('Response :-', responses);
+                          const certiAddData = [...certificatesData];
+                          const obj = {
+                            id: certiAddData.length,
+                            thumbnail: responses[0].thumbnail,
+                            url: responses[0].fullImage,
+                            title: addCertiTitle,
+                          };
+                          certiAddData.push(obj);
+                          setCertificatesData(certiAddData);
+                          setSelectedCerti([]);
+                          setAddCertiTitle('');
+                        })
+                      }
+                    }}
+                  />
+                </View>}
+                ListFooterComponentStyle={{ marginTop: 20 }}
+                keyExtractor={(itemValue, index) => index.toString() }
+              />
+            </EventItemRender>
+          </KeyboardAwareScrollView>}
 
           {editPressTitle === strings.refereeFee && <EventTextInput
-            value={'$20'}
-            onChangeText={() => {}}
+            value={refereeFeeCount.toString()}
+            onChangeText={(text) => {
+              setRefereeFeeCount(text);
+            }}
+            keyboardType={'numeric'}
             displayLastTitle={true}
+            displayFirstTitle={true}
+            valueFirstTitle={refereeFeeCount.toString().length > 0 ? '$' : ''}
             valueEndTitle={' CAD/match'}
             containerStyle={{ justifyContent: 'space-between' }}
           />}

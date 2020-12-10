@@ -11,7 +11,6 @@ import {
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import moment from 'moment';
-// import { AirbnbRating } from 'react-native-ratings';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -85,19 +84,6 @@ import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
 import ReviewRatingView from '../../components/Home/ReviewRatingView';
 import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
-
-const certificate_data = [
-  {
-    id: 0,
-    image: images.certificateImage,
-    title: 'FIFA Field Certificate',
-  },
-  {
-    id: 1,
-    image: images.certificateImage,
-    title: 'joinKFA Certificate',
-  },
-];
 
 const reviews_data = [
   {
@@ -208,8 +194,9 @@ export default function HomeScreen({ navigation, route }) {
   const [searchLocation, setSearchLocation] = useState('');
   const [locationDetail, setLocationDetail] = useState(null);
   const [sportName, setSportName] = useState('');
+  const [selectRefereeData, setSelectRefereeData] = useState(null);
+  const [languagesName, setLanguagesName] = useState('');
 
-  const [certificatesData] = useState(certificate_data);
   const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
@@ -987,10 +974,21 @@ export default function HomeScreen({ navigation, route }) {
     }
   }
 
+  let language_string = '';
+
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
     if (refereeInObject) {
+      if (refereeInObject.language.length > 0) {
+        refereeInObject.language.map((langItem, index) => {
+          language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+          return null;
+        })
+        setLanguagesName(language_string);
+      }
       setRefereesInModalVisible(!refereesInModalVisible);
+      setSportName(refereeInObject.sport_name);
+      setSelectRefereeData(refereeInObject);
     } else {
       // add New Referee
     }
@@ -1108,20 +1106,20 @@ export default function HomeScreen({ navigation, route }) {
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
-                    ref={addRoleActionSheet}
-                    options={[strings.addPlaying, strings.addRefereeing, strings.cancel]}
-                    cancelButtonIndex={2}
-                    onPress={(index) => {
-                      if (index === 0) {
-                        // Add Playing
-                        console.log('add playing')
-                      } else if (index === 1) {
-                        // Add Refereeing
-                        console.log('add refereeing')
-                        setRefereesInModalVisible(!refereesInModalVisible);
-                      }
-                    }}
-                  />
+        ref={addRoleActionSheet}
+        options={[strings.addPlaying, strings.addRefereeing, strings.cancel]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            // Add Playing
+            console.log('add playing')
+          } else if (index === 1) {
+            // Add Refereeing
+            console.log('add refereeing')
+            setRefereesInModalVisible(!refereesInModalVisible);
+          }
+        }}
+      />
       {(isTeamHome && authContext.entity.role === 'team')
       && <View style={ styles.challengeButtonStyle }>
         {authContext.entity.obj.group_id !== currentUserData.group_id && <View styles={[styles.outerContainerStyle, { height: 50 }]}><TouchableOpacity onPress={ onChallengePress }>
@@ -1594,7 +1592,7 @@ export default function HomeScreen({ navigation, route }) {
                 centerComponent={
                   <View style={styles.headerCenterViewStyle}>
                     <Image source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                    <Text style={styles.playInTextStyle}>{'Plays in Soccer'}</Text>
+                    <Text style={styles.playInTextStyle}>{`Plays in ${sportName || ''}`}</Text>
                   </View>
                 }
                 rightComponent={
@@ -1929,7 +1927,7 @@ export default function HomeScreen({ navigation, route }) {
                 centerComponent={
                   <View style={styles.headerCenterViewStyle}>
                     <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
-                    <Text style={styles.playInTextStyle}>{'Referees in Soccer'}</Text>
+                    <Text style={styles.playInTextStyle}>{`Referees in ${sportName || ''}`}</Text>
                   </View>
                 }
                 rightComponent={
@@ -1939,8 +1937,9 @@ export default function HomeScreen({ navigation, route }) {
                 }
               />
               <RefereesProfileSection
-                profileImage={images.profilePlaceHolder}
-                userName={'Christiano Ronaldo'}
+                profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
+                userName={fullName}
+                feesCount={(selectRefereeData && selectRefereeData.fee) ? selectRefereeData.fee : 0}
               />
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem
@@ -1949,20 +1948,20 @@ export default function HomeScreen({ navigation, route }) {
                     refereeInfoModal();
                   }}
                 >
-                  <NewsFeedDescription
+                  {selectRefereeData && selectRefereeData.descriptions !== '' && <NewsFeedDescription
                     character={140}
                     containerStyle={{ marginHorizontal: 0 }}
                     descriptionTxt={{
                       padding: 0, marginTop: 3, color: colors.whiteColor, fontFamily: fonts.RRegular,
                     }}
                     descText={{ fontSize: 16, color: colors.whiteGradientColor, fontFamily: fonts.RLight }}
-                    descriptions={strings.aboutValue}
-                  />
+                    descriptions={selectRefereeData && selectRefereeData.descriptions}
+                  />}
                   <Text style={styles.signUpTextStyle}>{strings.signedUpTime}</Text>
-                  <View style={styles.certificatesViewStyle}>
+                  {selectRefereeData && selectRefereeData.certificates && <View style={styles.certificatesViewStyle}>
                     <Text style={[styles.playInTextStyle, { fontFamily: fonts.RMedium, marginBottom: 5 }]}>{'Certificates'}</Text>
                     <FlatList
-                      data={certificatesData}
+                      data={selectRefereeData.certificates}
                       bounces={false}
                       horizontal={true}
                       showsHorizontalScrollIndicator={false}
@@ -1970,15 +1969,15 @@ export default function HomeScreen({ navigation, route }) {
                         marginHorizontal: 5,
                       }} />}
                       renderItem={({ item: certItem }) => <CertificatesItemView
-                        certificateImage={certItem.image}
+                        certificateImage={{ uri: certItem.thumbnail }}
                         certificateName={certItem.title}
                       />}
                       keyExtractor={(item, index) => index.toString()}
                     />
-                  </View>
+                  </View>}
                   <LanguageViewInInfo
                     title={'Languages'}
-                    languageName={'Korean, English, Deutsch, Italia'}
+                    languageName={languagesName}
                   />
                 </RefereesInItem>
 
@@ -2069,7 +2068,9 @@ export default function HomeScreen({ navigation, route }) {
               />
               <RefereeInfoSection
                 data={currentUserData}
+                selectRefereeData={selectRefereeData}
                 searchLocation={searchLocation}
+                languagesName={languagesName}
               />
             </SafeAreaView>
           </Modal>

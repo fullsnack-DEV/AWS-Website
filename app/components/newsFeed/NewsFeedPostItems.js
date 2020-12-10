@@ -170,7 +170,7 @@ function NewsFeedPostItems({
         {attachedImages.length > 0 ? (
           <NewsFeedDescription descriptions={descriptions} character={140} />
         ) : (
-          <NewsFeedDescription descriptions={descriptions} character={650} />
+          <NewsFeedDescription descriptions={descriptions} character={420} />
         )}
 
         <View style={{ marginTop: 10, marginLeft: 10 }}></View>

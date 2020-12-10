@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
   },
   profileImg: {
     alignSelf: 'center',
-    backgroundColor: colors.themeColor,
     borderColor: colors.whiteColor,
     borderRadius: 35,
     borderWidth: 1,

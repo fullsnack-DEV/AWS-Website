@@ -12,6 +12,7 @@ import UserCategoryView from './UserCategoryView';
 export default function RefereesProfileSection({
   profileImage,
   userName,
+  feesCount,
 }) {
   return (
     <View style={styles.topViewContainer}>
@@ -31,7 +32,7 @@ export default function RefereesProfileSection({
         </View>
       </View>
       <View style={styles.editViewStyle}>
-        <Text style={styles.editTextStyle}>{'$20 CAD'}
+        <Text style={styles.editTextStyle}>{`$${feesCount} CAD`}
           <Text style={styles.perHourTextStyle}>{' (per hours)'}</Text>
         </Text>
         <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>

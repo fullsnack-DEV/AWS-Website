@@ -17,7 +17,7 @@ export default function CertificatesItemView({
   return (
 
     <View>
-      <Image source={certificateImage} style={[styles.profileImage, profileImage]} resizeMode={'contain'} />
+      <Image source={certificateImage} style={[styles.profileImage, profileImage]} resizeMode={'cover'} />
       <Text style={[styles.teamTitleTextStyle, teamTitleTextStyle]}>{certificateName}</Text>
     </View>
 
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   profileImage: {
     height: 150,
     width: 195,
+    borderRadius: 5,
   },
   teamTitleTextStyle: {
     fontSize: 15,
