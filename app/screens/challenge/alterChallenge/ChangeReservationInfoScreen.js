@@ -126,11 +126,30 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
           if (screenName === 'change') {
             navigation.navigate('AlterAcceptDeclineScreen', { body: bodyParams });
           } else {
-            acceptDeclineChallengeOperation(
-              entity.uid,
-              bodyParams.challenge_id,
-              bodyParams.version,
-              'cancel',
+            Alert.alert(
+              'Are you sure that you want to cancel the match reservation?',
+              '',
+              [{
+                text: 'Yes',
+                onPress: () => {
+                  acceptDeclineChallengeOperation(
+                    entity.uid,
+                    bodyParams.challenge_id,
+                    bodyParams.version,
+                    'cancel',
+                  );
+                },
+              },
+              {
+                text: 'No',
+                style: 'cancel',
+                onPress: () => {
+                  navigation.goBack()
+                },
+              },
+
+              ],
+              { cancelable: false },
             );
           }
         }}

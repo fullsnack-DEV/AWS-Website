@@ -20,19 +20,21 @@ import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import TCBadge from '../components/TCBadge';
 import { widthPercentageToDP as wp } from '../utils/index';
-import AuthContext from '../auth/context'
+import AuthContext from '../auth/context';
 
 const Tab = createBottomTabNavigator();
 
 const getTabBarVisibility = (route) => {
-  const routeName = route.state
-    ? route.state.routes[route.state.index].name
-    : '';
-
+  let routeName = '';
+  if (route.name === 'Account') {
+    const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
+    routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name
+  } else {
+    routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
+  }
   if (
     routeName === 'SoccerRecording'
     || routeName === 'GameDetailRecord'
-    || routeName === 'SoccerRecordList'
     || routeName === 'TennisRecordList'
     || routeName === 'NewsFeedVideoPlayer'
     || routeName === 'RegisterPlayer'
@@ -78,7 +80,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'InvitationSentScreen'
     || routeName === 'ConnectionReqSentScreen'
     || routeName === 'MessageNewGroupScreen'
-    || routeName === 'SoccerHome'
+    || routeName === 'TennisRecording'
   ) {
     return false;
   }
@@ -174,7 +176,9 @@ function AppNavigator({ navigation }) {
       <Tab.Screen
         name="Notification"
         component={ NotificationNavigator }
-        options={ {
+
+        options={ ({ route }) => ({
+          tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
             <Image
               source={
@@ -183,7 +187,7 @@ function AppNavigator({ navigation }) {
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
           ),
-        } }
+        }) }
       />
       <Tab.Screen
         name="Message"

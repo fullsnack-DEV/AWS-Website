@@ -45,7 +45,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
 
         console.log('Body data of fee:', body);
         setloading(true);
-        getFeesEstimation(route.params.teamData[1].group_id, body, authContext)
+        getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, body, authContext)
           .then((response) => {
             setloading(false);
             console.log('fee data :', response.payload);
@@ -83,19 +83,56 @@ export default function CreateChallengeForm5({ navigation, route }) {
       body.manual_fee = false;
       body.currency_type = 'CAD';
       body.payment_method_type = 'card';
-      const home_id = route.params.teamData[0].group_id
-      const away_id = route.params.teamData[1].group_id
+
+      const home_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
+      const away_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
       delete body.home_team;
       delete body.away_team;
       body.home_team = home_id;
       body.away_team = away_id;
+      if (route.params.teamData[0].group_id) {
+        body.userChallenge = false;
+      } else {
+        // body.home_user = home_id;
+        // body.away_user = away_id;
+        body.userChallenge = true;
+        body.special_rule = 'test special rules';
+        body.gameRules = {
+          winning_point_in_game: 4,
+          tiebreaker_apply_at: 6,
+          apply_duece_in_set: true,
+          apply_tiebreaker_in_game: true,
+          apply_duece_in_game: true,
+          total_sets: 5,
+          game_count_to_win_set: 6,
+          applyDueceInTieBreaker: true,
+          winning_point_in_tiebreaker: 7,
+        };
+      }
 
       console.log('BODY OF CREATE CHALLENGE API:', body);
       setloading(true);
+
+      let entityID;
+      let type;
+      if (route.params.teamData[0].group_id) {
+        type = 'teams'
+        if (route.params.teamData[0].group_id === entity.uid) {
+          entityID = route.params.teamData[1].group_id
+        } else {
+          entityID = route.params.teamData[0].group_id
+        }
+      } else {
+        type = 'users'
+        if (route.params.teamData[0].user_id === entity.uid) {
+          entityID = route.params.teamData[1].user_id
+        } else {
+          entityID = route.params.teamData[0].user_id
+        }
+      }
       createChallenge(
-        route.params.teamData[0].group_id === entity.uid
-          ? route.params.teamData[1].group_id
-          : route.params.teamData[0].group_id,
+        entityID,
+        type,
         body,
         authContext,
       )

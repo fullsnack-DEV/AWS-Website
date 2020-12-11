@@ -109,7 +109,7 @@ const resetGame = (gameId, authContext) => makeAPIRequest({
 })
 const decreaseGameScore = (teamId, gameId, authContext) => makeAPIRequest({
   method: 'delete',
-  url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/decreaseScore`,
+  url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/score`,
   authContext,
 })
 

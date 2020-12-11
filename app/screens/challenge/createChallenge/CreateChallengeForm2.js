@@ -14,11 +14,16 @@ import colors from '../../../Constants/Colors';
 import TCGradientButton from '../../../components/TCGradientButton';
 import TCLabel from '../../../components/TCLabel';
 import TCTextField from '../../../components/TCTextField';
+import TCPicker from '../../../components/TCPicker';
 
 export default function CreateChallengeForm2({ navigation, route }) {
   const [rules, setRules] = useState('')
   const isFocused = useIsFocused();
   const [editableAlter, setEditableAlter] = useState(false);
+  const [userChallenge, setUserChallenge] = useState(false);
+  const [sets, setSets] = useState();
+  const [games, setGames] = useState();
+
   useEffect(() => {
     if (route && route.params && route.params.editable && route.params.body) {
       setRules(route.params.body.special_rule)
@@ -26,6 +31,12 @@ export default function CreateChallengeForm2({ navigation, route }) {
     if (route && route.params && route.params.editableAlter && route.params.body) {
       setEditableAlter(true)
       setRules(route.params.body.special_rule)
+    }
+    if (route?.params?.body?.sport === ('tennis' || 'Tennis')) {
+      console.log('Body in rules:', route.params.body);
+      setUserChallenge(true)
+    } else {
+      setUserChallenge(false)
     }
   }, [isFocused]);
   const checkValidation = () => {
@@ -36,7 +47,8 @@ export default function CreateChallengeForm2({ navigation, route }) {
     return true
   };
   return (
-    <View>
+    <>
+
       {editableAlter === false && <View style={styles.formSteps}>
         <View style={styles.form1}></View>
         <View style={styles.form2}></View>
@@ -45,21 +57,58 @@ export default function CreateChallengeForm2({ navigation, route }) {
         <View style={styles.form5}></View>
       </View>}
 
-      <View>
-
+      {!userChallenge && <View>
         <TCLabel title={'Rules'}/>
         <Text style={styles.responsibilityText}>Please, add the rules of the match.</Text>
         <View style={{ height: 100 }}>
           <TCTextField
-        height={100}
-        multiline={true}
-        placeholder={strings.writedownRulesPlaceholder}
-        keyboardType={'default'}
-        value={rules}
-        onChangeText={(text) => setRules(text)}/>
+            height={100}
+            multiline={true}
+            placeholder={strings.writedownRulesPlaceholder}
+            keyboardType={'default'}
+            value={rules}
+            onChangeText={(text) => setRules(text)}/>
         </View>
 
-      </View>
+      </View>}
+
+      {/* start view for user to user challenge rules */}
+      {userChallenge && <View style={{
+        flex: 1,
+      }}>
+        <TCLabel title={'Number of sets'}/>
+        <TCPicker
+         dataSource={[
+           { label: '1', value: '1' },
+           { label: '3', value: '3' },
+           { label: '5', value: '5' },
+           { label: '9', value: '9' },
+         ]}
+        placeholder={'Select sets'}
+        value={sets}
+        onValueChange={(value) => {
+          setSets(value);
+        }}
+        />
+        <TCLabel title={'Number of games to win set'}/>
+        <TCPicker
+         dataSource={[
+           { label: '1', value: '1' },
+           { label: '2', value: '2' },
+           { label: '3', value: '3' },
+           { label: '4', value: '4' },
+           { label: '5', value: '5' },
+           { label: '6', value: '6' },
+           { label: '7', value: '7' },
+         ]}
+        placeholder={'Select number of games'}
+        value={games}
+        onValueChange={(value) => {
+          setGames(value);
+        }}
+        />
+      </View>}
+      {/*  end view for user to user challenge rules */}
       <View style={{ flex: 1 }}/>
       <View style={{ marginBottom: 20 }}>
         <TCGradientButton title={editableAlter === true ? strings.doneTitle : strings.nextTitle} onPress={() => {
@@ -92,7 +141,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
         }}/>
       </View>
 
-    </View>
+    </>
   );
 }
 

@@ -678,12 +678,6 @@ export default function CreateChallengeForm4({ navigation, route }) {
                       'Reservation cannot be cancel after game time passed or offer expired.',
                     );
                   }
-                  acceptDeclineChallengeOperation(
-                    entity.uid,
-                    bodyParams.challenge_id,
-                    bodyParams.version,
-                    'cancel',
-                  );
                 }}
               />
             </View>
