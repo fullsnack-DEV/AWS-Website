@@ -40,6 +40,7 @@ const colors = {
   textFieldColor: '#f3f3f3',
   doneButtonColor: '#29bce5',
   actionSheetColor: '#006ff9',
+  lightBG: '#F9F9F9',
   offwhite: '#FCFCFC',
   offGrayColor: '#ebebeb',
   radoffwhiteioButtonColor: '#45C1C0',

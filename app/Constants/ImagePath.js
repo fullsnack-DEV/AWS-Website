@@ -62,6 +62,7 @@ const images = {
   dropDownArrow2: require('../assets/images/down_arrow.png'),
   curruentTime: require('../assets/images/ic_game_curruent_time.png'),
   gamePlus: require('../assets/images/ic_game_plus.png'),
+  gameOrangePlus: require('../assets/images/game_rocord.png'),
   gameRecord: require('../assets/images/ic_record.png'),
   gamePause: require('../assets/images/ic_game_pause.png'),
   gameStart: require('../assets/images/ic_game_start.png'),
@@ -149,6 +150,7 @@ const images = {
 
   switchAccount: require('../assets/images/switch_account.png'),
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
+  tennisArrow: require('../assets/images/tennis_arrow.png'),
   noSpecicPlayer: require('../assets/images/ic_no_specific.png'),
   clubPlaceholder: require('../assets/images/club_placeholder.png'),
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),
@@ -245,7 +247,7 @@ const images = {
   whiteTrophySmall: require('../assets/images/minitropy.png'),
   editPencil: require('../assets/images/editPencil.png'),
   addRole: require('../assets/images/add.png'),
-  tennisAce: require('../assets/images/tennisAce.png'),
+  tennisAce: require('../assets/images/ic_tennis_ace.png'),
   tennisFault: require('../assets/images/tennisFault.png'),
   tennisFootFault: require('../assets/images/tennisFootFault.png'),
   tennisScore: require('../assets/images/tennisScore.png'),
@@ -253,6 +255,9 @@ const images = {
   tennisUnForced: require('../assets/images/tennisUnForced.png'),
   tennisWinner: require('../assets/images/tennisWinner.png'),
   yellowDownArrow: require('../assets/images/yellowDownArrow.png'),
+
+  // Tennis recorder
+  tennisGeneral: require('../assets/images/ic_tennis_general.png'),
 };
 
 export default images;

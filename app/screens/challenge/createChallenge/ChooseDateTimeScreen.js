@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useRef, useState, useLayoutEffect, useContext,
+  useEffect, useState, useLayoutEffect, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -14,7 +14,6 @@ import {
 
 import { useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
-import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AuthContext from '../../../auth/context'
@@ -24,7 +23,7 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import TCGradientButton from '../../../components/TCGradientButton';
 import UnavailableTimeView from '../../../components/challenge/UnavailableTimeView';
-import TCDateTimePicker from '../../../components/TCDateTimePicker';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
 export default function ChooseDateTimeScreen({ navigation, route }) {
   const monthNames = [
@@ -46,57 +45,26 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const [fromTime, setfromTime] = useState('00:00:00');
-  const [toTime, setToTime] = useState('00:00:00');
   const [fromDate, setfromDate] = useState();
   const [toDate, setToDate] = useState();
-  const [timePickerFor, setTimePickerFor] = useState();
   const [datePickerFor, setDatePickerFor] = useState();
   const [filteredData, setFilterdData] = useState();
 
   const [slots, setSlots] = useState();
   const [marked, setMarked] = useState();
   const isFocused = useIsFocused();
-  const timePicker = useRef();
 
   useEffect(() => {
     getSlots();
   }, [isFocused]);
   useLayoutEffect(() => {}, [selectedDate]);
 
-  const onConfirm = (hour, minute) => {
-    console.log('HHMM', hour, minute);
-    const hr = hour < 10 ? `0${hour}` : hour
-
-    if (timePickerFor === 'from') {
-      const str = `${hr}:${minute}:00`;
-      console.log('DONE FROM TIME::', str);
-      setfromTime(str);
-    } else {
-      const str = `${hr}:${minute}:00`;
-      console.log('DONE TO TIME::', str);
-      setToTime(str);
-    }
-    timePicker.current.close();
+  const getDateFormat = (dateValue) => {
+    moment.locale('en');
+    return moment(new Date(dateValue)).format('MMM DD, yy      hh:mm A');
   };
-
-  const tConvert = (timeString) => {
-    const timeString12hr = new Date(
-      `1970-01-01T${timeString}Z`,
-    ).toLocaleTimeString(
-      {},
-      {
-        timeZone: 'UTC',
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      },
-    );
-    return timeString12hr;
-  };
-
   const getSlots = () => {
     setloading(true);
     blockedSlots(route.params.otherTeam.group_id, authContext)
@@ -159,19 +127,19 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     console.log('MARKED DATES::', markedDates);
   };
 
-  const handleDonePress = ({ date }) => {
+  const handleDonePress = (date) => {
     setShow(!show);
     if (datePickerFor === 'from') {
-      const str = date;
-      setfromDate(str);
+      console.log('From Date:', date);
+      setfromDate(date);
     } else {
-      const str = date;
-      setToDate(str);
+      setToDate(date);
     }
+    setShow(false)
     filterSlots(fromDate)
   };
   const handleCancelPress = () => {
-    setShow(!show);
+    setShow(false);
   };
 
   const filterSlots = (startDate) => {
@@ -284,7 +252,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             <View style={styles.fieldView}>
               <View
                 style={{
-                  flex: 0.4,
+
                   height: 35,
                   justifyContent: 'center',
                 }}>
@@ -292,7 +260,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                   From
                 </Text>
               </View>
-              <View style={{ flex: 0.6, flexDirection: 'row' }}>
+              <View style={{ marginRight: 15, flexDirection: 'row' }}>
                 {fromDate ? (
                   <Text
                     style={styles.fieldValue}
@@ -301,9 +269,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                       setDatePickerFor('from');
                       setShow(!show);
                     }}>
-                    {monthNames[new Date(fromDate).getMonth()]}{' '}
-                    {new Date(fromDate).getDate()} ,
-                    {new Date(fromDate).getFullYear()}
+                    {getDateFormat(fromDate)}
                   </Text>
                 ) : (
                   <Text
@@ -313,20 +279,9 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                       setDatePickerFor('from');
                       setShow(!show);
                     }}>
-                    {monthNames[new Date(selectedDate).getMonth()]}{' '}
-                    {new Date(selectedDate).getDate()} ,
-                    {new Date(selectedDate).getFullYear()}
+                    {getDateFormat(selectedDate)}
                   </Text>
                 )}
-                <Text
-                  style={styles.timeValue}
-                  onPress={() => {
-                    setTimePickerFor('from');
-                    timePicker.current.open();
-                  }}>
-                  {'   '}
-                  {tConvert(fromTime)}
-                </Text>
               </View>
             </View>
           </View>
@@ -334,7 +289,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             <View style={styles.fieldView}>
               <View
                 style={{
-                  flex: 0.4,
+
                   height: 35,
                   justifyContent: 'center',
                 }}>
@@ -342,7 +297,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                   To
                 </Text>
               </View>
-              <View style={{ flex: 0.6, flexDirection: 'row' }}>
+              <View style={{ marginRight: 15, flexDirection: 'row' }}>
                 {toDate ? (
                   <Text
                     style={styles.fieldValue}
@@ -351,9 +306,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                       setDatePickerFor('to');
                       setShow(!show);
                     }}>
-                    {monthNames[new Date(toDate).getMonth()]}{' '}
-                    {new Date(toDate).getDate()} ,
-                    {new Date(toDate).getFullYear()}
+                    {getDateFormat(toDate)}
                   </Text>
                 ) : (
                   <Text
@@ -363,34 +316,20 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                       setDatePickerFor('to');
                       setShow(!show);
                     }}>
-                    {monthNames[new Date(selectedDate).getMonth()]}{' '}
-                    {new Date(selectedDate).getDate()} ,
-                    {new Date(selectedDate).getFullYear()}
+                    {getDateFormat(selectedDate)}
                   </Text>
                 )}
-                <Text
-                  style={styles.timeValue}
-                  onPress={() => {
-                    setTimePickerFor('to');
-                    timePicker.current.open();
-                  }}>{'   '}
-                  {tConvert(toTime)}
-                </Text>
+
               </View>
             </View>
           </View>
-          <TimePicker
-            ref={timePicker}
-            onCancel={() => timePicker.current.close()}
-            onConfirm={(hour, minute) => onConfirm(hour, minute)}
-            minuteInterval={5}
-            minuteUnit={' min'}
-          />
-          <TCDateTimePicker
-            title={'Choose Date'}
+          <DateTimePickerView
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            minimumDate={fromDate || new Date()}
+            mode={'datetime'}
           />
           <View style={{ flex: 1 }}></View>
         </SafeAreaView>
@@ -399,18 +338,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       <TCGradientButton
         title={strings.applyTitle}
         onPress={() => {
-          const fromStr = fromDate || selectedDate
-          const toStr = toDate || selectedDate
-          const fromStamp = moment(`${fromStr} ${fromTime}`).format('YYYY-MM-DDTHH:mm:ss');
-          const toStamp = moment(`${toStr} ${toTime}`).format('YYYY-MM-DDTHH:mm:ss');
-
-          console.log('FROM-TO D/T:', `${new Date(fromStamp).getHours()}:${new Date(
-            fromStamp,
-          ).getMinutes()}:${new Date(
-            fromStamp,
-          ).getSeconds()}`);
-
-          navigation.navigate('CreateChallengeForm1', { from: `${new Date(moment(fromStamp).utcOffset(0))}`, to: `${new Date(moment(toStamp).utcOffset(0))}` })
+          navigation.navigate('CreateChallengeForm1', { from: fromDate || selectedDate, to: toDate || selectedDate })
         }}
       />
     </>
@@ -420,6 +348,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   fieldView: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 10,
     height: 35,
     alignItems: 'center',
@@ -442,11 +371,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     textAlign: 'center',
-  },
-  timeValue: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
   },
   dateHeader: {
     marginTop: 15,
