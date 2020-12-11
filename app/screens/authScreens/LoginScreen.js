@@ -277,8 +277,8 @@ export default function LoginScreen({ navigation }) {
       <FacebookButton onPress={() => onFacebookButtonPress()} />
       <GoogleButton onPress={() => onGoogleButtonPress()} />
       <Text style={styles.orText}>{strings.orText}</Text>
-
-      <TCTextField
+      <View style={styles.textFieldContainerStyle}>
+        <TCTextField
         style={styles.textFieldStyle}
         placeholder={strings.emailPlaceHolder}
         autoCapitalize="none"
@@ -286,6 +286,7 @@ export default function LoginScreen({ navigation }) {
         onChangeText={(text) => setEmail(text)}
         value={email}
       />
+      </View>
       <View style={styles.passwordView}>
         <TextInput
           style={styles.textInput}
@@ -427,18 +428,15 @@ const styles = StyleSheet.create({
 
     width: wp('75%'),
   },
-  textFieldStyle: {
-    backgroundColor: colors.whiteColor,
-    fontFamily: fonts.RRegular,
-
+  textFieldContainerStyle: {
+    height: 40,
     marginBottom: 10,
-    marginLeft: 32,
-    marginRight: 32,
-
-    paddingLeft: 8,
+  },
+  textFieldStyle: {
+    marginHorizontal: 32,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.5,
     shadowRadius: 4,
   },
 });
