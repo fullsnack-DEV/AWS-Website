@@ -14,20 +14,25 @@ function EventTextInput({
   placeholder,
   multiline,
   valueEndTitle,
+  valueFirstTitle,
   displayLastTitle,
+  displayFirstTitle,
   keyboardType,
   containerStyle,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <TextInput
-        placeholder={placeholder}
-        style={styles.textInputStyle}
-        onChangeText={onChangeText}
-        value={value}
-        multiline={multiline}
-        keyboardType={keyboardType}
-      />
+      <View style={{ flexDirection: 'row' }}>
+        {displayFirstTitle && <Text style={styles.valueAfterTextStyle}>{valueFirstTitle}</Text>}
+        <TextInput
+          placeholder={placeholder}
+          style={styles.textInputStyle}
+          onChangeText={onChangeText}
+          value={value}
+          multiline={multiline}
+          keyboardType={keyboardType}
+        />
+      </View>
       {displayLastTitle && <Text style={styles.valueAfterTextStyle}>{valueEndTitle}</Text>}
     </View>
   );

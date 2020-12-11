@@ -22,7 +22,7 @@ function VideoPost({ data }) {
   const uploadVideoURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
   let height = wp('96%');
-  height = data.media_height > data.media_width ? height = wp('116%') : height = wp('76%');
+  height = data.media_height > data.media_width ? height = wp('124%') : height = wp('68%');
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);

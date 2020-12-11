@@ -351,7 +351,7 @@ PODS:
     - React
   - react-native-geolocation (2.0.2):
     - React
-  - react-native-image-resizer (1.4.0):
+  - react-native-image-resizer (1.4.1):
     - React-Core
   - react-native-image-sequence (0.7.0):
     - React
@@ -438,7 +438,7 @@ PODS:
     - React
   - RNCPicker (1.8.1):
     - React-Core
-  - RNDateTimePicker (3.0.6):
+  - RNDateTimePicker (3.0.8):
     - React-Core
   - RNFastImage (8.3.4):
     - React-Core
@@ -781,7 +781,7 @@ SPEC CHECKSUMS:
   react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
   react-native-fbsdk: 00c15d138bba6d4efa628670886fc58cec858c19
   react-native-geolocation: cbd9d6bd06bac411eed2671810f454d4908484a8
-  react-native-image-resizer: bf422e1e457d7244562d919d11ba9080ccbe329b
+  react-native-image-resizer: af7fa48fe7913b7b96fa079d16dd97ada31d6833
   react-native-image-sequence: b4cc7ce0ee9eeec7574b005e06059b3f7f818d96
   react-native-maps: f4b89da81626ad7f151a8bfcb79733295d31ce5c
   react-native-netinfo: 77d133105df525d4a11f10fcaa8d0b8883ea6429
@@ -803,7 +803,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: cb9a623793918c6699586281f0b51cbc38f046f9
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
-  RNDateTimePicker: 54bc1830e4e8d99ed00e6b6735b8517e163b2a4a
+  RNDateTimePicker: aab869a517ecf3095910be81093e3d9b27cd82ed
   RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 804b98033f45c3a3e35b56de8c894f85ef5e4388
   RNFBAuth: 8c4de7a59b563bd399993855aa61183e1f1be4bf
