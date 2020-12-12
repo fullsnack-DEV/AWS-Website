@@ -130,6 +130,7 @@ export default function TennisRecording({ route }) {
           ]}
         />
         </View>
+        <View style={{ flex: 1 }}></View>
         {gameObj && (
           <View style={styles.bottomView}>
             <View style={styles.timeView}>
@@ -478,12 +479,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   bottomView: {
+    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    width: '100%',
-    bottom: 0,
     position: 'absolute',
+    bottom: 0,
+    width: '100%',
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
@@ -580,6 +582,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
+
   },
   scoreView: {
     flex: 1,
@@ -589,7 +592,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 5,
   },
   playerScore: {
     flex: 0.5,

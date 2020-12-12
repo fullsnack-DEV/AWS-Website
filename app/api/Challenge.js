@@ -8,11 +8,12 @@ export const getFeesEstimation = async (entityID, params, authContext) => makeAP
   authContext,
 })
 
-export const createChallenge = async (entityID, params, authContext) => makeAPIRequest({
+export const createChallenge = async (entityID, type, params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}teams/${entityID}/challenge`,
+  url: `${Config.BASE_URL}${type}/${entityID}/challenge`,
   data: params,
   authContext,
+  // type = 'teams' or 'users'
 })
 
 export const getChallenge = async (challengeId, authContext) => makeAPIRequest({

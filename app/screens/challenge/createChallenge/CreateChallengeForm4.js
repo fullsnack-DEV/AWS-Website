@@ -101,7 +101,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const renderSecureReferee = ({ item, index }) => (
     <TCInfoImageField
       title={index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`}
-      name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam.group_id ? homeTeam.group_name : awayTeam.group_name)))}
+      name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam?.group_id || (item.responsible_team_id === homeTeam?.user_id) ? homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}` : awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`)))}
       marginLeft={30}
     />
   );
@@ -109,7 +109,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const renderSecureScorekeeper = ({ item, index }) => (
     <TCInfoImageField
       title={`Scorekeeper ${index + 1}`}
-      name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam.group_id ? homeTeam.group_name : awayTeam.group_name)))}
+      name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam?.group_id || (item.responsible_team_id === homeTeam?.user_id) ? homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}` : awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`)))}
       marginLeft={30}
     />
   );
@@ -146,7 +146,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
           <View style={styles.teamView}>
             <Image source={images.teamPlaceholder} style={styles.teamImage} />
-            <Text style={styles.teamNameText}>{homeTeam && homeTeam.group_name}</Text>
+            <Text style={styles.teamNameText}>{homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}`}</Text>
           </View>
 
         </View>
@@ -165,7 +165,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-              {awayTeam && awayTeam.group_name}
+              {awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`}
             </Text>
           </View>
 
@@ -185,13 +185,13 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
           <TCInfoImageField
             title={'Home'}
-            name={route.params.teamData[0].group_name}
+            name={route.params.teamData[0].group_name || `${route.params.teamData[0].first_name} ${route.params.teamData[0].last_name}`}
             marginLeft={30}
           />
           <TCThinDivider />
           <TCInfoImageField
             title={'Away'}
-            name={route.params.teamData[1].group_name}
+            name={route.params.teamData[1].group_name || `${route.params.teamData[1].first_name} ${route.params.teamData[1].last_name}`}
             marginLeft={30}
           />
           <TCThinDivider />

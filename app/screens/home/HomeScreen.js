@@ -1605,6 +1605,15 @@ export default function HomeScreen({ navigation, route }) {
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
               />
+
+              <Text style={{
+                margin: 20, color: colors.whiteColor, fontSize: 20, fontFamily: fonts.RBlack,
+              }} onPress={() => {
+                setPlaysInModalVisible(!playsInModalVisible)
+                navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
+              }}>
+                CHALLENGE
+              </Text>
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem
                   title={strings.infoTitle}
