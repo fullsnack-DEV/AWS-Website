@@ -319,7 +319,6 @@ export default function AccountScreen({ navigation }) {
     } else if (section === 'Setting & Privacy') {
       const entity = authContext.entity
       if (entity.role === 'user') {
-        console.log('GO to UserSettingPrivacyScreen')
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
         navigation.navigate('GroupSettingPrivacyScreen', {
@@ -337,7 +336,6 @@ export default function AccountScreen({ navigation }) {
   };
 
   const handleOptions = async (options) => {
-    console.log('options', options)
     if (options === 'Register as a referee') {
       navigation.navigate('RegisterReferee');
     } else if (options === 'Add a sport') {
@@ -353,6 +351,8 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('CreateClubForm1');
     } else if (options === 'Payment Method') {
       navigation.navigate('PaymentMethodsScreen');
+    } else if (options === 'Payout Method') {
+      navigation.navigate('PayoutMethodScreen');
     }
   };
 

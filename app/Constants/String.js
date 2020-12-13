@@ -56,6 +56,7 @@ const strings = {
   nameText: 'Name',
   save: 'Save',
   done: 'Done',
+  yes: 'Yes',
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
 
@@ -371,7 +372,7 @@ const strings = {
   cancelMatch: 'CANCEL MATCH',
   alterReservation: 'CHANGE RESERVATION',
   sendAlterRequest: 'SEND ALTERATION REQUEST',
-  cancel: 'CANCEL',
+  cancel: 'Cancel',
   goToGameHome: 'GO TO GAME HOME',
   alreadyjoinclubmessage: 'Your team can’t join this club because a team can join only a club.',
   isinvitedsuccesfully: 'is invited successfully',
