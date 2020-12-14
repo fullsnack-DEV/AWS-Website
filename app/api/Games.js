@@ -124,6 +124,14 @@ const getGameRoster = (gameId, authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}games/${gameId}/roster`,
   authContext,
 })
+
+const getRefereeReviewData = async (userID, params, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/users/${userID}/reviews`,
+  params,
+  authContext,
+})
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -145,4 +153,5 @@ export {
   getGameStatsChartData,
   getGameStatsData,
   getGameRoster,
+  getRefereeReviewData,
 }

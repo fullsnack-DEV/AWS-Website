@@ -162,32 +162,32 @@ const language_list = [
   },
   {
     id: 1,
-    title: 'Korean',
+    title: 'English(Canada)',
     isChecked: false,
   },
   {
     id: 2,
-    title: 'Australian Football',
+    title: 'English(Singapore)',
     isChecked: false,
   },
   {
     id: 3,
-    title: 'Rumantsch',
+    title: 'English(UK)',
     isChecked: false,
   },
   {
     id: 4,
-    title: 'Deutsch',
+    title: 'English(US)',
     isChecked: false,
   },
   {
     id: 5,
-    title: 'Australian Football',
+    title: 'Deutsch',
     isChecked: false,
   },
   {
     id: 6,
-    title: 'Rumantsch',
+    title: 'Italiano',
     isChecked: false,
   },
   {
@@ -201,9 +201,8 @@ function RefereeInfoSection({
   data,
   selectRefereeData,
   languagesName,
+  onSavePress,
 }) {
-  console.log('Select Referee Data :-', selectRefereeData);
-
   const authContext = useContext(AuthContext)
   const [editPressTitle, setEditPressTitle] = useState(null);
   const [info, setInfo] = useState({
@@ -213,7 +212,7 @@ function RefereeInfoSection({
   });
   const [bioText, setBioText] = useState(selectRefereeData.descriptions);
   const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates);
-  const [refereeFeeCount, setRefereeFeeCount] = useState(selectRefereeData.fee);
+  const [refereeFeeCount, setRefereeFeeCount] = useState(selectRefereeData.fee || 0);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [editLanguageModal, setEditLanguageModal] = useState(false);
@@ -227,7 +226,22 @@ function RefereeInfoSection({
   const [addCertiTitle, setAddCertiTitle] = useState('');
   const [searchLanguageText, setSearchLanguageText] = useState('');
   const [languageList, setLanguageList] = useState(language_list);
-  const [selectedLanguage, setSelectedLanguage] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    if (selectRefereeData.language && selectRefereeData.language.length > 0) {
+      languageList.map((listItem) => {
+        const listValue = listItem;
+        selectRefereeData.language.map((default_lang) => {
+          if (default_lang.language_name === listValue.title) {
+            listValue.isChecked = true;
+          }
+          return null;
+        })
+        return null;
+      })
+      return languageList;
+    }
+    return [];
+  });
 
   const actionSheet = useRef();
 
@@ -644,6 +658,39 @@ function RefereeInfoSection({
             }
             rightComponent={
               <TouchableOpacity onPress={() => {
+                const langNameItem = {
+                  language_name: '',
+                };
+                const langParams = [];
+                selectedLanguage.map((lang) => {
+                  langNameItem.language_name = lang.title;
+                  langParams.push({ ...langNameItem });
+                  return null;
+                })
+
+                const refereeEditParams = {
+                  cancellation_policy: 'strict',
+                  certificates: certificatesData,
+                  descriptions: bioText,
+                  fee: refereeFeeCount,
+                  is_published: true,
+                  language: langParams,
+                  sport_name: selectRefereeData.sport_name,
+                }
+                const newDataList = [];
+                data.referee_data.forEach((item) => {
+                  if (item.sport_name === selectRefereeData.sport_name) {
+                    newDataList.push(refereeEditParams);
+                  } else {
+                    newDataList.push(item);
+                  }
+                });
+                const finalParams = {
+                  referee_data: newDataList,
+                  gender: info.genderText,
+                  birthday: (info.birthdayText / 1000),
+                };
+                onSavePress(finalParams);
                 setEditModal(false)
               }}>
                 <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
@@ -699,7 +746,7 @@ function RefereeInfoSection({
               containerStyle={{ marginTop: 15 }}
             >
               <BirthSelectItem
-                title={strings.languagesName}
+                title={languagesName}
                 onItemPress={() => {
                   editLanguage();
                 }}

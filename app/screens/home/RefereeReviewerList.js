@@ -1,36 +1,34 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
-  View, FlatList, Alert, ActivityIndicator,
+  View,
+  FlatList,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { createReaction, deletePost, getNewsFeed } from '../../api/NewsFeeds';
+import {
+  createReaction,
+  deletePost,
+  getNewsFeed,
+} from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
-import colors from '../../Constants/Colors'
-import AuthContext from '../../auth/context'
+import colors from '../../Constants/Colors';
+import AuthContext from '../../auth/context';
+import RefereeReviewItem from '../../components/Home/RefereeReviewItem';
 
-export default function NewsFeedList({
-  navigation, postData, onEndReached, footerLoading = false, scrollEnabled,
+export default function RefereeReviewerList({
+  navigation,
+  postData,
+  onEndReached,
+  footerLoading = false,
+  userID,
 }) {
-  // console.log('Post Data ::--', postData);
   const [pullRefresh, setPullRefresh] = useState(false);
   const [data, setData] = useState(postData);
   const [loading, setloading] = useState(false);
-  const [userID, setUserID] = useState('');
-  const authContext = useContext(AuthContext)
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const entity = authContext.entity
-      if (entity) {
-        setUserID(entity.uid || entity.auth.user_id);
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const authContext = useContext(AuthContext);
 
   const onProfilePress = (item) => {
     navigation.navigate('HomeScreen', {
@@ -55,17 +53,20 @@ export default function NewsFeedList({
             }}
           />
         )}
-        scrollEnabled={scrollEnabled}
         ListFooterComponent={() => (
           !footerLoading ? <View
             style={{
               height: hp(10),
             }}
-          /> : <ActivityIndicator size={'small'} color={ colors.blackColor } style={{ alignSelf: 'center', marginBottom: hp(10) }} />
+          /> : <ActivityIndicator
+            size={'small'}
+            color={ colors.blackColor }
+            style={{ alignSelf: 'center', marginBottom: hp(10) }}
+          />
         )}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, key }) => (
-          <NewsFeedPostItems
+          <RefereeReviewItem
             key={key}
             item={item}
             navigation={navigation}

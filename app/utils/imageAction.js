@@ -60,7 +60,12 @@ const uploadImage = (data, authContext) => {
         uri: image.path,
         type: image.path.split('.')[1] || 'jpeg',
       }),
-    ]).then(([fullImage, thumbnail]) => ({ fullImage, thumbnail }))
+    ]).then(([fullImage, thumbnail]) => ({
+      fullImage,
+      thumbnail,
+      height: image.height,
+      width: image.width,
+    }))
   });
 };
 

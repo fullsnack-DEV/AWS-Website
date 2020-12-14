@@ -10,7 +10,7 @@ import {
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
-import MatchBetweenRecentView from './MatchBetweenRecentView';
+import MatchBetweenSection from './MatchBetweenSection';
 
 export default function RecentMatchItems({
   eventColor,
@@ -44,14 +44,13 @@ export default function RecentMatchItems({
             <View style={styles.timeCityDividerStyle} />
             <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
-          <MatchBetweenRecentView
+          <MatchBetweenSection
             firstUserImage={firstUserImage}
             firstText={firstTeamText}
             secondUserImage={secondUserImage}
             secondText={secondTeamText}
             firstTeamPoint={firstTeamPoint}
             secondTeamPoint={secondTeamPoint}
-            containerStyle={{ marginVertical: 15, marginBottom: 10, marginHorizontal: 8 }}
           />
         </View>
       </View>
@@ -75,25 +74,25 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flexDirection: 'row',
-    marginTop: 5,
+    marginTop: 4,
   },
   colorView: {
     alignItems: 'center',
     backgroundColor: colors.orangeColor,
     borderBottomLeftRadius: 5,
     borderTopLeftRadius: 5,
-    paddingTop: 10,
-    paddingLeft: 5,
+    paddingTop: 15,
+    // paddingLeft: 5,
     width: wp('12%'),
   },
   dateMonthText: {
     color: colors.whiteColor,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: fonts.RLight,
   },
   dateText: {
     color: colors.whiteColor,
-    fontSize: 20,
+    fontSize: 14,
     fontFamily: fonts.RBold,
   },
   eventText: {
@@ -102,13 +101,13 @@ const styles = StyleSheet.create({
   },
   eventTime: {
     fontSize: 12,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
     alignSelf: 'center',
   },
   eventTitle: {
     fontSize: 16,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     color: colors.googleColor,
   },
   timeCityDividerStyle: {

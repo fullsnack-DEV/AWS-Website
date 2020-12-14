@@ -24,9 +24,6 @@ function ReviewerItemView({
   totalData,
   onReadMorePress,
 }) {
-  console.log('Index ::--', indexNumber);
-  console.log('Total Data ::--', totalData);
-
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const actionSheet = useRef();
@@ -54,9 +51,9 @@ function ReviewerItemView({
                 {item.created_date}
               </Text>
               <View style={styles.eventImageViewStyle}>
-                <Image source={images.team_ph} style={styles.imageStyle} resizeMode={'cover'} />
+                <Image source={images.usaImage} style={styles.imageStyle} resizeMode={'contain'} />
               </View>
-              <Text style={[styles.activeTimeAgoTxt, { fontSize: 14 }]}>{'Newyork City FC'}</Text>
+              <Text style={[styles.activeTimeAgoTxt, { fontSize: 12, fontFamily: fonts.RMedium }]}>{'Newyork City FC'}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -74,7 +71,7 @@ function ReviewerItemView({
         <View>
           <PostDescription
             descriptions={descriptions}
-            character={140}
+            character={125}
             containerStyle={{ marginHorizontal: 12 }}
             onReadMorePress={onReadMorePress}
           />
@@ -261,10 +258,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   dotImageStyle: {
-    height: hp('2%'),
+    height: 15,
     margin: wp('1.5%'),
     tintColor: colors.googleColor,
-    width: hp('2%'),
+    width: 15,
   },
   dotImageTouchStyle: {
     alignItems: 'center',
@@ -281,6 +278,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: wp('3%'),
     marginHorizontal: 12,
+    alignItems: 'center',
   },
   userNameTxt: {
     color: colors.lightBlackColor,
@@ -289,7 +287,7 @@ const styles = StyleSheet.create({
   },
   userNameView: {
     flexDirection: 'column',
-    marginLeft: wp('4%'),
+    marginLeft: wp('3%'),
     width: wp('63%'),
   },
   mainImageView: {
@@ -313,10 +311,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   eventImageViewStyle: {
-    height: 30,
-    width: 30,
-    borderRadius: 15,
-    shadowOpacity: 0.3,
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    shadowOpacity: 0.2,
     shadowOffset: {
       height: 1,
       width: 0,
@@ -328,9 +326,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   imageStyle: {
-    width: 25,
-    height: 25,
-    borderRadius: 25 / 2,
+    width: 15,
+    height: 15,
   },
   maxReviewImageView: {
     position: 'absolute',

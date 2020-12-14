@@ -115,6 +115,7 @@ const images = {
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
   dotImage: require('../assets/images/ic_dot.png'),
+  horizontalThreeDot: require('../assets/images/horizontal_three_dot.png'),
   footplayer: require('../assets/images/footballPlayer.png'),
   footballGround: require('../assets/images/footballGround.png'),
   comment: require('../assets/images/comment.png'),

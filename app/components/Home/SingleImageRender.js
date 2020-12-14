@@ -38,6 +38,7 @@ function SingleImageRender({ data }) {
         <SingleImageModal
             uploadImageURL={data.attachments[0].thumbnail}
             backBtnPress={() => setModalVisible(false)}
+            data={data}
         />
       </Modal>
     </View>
