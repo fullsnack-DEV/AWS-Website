@@ -446,5 +446,11 @@ const strings = {
   addcard: 'Add New Card...',
   endingin: ' Ending in ',
   addacard: 'Add a Card',
+  entergamefee: 'Enter Game Fee',
+  matchfee: 'Match fee',
+  firstnamevalidation: 'First name cannot be blank',
+  lastnamevalidation: 'Last name cannot be blank',
+  locationvalidation: 'Location cannot be blank',
+  addOptionMessage: '+ Add a payment method',
 };
 export default strings;
