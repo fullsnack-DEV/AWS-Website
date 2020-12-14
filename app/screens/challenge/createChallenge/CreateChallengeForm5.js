@@ -96,18 +96,6 @@ export default function CreateChallengeForm5({ navigation, route }) {
         // body.home_user = home_id;
         // body.away_user = away_id;
         body.userChallenge = true;
-        body.special_rule = 'test special rules';
-        body.gameRules = {
-          winning_point_in_game: 4,
-          tiebreaker_apply_at: 6,
-          apply_duece_in_set: true,
-          apply_tiebreaker_in_game: true,
-          apply_duece_in_game: true,
-          total_sets: 5,
-          game_count_to_win_set: 6,
-          applyDueceInTieBreaker: true,
-          winning_point_in_tiebreaker: 7,
-        };
       }
 
       console.log('BODY OF CREATE CHALLENGE API:', body);
