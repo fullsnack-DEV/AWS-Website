@@ -33,9 +33,9 @@ export default function MatchFeesCard({ senderOrReceiver = 'sender', challengeOb
 
     if (minutes > 0) {
       if (minutes > 1) {
-        time = `${minutes} minutes`
+        time = `${time}${minutes} minutes`
       } else {
-        time = `${minutes} minute`
+        time = `${time}${minutes} minute`
       }
     }
 
