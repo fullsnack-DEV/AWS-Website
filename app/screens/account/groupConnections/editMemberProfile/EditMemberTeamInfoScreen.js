@@ -96,10 +96,12 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
     patchMember(groupMemberDetail.group_id, groupMemberDetail.user_id, body, authContext).then(() => {
       setloading(false);
       navigation.goBack()
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   }
   const renderPosition = ({ item, index }) => (
     <TCTextField

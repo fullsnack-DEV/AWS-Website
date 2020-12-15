@@ -154,7 +154,8 @@ const images = {
 
   switchAccount: require('../assets/images/switch_account.png'),
   teamPlaceholder: require('../assets/images/team_placeholder.png'),
-  tennisArrow: require('../assets/images/tennis_arrow.png'),
+  tennisArrowRight: require('../assets/images/tennis_arrow_right.png'),
+  tennisArrowLeft: require('../assets/images/tennis_arrow_left.png'),
   noSpecicPlayer: require('../assets/images/ic_no_specific.png'),
   clubPlaceholder: require('../assets/images/club_placeholder.png'),
   leaguePlaceholder: require('../assets/images/league_placeholder.png'),

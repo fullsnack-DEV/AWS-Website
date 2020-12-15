@@ -19,6 +19,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath'
 import AuthContext from '../../auth/context'
+import strings from '../../Constants/String';
 
 export default function JoinedTeamsScreen() {
   const [teamList, setTeamList] = useState([]);
@@ -32,15 +33,19 @@ export default function JoinedTeamsScreen() {
     if (entity.role === 'club') {
       getTeamsOfClub(entity.uid, authContext).then((response) => {
         setTeamList(response.payload);
-      }).catch((error) => {
-        Alert.alert(error)
-      })
+      }).catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
     } else {
       getJoinedGroups(authContext).then((response) => {
         setTeamList(response.payload.teams);
-      }).catch((error) => {
-        Alert.alert(error)
-      })
+      }).catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
     }
   };
 

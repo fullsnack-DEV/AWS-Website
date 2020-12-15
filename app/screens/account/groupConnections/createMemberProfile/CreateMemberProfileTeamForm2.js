@@ -113,8 +113,10 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
         createProfile(bodyParams)
       })
         .catch((e) => {
-          Alert.alert('Towns Cup', e.messages)
           setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.7);
         });
     } else {
       bodyParams = {
@@ -137,10 +139,12 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
         const title = strings.sendInvite
         navigation.navigate('MemberProfileCreatedScreen', { memberObj: response.payload, buttonTitle: title })
       }
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   }
   const renderPosition = ({ item, index }) => (
     <TCTextField

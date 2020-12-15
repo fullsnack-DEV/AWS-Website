@@ -62,7 +62,7 @@ export default function EditFeeScreen({ navigation, route }) {
               console.log('BASIC FEE::', basicFee);
               if (basicFee <= 0.0 || basicFee >= 1.0) {
                 navigation.navigate('AlterAcceptDeclineScreen', {
-                  body: {
+                  challengeObj: {
                     ...bodyParams,
                     total_game_charges: basicFee,
                   },

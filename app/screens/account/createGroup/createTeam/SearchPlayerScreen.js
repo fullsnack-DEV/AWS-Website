@@ -52,9 +52,11 @@ export default function SearchPlayerScreen({ navigation, route }) {
 
       setPlayers(arr);
       setSearchPlayers(arr);
-    }).catch((error) => {
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
   const selectPlayer = (item) => {
     const arr = [];

@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import { getChallenge } from '../../api/Challenge';
 import ReservationStatus from '../../Constants/ReservationStatus';
+import strings from '../../Constants/String';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getChallengeDetail = (challengeID, authContext) => {
@@ -36,7 +37,9 @@ export const getChallengeDetail = (challengeID, authContext) => {
         return Obj
       }
     }
-  }).catch((error) => {
-    Alert.alert(error.messages)
-  })
+  }).catch((e) => {
+    setTimeout(() => {
+      Alert.alert(strings.alertmessagetitle, e.message);
+    }, 0.7);
+  });
 };

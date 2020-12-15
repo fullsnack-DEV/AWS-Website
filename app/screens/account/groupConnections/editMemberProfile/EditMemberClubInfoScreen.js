@@ -18,6 +18,7 @@ import AuthContext from '../../../../auth/context'
 import { getTeamsOfClub } from '../../../../api/Groups';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
+import strings from '../../../../Constants/String';
 
 let entity = {};
 export default function EditMemberClubInfoScreen({ navigation }) {
@@ -52,9 +53,11 @@ export default function EditMemberClubInfoScreen({ navigation }) {
   const getTeamsList = async () => {
     getTeamsOfClub(entity.uid, authContext).then((response) => {
       setTeamList(response.payload);
-    }).catch((error) => {
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
   return (
 

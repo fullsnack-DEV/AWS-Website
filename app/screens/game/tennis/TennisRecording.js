@@ -1,7 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable array-callback-return */
 import React, {
-  useState, useEffect,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useLayoutEffect,
+
 } from 'react';
 import {
   View,
@@ -12,27 +17,36 @@ import {
   Platform,
   FlatList,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
 // import { useIsFocused } from '@react-navigation/native';
-
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-
+import ActionSheet from 'react-native-actionsheet';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
+import GameVerb from '../../../Constants/GameVerb';
+import ReservationStatus from '../../../Constants/ReservationStatus';
 
 import TCGameButton from '../../../components/TCGameButton';
-// import AuthContext from '../../../auth/context';
 
+import {
+  resetGame,
+  getGameByGameID,
+  decreaseGameScore,
+  addGameRecord,
+} from '../../../api/Games';
+import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TennisScoreView from '../../../components/game/tennis/TennisScoreView';
+import strings from '../../../Constants/String';
 
 const recordButtonList = [
   'General',
@@ -43,58 +57,154 @@ const recordButtonList = [
   'Foot Fault',
   'Let',
 ];
-export default function TennisRecording({ route }) {
+let entity = {};
+let timer, timerForTimeline;
+let lastTimeStamp;
+let lastVerb;
+const opetions = ['End Match', 'Cancel'];
+export default function TennisRecording({ navigation, route }) {
   const isFocused = useIsFocused();
+  const actionSheet = useRef();
+  const headerActionSheet = useRef();
+  const authContext = useContext(AuthContext);
   const [pickerShow, setPickerShow] = useState(false);
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
   const [detailRecording, setDetailRecording] = useState(false);
   const [gameObj, setGameObj] = useState();
   const [player1Selected, setPlayer1Selected] = useState(false);
   const [player2Selected, setPlayer2Selected] = useState(false);
-  const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0)
-  const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0)
-  const [homeTeamGamePoint, setHomeTeamGamePoint] = useState('0')
-  const [awayTeamGamePoint, setAwayTeamGamePoint] = useState('0')
-
+  const [selectedTeam, setSelectedTeam] = useState();
+  const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0);
+  const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0);
+  const [homeTeamGamePoint, setHomeTeamGamePoint] = useState('0');
+  const [awayTeamGamePoint, setAwayTeamGamePoint] = useState('0');
+  const [servingTeamID, setServingTeamID] = useState();
+  const [date, setDate] = useState();
+  const [actionByTeamID, setActionByTeamID] = useState();
   const [loading, setloading] = useState(false);
 
   useEffect(() => {
     // const { gameDetail } = route.params ?? {};
+    entity = authContext.entity;
+    console.log(entity);
     if (route && route.params && route.params.gameDetail) {
+      getGameDetail(route.params.gameDetail.game_id, true);
       console.log('GAME DATA:', JSON.stringify(route.params.gameDetail));
-      setloading(false)
-      setTimelineTimer('00 : 00 : 00')
-      setGameObj(route.params.gameDetail)
-
-      calculateMatchScore()
-      calculateGameScore()
+      setloading(false);
+      setTimelineTimer('00 : 00 : 00');
+      // setGameObj(route.params.gameDetail)
     }
   }, [isFocused]);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableWithoutFeedback onPress={() => headerActionSheet.current.show()}>
+          <Image source={images.vertical3Dot} style={styles.headerRightImg} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [navigation, date, gameObj]);
+
+  useFocusEffect(() => {
+    startStopTimerTimeline()
+    timer = setInterval(() => {
+      if (gameObj && gameObj.status !== GameStatus.ended) {
+        getGameDetail(gameObj.game_id, false);
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(timer)
+      clearInterval(timerForTimeline)
+    }
+  }, [])
+  const configurePeriodOpetions = () => {
+    if (gameObj?.scoreboard?.game_inprogress) {
+      if (
+        !(gameObj?.scoreboard?.game_inprogress?.winner
+        || gameObj?.scoreboard?.game_inprogress?.end_datetime)
+      ) {
+        opetions.unshift('End Game');
+      }
+      const reverseData = gameObj?.scoreboard?.sets.reverse()
+      if (
+        !(reverseData[0].winner
+        || reverseData[0].end_datetime)
+      ) {
+        opetions.unshift('End Set');
+      }
+    }
+  };
+  const defineServingTeamID = () => {
+    if (gameObj.game_inprogress && gameObj.game_inprogress.serving_team_id) {
+      setServingTeamID(gameObj.game_inprogress.serving_team_id);
+    } else {
+      setServingTeamID(gameObj.home_team.user_id);
+    }
+  };
   const calculateMatchScore = () => {
+    setHomeMatchPoint(0);
+    setAwayMatchPoint(0);
     gameObj?.scoreboard?.sets.map((e) => {
+      let homePoint = 0;
+      let awayPoint = 0;
       if (e.winner) {
         if (e.winner === gameObj.home_team.user_id) {
-          setHomeMatchPoint(homeTeamMatchPoint + 1)
+          homePoint = +1;
+          // setHomeMatchPoint(homeTeamMatchPoint + 1)
         } else {
-          setAwayMatchPoint(awayTeamMatchPoint + 1)
+          awayPoint = +1;
+          // setAwayMatchPoint(awayTeamMatchPoint + 1)
         }
       }
-    })
-  }
+      setHomeMatchPoint(homePoint);
+      setAwayMatchPoint(awayPoint);
+    });
+  };
   const calculateGameScore = () => {
     // eslint-disable-next-line array-callback-return
-    if (gameObj?.scoreboard?.game_inprogress?.winner || gameObj?.scoreboard?.game_inprogress?.end_datetime) {
-      setHomeTeamGamePoint('0')
-      setAwayTeamGamePoint('0')
-
-      console.log('GAME SCORE:', `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`);
+    if (
+      gameObj?.scoreboard?.game_inprogress?.winner
+      || gameObj?.scoreboard?.game_inprogress?.end_datetime
+    ) {
+      setHomeTeamGamePoint('0');
+      setAwayTeamGamePoint('0');
+      console.log(
+        'GAME SCORE:',
+        `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`,
+      );
     } else {
-      setHomeTeamGamePoint(gameObj?.scoreboard?.game_inprogress?.home_team_point)
-      setAwayTeamGamePoint(gameObj?.scoreboard?.game_inprogress?.away_team_point)
+      setHomeTeamGamePoint(
+        gameObj?.scoreboard?.game_inprogress?.home_team_point,
+      );
+      setAwayTeamGamePoint(
+        gameObj?.scoreboard?.game_inprogress?.away_team_point,
+      );
     }
-  }
-
+  };
+  const validate = () => {
+    if (
+      gameObj.status === GameStatus.accepted
+      || gameObj.status === GameStatus.reset
+    ) {
+      Alert.alert('Please, start the game first.');
+      return false;
+    }
+    if (gameObj.status === GameStatus.ended) {
+      Alert.alert('Game is ended.');
+      return false;
+    }
+    if (gameObj.status === GameStatus.paused) {
+      Alert.alert('Game is paused.');
+      return false;
+    }
+    if (!selectedTeam) {
+      Alert.alert('Please, select a player first');
+      return false;
+    }
+    return true;
+  };
   const getDateFormat = (dateValue) => {
     moment.locale('en');
     return moment(new Date(dateValue)).format('hh : mm a, MMM DD');
@@ -103,7 +213,41 @@ export default function TennisRecording({ route }) {
     <TCGameButton
       title={item}
       onPress={() => {
-        console.log('Ok');
+        if (validate()) {
+          if (item === 'General') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.Score;
+          } else if (item === 'Ace') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.Ace;
+          } else if (item === 'Winner') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.Winner;
+          } else if (item === 'Unforced') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.Unforced;
+          } else if (item === 'Fault') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.Fault;
+          } else if (item === 'Foot Fault') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.FeetFault;
+          } else if (item === 'Let') {
+            lastTimeStamp = date ? date.getTime() : new Date().getTime();
+            lastVerb = GameVerb.LetScore;
+          }
+          let body = [{}];
+          body = [
+            {
+              verb: lastVerb,
+              timestamp: lastTimeStamp,
+              team_id: selectedTeam,
+              doneBy: selectedTeam,
+              serving_team_id: servingTeamID,
+            },
+          ];
+          addGameRecordDetail(gameObj.game_id, body);
+        }
       }}
       buttonColor={colors.whiteColor}
       imageName={
@@ -119,308 +263,825 @@ export default function TennisRecording({ route }) {
       imageSize={32}
     />
   );
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setPickerShow(Platform.OS === 'ios');
+    startStopTimerTimeline()
+    setDate(currentDate);
+  };
+  // eslint-disable-next-line consistent-return
+  const getTimeDifferent = (sDate, eDate) => {
+    let breakTime = 0;
+    if (gameObj && gameObj.breakTime) {
+      breakTime = gameObj.breakTime / 1000;
+    }
+    if (date) {
+      // eslint-disable-next-line no-param-reassign
+      eDate = date;
+    }
+
+    const tempDate = new Date(eDate);
+    tempDate.setMinutes(tempDate.getMinutes() + breakTime);
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    const seconds = Math.floor(delta % 60);
+
+    if (hours >= 99) {
+      return '99 : 00 : 00';
+    }
+    let hr, min, sec;
+    if (hours <= 9) {
+      hr = `0${hours}`;
+    } else {
+      hr = hours;
+    }
+    if (minutes <= 9) {
+      min = `0${minutes}`;
+    } else {
+      min = minutes;
+    }
+    if (seconds <= 9) {
+      sec = `0${seconds}`;
+    } else {
+      sec = seconds;
+    }
+    return `${hr} : ${min} : ${sec}`;
+  };
+  const startStopTimerTimeline = () => {
+    clearInterval(timer);
+    clearInterval(timerForTimeline);
+    if (gameObj && gameObj.status === GameStatus.ended) {
+      setTimelineTimer(
+        getTimeDifferent(
+          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime,
+          gameObj
+            && gameObj.actual_startdatetime
+            && gameObj.actual_startdatetime,
+        ),
+      );
+    } else if (
+      (gameObj && gameObj.status === GameStatus.accepted)
+      || (gameObj && gameObj.status === GameStatus.reset)
+    ) {
+      setTimelineTimer(
+        getTimeDifferent(new Date().getTime(), new Date().getTime()),
+      );
+    } else if (gameObj && gameObj.status === GameStatus.paused) {
+      setTimelineTimer(
+        getTimeDifferent(
+          gameObj && gameObj.pause_datetime && gameObj.pause_datetime,
+          gameObj
+            && gameObj.actual_startdatetime
+            && gameObj.actual_startdatetime,
+        ),
+      );
+    } else if (date) {
+      setTimelineTimer(
+        getTimeDifferent(
+          gameObj
+            && gameObj.actual_startdatetime
+            && gameObj.actual_startdatetime,
+          new Date(date).getTime(),
+        ),
+      );
+    } else {
+      timerForTimeline = setInterval(() => {
+        if (gameObj) {
+          setTimelineTimer(
+            getTimeDifferent(
+              new Date().getTime(),
+              gameObj
+                && gameObj.actual_startdatetime
+                && gameObj.actual_startdatetime,
+            ),
+          );
+        }
+      }, 1000);
+    }
+  };
+  const resetGameDetail = (gameId) => {
+    setloading(true);
+    resetGame(gameId, authContext)
+      .then((response) => {
+        getGameDetail(gameId, true);
+        startStopTimerTimeline()
+        setloading(false);
+        setDate();
+        console.log('RESET GAME RESPONSE::', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
+  };
+  const getGameDetail = (gameId, isLoading) => {
+    if (isLoading) {
+      setloading(true);
+    }
+    getGameByGameID(gameId, authContext)
+      .then((response) => {
+        console.log('GAME RESPONSE::', JSON.stringify(response.payload));
+        setGameObj(response.payload);
+        if (entity === gameObj.home_team.group_id) {
+          setActionByTeamID(gameObj.home_team.group_id);
+        } else {
+          setActionByTeamID(gameObj.away_team.group_id);
+        }
+        calculateMatchScore();
+        calculateGameScore();
+        if (!servingTeamID) {
+          defineServingTeamID();
+        }
+        configurePeriodOpetions();
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
+  };
+  const decreaseGameScoreRecord = (teamId, gameId) => {
+    setloading(true);
+    decreaseGameScore(teamId, gameId, authContext)
+      .then((response) => {
+        if (selectedTeam === gameObj.home_team.group_id) {
+          setGameObj({
+            ...gameObj,
+            home_team_goal: gameObj.home_team_goal - 1,
+          });
+        } else if (selectedTeam === gameObj.away_team.group_id) {
+          setGameObj({
+            ...gameObj,
+            away_team_goal: gameObj.away_team_goal - 1,
+          });
+        }
+        setloading(false);
+        console.log('DECREASE GAME RESPONSE::', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
+  };
+  const addGameRecordDetail = (gameId, params) => {
+    setloading(true);
+    addGameRecord(gameId, params, authContext)
+      .then((response) => {
+        console.log('response of game record::', response);
+        setloading(false);
+        setDate();
+        if (lastVerb === GameVerb.Goal) {
+          if (selectedTeam === gameObj.home_team.group_id) {
+            setGameObj({
+              ...gameObj,
+              home_team_goal: gameObj.home_team_goal + 1,
+            });
+          } else if (selectedTeam === gameObj.away_team.group_id) {
+            setGameObj({
+              ...gameObj,
+              away_team_goal: gameObj.away_team_goal + 1,
+            });
+          }
+        } else if (lastVerb === GameVerb.Start) {
+          setGameObj({
+            ...gameObj,
+            actual_startdatetime: lastTimeStamp,
+            status: GameStatus.playing,
+          });
+          startStopTimerTimeline();
+        } else if (lastVerb === GameVerb.Pause) {
+          setGameObj({
+            ...gameObj,
+            pause_datetime: lastTimeStamp,
+            status: GameStatus.paused,
+          });
+          startStopTimerTimeline();
+        } else if (lastVerb === GameVerb.Resume) {
+          setGameObj({ ...gameObj, status: GameStatus.resume });
+          startStopTimerTimeline();
+        } else if (lastVerb === GameVerb.End) {
+          setGameObj({
+            ...gameObj,
+            actual_enddatetime: lastTimeStamp,
+            status: GameStatus.ended,
+          });
+          startStopTimerTimeline();
+        }
+        getGameDetail(gameId, true);
+        console.log('GAME RESPONSE::', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
+  };
+  const matchEnd = () => {
+    if (
+      gameObj.status === GameStatus.accepted
+    || gameObj.status === GameStatus.reset
+    ) {
+      Alert.alert('Please, start the game first.');
+    } else if (gameObj.status === GameStatus.ended) {
+      Alert.alert('Game is ended.');
+    } else {
+      lastTimeStamp = new Date().getTime();
+      lastVerb = GameVerb.End;
+      const body = [
+        {
+          verb: lastVerb,
+          timestamp: lastTimeStamp,
+          team_id: actionByTeamID,
+        },
+      ];
+      addGameRecordDetail(gameObj.game_id, body);
+    }
+  }
   return (
     <>
-      {gameObj && <View style={{ flex: 1 }}>
-        <View>
-          <ActivityLoader visible={loading} />
-          <View style={styles.headerView}>
-            <View style={styles.leftView}>
-              <View style={styles.profileShadow}>
-                <Image
-                source={gameObj?.home_team?.thumbnail ? { uri: gameObj?.home_team?.thumbnail } : images.profilePlaceHolder}
-                style={player1Selected ? [styles.profileImg, { borderColor: colors.themeColor }] : styles.profileImg}
-              />
-              </View>
-              <Text style={styles.leftText} numberOfLines={2}>
-                {gameObj.home_team.first_name} {gameObj.home_team.last_name}
-              </Text>
-            </View>
-
-            <View>
-              <Text style={styles.centerSetText}>SET SCORES</Text>
-              <View style={styles.centerView}>
-                <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
-                <Image source={images.tennisArrow} style={styles.orangeArrow} />
-                <Text style={styles.centerText}>{awayTeamMatchPoint}</Text>
-              </View>
-            </View>
-
-            <View style={styles.rightView}>
-              <Text style={styles.rightText} numberOfLines={2}>
-                {gameObj.away_team.first_name} {gameObj.away_team.last_name}
-              </Text>
-              <View style={styles.profileShadow}>
-                <Image
-                                source={gameObj?.away_team?.thumbnail ? { uri: gameObj?.away_team?.thumbnail } : images.profilePlaceHolder}
-                                style={player2Selected ? [styles.profileImg, { borderColor: colors.themeColor }] : styles.profileImg}
-              />
-              </View>
-            </View>
-          </View>
-          <TennisScoreView
-          scoreDataSource={gameObj}
-        />
-        </View>
-        <View style={{ flex: 1 }}></View>
-        {gameObj && (
-          <View style={styles.bottomView}>
-            <View style={styles.timeView}>
-              <Text style={styles.timer}>{timelineTimer}</Text>
-
-              {pickerShow && (
-                <View style={styles.curruentTimeView}>
-                  <TouchableOpacity onPress={() => {}}>
-                    <Image
-                    source={images.curruentTime}
-                    style={styles.curruentTimeImg}
+      {gameObj && (
+        <View style={{ flex: 1 }}>
+          <View>
+            <ActivityLoader visible={loading} />
+            <View style={styles.headerView}>
+              <View style={styles.leftView}>
+                <View style={styles.profileShadow}>
+                  <Image
+                    source={
+                      gameObj?.home_team?.thumbnail
+                        ? { uri: gameObj?.home_team?.thumbnail }
+                        : images.profilePlaceHolder
+                    }
+                    style={
+                      servingTeamID === gameObj.home_team.user_id
+                        ? styles.profileImg
+                        : [styles.profileImg, { borderColor: colors.themeColor }]
+                    }
                   />
-                  </TouchableOpacity>
+                </View>
+                <Text style={styles.leftText} numberOfLines={2}>
+                  {gameObj.home_team.first_name} {gameObj.home_team.last_name}
+                </Text>
+              </View>
+
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  Alert.alert(
+                    'Do you want to change the serving player?',
+                    '',
+                    [
+                      {
+                        text: 'Cancel',
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Ok',
+                        style: 'default',
+                        onPress: () => {
+                          if (gameObj?.game_inprogress?.winner) {
+                            Alert.alert(
+                              'You can not change serving player during game.',
+                            );
+                          } else if (
+                            gameObj?.home_team?.user_id === servingTeamID
+                          ) {
+                            setServingTeamID(gameObj?.away_team?.user_id);
+                          } else {
+                            setServingTeamID(gameObj?.home_team?.user_id);
+                          }
+                          console.log('OK Pressed');
+                        },
+                      },
+                    ],
+                    { cancelable: false },
+                  );
+                }}>
+                <View>
+                  <Text style={styles.centerSetText}>SET SCORES</Text>
+                  <View style={styles.centerView}>
+                    <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
+                    <Image
+                      source={
+                        servingTeamID === gameObj.home_team.user_id
+                          ? images.tennisArrowLeft
+                          : images.tennisArrowRight
+                      }
+                      style={styles.orangeArrow}
+                    />
+                    <Text style={styles.centerText}>{awayTeamMatchPoint}</Text>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+
+              <View style={styles.rightView}>
+                <Text style={styles.rightText} numberOfLines={2}>
+                  {gameObj.away_team.first_name} {gameObj.away_team.last_name}
+                </Text>
+                <View style={styles.profileShadow}>
+                  <Image
+                    source={
+                      gameObj?.away_team?.thumbnail
+                        ? { uri: gameObj?.away_team?.thumbnail }
+                        : images.profilePlaceHolder
+                    }
+                    style={
+                      servingTeamID === gameObj.away_team.user_id
+                        ? styles.profileImg
+                        : [styles.profileImg, { borderColor: colors.themeColor }]
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+            <TennisScoreView scoreDataSource={gameObj} />
+          </View>
+          <View style={{ flex: 1 }}></View>
+          {gameObj && (
+            <View style={styles.bottomView}>
+              <View style={styles.timeView}>
+                <Text style={styles.timer}>{timelineTimer}</Text>
+
+                {pickerShow && (
+                  <View style={styles.curruentTimeView}>
+                    <TouchableOpacity onPress={() => {
+                      setDate()
+                    }}>
+                      <Image
+                        source={images.curruentTime}
+                        style={styles.curruentTimeImg}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                <Text
+                style={styles.startTime}
+                onPress={() => {
+                  setPickerShow(!pickerShow);
+                }}>
+                  {((gameObj && gameObj.status && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status && gameObj.status === GameStatus.reset)) ? 'Game start at now' : getDateFormat(date ? new Date(date.getTime()) : new Date())}
+                </Text>
+                <Image source={images.dropDownArrow} style={styles.downArrow} />
+                <View style={styles.separatorLine}></View>
+              </View>
+              {pickerShow && (
+                <View>
+                  <RNDateTimePicker
+                locale={'en'}
+                default = 'spinner'
+                value={date || new Date()}
+                onChange={onChange}
+                mode={'datetime'}
+                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime)}
+                maximumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()}
+                />
                 </View>
               )}
-              <Text
-              style={styles.startTime}
-              onPress={() => {
-                setPickerShow(!pickerShow);
-              }}>
-                {(gameObj
-                && gameObj.status
-                && gameObj.status === GameStatus.accepted)
-              || (gameObj && gameObj.status && gameObj.status === GameStatus.reset)
-                  ? 'Game start at now'
-                  : getDateFormat(new Date())}
-              </Text>
-              <Image source={images.dropDownArrow} style={styles.downArrow} />
-              <View style={styles.separatorLine}></View>
-            </View>
-            {pickerShow && (
-              <View>
-                <RNDateTimePicker
-                locale={'en'}
-                default="spinner"
-               // display='default'
-                value={new Date()}
-                onChange={() => {
-                  console.log('ok');
-                }}
-                mode={'datetime'}
-                minimumDate={
-                  gameObj.status === GameStatus.accepted
-                  || gameObj.status === GameStatus.reset
-                    ? new Date(1950, 0, 1)
-                    : new Date(gameObj.actual_startdatetime)
-                }
-                maximumDate={
-                  gameObj.status === GameStatus.accepted
-                  || gameObj.status === GameStatus.reset
-                    ? new Date(1950, 0, 1)
-                    : new Date()
-                }
-              />
+              <View style={styles.middleViewContainer}>
+                <TouchableWithoutFeedback
+                  style={styles.playerView}
+                  onPress={() => {
+                    setPlayer2Selected(false);
+                    setPlayer1Selected(true);
+                    setSelectedTeam(gameObj.home_team.user_id);
+                    setActionByTeamID(gameObj.home_team.user_id);
+                  }}>
+                  {player1Selected ? (
+                    <LinearGradient
+                      colors={[colors.yellowColor, colors.themeColor]}
+                      style={styles.playerView}>
+                      <Image
+                        source={
+                          gameObj?.home_team?.thumbnail
+                            ? { uri: gameObj?.home_team?.thumbnail }
+                            : images.profilePlaceHolder
+                        }
+                        style={styles.playerProfile}
+                      />
+                      <Text style={styles.selectedPlayerNameText}>
+                        {gameObj.home_team.first_name}{' '}
+                        {gameObj.home_team.last_name}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <View style={styles.playerView}>
+                      <Image
+                        source={
+                          gameObj?.home_team?.thumbnail
+                            ? { uri: gameObj?.home_team?.thumbnail }
+                            : images.profilePlaceHolder
+                        }
+                        style={styles.playerProfile}
+                      />
+                      <Text style={styles.playerNameText}>
+                        {gameObj.home_team.first_name}{' '}
+                        {gameObj.home_team.last_name}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableWithoutFeedback>
+                <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
+                <TouchableWithoutFeedback
+                  style={styles.playerView}
+                  onPress={() => {
+                    setPlayer1Selected(false);
+                    setPlayer2Selected(true);
+                    setSelectedTeam(gameObj.away_team.user_id);
+                    setActionByTeamID(gameObj.away_team.user_id);
+                  }}>
+                  {player2Selected ? (
+                    <LinearGradient
+                      colors={[colors.yellowColor, colors.themeColor]}
+                      style={styles.playerView}>
+                      <Image
+                        source={
+                          gameObj?.away_team?.thumbnail
+                            ? { uri: gameObj?.away_team?.thumbnail }
+                            : images.profilePlaceHolder
+                        }
+                        style={styles.playerProfile}
+                      />
+                      <Text style={styles.selectedPlayerNameText}>
+                        {gameObj.away_team.first_name}{' '}
+                        {gameObj.away_team.last_name}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <View style={styles.playerView}>
+                      <Image
+                        source={
+                          gameObj?.away_team?.thumbnail
+                            ? { uri: gameObj?.away_team?.thumbnail }
+                            : images.profilePlaceHolder
+                        }
+                        style={styles.playerProfile}
+                      />
+                      <Text numberOfLines={2} style={styles.playerNameText}>
+                        {gameObj.away_team.first_name}{' '}
+                        {gameObj.away_team.last_name}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableWithoutFeedback>
               </View>
-            )}
-            <View style={styles.middleViewContainer}>
-              <TouchableWithoutFeedback
-              style={styles.playerView}
-              onPress={() => {
-                setPlayer2Selected(false)
-                setPlayer1Selected(true)
-              }}>
-                {player1Selected ? (
-                  <LinearGradient
-                  colors={[colors.yellowColor, colors.themeColor]}
-                  style={styles.playerView}>
-                    <Image
-                    source={gameObj?.home_team?.thumbnail ? { uri: gameObj?.home_team?.thumbnail } : images.profilePlaceHolder}
-                    style={styles.playerProfile}
-                  />
-                    <Text
-                    style={styles.selectedPlayerNameText}>
-                      {gameObj.home_team.first_name} {gameObj.home_team.last_name}
-                    </Text>
-                  </LinearGradient>
-                ) : (
-                  <View style={styles.playerView}>
-                    <Image
-                    source={gameObj?.home_team?.thumbnail ? { uri: gameObj?.home_team?.thumbnail } : images.profilePlaceHolder}
-                    style={styles.playerProfile}
-                  />
-                    <Text style={styles.playerNameText}>{gameObj.home_team.first_name} {gameObj.home_team.last_name}</Text>
-                  </View>
-                )}
-              </TouchableWithoutFeedback>
-              <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
-              <TouchableWithoutFeedback
-              style={styles.playerView}
-              onPress={() => {
-                setPlayer1Selected(false);
-                setPlayer2Selected(true);
-              }}>
-                {player2Selected ? (
-                  <LinearGradient
-                  colors={[colors.yellowColor, colors.themeColor]}
-                  style={styles.playerView}>
-                    <Image
-                    source={gameObj?.away_team?.thumbnail ? { uri: gameObj?.away_team?.thumbnail } : images.profilePlaceHolder}
-                    style={styles.playerProfile}
-                  />
-                    <Text
-                    style={styles.selectedPlayerNameText}>
-                      {gameObj.away_team.first_name} {gameObj.away_team.last_name}
-                    </Text>
-                  </LinearGradient>
-                ) : (
-                  <View style={styles.playerView}>
-                    <Image
-                    source={gameObj?.away_team?.thumbnail ? { uri: gameObj?.away_team?.thumbnail } : images.profilePlaceHolder}
-                    style={styles.playerProfile}
-                  />
-                    <Text numberOfLines={2} style={styles.playerNameText}>
-                      {gameObj.away_team.first_name} {gameObj.away_team.last_name}
-                    </Text>
-                  </View>
-                )}
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.scoreView}>
-              <Text style={styles.playerScore}>{homeTeamGamePoint}</Text>
-              <Text style={styles.playerScore}>{awayTeamGamePoint}</Text>
-            </View>
-            {!detailRecording && (
-              <View style={styles.plusMinusContainer}>
-                <Image
-                source={images.gameOrangePlus}
-                style={{
-                  height: 76,
-                  width: 76,
-                  resizeMode: 'cover',
-                  marginLeft: 50,
-                }}
-              />
-                <Image
-                source={images.deleteRecentGoal}
-                style={{
-                  height: 34,
-                  width: 34,
-                  resizeMode: 'cover',
-                  marginLeft: 15,
-                }}
-              />
+              <View style={styles.scoreView}>
+                <Text style={styles.playerScore}>{homeTeamGamePoint}</Text>
+                <Text style={styles.playerScore}>{awayTeamGamePoint}</Text>
               </View>
-            )}
-            <TCThinDivider width={'100%'} />
-            {detailRecording && (
-              <FlatList
-              data={recordButtonList}
-              renderItem={renderGameButton}
-              keyExtractor={(item, index) => index.toString()}
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              style={
-                gameObj.status === GameStatus.accepted
-                || gameObj.status === GameStatus.reset
-                || gameObj.status === GameStatus.ended
-                  ? [styles.buttonListView, { opacity: 0.4 }]
-                  : styles.buttonListView
-              }
-            />
-            )}
-            <View />
-            <TCThinDivider width={'100%'} />
-            <View style={styles.gameRecordButtonView}>
-              {gameObj.status === GameStatus.accepted && (
-                <TCGameButton
-                title="Start"
-                onPress={() => {
-                  console.log('ok');
-                }}
-                gradientColor={[colors.yellowColor, colors.themeColor]}
-                imageName={images.gameStart}
-                textColor={colors.themeColor}
-                imageSize={16}
-              />
+              {!detailRecording && (
+                <View style={styles.plusMinusContainer}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      if (
+                        gameObj.status === GameStatus.accepted
+                        || gameObj.status === GameStatus.reset
+                      ) {
+                        Alert.alert('Game not started yet.');
+                      } else if (gameObj.status === GameStatus.ended) {
+                        Alert.alert('Game is ended.');
+                      } else if (!selectedTeam) {
+                        Alert.alert('Select Team');
+                      } else {
+                        lastTimeStamp = date
+                          ? date.getTime()
+                          : new Date().getTime();
+                        lastVerb = GameVerb.Score;
+                        const body = [
+                          {
+                            verb: lastVerb,
+                            timestamp: lastTimeStamp,
+                            team_id: selectedTeam,
+                            serving_team_id: servingTeamID,
+                          },
+                        ];
+                        addGameRecordDetail(gameObj.game_id, body);
+                      }
+                    }}>
+                    <Image
+                      source={images.gameOrangePlus}
+                      style={{
+                        height: 76,
+                        width: 76,
+                        resizeMode: 'cover',
+                        marginLeft: 50,
+                      }}
+                    />
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      if (
+                        gameObj.status === GameStatus.accepted
+                        || gameObj.status === GameStatus.reset
+                      ) {
+                        Alert.alert('Game not started yet.');
+                      } else if (gameObj.status === GameStatus.ended) {
+                        Alert.alert('Game is ended.');
+                      } else if (!selectedTeam) {
+                        Alert.alert('Select Team');
+                      } else if (
+                        selectedTeam === gameObj.home_team.group_id
+                        && gameObj.home_team_goal <= 0
+                      ) {
+                        Alert.alert('Goal not added yet.');
+                      } else if (
+                        selectedTeam === gameObj.away_team.group_id
+                        && gameObj.away_team_goal <= 0
+                      ) {
+                        Alert.alert('Goal not added yet.');
+                      } else {
+                        Alert.alert(
+                          'The recent goal will be cancelled.',
+                          '',
+                          [
+                            {
+                              text: 'Cancel',
+                              style: 'cancel',
+                            },
+                            {
+                              text: 'Ok',
+                              style: 'default',
+                              onPress: () => {
+                                decreaseGameScoreRecord(
+                                  selectedTeam,
+                                  gameObj.game_id,
+                                );
+                              },
+                            },
+                          ],
+                          { cancelable: false },
+                        );
+                      }
+                    }}>
+                    <Image
+                      source={images.deleteRecentGoal}
+                      style={{
+                        height: 34,
+                        width: 34,
+                        resizeMode: 'cover',
+                        marginLeft: 15,
+                      }}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
               )}
-              {gameObj.status === GameStatus.paused && (
-                <TCGameButton
-                title="Resume"
-                onPress={() => {
-                  console.log('ok');
-                }}
-                gradientColor={[colors.yellowColor, colors.themeColor]}
-                imageName={images.gameStart}
-                textColor={colors.themeColor}
-                imageSize={16}
-              />
+              <TCThinDivider width={'100%'} />
+              {detailRecording && (
+                <FlatList
+                  data={recordButtonList}
+                  renderItem={renderGameButton}
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  horizontal={true}
+                  style={
+                    gameObj.status === GameStatus.accepted
+                    || gameObj.status === GameStatus.reset
+                    || gameObj.status === GameStatus.ended
+                      ? [styles.buttonListView, { opacity: 0.4 }]
+                      : styles.buttonListView
+                  }
+                />
               )}
-              {(gameObj.status === GameStatus.playing
-              || gameObj.status === GameStatus.resume) && (
-                <TCGameButton
-                title="Pause"
-                onPress={() => {
-                  console.log('ok');
-                }}
-                gradientColor={[colors.yellowColor, colors.themeColor]}
-                imageName={images.gamePause}
-                textColor={colors.themeColor}
-                imageSize={15}
-              />
-              )}
-              {(gameObj.status === GameStatus.playing
-              || gameObj.status === GameStatus.paused
-              || gameObj.status === GameStatus.resume) && (
-                <TCGameButton
-                title="Match End"
-                onPress={() => {
-                  console.log('ok');
-                }}
-                gradientColor={[colors.yellowColor, colors.themeColor]}
-                buttonTitle={'END'}
-                buttonTextColor={colors.whiteColor}
-                textColor={colors.themeColor}
-                imageSize={15}
-              />
-              )}
-              {(gameObj.status === GameStatus.accepted
-              || gameObj.status === GameStatus.playing
-              || gameObj.status === GameStatus.paused
-              || gameObj.status === GameStatus.ended
-              || gameObj.status === GameStatus.resume) && (
-                <TCGameButton
-                title="Records"
-                onPress={() => {
-                  console.log('ok');
-                }}
-                gradientColor={[colors.veryLightBlack, colors.veryLightBlack]}
-                imageName={images.gameRecord}
-                textColor={colors.darkGrayColor}
-                imageSize={25}
-              />
-              )}
-              {(gameObj.status === GameStatus.accepted
-              || gameObj.status === GameStatus.playing
-              || gameObj.status === GameStatus.paused
-              || gameObj.status === GameStatus.ended
-              || gameObj.status === GameStatus.resume) && (
-                <TCGameButton
-                title={detailRecording ? 'Simple' : 'Detail'}
-                onPress={() => {
-                  setDetailRecording(!detailRecording);
-                }}
-                gradientColor={[
-                  colors.greenGradientStart,
-                  colors.greenGradientEnd,
-                ]}
-                imageName={
-                  detailRecording ? images.gameSimple : images.gameDetail
-                }
-                textColor={colors.gameDetailColor}
-                imageSize={30}
-              />
-              )}
+              <View />
+              <TCThinDivider width={'100%'} />
+              <View style={styles.gameRecordButtonView}>
+                {gameObj.status === GameStatus.accepted && (
+                  <TCGameButton
+                    title="Start"
+                    onPress={() => {
+                      if (
+                        gameObj.challenge_status
+                        && gameObj.challenge_status
+                          === ReservationStatus.pendingrequestpayment
+                      ) {
+                        Alert.alert(
+                          'Game cannot be start unless the payment goes through',
+                        );
+                      } else {
+                        lastTimeStamp = date
+                          ? date.getTime()
+                          : new Date().getTime();
+                        lastVerb = GameVerb.Start;
+                        const body = [
+                          {
+                            verb: lastVerb,
+                            timestamp: lastTimeStamp,
+                            team_id: actionByTeamID,
+                          },
+                        ];
+                        addGameRecordDetail(gameObj.game_id, body);
+                      }
+                    }}
+                    gradientColor={[colors.yellowColor, colors.themeColor]}
+                    imageName={images.gameStart}
+                    textColor={colors.themeColor}
+                    imageSize={16}
+                  />
+                )}
+                {gameObj.status === GameStatus.paused && (
+                  <TCGameButton
+                    title="Resume"
+                    onPress={() => {
+                      lastTimeStamp = new Date().getTime();
+                      lastVerb = GameVerb.Resume;
+                      const body = [
+                        {
+                          verb: lastVerb,
+                          timestamp: lastTimeStamp,
+                          team_id: actionByTeamID,
+                        },
+                      ];
+                      addGameRecordDetail(gameObj.game_id, body);
+                    }}
+                    gradientColor={[colors.yellowColor, colors.themeColor]}
+                    imageName={images.gameStart}
+                    textColor={colors.themeColor}
+                    imageSize={16}
+                  />
+                )}
+                {(gameObj.status === GameStatus.playing
+                  || gameObj.status === GameStatus.resume) && (
+                    <TCGameButton
+                    title="Pause"
+                    onPress={() => {
+                      lastTimeStamp = new Date().getTime();
+                      lastVerb = GameVerb.Pause;
+                      const body = [
+                        {
+                          verb: lastVerb,
+                          timestamp: lastTimeStamp,
+                          team_id: actionByTeamID,
+                        },
+                      ];
+                      addGameRecordDetail(gameObj.game_id, body);
+                    }}
+                    gradientColor={[colors.yellowColor, colors.themeColor]}
+                    imageName={images.gamePause}
+                    textColor={colors.themeColor}
+                    imageSize={15}
+                  />
+                )}
+                {(gameObj.status === GameStatus.playing
+                  || gameObj.status === GameStatus.paused
+                  || gameObj.status === GameStatus.resume) && (
+                    <TCGameButton
+                    title="Match End"
+                    onPress={() => {
+                      matchEnd()
+                    }}
+                    gradientColor={[colors.yellowColor, colors.themeColor]}
+                    buttonTitle={'END'}
+                    buttonTextColor={colors.whiteColor}
+                    textColor={colors.themeColor}
+                    imageSize={15}
+                  />
+                )}
+                {(gameObj.status !== GameStatus.accepted
+                  || gameObj.status !== GameStatus.reset
+                  || gameObj.status !== GameStatus.ended) && (
+                    <TCGameButton
+                    title="End"
+                    onPress={() => {
+                      actionSheet.current.show();
+                    }}
+                    gradientColor={[colors.yellowColor, colors.themeColor]}
+                    buttonTitle={'PERIOD'}
+                    buttonTextColor={colors.whiteColor}
+                    textColor={colors.themeColor}
+                    imageSize={15}
+                  />
+                )}
+                {(gameObj.status === GameStatus.accepted
+                  || gameObj.status === GameStatus.playing
+                  || gameObj.status === GameStatus.paused
+                  || gameObj.status === GameStatus.ended
+                  || gameObj.status === GameStatus.resume) && (
+                    <TCGameButton
+                    title="Records"
+                    onPress={() => {
+                      console.log('ok');
+                    }}
+                    gradientColor={[
+                      colors.veryLightBlack,
+                      colors.veryLightBlack,
+                    ]}
+                    imageName={images.gameRecord}
+                    textColor={colors.darkGrayColor}
+                    imageSize={25}
+                  />
+                )}
+                {(gameObj.status === GameStatus.accepted
+                  || gameObj.status === GameStatus.playing
+                  || gameObj.status === GameStatus.paused
+                  || gameObj.status === GameStatus.ended
+                  || gameObj.status === GameStatus.resume) && (
+                    <TCGameButton
+                    title={detailRecording ? 'Simple' : 'Detail'}
+                    onPress={() => {
+                      setDetailRecording(!detailRecording);
+                    }}
+                    gradientColor={[
+                      colors.greenGradientStart,
+                      colors.greenGradientEnd,
+                    ]}
+                    imageName={
+                      detailRecording ? images.gameSimple : images.gameDetail
+                    }
+                    textColor={colors.gameDetailColor}
+                    imageSize={30}
+                  />
+                )}
+              </View>
             </View>
-          </View>
-        )}
-      </View>}
+          )}
+        </View>
+      )}
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={opetions}
+        cancelButtonIndex={opetions.length + 1}
+        // destructiveButtonIndex={1}
+        onPress={(index) => {
+          if (opetions[index] === 'End Game') {
+            lastTimeStamp = new Date().getTime();
+            lastVerb = GameVerb.GameEnd;
+            const body = [
+              {
+                verb: lastVerb,
+                timestamp: lastTimeStamp,
+                is_manual: true,
+              },
+            ];
+            addGameRecordDetail(gameObj.game_id, body);
+          } else if (opetions[index] === 'End Set') {
+            lastTimeStamp = new Date().getTime();
+            lastVerb = GameVerb.SetEnd;
+            const body = [
+              {
+                verb: lastVerb,
+                timestamp: lastTimeStamp,
+                is_manual: true,
+              },
+            ];
+            addGameRecordDetail(gameObj.game_id, body);
+          } else if (opetions[index] === 'End Match') {
+            matchEnd()
+          }
+        }}
+      />
+      <ActionSheet
+        ref={headerActionSheet}
+        // title={'News Feed Post'}
+        options={['Game Reservation Detail', 'Add Set or Game', 'Deleted Records', 'Reset Match', 'Cancel']}
+        cancelButtonIndex={4}
+        destructiveButtonIndex={3}
+        onPress={(index) => {
+          if (index === 0) {
+            console.log('ok');
+          } else if (index === 1) {
+            console.log('ok');
+          } else if (index === 2) {
+            console.log('ok');
+          } else if (index === 3) {
+            Alert.alert(
+              'Do you want to reset all the match records?',
+              '',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Reset',
+                  style: 'destructive',
+                  onPress: () => {
+                    if (gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset) {
+                      Alert.alert('Game not started yet.');
+                    } else if (gameObj.status === GameStatus.ended) {
+                      Alert.alert('Game is ended.');
+                    } else {
+                      resetGameDetail(gameObj.game_id);
+                    }
+                  },
+                },
+              ],
+              { cancelable: false },
+            );
+          }
+        }}
+      />
     </>
   );
 }
@@ -618,7 +1279,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
-
   },
   scoreView: {
     flex: 1,
@@ -663,5 +1323,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: '5%',
     marginBottom: '5%',
+  },
+  headerRightImg: {
+    height: 15,
+    marginRight: 20,
+    resizeMode: 'contain',
+    tintColor: colors.blackColor,
+    width: 15,
   },
 });

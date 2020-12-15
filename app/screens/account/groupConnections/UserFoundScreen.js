@@ -28,10 +28,12 @@ export default function UserFoundScreen({ navigation, route }) {
       Alert.alert('Towns Cup', response.messages)
       navigation.goBack();
     })
-      .catch((error) => {
-        setloading(false)
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
   return (
     <View style={styles.mainContainer}>

@@ -36,6 +36,7 @@ import TCGameButton from '../../../components/TCGameButton';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import strings from '../../../Constants/String';
 
 let timer, timerForTimeline;
 let lastTimeStamp;
@@ -215,7 +216,9 @@ export default function GameDetailRecord({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        Alert.alert(e.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const resetGameDetail = (gameId) => {
@@ -239,7 +242,9 @@ export default function GameDetailRecord({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        Alert.alert(e.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const getMemberName = (memberID) => {
@@ -387,8 +392,9 @@ export default function GameDetailRecord({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('OWN ERROR ::', e);
-        Alert.alert(e.Error);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const checkMemberOnBench = (memberID) => homeBench.some((e) => e.member_id === memberID)

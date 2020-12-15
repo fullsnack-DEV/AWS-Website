@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image, FlatList, Alert,
@@ -38,8 +39,9 @@ export default function CreateChallengeForm4({ navigation, route }) {
   useEffect(() => {
     entity = authContext.entity;
     const { challengeObj } = route.params ?? {};
+    console.log('ALTER CHALLENGE OBJECT:', challengeObj);
     getChallengeDetail(challengeObj.challenge_id);
-    console.log('BODY PARAMS:', challengeObj);
+
     setbodyParams(challengeObj);
   }, [isFocused]);
 
@@ -79,9 +81,11 @@ export default function CreateChallengeForm4({ navigation, route }) {
           });
         }
       })
-      .catch((error) => {
+      .catch((e) => {
         setloading(false);
-        Alert.alert(error.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const getChallengeDetail = (challengeID) => {
@@ -101,9 +105,11 @@ export default function CreateChallengeForm4({ navigation, route }) {
           console.log('AWAY::', awayTeam);
         }
       })
-      .catch((error) => {
+      .catch((e) => {
         setloading(false);
-        Alert.alert(error.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
 
@@ -177,6 +183,15 @@ export default function CreateChallengeForm4({ navigation, route }) {
   // eslint-disable-next-line consistent-return
   const checkSenderOrReceiver = (challengeObj) => {
     if (!challengeObj.userChallenge) {
+      if (
+        challengeObj.status === ReservationStatus.pendingpayment
+        || challengeObj.status === ReservationStatus.pendingrequestpayment
+      ) {
+        if (challengeObj.invited_by === entity.uid) {
+          return 'sender';
+        }
+        return 'receiver';
+      }
       if (challengeObj.status === ReservationStatus.offered) {
         if (entity.uid === bodyParams.created_by.group_id) {
           return 'sender';
@@ -327,7 +342,47 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 )}
               </View>
           )}
-
+          {/* status pending payment */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.pendingpayment && (
+              <View>
+                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                <Text style={styles.challengeText}>
+                  {getTeamName(bodyParams)} has accepted your game reservation,
+                  but your payment hasnt gone through yet.
+                </Text>
+                <Text style={styles.timeText}>
+                  This reservation will be canceled unless the payment goes
+                  through within{' '}
+                  {getDayTimeDifferent(
+                    bodyParams.offer_expiry * 1000,
+                    new Date().getTime(),
+                  )}
+                  .
+                </Text>
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.pendingpayment && (
+              <View>
+                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                <Text style={styles.challengeText}>
+                  Your team has accepted a game reservation from{' '}
+                  {getTeamName(bodyParams)}, but the payment hasnt gone through
+                  yet.
+                </Text>
+                <Text style={styles.timeText}>
+                  This reservation will be canceled unless the payment goes
+                  through within{' '}
+                  {getDayTimeDifferent(
+                    bodyParams.offer_expiry * 1000,
+                    new Date().getTime(),
+                  )}
+                  .\nYou can cancel the game reservation without a penalty
+                  before the payment will go through.
+                </Text>
+              </View>
+          )}
           {/* Status accepted */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.accepted && (
@@ -429,6 +484,16 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
 
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.pendingpayment && (
+              <TCBorderButton
+                title={'TRY TO PAY AGAIN'}
+                onPress={() => {
+                  console.log('OK PAYMENT');
+                }}
+                marginBottom={15}
+              />
+          )}
           {!(
             bodyParams.status === ReservationStatus.offered
             || bodyParams.status === ReservationStatus.cancelled
@@ -590,6 +655,14 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   marginBottom={15}
                   height={40}
                   shadow={true}
+                  onPress={() => {
+                    acceptDeclineChallengeOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'cancel',
+                    );
+                  }}
                 />
               </View>
           )}
@@ -669,10 +742,12 @@ export default function CreateChallengeForm4({ navigation, route }) {
                       || bodyParams.game_status === GameStatus.reset)
                     && bodyParams.start_datetime * 1000 > new Date().getTime()
                   ) {
-                    navigation.navigate('ChangeReservationInfoScreen', {
-                      screen: 'cancel',
-                      body: bodyParams,
-                    });
+                    acceptDeclineChallengeOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'cancel',
+                    );
                   } else {
                     Alert.alert(
                       'Reservation cannot be cancel after game time passed or offer expired.',

@@ -22,6 +22,7 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import AuthContext from '../../../auth/context'
+import strings from '../../../Constants/String';
 
 let entity = {};
 export default function ConnectMemberAccountScreen({ navigation, route }) {
@@ -62,10 +63,12 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         setSearchMember(response.payload.filter((obj) => obj.group_member_detail.connected === false && obj.group_member_detail.canConnect === true))
         setloading(false);
       })
-      .catch((error) => {
-        setloading(false)
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
   const connectMemberProfile = () => {
     const result = members.filter((x) => x.isSelect === true);
@@ -76,10 +79,12 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         setloading(false)
         navigation.navigate('ConnectionReqSentScreen', { memberObj: obj });
       })
-        .catch((error) => {
-          setloading(false)
-          Alert.alert(error)
-        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.7);
+        });
     } else {
       Alert.alert('Towns Cup', 'Please select one member for connect with profile.')
     }

@@ -45,9 +45,12 @@ export default function InviteMembersBySearchScreen({ navigation }) {
       console.log('Response of Invitation sent:', response);
       navigation.navigate('InvitationSentScreen');
     })
-      .catch((error) => {
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
   const getUsers = async () => {
     getUserList(authContext).then((response) => {

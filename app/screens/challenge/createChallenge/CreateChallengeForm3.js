@@ -216,7 +216,7 @@ export default function CreateChallengeForm3({ navigation, route }) {
       <TCGradientButton title={editableAlter ? strings.doneTitle : strings.nextTitle} onPress={() => {
         if (editableAlter) {
           navigation.navigate('AlterAcceptDeclineScreen', {
-            body: {
+            challengeObj: {
               ...route.params.body,
               referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),
               scorekeeper: scorekeeper.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),

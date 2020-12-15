@@ -28,6 +28,12 @@ export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, sta
   data: params,
   authContext,
 })
+export const acceptDeclineAlterChallenge = async (teamId, challengeId, versionNo, status, params = {}, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}teams/${teamId}/challenge/${challengeId}/${status}/alterrequest?version=${versionNo}`,
+  data: params,
+  authContext,
+})
 
 export const updateChallenge = async (challengeId, params, authContext) => makeAPIRequest({
   method: 'patch',

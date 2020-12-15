@@ -27,6 +27,7 @@ import {
 } from '../../api/Groups';
 
 import images from '../../Constants/ImagePath';
+import strings from '../../Constants/String';
 
 export default function AccountHeader({ authEntity, entityRole }) {
   const [parentGroup, setParentGroup] = useState(null);
@@ -43,9 +44,11 @@ export default function AccountHeader({ authEntity, entityRole }) {
         setParentGroup(null);
       }
     })
-      .catch((error) => {
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   };
 
   return (

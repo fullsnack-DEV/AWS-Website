@@ -18,11 +18,11 @@ export default function ChallengeSentScreen({ navigation, route }) {
         <View style={styles.imageContainer}>
           <Image source={images.emailSent1} style={styles.rotateImage}/>
         </View>
-        <Text style={styles.infoText}>When {route && route.params && route.params.groupObj && route.params.groupObj.group_name} accepts your
+        <Text style={styles.infoText}>When {route && route.params && route.params.groupObj && (route.params.groupObj.group_name || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`)} accepts your
           match reservation request, you will be notified.</Text>
       </View>
       {route && route.params && route.params.groupObj && <TCBorderButton
-      title={`GO TO ${route.params.groupObj.group_name}`}
+      title={`GO TO ${route.params.groupObj.group_name || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`}`}
       textColor={colors.whiteColor}
       borderColor={colors.whiteColor}
       backgroundColor={'transparent'}

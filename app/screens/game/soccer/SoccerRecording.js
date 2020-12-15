@@ -35,6 +35,7 @@ import {
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import strings from '../../../Constants/String';
 
 let entity = {};
 let timer, timerForTimeline;
@@ -181,7 +182,9 @@ export default function SoccerRecording({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        Alert.alert(e.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const resetGameDetail = (gameId) => {
@@ -205,7 +208,9 @@ export default function SoccerRecording({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        Alert.alert(e.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const decreaseGameScoreRecord = (teamId, gameId) => {
@@ -227,8 +232,10 @@ export default function SoccerRecording({ navigation, route }) {
         console.log('DECREASE GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
-        setloading(false)
-        Alert.alert(e.messages)
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const addGameRecordDetail = (gameId, params) => {
@@ -278,7 +285,9 @@ export default function SoccerRecording({ navigation, route }) {
       })
       .catch((e) => {
         setloading(false);
-        Alert.alert(e.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   const onChange = (event, selectedDate) => {

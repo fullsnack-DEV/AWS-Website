@@ -9,6 +9,23 @@ const GameVerb = {
   RC: 'rc',
   In: 'in',
   Out: 'out',
+  // Tennis Verbs
+  Ace: 'ace',
+  Winner: 'winner',
+  Fault: 'fault',
+  FeetFault: 'footFault',
+  Doublefault: 'doubleFault',
+  Unforced: 'unforcedError',
+  LetScore: 'let',
+  Score: 'score',
+  SetStart: 'setStart',
+  SetEnd: 'setEnd',
+  SetStartMannually: 'setStartMannually',
+  GameStart: 'gameStart',
+  GameStartMannually: 'gameStartMannually',
+  GameEnd: 'gameEnd',
+  GameEndMannually: 'gameEndMannually',
+  SetEndMannually: 'setEndMannually',
 };
 
 export default GameVerb

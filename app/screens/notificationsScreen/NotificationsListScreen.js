@@ -56,12 +56,12 @@ function NotificationsListScreen({ navigation }) {
   const [loading, setloading] = useState(true);
   const navigateFlatList = (item) => {
     console.log('cell selected', item.activities[0].object)
-    const a = JSON.parse(item.activities[0].object).challengeObject.challenge_id
+    const a = JSON.parse(item.activities[0].object)?.challengeObject?.challenge_id || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id
     setloading(true)
     Utils.getChallengeDetail(a, authContext).then((obj) => {
       console.log('kkkk:', obj.challengeObj);
       console.log('Screen name kkkk:', obj.screenName);
-      navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj })
+      navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj || obj.challengeObj[0] })
       setloading(false)
     })
     // const { Obj } = Utils.getChallengeDetail(a, authContext)

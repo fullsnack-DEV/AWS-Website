@@ -32,6 +32,7 @@ import images from '../../../Constants/ImagePath'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import TCThinDivider from '../../../components/TCThinDivider';
+import strings from '../../../Constants/String';
 
 // FIXME -this is static source for now we will inject with api call
 const filterArray = [
@@ -116,7 +117,9 @@ export default function GroupMembersScreen({ navigation, route }) {
         setloading(false);
       })
       .catch((e) => {
-        Alert.alert('', e.messages)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   }
   useLayoutEffect(() => {

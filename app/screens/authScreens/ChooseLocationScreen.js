@@ -41,9 +41,11 @@ export default function ChooseLocationScreen({ navigation }) {
       searchLocation(searchLocationText, authContext).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
-      }).catch((error) => {
-        Alert.alert(error)
-      })
+      }).catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
     } else {
       setNoData(true);
       setCityData([]);
@@ -73,9 +75,11 @@ export default function ChooseLocationScreen({ navigation }) {
           country: item.terms[2].value,
         });
       }
-    }).catch((error) => {
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
 
   const renderItem = ({ item, index }) => (

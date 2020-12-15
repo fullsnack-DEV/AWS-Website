@@ -45,8 +45,10 @@ export default function ForgotPasswordScreen({ navigation }) {
       .then(() => {
         navigation.navigate('ForgotPasswordLinkSentScreen');
       }).catch((e) => {
-        Alert.alert('Towns Cup', e);
-      })
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
   return (
 

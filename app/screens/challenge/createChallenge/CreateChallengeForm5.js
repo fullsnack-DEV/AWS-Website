@@ -63,9 +63,11 @@ export default function CreateChallengeForm5({ navigation, route }) {
             console.log('fee BODY :', body);
             // setPaymentInfo(response.payload)
           })
-          .catch((error) => {
+          .catch((e) => {
             setloading(false);
-            Alert.alert(error.messages);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 0.7);
           });
       }
     }
@@ -133,10 +135,11 @@ export default function CreateChallengeForm5({ navigation, route }) {
               : route.params.teamData[0],
           });
         })
-        .catch((error) => {
+        .catch((e) => {
           setloading(false);
-          console.log('Error', error)
-          Alert.alert(error.messages);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.7);
         });
     }
   };
