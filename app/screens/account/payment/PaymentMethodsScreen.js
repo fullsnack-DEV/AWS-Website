@@ -19,14 +19,13 @@ import * as Utility from '../../../utils';
 import images from '../../../Constants/ImagePath';
 import { publishableKey } from '../../../utils/constant';
 
-export default function PaymentMethodsScreen({ navigation }) {
+export default function PaymentMethodsScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
   const [cards, setCards] = useState([])
 
   useEffect(() => {
-    console.log('NAVIGATION:', navigation)
     getPaymentMethods()
   }, [isFocused])
 
@@ -50,50 +49,51 @@ export default function PaymentMethodsScreen({ navigation }) {
   }
 
   const onCardSelected = async (item) => {
-    console.log('item', item)
+    if (route.params.comeFrom === 'CreateChallengeForm5') {
+      navigation.navigate('CreateChallengeForm5', {
+        paymentMethod: item,
+      });
+    }
   }
 
-  const renderCard = ({ item, index }) => {
-    console.log('index', index)
-    return (
-      <View>
-        <TouchableOpacity style={{
-          height: 50,
-          backgroundColor: colors.whiteColor,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-        }} onPress={() => { onCardSelected(item) }}>
-          <View style={{
-            backgroundColor: colors.orangeColor, padding: 4, paddingHorizontal: 4, borderRadius: 4,
-          }}>
-            <Text style={{
-              fontFamily: fonts.RBold,
-              fontSize: 12,
-              fontStyle: 'italic',
-              color: colors.whiteColor,
-            }}>{item.card.brand.toUpperCase()}</Text>
-          </View>
+  const renderCard = ({ item }) => (
+    <View>
+      <TouchableOpacity style={{
+        height: 50,
+        backgroundColor: colors.whiteColor,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+      }} onPress={() => { onCardSelected(item) }}>
+        <View style={{
+          backgroundColor: colors.orangeColor, padding: 4, paddingHorizontal: 4, borderRadius: 4,
+        }}>
           <Text style={{
-            marginLeft: 12,
-            color: colors.orangeColor,
             fontFamily: fonts.RBold,
-            fontSize: 16,
-          }}>{Utility.capitalize(item.card.brand) }</Text>
-          <Text style={{
-            color: colors.orangeColor,
-            fontFamily: fonts.RLight,
-            fontSize: 16,
-          }}>{strings.endingin}</Text>
-          <Text style={{
-            color: colors.orangeColor,
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-          }}>{item.card.last4}</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+            fontSize: 12,
+            fontStyle: 'italic',
+            color: colors.whiteColor,
+          }}>{item.card.brand.toUpperCase()}</Text>
+        </View>
+        <Text style={{
+          marginLeft: 12,
+          color: colors.orangeColor,
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+        }}>{Utility.capitalize(item.card.brand) }</Text>
+        <Text style={{
+          color: colors.orangeColor,
+          fontFamily: fonts.RLight,
+          fontSize: 16,
+        }}>{strings.endingin}</Text>
+        <Text style={{
+          color: colors.orangeColor,
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+        }}>{item.card.last4}</Text>
+      </TouchableOpacity>
+    </View>
+  )
 
   const itemSeparator = () => (
     // Item Separator

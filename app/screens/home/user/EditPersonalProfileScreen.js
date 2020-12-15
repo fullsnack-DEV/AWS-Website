@@ -76,13 +76,13 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   // Form Validation
   const checkValidation = () => {
     if (profile.first_name === '') {
-      Alert.alert('Towns Cup', 'First name cannot be blank');
+      Alert.alert(strings.alertmessagetitle, strings.firstnamevalidation);
       return false
     } if (profile.last_name === '') {
-      Alert.alert('Towns Cup', 'Last name cannot be blank');
+      Alert.alert(strings.alertmessagetitle, strings.lastnamevalidation);
       return false
     } if (profile.location === '') {
-      Alert.alert('Towns Cup', 'Location cannot be blank');
+      Alert.alert(strings.alertmessagetitle, strings.locationvalidation);
       return false
     }
     return true
