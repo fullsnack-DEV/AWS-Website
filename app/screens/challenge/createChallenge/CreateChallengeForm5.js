@@ -37,9 +37,11 @@ export default function CreateChallengeForm5({ navigation, route }) {
     if (route && route.params && route.params.teamData && route.params.body) {
       if (route.params.teamData[0].group_id === entity.uid) {
         body = { ...route.params.body };
+        body.start_datetime /= 1000
+        body.end_datetime /= 1000
         body.manual_fee = false;
         setloading(true);
-        getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, { ...body, start_datetime: route.params.body.start_datetime / 1000, end_datetime: route.params.body.end_datetime / 1000 }, authContext)
+        getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, body, authContext)
           .then((response) => {
             if (route && route.params && route.params.body) {
               body = route.params.body;
