@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -13,6 +14,7 @@ import images from '../Constants/ImagePath'
 
 function TCTouchableLabel({
   title = '',
+  subTitle,
   onPress,
   placeholder,
   placeholderTextColor = colors.userPostTimeColor,
@@ -25,14 +27,24 @@ function TCTouchableLabel({
     <View>
       <TouchableOpacity
         onPress={ onPress } style={[styles.containerStyle, style]}>
-        <TextInput
+        {!subTitle && <TextInput
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
           style={[styles.textInput, textStyle]}
           value={title}
           editable={false}
           pointerEvents="none"
-          />
+          />}
+        {subTitle && <View style={{
+          flex: 1,
+          flexDirection: 'row',
+          marginHorizontal: 15,
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <Text style={styles.text}>{title}</Text>
+          <Text style={styles.text}>{subTitle}</Text>
+        </View>}
         {showNextArrow && (
           <Image
         style={styles.nextIconStyle}
@@ -71,6 +83,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     paddingHorizontal: 10,
+    color: colors.lightBlackColor,
+  },
+  text: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
     color: colors.lightBlackColor,
   },
   nextIconStyle: {

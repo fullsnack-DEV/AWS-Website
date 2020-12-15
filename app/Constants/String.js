@@ -56,6 +56,7 @@ const strings = {
   nameText: 'Name',
   save: 'Save',
   done: 'Done',
+  yes: 'Yes',
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
 
@@ -371,7 +372,7 @@ const strings = {
   cancelMatch: 'CANCEL MATCH',
   alterReservation: 'CHANGE RESERVATION',
   sendAlterRequest: 'SEND ALTERATION REQUEST',
-  cancel: 'CANCEL',
+  cancel: 'Cancel',
   goToGameHome: 'GO TO GAME HOME',
   alreadyjoinclubmessage: 'Your team can’t join this club because a team can join only a club.',
   isinvitedsuccesfully: 'is invited successfully',
@@ -445,5 +446,11 @@ const strings = {
   addcard: 'Add New Card...',
   endingin: ' Ending in ',
   addacard: 'Add a Card',
+  entergamefee: 'Enter Game Fee',
+  matchfee: 'Match fee',
+  firstnamevalidation: 'First name cannot be blank',
+  lastnamevalidation: 'Last name cannot be blank',
+  locationvalidation: 'Location cannot be blank',
+  addOptionMessage: '+ Add a payment method',
 };
 export default strings;

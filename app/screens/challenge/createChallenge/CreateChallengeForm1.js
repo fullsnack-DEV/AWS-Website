@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext,
+  useEffect, useState, useContext, useLayoutEffect,
 } from 'react';
 import {
   StyleSheet,
@@ -55,6 +55,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
   const [secureVenue, setsecureVenue] = useState(0);
   const [teamData, setTeamData] = useState();
   const [editableAlter, setEditableAlter] = useState(false);
+  const [venueTitle, setVenueTitle] = useState('');
 
   const [venueData, setVenueData] = useState({
     lat: null,
@@ -63,6 +64,10 @@ export default function CreateChallengeForm1({ navigation, route }) {
     address: null,
     venueType: null,
   });
+
+  useLayoutEffect(() => {
+
+  }, [venueTitle])
 
   useEffect(() => {
     entity = authContext.entity
@@ -125,14 +130,16 @@ export default function CreateChallengeForm1({ navigation, route }) {
         venueType: 'other',
         lat: response.results[0].geometry.location.lat,
         long: response.results[0].geometry.location.lng,
-        title: '',
+        title: venueTitle,
       });
       console.log('LAT LONG::', JSON.stringify(response));
     });
   };
+
   const swapTeam = () => {
     setteams([teams[1], teams[0]]);
   };
+
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (from, to) => {
     let delta = Math.abs(
@@ -151,6 +158,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
 
     return `${hours} hours ${minutes} minutes`;
   };
+
   const tConvert = (timeString) => {
     const timeString12hr = new Date(
       `1970-01-01T${timeString}Z`,
@@ -165,12 +173,14 @@ export default function CreateChallengeForm1({ navigation, route }) {
     );
     return timeString12hr;
   };
+
   const time_format = (d) => {
     const hours = format_two_digits(d.getHours());
     const minutes = format_two_digits(d.getMinutes());
     const seconds = format_two_digits(d.getSeconds());
     return tConvert(`${hours}:${minutes}:${seconds}`);
   }
+
   const format_two_digits = (n) => (n < 10 ? `0${n}` : n)
 
   const checkValidation = () => {
@@ -195,9 +205,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
     }
     bodyParams.home_team = teams[0]
     bodyParams.away_team = teams[1]
+    bodyParams.hourly_game_fee = route.params.groupObj.game_fee
+    bodyParams.currency_type = route.params.groupObj.currency_type
     bodyParams.venue = venueData
-    bodyParams.sport = teamData[0].sport
-    bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name : teamData[1].group_name
+    bodyParams.sport = teamData[0].sport || teamData[1].sport
+    bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`
 
     console.log('FORM ! BODY PARAMS', bodyParams);
     return bodyParams
@@ -215,7 +227,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
         </View>}
 
         <View>
-          <TCLabel title={`Match · ${teamData[0].sport}`} />
+          <TCLabel title={`Match · ${teamData[0]?.sport || teamData[1]?.sport}`} />
           <TCThickDivider />
         </View>
         <View>
@@ -234,7 +246,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 />
               </View>
               <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>{teams[0].group_name}</Text>
+                <Text style={styles.teamNameLable}>{teams[0].group_name || `${teams[0].first_name} ${teams[0].last_name}`}</Text>
                 <Text style={styles.locationLable}>
                   {teams[0].city}, {teams[0].state_abbr}
                 </Text>
@@ -260,7 +272,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 />
               </View>
               <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>{teams[1].group_name}</Text>
+                <Text style={styles.teamNameLable}>{teams[1].group_name || `${teams[1].first_name} ${teams[1].last_name}`}</Text>
                 <Text style={styles.locationLable}>
                   {teams[1].city}, {teams[1].state_abbr}
                 </Text>
@@ -281,7 +293,6 @@ export default function CreateChallengeForm1({ navigation, route }) {
             <View>
               <TouchableOpacity
                 onPress={() => {
-                  console.log('Form 1 body:', bodyParams);
                   navigation.navigate('ChooseDateTimeScreen', {
                     otherTeam: route.params.groupObj || bodyParams,
                   })
@@ -293,11 +304,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   style={styles.textInput}
                   value={
                     (bodyParams && bodyParams.start_datetime && bodyParams.end_datetime
-                      && `${getTimeDifferent(bodyParams.start_datetime * 1000, bodyParams.end_datetime * 1000)}\n${
-                        monthNames[new Date(bodyParams.start_datetime * 1000).getMonth()]
-                      } ${new Date(bodyParams.start_datetime * 1000).getDate()}, ${new Date(
-                        bodyParams.start_datetime * 1000,
-                      ).getFullYear()}  ${time_format(new Date(bodyParams.start_datetime * 1000))} - ${time_format(new Date(bodyParams.end_datetime * 1000))}`)
+                      && `${getTimeDifferent(bodyParams.start_datetime, bodyParams.end_datetime)}\n${
+                        monthNames[new Date(bodyParams.start_datetime).getMonth()]
+                      } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
+                        bodyParams.start_datetime,
+                      ).getFullYear()}  ${time_format(new Date(bodyParams.start_datetime))} - ${time_format(new Date(bodyParams.end_datetime))}`)
                   }
                   editable={false}
                   pointerEvents="none"
@@ -312,7 +323,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
           <TCLabel title={'Venue'} required={true} />
           <View style={styles.viewContainer}>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[0].group_name}’s home</Text>
+              <Text style={styles.radioText}>{teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`}’s home</Text>
               <TouchableOpacity
                 onPress={() => {
                   if (teamData[0].homefield_Address) {
@@ -352,7 +363,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
               </TouchableOpacity>
             </View>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[1].group_name}’s home</Text>
+              <Text style={styles.radioText}>{teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`}’s home</Text>
               <TouchableOpacity
                 onPress={() => {
                   if (teamData[1].homefield_Address) {
@@ -414,8 +425,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
             {venue === 0 && (
               <TCTextField
                 placeholder={'Venue name'}
-                value={venueData.title && venueData.title}
-                onChangeText={(text) => setVenueData({ ...venueData, title: text })
+                value={venueTitle}
+                onChangeText={(text) => {
+                  setVenueTitle(text)
+                  setVenueData({ ...venueData, title: text })
+                }
                 }
               />
             )}
@@ -467,7 +481,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
           </Text>
           <View style={styles.viewContainer}>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{entity && entity.obj && entity.obj.group_name}’s home</Text>
+              <Text style={styles.radioText}>{teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`}’s home</Text>
               <TouchableOpacity onPress={() => setsecureVenue(0)}>
                 <Image
                   source={
@@ -481,7 +495,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
             </View>
 
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[1].group_name}’s home</Text>
+              <Text style={styles.radioText}>{teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`}’s home</Text>
               <TouchableOpacity onPress={() => setsecureVenue(1)}>
                 <Image
                   source={

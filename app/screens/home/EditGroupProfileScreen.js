@@ -147,7 +147,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   }
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
-    updateGroupProfile(userProfile, paramGroupID, authContext).then(async (response) => {
+    updateGroupProfile(userProfile, paramGroupID, authContext).then((response) => {
       setloading(true);
       setTimeout(() => {
         Alert.alert('Towns Cup', 'Profile changed sucessfully');

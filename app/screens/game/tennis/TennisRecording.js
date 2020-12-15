@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable array-callback-return */
 import React, {
   useState, useEffect,
 } from 'react';
@@ -16,6 +18,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
 // import { useIsFocused } from '@react-navigation/native';
 
+import { useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
@@ -40,25 +43,58 @@ const recordButtonList = [
   'Foot Fault',
   'Let',
 ];
-
 export default function TennisRecording({ route }) {
+  const isFocused = useIsFocused();
   const [pickerShow, setPickerShow] = useState(false);
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
   const [detailRecording, setDetailRecording] = useState(false);
   const [gameObj, setGameObj] = useState();
   const [player1Selected, setPlayer1Selected] = useState(false);
   const [player2Selected, setPlayer2Selected] = useState(false);
+  const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0)
+  const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0)
+  const [homeTeamGamePoint, setHomeTeamGamePoint] = useState('0')
+  const [awayTeamGamePoint, setAwayTeamGamePoint] = useState('0')
 
   const [loading, setloading] = useState(false);
+
   useEffect(() => {
     // const { gameDetail } = route.params ?? {};
     if (route && route.params && route.params.gameDetail) {
-      console.log('GAME DATA:', route.params.gameDetail);
+      console.log('GAME DATA:', JSON.stringify(route.params.gameDetail));
       setloading(false)
       setTimelineTimer('00 : 00 : 00')
-      setGameObj(route.params.gameDetail);
+      setGameObj(route.params.gameDetail)
+
+      calculateMatchScore()
+      calculateGameScore()
     }
-  }, []);
+  }, [isFocused]);
+
+  const calculateMatchScore = () => {
+    gameObj?.scoreboard?.sets.map((e) => {
+      if (e.winner) {
+        if (e.winner === gameObj.home_team.user_id) {
+          setHomeMatchPoint(homeTeamMatchPoint + 1)
+        } else {
+          setAwayMatchPoint(awayTeamMatchPoint + 1)
+        }
+      }
+    })
+  }
+  const calculateGameScore = () => {
+    // eslint-disable-next-line array-callback-return
+    if (gameObj?.scoreboard?.game_inprogress?.winner || gameObj?.scoreboard?.game_inprogress?.end_datetime) {
+      setHomeTeamGamePoint('0')
+      setAwayTeamGamePoint('0')
+
+      console.log('GAME SCORE:', `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`);
+    } else {
+      setHomeTeamGamePoint(gameObj?.scoreboard?.game_inprogress?.home_team_point)
+      setAwayTeamGamePoint(gameObj?.scoreboard?.game_inprogress?.away_team_point)
+    }
+  }
+
   const getDateFormat = (dateValue) => {
     moment.locale('en');
     return moment(new Date(dateValue)).format('hh : mm a, MMM DD');
@@ -92,8 +128,8 @@ export default function TennisRecording({ route }) {
             <View style={styles.leftView}>
               <View style={styles.profileShadow}>
                 <Image
-                source={images.teamPlaceholder}
-                style={styles.profileImg}
+                source={gameObj?.home_team?.thumbnail ? { uri: gameObj?.home_team?.thumbnail } : images.profilePlaceHolder}
+                style={player1Selected ? [styles.profileImg, { borderColor: colors.themeColor }] : styles.profileImg}
               />
               </View>
               <Text style={styles.leftText} numberOfLines={2}>
@@ -104,9 +140,9 @@ export default function TennisRecording({ route }) {
             <View>
               <Text style={styles.centerSetText}>SET SCORES</Text>
               <View style={styles.centerView}>
-                <Text style={styles.centerText}>14</Text>
+                <Text style={styles.centerText}>{homeTeamMatchPoint}</Text>
                 <Image source={images.tennisArrow} style={styles.orangeArrow} />
-                <Text style={styles.centerText}>14</Text>
+                <Text style={styles.centerText}>{awayTeamMatchPoint}</Text>
               </View>
             </View>
 
@@ -116,20 +152,17 @@ export default function TennisRecording({ route }) {
               </Text>
               <View style={styles.profileShadow}>
                 <Image
-                source={images.teamPlaceholder}
-                style={styles.profileImg}
+                                source={gameObj?.away_team?.thumbnail ? { uri: gameObj?.away_team?.thumbnail } : images.profilePlaceHolder}
+                                style={player2Selected ? [styles.profileImg, { borderColor: colors.themeColor }] : styles.profileImg}
               />
               </View>
             </View>
           </View>
           <TennisScoreView
-          scoreDataSource={[
-            { 1: '1', 2: '2' },
-            { 1: '3', 2: '4' },
-            { 1: '5', 2: '6' },
-          ]}
+          scoreDataSource={gameObj}
         />
         </View>
+        <View style={{ flex: 1 }}></View>
         {gameObj && (
           <View style={styles.bottomView}>
             <View style={styles.timeView}>
@@ -198,7 +231,7 @@ export default function TennisRecording({ route }) {
                   colors={[colors.yellowColor, colors.themeColor]}
                   style={styles.playerView}>
                     <Image
-                    source={images.profilePlaceHolder}
+                    source={gameObj?.home_team?.thumbnail ? { uri: gameObj?.home_team?.thumbnail } : images.profilePlaceHolder}
                     style={styles.playerProfile}
                   />
                     <Text
@@ -209,7 +242,7 @@ export default function TennisRecording({ route }) {
                 ) : (
                   <View style={styles.playerView}>
                     <Image
-                    source={images.profilePlaceHolder}
+                    source={gameObj?.home_team?.thumbnail ? { uri: gameObj?.home_team?.thumbnail } : images.profilePlaceHolder}
                     style={styles.playerProfile}
                   />
                     <Text style={styles.playerNameText}>{gameObj.home_team.first_name} {gameObj.home_team.last_name}</Text>
@@ -228,7 +261,7 @@ export default function TennisRecording({ route }) {
                   colors={[colors.yellowColor, colors.themeColor]}
                   style={styles.playerView}>
                     <Image
-                    source={images.profilePlaceHolder}
+                    source={gameObj?.away_team?.thumbnail ? { uri: gameObj?.away_team?.thumbnail } : images.profilePlaceHolder}
                     style={styles.playerProfile}
                   />
                     <Text
@@ -239,7 +272,7 @@ export default function TennisRecording({ route }) {
                 ) : (
                   <View style={styles.playerView}>
                     <Image
-                    source={images.profilePlaceHolder}
+                    source={gameObj?.away_team?.thumbnail ? { uri: gameObj?.away_team?.thumbnail } : images.profilePlaceHolder}
                     style={styles.playerProfile}
                   />
                     <Text numberOfLines={2} style={styles.playerNameText}>
@@ -250,8 +283,8 @@ export default function TennisRecording({ route }) {
               </TouchableWithoutFeedback>
             </View>
             <View style={styles.scoreView}>
-              <Text style={styles.playerScore}>15</Text>
-              <Text style={styles.playerScore}>15</Text>
+              <Text style={styles.playerScore}>{homeTeamGamePoint}</Text>
+              <Text style={styles.playerScore}>{awayTeamGamePoint}</Text>
             </View>
             {!detailRecording && (
               <View style={styles.plusMinusContainer}>
@@ -405,6 +438,7 @@ const styles = StyleSheet.create({
   },
   centerView: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
     width: wp('22%'),
   },
@@ -440,6 +474,8 @@ const styles = StyleSheet.create({
 
   profileImg: {
     borderRadius: 15,
+    borderWidth: 2,
+    borderColor: colors.whiteColor,
     height: 30,
     marginLeft: 10,
     marginRight: 10,
@@ -478,12 +514,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   bottomView: {
+    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    width: '100%',
-    bottom: 0,
     position: 'absolute',
+    bottom: 0,
+    width: '100%',
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
@@ -571,6 +608,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     marginLeft: 5,
     marginRight: 5,
+    borderRadius: 13,
   },
   middleViewContainer: {
     flexDirection: 'row',
@@ -580,6 +618,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
+
   },
   scoreView: {
     flex: 1,
@@ -589,7 +628,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 5,
   },
   playerScore: {
     flex: 0.5,

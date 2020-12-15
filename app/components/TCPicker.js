@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.29,
     shadowRadius: 1,
     width: '92%',
   },

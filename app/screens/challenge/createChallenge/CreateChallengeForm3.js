@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-
+import AuthContext from '../../../auth/context';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -21,8 +21,10 @@ import TCLabel from '../../../components/TCLabel';
 
 import TCMessageButton from '../../../components/TCMessageButton';
 
+let entity = {};
 export default function CreateChallengeForm3({ navigation, route }) {
   const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext)
   const [editableAlter, setEditableAlter] = useState(false);
   const [referees, setReferees] = useState([{
     id: 0,
@@ -36,6 +38,8 @@ export default function CreateChallengeForm3({ navigation, route }) {
     responsible_team_id: 'none',
   }]);
   useEffect(() => {
+    entity = authContext.entity
+    console.log(entity);
     if (route && route.params && route.params.editable && route.params.body) {
       setReferees([...route.params.body.referee])
       setScorekeeper([...route.params.body.scorekeeper])
@@ -83,23 +87,23 @@ export default function CreateChallengeForm3({ navigation, route }) {
           </TouchableOpacity>
         </View>
         <View style={styles.radioContainer}>
-          <Text style={styles.radioText}>{route.params.teamData[0].group_name}’s home</Text>
+          <Text style={styles.radioText}>{route.params.teamData[0].group_name || `${route.params.teamData[0].first_name} ${route.params.teamData[0].last_name}`}’s home</Text>
           <TouchableOpacity onPress={() => {
             const ref = [...referees];
-            ref[index].responsible_team_id = route.params.teamData[0].group_id
+            ref[index].responsible_team_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
             setReferees(ref)
           }}>
-            <Image source={referees[index].responsible_team_id === route.params.teamData[0].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Image source={(referees[index].responsible_team_id === route.params.teamData[0].group_id) || (referees[index].responsible_team_id === route.params.teamData[0].user_id) ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
           </TouchableOpacity>
         </View>
         <View style={styles.radioContainer}>
-          <Text style={styles.radioText}>{route.params.teamData[1].group_name}’s home</Text>
+          <Text style={styles.radioText}>{route.params.teamData[1].group_name || `${route.params.teamData[1].first_name} ${route.params.teamData[1].last_name}`}’s home</Text>
           <TouchableOpacity onPress={() => {
             const ref = [...referees];
-            ref[index].responsible_team_id = route.params.teamData[1].group_id
+            ref[index].responsible_team_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
             setReferees(ref)
           }}>
-            <Image source={referees[index].responsible_team_id === route.params.teamData[1].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Image source={(referees[index].responsible_team_id === route.params.teamData[1].group_id) || (referees[index].responsible_team_id === route.params.teamData[1].user_id) ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
           </TouchableOpacity>
         </View>
       </View>}
@@ -128,23 +132,23 @@ export default function CreateChallengeForm3({ navigation, route }) {
           </TouchableOpacity>
         </View>
         <View style={styles.radioContainer}>
-          <Text style={styles.radioText}>{route.params.teamData[0].group_name}’s home</Text>
+          <Text style={styles.radioText}>{route.params.teamData[0].group_name || `${route.params.teamData[0].first_name} ${route.params.teamData[0].last_name}`}’s home</Text>
           <TouchableOpacity onPress={() => {
             const score = [...scorekeeper];
-            score[index].responsible_team_id = route.params.teamData[0].group_id
+            score[index].responsible_team_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
             setScorekeeper(score)
           }}>
-            <Image source={scorekeeper[index].responsible_team_id === route.params.teamData[0].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Image source={(scorekeeper[index].responsible_team_id === route.params.teamData[0].group_id) || scorekeeper[index].responsible_team_id === route.params.teamData[0].user_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
           </TouchableOpacity>
         </View>
         <View style={styles.radioContainer}>
-          <Text style={styles.radioText}>{route.params.teamData[1].group_name}’s home</Text>
+          <Text style={styles.radioText}>{route.params.teamData[1].group_name || `${route.params.teamData[1].first_name} ${route.params.teamData[1].last_name}`}’s home</Text>
           <TouchableOpacity onPress={() => {
             const score = [...scorekeeper];
-            score[index].responsible_team_id = route.params.teamData[1].group_id
+            score[index].responsible_team_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
             setScorekeeper(score)
           }}>
-            <Image source={scorekeeper[index].responsible_team_id === route.params.teamData[1].group_id ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
+            <Image source={(scorekeeper[index].responsible_team_id === route.params.teamData[1].group_id) || (scorekeeper[index].responsible_team_id === route.params.teamData[1].user_id) ? images.radioCheckGreenBG : images.radioUnselect} style={styles.radioSelectStyle}/>
           </TouchableOpacity>
         </View>
       </View>}
