@@ -69,6 +69,8 @@ export default function FeedsScreen({ navigation }) {
           type: 'image',
           url: item.fullImage,
           thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
         }))
         const dataParams = {
           text: postDesc && postDesc,

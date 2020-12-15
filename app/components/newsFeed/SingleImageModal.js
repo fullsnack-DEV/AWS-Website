@@ -17,7 +17,15 @@ import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 
-export default function SingleImageModal({ backBtnPress, uploadImageURL }) {
+export default function SingleImageModal({ backBtnPress, uploadImageURL, data }) {
+  let height = wp('96%');
+  if (data.media_height > data.media_width) {
+    height = wp('124%')
+  } else if (data.media_height < data.media_width) {
+    height = wp('68%')
+  } else {
+    height = wp('96%')
+  }
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.blackColor }}
@@ -25,9 +33,9 @@ export default function SingleImageModal({ backBtnPress, uploadImageURL }) {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchViewStyle}>
           <FastImage
-            style={styles.uploadedImage}
+            style={[styles.uploadedImage, { height }]}
             source={{ uri: uploadImageURL }}
-            resizeMode={ FastImage.resizeMode.contain }
+            resizeMode={ FastImage.resizeMode.cover }
           />
         </View>
         <View style={ styles.containerStyle }>

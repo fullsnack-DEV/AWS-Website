@@ -18,7 +18,14 @@ function SingleImage({ data }) {
   const uploadImageURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
   let height = wp('96%');
-  height = data.media_height > data.media_width ? height = wp('124%') : height = wp('68%');
+  if (data.media_height > data.media_width) {
+    height = wp('124%')
+  } else if (data.media_height < data.media_width) {
+    height = wp('68%')
+  } else {
+    height = wp('96%')
+  }
+  // height = data.media_height > data.media_width ? height = wp('124%') : height = wp('68%');
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -52,6 +59,7 @@ function SingleImage({ data }) {
         <SingleImageModal
           uploadImageURL={uploadImageURL && uploadImageURL}
           backBtnPress={() => setModalVisible(false)}
+          data={data}
         />
       </Modal>
       <TouchableWithoutFeedback onPress={() => {

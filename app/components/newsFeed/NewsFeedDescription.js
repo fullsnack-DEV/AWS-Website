@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import ParsedText from 'react-native-parsed-text';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
 function NewsFeedDescription({
   descriptions,
@@ -14,11 +17,34 @@ function NewsFeedDescription({
     setReadMore(!readMore);
   }
 
+  function renderText(matchingString) {
+    const pattern = /@(\w+)/;
+    const match = matchingString.match(pattern);
+    return `${match[0]}`;
+  }
+
+  function handleNamePress(name) {
+    console.log(`Hello ${name}`);
+  }
+
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       {descriptions.length > 0 && (
-        <Text style={[styles.descriptionTxt, descriptionTxt]}>
-          {readMore ? descriptions : descriptions.substring(0, character)}
+        <Text style={[styles.descText, descText]}>
+          <ParsedText
+            style={[styles.text, descriptionTxt]}
+            parse={
+              [{
+                pattern: /@(\w+)/,
+                style: styles.username,
+                onPress: handleNamePress,
+                renderText,
+              }]
+            }
+            childrenProps={{ allowFontScaling: false }}
+          >
+            {readMore ? descriptions : descriptions.substring(0, character)}
+          </ParsedText>
           {descriptions.length > character && !readMore ? '... ' : ' '}
           {descriptions.length > character && (
             <Text onPress={ () => toggleNumberOfLines() } style={[styles.descText, descText]}>
@@ -39,10 +65,18 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 12,
   },
-  descriptionTxt: {
+  username: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.greeColor,
+  },
+  text: {
     fontSize: 16,
     paddingVertical: '2%',
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
+
 });
 
 export default NewsFeedDescription;

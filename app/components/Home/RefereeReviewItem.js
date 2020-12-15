@@ -16,11 +16,11 @@ import ActionSheet from 'react-native-actionsheet';
 
 import Carousel from 'react-native-snap-carousel';
 import images from '../../Constants/ImagePath';
-import SingleImage from './SingleImage';
-import VideoPost from './VideoPost';
-import PostImageSet from './PostImageSet';
-import MultiPostVideo from './MultiPostVideo';
-import NewsFeedDescription from './NewsFeedDescription';
+import SingleImage from '../newsFeed/SingleImage';
+import VideoPost from '../newsFeed/VideoPost';
+import PostImageSet from '../newsFeed/PostImageSet';
+import MultiPostVideo from '../newsFeed/MultiPostVideo';
+import NewsFeedDescription from '../newsFeed/NewsFeedDescription';
 import {
   commentPostTimeCalculate,
 } from '../../Constants/LoaderImages';
@@ -28,7 +28,7 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-function NewsFeedPostItems({
+function RefereeReviewItem({
   navigation,
   key,
   item,
@@ -61,7 +61,6 @@ function NewsFeedPostItems({
     }
   }, [item]);
   const actionSheet = useRef();
-  // let like = false;
 
   let userImage = '';
   if (item.actor && item.actor.data) {
@@ -88,11 +87,19 @@ function NewsFeedPostItems({
           />
         </TouchableWithoutFeedback>
         <View style={styles.userNameView}>
-          <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
-          <Text style={styles.activeTimeAgoTxt}>
-            {/* {moment(item.time).startOf('hour').fromNow()} */}
-            {commentPostTimeCalculate(item.time)}
-          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
+            <Text style={[styles.userNameTxt, { fontFamily: fonts.RRegular, marginLeft: 5 }]}>{'left a review'}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3 }}>
+            <Text style={styles.activeTimeAgoTxt}>
+              {commentPostTimeCalculate(item.time)}
+            </Text>
+            <View style={styles.eventImageViewStyle}>
+              <Image source={images.usaImage} style={styles.imageStyle} resizeMode={'contain'} />
+            </View>
+            <Text style={[styles.activeTimeAgoTxt, { fontSize: 12, fontFamily: fonts.RMedium }]}>{'Newyork City FC'}</Text>
+          </View>
         </View>
         <TouchableOpacity
           style={styles.dotImageTouchStyle}
@@ -101,79 +108,77 @@ function NewsFeedPostItems({
           }}>
           <Image
             style={styles.dotImageStyle}
-            source={images.horizontalThreeDot}
+            source={images.dotImage}
             resizeMode={'contain'}
           />
         </TouchableOpacity>
       </View>
+      <View style={{ marginTop: 10 }} />
+      {attachedImages.length > 0 ? (
+        <NewsFeedDescription descriptions={descriptions} character={140} />
+      ) : (
+        <NewsFeedDescription descriptions={descriptions} character={420} />
+      )}
+      <View style={{ marginTop: 10 }} />
       <View>
-        {
-                attachedImages && attachedImages.length === 1 ? (
-                  <FlatList
-              data={attachedImages}
-              horizontal={true}
-              bounces={false}
-              showsHorizontalScrollIndicator={false}
-              ListHeaderComponent={() => <View style={{ width: wp('2%') }} />}
-              ListFooterComponent={() => <View style={{ width: wp('2%') }} />}
-              ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
-              renderItem={({ item: attachItem }) => {
-                if (attachItem.type === 'image') {
-                  return <SingleImage data={attachItem} />;
-                }
-                if (attachItem.type === 'video') {
-                  return (
-                    <VideoPost
-                      data={attachItem}
-                    />
-                  );
-                }
-                return <View />;
-              }}
-              keyExtractor={(index) => index.toString()}
-            />
-                ) : (
-                  <Carousel
-              data={attachedImages}
-              renderItem={({ item: multiAttachItem, index }) => {
-                if (multiAttachItem.type === 'image') {
-                  return (
-                    <PostImageSet
-                      activeIndex={index}
-                      data={multiAttachItem}
-                      itemNumber={index + 1}
-                      attachedImages={attachedImages}
-                      totalItemNumber={attachedImages.length}
-                    />
-                  );
-                }
-                if (multiAttachItem.type === 'video') {
-                  return (
-                    <MultiPostVideo
-                      activeIndex={index}
-                      data={multiAttachItem}
-                      itemNumber={index + 1}
-                      attachedImages={attachedImages}
-                      totalItemNumber={attachedImages.length}
-                    />
-                  );
-                }
-                return <View />;
-              }}
-              inactiveSlideScale={1}
-              inactiveSlideOpacity={1}
-              sliderWidth={wp(100)}
-              itemWidth={wp(94)}
-            />
-                )
+        {attachedImages && attachedImages.length === 1 ? (
+          <FlatList
+            data={attachedImages}
+            horizontal={true}
+            bounces={false}
+            showsHorizontalScrollIndicator={false}
+            ListHeaderComponent={() => <View style={{ width: wp('2%') }} />}
+            ListFooterComponent={() => <View style={{ width: wp('2%') }} />}
+            ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
+            renderItem={({ item: attachItem }) => {
+              if (attachItem.type === 'image') {
+                return <SingleImage data={attachItem} />;
               }
-        {attachedImages.length > 0 ? (
-          <NewsFeedDescription descriptions={descriptions} character={140} />
+              if (attachItem.type === 'video') {
+                return (
+                  <VideoPost
+                    data={attachItem}
+                  />
+                );
+              }
+              return <View />;
+            }}
+            keyExtractor={(index) => index.toString()}
+         />
         ) : (
-          <NewsFeedDescription descriptions={descriptions} character={480} />
+          <Carousel
+            data={attachedImages}
+            renderItem={({ item: multiAttachItem, index }) => {
+              if (multiAttachItem.type === 'image') {
+                return (
+                  <PostImageSet
+                    activeIndex={index}
+                    data={multiAttachItem}
+                    itemNumber={index + 1}
+                    attachedImages={attachedImages}
+                    totalItemNumber={attachedImages.length}
+                  />
+                );
+              }
+              if (multiAttachItem.type === 'video') {
+                return (
+                  <MultiPostVideo
+                    activeIndex={index}
+                    data={multiAttachItem}
+                    itemNumber={index + 1}
+                    attachedImages={attachedImages}
+                    totalItemNumber={attachedImages.length}
+                  />
+                );
+              }
+              return <View />;
+            }}
+            inactiveSlideScale={1}
+            inactiveSlideOpacity={1}
+            sliderWidth={wp(100)}
+            itemWidth={wp(94)}
+          />
         )}
-
-        <View style={{ marginTop: 10, marginLeft: 10 }}></View>
 
         <View style={styles.commentShareLikeView}>
           <View
@@ -274,19 +279,19 @@ function NewsFeedPostItems({
           </View>
         </View>
         <ActionSheet
-                ref={actionSheet}
-                title={'News Feed Post'}
-                options={['Edit Post', 'Delete Post', 'Cancel']}
-                cancelButtonIndex={2}
-                destructiveButtonIndex={1}
-                onPress={(index) => {
-                  if (index === 0) {
-                    navigation.navigate('EditPostScreen', { data: item });
-                  } else if (index === 1) {
-                    onDeletePost();
-                  }
-                }}
-              />
+            ref={actionSheet}
+            title={'News Feed Post'}
+            options={['Edit Post', 'Delete Post', 'Cancel']}
+            cancelButtonIndex={2}
+            destructiveButtonIndex={1}
+            onPress={(index) => {
+              if (index === 0) {
+                navigation.navigate('EditPostScreen', { data: item });
+              } else if (index === 1) {
+                onDeletePost();
+              }
+            }}
+        />
       </View>
     </View>
   );
@@ -294,10 +299,9 @@ function NewsFeedPostItems({
 
 const styles = StyleSheet.create({
   activeTimeAgoTxt: {
-    color: colors.userPostTimeColor,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    top: 2,
   },
   background: {
     borderRadius: hp('2.5%'),
@@ -351,6 +355,25 @@ const styles = StyleSheet.create({
     marginLeft: wp('4%'),
     width: wp('70%'),
   },
+  eventImageViewStyle: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    },
+    elevation: 5,
+    backgroundColor: colors.whiteColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 8,
+  },
+  imageStyle: {
+    width: 15,
+    height: 15,
+  },
 });
 
-export default NewsFeedPostItems;
+export default RefereeReviewItem;

@@ -20,7 +20,12 @@ import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import { getGameScoreboardEvents, getGameStatsChartData, getGameStatsData } from '../../api/Games';
+import {
+  getGameScoreboardEvents,
+  getGameStatsChartData,
+  getGameStatsData,
+  getRefereeReviewData,
+} from '../../api/Games';
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
@@ -84,6 +89,7 @@ import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
 import ReviewRatingView from '../../components/Home/ReviewRatingView';
 import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
+import RefereeReviewerList from './RefereeReviewerList';
 
 const reviews_data = [
   {
@@ -172,7 +178,9 @@ export default function HomeScreen({ navigation, route }) {
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [recentMatchData, setRecentMatchData] = useState([]);
+  const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
+  const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
   const [gamesChartData, setGamesChartData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [gameStatsData, setGameStatsData] = useState({
     from_date: false,
@@ -979,6 +987,7 @@ export default function HomeScreen({ navigation, route }) {
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
     if (refereeInObject) {
+      const entity = authContext.entity;
       if (refereeInObject.language.length > 0) {
         refereeInObject.language.map((langItem, index) => {
           language_string = language_string + (index ? ', ' : '') + langItem.language_name;
@@ -989,6 +998,35 @@ export default function HomeScreen({ navigation, route }) {
       setRefereesInModalVisible(!refereesInModalVisible);
       setSportName(refereeInObject.sport_name);
       setSelectRefereeData(refereeInObject);
+
+      const params = {
+        sport: refereeInObject.sport_name,
+        role: 'referee',
+      };
+      getGameScoreboardEvents(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
+        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        const recentMatch = [];
+        const upcomingMatch = [];
+        if (res.payload.length > 0) {
+          res.payload.filter((event_item) => {
+            const eventStartDate = new Date(event_item.start_datetime * 1000)
+            if (eventStartDate > date) {
+              upcomingMatch.push(event_item);
+              setRefereeUpcomingMatch([...upcomingMatch]);
+            } else {
+              recentMatch.push(event_item);
+              setRefereeRecentMatch([...recentMatch]);
+            }
+            return null;
+          });
+        }
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+
+      getRefereeReviewData(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
+        console.log('Get Referee Review Data Res ::--', res);
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
     } else {
       // add New Referee
     }
@@ -1231,6 +1269,7 @@ export default function HomeScreen({ navigation, route }) {
                     navigation={navigation}
                     postData={postData}
                     userID={userID}
+                    scrollEnabled={false}
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >
@@ -1997,7 +2036,7 @@ export default function HomeScreen({ navigation, route }) {
                   }}
                 >
                   <RecentMatchView
-                    data={recentMatchData.length > 0 ? recentMatchData[0] : null}
+                    data={refereeRecentMatch.length > 0 ? refereeRecentMatch[0] : null}
                   />
                 </RefereesInItem>
 
@@ -2080,6 +2119,18 @@ export default function HomeScreen({ navigation, route }) {
                 selectRefereeData={selectRefereeData}
                 searchLocation={searchLocation}
                 languagesName={languagesName}
+                onSavePress={(params) => {
+                  patchRegisterRefereeDetails(params, authContext).then((res) => {
+                    const changedata = currentUserData;
+                    changedata.referee_data = res.payload.referee_data;
+                    changedata.gender = res.payload.gender;
+                    changedata.birthday = res.payload.birthday;
+                    setCurrentUserData(changedata);
+                  }).catch((error) => {
+                    console.log('error coming', error)
+                    Alert.alert(strings.alertmessagetitle, error.message)
+                  })
+                }}
               />
             </SafeAreaView>
           </Modal>
@@ -2123,20 +2174,20 @@ export default function HomeScreen({ navigation, route }) {
                 />
               </View>
               <ScheduleTabView
-                firstTabTitle={`Completed (${recentMatchData.length})`}
-                secondTabTitle={`Upcoming (${upcomingMatchData.length})`}
+                firstTabTitle={`Completed (${refereeRecentMatch.length})`}
+                secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
                 indexCounter={scoreboardTabNumber}
                 eventPrivacyContianer={{ width: wp('70%') }}
                 onFirstTabPress={() => setScroboardTabNumber(0)}
                 onSecondTabPress={() => setScroboardTabNumber(1)}
               />
               {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
-                sportsData={recentMatchData}
+                sportsData={refereeRecentMatch}
                 showEventNumbers={true}
                 showAssistReferee={true}
               />}
               {scoreboardTabNumber === 1 && <UpcomingMatchScreen
-                sportsData={upcomingMatchData}
+                sportsData={refereeUpcomingMatch}
                 showEventNumbers={true}
               />}
             </SafeAreaView>
@@ -2226,7 +2277,7 @@ export default function HomeScreen({ navigation, route }) {
                     }
                   />
                 </View>
-                <View>
+                <ScrollView>
                   <ReviewRecentMatch
                     eventColor={colors.yellowColor}
                     startDate1={'Sep'}
@@ -2242,7 +2293,12 @@ export default function HomeScreen({ navigation, route }) {
                     firstTeamPoint={3}
                     secondTeamPoint={1}
                   />
-                </View>
+                  <RefereeReviewerList
+                    navigation={navigation}
+                    postData={postData}
+                    userID={userID}
+                  />
+                </ScrollView>
               </SafeAreaView>
             </Modal>
           </Modal>
