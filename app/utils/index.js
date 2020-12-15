@@ -239,3 +239,5 @@ export const getRegionFromMarkers = (markers, delta = 0.025, offset = 2.5) => {
     latitude, longitude, latitudeDelta: latDelta, longitudeDelta: lngDelta,
   };
 }
+
+export const round = (value, decimals) => value.toFixed(decimals)

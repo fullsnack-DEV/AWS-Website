@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View, Text, StyleSheet,
 } from 'react-native';
@@ -7,12 +7,10 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import strings from '../../Constants/String';
 import TCThinDivider from '../TCThinDivider';
 
 export default function MatchFeesCard({ senderOrReceiver = 'sender', challengeObj }) {
-  useEffect(() => {
-    console.log('Challenge Obj:', challengeObj);
-  }, [])
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
@@ -20,30 +18,55 @@ export default function MatchFeesCard({ senderOrReceiver = 'sender', challengeOb
     const hours = Math.floor(delta / 3600) % 24;
     delta -= hours * 3600;
 
-    console.log('HOURS::', hours);
     const minutes = Math.floor(delta / 60) % 60;
     delta -= minutes * 60;
 
-    return `${hours} hours ${minutes} minutes`;
+    let time = ''
+
+    if (hours > 0) {
+      if (hours > 1) {
+        time = `${hours} hours `
+      } else {
+        time = `${hours} hour `
+      }
+    }
+
+    if (minutes > 0) {
+      if (minutes > 1) {
+        time = `${time}${minutes} minutes`
+      } else {
+        time = `${time}${minutes} minute`
+      }
+    }
+
+    return time;
   };
 
   return (
     <View style={styles.backgroundView}>
       {challengeObj && <View>
         <View style={styles.feesRow}>
-          <Text style={styles.matchServiceFeeText}>Match fee <Text style={styles.smallFeeText}>${challengeObj.hourly_game_fee} {challengeObj.currency_type || 'CAD'} x {getTimeDifferent(challengeObj.start_datetime * 1000, challengeObj.end_datetime * 1000)}</Text></Text>
-          <Text style={styles.matchServiceFeeText}>${challengeObj.total_game_charges} {challengeObj.currency_type || 'CAD'}</Text>
+          <Text style={styles.matchServiceFeeText}>{strings.matchfee}<Text style={styles.smallFeeText}> ${challengeObj.hourly_game_fee} {challengeObj.currency_type || 'CAD'} x {getTimeDifferent(challengeObj.start_datetime, challengeObj.end_datetime)}</Text></Text>
+          <Text style={styles.matchServiceFeeText}>${challengeObj.total_game_charges?.toFixed(2)} {challengeObj.currency_type || 'CAD'}</Text>
         </View>
         <View style={styles.feesRow}>
-          <Text style={styles.matchServiceFeeText}>Service fee</Text>
-          <Text style={styles.matchServiceFeeText}>${senderOrReceiver === 'sender' ? challengeObj.service_fee1_charges : challengeObj.service_fee2_charges} {challengeObj.currency_type || 'CAD'}</Text>
+          <Text style={styles.matchServiceFeeText}>
+            Service fee
+          </Text>
+          <Text style={styles.matchServiceFeeText}>
+            ${senderOrReceiver === 'sender' ? challengeObj.service_fee1_charges?.toFixed(2) : challengeObj.service_fee2_charges?.toFixed(2)} {challengeObj.currency_type || 'CAD'}
+          </Text>
         </View>
 
         <View style={{ flex: 1 }}/>
         <TCThinDivider width={'94%'}/>
         <View style={[styles.feesRow, { marginBottom: 5 }]}>
-          <Text style={styles.feeStructureText}>{senderOrReceiver === 'sender' ? 'Total payment' : 'Total earning'}</Text>
-          <Text style={styles.feeStructureText}>${senderOrReceiver === 'sender' ? challengeObj.total_charges : challengeObj.total_payout} {challengeObj.currency_type || 'CAD'}</Text>
+          <Text style={styles.feeStructureText}>
+            {senderOrReceiver === 'sender' ? 'Total payment' : 'Total earning'}
+          </Text>
+          <Text style={styles.feeStructureText}>
+            ${senderOrReceiver === 'sender' ? challengeObj.total_charges?.toFixed(2) : challengeObj.total_payout?.toFixed(2)} {challengeObj.currency_type || 'CAD'}
+          </Text>
         </View>
       </View>}
     </View>

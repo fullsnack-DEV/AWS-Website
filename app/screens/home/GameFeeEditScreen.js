@@ -1,6 +1,7 @@
 import React, {
   useState,
   useLayoutEffect,
+  useContext,
 } from 'react';
 
 import {
@@ -16,13 +17,14 @@ import TCLabel from '../../components/TCLabel';
 import { patchGroup } from '../../api/Groups';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
-import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCPicker from '../../components/TCPicker';
+import AuthContext from '../../auth/context';
 
 export default function GameFeeEditScreen({ navigation, route }) {
   // For activity indicator
+  const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [gameFee, setGameFee] = useState(route.params.groupDetails.game_fee);
   const [currency, setCurrency] = useState(route.params.groupDetails.currency_type);
@@ -40,26 +42,28 @@ export default function GameFeeEditScreen({ navigation, route }) {
         } }>{strings.done}</Text>
       ),
     });
-  }, [navigation, gameFee]);
+  }, [navigation, gameFee, currency]);
 
   const onSaveButtonClicked = () => {
     setloading(true);
     const groupProfile = {};
     groupProfile.game_fee = gameFee;
     groupProfile.currency_type = currency;
-    patchGroup(route.params.groupDetails.group_id, groupProfile).then(async (response) => {
-      setloading(false);
-      if (response && response.status === true) {
-        const entity = await Utility.getStorage('loggedInEntity')
+    patchGroup(route.params.groupDetails.group_id, groupProfile, authContext)
+      .then((response) => {
+        setloading(false);
+        const entity = authContext.entity
         entity.obj = response.payload;
-        Utility.setStorage('loggedInEntity', entity);
+        authContext.setEntity({ ...entity })
         navigation.goBack();
-      } else {
+      })
+      .catch((e) => {
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, 'Something went wrong');
-        }, 0.1)
-      }
-    })
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.3)
+      }).finally(() => {
+        setloading(false);
+      })
   }
 
   return (
@@ -78,28 +82,33 @@ export default function GameFeeEditScreen({ navigation, route }) {
               color: colors.userPostTimeColor,
             }}>{strings.perhoursinbracket}</Text>
           </View>
-          <View style={{ flexDirection: 'row' }}>
-            <TCTextField
-              style={{ width: '50%', marginRight: 5 }}
-              placeholder={strings.enterBioPlaceholder}
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            <View style={{ width: '70%' }}>
+              <TCTextField
+              style={{ marginRight: 5 }}
+              placeholder={strings.entergamefee}
               onChangeText={(text) => setGameFee(text)}
               multiline
               maxLength={5}
               keyboardType={'decimal-pad'}
               value={gameFee}
               />
-            <TCPicker
-              dataSource={[
-                { label: 'CAD', value: 'CAD' },
-                { label: 'USD', value: 'USD' },
-              ]}
-              placeholder={strings.currencyplacholder}
-              value={currency}
-              onValueChange={(value) => {
-                console.log('value', value)
-                setCurrency(value);
-              }}
-            />
+            </View>
+            <View style={{ width: '30%' }}>
+              <TCPicker
+                dataSource={[
+                  { label: 'CAD', value: 'CAD' },
+                  { label: 'USD', value: 'USD' },
+                ]}
+                placeholder={strings.currencyplacholder}
+                value={currency}
+                onValueChange={(value) => {
+                  console.log('value', value)
+                  setCurrency(value);
+                }}
+              />
+            </View>
+
           </View>
         </View>
       </ScrollView>

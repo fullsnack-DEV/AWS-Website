@@ -15,6 +15,7 @@ import TCLabel from '../../../components/TCLabel';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import * as Utility from '../../../utils';
 
 let entity = {};
 let body = {};
@@ -22,33 +23,26 @@ export default function CreateChallengeForm5({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
-  // const [paymentInfo, setPaymentInfo] = useState();
-  // const [homeTeam, setHomeTeam] = useState();
-  // const [awayTeam, setAwayTeam] = useState();
 
   useEffect(() => {
     getAuthEntity();
     getFeeDetail();
   }, [isFocused]);
+
   const getAuthEntity = async () => {
     entity = authContext.entity;
   };
+
   const getFeeDetail = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
       if (route.params.teamData[0].group_id === entity.uid) {
-        // setHomeTeam(route.params.teamData[0])
-        // setAwayTeam(route.params.teamData[1])
-
-        body.start_datetime = route.params.body.start_datetime / 1000;
-        body.end_datetime = route.params.body.end_datetime / 1000;
+        body = { ...route.params.body };
+        body.start_datetime /= 1000
+        body.end_datetime /= 1000
         body.manual_fee = false;
-
-        console.log('Body data of fee:', body);
         setloading(true);
         getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, body, authContext)
           .then((response) => {
-            setloading(false);
-            console.log('fee data :', response.payload);
             if (route && route.params && route.params.body) {
               body = route.params.body;
               body.total_payout = response.payload.total_payout;
@@ -56,11 +50,9 @@ export default function CreateChallengeForm5({ navigation, route }) {
               body.service_fee2_charges = response.payload.total_service_fee2;
               body.total_charges = response.payload.total_amount;
               body.total_game_charges = response.payload.total_game_fee;
-              body.hourly_game_fee = 0;
-              body.currency_type = 'CAD';
               body.payment_method_type = 'card';
             }
-            console.log('fee BODY :', body);
+            setloading(false);
             // setPaymentInfo(response.payload)
           })
           .catch((e) => {
@@ -75,15 +67,15 @@ export default function CreateChallengeForm5({ navigation, route }) {
 
   const createChallengeTeam = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
-      body = route.params.body;
+      body = { ...route.params.body };
+      body.start_datetime /= 1000
+      body.end_datetime /= 1000
       body.userChallenge = false;
-      body.total_charges = 0.0;
-      body.total_game_charges = 0.0;
-      body.total_payout = 0.0;
-      body.service_fee1_charges = 0.0;
-      body.service_fee2_charges = 0.0;
       body.manual_fee = false;
-      body.currency_type = 'CAD';
+      if (route.params.paymentMethod) {
+        body.source = route.params.paymentMethod.id
+      }
+
       body.payment_method_type = 'card';
 
       const home_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
@@ -95,12 +87,8 @@ export default function CreateChallengeForm5({ navigation, route }) {
       if (route.params.teamData[0].group_id) {
         body.userChallenge = false;
       } else {
-        // body.home_user = home_id;
-        // body.away_user = away_id;
         body.userChallenge = true;
       }
-
-      console.log('BODY OF CREATE CHALLENGE API:', body);
       setloading(true);
 
       let entityID;
@@ -120,15 +108,15 @@ export default function CreateChallengeForm5({ navigation, route }) {
           entityID = route.params.teamData[0].user_id
         }
       }
+
       createChallenge(
         entityID,
         type,
         body,
         authContext,
       )
-        .then((response) => {
+        .then(() => {
           setloading(false);
-          console.log('RESPONSE OF CREATE CHALLENGE:', response);
           navigation.navigate('ChallengeSentScreen', {
             groupObj: route.params.teamData[0].group_id === entity.uid
               ? route.params.teamData[1]
@@ -164,8 +152,14 @@ export default function CreateChallengeForm5({ navigation, route }) {
         <TCLabel title={'Payment Method'} />
         <View>
           <TCTouchableLabel
-            title={'+ Add a payment method'}
+            title={route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+            subTitle={route.params.paymentMethod?.card.last4 }
             showNextArrow={true}
+            onPress={() => {
+              navigation.navigate('PaymentMethodsScreen', {
+                comeFrom: 'CreateChallengeForm5',
+              })
+            }}
           />
         </View>
       </View>

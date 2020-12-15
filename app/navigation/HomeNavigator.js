@@ -46,6 +46,7 @@ import ClubCreatedScreen from '../screens/account/createGroup/createClub/ClubCre
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import AddCardScreen from '../screens/account/payment/AddCardScreen';
+import PayoutMethodScreen from '../screens/account/payment/PayoutMethodScreen';
 
 // import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 
@@ -1414,6 +1415,23 @@ const HomeNavigator = () => (
         component={ PaymentMethodsScreen }
         options={ {
           title: 'Payment Methods',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
+        name="PayoutMethodScreen"
+        component={ PayoutMethodScreen }
+        options={ {
+          title: 'Payout Method',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

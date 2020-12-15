@@ -68,6 +68,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
   useLayoutEffect(() => {
 
   }, [venueTitle])
+
   useEffect(() => {
     entity = authContext.entity
 
@@ -134,9 +135,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
       console.log('LAT LONG::', JSON.stringify(response));
     });
   };
+
   const swapTeam = () => {
     setteams([teams[1], teams[0]]);
   };
+
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (from, to) => {
     let delta = Math.abs(
@@ -155,6 +158,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
 
     return `${hours} hours ${minutes} minutes`;
   };
+
   const tConvert = (timeString) => {
     const timeString12hr = new Date(
       `1970-01-01T${timeString}Z`,
@@ -169,12 +173,14 @@ export default function CreateChallengeForm1({ navigation, route }) {
     );
     return timeString12hr;
   };
+
   const time_format = (d) => {
     const hours = format_two_digits(d.getHours());
     const minutes = format_two_digits(d.getMinutes());
     const seconds = format_two_digits(d.getSeconds());
     return tConvert(`${hours}:${minutes}:${seconds}`);
   }
+
   const format_two_digits = (n) => (n < 10 ? `0${n}` : n)
 
   const checkValidation = () => {
@@ -199,6 +205,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
     }
     bodyParams.home_team = teams[0]
     bodyParams.away_team = teams[1]
+    bodyParams.hourly_game_fee = route.params.groupObj.game_fee
+    bodyParams.currency_type = route.params.groupObj.currency_type
     bodyParams.venue = venueData
     bodyParams.sport = teamData[0].sport || teamData[1].sport
     bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`

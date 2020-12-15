@@ -113,6 +113,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
       marginLeft={30}
     />
   );
+
   return (
     <TCKeyboardView>
       <View style={styles.formSteps}>
