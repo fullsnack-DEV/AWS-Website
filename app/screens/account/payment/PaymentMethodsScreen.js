@@ -27,7 +27,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   const [cards, setCards] = useState([])
 
   useEffect(() => {
-    getPaymentMethods()
+    if (isFocused) { getPaymentMethods() }
   }, [isFocused])
 
   const getPaymentMethods = async () => {

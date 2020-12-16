@@ -9,44 +9,14 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import strings from '../../Constants/String';
 import TCThinDivider from '../TCThinDivider';
+import { getShortTimeDifForReservation } from '../../utils/Time'
 
 export default function MatchFeesCard({ senderOrReceiver = 'sender', challengeObj }) {
-  // eslint-disable-next-line consistent-return
-  const getTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
-
-    const hours = Math.floor(delta / 3600) % 24;
-    delta -= hours * 3600;
-
-    const minutes = Math.floor(delta / 60) % 60;
-    delta -= minutes * 60;
-
-    let time = ''
-
-    if (hours > 0) {
-      if (hours > 1) {
-        time = `${hours} hours `
-      } else {
-        time = `${hours} hour `
-      }
-    }
-
-    if (minutes > 0) {
-      if (minutes > 1) {
-        time = `${time}${minutes} minutes`
-      } else {
-        time = `${time}${minutes} minute`
-      }
-    }
-
-    return time;
-  };
-
   return (
     <View style={styles.backgroundView}>
       {challengeObj && <View>
         <View style={styles.feesRow}>
-          <Text style={styles.matchServiceFeeText}>{strings.matchfee}<Text style={styles.smallFeeText}> ${challengeObj.hourly_game_fee} {challengeObj.currency_type || 'CAD'} x {getTimeDifferent(challengeObj.start_datetime, challengeObj.end_datetime)}</Text></Text>
+          <Text style={styles.matchServiceFeeText}>{strings.matchfee}<Text style={styles.smallFeeText}> ${challengeObj.hourly_game_fee} {challengeObj.currency_type || 'CAD'} x {getShortTimeDifForReservation(challengeObj.start_datetime, challengeObj.end_datetime)}</Text></Text>
           <Text style={styles.matchServiceFeeText}>${challengeObj.total_game_charges?.toFixed(2)} {challengeObj.currency_type || 'CAD'}</Text>
         </View>
         <View style={styles.feesRow}>
