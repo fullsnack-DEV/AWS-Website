@@ -24,6 +24,7 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import AuthContext from '../../../auth/context'
+import { getTimeDifForReservation } from '../../../utils/Time';
 
 let entity = {};
 let bodyParams = {};
@@ -138,25 +139,6 @@ export default function CreateChallengeForm1({ navigation, route }) {
 
   const swapTeam = () => {
     setteams([teams[1], teams[0]]);
-  };
-
-  // eslint-disable-next-line consistent-return
-  const getTimeDifferent = (from, to) => {
-    let delta = Math.abs(
-      new Date(from).getTime()
-            - new Date(to).getTime(),
-    ) / 1000;
-
-    const days = Math.floor(delta / 86400);
-    delta -= days * 86400;
-
-    const hours = Math.floor(delta / 3600) % 24;
-    delta -= hours * 3600;
-
-    const minutes = Math.floor(delta / 60) % 60;
-    delta -= minutes * 60;
-
-    return `${hours} hours ${minutes} minutes`;
   };
 
   const tConvert = (timeString) => {
@@ -304,7 +286,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   style={styles.textInput}
                   value={
                     (bodyParams && bodyParams.start_datetime && bodyParams.end_datetime
-                      && `${getTimeDifferent(bodyParams.start_datetime, bodyParams.end_datetime)}\n${
+                      && `${getTimeDifForReservation(bodyParams.start_datetime, bodyParams.end_datetime)}\n${
                         monthNames[new Date(bodyParams.start_datetime).getMonth()]
                       } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
                         bodyParams.start_datetime,

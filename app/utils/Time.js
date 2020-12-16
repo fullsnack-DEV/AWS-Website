@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const toShortTimeFromString = (timeToconvert) => {
+export const toShortTimeFromString = (timeToconvert) => {
   const minute = moment(new Date()).diff(timeToconvert, 'minute');
   const hour = moment(new Date()).diff(timeToconvert, 'hour');
   const day = moment(new Date()).diff(timeToconvert, 'day');
@@ -24,4 +24,56 @@ const toShortTimeFromString = (timeToconvert) => {
   return 'Just now';
 }
 
-export default toShortTimeFromString
+export const getShortTimeDifForReservation = (sDate, eDate) => {
+  let delta = Math.abs(parseFloat((sDate / 1000).toFixed(0)) - parseFloat((eDate / 1000).toFixed(0)));
+
+  const hours = Math.floor(delta / 3600) % 24;
+  delta -= hours * 3600;
+
+  const minutes = Math.floor(delta / 60) % 60;
+  delta -= minutes * 60;
+
+  let time = ''
+
+  if (hours > 0) {
+    if (minutes > 0) {
+      time = `${hours}:${minutes}h`
+    } else {
+      time = `${hours}h`
+    }
+  } else {
+    time = `${minutes}m`
+  }
+
+  return time;
+};
+
+export const getTimeDifForReservation = (sDate, eDate) => {
+  let delta = Math.abs(parseFloat((sDate / 1000).toFixed(0)) - parseFloat((eDate / 1000).toFixed(0)));
+
+  const hours = Math.floor(delta / 3600) % 24;
+  delta -= hours * 3600;
+
+  const minutes = Math.floor(delta / 60) % 60;
+  delta -= minutes * 60;
+
+  let time = ''
+
+  if (hours > 0) {
+    if (hours === 1) {
+      time = `${hours} hour `
+    } else {
+      time = `${hours} hours `
+    }
+  }
+
+  if (minutes > 0) {
+    if (minutes === 1) {
+      time = `${time}${minutes} minute`
+    } else {
+      time = `${time}${minutes} minutes`
+    }
+  }
+
+  return time;
+};

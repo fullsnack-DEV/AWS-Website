@@ -1,6 +1,6 @@
 import moment from 'moment';
 import strings from '../../Constants/String'
-import toShortTimeFromString from '../../utils/Time';
+import { toShortTimeFromString } from '../../utils/Time';
 import NotificationType from '../../Constants/NotificationType';
 
 const offsetFrom = (expiryDate) => {

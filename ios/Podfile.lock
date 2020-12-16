@@ -785,8 +785,8 @@ SPEC CHECKSUMS:
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
   react-native-fbsdk: 00c15d138bba6d4efa628670886fc58cec858c19
-  react-native-geolocation: c956aeb136625c23e0dce0467664af2c437888c9
-  react-native-image-resizer: 354b09df56858289f386dfbd804e318155c14c8f
+  react-native-geolocation: cbd9d6bd06bac411eed2671810f454d4908484a8
+  react-native-image-resizer: af7fa48fe7913b7b96fa079d16dd97ada31d6833
   react-native-image-sequence: b4cc7ce0ee9eeec7574b005e06059b3f7f818d96
   react-native-maps: f4b89da81626ad7f151a8bfcb79733295d31ce5c
   react-native-netinfo: 77d133105df525d4a11f10fcaa8d0b8883ea6429
@@ -805,11 +805,11 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
-  RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
-  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
+  ReactNativeART: f003b07dfa7098aa419ed95b69560923440b1eee
+  RNCAsyncStorage: cb9a623793918c6699586281f0b51cbc38f046f9
+  RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
-  RNDateTimePicker: 8eba76de1afd556bc00c874f4d0c0616e30e32f1
+  RNDateTimePicker: aab869a517ecf3095910be81093e3d9b27cd82ed
   RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 804b98033f45c3a3e35b56de8c894f85ef5e4388
   RNFBAuth: 8c4de7a59b563bd399993855aa61183e1f1be4bf
@@ -825,11 +825,11 @@ SPEC CHECKSUMS:
   SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   Stripe: 92f1c73a9dbd3c54277ed06a1fea6e08f20414c6
-  tipsi-stripe: b0655ee97dfd4b865d178d81b53ff54b95348701
+  tipsi-stripe: 3f978858a4e88536fea8addea820192fe21ff811
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 2405924c491fad8d8cab5f161a9fe4cb9de9383d
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.8.4

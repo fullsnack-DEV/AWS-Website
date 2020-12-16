@@ -54,23 +54,46 @@ function NotificationsListScreen({ navigation }) {
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(true);
-  const navigateFlatList = (item) => {
-    console.log('cell selected', item.activities[0].object)
-    const a = JSON.parse(item.activities[0].object)?.challengeObject?.challenge_id || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id
-    setloading(true)
-    Utils.getChallengeDetail(a, authContext).then((obj) => {
-      console.log('kkkk:', obj.challengeObj);
-      console.log('Screen name kkkk:', obj.screenName);
-      navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj || obj.challengeObj[0] })
-      setloading(false)
-    })
-    // const { Obj } = Utils.getChallengeDetail(a, authContext)
-    // console.log('kkkk:', Obj);
-
-    // console.log('Response:', challengeObj);
-    //   console.log('Screen Name:', screenName);
-    // navigation.navigate('AcceptDeclineChallengeScreen', { challengeID: JSON.parse(item.activities[0].object).challengeObject.challenge_id })
+  const onDetailPress = (item) => {
+    if (activeScreen) {
+      const a = JSON.parse(item.activities[0].object)?.challengeObject?.challenge_id || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id
+      setloading(true)
+      Utils.getChallengeDetail(a, authContext).then((obj) => {
+        console.log('kkkk:', obj.challengeObj);
+        console.log('Screen name kkkk:', obj.screenName);
+        navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj || obj.challengeObj[0] })
+        setloading(false)
+      })
+    } else {
+      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
+      Alert.alert(`Do you want to switch account to ${name}?`, '', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+      ],
+      { cancelable: true })
+    }
   };
+
+  const onMessagePress = (item) => {
+    if (activeScreen) {
+      console.log('item', item)
+    } else {
+      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
+      Alert.alert(`Do you want to switch account to ${name}?`, '', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+      ],
+      { cancelable: true })
+    }
+  }
 
   const onDelete = ({ item }) => {
     if (activeScreen) {
@@ -97,8 +120,8 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const onAccept = (requestId) => {
-    setloading(true)
     if (activeScreen) {
+      setloading(true)
       acceptRequest(requestId, authContext).then(() => {
         callNotificationList();
       }).catch((error) => {
@@ -159,16 +182,16 @@ function NotificationsListScreen({ navigation }) {
             selectedEntity={selectedEntity}
             onAccept={() => onAccept(item.activities[0].id)}
             onDecline={() => onDecline(item.activities[0].id)}
-            onPress={navigateFlatList}
+            onPress={() => {}}
           />
       )}
 
       {!isInvite(item.activities[0].verb) && (<PRNotificationDetailMessageItem
           item={item}
           selectedEntity={selectedEntity}
-          onDetailPress={() => navigateFlatList(item)}
-          onMessagePress={navigateFlatList}
-          onPress={navigateFlatList}
+          onDetailPress={() => onDetailPress(item)}
+          onMessagePress={() => onMessagePress(item)}
+          onPress={() => {}}
         />
       )}
     </AppleStyleSwipeableRow>
@@ -178,9 +201,9 @@ function NotificationsListScreen({ navigation }) {
     <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
       <NotificationItem
           data={item}
-          cta1={navigateFlatList}
-          cta2={navigateFlatList}
-          card={navigateFlatList}
+          cta1={() => {}}
+          cta2={() => {}}
+          card={() => {}}
         />
     </AppleStyleSwipeableRow>
   )
@@ -220,8 +243,6 @@ function NotificationsListScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    console.log('useEffect', notifAPI)
-
     if (notifAPI !== 1) {
       getUnreadCount(authContext).then((response) => {
         if (response.status === true) {
@@ -311,8 +332,6 @@ function NotificationsListScreen({ navigation }) {
       setActiveScreen(false);
     }
   }
-
-  console.log('render notifications screen', mainNotificationsList)
 
   return (
     <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>

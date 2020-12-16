@@ -18,15 +18,17 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import * as Utility from '../../../utils';
 
 let entity = {};
-let body = {};
 export default function CreateChallengeForm5({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
+  const [estimationFee, setEstimationFee] = useState();
 
   useEffect(() => {
-    getAuthEntity();
-    getFeeDetail();
+    if (isFocused) {
+      getAuthEntity();
+      getFeeDetail();
+    }
   }, [isFocused]);
 
   const getAuthEntity = async () => {
@@ -36,24 +38,23 @@ export default function CreateChallengeForm5({ navigation, route }) {
   const getFeeDetail = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
       if (route.params.teamData[0].group_id === entity.uid) {
-        body = { ...route.params.body };
-        body.start_datetime /= 1000
-        body.end_datetime /= 1000
-        body.manual_fee = false;
+        const feeBody = { ...route.params.body };
+        feeBody.start_datetime = parseFloat((feeBody.start_datetime / 1000).toFixed(0))
+        feeBody.end_datetime = parseFloat((feeBody.end_datetime / 1000).toFixed(0))
+        feeBody.manual_fee = false;
         setloading(true);
-        getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, body, authContext)
+        getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, feeBody, authContext)
           .then((response) => {
             if (route && route.params && route.params.body) {
-              body = route.params.body;
+              const body = route.params.body;
               body.total_payout = response.payload.total_payout;
               body.service_fee1_charges = response.payload.total_service_fee1;
               body.service_fee2_charges = response.payload.total_service_fee2;
               body.total_charges = response.payload.total_amount;
               body.total_game_charges = response.payload.total_game_fee;
-              body.payment_method_type = 'card';
+              setEstimationFee({ ...body });
             }
             setloading(false);
-            // setPaymentInfo(response.payload)
           })
           .catch((e) => {
             setloading(false);
@@ -67,27 +68,27 @@ export default function CreateChallengeForm5({ navigation, route }) {
 
   const createChallengeTeam = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
-      body = { ...route.params.body };
-      body.start_datetime /= 1000
-      body.end_datetime /= 1000
-      body.userChallenge = false;
-      body.manual_fee = false;
+      const challengeBody = { ...route.params.body };
+      challengeBody.start_datetime = parseFloat((challengeBody.start_datetime / 1000).toFixed(0))
+      challengeBody.end_datetime = parseFloat((challengeBody.end_datetime / 1000).toFixed(0))
+      challengeBody.userChallenge = false;
+      challengeBody.manual_fee = false;
       if (route.params.paymentMethod) {
-        body.source = route.params.paymentMethod.id
+        challengeBody.source = route.params.paymentMethod.id
       }
 
-      body.payment_method_type = 'card';
+      challengeBody.payment_method_type = 'card';
 
       const home_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
       const away_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
-      delete body.home_team;
-      delete body.away_team;
-      body.home_team = home_id;
-      body.away_team = away_id;
+      delete challengeBody.home_team;
+      delete challengeBody.away_team;
+      challengeBody.home_team = home_id;
+      challengeBody.away_team = away_id;
       if (route.params.teamData[0].group_id) {
-        body.userChallenge = false;
+        challengeBody.userChallenge = false;
       } else {
-        body.userChallenge = true;
+        challengeBody.userChallenge = true;
       }
       setloading(true);
 
@@ -108,11 +109,10 @@ export default function CreateChallengeForm5({ navigation, route }) {
           entityID = route.params.teamData[0].user_id
         }
       }
-
       createChallenge(
         entityID,
         type,
-        body,
+        challengeBody,
         authContext,
       )
         .then(() => {
@@ -127,7 +127,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 0.3);
         });
     }
   };
@@ -145,7 +145,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
       <View style={styles.viewMarginStyle}>
         <TCLabel title={'Payment'} />
         {/* paymentData={paymentInfo} homeTeam={homeTeam && homeTeam} awayTeam={awayTeam && awayTeam} */}
-        <MatchFeesCard challengeObj={body} senderOrReceiver={'sender'} />
+        <MatchFeesCard challengeObj={estimationFee} senderOrReceiver={'sender'} />
       </View>
 
       <View style={styles.viewMarginStyle}>
