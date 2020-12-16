@@ -78,11 +78,9 @@ const styles = StyleSheet.create({
   entityNameTextStyle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
-    fontSize: 16,
+    fontSize: 14,
     marginLeft: 7,
     width: 72,
-    // numberOfLines: 2,
-    // ellipsizeMode: 'trail',
   },
   entityNameTextStyleActive: {
     color: colors.kHexColorFF8A01,

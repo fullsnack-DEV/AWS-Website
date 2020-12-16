@@ -33,11 +33,11 @@ function PRNotificationDetailMessageItem({
             />
           <View style={styles.textContentStyle}>
             <Text style={styles.textContainerStyle}>
-              {dataDictionary.preText && <Text>{`${dataDictionary.preText}. `}</Text>}
+              {dataDictionary.preText && <Text>{`${dataDictionary.preText}`}</Text>}
               <Text style={styles.boldTextStyle}>
-                {`${dataDictionary.firstTitle} `}
+                {dataDictionary.preText ? `${dataDictionary.firstTitle}` : `${dataDictionary.firstTitle} `}
               </Text>
-              <Text>{`${dataDictionary.text}. `}</Text>
+              <Text>{`${dataDictionary.text} `}</Text>
               {dataDictionary.doneByText && <Text style={styles.timeStyle}>{dataDictionary.doneByText} </Text>}
               {dataDictionary.doneByTitle && <Text style={styles.smallBoldStyle}>{dataDictionary.doneByTitle} </Text>}
               <Text style={styles.timeStyle}>{dataDictionary.notificationTime}</Text>

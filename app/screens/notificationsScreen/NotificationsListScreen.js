@@ -197,8 +197,8 @@ function NotificationsListScreen({ navigation }) {
     return null
   }
   const activeTab = async (index) => {
-    setCurrentTab(index);
     checkActiveScreen(groupList[index])
+    setCurrentTab(index);
     refContainer.current.scrollToIndex({
       animated: true,
       index,
@@ -220,12 +220,14 @@ function NotificationsListScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
+    console.log('useEffect', notifAPI)
+
     if (notifAPI !== 1) {
       getUnreadCount(authContext).then((response) => {
         if (response.status === true) {
           const { teams } = response.payload;
           const { clubs } = response.payload;
-          const groups = [authContext.entity.auth, ...clubs, ...teams]
+          const groups = [authContext.entity.auth.user, ...clubs, ...teams]
           setGroupList(groups);
           setNotifAPI(1);
           setCurrentTab(0);
@@ -241,11 +243,9 @@ function NotificationsListScreen({ navigation }) {
     }
   }, [currentTab, isFocused]);
 
-  useEffect(() => {
-  }, [mainNotificationsList]);
-
   const callNotificationList = () => {
     setloading(true)
+    setMainNotificationsList([]);
     const entity = groupList[currentTab];
     setSelectedEntity({ ...entity });
     const params = {
@@ -312,6 +312,8 @@ function NotificationsListScreen({ navigation }) {
     }
   }
 
+  console.log('render notifications screen', mainNotificationsList)
+
   return (
     <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
       <View>
@@ -330,7 +332,7 @@ function NotificationsListScreen({ navigation }) {
         <SectionList
           ItemSeparatorComponent={itemSeparator}
           sections={mainNotificationsList}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.create_at}
           renderItem={RenderSections}
           renderSectionHeader={({ section: { section } }) => (
             <View style={{ flex: 1, flexDirection: 'column-reverse' }}>

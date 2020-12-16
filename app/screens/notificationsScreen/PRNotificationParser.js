@@ -80,6 +80,8 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
         }
       }
     }
+    finalString.doneByText = strings.doneByText
+    finalString.doneByTitle = activity.actor.data.full_name || ''
   } else {
     if (team.user_id === loggedInEntity.auth.user_id) {
       team = challengeObject.home_team;
@@ -104,8 +106,6 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
   finalString.text = notificationObject.text
   finalString.entityType = 'team'
   finalString.imgName = team.thumbnail
-  finalString.doneByText = strings.doneByText
-  finalString.doneByTitle = activity.actor.data.full_name || ''
 
   if (data && data.created_at) {
     finalString.notificationTime = toShortTimeFromString(`${data.created_at}+0000`)
@@ -212,7 +212,16 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
     finalString.firstTitle = `${team.first_name} ${team.last_name}`
   }
 
+  finalString.firstTitle = notificationObject.team_name
   finalString.text = notificationObject.text
+  const parts = notificationObject.text.split(notificationObject.team_name)
+  if (parts[0]) {
+    finalString.preText = parts[0]
+  }
+  if (parts[1]) {
+    finalString.text = parts[1]
+  }
+
   finalString.entityType = 'team'
   finalString.imgName = team.thumbnail
 
