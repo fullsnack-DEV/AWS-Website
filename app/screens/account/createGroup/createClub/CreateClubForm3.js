@@ -71,10 +71,12 @@ export default function CreateClubForm3({ navigation, route }) {
       setloading(false)
       navigation.navigate('ClubCreatedScreen', {
         groupName: response.payload.group_name,
-      }).catch((error) => {
-        setloading(false)
-        Alert.alert(error)
-      })
+      }).catch((e) => {
+        setTimeout(() => {
+          setloading(false)
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
     });
   };
 

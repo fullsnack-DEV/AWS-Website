@@ -77,8 +77,10 @@ export default function EditMemberInfoScreen({ navigation, route }) {
         editMemberInfo(memberInfo.group.group_id, memberInfo.user_id, bodyParams)
       })
         .catch((e) => {
-          Alert.alert('Towns Cup', e.messages)
           setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.7);
         });
     } else {
       bodyParams = {
@@ -93,10 +95,12 @@ export default function EditMemberInfoScreen({ navigation, route }) {
       setloading(false)
       navigation.goBack()
     })
-      .catch((error) => {
-        setloading(false)
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
   const checkValidation = () => {
     if (memberInfo.first_name === '') {

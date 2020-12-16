@@ -100,8 +100,10 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
         })
         setMarked(markedDates);
       })
-      .catch((error) => {
-        Alert.alert(error.messages);
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
 

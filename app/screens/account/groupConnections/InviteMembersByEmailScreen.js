@@ -35,7 +35,7 @@ export default function InviteMembersByEmailScreen({ navigation }) {
     });
   }, [navigation, email]);
 
-  const sendInvitation = async () => {
+  const sendInvitation = () => {
     const entity = authContext.entity
 
     const emails = email.map((i) => i.email);
@@ -53,7 +53,9 @@ export default function InviteMembersByEmailScreen({ navigation }) {
       navigation.navigate('InvitationSentScreen');
     })
       .catch((e) => {
-        Alert.alert('', e.messages)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   }
 

@@ -134,8 +134,10 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
       }
     })
       .catch((e) => {
-        setloading(false)
-        Alert.alert('', e.messages)
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   }
   const handleDonePress = ({ date }) => {

@@ -18,6 +18,7 @@ import AuthContext from '../../../../auth/context'
 import { getTeamsOfClub } from '../../../../api/Groups';
 import TCGroupNameBadge from '../../../../components/TCGroupNameBadge';
 import TCThinDivider from '../../../../components/TCThinDivider';
+import strings from '../../../../Constants/String';
 
 let entity = {};
 export default function CreateMemberProfileClubForm2({ navigation, route }) {
@@ -58,9 +59,11 @@ export default function CreateMemberProfileClubForm2({ navigation, route }) {
         e.is_member = false;
       });
       setTeamList(response.payload);
-    }).catch((error) => {
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
   return (
 

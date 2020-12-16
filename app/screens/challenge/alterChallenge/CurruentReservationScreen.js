@@ -84,9 +84,9 @@ export default function CurruentReservationScreen({ route }) {
           homeTeam
           && awayTeam
           && ((item.responsible_team_id === 'none' && 'None')
-            || (item.responsible_team_id === homeTeam.group_id
-              ? homeTeam.group_name
-              : awayTeam.group_name))
+            || (item.responsible_team_id === (homeTeam.group_id ?? homeTeam.user_id)
+              ? homeTeam.group_name || `${homeTeam.first_name} ${homeTeam.last_name}`
+              : awayTeam.group_name || `${awayTeam.first_name} ${awayTeam.last_name}`))
         }
         marginLeft={30}
       />
@@ -99,9 +99,9 @@ export default function CurruentReservationScreen({ route }) {
           homeTeam
           && awayTeam
           && ((item.responsible_team_id === 'none' && 'None')
-            || (item.responsible_team_id === homeTeam.group_id
-              ? homeTeam.group_name
-              : awayTeam.group_name))
+            || (item.responsible_team_id === (homeTeam.group_id ?? awayTeam.user_id)
+              ? homeTeam.group_name || `${homeTeam.first_name} ${homeTeam.last_name}`
+              : awayTeam.group_name || `${awayTeam.first_name} ${awayTeam.last_name}`))
         }
         marginLeft={30}
       />
@@ -157,9 +157,9 @@ export default function CurruentReservationScreen({ route }) {
                     style={styles.teamImage}
                   />
                 <Text style={styles.teamNameText}>
-                  {bodyParams.invited_by === bodyParams.home_team.group_id
-                    ? bodyParams.home_team.group_name
-                    : bodyParams.away_team.group_name}
+                  {bodyParams?.invited_by === (bodyParams?.home_team?.group_id ?? bodyParams?.home_team?.user_id)
+                    ? bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`
+                    : bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
                 </Text>
               </View>
             </View>
@@ -181,9 +181,9 @@ export default function CurruentReservationScreen({ route }) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                     }}>
-                  {bodyParams.invited_by === bodyParams.home_team.group_id
-                    ? bodyParams.away_team.group_name
-                    : bodyParams.home_team.group_name}
+                  {bodyParams.invited_by === (bodyParams.home_team.group_id ?? bodyParams.home_team.user_id)
+                    ? bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`
+                    : bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
                 </Text>
               </View>
             </View>
@@ -201,13 +201,13 @@ export default function CurruentReservationScreen({ route }) {
               </View>
               <TCInfoImageField
                   title={'Home'}
-                  name={bodyParams.home_team.group_name}
+                  name={bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
                   marginLeft={30}
                 />
               <TCThinDivider />
               <TCInfoImageField
                   title={'Away'}
-                  name={bodyParams.away_team.group_name}
+                  name={bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
                   marginLeft={30}
                 />
               <TCThinDivider />

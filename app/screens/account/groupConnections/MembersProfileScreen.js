@@ -91,10 +91,12 @@ export default function MembersProfileScreen({ navigation, route }) {
       setMemberDetail(response.payload);
       setloading(false)
     })
-      .catch((error) => {
-        setloading(false)
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
   const deleteMemberProfile = (groupID, memberID) => {
     setloading(true)
@@ -103,10 +105,12 @@ export default function MembersProfileScreen({ navigation, route }) {
       console.log('PROFILE RESPONSE::', response.payload);
       navigation.goBack()
     })
-      .catch((error) => {
-        setloading(false)
-        Alert.alert(error)
-      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   }
 
   function MemberPhoneNumber() {

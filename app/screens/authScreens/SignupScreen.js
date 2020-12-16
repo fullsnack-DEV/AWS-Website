@@ -144,9 +144,11 @@ export default function SignupScreen({ navigation }) {
             });
         });
       })
-      .catch((error) => {
-        setloading(false)
-        Alert.alert(error.messages || error.code || JSON.stringify(error))
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
 

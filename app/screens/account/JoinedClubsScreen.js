@@ -19,6 +19,7 @@ import { getJoinedGroups } from '../../api/Groups';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
+import strings from '../../Constants/String';
 
 export default function JoinedClubsScreen() {
   const authContext = useContext(AuthContext)
@@ -27,9 +28,11 @@ export default function JoinedClubsScreen() {
   useEffect(() => {
     getJoinedGroups(authContext).then((response) => {
       setClubList(response.payload.clubs);
-    }).catch((error) => {
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   }, []);
 
   return (

@@ -66,9 +66,11 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
           status: 'cancel',
         });
       })
-      .catch((error) => {
+      .catch((e) => {
         setloading(false);
-        Alert.alert(error.messages);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
       });
   };
   return (
@@ -124,7 +126,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
         title={screenName === 'change' ? strings.nextTitle : strings.cancelMatch}
         onPress={() => {
           if (screenName === 'change') {
-            navigation.navigate('AlterAcceptDeclineScreen', { body: bodyParams });
+            navigation.navigate('AlterAcceptDeclineScreen', { challengeObj: bodyParams });
           } else {
             Alert.alert(
               'Are you sure that you want to cancel the match reservation?',

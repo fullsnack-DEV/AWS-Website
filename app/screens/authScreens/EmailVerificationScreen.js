@@ -9,6 +9,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import images from '../../Constants/ImagePath';
+import strings from '../../Constants/String';
 
 export default function EmailVerificationScreen({ navigation, route }) {
   const verifyUserEmail = () => {
@@ -22,7 +23,11 @@ export default function EmailVerificationScreen({ navigation, route }) {
           Alert.alert('Email not verified yet');
         }
       })
-      .catch((error) => Alert.alert(error.messages || error.code || JSON.stringify(error)));
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   };
 
   const resend = () => {
@@ -33,7 +38,11 @@ export default function EmailVerificationScreen({ navigation, route }) {
       .then(() => {
         Alert.alert('Verification Link send sucessfully');
       })
-      .catch((error) => Alert.alert(error.messages || error.code || JSON.stringify(error)));
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   };
 
   return (

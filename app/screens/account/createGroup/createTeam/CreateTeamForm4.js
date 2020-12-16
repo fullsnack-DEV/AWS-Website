@@ -77,10 +77,12 @@ export default function CreateTeamForm4({ navigation, route }) {
       navigation.navigate('TeamCreatedScreen', {
         groupName: response.payload.group_name,
       });
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
 
   return (

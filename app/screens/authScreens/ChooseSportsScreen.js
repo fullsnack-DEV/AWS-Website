@@ -45,10 +45,12 @@ export default function ChooseSportsScreen({ navigation, route }) {
       }
       setSports(arr);
       setloading(false);
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   }, []);
 
   const isIconCheckedOrNot = ({ item, index }) => {
@@ -86,10 +88,12 @@ export default function ChooseSportsScreen({ navigation, route }) {
 
     createUser(data, authContext).then(() => {
       getUserInfo();
-    }).catch((error) => {
-      setloading(false)
-      Alert.alert(error)
-    })
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
   const getUserInfo = async () => {
     let entity = authContext.entity

@@ -39,6 +39,7 @@ import TCNavigationHeader from '../../components/TCNavigationHeader';
 import {
   QB_ACCOUNT_TYPE, QBconnectAndSubscribe, QBlogin, QBLogout,
 } from '../../utils/QuickBlox';
+import strings from '../../Constants/String';
 
 export default function AccountScreen({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -145,9 +146,11 @@ export default function AccountScreen({ navigation }) {
       }
       setloading(false)
     })
-      .catch((error) => {
-        Alert.alert(error.messages)
-      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   };
 
   const getOwnGroupList = async (currentEntity) => {
@@ -166,41 +169,51 @@ export default function AccountScreen({ navigation }) {
         setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
       }
     })
-      .catch((error) => {
-        Alert.alert(error.messages)
-      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   };
 
   const getTeamsList = async (currentEntity) => {
     if (currentEntity.role === 'club') {
       getTeamsOfClub(authContext.entity.uid, authContext).then((response) => {
         setTeamList(response.payload);
-      }).catch((error) => {
-        Alert.alert(error.messages)
-      })
+      }).catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
     } else {
       getJoinedGroups(authContext).then((response) => {
         setTeamList(response.payload.teams);
-      }).catch((error) => {
-        Alert.alert(error.messages)
-      })
+      }).catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
     }
   };
 
   const getClubList = async () => {
     getJoinedGroups(authContext).then((response) => {
       setClubList(response.payload.clubs);
-    }).catch((error) => {
-      Alert.alert(error.messages)
-    })
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   };
 
   const onSwitchProfile = async ({ item }) => {
     setloading(true)
     switchProfile(item).then((currentEntity) => {
       switchQBAccount(item, currentEntity)
-    }).catch((error) => {
-      Alert.alert(error.messages)
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
     }).finally(() => setloading(false))
   }
 
