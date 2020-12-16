@@ -54,6 +54,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
               body.total_game_charges = response.payload.total_game_fee;
               setEstimationFee({ ...body });
             }
+
             setloading(false);
           })
           .catch((e) => {
@@ -78,6 +79,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
       }
 
       challengeBody.payment_method_type = 'card';
+      challengeBody.currency_type = challengeBody.currency_type || 'CAD'
 
       const home_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
       const away_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
@@ -109,6 +111,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
           entityID = route.params.teamData[0].user_id
         }
       }
+      console.log('Challenge Body:', JSON.stringify(challengeBody));
       createChallenge(
         entityID,
         type,

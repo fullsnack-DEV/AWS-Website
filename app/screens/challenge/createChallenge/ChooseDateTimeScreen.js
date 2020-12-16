@@ -132,9 +132,10 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   const handleDonePress = (date) => {
     setShow(!show);
     if (datePickerFor === 'from') {
-      console.log('From Date:', date);
+      console.log('From Date:', Math.trunc(date.getTime() / 1000));
       setfromDate(date);
     } else {
+      console.log('TO Date:', date.getTime());
       setToDate(date);
     }
     setShow(false)
@@ -330,6 +331,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            minuteInterval={30}
             minimumDate={fromDate || new Date()}
             mode={'datetime'}
           />

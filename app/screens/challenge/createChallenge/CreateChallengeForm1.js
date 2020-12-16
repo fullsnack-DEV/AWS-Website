@@ -188,7 +188,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
     bodyParams.home_team = teams[0]
     bodyParams.away_team = teams[1]
     bodyParams.hourly_game_fee = route.params.groupObj.game_fee
-    bodyParams.currency_type = route.params.groupObj.currency_type
+    bodyParams.currency_type = route.params.groupObj.currency_type || 'CAD'
     bodyParams.venue = venueData
     bodyParams.sport = teamData[0].sport || teamData[1].sport
     bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`
