@@ -77,7 +77,6 @@ const makeAPIRequest = async ({
     params,
     responseType,
   };
-  console.log('Opetiins ::', JSON.stringify(options));
   try {
     const response = await axios(options);
     if (!response.data.status) {
