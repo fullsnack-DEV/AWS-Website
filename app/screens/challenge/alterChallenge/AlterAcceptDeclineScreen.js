@@ -174,11 +174,9 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     body.end_datetime = bodyParams.end_datetime / 1000;
     body.currency_type = 'CAD';
     body.payment_method_type = 'card';
+    body.manual_fee = bodyParams.manual_fee;
     if (bodyParams.manual_fee) {
-      body.manual_fee = bodyParams.manual_fee;
       body.total_game_charges = bodyParams.total_game_charges;
-    } else {
-      body.manual_fee = bodyParams.manual_fee;
     }
 
     console.log('Body data of fee:', body);
@@ -203,6 +201,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           service_fee1_charges: response.payload.total_service_fee1,
           service_fee2_charges: response.payload.total_service_fee2,
         })
+
         // total_stripe_fee
 
         // if (route && route.params && route.params.body) {
@@ -319,7 +318,20 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     moment.locale('en');
     return moment(new Date(dateValue)).format('MMM DD, yy hh:mm a');
   };
+  const getDayTimeDifferent = (sDate, eDate) => {
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    return `${days}d ${hours}h ${minutes}m`;
+  };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
@@ -432,6 +444,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   };
   const updateChallengeDetail = () => {
     setloading(true)
+    const challengeID = bodyParams.challenge_id;
     delete bodyParams.created_at;
     delete bodyParams.created_by;
     delete bodyParams.entity_id;
@@ -456,7 +469,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     // setbodyParams({ ...bodyParams });
 
     console.log('FINAL BODY PARAMS::', bodyParams);
-    updateChallenge(bodyParams.challenge_id, bodyParams, authContext).then((response) => {
+    updateChallenge(challengeID, bodyParams, authContext).then((response) => {
       setloading(false)
       console.log('response of alter challenge::', response.payload);
       navigation.navigate('AlterRequestSent')
@@ -494,6 +507,13 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
 
   //   return `${days}d ${hours}h ${minutes}m`;
   // };
+  const getPendingRequestPaymentMessage = () => {
+    if (bodyParams.change_requested_by === entity.uid) {
+      return `${getTeamName(bodyParams)} has accepted your game reservation alteration request, but `
+    }
+
+    return `Your team has accepted a game reservation alteration request from ${getTeamName(bodyParams)}, but `
+  }
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -577,7 +597,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               </View>
             </View>
           </View>
-          {/* status pending request payment */}
+          {/* status change requested */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View>
@@ -597,11 +617,65 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 </Text>
               </View>
           )}
-          {!(
-            bodyParams.status === ReservationStatus.offered
-            || bodyParams.status === ReservationStatus.cancelled
-            || bodyParams.status === ReservationStatus.declined
-          ) && (
+          {/* status change requested */}
+
+          {/* status pending request payment */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.pendingrequestpayment && (
+              <View>
+                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                <Text style={styles.challengeText}>
+                  {getPendingRequestPaymentMessage()}your payment hasnt gone through yet.
+                </Text>
+                <Text style={styles.awatingNotesText}>
+                  {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
+                    bodyParams.offer_expiry * 1000,
+                    new Date().getTime(),
+                  )}
+                  \n Meanwhile, ${getTeamName(bodyParams)} can cancel acceptance of the alteration request before the payment is completed.`}
+                </Text>
+
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.pendingrequestpayment && (
+              <View>
+                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                <Text style={styles.challengeText}>
+                  {getPendingRequestPaymentMessage()}the payment hasnt gone through yet.
+                </Text>
+                <Text style={styles.awatingNotesText}>
+                  {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
+                    bodyParams.offer_expiry * 1000,
+                    new Date().getTime(),
+                  )}
+                  \n Meanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
+                </Text>
+              </View>
+          )}
+          {/* status pending request payment */}
+
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.pendingrequestpayment && (
+              <TCGradientButton
+                title={'TRY TO PAY AGAIN'}
+                onPress={() => {
+                  console.log('OK PAYMENT');
+                }}
+                marginBottom={15}
+              />
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.pendingrequestpayment && (
+              <TCGradientButton
+                title={'RESTORE TO PREVIOUS VERSION'}
+                onPress={() => {
+                  console.log('OK PAYMENT');
+                }}
+                marginBottom={15}
+              />
+          )}
+          {(bodyParams.status === ReservationStatus.changeRequest) && (
             <TCBorderButton
               title={'GAME HOME'}
               onPress={() => navigation.navigate('SoccerHome', {
@@ -1066,7 +1140,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               />
             </View>
           )}
-          {bodyParams.status === ReservationStatus.changeRequest && (
+          {(bodyParams.status === ReservationStatus.changeRequest || bodyParams.status === ReservationStatus.pendingrequestpayment) && (
             <View>
               <TCBorderButton
                 title={strings.cancelMatch}

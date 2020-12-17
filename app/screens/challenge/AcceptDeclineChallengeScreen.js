@@ -351,7 +351,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   {getTeamName(bodyParams)} has accepted your game reservation,
                   but your payment hasnt gone through yet.
                 </Text>
-                <Text style={styles.timeText}>
+                <Text style={styles.pendingRequestText}>
                   This reservation will be canceled unless the payment goes
                   through within{' '}
                   {getDayTimeDifferent(
@@ -371,18 +371,15 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   {getTeamName(bodyParams)}, but the payment hasnt gone through
                   yet.
                 </Text>
-                <Text style={styles.timeText}>
-                  This reservation will be canceled unless the payment goes
-                  through within{' '}
-                  {getDayTimeDifferent(
+                <Text style={styles.awatingNotesText}>
+                  {`This reservation will be canceled unless the payment goes through within${getDayTimeDifferent(
                     bodyParams.offer_expiry * 1000,
                     new Date().getTime(),
-                  )}
-                  .\nYou can cancel the game reservation without a penalty
-                  before the payment will go through.
+                  )}.\nYou can cancel the game reservation without a penalty before the payment will go through.`}
                 </Text>
               </View>
           )}
+          {/* status pending payment */}
           {/* Status accepted */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.accepted && (
@@ -486,7 +483,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.pendingpayment && (
-              <TCBorderButton
+              <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
                 onPress={() => {
                   console.log('OK PAYMENT');
@@ -494,6 +491,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 marginBottom={15}
               />
           )}
+
           {!(
             bodyParams.status === ReservationStatus.offered
             || bodyParams.status === ReservationStatus.cancelled
@@ -625,7 +623,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             }
           />
           <MatchFeesCard
-            challengeObj={bodyParams}
+            challengeObj={{ ...bodyParams, start_datetime: bodyParams.start_datetime * 1000, end_datetime: bodyParams.end_datetime * 1000 }}
             senderOrReceiver={
               checkSenderOrReceiver(bodyParams) === 'sender'
                 ? 'sender'
@@ -757,6 +755,34 @@ export default function CreateChallengeForm4({ navigation, route }) {
               />
             </View>
           )}
+          {bodyParams.status === ReservationStatus.pendingpayment && <TCBorderButton
+                title={strings.cancelMatch}
+                textColor={colors.whiteColor}
+                borderColor={colors.grayColor}
+                backgroundColor={colors.grayColor}
+                height={40}
+                shadow={true}
+                marginBottom={15}
+                marginTop={15}
+                onPress={() => {
+                  if (
+                    (bodyParams.game_status === GameStatus.accepted
+                      || bodyParams.game_status === GameStatus.reset)
+                    && bodyParams.start_datetime * 1000 > new Date().getTime()
+                  ) {
+                    acceptDeclineChallengeOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'cancel',
+                    );
+                  } else {
+                    Alert.alert(
+                      'Reservation cannot be cancel after game time passed or offer expired.',
+                    );
+                  }
+                }}
+              />}
         </View>
       )}
     </TCKeyboardView>
@@ -852,6 +878,17 @@ const styles = StyleSheet.create({
   },
   timeText: {
     color: colors.themeColor,
+  },
+  awatingNotesText: {
+    color: colors.userPostTimeColor,
+    marginRight: 15,
+    marginLeft: 15,
+    marginBottom: 15,
+  },
+  pendingRequestText: {
+    color: colors.userPostTimeColor,
+    marginLeft: 15,
+    marginRight: 15,
   },
   responsibilityNote: {
     fontSize: 12,
