@@ -51,7 +51,7 @@ const BookScorekeeper = ({ navigation, route }) => {
     setSearchText(text);
     const search = () => {
       if (text !== '') {
-        const data = getSearchData(scorekeepersData, 'full_name', text)
+        const data = getSearchData(scorekeepersData, ['full_name', 'city', 'country'], text)
         if (data?.length > 0) setSearchData([...data]);
         else setSearchData([]);
       }

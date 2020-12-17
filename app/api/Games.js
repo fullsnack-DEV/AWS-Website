@@ -138,6 +138,12 @@ const getRefereeReviewData = async (userID, params, authContext) => makeAPIReque
   authContext,
 })
 
+const getGameSlots = async (entity_type, entity_id, queryString, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/${entity_type}/${entity_id}/slots/games?${queryString}`,
+  authContext,
+});
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -161,4 +167,5 @@ export {
   getGameRoster,
   getRefereeReviewData,
   getGameUser,
+  getGameSlots,
 }

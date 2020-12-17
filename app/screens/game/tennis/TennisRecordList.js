@@ -250,6 +250,7 @@ export default function TennisRecordList({ route, navigation }) {
     }
     return (
       <View>
+        <RenderDash/>
         <RenderSets
           item={item}
           index={index}
@@ -257,7 +258,7 @@ export default function TennisRecordList({ route, navigation }) {
           home_team_score={item?.home_team_win_count}
           away_team_score={item?.away_team_win_count}
           timeString={`${item.start_date} - ${item.end_date === '-' ? 'Not Ended' : item.end_date}`}
-      />
+        />
         {/* Inner Set Records */}
 
         {item?.isOpen && (
@@ -288,13 +289,14 @@ export default function TennisRecordList({ route, navigation }) {
     }
     return (
       <View>
+
         <View style={{
           ...styles.setContainer,
           backgroundColor: colors.whiteColor,
           borderTopWidth: 0,
           marginBottom: 0,
         }}>
-
+          <RenderDash/>
           {/* Down Arrow */}
           <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleGameRecords(parentIndex, index)}>
             <FastImage
@@ -370,39 +372,51 @@ export default function TennisRecordList({ route, navigation }) {
 
     return (
       <View>
+
         {!isGameState && isHomeTeam && (
-          <TennisGameScoreLeft
+          <View>
+            <RenderDash zIndex={1}/>
+            <TennisGameScoreLeft
                          gameData={gameData}
                          recordData={item}
                          editor={editorChecked}
                      />
+          </View>
         )}
         {!isGameState && !isHomeTeam && (
-          <TennisGameScoreRight
+          <View>
+            <RenderDash zIndex={1}/>
+            <TennisGameScoreRight
                          gameData={gameData}
                          recordData={item}
                          editor={editorChecked}
                      />
+          </View>
         )}
         {isGameState && <TennisGameState gameStats={tennisGameStats} recordData={item}/>}
       </View>
     )
   }
+  const RenderDash = ({ zIndex = 0 }) => (
+    <Dash
+            style={ {
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: wp(100),
+              alignSelf: 'center',
+              flex: 1,
+              zIndex,
+              height: '100%',
+              position: 'absolute',
+              flexDirection: 'column',
+            } }
+            dashColor={ colors.lightgrayColor }
+        />
+  )
   return (
     <View style={ styles.mainContainer }>
-      <Dash
-          style={ {
-            alignSelf: 'center',
-            flex: 1,
-            height: '100%',
-            position: 'absolute',
-            zIndex: 1,
-            flexDirection: 'column',
-          } }
-          dashColor={ colors.lightgrayColor }
-        />
-
       <View style={ { flexDirection: 'row' } }>
+        <RenderDash/>
         <View style={ styles.editorView }>
           <Text style={{ fontSize: 12, fontFamily: fonts.RRegular }}>Show editors</Text>
           <TouchableWithoutFeedback
@@ -419,6 +433,7 @@ export default function TennisRecordList({ route, navigation }) {
       </View>
 
       <View style={ styles.headerView }>
+        <RenderDash/>
         <View style={ styles.leftView }>
           <View style={ styles.profileShadow }>
             <FastImage

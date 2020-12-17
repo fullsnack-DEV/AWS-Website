@@ -13,11 +13,11 @@ import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 
-import Scores from './Scores';
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import AuthContext from '../../../../../context/auth';
+import TennisScoreView from '../../TennisScoreView';
 
 const Summary = ({
   gameData,
@@ -26,7 +26,6 @@ const Summary = ({
   navigation,
   followSoccerUser,
   unFollowSoccerUser,
-  getGameData,
   getGameMatchRecords,
   getSportsList,
 }) => {
@@ -124,7 +123,12 @@ const Summary = ({
       )}
 
       {/* Scores */}
-      <Scores gameId={gameData?.game_id} getTennisGameData={getGameData}/>
+      <View style={{ backgroundColor: colors.whiteColor, padding: 10, marginBottom: hp(1) }}>
+        <Text style={styles.title}>
+          Scores
+        </Text>
+        <TennisScoreView scoreDataSource={gameData} />
+      </View>
 
       {/* Match Records */}
       <MatchRecords
@@ -177,6 +181,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.themeColor,
     fontFamily: fonts.RRegular,
+  },
+  title: {
+    fontFamily: fonts.RRegular,
+    fontSize: 20,
+    color: colors.lightBlackColor,
+    marginBottom: -25,
   },
 })
 export default Summary;

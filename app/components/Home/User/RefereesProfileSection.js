@@ -3,7 +3,7 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
+  Image, TouchableOpacity,
 } from 'react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -13,6 +13,7 @@ export default function RefereesProfileSection({
   profileImage,
   userName,
   feesCount,
+  onBookRefereePress,
 }) {
   return (
     <View style={styles.topViewContainer}>
@@ -35,7 +36,9 @@ export default function RefereesProfileSection({
         <Text style={styles.editTextStyle}>{`$${feesCount} CAD`}
           <Text style={styles.perHourTextStyle}>{' (per hours)'}</Text>
         </Text>
-        <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
+        <TouchableOpacity onPress={onBookRefereePress}>
+          <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

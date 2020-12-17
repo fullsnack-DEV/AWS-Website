@@ -71,7 +71,7 @@ const Referees = ({
               </Text>
             </View>
           )}/>
-      {isAdmin && (
+      {isAdmin && gameData?.status !== 'ended' && (
         <TCGradientButton
             onPress={handleBookReferee}
               startGradientColor={colors.whiteColor}

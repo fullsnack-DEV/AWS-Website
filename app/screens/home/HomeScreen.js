@@ -1987,6 +1987,15 @@ export default function HomeScreen({ navigation, route }) {
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
                 feesCount={(selectRefereeData && selectRefereeData.fee) ? selectRefereeData.fee : 0}
+                onBookRefereePress={() => {
+                  const user = authContext?.entity?.auth?.user;
+                  const body = {
+                    hourly_game_fee: user?.referee_data.filter((item) => item?.sport_name === selectRefereeData?.sport_name)?.[0]?.fee,
+                    currency_type: user?.referee_data.filter((item) => item?.sport_name === selectRefereeData?.sport_name)?.[0]?.currency_type ?? 'CAD',
+                  }
+                  setRefereesInModalVisible(false);
+                  navigation.navigate('RefereeBookingDateAndTime', { userData: user, body });
+                }}
               />
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem

@@ -248,15 +248,27 @@ export const escapeRegExp = (str) => {
   return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
 };
 
-export const getSearchData = (data, field, searchString) => {
+export const getSearchData = (data, field = [], searchString) => {
+  const searchData = [];
   const searchStr = escapeRegExp(searchString)
   if (searchStr !== '') {
-    return data?.filter((item) => item?.[field]
-      ?.toLowerCase()
-      ?.toString()
-      ?.match(searchStr?.toLowerCase()?.toString()))
+    data.map((item) => {
+      let isSearch = false;
+      field.map((key) => {
+        if (!isSearch
+            && item?.[key]
+              ?.toLowerCase()
+              ?.toString()
+              ?.match(searchStr?.toLowerCase()?.toString())) {
+          isSearch = true;
+        }
+        return true;
+      })
+      if (isSearch) searchData.push(item);
+      return true;
+    })
   }
-  return [];
+  return searchData;
 }
 
 export const round = (value, decimals) => value.toFixed(decimals)
