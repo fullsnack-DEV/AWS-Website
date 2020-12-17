@@ -29,6 +29,7 @@ import fonts from '../../Constants/Fonts';
 import uploadImages from '../../utils/imageAction';
 import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
+import * as Utility from '../../utils';
 
 export default function EditGroupProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -156,6 +157,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       entity.obj = response.payload;
       entity.auth.user = response.payload;
       authContext.setEntity({ ...entity })
+      Utility.setStorage('authContextEntity', { ...entity })
     }).catch(() => {
       setTimeout(() => {
         Alert.alert('Towns Cup', 'Something went wrong');

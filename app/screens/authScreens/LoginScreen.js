@@ -134,11 +134,14 @@ export default function LoginScreen({ navigation }) {
       entity.obj = response.payload;
       authContext.setEntity({ ...entity })
       authContext.setUser({ ...response.payload });
+      Utility.setStorage('authContextEntity', { ...entity })
+      Utility.setStorage('authContextUser', { ...response.payload })
 
       QBlogin(entity.uid, response.payload).then((res) => {
         entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
 
         authContext.setEntity({ ...entity })
+        Utility.setStorage('authContextEntity', { ...entity })
 
         QBconnectAndSubscribe(entity)
       }).catch((error) => {

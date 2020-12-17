@@ -90,6 +90,7 @@ import ReviewRatingView from '../../components/Home/ReviewRatingView';
 import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
+import * as Utility from '../../utils';
 
 const reviews_data = [
   {
@@ -377,34 +378,29 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const loginEntity = authContext.entity
-      let uid = loginEntity.uid
-      let role = loginEntity.role
-      let admin = false
-      if (route.params && route.params.uid && route.params.role) {
-        uid = route.params.uid;
-        role = route.params.role;
-        if (loginEntity.uid === uid) {
-          admin = true
-          setIsAdmin(true)
-        }
-      } else {
+    const loginEntity = authContext.entity
+    let uid = loginEntity.uid
+    let role = loginEntity.role
+    let admin = false
+    if (route.params && route.params.uid && route.params.role) {
+      uid = route.params.uid;
+      role = route.params.role;
+      if (loginEntity.uid === uid) {
         admin = true
         setIsAdmin(true)
       }
+    } else {
+      admin = true
+      setIsAdmin(true)
+    }
 
-      getData(uid, role, admin).catch((error) => {
-        console.log('error', error)
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 0.3)
-        setloading(false);
-      });
+    getData(uid, role, admin).catch((error) => {
+      console.log('error', error)
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, error.message);
+      }, 0.3)
+      setloading(false);
     });
-    return () => {
-      unsubscribe();
-    };
   }, [authContext.entity]);
 
   const progressStatus = (completed, total) => {
@@ -825,6 +821,7 @@ export default function HomeScreen({ navigation, route }) {
       }, 0.3)
     }).finally(() => {
       authContext.setEntity({ ...e })
+      Utility.setStorage('authContextEntity', { ...e })
       setCurrentUserData({ ...currentUserData });
     });
   };
@@ -833,6 +830,7 @@ export default function HomeScreen({ navigation, route }) {
     const e = authContext.entity
     e.obj.parent_group_id = '';
     authContext.setEntity({ ...e })
+    Utility.setStorage('authContextEntity', { ...e })
     if (currentUserData.joined_teams) {
       currentUserData.joined_teams = currentUserData.joined_teams.filter((team) => team.group_id !== e.uid)
     }
@@ -844,6 +842,7 @@ export default function HomeScreen({ navigation, route }) {
       console.log('clubLeaveTeam error with userID', error, userID)
       e.obj.parent_group_id = userID;
       authContext.setEntity({ ...e })
+      Utility.setStorage('authContextEntity', { ...e })
       if (currentUserData.joined_teams) {
         currentUserData.joined_teams.push(e.obj);
       } else {

@@ -105,13 +105,16 @@ export default function ChooseSportsScreen({ navigation, route }) {
       entity.auth.user = response.payload
       entity.role = 'user'
       await authContext.setUser(response.payload);
+      Utility.setStorage('authContextUser', { ...response.payload })
       QBlogin(entity.uid, response.payload).then(async (res) => {
         entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
         authContext.setEntity({ ...entity })
+        Utility.setStorage('authContextEntity', { ...entity })
         await QBconnectAndSubscribe(entity);
       }).catch(async () => {
         entity = { ...entity, QB: { connected: false } }
         authContext.setEntity({ ...entity })
+        Utility.setStorage('authContextEntity', { ...entity })
       });
       setloading(false);
     } else {

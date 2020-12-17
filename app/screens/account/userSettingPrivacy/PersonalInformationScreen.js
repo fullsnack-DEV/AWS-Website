@@ -501,6 +501,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 await Utility.setStorage('user', response.payload);
                 setEditMode(false);
                 authContext.setUser(response.payload);
+                Utility.setStorage('authContextUser', { ...response.payload })
               } else {
                 Alert.alert('Towns Cup', 'Something went wrong');
               }

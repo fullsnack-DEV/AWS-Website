@@ -2,6 +2,7 @@ import axios from 'axios';
 import firebase from '@react-native-firebase/app';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
+import * as Utility from '.';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
   let apiHeaders = {
@@ -57,6 +58,7 @@ const makeAPIRequest = async ({
           };
           entity.auth.token = token;
           authContext.setEntity({ ...entity });
+          Utility.setStorage('authContextEntity', { ...entity })
         });
       }
     });

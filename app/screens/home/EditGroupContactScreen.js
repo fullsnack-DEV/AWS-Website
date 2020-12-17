@@ -51,6 +51,7 @@ export default function EditGroupContactScreen({ navigation, route }) {
       const entity = authContext.entity
       entity.obj = response.payload;
       authContext.setEntity({ ...entity })
+      Utility.setStorage('authContextEntity', { ...entity })
       navigation.goBack();
     }).catch(() => {
       setTimeout(() => {

@@ -21,6 +21,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCPicker from '../../components/TCPicker';
 import AuthContext from '../../auth/context';
+import * as Utility from '../../utils';
 
 export default function GameFeeEditScreen({ navigation, route }) {
   // For activity indicator
@@ -55,6 +56,7 @@ export default function GameFeeEditScreen({ navigation, route }) {
         const entity = authContext.entity
         entity.obj = response.payload;
         authContext.setEntity({ ...entity })
+        Utility.setStorage('authContextEntity', { ...entity })
         navigation.goBack();
       })
       .catch((e) => {

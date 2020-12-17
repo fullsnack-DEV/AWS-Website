@@ -101,6 +101,7 @@ export default function FollowTeams({ route }) {
       entity.role = 'user'
       await Utility.setStorage('loggedInEntity', entity)
       await authContext.setUser(response.payload);
+      Utility.setStorage('authContextUser', { ...response.payload })
       setloading(false);
     } else {
       throw new Error(response);
