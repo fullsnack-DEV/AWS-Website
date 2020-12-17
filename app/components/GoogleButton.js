@@ -28,7 +28,8 @@ function GoogleButton({ onPress }) {
 const styles = StyleSheet.create({
   allButton: {
     backgroundColor: colors.whiteColor,
-
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 40,
     marginLeft: '5%',
     marginRight: '5%',
@@ -37,8 +38,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-
-    // elevation: 5,
+    padding: 12,
   },
   googleImg: {
     alignSelf: 'center',
@@ -50,12 +50,11 @@ const styles = StyleSheet.create({
     color: colors.googleColor,
     fontFamily: fonts.RRegular,
     fontSize: 17,
-    height: 50,
-    padding: 12,
+    textAlign: 'center',
+    marginLeft: 10,
   },
   imgWithText: {
     flexDirection: 'row',
-    paddingLeft: 80,
   },
 });
 

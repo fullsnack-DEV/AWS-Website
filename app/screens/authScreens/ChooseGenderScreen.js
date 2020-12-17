@@ -9,7 +9,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import { Tooltip } from 'react-native-elements';
-
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import * as Utility from '../../utils/index';
 import TCButton from '../../components/TCButton';
@@ -43,9 +43,9 @@ export default function ChooseGenderScreen({ navigation }) {
             setSelected(0);
           } }>
             {selected === 0 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
+              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
             ) : (
-              <Image
+              <FastImage
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />

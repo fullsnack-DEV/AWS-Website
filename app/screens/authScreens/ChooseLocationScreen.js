@@ -24,7 +24,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
 import { searchGroups } from '../../api/Groups';
-import searchLocation from '../../api/External';
+import { searchLocations } from '../../api/External';
 
 export default function ChooseLocationScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -38,7 +38,7 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocation(searchLocationText, authContext).then((response) => {
+      searchLocations(searchLocationText).then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       }).catch((e) => {

@@ -249,14 +249,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 5,
-
-    color: 'black',
     elevation: 3,
     flexDirection: 'row',
-    fontSize: wp('4%'),
     height: 40,
     marginBottom: 16,
-
     marginTop: 2,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
@@ -274,13 +270,12 @@ const styles = StyleSheet.create({
     width: wp('25%'),
   },
   textInput: {
-
     backgroundColor: colors.whiteColor,
     borderRadius: 5,
     color: colors.blackColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-    height: 40,
+    fontSize: 16,
+    // height: 40,
     paddingLeft: 17,
 
     width: wp('75%'),
