@@ -30,6 +30,7 @@ import fonts from '../../../Constants/Fonts';
 import uploadImages from '../../../utils/imageAction';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
+import * as Utility from '../../../utils';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -159,6 +160,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
         entity.obj = response.payload;
         entity.auth.user = response.payload;
         authContext.setEntity({ ...entity })
+        Utility.setStorage('authContextEntity', { ...entity })
       } else {
         setTimeout(() => {
           Alert.alert('Towns Cup', 'Something went wrong');

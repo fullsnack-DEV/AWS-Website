@@ -186,7 +186,7 @@ export default function AccountScreen({ navigation }) {
         }, 0.7);
       });
     } else {
-      getJoinedGroups(authContext).then((response) => {
+      getJoinedGroups(authContext.entity.uid, authContext).then((response) => {
         setTeamList(response.payload.teams);
       }).catch((e) => {
         setTimeout(() => {
@@ -197,7 +197,7 @@ export default function AccountScreen({ navigation }) {
   };
 
   const getClubList = async () => {
-    getJoinedGroups(authContext).then((response) => {
+    getJoinedGroups(authContext.entity.uid, authContext).then((response) => {
       setClubList(response.payload.clubs);
     }).catch((e) => {
       setTimeout(() => {
@@ -265,12 +265,14 @@ export default function AccountScreen({ navigation }) {
       setGroupList([authContext.entity.auth.user, ...club, ...team]);
     }
     authContext.setEntity({ ...currentEntity })
+    Utility.setStorage('authContextEntity', { ...currentEntity })
     return currentEntity
   };
 
   const switchQBAccount = async (accountData, entity) => {
     let currentEntity = entity
     authContext.setEntity({ ...currentEntity })
+    Utility.setStorage('authContextEntity', { ...currentEntity })
     const entityType = accountData?.entity_type
     const uid = entityType === 'player' ? 'user_id' : 'group_id'
     QBLogout().then(() => {
@@ -291,6 +293,7 @@ export default function AccountScreen({ navigation }) {
       ).then(async (res) => {
         currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
         authContext.setEntity({ ...currentEntity })
+        Utility.setStorage('authContextEntity', { ...currentEntity })
         QBconnectAndSubscribe(currentEntity)
       })
     })
@@ -374,6 +377,7 @@ export default function AccountScreen({ navigation }) {
       style={styles.listContainer}
       onPress={() => {
         onSwitchProfile({ item, index });
+        navigation.closeDrawer();
       }}>
       <View>
         {item.entity_type === 'player'

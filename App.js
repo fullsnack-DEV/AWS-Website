@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState, useEffect, useMemo, useContext,
+} from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import AuthContext from './app/auth/context';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
-// import * as Utility from './app/utils/index';
+import * as Utility from './app/utils/index';
 import { QBinit } from './app/utils/QuickBlox';
 
 export default function App() {
@@ -15,6 +17,7 @@ export default function App() {
   const updateAuth = (e) => {
     setEntity({ ...e })
   }
+  const authContext = useContext(AuthContext);
   const authValue = useMemo(
     () => ({
       role,
@@ -28,28 +31,27 @@ export default function App() {
     [role, user, entity],
   );
 
-  // const getLoginUserDetail = async () => {
-  //   const e = await Utility.getStorage('loggedInEntity');
-  //   if (e && e.auth) {
-  //     setEntity({ ...e })
-  //     if (entity.role === 'user') {
-  //       setUser(e.auth.user);
-  //       await QBconnectAndSubscribe(e);
-  //     } else {
-  //       setUser(e.obj);
-  //     }
-  //   }
-  // };
+  const getLoginUserDetail = async () => {
+    const authContextEntity = await Utility.getStorage('authContextEntity');
+    const authContextUser = await Utility.getStorage('authContextUser');
+    if (authContextEntity) {
+      setEntity({ ...authContextEntity })
+      authContext.setEntity({ ...entity })
+      authContext.setUser({ ...authContextUser });
+      // if (entity.role === 'user') {
+      //   setUser(e.auth.user);
+      //   await QBconnectAndSubscribe(e);
+      // } else {
+      //   setUser(e.obj);
+      // }
+    }
+  };
 
   useEffect(() => {
     // requestPermission();
-    // console.log('##################  app.js is called   #################')
-    // if (entity) {
-    //   console.log('entity is obj. storing in async now', entity)
-    //   Utility.setStorage('loggedInEntity', entity)
-    // } else {
-    //   getLoginUserDetail();
-    // }
+    if (!entity) {
+      getLoginUserDetail();
+    }
   }, []);
   QBinit();
 
