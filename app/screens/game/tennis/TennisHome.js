@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
-  StatusBar, Platform,
+  Platform,
 } from 'react-native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
@@ -109,7 +109,6 @@ const TennisHome = ({ navigation, route }) => {
       {tabKey === 2 && <Review navigation={navigation} getSoccerGameReview={getTennisGameReview} isAdmin={isAdmin} gameData={gameData}/>}
       {tabKey === 3 && (
         <Gallery
-            authContext={authContext}
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
               gameData={gameData}
               getSoccerGalleryData={getTennisGalleryData}
@@ -118,10 +117,6 @@ const TennisHome = ({ navigation, route }) => {
     </View>
   )
   return (<View style={styles.mainContainer}>
-    <StatusBar
-        style={{ height: 1 }}
-        barStyle="light-content"
-    />
     <ActivityLoader visible={loading} />
     <TopBackgroundHeader navigation={navigation} gameData={gameData}>
       <TCScrollableProfileTabs
@@ -132,7 +127,7 @@ const TennisHome = ({ navigation, route }) => {
         customStyle={{ flex: 1 }}
         currentTab={currentTab}
         renderTabContain={renderTabContain}
-    />
+     />
     </TopBackgroundHeader>
     {uploadImageProgressData && (
       <ImageProgress

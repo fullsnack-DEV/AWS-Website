@@ -1,45 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
+  Alert,
+  Dimensions,
+  FlatList,
   Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  ScrollView,
-  Dimensions,
-  FlatList,
-  Platform,
-  Alert,
+  View,
 } from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
+import ImagePicker from 'react-native-image-crop-picker';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import { getSportsList } from '../../../api/Games';
+import AuthContext from '../../../auth/context';
+import uploadImages from '../../../utils/imageAction';
+import TCInnerLoader from '../../../components/TCInnerLoader';
+import { getUserDetails } from '../../../api/Users';
 
 export default function RegisterReferee({ navigation }) {
+  const authContext = useContext(AuthContext);
   const [isModalVisible, setModalVisible] = useState(false);
-
+  const [refereesData, setRefereesData] = useState([]);
+  const [sportList, setSportList] = useState([]);
   const [sports, setSports] = useState('');
-  const [certificate, setSCertificate] = useState([]);
+  const [certificate, setCertificate] = useState([{ title: '' }]);
   const [description, onChangeText] = useState('');
-  const [matchFee, onMatchFeeChanged] = useState(0.0);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [languages, setLanguages] = useState([]);
+  const [imageUploadingLoader, setImageUploadingLoader] = useState(null);
   const selectedLanguage = [];
-
+  const [validationError, setError] = useState(null);
   useEffect(() => {
+    getSportsList(authContext).then((res) => {
+      const sport = [];
+      res.payload.map((item) => sport.push({
+        label: item?.sport_name,
+        value: item?.sport_name.toLowerCase(),
+      }))
+      setSportList([...sport]);
+    })
+    getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
+      setRefereesData(res?.payload?.referee_data)
+    });
     const language = [
       { language: 'English', id: 1 },
       { language: 'English(Canada)', id: 2 },
@@ -59,31 +75,139 @@ export default function RegisterReferee({ navigation }) {
     setLanguages(arr);
   }, []);
   const addMore = () => {
-    // FIXME:
-    setSCertificate([...certificate, certificate.length]);
-    // index += 1;
+    setCertificate([...certificate, {}]);
   };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const renderItem = () => (
-    <View style={{ flexDirection: 'column' }}>
-      <View style={styles.addCertificateView}>
-        <TouchableOpacity>
-          <Image style={styles.certificateImg} />
-          <Image source={images.certificateUpload} style={styles.chooseImage} />
-        </TouchableOpacity>
-        <TextInput
+  const renderItem = ({ item, index }) => (
+    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'column' }}>
+        <View style={styles.addCertificateView}>
+          <TextInput
           placeholder={strings.titleOrDescriptionText}
-          style={styles.certificateDescription}
-          onChangeText={(text) => onMatchFeeChanged(text)}
-          value={matchFee}></TextInput>
+          style={{
+            ...styles.certificateDescription,
+            borderWidth: validationError?.certificate === index ? 1 : 0,
+            borderColor: colors.redDelColor,
+          }}
+          onChangeText={(text) => {
+            const certi = certificate;
+            certi[index] = {
+              ...certi[index],
+              title: text,
+            }
+            setCertificate([...certi])
+          }}
+          value={certificate?.[index]?.title}/>
+        </View>
+        {/* eslint-disable-next-line no-mixed-operators */}
+        {/* {(item?.url || item?.title) ? ( */}
+        <TouchableOpacity onPress={() => {
+          if (certificate?.length === 1) {
+            setCertificate([{}]);
+          } else if (index !== (certificate?.length - 1)) {
+            const certiUrl = certificate;
+            certiUrl.splice(index, 1);
+            setCertificate([...certiUrl]);
+          }
+        }}>
+          <Text style={styles.delete}>{strings.deleteTitle}</Text>
+        </TouchableOpacity>
+        {/* ) : null} */}
+        {!item?.url && (
+          <TouchableOpacity onPress={() => {
+            ImagePicker.openPicker({
+              width: 300,
+              height: 400,
+              cropping: true,
+              maxFiles: 10,
+            }).then((pickImages) => {
+              setImageUploadingLoader(index);
+              const certiUrl = certificate;
+              certiUrl[index] = { ...certiUrl[index], url: pickImages?.sourceURL };
+              setCertificate([...certiUrl])
+              uploadImages([pickImages], authContext).then((responses) => {
+                certiUrl[index] = {
+                  ...certiUrl[index],
+                  url: responses?.[0].fullImage ?? '',
+                  thumbnail: responses?.[0].thumbnail ?? '',
+                };
+                setCertificate([...certiUrl])
+              }).catch(() => {
+                certiUrl.splice(index, 1);
+                setCertificate([...certiUrl]);
+              }).finally(() => {
+                setTimeout(() => setImageUploadingLoader(null), 1500);
+                addMore();
+              })
+            });
+          }} style={styles.addCertificateButton}>
+            <Text style={styles.addCertificateText}>
+              {strings.addCertificateTitle}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
-      <TouchableOpacity>
-        <Text style={styles.delete}>{strings.deleteTitle}</Text>
-      </TouchableOpacity>
+      {item?.url && (
+        <View style={{
+          padding: 15, alignSelf: 'flex-start',
+        }}>
+          <View>
+            <FastImage
+                resizeMode={FastImage.resizeMode.cover}
+                  source={{ uri: certificate?.[index]?.url }}
+                  style={{ width: 195, height: 150, borderRadius: 10 }}
+              />
+            <TouchableOpacity style={{
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              position: 'absolute',
+              height: 22,
+              width: 22,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 50,
+              right: -10,
+              top: -5,
+            }}
+            onPress={() => {
+              const certi = certificate;
+              delete certi[index].url;
+              delete certi[index].thumbnail;
+              setCertificate([...certi]);
+            }}
+            >
+              <Image
+                     source={images.menuClose}
+                     style={{
+                       zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
+                     }}
+                />
+            </TouchableOpacity>
+            {index === imageUploadingLoader && (
+              <View style={{
+                alignSelf: 'center',
+                position: 'absolute',
+                height: 150,
+                width: 195,
+                borderRadius: 10,
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+              }}>
+                <TCInnerLoader visible={index === imageUploadingLoader} />
+                <Text style={{
+                  fontFamily: fonts.RLight, fontSize: 20, color: colors.yellowColor, marginLeft: 5,
+                }}>Uploading...</Text>
+              </View>
+            )}
+
+          </View>
+        </View>
+      )}
     </View>
   );
   const isIconCheckedOrNot = ({ item, index }) => {
@@ -122,12 +246,25 @@ export default function RegisterReferee({ navigation }) {
   );
 
   const checkValidation = () => {
-    if (sports === '') {
+    if (!sports) {
+      setError({ sports: 'Enter Sports' })
       Alert.alert('Towns Cup', 'Sports cannot be blank');
       return false;
     }
+    const findIndex = certificate?.findIndex((item) => !item?.title && (item?.thumbnail || item?.url))
+    if (findIndex !== -1) {
+      setError({ certificate: findIndex })
+      Alert.alert('Towns Cup', 'Add title for certificate')
+      return false;
+    }
+    setError(null);
 
-    return true;
+    const isExist = refereesData?.filter((item) => item?.sport_name === sports);
+    if (isExist?.length) {
+      Alert.alert('Towns Cup', `You are already registrated as a referee in ${sports}`);
+      return false;
+    }
+    return true
   };
 
   return (
@@ -145,20 +282,18 @@ export default function RegisterReferee({ navigation }) {
           label: strings.selectSportPlaceholder,
           value: null,
         }}
-        items={[
-          { label: 'Football', value: 'football' },
-          { label: 'Baseball', value: 'baseball' },
-          { label: 'Hockey', value: 'hockey' },
-        ]}
+        items={sportList}
         onValueChange={(value) => {
           setSports(value);
         }}
         useNativeAndroidPickerStyle={false}
         // eslint-disable-next-line no-sequences
-        style={
-          (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
-          { ...styles })
-        }
+        style={{
+          ...(Platform.OS === 'ios'
+            ? { ...styles.inputIOS }
+            : { ...styles.inputAndroid },
+          { ...styles }),
+        }}
         value={sports}
         Icon={() => (
           <Image source={images.dropDownArrow} style={styles.downArrow} />
@@ -189,14 +324,8 @@ export default function RegisterReferee({ navigation }) {
       <FlatList
         scrollEnabled={false}
         data={certificate}
-        // keyExtractor={ ( index ) => index }
         renderItem={renderItem}
       />
-      <TouchableOpacity onPress={addMore} style={styles.addCertificateButton}>
-        <Text style={styles.addCertificateText}>
-          {strings.addCertificateTitle}
-        </Text>
-      </TouchableOpacity>
       <Text style={styles.LocationText}>{strings.languageTitle}</Text>
       <View style={styles.searchView}>
         <TouchableOpacity onPress={toggleModal}>
@@ -274,29 +403,30 @@ export default function RegisterReferee({ navigation }) {
           </View>
         </View>
       </Modal>
-      <TouchableOpacity
-        onPress={() => {
-          if (checkValidation()) {
-            let bodyParams = {};
-            const referee_data = [];
-
-            bodyParams.sport_name = sports;
-            bodyParams.descriptions = description;
-            bodyParams.language = selectedLanguages;
-
-            referee_data[0] = bodyParams;
-            bodyParams = { referee_data };
-            console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
-
-            navigation.navigate('RegisterRefereeForm2', { bodyParams });
-          }
-        }}>
-        <LinearGradient
-          colors={[colors.yellowColor, colors.themeColor]}
-          style={styles.nextButton}>
-          <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+      {!imageUploadingLoader && (
+        <TouchableOpacity
+              onPress={() => {
+                const isValid = checkValidation();
+                if (isValid) {
+                  certificate.pop();
+                  let bodyParams = {};
+                  const referee_data = [];
+                  bodyParams.sport_name = sports;
+                  bodyParams.descriptions = description;
+                  bodyParams.language = selectedLanguages;
+                  bodyParams.certificate = certificate;
+                  referee_data[0] = bodyParams;
+                  bodyParams = { referee_data };
+                  navigation.navigate('RegisterRefereeForm2', { bodyParams, refereesData });
+                }
+              }}>
+          <LinearGradient
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={styles.nextButton}>
+            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 }
@@ -376,25 +506,6 @@ const styles = StyleSheet.create({
     top: 22,
     width: 18,
   },
-  certificateImg: {
-    alignSelf: 'center',
-    backgroundColor: colors.textFieldColor,
-    borderRadius: 10,
-
-    height: 45,
-
-    marginRight: 15,
-    resizeMode: 'contain',
-    width: 45,
-  },
-  chooseImage: {
-    bottom: 0,
-    height: 20,
-    position: 'absolute',
-    resizeMode: 'contain',
-    right: 8,
-    width: 20,
-  },
   addCertificateView: {
     flexDirection: 'row',
     // backgroundColor: 'red',
@@ -405,7 +516,6 @@ const styles = StyleSheet.create({
   },
   addCertificateButton: {
     alignItems: 'center',
-
     alignSelf: 'center',
     borderColor: colors.userPostTimeColor,
     borderRadius: 6,
@@ -413,6 +523,7 @@ const styles = StyleSheet.create({
     height: 30,
     justifyContent: 'center',
     marginTop: '5%',
+    paddingHorizontal: 5,
     width: '35%',
   },
   addCertificateText: {
@@ -434,7 +545,7 @@ const styles = StyleSheet.create({
     // backgroundColor: colors.textFieldColor,
     // paddingLeft: 10,
     height: 40,
-    width: wp('78%'),
+    width: '100%',
     alignSelf: 'center',
 
     fontSize: wp('3.8%'),
@@ -550,7 +661,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
-
     paddingVertical: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },

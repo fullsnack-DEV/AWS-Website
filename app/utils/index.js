@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
+import _ from 'lodash';
 import strings from '../Constants/String'
 import images from '../Constants/ImagePath';
 
@@ -238,6 +239,24 @@ export const getRegionFromMarkers = (markers, delta = 0.025, offset = 2.5) => {
   return {
     latitude, longitude, latitudeDelta: latDelta, longitudeDelta: lngDelta,
   };
+}
+
+export const escapeRegExp = (str) => {
+  if (!_.isString(str)) {
+    return '';
+  }
+  return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
+};
+
+export const getSearchData = (data, field, searchString) => {
+  const searchStr = escapeRegExp(searchString)
+  if (searchStr !== '') {
+    return data?.filter((item) => item?.[field]
+      ?.toLowerCase()
+      ?.toString()
+      ?.match(searchStr?.toLowerCase()?.toString()))
+  }
+  return [];
 }
 
 export const round = (value, decimals) => value.toFixed(decimals)

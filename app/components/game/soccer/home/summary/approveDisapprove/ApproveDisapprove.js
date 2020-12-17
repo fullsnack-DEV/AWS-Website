@@ -166,7 +166,7 @@ const ApproveDisapprove = ({
             </TouchableOpacity>
           </Text>
           {showWarningPopup && (
-            <TCPopupMessage message={MESSAGE} />
+            <TCPopupMessage message={MESSAGE} style={{ marginBottom: 10 }}/>
           )}
           <View style={styles.teamVSContainer}>
             <View style={styles.teamVSContentContainer}>

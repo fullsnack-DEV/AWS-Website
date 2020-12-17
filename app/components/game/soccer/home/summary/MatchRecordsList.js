@@ -35,7 +35,7 @@ const MatchRecordsList = ({
       <TCInnerLoader visible={loading}/>
       {!loading && (<FlatList
         scrollEnabled={false}
-        keyExtractor={({ index }) => index?.toString()}
+        keyExtractor={(item, index) => index?.toString()}
         bounces={false}
         data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY)}
         renderItem={({ item, index }) => {

@@ -262,9 +262,10 @@ const images = {
   tennisUnForced: require('../assets/images/tennisUnForced.png'),
   tennisWinner: require('../assets/images/tennisWinner.png'),
   yellowDownArrow: require('../assets/images/yellowDownArrow.png'),
-
+  refereeSucessBG: require('../assets/images/RefereeSucessBG.png'),
   // Tennis recorder
   tennisGeneral: require('../assets/images/ic_tennis_general.png'),
+  requestSentImage: require('../assets/images/requestSentImage.png'),
 };
 
 export default images;

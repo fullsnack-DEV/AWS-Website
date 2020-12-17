@@ -113,7 +113,16 @@ import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import CurruentReservationScreen from '../screens/challenge/alterChallenge/CurruentReservationScreen';
+import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
+import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterRefereeSuccess';
+import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
+
 import ChangeReservationInfoScreen from '../screens/challenge/alterChallenge/ChangeReservationInfoScreen';
+import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
+import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/BookScorekeeper';
+import ScorekeeperBookingDateAndTime
+  from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
+import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
 
 const Stack = createStackNavigator();
 
@@ -503,6 +512,54 @@ const HomeNavigator = () => (
             },
           } }
       />
+
+    {/*  Book A Referee */}
+    <Stack.Screen
+          name="BookReferee"
+          component={BookReferee}
+          options={{
+            headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="RefereeBookingDateAndTime"
+          component={RefereeBookingDateAndTime}
+          options={{
+            headerShown: false,
+          }}
+      />
+
+    <Stack.Screen
+          name="BookRefereeSuccess"
+          component={ BookRefereeSuccess }
+          options={ {
+            headerShown: false,
+          } }
+      />
+    {/*  Book A Scorekeeper */}
+    <Stack.Screen
+          name="BookScorekeeper"
+          component={BookScorekeeper}
+          options={{
+            headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="ScorekeeperBookingDateAndTime"
+          component={ScorekeeperBookingDateAndTime}
+          options={{
+            headerShown: false,
+          }}
+      />
+
+    <Stack.Screen
+          name="BookScorekeeperSuccess"
+          component={ BookScorekeeperSuccess }
+          options={ {
+            headerShown: false,
+          } }
+      />
+
     <Stack.Screen
           name="EditLineUpScreen"
           component={EditLineUpScreen}
@@ -616,6 +673,14 @@ const HomeNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+          name="RegisterRefereeSuccess"
+          component={ RegisterRefereeSuccess }
+          options={ {
+            headerShown: false,
+          } }
+      />
+
     <Stack.Screen
         name="CreateTeamForm1"
         component={ CreateTeamForm1 }

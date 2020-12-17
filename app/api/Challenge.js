@@ -41,3 +41,10 @@ export const updateChallenge = async (challengeId, params, authContext) => makeA
   data: params,
   authContext,
 })
+
+export const getRefereeGameFeeEstimation = async (entityID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}referees/reservation/${entityID}/estimateGameFee`,
+  data: params,
+  authContext,
+})

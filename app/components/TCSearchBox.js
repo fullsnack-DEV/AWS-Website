@@ -17,7 +17,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCSearchBox({
-  onChangeText, style, value, ...props
+  onChangeText, style, value, placeholderText = strings.searchHereText, ...props
 }) {
   return (
     <View style={{ ...styles.sectionStyle, ...style } } {...props}>
@@ -25,7 +25,7 @@ export default function TCSearchBox({
       <TextInput
           value={value}
             style={ styles.textInput }
-            placeholder={ strings.searchHereText }
+            placeholder={ placeholderText }
             clearButtonMode="always"
             placeholderTextColor={ colors.userPostTimeColor }
             onChangeText={onChangeText}
@@ -37,7 +37,7 @@ export default function TCSearchBox({
 const styles = StyleSheet.create({
   sectionStyle: {
     alignItems: 'center',
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.offwhite,
     borderRadius: 25,
     flexDirection: 'row',
     height: 45,

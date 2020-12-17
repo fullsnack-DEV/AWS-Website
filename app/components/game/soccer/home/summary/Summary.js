@@ -133,14 +133,25 @@ const Summary = ({
       getGameMatchRecords={getGameMatchRecords}
   />
       <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
+
       <Referees
-      refereesData={gameData?.referees ?? []}
-      isAdmin={isAdmin}
-      userRole={userRole}
-      followSoccerUser={followSoccerUser}
-      unFollowSoccerUser={unFollowSoccerUser}
-  />
-      <Scorekeepers scorekeepersData={gameData?.scorekeepers ?? []} isAdmin={isAdmin} userRole={userRole}/>
+          gameData={gameData}
+          navigation={navigation}
+          refereesData={gameData?.referees ?? []}
+          isAdmin={isAdmin}
+          userRole={userRole}
+          followSoccerUser={followSoccerUser}
+          unFollowSoccerUser={unFollowSoccerUser}
+      />
+      <Scorekeepers
+          followSoccerUser={followSoccerUser}
+          unFollowSoccerUser={unFollowSoccerUser}
+          gameData={gameData}
+          navigation={navigation}
+          scorekeepersData={gameData?.scorekeepers ?? []}
+          isAdmin={isAdmin}
+          userRole={userRole}
+      />
       <View style={{ backgroundColor: colors.whiteColor }}>
         <FeedsScreen navigation={navigation}/>
       </View>

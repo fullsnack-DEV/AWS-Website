@@ -13,7 +13,7 @@ const TCStarRating = ({
   const getRating = () => (_.isNaN(rating) ? 0 : rating)
 
   return (
-    <View style={{ flexDirection: 'row', flex: 1 }}>
+    <View style={{ flexDirection: 'row' }}>
 
       {/* Direction : Right */}
 
