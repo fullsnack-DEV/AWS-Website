@@ -12,16 +12,24 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../../TCGradientButton';
 
-const Scorekeepers = ({ scorekeepersData, isAdmin, userRole }) => {
+const Scorekeepers = ({
+  navigation,
+  scorekeepersData,
+  isAdmin,
+  userRole,
+  gameData,
+  followSoccerUser,
+  unFollowSoccerUser,
+}) => {
   const [scorekeeper, setScorekeeper] = useState([]);
 
   useEffect(() => setScorekeeper(scorekeepersData), [scorekeepersData])
 
   const onFollowPress = async (userID, status) => {
-    const refre = _.cloneDeep(scorekeeper);
-    const index = refre.findIndex((item) => item?.user_id === userID);
-    if (index > -1) refre[index].is_following = status
-    setScorekeeper(refre);
+    const sKeeper = _.cloneDeep(scorekeeper);
+    const index = sKeeper.findIndex((item) => item?.user_id === userID);
+    if (index > -1) sKeeper[index].is_following = status
+    setScorekeeper(sKeeper);
   };
 
   const renderScorekeepers = ({ item }) => (
@@ -30,11 +38,17 @@ const Scorekeepers = ({ scorekeepersData, isAdmin, userRole }) => {
           title={item?.full_name}
           is_following={item?.is_following}
           onFollowUnfollowPress={onFollowPress}
+          followSoccerUser={followSoccerUser}
+          unFollowSoccerUser={unFollowSoccerUser}
           profileImage={item?.thumbnail}
           isAdmin={isAdmin}
           userRole={userRole}
       />
   )
+  const handleBookScorekeeper = () => {
+    navigation.navigate('BookScorekeeper', { gameData })
+  }
+
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <Text style={styles.title}>
@@ -54,6 +68,7 @@ const Scorekeepers = ({ scorekeepersData, isAdmin, userRole }) => {
               )}/>
       {isAdmin && (
         <TCGradientButton
+                onPress={handleBookScorekeeper}
                   startGradientColor={colors.whiteColor}
                   endGradientColor={colors.whiteColor}
                   title={'BOOK SCOREKEEPERS'}

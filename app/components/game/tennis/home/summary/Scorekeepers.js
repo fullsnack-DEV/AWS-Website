@@ -12,7 +12,15 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../../TCGradientButton';
 
-const Scorekeepers = ({ scorekeepersData, isAdmin, userRole }) => {
+const Scorekeepers = ({
+  scorekeepersData,
+  isAdmin,
+  userRole,
+  navigation,
+  gameData,
+  followSoccerUser,
+  unFollowSoccerUser,
+}) => {
   const [scorekeeper, setScorekeeper] = useState([]);
 
   useEffect(() => setScorekeeper(scorekeepersData), [scorekeepersData])
@@ -30,11 +38,17 @@ const Scorekeepers = ({ scorekeepersData, isAdmin, userRole }) => {
           title={item?.full_name}
           is_following={item?.is_following}
           onFollowUnfollowPress={onFollowPress}
+          followSoccerUser={followSoccerUser}
+          unFollowSoccerUser={unFollowSoccerUser}
           profileImage={item?.thumbnail}
           isAdmin={isAdmin}
           userRole={userRole}
       />
   )
+  const handleBookScorekeeper = () => {
+    navigation.navigate('BookScorekeeper', { gameData })
+  }
+
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <Text style={styles.title}>
@@ -54,7 +68,8 @@ const Scorekeepers = ({ scorekeepersData, isAdmin, userRole }) => {
               )}/>
       {isAdmin && (
         <TCGradientButton
-                  startGradientColor={colors.whiteColor}
+            onPress={handleBookScorekeeper}
+            startGradientColor={colors.whiteColor}
                   endGradientColor={colors.whiteColor}
                   title={'BOOK SCOREKEEPERS'}
                   style={{

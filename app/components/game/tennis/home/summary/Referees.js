@@ -16,6 +16,8 @@ const Referees = ({
   userRole,
   followSoccerUser,
   unFollowSoccerUser,
+  gameData,
+  navigation,
 }) => {
   const [refree, setRefree] = useState([]);
   const authContext = useContext(AuthContext)
@@ -49,6 +51,11 @@ const Referees = ({
           userRole={userRole}
       />
   )
+
+  const handleBookReferee = () => {
+    navigation.navigate('BookReferee', { gameData })
+  }
+
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <Text style={styles.title}>
@@ -68,6 +75,7 @@ const Referees = ({
           )}/>
       {isAdmin && (
         <TCGradientButton
+            onPress={handleBookReferee}
               startGradientColor={colors.whiteColor}
               endGradientColor={colors.whiteColor}
               title={'BOOK REFEREE'}

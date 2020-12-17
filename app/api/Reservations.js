@@ -7,3 +7,10 @@ export const getReservationList = async (authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}/reservations?referenceObject=true`,
   authContext,
 })
+
+export const createUserReservation = (userType, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/${userType}/reservation`,
+  data: params,
+  authContext,
+})

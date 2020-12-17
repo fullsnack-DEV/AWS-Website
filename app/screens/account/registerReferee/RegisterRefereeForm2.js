@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -20,17 +20,23 @@ import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 
-import { patchRegisterRefereeDetails } from '../../../api/Users';
+import { getUserDetails, patchRegisterRefereeDetails } from '../../../api/Users';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 
 export default function RegisterRefereeForm2({ navigation, route }) {
-  // For activity indigator
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
-  const [matchFee, onMatchFeeChanged] = React.useState('');
+  const [matchFee, onMatchFeeChanged] = React.useState('0');
   const [selected, setSelected] = useState(0);
-
+  const [currentRefereeData, setCurrentRefereeData] = useState([]);
+  useEffect(() => {
+    getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
+      setCurrentRefereeData(res?.payload?.referee_data);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }, [])
   const registerRefereeCall = () => {
     setloading(true);
     if (route.params && route.params.bodyParams) {
@@ -43,15 +49,17 @@ export default function RegisterRefereeForm2({ navigation, route }) {
       } else {
         bodyParams.referee_data[0].cancellation_policy = 'flexible';
       }
-      patchRegisterRefereeDetails(bodyParams, authContext).then(() => {
-        navigation.navigate('AccountScreen');
-        Alert.alert('Towns Cup', 'Referee sucessfully registered');
+      const allData = { referee_data: [...bodyParams?.referee_data, ...currentRefereeData] }
 
-        setloading(false);
+      patchRegisterRefereeDetails(allData, authContext).then((res) => {
+        const entity = authContext.entity
+        entity.auth.user = res.payload;
+        entity.obj = res.payload;
+        authContext.setEntity({ ...entity })
+        navigation.navigate('RegisterRefereeSuccess');
       }).catch((error) => {
-        setloading(false)
         Alert.alert(error)
-      })
+      }).finally(() => setloading(false));
     }
   };
 
@@ -73,7 +81,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
             placeholder={ strings.enterFeePlaceholder }
             style={ styles.feeText }
             onChangeText={ (text) => onMatchFeeChanged(text) }
-            value={ (matchFee) }
+            value={matchFee}
             keyboardType={ 'decimal-pad' }></TextInput>
           <Text style={ styles.curruency }>CAD/hour</Text>
         </View>
@@ -199,13 +207,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
-    marginBottom: '22%',
   },
   formSteps: {
     alignSelf: 'flex-end',
     flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
+    padding: 15,
   },
   form1: {
     backgroundColor: colors.themeColor,

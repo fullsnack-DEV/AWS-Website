@@ -67,7 +67,7 @@ const TCUserFollowUnfollowList = ({
             </TouchableOpacity>
           ) : (
             <View>
-              {!loading && userRole === 'user' ? (<TCGradientButton
+              {!loading && userRole === 'user' && (<TCGradientButton
                       onPress={onFollowPress}
                       title={is_following ? 'Following' : 'Follow'}
                       startGradientColor={is_following ? colors.yellowColor : colors.whiteColor}
@@ -80,18 +80,20 @@ const TCUserFollowUnfollowList = ({
                         width: 75,
                         borderWidth: 1,
                         borderColor: colors.yellowColor,
-                      }} />) : (
-                        <View style={{
-                          borderRadius: 5,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          height: 25,
-                          width: 75,
-                          borderWidth: 1,
-                          borderColor: colors.yellowColor,
-                        }}>
-                          <TCInnerLoader allowMargin={true} size={20} visible={loading}/>
-                        </View>
+                      }} />
+              )}
+              {loading && userRole === 'user' && (
+                <View style={{
+                  borderRadius: 5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: 25,
+                  width: 75,
+                  borderWidth: 1,
+                  borderColor: colors.yellowColor,
+                }}>
+                  <TCInnerLoader allowMargin={true} size={20} visible={loading}/>
+                </View>
               )}
             </View>
           )}

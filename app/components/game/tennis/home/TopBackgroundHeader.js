@@ -90,6 +90,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
   return (
     <View style={{ flex: 1 }}>
       <Header
+          barStyle={'light-content'}
             safeAreaStyle={{ position: 'absolute' }}
             leftComponent={
               <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -119,6 +120,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
             onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)}
             renderFixedHeader={() => (
               <Header
+                  barStyle={'light-content'}
                 safeAreaStyle={{ position: 'absolute' }}
                 leftComponent={
                   <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -148,6 +150,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                     blurRadius={1.5}
                     style={styles.stickyImageStyle} />
                 <Header
+                    barStyle={'light-content'}
                         safeAreaStyle={{ position: 'absolute' }}
                         centerComponent={
                           <View style={styles.closeHeaderCenterStyle}>

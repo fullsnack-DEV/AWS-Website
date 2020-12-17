@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
+    alignItems: 'center',
   },
   fieldTitle: {
     fontSize: 16,

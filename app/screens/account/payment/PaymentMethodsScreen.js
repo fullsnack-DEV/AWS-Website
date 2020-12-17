@@ -50,11 +50,9 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   }
 
   const onCardSelected = async (item) => {
-    if (route.params.comeFrom === 'CreateChallengeForm5') {
-      navigation.navigate('CreateChallengeForm5', {
-        paymentMethod: item,
-      });
-    }
+    navigation.navigate(route?.params?.comeFrom, {
+      paymentMethod: item,
+    });
   }
 
   const onDeleteCard = (item) => {

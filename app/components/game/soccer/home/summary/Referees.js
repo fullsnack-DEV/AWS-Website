@@ -11,11 +11,13 @@ import TCGradientButton from '../../../../TCGradientButton';
 import AuthContext from '../../../../../auth/context'
 
 const Referees = ({
+  gameData,
   refereesData,
   isAdmin,
   userRole,
   followSoccerUser,
   unFollowSoccerUser,
+  navigation,
 }) => {
   const authContext = useContext(AuthContext)
   const [refree, setRefree] = useState([])
@@ -48,6 +50,10 @@ const Referees = ({
           userRole={userRole}
       />
   )
+
+  const handleBookReferee = () => {
+    navigation.navigate('BookReferee', { gameData })
+  }
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <Text style={styles.title}>
@@ -67,6 +73,7 @@ const Referees = ({
           )}/>
       {isAdmin && (
         <TCGradientButton
+            onPress={handleBookReferee}
               startGradientColor={colors.whiteColor}
               endGradientColor={colors.whiteColor}
               title={'BOOK REFEREE'}

@@ -139,6 +139,8 @@ const Summary = ({
 
       {/* Regerees */}
       <Referees
+          navigation={navigation}
+            gameData={gameData}
             refereesData={gameData?.referees ?? []}
             isAdmin={isAdmin}
             userRole={userRole}
@@ -147,7 +149,15 @@ const Summary = ({
         />
 
       {/* Scorekeepers */}
-      <Scorekeepers scorekeepersData={gameData?.scorekeepers ?? []} isAdmin={isAdmin} userRole={userRole}/>
+      <Scorekeepers
+          followSoccerUser={followSoccerUser}
+          unFollowSoccerUser={unFollowSoccerUser}
+          scorekeepersData={gameData?.scorekeepers ?? []}
+          isAdmin={isAdmin}
+          userRole={userRole}
+          navigation={navigation}
+          gameData={gameData}
+      />
 
       {/* Feed Screen */}
       <View style={{ backgroundColor: colors.whiteColor }}>
