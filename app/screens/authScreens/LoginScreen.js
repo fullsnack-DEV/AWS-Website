@@ -85,6 +85,7 @@ export default function LoginScreen({ navigation }) {
     const entity = {
       uid: user.uid,
       role: 'user',
+      isLoggedIn: true,
       auth: {
         token,
         user_id: user.uid,
@@ -124,9 +125,26 @@ export default function LoginScreen({ navigation }) {
         setloading(false);
       });
   };
+
+  const QBInitialLogin = (entity, response) => {
+    let qbEntity = entity;
+    QBlogin(qbEntity.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+
+      authContext.setEntity({ ...qbEntity })
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+
+      QBconnectAndSubscribe(qbEntity)
+    }).catch(async (error) => {
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      authContext.setEntity({ ...qbEntity })
+      console.log(error.message);
+    });
+  }
   const getUserInfo = (e) => {
     const ac = authContext
-    let entity = e
+    const entity = e
     ac.entity = entity
 
     return getUserDetails(entity.auth.user_id, ac).then((response) => {
@@ -137,16 +155,8 @@ export default function LoginScreen({ navigation }) {
       Utility.setStorage('authContextEntity', { ...entity })
       Utility.setStorage('authContextUser', { ...response.payload })
 
-      QBlogin(entity.uid, response.payload).then((res) => {
-        entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+      QBInitialLogin(entity, response.payload);
 
-        authContext.setEntity({ ...entity })
-        Utility.setStorage('authContextEntity', { ...entity })
-
-        QBconnectAndSubscribe(entity)
-      }).catch((error) => {
-        console.log(error.message);
-      });
       return setloading(false);
     })
   }
@@ -188,6 +198,7 @@ export default function LoginScreen({ navigation }) {
                     uid: user.uid,
                     role: 'user',
                     obj: response.payload,
+                    isLoggedIn: true,
                     auth: {
                       user_id: user.uid,
                       token,
@@ -197,6 +208,7 @@ export default function LoginScreen({ navigation }) {
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   authContext.setUser(response.payload)
+                  QBInitialLogin(entity, response.payload);
                 } else {
                   Alert.alert(response.messages);
                 }
@@ -239,6 +251,7 @@ export default function LoginScreen({ navigation }) {
                     uid: user.uid,
                     role: 'user',
                     obj: response.payload,
+                    isLoggedIn: true,
                     auth: {
                       user_id: user.uid,
                       token,
@@ -248,6 +261,7 @@ export default function LoginScreen({ navigation }) {
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   await authContext.setUser(response.payload);
+                  QBInitialLogin(entity, response.payload);
                 } else {
                   Alert.alert(response.messages);
                 }

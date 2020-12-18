@@ -92,6 +92,7 @@ export default function WelcomeScreen({ navigation }) {
             }
             await Utility.setStorage('userInfo', userDetail);
             await Utility.setStorage('loggedInEntity', entity);
+            await authContext.setEntity({ ...entity })
 
             getUserDetails(user.uid, authContext).then((response) => {
               setloading(false);
@@ -144,6 +145,7 @@ export default function WelcomeScreen({ navigation }) {
               role: 'user',
             }
             await Utility.setStorage('loggedInEntity', entity);
+            await authContext.setEntity({ ...entity })
             const flName = user.displayName.split(' ');
 
             const userDetail = {};

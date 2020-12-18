@@ -54,25 +54,25 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getTeamsData = async (item) => {
     const queryParams = {
-      state: item.terms[1].value,
-      city: item.terms[0].value,
+      state: item.terms?.[1]?.value,
+      city: item.terms?.[0]?.value,
     };
 
     searchGroups(queryParams, authContext).then((response) => {
       if (response.payload.length > 0) {
         navigation.navigate('TotalTeamsScreen', {
-          city: item.terms[0].value,
+          city: item.terms?.[0]?.value,
           state: item.terms[1].value,
-          country: item.terms[2].value,
+          country: item.terms?.[2]?.value,
           totalTeams: response.payload.length,
           teamData: response.payload,
         });
       } else {
         navigation.navigate('ChooseSportsScreen', {
 
-          city: item.terms[0].value,
-          state: item.terms[1].value,
-          country: item.terms[2].value,
+          city: item.terms?.[0]?.value,
+          state: item.terms?.[1]?.value,
+          country: item.terms?.[2]?.value,
         });
       }
     }).catch((e) => {
