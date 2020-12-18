@@ -123,6 +123,7 @@ import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/Boo
 import ScorekeeperBookingDateAndTime
   from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
+import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 
 const Stack = createStackNavigator();
 
@@ -528,7 +529,13 @@ const HomeNavigator = () => (
             headerShown: false,
           }}
       />
-
+    <Stack.Screen
+          name="RefereeSelectMatch"
+          component={RefereeSelectMatch}
+          options={{
+            headerShown: false,
+          }}
+      />
     <Stack.Screen
           name="BookRefereeSuccess"
           component={ BookRefereeSuccess }

@@ -31,7 +31,7 @@ const gameIds = [
   '0750bda5-942e-4de2-bb65-386aec7cf6c3', // 2
   '13f4cde8-6a90-4236-8cdd-5ede92e94d5b', // 3
 ]
-const globalGameId = gameIds[3];
+const globalGameId = gameIds[0];
 const TennisHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const [tennisGameId] = useState(route?.params?.gameId ?? globalGameId);

@@ -42,12 +42,16 @@ import TCInnerLoader from '../../../../components/TCInnerLoader';
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const userData = route?.params?.userData;
-  const gameData = route?.params?.gameData;
+  const [gameData, setGameData] = useState(route?.params?.gameData);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
   const [challengeObject, setChallengeObject] = useState(null);
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    setGameData(route?.params?.gameData);
+    if (route.params?.gameData) getFeeDetail();
+  }, [route?.params?.gameData])
   const getFeeDetail = () => {
     setLoading(true);
     body = {
@@ -73,9 +77,6 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
       });
   };
 
-  useEffect(() => {
-    getFeeDetail();
-  }, [])
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>
       {text}
@@ -95,6 +96,11 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   }
 
   const handleOnNext = () => {
+    if (!gameData?.game_id) {
+      Alert.alert('Towns Cup', 'You don\'t have any selected match');
+      return false;
+    }
+
     if (chiefOrAssistant === 'chief' && !gameData?.challenge_referee?.[0]?.is_chief) {
       Alert.alert('Towns Cup', 'You can’t book the chief referee for this match.');
       return false;
@@ -118,13 +124,13 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     if (Number(bodyParams.hourly_game_fee) === 0) delete bodyParams.source;
 
     delete bodyParams.hourly_game_fee
-
+    setLoading(true);
     createUserReservation('referees', bodyParams, authContext).then(() => {
       const navigationName = `${gameData?.sport}Home`;
       navigation.navigate('BookRefereeSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
-      Alert.alert('Towns Cup', error?.message)
-    })
+      setTimeout(() => Alert.alert('Towns Cup', error?.message), 200)
+    }).finally(() => setLoading(false));
     return true;
   }
   return (
@@ -167,12 +173,16 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               <View style={styles.contentContainer}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Title text={'Choose a Match'} required={true} />
-                  {!gameData && (
-                    <FastImage
-                            source={images.arrowGraterthan}
-                            style={{ width: 12, height: 12 }}
-                        />
-                  )}
+                  <TouchableOpacity onPress={() => {
+                    navigation.navigate('RefereeSelectMatch', { userData });
+                  }}>
+                    {!gameData && (
+                      <FastImage
+                              source={images.arrowGraterthan}
+                              style={{ width: 12, height: 12 }}
+                          />
+                    )}
+                  </TouchableOpacity>
                 </View>
                 {gameData && <TCGameCard data={gameData} />}
               </View>
@@ -265,7 +275,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               <Seperator/>
 
               {/* Payment Method */}
-              {Number(route?.params?.hourly_game_fee) > 0 && (
+              {Number(route?.params?.body?.hourly_game_fee) > 0 && (
                 <View style={styles.contentContainer}>
                   <Title text={'Payment Method'} />
                   <View style={{ marginTop: 10 }}>
@@ -284,13 +294,16 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               )}
 
               {/* Payment */}
-              <View style={styles.contentContainer}>
-                <Title text={'Payment'} />
-                <View style={{ marginTop: 10 }}>
+              {route?.params?.paymentMethod?.id && gameData && (
+                <View style={styles.contentContainer}>
+                  <Title text={'Payment'} />
+                  <View style={{ marginTop: 10 }}>
 
-                  <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'receiver'} />
+                    <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'receiver'} />
+                  </View>
                 </View>
-              </View>
+              )}
+
               <Seperator />
 
               {/* Next Button */}

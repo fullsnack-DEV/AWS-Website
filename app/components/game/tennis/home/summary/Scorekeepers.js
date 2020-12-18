@@ -66,7 +66,7 @@ const Scorekeepers = ({
                   </Text>
                 </View>
               )}/>
-      {isAdmin && (
+      {isAdmin && gameData?.status !== 'ended' && (
         <TCGradientButton
             onPress={handleBookScorekeeper}
             startGradientColor={colors.whiteColor}
