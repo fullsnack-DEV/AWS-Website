@@ -104,6 +104,8 @@ export default function ChooseSportsScreen({ navigation, route }) {
       entity.obj = response.payload
       entity.auth.user = response.payload
       entity.role = 'user'
+      entity.isLoggedIn = true
+
       await authContext.setUser(response.payload);
       Utility.setStorage('authContextUser', { ...response.payload })
       QBlogin(entity.uid, response.payload).then(async (res) => {

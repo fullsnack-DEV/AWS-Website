@@ -1,8 +1,8 @@
 import makeAPIRequest from '../utils/Global';
+import apiCall from '../utils/apiCall';
 
-export const searchLocations = async (query, authContext) => makeAPIRequest({
+export const searchLocations = async (query) => apiCall({
   method: 'get',
-  authContext,
   url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
 })
 

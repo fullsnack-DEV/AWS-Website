@@ -229,6 +229,9 @@ const styles = StyleSheet.create({
     marginLeft: '5%',
     marginRight: '5%',
     marginTop: '3%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
@@ -253,12 +256,11 @@ const styles = StyleSheet.create({
   },
   imgWithText: {
     flexDirection: 'row',
-    paddingLeft: 80,
   },
   logo: {
     alignContent: 'center',
-    height: hp('15%'),
-    marginBottom: hp('4%'),
+    height: hp(12),
+    marginBottom: hp(4),
     resizeMode: 'contain',
   },
   logoContainer: {
@@ -293,8 +295,7 @@ const styles = StyleSheet.create({
     color: colors.themeColor,
     fontFamily: fonts.RRegular,
     fontSize: 17,
-    height: 50,
-    padding: 12,
+    marginLeft: 10,
   },
   welcome: {
     color: colors.whiteColor,

@@ -31,12 +31,13 @@ const styles = StyleSheet.create({
     marginLeft: '5%',
     marginRight: '5%',
     marginTop: '3%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-
-    // elevation: 5,
   },
   fbImg: {
     alignSelf: 'center',
@@ -48,12 +49,10 @@ const styles = StyleSheet.create({
     color: colors.fbTextColor,
     fontFamily: fonts.RRegular,
     fontSize: 17,
-    height: 50,
-    padding: 12,
+    marginLeft: 10,
   },
   imgWithText: {
     flexDirection: 'row',
-    paddingLeft: 80,
   },
 });
 export default FacebookButton;
