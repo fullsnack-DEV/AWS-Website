@@ -59,7 +59,7 @@ function NotificationsListScreen({ navigation }) {
       const a = JSON.parse(item.activities[0].object)?.challengeObject?.challenge_id || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id
       setloading(true)
       Utils.getChallengeDetail(a, authContext).then((obj) => {
-        console.log('kkkk:', obj.challengeObj);
+        console.log('kkkk:', JSON.stringify(obj.challengeObj));
         console.log('Screen name kkkk:', obj.screenName);
         navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj || obj.challengeObj[0] })
         setloading(false)

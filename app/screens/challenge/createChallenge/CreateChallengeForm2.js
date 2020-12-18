@@ -310,7 +310,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                     teamData: route.params.teamData,
                     body: {
                       ...route.params.body,
-                      gameRules: rules,
+                      special_rule: rules,
                     },
                   });
                 }

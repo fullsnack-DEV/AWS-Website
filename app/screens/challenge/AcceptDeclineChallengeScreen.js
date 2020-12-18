@@ -198,6 +198,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
         }
         return 'receiver';
       }
+
       if (challengeObj.updated_by.group_id === entity.uid) {
         return 'sender';
       }
@@ -382,7 +383,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           {/* status pending payment */}
           {/* Status accepted */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === ReservationStatus.accepted && (
+            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
               <View>
                 <Text
                   style={[
@@ -398,7 +399,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === ReservationStatus.accepted && (
+            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
               <View>
                 <Text
                   style={[
@@ -486,7 +487,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
                 onPress={() => {
-                  console.log('OK PAYMENT');
+                  navigation.navigate('PayAgainScreen', {
+                    body: bodyParams,
+                    comeFrom: ReservationStatus.pendingpayment,
+                  })
                 }}
                 marginBottom={15}
               />
@@ -699,7 +703,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
 
-          {bodyParams.status === ReservationStatus.accepted && (
+          {(bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
             <View>
               <TCBorderButton
                 title={strings.alterReservation}

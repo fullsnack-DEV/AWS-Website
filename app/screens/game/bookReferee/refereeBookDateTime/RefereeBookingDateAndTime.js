@@ -133,6 +133,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     }).finally(() => setLoading(false));
     return true;
   }
+
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header

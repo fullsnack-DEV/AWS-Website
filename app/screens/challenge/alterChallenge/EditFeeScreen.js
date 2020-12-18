@@ -25,8 +25,6 @@ export default function EditFeeScreen({ navigation, route }) {
       console.log('EDIT FEES::', route.params.body);
       bodyParams = {
         ...route.params.body,
-        manual_fee: true,
-
       }
       setBasicFee(route.params.body.total_game_charges)
     }
@@ -64,8 +62,10 @@ export default function EditFeeScreen({ navigation, route }) {
                 navigation.navigate('AlterAcceptDeclineScreen', {
                   challengeObj: {
                     ...bodyParams,
-                    total_game_charges: basicFee,
+                    manual_fee: true,
+                    total_game_charges: parseFloat(basicFee),
                   },
+                  updatedFee: true,
                 })
               } else {
                 Alert.alert('Please enter valid game fee.')

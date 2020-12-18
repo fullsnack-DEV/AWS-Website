@@ -452,5 +452,6 @@ const strings = {
   lastnamevalidation: 'Last name cannot be blank',
   locationvalidation: 'Location cannot be blank',
   addOptionMessage: '+ Add a payment method',
+  selectPaymentText: 'Please select payment method.',
 };
 export default strings;

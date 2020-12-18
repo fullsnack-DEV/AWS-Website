@@ -53,7 +53,7 @@ const BookReferee = ({ navigation, route }) => {
     setSearchText(text);
     const search = () => {
       if (text !== '') {
-        const data = getSearchData(refereesData, ['full_name', 'city', 'country'], text)
+        const data = getSearchData(refereesData, 'full_name', text)
         if (data?.length > 0) setSearchData([...data]);
         else setSearchData([]);
       }
