@@ -111,6 +111,7 @@ export default function SignupScreen({ navigation }) {
           uid: user.uid,
           role: 'user',
         };
+        await authContext.setEntity({ ...entity })
         await Utility.setStorage('userInfo', userDetail);
         await Utility.setStorage('loggedInEntity', entity);
 

@@ -95,8 +95,26 @@ export default function ChooseSportsScreen({ navigation, route }) {
       }, 0.7);
     });
   };
+
+  const QBInitialLogin = (entity, response) => {
+    let qbEntity = entity;
+    QBlogin(qbEntity.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+
+      authContext.setEntity({ ...qbEntity })
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+
+      QBconnectAndSubscribe(qbEntity)
+    }).catch(async (error) => {
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      authContext.setEntity({ ...qbEntity })
+      console.log(error.message);
+    });
+  }
+
   const getUserInfo = async () => {
-    let entity = authContext.entity
+    const entity = authContext.entity
     console.log('USER ENTITY:', entity);
     const response = await getUserDetails(entity.auth.user_id, authContext);
 
@@ -106,18 +124,10 @@ export default function ChooseSportsScreen({ navigation, route }) {
       entity.role = 'user'
       entity.isLoggedIn = true
 
+      authContext.setEntity({ ...entity })
       await authContext.setUser(response.payload);
       Utility.setStorage('authContextUser', { ...response.payload })
-      QBlogin(entity.uid, response.payload).then(async (res) => {
-        entity = { ...entity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-        authContext.setEntity({ ...entity })
-        Utility.setStorage('authContextEntity', { ...entity })
-        await QBconnectAndSubscribe(entity);
-      }).catch(async () => {
-        entity = { ...entity, QB: { connected: false } }
-        authContext.setEntity({ ...entity })
-        Utility.setStorage('authContextEntity', { ...entity })
-      });
+      QBInitialLogin(entity, response);
       setloading(false);
     } else {
       throw new Error(response);
