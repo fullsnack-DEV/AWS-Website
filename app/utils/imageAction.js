@@ -15,7 +15,7 @@ const base64ToArrayBuffer = (base64) => {
   // return Buffer.from(binaryString)
 };
 
-const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
+export const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
   const base64 = await fs.readFile(uri, 'base64');
   const imgBuffer = base64ToArrayBuffer(base64);
   const options = {

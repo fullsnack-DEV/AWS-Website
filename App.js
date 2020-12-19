@@ -38,12 +38,6 @@ export default function App() {
       setEntity({ ...authContextEntity })
       authContext.setEntity({ ...entity })
       authContext.setUser({ ...authContextUser });
-      // if (entity.role === 'user') {
-      //   setUser(e.auth.user);
-      //   await QBconnectAndSubscribe(e);
-      // } else {
-      //   setUser(e.obj);
-      // }
     }
   };
 
