@@ -68,6 +68,9 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
       body.total_game_charges = response?.payload?.total_game_fee ?? 0;
       body.payment_method_type = 'card';
       body = { ...body, ...route.params?.body };
+
+      console.log('Route data:', route.params?.body);
+      console.log('body data:', body);
       setChallengeObject(body);
       setLoading(false);
     })
@@ -295,12 +298,12 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               )}
 
               {/* Payment */}
-              {route?.params?.paymentMethod?.id && gameData && (
+              { gameData && (
                 <View style={styles.contentContainer}>
                   <Title text={'Payment'} />
                   <View style={{ marginTop: 10 }}>
 
-                    <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'receiver'} />
+                    <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'sender'} type='referee' />
                   </View>
                 </View>
               )}

@@ -1,7 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
-  FlatList, StyleSheet, Text, TouchableOpacity, View,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import images from '../../../../Constants/ImagePath';
@@ -12,14 +16,14 @@ import TCSearchBox from '../../../../components/TCSearchBox';
 import RenderReferee from './RenderReferee';
 import TCGradientButton from '../../../../components/TCGradientButton';
 import { getGameUser } from '../../../../api/Games';
-import AuthContext from '../../../../auth/context'
+import AuthContext from '../../../../auth/context';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
 
 const TYPING_SPEED = 200;
 const BookReferee = ({ navigation, route }) => {
   const gameData = route?.params?.gameData;
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [refereesData, setRefereesData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [searchData, setSearchData] = useState(null);
@@ -28,121 +32,152 @@ const BookReferee = ({ navigation, route }) => {
   const [typingTimeout, setTypingTimeout] = useState(0);
   useEffect(() => {
     setLoading(true);
-    getGameUser(gameData?.sport, 'referees', authContext).then((res) => {
-      setRefereesData([...res?.payload]);
-    }).finally(() => setLoading(false))
-  }, [])
+    getGameUser(gameData?.sport, 'referees', authContext)
+      .then((res) => {
+        setRefereesData([...res?.payload]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const renderRefereeData = ({ item }) => {
-    const referee = item?.referee_data?.filter((refereeItem) => refereeItem?.sport_name === gameData?.sport);
+    const referee = item?.referee_data?.filter(
+      (refereeItem) => refereeItem?.sport_name === gameData?.sport,
+    );
     return (
       <RenderReferee
-            isSelected={item?.user_id === selectedReferee?.user_id}
-            fees={referee?.[0]?.fee ?? 0}
-            name={item?.full_name}
-            country={`${item?.city ?? ''} ${item?.country ? ',' : ''} ${item?.country ?? ''}`}
-            rating={referee?.[0]?.avg_review?.total_avg ?? 0}
-            onRadioClick={() => {
-              setSelectedReferee(item)
-            }}
-        />
-    )
-  }
+        isSelected={item?.user_id === selectedReferee?.user_id}
+        fees={referee?.[0]?.fee ?? 0}
+        name={item?.full_name}
+        country={`${item?.city ?? ''} ${item?.country ? ',' : ''} ${
+          item?.country ?? ''
+        }`}
+        rating={referee?.[0]?.avg_review?.total_avg ?? 0}
+        onRadioClick={() => {
+          console.log('selected referee data:', JSON.stringify(item));
+          setSelectedReferee(item);
+        }}
+      />
+    );
+  };
   const onSearchRefreeTextChange = (text) => {
     if (typingTimeout) clearTimeout(typingTimeout);
     setSearchText(text);
     const search = () => {
       if (text !== '') {
-        const data = getSearchData(refereesData, 'full_name', text)
+        const data = getSearchData(refereesData, 'full_name', text);
         if (data?.length > 0) setSearchData([...data]);
         else setSearchData([]);
       }
-    }
-    setTypingTimeout(setTimeout(search, TYPING_SPEED))
-  }
+    };
+    setTypingTimeout(setTimeout(search, TYPING_SPEED));
+  };
   return (
     <View style={styles.mainContainer}>
       <Header
-            leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
-              </TouchableOpacity>
-            }
-            centerComponent={
-              <Text style={styles.eventTitleTextStyle}>Book a referee</Text>
-            }
-        />
-      <View style={styles.headerBottomBorder}/>
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FastImage
+              resizeMode={'contain'}
+              source={images.backArrow}
+              style={styles.backImageStyle}
+            />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTitleTextStyle}>Book a referee</Text>
+        }
+      />
+      <View style={styles.headerBottomBorder} />
 
       {/* Loader */}
-      <TCInnerLoader visible={loading}/>
+      <TCInnerLoader visible={loading} />
 
       {/* Content */}
       {!loading && (
         <View style={styles.contentContainer}>
-
           {/*  Search Bar */}
           <TCSearchBox
             value={searchText}
             placeholderText={'Search'}
             onChangeText={onSearchRefreeTextChange}
-        />
+          />
 
           {/*  Total and Filter */}
           <View style={styles.totalAndFilterContainer}>
-            <Text style={styles.totalRefereeText}>Total {refereesData?.length ?? 0} Referees</Text>
+            <Text style={styles.totalRefereeText}>
+              Total {refereesData?.length ?? 0} Referees
+            </Text>
             <Text style={styles.filtersText}>Filters</Text>
           </View>
 
           {/*  Referee List Container */}
           {!loading && (
             <FlatList
-            keyExtractor={(item) => item?.user_id}
-            bounces={false}
+              keyExtractor={(item) => item?.user_id}
+              bounces={false}
               data={searchText === '' ? refereesData : searchData}
               renderItem={renderRefereeData}
-            ListEmptyComponent={<Text style={styles.emptySectionListItem}>
-              {searchText === '' ? 'No referee found' : `No referee found for '${searchText}'`}
-            </Text>}
-          />
+              ListEmptyComponent={
+                <Text style={styles.emptySectionListItem}>
+                  {searchText === ''
+                    ? 'No referee found'
+                    : `No referee found for '${searchText}'`}
+                </Text>
+              }
+            />
           )}
           {/*  Next Button */}
           {selectedReferee && (
             <View style={{ justifyContent: 'flex-end' }}>
               <TCGradientButton
-                  title={'NEXT'}
-                  onPress={() => {
-                    const body = {
-                      hourly_game_fee: selectedReferee?.referee_data.filter((item) => item?.sport_name === gameData?.sport)?.[0]?.fee,
-                      currency_type: selectedReferee?.referee_data.filter((item) => item?.sport_name === gameData?.sport)?.[0]?.currency_type ?? 'CAD',
-                    }
-                    if (gameData?.referees) {
-                      if (gameData?.referees?.length < gameData?.challenge_referee?.length) {
-                        navigation.navigate('RefereeBookingDateAndTime', { userData: selectedReferee, gameData, body });
-                      } else {
-                        Alert.alert(
-                          'Towns Cup',
-                          `You can't book more than ${gameData?.challenge_referee?.length} referee for this match. You can change the number of referees in the reservation details.`,
-                        )
-                      }
-                    } else if (gameData?.challenge_referee?.length > 0) {
-                      navigation.navigate('RefereeBookingDateAndTime', { userData: selectedReferee, gameData, body });
+                title={'NEXT'}
+                onPress={() => {
+                  const body = {
+                    hourly_game_fee: selectedReferee?.referee_data.filter(
+                      (item) => item?.sport_name === gameData?.sport,
+                    )?.[0]?.fee ?? 0,
+                    currency_type:
+                      selectedReferee?.referee_data.filter(
+                        (item) => item?.sport_name === gameData?.sport,
+                      )?.[0]?.currency_type ?? 'CAD',
+                  };
+                  if (gameData?.referees) {
+                    if (
+                      gameData?.referees?.length
+                      < gameData?.challenge_referee?.length
+                    ) {
+                      navigation.navigate('RefereeBookingDateAndTime', {
+                        userData: selectedReferee,
+                        gameData,
+                        body,
+                      });
                     } else {
                       Alert.alert(
                         'Towns Cup',
-                        `You can’t book more than ${gameData?.challenge_referee?.length} referee for this match. You can change the number of referees in the reservation details.`,
-                      )
+                        `You can't book more than ${gameData?.challenge_referee?.length} referee for this match. You can change the number of referees in the reservation details.`,
+                      );
                     }
-                  }}
+                  } else if (gameData?.challenge_referee?.length > 0) {
+                    navigation.navigate('RefereeBookingDateAndTime', {
+                      userData: selectedReferee,
+                      gameData,
+                      body,
+                    });
+                  } else {
+                    Alert.alert(
+                      'Towns Cup',
+                      `You can’t book more than ${gameData?.challenge_referee?.length} referee for this match. You can change the number of referees in the reservation details.`,
+                    );
+                  }
+                }}
               />
             </View>
           )}
-
         </View>
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -176,7 +211,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomColor: colors.grayBackgroundColor,
     borderBottomWidth: 2,
-
   },
   totalRefereeText: {
     fontSize: 12,
@@ -196,6 +230,5 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     textAlign: 'center',
   },
-
-})
+});
 export default BookReferee;

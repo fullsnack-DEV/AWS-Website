@@ -10,6 +10,7 @@ export default function DateTimePickerView({
   mode,
   minimumDate,
   maximumDate,
+  minutesGap = 1,
 }) {
   return (
     <DateTimePickerModal
@@ -19,6 +20,7 @@ export default function DateTimePickerView({
       onCancel={onCancel}
       onHide={onHide}
       date={date}
+      minuteInterval={minutesGap}
       minimumDate={minimumDate}
       maximumDate={maximumDate}
     />

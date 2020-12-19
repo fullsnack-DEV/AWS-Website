@@ -93,6 +93,23 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           break;
         }
       }
+      if (!paymentCard) {
+        setPaymentCard({
+          start_datetime: challengeObj[0].start_datetime,
+          end_datetime: challengeObj[0].end_datetime,
+          currency_type: challengeObj[0].currency_type,
+          payment_method_type: challengeObj[0].payment_method_type,
+          total_game_charges: challengeObj[0].total_game_charges,
+          service_fee1_charges: challengeObj[0].service_fee1_charges,
+          service_fee2_charges: challengeObj[0].service_fee2_charges,
+          total_charges: challengeObj[0].total_charges,
+          total_stripe_fee: challengeObj[0].total_stripe_fee,
+          total_payout: challengeObj[0].total_payout,
+        })
+      }
+      console.log('challenge Object::', challengeObj[0]);
+
+      console.log('Payment Object::', paymentCard);
     } else {
       if (isOld === false) {
         setbodyParams(challengeObj);
@@ -113,22 +130,25 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         setHomeTeam(challengeObj.home_team);
         setAwayTeam(challengeObj.away_team);
       }
+      if (!paymentCard) {
+        setPaymentCard({
+          start_datetime: challengeObj.start_datetime,
+          end_datetime: challengeObj.end_datetime,
+          currency_type: challengeObj.currency_type,
+          payment_method_type: challengeObj.payment_method_type,
+          total_game_charges: challengeObj.total_game_charges,
+          service_fee1_charges: challengeObj.service_fee1_charges,
+          service_fee2_charges: challengeObj.service_fee2_charges,
+          total_charges: challengeObj.total_charges,
+          total_stripe_fee: challengeObj.total_stripe_fee,
+          total_payout: challengeObj.total_payout,
+        })
+      }
+      console.log('challenge Object::', challengeObj);
+
+      console.log('Payment Object::', paymentCard);
     }
 
-    if (!paymentCard) {
-      setPaymentCard({
-        start_datetime: challengeObj.start_datetime,
-        end_datetime: challengeObj.end_datetime,
-        currency_type: challengeObj.currency_type,
-        payment_method_type: challengeObj.payment_method_type,
-        total_game_charges: challengeObj.total_game_charges,
-        service_fee1_charges: challengeObj.service_fee1_charges,
-        service_fee2_charges: challengeObj.service_fee2_charges,
-        total_charges: challengeObj.total_charges,
-        total_stripe_fee: challengeObj.total_stripe_fee,
-        total_payout: challengeObj.total_payout,
-      })
-    }
     getPaymentMethods()
   }, [isFocused]);
 
@@ -1180,7 +1200,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             }
           />
 
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+          {/* {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View style={{ marginTop: 10 }}>
                 <TCTouchableLabel
@@ -1194,6 +1214,20 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             }}
           />
               </View>
+          )} */}
+          {checkSenderOrReceiver(bodyParams) === 'sender' && (
+            <View style={{ marginTop: 10 }}>
+              <TCTouchableLabel
+            title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+            subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
+            showNextArrow={true}
+            onPress={() => {
+              navigation.navigate('PaymentMethodsScreen', {
+                comeFrom: 'AlterAcceptDeclineScreen',
+              })
+            }}
+          />
+            </View>
           )}
           {editPayment && (
             <View style={{ marginTop: 15 }}>
@@ -1259,7 +1293,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                       bodyParams.challenge_id,
                       bodyParams.version,
                       'accept',
-                      route?.params?.paymentMethod.id,
+                      route?.params?.paymentMethod?.id && route?.params?.paymentMethod?.id,
                     );
                   }}
                 />

@@ -12,15 +12,17 @@ import { getShortTimeDifForReservation } from '../../utils/Time';
 export default function MatchFeesCard({
   senderOrReceiver = 'sender',
   challengeObj,
+  type = 'challenge',
 }) {
   console.log('Challenge Obj of Fee card :', challengeObj);
+  // eslint-disable-next-line no-return-assign
   return (
     <View style={styles.backgroundView}>
       {challengeObj && (
         <View>
           <View style={styles.feesRow}>
             <Text style={styles.matchServiceFeeText}>
-              {strings.matchfee}{' '}
+              { (type === 'referee' && strings.refereeFeecardText) || (type === 'challenge' && strings.matchfee) || (type === 'scorekeeper' && strings.scorekeeperFee)}{' '}
               {challengeObj.manual_fee === false && (
                 <Text style={styles.smallFeeText}>
                   {' '}
@@ -38,7 +40,7 @@ export default function MatchFeesCard({
               )}{' '}
             </Text>
             <Text style={styles.matchServiceFeeText}>
-              ${parseFloat(challengeObj.total_game_charges)}{' '}
+              ${parseFloat(challengeObj.total_game_charges).toFixed(2)}{' '}
               {challengeObj.currency_type || 'CAD'}
             </Text>
           </View>

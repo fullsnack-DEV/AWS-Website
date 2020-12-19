@@ -448,6 +448,8 @@ const strings = {
   addacard: 'Add a Card',
   entergamefee: 'Enter Game Fee',
   matchfee: 'Match fee',
+  refereeFeecardText: 'Referee fee',
+  scorekeeperFee: 'Scorekeeper fee',
   firstnamevalidation: 'First name cannot be blank',
   lastnamevalidation: 'Last name cannot be blank',
   locationvalidation: 'Location cannot be blank',
