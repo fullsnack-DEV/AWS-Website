@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,19 +21,17 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCSearchBox from '../../components/TCSearchBox';
 import {
-  QB_ACCOUNT_TYPE, QBconnectAndSubscribe,
+  QB_ACCOUNT_TYPE,
   QBcreateDialog,
   QBgetDialogs,
   QBgetUserDetail,
   QBsetupSettings,
 } from '../../utils/QuickBlox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
-import AuthContext from '../../auth/context';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 const MessageMainScreen = ({ navigation, route }) => {
-  const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [endReachedCalled, setEndReachedCalled] = useState(false);
@@ -56,7 +54,7 @@ const MessageMainScreen = ({ navigation, route }) => {
     return () => {
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE);
     }
-  }, [isFocused])
+  }, [navigation, isFocused])
 
   const navigateToMessageChat = async (uid) => {
     QBgetUserDetail(
@@ -105,10 +103,9 @@ const MessageMainScreen = ({ navigation, route }) => {
 
   const connectAndSubscribe = async () => {
     setLoading(true);
-    await QBconnectAndSubscribe(authContext);
     await QBsetupSettings();
     await getDialogs();
-    setLoading(false)
+    setTimeout(() => setLoading(false), 1500);
   }
 
   const onDialogPress = (dialog) => {

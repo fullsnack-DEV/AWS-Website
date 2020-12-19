@@ -7,7 +7,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -78,8 +78,8 @@ export default function ChooseSportsScreen({ navigation, route }) {
       email: user.email,
       birthday: user.birthday,
       gender: user.gender,
-      thumbnail: '',
-      full_image: '',
+      thumbnail: user?.thumbnail ?? '',
+      full_image: user?.full_image ?? '',
       sports: selected,
       city: route.params.city,
       state_abbr: route.params.state,
@@ -96,20 +96,20 @@ export default function ChooseSportsScreen({ navigation, route }) {
     });
   };
 
-  const QBInitialLogin = (entity, response) => {
-    let qbEntity = entity;
+  const QBInitialLogin = (response) => {
+    let qbEntity = authContext?.entity;
     QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-
-      authContext.setEntity({ ...qbEntity })
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-
+      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity)
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      authContext.setEntity({ ...qbEntity })
+      setloading(false);
     }).catch(async (error) => {
       qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
-      console.log(error.message);
+      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
+      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
+      console.log('QB Login Error : ', error.message);
+      setloading(false);
     });
   }
 
@@ -117,18 +117,15 @@ export default function ChooseSportsScreen({ navigation, route }) {
     const entity = authContext.entity
     console.log('USER ENTITY:', entity);
     const response = await getUserDetails(entity.auth.user_id, authContext);
-
     if (response.status) {
       entity.obj = response.payload
       entity.auth.user = response.payload
       entity.role = 'user'
-      entity.isLoggedIn = true
 
       authContext.setEntity({ ...entity })
       await authContext.setUser(response.payload);
       Utility.setStorage('authContextUser', { ...response.payload })
       QBInitialLogin(entity, response);
-      setloading(false);
     } else {
       throw new Error(response);
     }
@@ -160,9 +157,9 @@ export default function ChooseSportsScreen({ navigation, route }) {
       <Text style={ styles.sportList }>{item.sport_name}</Text>
       <View style={ styles.checkbox }>
         {sports[index].isChecked ? (
-          <Image source={ images.checkWhite } style={ styles.checkboxImg } />
+          <FastImage resizeMode={'contain'} source={ images.checkWhite } style={ styles.checkboxImg } />
         ) : (
-          <Image source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+          <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
         )}
       </View>
       <Separator />
@@ -222,16 +219,13 @@ const styles = StyleSheet.create({
   },
   unCheckboxImg: {
     width: wp('5.5%'),
-
+    height: wp('5.5%'),
     tintColor: colors.whiteColor,
-    resizeMode: 'contain',
     alignSelf: 'center',
   },
   checkboxImg: {
     width: wp('5.5%'),
-
-    // paddingLeft: wp('25%'),
-    resizeMode: 'contain',
+    height: wp('5.5%'),
     alignSelf: 'center',
   },
   listItem: {

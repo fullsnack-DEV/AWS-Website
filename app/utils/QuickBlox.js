@@ -247,12 +247,17 @@ export const QBconnectAndSubscribe = async (entity) => {
     const { id } = entity.QB
     if (!connected) {
       return QB.chat.connect({ userId: id, password: QB_Auth_Password })
-        .then(async () => true).catch((error) => {
+        .then(async () => {
+          console.log('QB connected successfully')
+          return true;
+        }).catch((error) => {
           console.log(error.message)
-          return null
+          return { error: error.message }
         })
     }
+    console.log('QB already connected')
     return true
   }
-  return null
+  console.log('Something went wrong');
+  return { error: 'Something Went wrong' }
 }

@@ -1,4 +1,4 @@
-package com.townscup_reactnative;
+package com.townscup;
 
 import com.facebook.react.ReactActivity;
 

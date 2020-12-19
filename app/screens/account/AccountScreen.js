@@ -48,7 +48,6 @@ export default function AccountScreen({ navigation }) {
   const [groupList, setGroupList] = useState([]);
   const [team, setTeam] = useState([]);
   const [club, setClub] = useState([]);
-
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
   // for set/get clubs
@@ -209,12 +208,14 @@ export default function AccountScreen({ navigation }) {
   const onSwitchProfile = async ({ item }) => {
     setloading(true)
     switchProfile(item).then((currentEntity) => {
+      setloading(true);
       switchQBAccount(item, currentEntity)
     }).catch((e) => {
+      setloading(false)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
       }, 0.7);
-    }).finally(() => setloading(false))
+    })
   }
 
   const switchProfile = async (item) => {
@@ -294,8 +295,19 @@ export default function AccountScreen({ navigation }) {
         currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
         authContext.setEntity({ ...currentEntity })
         Utility.setStorage('authContextEntity', { ...currentEntity })
-        QBconnectAndSubscribe(currentEntity)
+        QBconnectAndSubscribe(currentEntity).then((qbRes) => {
+          setloading(false)
+          if (qbRes?.error) {
+            Alert('Towns Cup', qbRes?.error)
+          }
+        }).catch(() => {
+          setloading(false)
+        })
+      }).catch(() => {
+        setloading(false)
       })
+    }).catch(() => {
+      setloading(false)
     })
   }
 
