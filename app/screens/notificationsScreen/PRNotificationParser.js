@@ -161,10 +161,9 @@ const parseRefereeRequestNotification = async (data, loggedInEntity) => {
 
   finalString.isExpired = false
   finalString.expiryText = '00:00'
-
   if (reservationObject.status === 'offered' || reservationObject.status === 'changeRequest') {
-    if (reservationObject.offer_expiry) {
-      const expDate = new Date(reservationObject.offer_expiry * 1000)
+    if (reservationObject.expiry_datetime) {
+      const expDate = new Date(reservationObject.expiry_datetime * 1000)
       finalString.expiryText = offsetFrom(expDate)
       if (moment(expDate).diff(new Date(), 'minute') <= 0) {
         finalString.isExpired = true
@@ -268,7 +267,15 @@ const parseRefereeAwaitingPaymentRequestNotification = async (data, loggedInEnti
     finalString.imgName = reservationObject.game.home_team.thumbnail
   }
 
+  finalString.firstTitle = notificationObject.team_name
   finalString.text = notificationObject.text
+  const parts = notificationObject.text.split(notificationObject.team_name)
+  if (parts[0]) {
+    finalString.preText = parts[0]
+  }
+  if (parts[1]) {
+    finalString.text = parts[1]
+  }
 
   if (data && data.created_at) {
     finalString.notificationTime = toShortTimeFromString(`${data.created_at}+0000`)
@@ -292,7 +299,7 @@ export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
   } if (data.activities[0].verb.includes(NotificationType.refereeRequest)
     || data.activities[0].verb.includes(NotificationType.changeRefereeRequest)
     || data.activities[0].verb.includes(NotificationType.scorekeeperRequest)) {
-    return parseRefereeRequestNotification(data)
+    return parseRefereeRequestNotification(data, loggedInEntity)
   } if (data.activities[0].verb.includes(NotificationType.refereeReservationInitialPaymentFail)
     || data.activities[0].verb.includes(NotificationType.refereeReservationAlterPaymentFail)
     || data.activities[0].verb.includes(NotificationType.refereeReservationAwaitingPaymentPaid)
