@@ -208,7 +208,7 @@ export default function LoginScreen({ navigation }) {
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   authContext.setUser(response.payload)
-                  QBInitialLogin(entity, response.payload);
+                  QBInitialLogin(entity, response?.payload);
                 } else {
                   Alert.alert(response.messages);
                 }
@@ -228,7 +228,7 @@ export default function LoginScreen({ navigation }) {
         if (error.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
         }
-        setTimeout(() => Alert.alert('Towns Cup', message));
+        setTimeout(() => Alert.alert('Towns Cup', message), 1);
       });
   };
 
@@ -262,7 +262,7 @@ export default function LoginScreen({ navigation }) {
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   await authContext.setUser(response.payload);
-                  QBInitialLogin(entity, response.payload);
+                  QBInitialLogin(entity, response?.payload);
                 } else {
                   Alert.alert(response.messages);
                 }

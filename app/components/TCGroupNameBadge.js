@@ -14,10 +14,15 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCGroupNameBadge({ name = 'Tiger Youths', groupType = 'team', ...otherProps }) {
+  let typeImage = images.teamT;
+  if (groupType === 'player') typeImage = ''
+  else if (groupType === 'club') typeImage = images.clubC
+  else if (groupType === 'league') typeImage = images.clubC
+
   return (
     <View style={{ flexDirection: 'row' }} {...otherProps}>
       <Text style={styles.nameText} numberOfLines={1}>{name}</Text>
-      <Image source={ groupType === 'team' ? images.teamT : images.clubC} style={ styles.teamTImage } />
+      <Image source={typeImage} style={ styles.teamTImage } />
     </View>
   );
 }

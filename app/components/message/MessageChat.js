@@ -227,6 +227,7 @@ const MessageChat = ({
   const sendMessage = () => {
     if (!uploadedFile && messageBody === '') {
       Alert.alert('Enter Message')
+      return false;
     }
     const message = (uploadedFile && messageBody === '') ? '[attachment]' : messageBody
     QBsendMessage(dialogId, message, uploadedFile).then(() => {
@@ -235,6 +236,7 @@ const MessageChat = ({
       setUploadedFile(null);
       onInputBoxFocus()
     })
+    return true;
   }
 
   const uploadImage = () => {

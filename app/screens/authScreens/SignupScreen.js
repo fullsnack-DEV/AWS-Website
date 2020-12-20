@@ -187,9 +187,17 @@ export default function SignupScreen({ navigation }) {
       })
       .catch((e) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        let message = '';
+        if (e.code === 'auth/user-not-found') {
+          message = 'This email address is not registerd';
+        }
+        if (e.code === 'auth/email-already-in-use') {
+          message = 'That email address is already in use!';
+        }
+        if (e.code === 'auth/invalid-email') {
+          message = 'That email address is invalid!';
+        }
+        setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };
 
@@ -206,13 +214,9 @@ export default function SignupScreen({ navigation }) {
         <TCKeyboardView>
           <View style={{ marginVertical: 20 }}>
             <FastImage
-              source={profilePic?.sourceURL ? { uri: profilePic?.sourceURL } : images.profilePlaceHolder}
+              source={profilePic?.path ? { uri: profilePic?.path } : images.profilePlaceHolder}
               style={styles.profile}
           />
-            <FastImage
-                source={images.certificateUpload}
-                style={styles.cameraIcon}
-              />
             <TouchableOpacity
                 style={styles.profileCameraButtonStyle}
                 onPress={() => {
@@ -252,11 +256,11 @@ export default function SignupScreen({ navigation }) {
             />
           <View style={styles.passwordView}>
             <TextInput
-                  style={styles.textInput}
+                  style={{ ...styles.textInput, zIndex: 100 }}
                   placeholder={strings.passwordText}
                   onChangeText={(text) => setPassword(text)}
                   value={password}
-                  // placeholderTextColor={colors.themeColor}
+                  placeholderTextColor={colors.userPostTimeColor}
                   secureTextEntry={hidePassword}
                   keyboardType={'default'}
               />
@@ -276,13 +280,12 @@ export default function SignupScreen({ navigation }) {
 
           <TCButton
                 title={strings.signUpCapitalText}
-                extraStyle={{ marginTop: hp('10%'), marginBottom: hp('4%') }}
+                extraStyle={{ marginTop: hp('10%') }}
                 onPress={() => {
                   if (validate()) {
                     signupUser(fName, lName, email, password);
                   }
                 }}
-                // () => navigation.navigate('ChooseLocationScreen')
             />
         </TCKeyboardView>
       </ScrollView>

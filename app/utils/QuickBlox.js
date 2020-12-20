@@ -19,6 +19,13 @@ export const QB_ACCOUNT_TYPE = {
   LEAGUE: 'L_',
 }
 
+export const getQBAccountType = (entity_type) => {
+  let accountType = QB_ACCOUNT_TYPE.USER;
+  if (entity_type === 'team') accountType = QB_ACCOUNT_TYPE.TEAM;
+  if (entity_type === 'club') accountType = QB_ACCOUNT_TYPE.CLUB;
+  if (entity_type === 'league') accountType = QB_ACCOUNT_TYPE.LEAGUE;
+  return accountType;
+}
 export const QB_DIALOG_TYPE = {
   SINGLE: 'single',
   GROUP: 'group',

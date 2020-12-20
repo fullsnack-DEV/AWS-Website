@@ -91,6 +91,7 @@ import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
+import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
 
 const reviews_data = [
   {
@@ -826,6 +827,21 @@ export default function HomeScreen({ navigation, route }) {
     });
   };
 
+  const onMessageButtonPress = (user) => {
+    const accountType = getQBAccountType(user?.entity_type);
+    const uid = user?.entity_type === 'player' ? user?.user_id : user?.group_id;
+    QBcreateUser(uid, user, accountType).then(() => {
+      navigation.navigate('Message', {
+        screen: 'MessageMainScreen',
+        params: { userId: uid },
+      })
+    }).catch(() => {
+      navigation.navigate('Message', {
+        screen: 'MessageMainScreen',
+        params: { userId: uid },
+      })
+    })
+  }
   const clubLeaveTeam = async () => {
     const e = authContext.entity
     e.obj.parent_group_id = '';
@@ -867,10 +883,7 @@ export default function HomeScreen({ navigation, route }) {
         clubInviteUser();
         break;
       case 'message':
-        navigation.navigate('Message', {
-          screen: 'MessageMainScreen',
-          params: { userId: currentUserData?.user_id },
-        })
+        onMessageButtonPress(currentUserData);
         break;
       case 'edit':
         navigation.navigate('EditPersonalProfileScreen')
@@ -904,10 +917,7 @@ export default function HomeScreen({ navigation, route }) {
         clubLeaveTeam();
         break;
       case 'message':
-        navigation.navigate('Message', {
-          screen: 'MessageMainScreen',
-          params: { userId: currentUserData?.group_id },
-        })
+        onMessageButtonPress(currentUserData);
         break;
       case 'edit':
         navigation.navigate('EditGroupProfileScreen', {
@@ -938,10 +948,7 @@ export default function HomeScreen({ navigation, route }) {
         clubInviteTeam();
         break;
       case 'message':
-        navigation.navigate('Message', {
-          screen: 'MessageMainScreen',
-          params: { userId: currentUserData?.group_id },
-        })
+        onMessageButtonPress(currentUserData);
         break;
       case 'edit':
         // edit code here
@@ -1140,6 +1147,18 @@ export default function HomeScreen({ navigation, route }) {
     }
   }, [route.params]);
 
+  const onConnectionButtonPress = (tab) => {
+    let entity_type = authContext?.entity?.entity_type;
+    let user_id = authContext?.entity?.uid;
+    if (route?.params?.role) entity_type = route?.params?.role;
+    if (route?.params?.uid) user_id = route?.params?.uid;
+    if (tab !== 'members') {
+      navigation.navigate('UserConnections', { tab, entity_type, user_id });
+    } else {
+      navigation.navigate('GroupMembersScreen', { groupID: user_id });
+    }
+  }
+
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -1227,6 +1246,7 @@ export default function HomeScreen({ navigation, route }) {
         renderForeground={() => (
           <BackgroundProfile
             currentUserData={currentUserData}
+            onConnectionButtonPress={onConnectionButtonPress}
           />
         )}
         >
