@@ -22,6 +22,7 @@ import {
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
@@ -42,13 +43,13 @@ import {
 import strings from '../../Constants/String';
 
 export default function AccountScreen({ navigation }) {
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState(null);
   const [groupList, setGroupList] = useState([]);
   const [team, setTeam] = useState([]);
   const [club, setClub] = useState([]);
-
   // for set/get teams
   const [teamList, setTeamList] = useState([]);
   // for set/get clubs
@@ -134,7 +135,7 @@ export default function AccountScreen({ navigation }) {
       });
     }
     getData()
-  }, [authContext.entity]);
+  }, [authContext.entity, isFocused, navigation]);
 
   const getParentClub = (item) => {
     setloading(true)
@@ -209,12 +210,14 @@ export default function AccountScreen({ navigation }) {
   const onSwitchProfile = async ({ item }) => {
     setloading(true)
     switchProfile(item).then((currentEntity) => {
+      setloading(true);
       switchQBAccount(item, currentEntity)
     }).catch((e) => {
+      setloading(false)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
       }, 0.7);
-    }).finally(() => setloading(false))
+    })
   }
 
   const switchProfile = async (item) => {
@@ -294,8 +297,19 @@ export default function AccountScreen({ navigation }) {
         currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
         authContext.setEntity({ ...currentEntity })
         Utility.setStorage('authContextEntity', { ...currentEntity })
-        QBconnectAndSubscribe(currentEntity)
+        QBconnectAndSubscribe(currentEntity).then((qbRes) => {
+          setloading(false)
+          if (qbRes?.error) {
+            Alert('Towns Cup', qbRes?.error)
+          }
+        }).catch(() => {
+          setloading(false)
+        })
+      }).catch(() => {
+        setloading(false)
       })
+    }).catch(() => {
+      setloading(false)
     })
   }
 

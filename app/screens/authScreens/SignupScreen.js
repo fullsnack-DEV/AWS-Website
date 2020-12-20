@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  ScrollView,
   Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
   TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
+import ImagePicker from 'react-native-image-crop-picker';
+import FastImage from 'react-native-fast-image';
+import Config from 'react-native-config';
+import { uploadImageOnPreSignedUrls } from '../../utils/imageAction';
 import { getUserDetails } from '../../api/Users';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -29,6 +29,7 @@ import fonts from '../../Constants/Fonts';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context'
+import apiCall from '../../utils/apiCall';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -49,6 +50,7 @@ export default function SignupScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
+  const [profilePic, setProfilePic] = useState(null);
   // For activity indigator
   const [loading, setloading] = useState(false);
   useEffect(() => {
@@ -93,6 +95,14 @@ export default function SignupScreen({ navigation }) {
 
     return false;
   };
+
+  // const getProfilePicUrl = (pickImages) => uploadImages([pickImages], authContext).then((responses) => responses.map((item) => ({
+  //   type: 'image',
+  //   url: item.fullImage,
+  //   thumbnail: item.thumbnail,
+  // }))).catch((error) => {
+  //   console.log(error);
+  // });
   const saveUserDetails = async () => auth().onAuthStateChanged(async (user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
@@ -105,20 +115,50 @@ export default function SignupScreen({ navigation }) {
           last_name: lName,
           email,
         };
-
+        const uploadImageConfig = {
+          method: 'get',
+          url: `${Config.BASE_URL}/pre-signed-url?count=2`,
+          headers: { Authorization: `Bearer ${token?.token}` },
+        }
         const entity = {
           auth: { token, user_id: user.uid },
           uid: user.uid,
           role: 'user',
         };
-        await authContext.setEntity({ ...entity })
-        await Utility.setStorage('userInfo', userDetail);
-        await Utility.setStorage('loggedInEntity', entity);
-
+        if (profilePic) {
+          const apiResponse = await apiCall(uploadImageConfig);
+          const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
+          Promise.all([
+            uploadImageOnPreSignedUrls({
+              url: preSignedUrls?.[0],
+              uri: profilePic.path,
+              type: profilePic.path.split('.')[1] || 'jpeg',
+            }),
+            uploadImageOnPreSignedUrls({
+              url: preSignedUrls?.[1],
+              uri: profilePic?.path,
+              type: profilePic?.path.split('.')[1] || 'jpeg',
+            }),
+          ]).then(async ([fullImage, thumbnail]) => {
+            userDetail.full_image = fullImage;
+            userDetail.thumbnail = thumbnail
+            await authContext.setEntity({ ...entity })
+            await Utility.setStorage('userInfo', userDetail);
+            await Utility.setStorage('loggedInEntity', entity);
+          }).catch(async () => {
+            await authContext.setEntity({ ...entity })
+            await Utility.setStorage('userInfo', userDetail);
+            await Utility.setStorage('loggedInEntity', entity);
+          })
+        } else {
+          await authContext.setEntity({ ...entity })
+          await Utility.setStorage('userInfo', userDetail);
+          await Utility.setStorage('loggedInEntity', entity);
+        }
         return user;
       });
     }
-  });
+  })
 
   const signupUser = (fname, lname, emailAddress, passwordInput) => {
     setloading(true)
@@ -147,9 +187,17 @@ export default function SignupScreen({ navigation }) {
       })
       .catch((e) => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        let message = '';
+        if (e.code === 'auth/user-not-found') {
+          message = 'This email address is not registerd';
+        }
+        if (e.code === 'auth/email-already-in-use') {
+          message = 'That email address is already in use!';
+        }
+        if (e.code === 'auth/invalid-email') {
+          message = 'That email address is invalid!';
+        }
+        setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };
 
@@ -163,67 +211,83 @@ export default function SignupScreen({ navigation }) {
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
       <ScrollView>
-        <TouchableOpacity
-          onPress={() => alert('image picked')}
-          style={styles.profile}>
-          <Image style={styles.profile} source={images.profilePlaceHolder} />
-        </TouchableOpacity>
         <TCKeyboardView>
-          <TCTextField
-          style={styles.textFieldStyle}
-            placeholder={strings.fnameText}
-            onChangeText={(text) => setFName(text)}
-            value={fName}
+          <View style={{ marginVertical: 20 }}>
+            <FastImage
+              source={profilePic?.path ? { uri: profilePic?.path } : images.profilePlaceHolder}
+              style={styles.profile}
           />
+            <TouchableOpacity
+                style={styles.profileCameraButtonStyle}
+                onPress={() => {
+                  ImagePicker.openPicker({
+                    width: 300,
+                    height: 400,
+                    cropping: true,
+                  }).then((pickImages) => {
+                    setProfilePic(pickImages);
+                  });
+                }}>
+              <FastImage
+                  source={images.certificateUpload}
+                  style={styles.cameraIcon}
+              />
+            </TouchableOpacity>
+          </View>
           <TCTextField
-          style={styles.textFieldStyle}
-            placeholder={strings.lnameText}
-            onChangeText={(text) => setLName(text)}
-            value={lName}
-          />
+                style={styles.textFieldStyle}
+                placeholder={strings.fnameText}
+                onChangeText={(text) => setFName(text)}
+                value={fName}
+            />
           <TCTextField
-            style={styles.textFieldStyle}
-            placeholder={strings.emailPlaceHolder}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-          />
+                style={styles.textFieldStyle}
+                placeholder={strings.lnameText}
+                onChangeText={(text) => setLName(text)}
+                value={lName}
+            />
+          <TCTextField
+                style={styles.textFieldStyle}
+                placeholder={strings.emailPlaceHolder}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                onChangeText={(text) => setEmail(text)}
+                value={email}
+            />
           <View style={styles.passwordView}>
             <TextInput
-              style={styles.textInput}
-              placeholder={strings.passwordText}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              // placeholderTextColor={colors.themeColor}
-              secureTextEntry={hidePassword}
-              keyboardType={'default'}
-            />
+                  style={{ ...styles.textInput, zIndex: 100 }}
+                  placeholder={strings.passwordText}
+                  onChangeText={(text) => setPassword(text)}
+                  value={password}
+                  placeholderTextColor={colors.userPostTimeColor}
+                  secureTextEntry={hidePassword}
+                  keyboardType={'default'}
+              />
             <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
               <Image source={hidePassword ? images.hidePassword : images.showPassword} style={styles.passwordEyes} />
             </TouchableWithoutFeedback>
           </View>
 
           <TCTextField
-          style={styles.textFieldStyle}
-            placeholder={strings.confirmPasswordText}
-            autoCapitalize="none"
-            secureText={true}
-            onChangeText={(text) => setCPassword(text)}
-            value={cPassword}
-          />
-        </TCKeyboardView>
+                style={styles.textFieldStyle}
+                placeholder={strings.confirmPasswordText}
+                autoCapitalize="none"
+                secureText={true}
+                onChangeText={(text) => setCPassword(text)}
+                value={cPassword}
+            />
 
-        <TCButton
-          title={strings.signUpCapitalText}
-          extraStyle={{ marginTop: hp('10%'), marginBottom: hp('4%') }}
-          onPress={() => {
-            if (validate()) {
-              signupUser(fName, lName, email, password);
-            }
-          }}
-          // () => navigation.navigate('ChooseLocationScreen')
-        />
+          <TCButton
+                title={strings.signUpCapitalText}
+                extraStyle={{ marginTop: hp('10%') }}
+                onPress={() => {
+                  if (validate()) {
+                    signupUser(fName, lName, email, password);
+                  }
+                }}
+            />
+        </TCKeyboardView>
       </ScrollView>
     </View>
   );
@@ -264,11 +328,11 @@ const styles = StyleSheet.create({
   profile: {
     alignContent: 'center',
     alignSelf: 'center',
-    height: hp('25%'),
-    marginBottom: hp('3%'),
-    marginTop: hp('3%'),
-    resizeMode: 'contain',
-    width: wp('25%'),
+    height: 100,
+    marginTop: 40,
+    marginBottom: 20,
+    width: 100,
+    borderRadius: 50,
   },
   textInput: {
     backgroundColor: colors.whiteColor,
@@ -294,5 +358,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
+  },
+  profileCameraButtonStyle: {
+    height: 22,
+    width: 22,
+    marginTop: -40,
+    marginLeft: 60,
+    alignSelf: 'center',
+  },
+  cameraIcon: {
+    height: 22,
+    width: 22,
   },
 });

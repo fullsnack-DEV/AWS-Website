@@ -126,6 +126,7 @@ import ScorekeeperBookingDateAndTime
   from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
+import UserConnections from '../screens/account/connections/UserConnections';
 
 const Stack = createStackNavigator();
 
@@ -569,6 +570,23 @@ const HomeNavigator = () => (
           } }
       />
 
+    {/*  Connections */}
+    <Stack.Screen
+          name="UserConnections"
+          component={ UserConnections }
+          options={ {
+            title: 'Connections',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
     <Stack.Screen
           name="EditLineUpScreen"
           component={EditLineUpScreen}

@@ -40,7 +40,6 @@ export default function UserHomeTopSection({
           }
         }}/>)
   }
-
   const renderRefereesIn = ({ item }) => {
     if (item.item_type) {
       return renderAddRefereeRole({ item })

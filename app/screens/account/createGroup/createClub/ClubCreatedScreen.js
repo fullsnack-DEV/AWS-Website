@@ -18,7 +18,7 @@ export default function ClubCreatedScreen({ navigation, route }) {
     <View style={ styles.mainContainer }>
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
-      <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
+      <TouchableOpacity onPress={ () => navigation.navigate('HomeScreen') }>
         <Image
           source={ images.backArrow }
           style={ styles.backArrowButton}

@@ -119,3 +119,9 @@ export const deletePaymentMethod = (paymentMehtodId, authContext) => makeAPIRequ
   url: `${Config.BASE_URL}/payments/cards/${paymentMehtodId}`,
   authContext,
 });
+
+export const getUserFollowerFollowing = (userId, entity_type, type, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/${entity_type}/${userId}/${type}`,
+  authContext,
+})

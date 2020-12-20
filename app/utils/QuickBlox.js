@@ -19,6 +19,13 @@ export const QB_ACCOUNT_TYPE = {
   LEAGUE: 'L_',
 }
 
+export const getQBAccountType = (entity_type) => {
+  let accountType = QB_ACCOUNT_TYPE.USER;
+  if (entity_type === 'team') accountType = QB_ACCOUNT_TYPE.TEAM;
+  if (entity_type === 'club') accountType = QB_ACCOUNT_TYPE.CLUB;
+  if (entity_type === 'league') accountType = QB_ACCOUNT_TYPE.LEAGUE;
+  return accountType;
+}
 export const QB_DIALOG_TYPE = {
   SINGLE: 'single',
   GROUP: 'group',
@@ -247,12 +254,17 @@ export const QBconnectAndSubscribe = async (entity) => {
     const { id } = entity.QB
     if (!connected) {
       return QB.chat.connect({ userId: id, password: QB_Auth_Password })
-        .then(async () => true).catch((error) => {
+        .then(async () => {
+          console.log('QB connected successfully')
+          return true;
+        }).catch((error) => {
           console.log(error.message)
-          return null
+          return { error: error.message }
         })
     }
+    console.log('QB already connected')
     return true
   }
-  return null
+  console.log('Something went wrong');
+  return { error: 'Something Went wrong' }
 }

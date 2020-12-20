@@ -37,7 +37,7 @@ import { createUserReservation } from '../../../../api/Reservations';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import * as Utility from '../../../../utils';
 import strings from '../../../../Constants/String';
-import TCInnerLoader from '../../../../components/TCInnerLoader';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
@@ -157,52 +157,51 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
           <TCStep totalStep={3} currentStep={2} style={{
             margin: 0, padding: 0, paddingTop: 15, paddingRight: 15,
           }}/>
-          <TCInnerLoader visible={loading}/>
-          {!loading && (
-            <View>
-              {/* Name and country */}
-              <View style={styles.contentContainer}>
-                <Title text={'Referee'} />
-                <View style={{ marginVertical: 10 }}>
-                  <TCProfileView
+          <ActivityLoader visible={loading} />
+          <View>
+            {/* Name and country */}
+            <View style={styles.contentContainer}>
+              <Title text={'Referee'} />
+              <View style={{ marginVertical: 10 }}>
+                <TCProfileView
                         name={userData?.full_name}
                         location={`${userData?.city} , ${userData?.country}`}
                         image={userData?.full_image ? { uri: userData?.full_image } : images.profilePlaceHolder}
                     />
-                </View>
               </View>
-              <Seperator/>
+            </View>
+            <Seperator/>
 
-              {/* Choose Match */}
-              <View style={styles.contentContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Title text={'Choose a Match'} required={true} />
-                  <TouchableOpacity onPress={() => {
-                    navigation.navigate('RefereeSelectMatch', { userData });
-                  }}>
-                    {!gameData && (
-                      <FastImage
+            {/* Choose Match */}
+            <View style={styles.contentContainer}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Title text={'Choose a Match'} required={true} />
+                <TouchableOpacity onPress={() => {
+                  navigation.navigate('RefereeSelectMatch', { userData });
+                }}>
+                  {!gameData && (
+                    <FastImage
                               source={images.arrowGraterthan}
                               style={{ width: 12, height: 12 }}
                           />
-                    )}
-                  </TouchableOpacity>
-                </View>
-                {gameData && <TCGameCard data={gameData} />}
+                  )}
+                </TouchableOpacity>
               </View>
+              {gameData && <TCGameCard data={gameData} />}
+            </View>
 
-              {/* Date & Time */}
-              {gameData && (
-                <View>
-                  <View style={styles.contentContainer}>
-                    <Title text={'Date & Time'} />
-                    <TCInfoField
+            {/* Date & Time */}
+            {gameData && (
+              <View>
+                <View style={styles.contentContainer}>
+                  <Title text={'Date & Time'} />
+                  <TCInfoField
                             title={'Date'}
                             value={gameData?.timestamp && moment(gameData?.timestamp * 1000).format('MMM DD, YYYY')}
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
-                    <Seperator height={2}/>
-                    <TCInfoField
+                  <Seperator height={2}/>
+                  <TCInfoField
                             title={'Time'}
                             value={(gameData?.start_datetime && gameData?.end_datetime)
                               ? getDateDuration(gameData?.start_datetime, gameData?.end_datetime)
@@ -210,23 +209,23 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                             }
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
-                    <Seperator height={2}/>
-                  </View>
+                  <Seperator height={2}/>
+                </View>
 
-                  {/* Venue */}
-                  <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
-                    <TCInfoField
+                {/* Venue */}
+                <View style={styles.contentContainer}>
+                  <Title text={'Venue'} />
+                  <TCInfoField
                             title={'Venue'}
                             value={gameData?.venue?.title}
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
-                    <TCInfoField
+                  <TCInfoField
                             title={'Address'}
                             value={gameData?.venue?.address}
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
-                    <EventMapView
+                  <EventMapView
                             region={{
                               latitude: gameData?.venue?.lat ?? 0.0,
                               longitude: gameData?.venue?.lng ?? 0.0,
@@ -238,16 +237,16 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                               longitude: gameData?.venue?.lng ?? 0.0,
                             }}
                         />
-                  </View>
                 </View>
-              )}
-              <Seperator/>
+              </View>
+            )}
+            <Seperator/>
 
-              {/* Chief or assistant */}
-              <View style={styles.contentContainer}>
-                <Title text={'Chief or assistant'} />
-                {['chief', 'assistant'].map((item, index) => (
-                  <View
+            {/* Chief or assistant */}
+            <View style={styles.contentContainer}>
+              <Title text={'Chief or assistant'} />
+              {['chief', 'assistant'].map((item, index) => (
+                <View
                           key={index}
                           style={{
                             margin: 7,
@@ -255,35 +254,35 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                             alignItems: 'center',
                             justifyContent: 'space-between',
                           }}>
-                    <Text style={{
-                      fontFamily: fonts.RRegular,
-                      fontSize: 16,
-                      color: colors.lightBlackColor,
-                    }}>{_.startCase(item)} Referee</Text>
-                    <TouchableOpacity style={{
-                      borderColor: colors.magnifyIconColor, height: 22, width: 22, borderWidth: 2, borderRadius: 50, alignItems: 'center', justifyContent: 'center',
-                    }}
+                  <Text style={{
+                    fontFamily: fonts.RRegular,
+                    fontSize: 16,
+                    color: colors.lightBlackColor,
+                  }}>{_.startCase(item)} Referee</Text>
+                  <TouchableOpacity style={{
+                    borderColor: colors.magnifyIconColor, height: 22, width: 22, borderWidth: 2, borderRadius: 50, alignItems: 'center', justifyContent: 'center',
+                  }}
                                           onPress={() => setChiefOrAssistant(item)}>
-                      {item === chiefOrAssistant && (
-                        <LinearGradient
+                    {item === chiefOrAssistant && (
+                      <LinearGradient
                                   colors={[colors.orangeColor, colors.yellowColor]}
                                   end={{ x: 0.0, y: 0.25 }}
                                   start={{ x: 1, y: 0.5 }}
                                   style={{ height: 13, width: 13, borderRadius: 50 }}>
-                        </LinearGradient>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-              <Seperator/>
+                      </LinearGradient>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+            <Seperator/>
 
-              {/* Payment Method */}
-              {Number(route?.params?.body?.hourly_game_fee) > 0 && (
-                <View style={styles.contentContainer}>
-                  <Title text={'Payment Method'} />
-                  <View style={{ marginTop: 10 }}>
-                    <TCTouchableLabel
+            {/* Payment Method */}
+            {Number(route?.params?.body?.hourly_game_fee) > 0 && (
+              <View style={styles.contentContainer}>
+                <Title text={'Payment Method'} />
+                <View style={{ marginTop: 10 }}>
+                  <TCTouchableLabel
                           title={route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
                           subTitle={route.params.paymentMethod?.card.last4 }
                           showNextArrow={true}
@@ -293,30 +292,29 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                             })
                           }}
                       />
-                  </View>
                 </View>
-              )}
+              </View>
+            )}
 
-              {/* Payment */}
-              { gameData && (
-                <View style={styles.contentContainer}>
-                  <Title text={'Payment'} />
-                  <View style={{ marginTop: 10 }}>
+            {/* Payment */}
+            { gameData && (
+              <View style={styles.contentContainer}>
+                <Title text={'Payment'} />
+                <View style={{ marginTop: 10 }}>
 
-                    <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'sender'} type='referee' />
-                  </View>
+                  <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'sender'} type='referee' />
                 </View>
-              )}
+              </View>
+            )}
 
-              <Seperator />
+            <Seperator />
 
-              {/* Next Button */}
-              <TCGradientButton
+            {/* Next Button */}
+            <TCGradientButton
                     title={'Next'}
                     onPress={handleOnNext}
                 />
-            </View>
-          )}
+          </View>
 
         </SafeAreaView>
       </ScrollView>

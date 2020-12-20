@@ -158,7 +158,7 @@ export default function FollowTeams({ route }) {
       <Text style={ styles.sportText }>Follow sport teams.</Text>
       <FlatList
         data={ teams }
-        keyExtractor={(index) => index.toString()}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={ renderItem }
       />
       <TCButton

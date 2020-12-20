@@ -3,11 +3,10 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   FlatList,
   Alert,
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -37,14 +36,13 @@ export default function ChooseSportsScreen({ navigation, route }) {
 
   useEffect(() => {
     getSportsList(authContext).then((response) => {
-      setloading(true);
       const arr = [];
       for (const tempData of response.payload) {
         tempData.isChecked = false;
         arr.push(tempData);
       }
       setSports(arr);
-      setloading(false);
+      setTimeout(() => setloading(false), 1000);
     }).catch((e) => {
       setloading(false);
       setTimeout(() => {
@@ -78,8 +76,8 @@ export default function ChooseSportsScreen({ navigation, route }) {
       email: user.email,
       birthday: user.birthday,
       gender: user.gender,
-      thumbnail: '',
-      full_image: '',
+      thumbnail: user?.thumbnail ?? '',
+      full_image: user?.full_image ?? '',
       sports: selected,
       city: route.params.city,
       state_abbr: route.params.state,
@@ -96,20 +94,20 @@ export default function ChooseSportsScreen({ navigation, route }) {
     });
   };
 
-  const QBInitialLogin = (entity, response) => {
-    let qbEntity = entity;
+  const QBInitialLogin = (response) => {
+    let qbEntity = authContext?.entity;
     QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-
-      authContext.setEntity({ ...qbEntity })
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-
+      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity)
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      authContext.setEntity({ ...qbEntity })
+      setloading(false);
     }).catch(async (error) => {
       qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
-      console.log(error.message);
+      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
+      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
+      console.log('QB Login Error : ', error.message);
+      setloading(false);
     });
   }
 
@@ -117,18 +115,15 @@ export default function ChooseSportsScreen({ navigation, route }) {
     const entity = authContext.entity
     console.log('USER ENTITY:', entity);
     const response = await getUserDetails(entity.auth.user_id, authContext);
-
     if (response.status) {
       entity.obj = response.payload
       entity.auth.user = response.payload
       entity.role = 'user'
-      entity.isLoggedIn = true
 
       authContext.setEntity({ ...entity })
       await authContext.setUser(response.payload);
       Utility.setStorage('authContextUser', { ...response.payload })
-      QBInitialLogin(entity, response);
-      setloading(false);
+      QBInitialLogin(entity, response?.payload);
     } else {
       throw new Error(response);
     }
@@ -142,27 +137,27 @@ export default function ChooseSportsScreen({ navigation, route }) {
         } }>
 
       {item.sport_name === 'Soccer' && (
-        <Image source={ images.footballSport } style={ styles.sportImg } />
+        <FastImage resizeMode={'contain'} source={ images.footballSport } style={ styles.sportImg } />
       )}
       {item.sport_name === 'Tennis' && (
-        <Image source={ images.bandySport } style={ styles.sportImg } />
+        <FastImage resizeMode={'contain'} source={ images.bandySport } style={ styles.sportImg } />
       )}
       {item.sport_name === 'Football' && (
-        <Image source={ images.footballSport } style={ styles.sportImg } />
+        <FastImage resizeMode={'contain'} source={ images.footballSport } style={ styles.sportImg } />
       )}
       {item.sport_name === 'Baseball' && (
-        <Image source={ images.baseballSport } style={ styles.sportImg } />
+        <FastImage resizeMode={'contain'} source={ images.baseballSport } style={ styles.sportImg } />
       )}
       {item.sport_name === 'Volleyball' && (
-        <Image source={ images.archerySport } style={ styles.sportImg } />
+        <FastImage resizeMode={'contain'} source={ images.archerySport } style={ styles.sportImg } />
       )}
 
       <Text style={ styles.sportList }>{item.sport_name}</Text>
       <View style={ styles.checkbox }>
         {sports[index].isChecked ? (
-          <Image source={ images.checkWhite } style={ styles.checkboxImg } />
+          <FastImage resizeMode={'contain'} source={ images.checkWhite } style={ styles.checkboxImg } />
         ) : (
-          <Image source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+          <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
         )}
       </View>
       <Separator />
@@ -175,14 +170,14 @@ export default function ChooseSportsScreen({ navigation, route }) {
       <View style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
         {/* <Loader visible={getSportsList.loading} /> */}
-        <Image style={ styles.background } source={ images.orangeLayer } />
-        <Image style={ styles.background } source={ images.bgImage } />
+        <FastImage style={ styles.background } source={ images.orangeLayer } />
+        <FastImage style={ styles.background } source={ images.bgImage } />
 
         <Text style={ styles.sportText }>{strings.sportText}</Text>
         {/* <ActivityIndicator animating={loading} size="large" /> */}
         <FlatList
           data={ sports }
-          keyExtractor={(index) => index.toString()}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={ renderItem }
         />
 
@@ -222,16 +217,13 @@ const styles = StyleSheet.create({
   },
   unCheckboxImg: {
     width: wp('5.5%'),
-
+    height: wp('5.5%'),
     tintColor: colors.whiteColor,
-    resizeMode: 'contain',
     alignSelf: 'center',
   },
   checkboxImg: {
     width: wp('5.5%'),
-
-    // paddingLeft: wp('25%'),
-    resizeMode: 'contain',
+    height: wp('5.5%'),
     alignSelf: 'center',
   },
   listItem: {
@@ -246,8 +238,6 @@ const styles = StyleSheet.create({
   sportImg: {
     width: wp('5%'),
     height: hp('4%'),
-    // paddingLeft: wp('25%'),
-    resizeMode: 'contain',
     alignSelf: 'center',
   },
   sportList: {

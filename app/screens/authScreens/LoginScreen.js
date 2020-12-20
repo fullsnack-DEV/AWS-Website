@@ -85,7 +85,6 @@ export default function LoginScreen({ navigation }) {
     const entity = {
       uid: user.uid,
       role: 'user',
-      isLoggedIn: true,
       auth: {
         token,
         user_id: user.uid,
@@ -96,8 +95,11 @@ export default function LoginScreen({ navigation }) {
     authContext.setEntity({ ...entity })
     console.log('authContext111', entity)
     return getUserInfo(entity).then((data) => {
+      QBInitialLogin(data.payload);
       console.log('Function data', data);
     }).catch((e) => {
+      setloading(false);
+      setTimeout(() => Alert.alert('Towns Cup', e.message), 1);
       console.log('Function catch', e);
     })
   });
@@ -109,37 +111,38 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .signInWithEmailAndPassword(_email, _password)
       .then(() => {
-        setloading(false);
         auth().onAuthStateChanged(onAuthStateChanged);
       })
       .catch((error) => {
+        let message = '';
+        setloading(false);
         if (error.code === 'auth/user-not-found') {
-          Alert.alert('This email address is not registerd');
+          message = 'This email address is not registerd';
         }
         if (error.code === 'auth/email-already-in-use') {
-          Alert.alert('That email address is already in use!');
+          message = 'That email address is already in use!';
         }
         if (error.code === 'auth/invalid-email') {
-          Alert.alert('That email address is invalid!');
+          message = 'That email address is invalid!';
         }
-        setloading(false);
+        setTimeout(() => Alert.alert('Towns Cup', message), 1)
       });
   };
 
-  const QBInitialLogin = (entity, response) => {
-    let qbEntity = entity;
+  const QBInitialLogin = (response) => {
+    let qbEntity = authContext?.entity;
     QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-
-      authContext.setEntity({ ...qbEntity })
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-
+      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity)
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      authContext.setEntity({ ...qbEntity })
+      setloading(false);
     }).catch(async (error) => {
       qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
-      console.log(error.message);
+      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
+      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
+      console.log('QB Login Error : ', error.message);
+      setloading(false);
     });
   }
   const getUserInfo = (e) => {
@@ -155,9 +158,7 @@ export default function LoginScreen({ navigation }) {
       Utility.setStorage('authContextEntity', { ...entity })
       Utility.setStorage('authContextUser', { ...response.payload })
 
-      QBInitialLogin(entity, response.payload);
-
-      return setloading(false);
+      return true;
     })
   }
   // Psaaword Hide/Show function for setState
@@ -198,7 +199,6 @@ export default function LoginScreen({ navigation }) {
                     uid: user.uid,
                     role: 'user',
                     obj: response.payload,
-                    isLoggedIn: true,
                     auth: {
                       user_id: user.uid,
                       token,
@@ -208,7 +208,7 @@ export default function LoginScreen({ navigation }) {
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   authContext.setUser(response.payload)
-                  QBInitialLogin(entity, response.payload);
+                  QBInitialLogin(entity, response?.payload);
                 } else {
                   Alert.alert(response.messages);
                 }
@@ -218,15 +218,17 @@ export default function LoginScreen({ navigation }) {
         });
       })
       .catch((error) => {
+        let message = '';
         if (error.code === 'auth/user-not-found') {
-          Alert.alert('This email address is not registerd');
+          message = 'This email address is not registerd';
         }
         if (error.code === 'auth/email-already-in-use') {
-          Alert.alert('That email address is already in use!');
+          message = 'That email address is already in use!';
         }
         if (error.code === 'auth/invalid-email') {
-          Alert.alert('That email address is invalid!');
+          message = 'That email address is invalid!';
         }
+        setTimeout(() => Alert.alert('Towns Cup', message), 1);
       });
   };
 
@@ -251,7 +253,6 @@ export default function LoginScreen({ navigation }) {
                     uid: user.uid,
                     role: 'user',
                     obj: response.payload,
-                    isLoggedIn: true,
                     auth: {
                       user_id: user.uid,
                       token,
@@ -261,7 +262,7 @@ export default function LoginScreen({ navigation }) {
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   await authContext.setUser(response.payload);
-                  QBInitialLogin(entity, response.payload);
+                  QBInitialLogin(entity, response?.payload);
                 } else {
                   Alert.alert(response.messages);
                 }
@@ -271,15 +272,17 @@ export default function LoginScreen({ navigation }) {
         });
       })
       .catch((error) => {
+        let message = ''
         if (error.code === 'auth/user-not-found') {
-          Alert.alert('This email address is not registerd');
+          message = 'This email address is not registerd';
         }
         if (error.code === 'auth/email-already-in-use') {
-          Alert.alert('That email address is already in use!');
+          message = 'That email address is already in use!';
         }
         if (error.code === 'auth/invalid-email') {
-          Alert.alert('That email address is invalid!');
+          message = 'That email address is invalid!';
         }
+        setTimeout(() => Alert.alert('Towns Cup', message), 1);
       });
   };
 

@@ -10,7 +10,6 @@ import {
   ScrollView,
   Alert,
   FlatList,
-
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -316,8 +315,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
         onPress={() => {
           if (toDate > fromDate) {
             navigation.navigate('CreateChallengeForm1', {
-              from: fromDate || selectedDate,
-              to: toDate || selectedDate,
+              from: fromDate,
+              to: toDate,
             });
           } else {
             Alert.alert('Please choose correct date.');

@@ -29,8 +29,8 @@ export default function StatsSelectionView({
         onValueChange={onValueChange}
         onDonePress={onDonePress}
         useNativeAndroidPickerStyle={false}
-        // eslint-disable-next-line no-sequences
-        style={ (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), { ...styles } }
+
+        style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
         value={value}
         Icon={() => (
           <Image source={images.dropDownArrow} style={styles.downArrow} />

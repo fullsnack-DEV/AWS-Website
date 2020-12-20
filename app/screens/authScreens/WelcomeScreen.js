@@ -100,9 +100,9 @@ export default function WelcomeScreen({ navigation }) {
                 Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
               } else {
                 navigation.navigate('AddBirthdayScreen')
-              // navigation.navigate('ChooseLocationScreen');
               }
             }).catch(() => {
+              // Alert.alert('Towns Cup', error.message);
               navigation.navigate('AddBirthdayScreen')
             });
             setloading(false);
@@ -167,7 +167,7 @@ export default function WelcomeScreen({ navigation }) {
                 Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
               } else {
                 navigation.navigate('AddBirthdayScreen')
-              // navigation.navigate('ChooseLocationScreen');
+                // navigation.navigate('ChooseLocationScreen');
               }
             }).catch(() => {
               navigation.navigate('AddBirthdayScreen')
@@ -208,16 +208,16 @@ export default function WelcomeScreen({ navigation }) {
       <GoogleButton onPress={ () => onGoogleButtonPress() }/>
 
       <TouchableOpacity
-        style={ [styles.imgWithText, styles.allButton] }
-        onPress={ () => navigation.navigate('SignupScreen')
-        }>
+            style={ [styles.imgWithText, styles.allButton] }
+            onPress={ () => navigation.navigate('SignupScreen')
+            }>
         <Image source={ images.email } style={ styles.signUpImg } />
         <Text style={ styles.signUpText }>{strings.signUpText}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={ () => navigation.navigate('LoginScreen') }
-        style={ styles.alreadyView }>
+            onPress={ () => navigation.navigate('LoginScreen') }
+            style={ styles.alreadyView }>
         <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
       </TouchableOpacity>
     </View>

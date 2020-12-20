@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.townscup_reactnative"
+        applicationId "com.townscup"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
