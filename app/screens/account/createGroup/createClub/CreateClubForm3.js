@@ -61,12 +61,11 @@ export default function CreateClubForm3({ navigation, route }) {
     bodyParams.unread = 0;
 
     const entity = authContext.entity
-    // FIXME
     createGroup(
-      authContext,
       bodyParams,
       entity.role === 'team' && entity.uid,
       entity.role === 'team' && 'club',
+      authContext,
     ).then((response) => {
       setloading(false)
       navigation.navigate('ClubCreatedScreen', {

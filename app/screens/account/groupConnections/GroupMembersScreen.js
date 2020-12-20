@@ -33,6 +33,7 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import TCThinDivider from '../../../components/TCThinDivider';
 import strings from '../../../Constants/String';
+import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
 
 // FIXME -this is static source for now we will inject with api call
 const filterArray = [
@@ -203,9 +204,17 @@ export default function GroupMembersScreen({ navigation, route }) {
                   renderItem={({ item }) => <UserRoleView data = {item}
                   onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}
                   onPressMessage={() => {
-                    navigation.navigate('Message', {
-                      screen: 'MessageMainScreen',
-                      params: { userId: item.user_id },
+                    const accountType = getQBAccountType(item?.entity_type);
+                    QBcreateUser(item?.user_id, item, accountType).then(() => {
+                      navigation.navigate('Message', {
+                        screen: 'MessageMainScreen',
+                        params: { userId: item.user_id },
+                      })
+                    }).catch(() => {
+                      navigation.navigate('Message', {
+                        screen: 'MessageMainScreen',
+                        params: { userId: item.user_id },
+                      })
                     })
                   }}
                   />}

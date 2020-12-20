@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
-  FlatList,
+  FlatList, StatusBar,
 } from 'react-native';
 
 import {
@@ -36,6 +36,7 @@ export default function SoccerRecordList({ route, navigation }) {
   const [gameData, setGameData] = useState(null);
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitleStyle: { alignSelf: 'center' },
       headerRight: () => (
         <TouchableWithoutFeedback
           onPress={ () => alert('This is a 3 dot button!') }>
@@ -80,6 +81,7 @@ export default function SoccerRecordList({ route, navigation }) {
 
   return (
     <View style={ styles.mainContainer }>
+      <StatusBar barStyle={'dark-content'}/>
       <View style={ { flexDirection: 'row' } }>
         <View
           style={ {

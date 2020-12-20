@@ -22,6 +22,7 @@ import {
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
@@ -42,6 +43,7 @@ import {
 import strings from '../../Constants/String';
 
 export default function AccountScreen({ navigation }) {
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState(null);
@@ -133,7 +135,7 @@ export default function AccountScreen({ navigation }) {
       });
     }
     getData()
-  }, [authContext.entity]);
+  }, [authContext.entity, isFocused, navigation]);
 
   const getParentClub = (item) => {
     setloading(true)

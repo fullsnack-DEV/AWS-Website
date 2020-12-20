@@ -3,7 +3,7 @@ import {
   StyleSheet,
   View,
   Image,
-  Text,
+  Text, TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -19,6 +19,7 @@ function BackgroundProfile({
   bgImageStyle,
   profileImageStyle,
   currentUserData,
+  onConnectionButtonPress,
 }) {
   let bgImage = '';
   if (currentUserData && currentUserData.background_full_image) {
@@ -94,34 +95,43 @@ function BackgroundProfile({
             </View>
           </View>
           {currentUserData.entity_type === 'club' && <View style={styles.statusViewStyle}>
-            <View style={styles.statusInnerViewStyle}>
+            <TouchableOpacity
+                onPress={() => onConnectionButtonPress('following')}
+                style={styles.statusInnerViewStyle}>
               <Text style={styles.followingTextStyle}>{strings.teamstitle}</Text>
               <Text style={styles.followingLengthText}>{teamCount}</Text>
-            </View>
+            </TouchableOpacity>
             <View style={styles.followingSepratorView} />
-            <View style={styles.statusInnerViewStyle}>
+            <TouchableOpacity
+                onPress={() => onConnectionButtonPress('members')}
+                style={styles.statusInnerViewStyle}>
               <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
               <Text style={styles.followingLengthText}>{memberCount}</Text>
-            </View>
+            </TouchableOpacity>
             <View style={styles.followingSepratorView} />
-            <View style={styles.statusInnerViewStyle}>
+            <TouchableOpacity
+                onPress={() => onConnectionButtonPress('followers')}
+                style={styles.statusInnerViewStyle}>
               <Text style={styles.followingTextStyle}>{strings.followersRadio}</Text>
               <Text style={styles.followingLengthText}>{followersCounter}</Text>
-            </View>
+            </TouchableOpacity>
           </View>}
           {currentUserData.entity_type !== 'club' && <View style={styles.statusViewStyle}>
-            {currentUserData.following_count !== undefined ? <View style={[styles.statusInnerViewStyle, { width: '47%' }]}>
-              <Text style={styles.followingTextStyle}>{strings.following}</Text>
-              <Text style={styles.followingLengthText}>{followingsCounter}</Text>
-            </View> : <View style={[styles.statusInnerViewStyle, { width: '47%' }]}>
-              <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
-              <Text style={styles.followingLengthText}>{memberCount}</Text>
-            </View>}
+            {currentUserData.following_count !== undefined ? (
+              <TouchableOpacity
+              onPress={() => onConnectionButtonPress('following')}
+                  style={[styles.statusInnerViewStyle, { width: '47%' }]}>
+                <Text style={styles.followingTextStyle}>{strings.following}</Text>
+                <Text style={styles.followingLengthText}>{followingsCounter}</Text>
+              </TouchableOpacity>) : <TouchableOpacity onPress={() => onConnectionButtonPress('members')} style={[styles.statusInnerViewStyle, { width: '47%' }]}>
+                <Text style={styles.followingTextStyle}>{strings.membersTitle}</Text>
+                <Text style={styles.followingLengthText}>{memberCount}</Text>
+              </TouchableOpacity>}
             <View style={styles.followingSepratorView} />
-            <View style={[styles.statusInnerViewStyle, { width: '47%' }]}>
+            <TouchableOpacity onPress={() => onConnectionButtonPress('followers')} style={[styles.statusInnerViewStyle, { width: '47%' }]}>
               <Text style={styles.followingTextStyle}>{strings.followersRadio}</Text>
               <Text style={styles.followingLengthText}>{followersCounter}</Text>
-            </View>
+            </TouchableOpacity>
           </View>}
         </View>
       </View>

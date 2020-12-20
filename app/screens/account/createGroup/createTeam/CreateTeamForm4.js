@@ -66,12 +66,11 @@ export default function CreateTeamForm4({ navigation, route }) {
     console.log('bodyPARAMS:: ', bodyParams);
 
     const entity = authContext.entity
-    // FIXME
     createGroup(
-      authContext,
       bodyParams,
       entity.role === 'club' && entity.uid,
       entity.role === 'club' && 'club',
+      authContext,
     ).then((response) => {
       setloading(false);
       navigation.navigate('TeamCreatedScreen', {
