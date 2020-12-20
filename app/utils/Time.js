@@ -26,7 +26,8 @@ export const toShortTimeFromString = (timeToconvert) => {
 
 export const getShortTimeDifForReservation = (sDate, eDate) => {
   let delta = Math.abs(parseFloat((sDate / 1000).toFixed(0)) - parseFloat((eDate / 1000).toFixed(0)));
-
+  console.log('sdate::', sDate / 1000000);
+  console.log('edate::', eDate / 1000000);
   const hours = Math.floor(delta / 3600) % 24;
   delta -= hours * 3600;
 

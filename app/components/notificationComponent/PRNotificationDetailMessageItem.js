@@ -29,7 +29,7 @@ function PRNotificationDetailMessageItem({
             entityType={dataDictionary.entityType}
             source={ { uri: dataDictionary.imgName }}
             containerStyle={styles.imageContainer}
-            intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
+            intialChar={dataDictionary.firstTitle?.charAt(0).toUpperCase()}
             />
           <View style={styles.textContentStyle}>
             <Text style={styles.textContainerStyle}>

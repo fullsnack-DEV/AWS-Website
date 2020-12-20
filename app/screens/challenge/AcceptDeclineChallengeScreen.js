@@ -157,9 +157,9 @@ export default function CreateChallengeForm4({ navigation, route }) {
         homeTeam
         && awayTeam
         && ((item.responsible_team_id === 'none' && 'None')
-          || (item.responsible_team_id === homeTeam.group_id
-            ? homeTeam.group_name
-            : awayTeam.group_name))
+          || (item.responsible_team_id === (homeTeam.group_id ?? homeTeam.user_id)
+            ? homeTeam.group_name || `${homeTeam.first_name} ${homeTeam.last_name}`
+            : awayTeam.group_name || `${awayTeam.first_name} ${awayTeam.last_name}`))
       }
       marginLeft={30}
     />
@@ -172,9 +172,9 @@ export default function CreateChallengeForm4({ navigation, route }) {
         homeTeam
         && awayTeam
         && ((item.responsible_team_id === 'none' && 'None')
-          || (item.responsible_team_id === homeTeam.group_id
-            ? homeTeam.group_name
-            : awayTeam.group_name))
+          || (item.responsible_team_id === (homeTeam.group_id ?? homeTeam.user_id)
+            ? homeTeam.group_name || `${homeTeam.first_name} ${homeTeam.last_name}`
+            : awayTeam.group_name || `${awayTeam.first_name} ${awayTeam.last_name}`))
       }
       marginLeft={30}
     />
@@ -198,6 +198,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
         }
         return 'receiver';
       }
+
       if (challengeObj.updated_by.group_id === entity.uid) {
         return 'sender';
       }
@@ -208,6 +209,30 @@ export default function CreateChallengeForm4({ navigation, route }) {
       // return 'receiver';
     }
     console.log('challenge for user to user');
+    if (
+      challengeObj.status === ReservationStatus.pendingpayment
+      || challengeObj.status === ReservationStatus.pendingrequestpayment
+    ) {
+      if (challengeObj.invited_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj.status === ReservationStatus.offered) {
+      if (entity.uid === bodyParams.created_by.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+
+    if (challengeObj.updated_by.uid === entity.uid) {
+      return 'sender';
+    }
+    return 'receiver';
+    // if (challengeObj.change_requested_by === entity.uid) {
+    //   return 'sender';
+    // }
+    // return 'receiver';
   };
 
   // eslint-disable-next-line consistent-return
@@ -219,6 +244,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
       return challengeObject.home_team.group_name;
     }
     console.log('user challenge');
+    if (challengeObject.home_team.user_id === entity.uid) {
+      return `${challengeObject.away_team.first_name} ${challengeObject.away_team.last_name}`;
+    }
+    return `${challengeObject.home_team.first_name} ${challengeObject.home_team.last_name}`;
   };
   return (
     <TCKeyboardView>
@@ -245,9 +274,9 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   style={styles.teamImage}
                 />
                 <Text style={styles.teamNameText}>
-                  {bodyParams.invited_by === bodyParams.home_team.group_id
-                    ? bodyParams.home_team.group_name
-                    : bodyParams.away_team.group_name}
+                  {bodyParams.invited_by === (bodyParams.home_team.group_id ?? bodyParams.home_team.user_id)
+                    ? bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`
+                    : bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
                 </Text>
               </View>
             </View>
@@ -269,9 +298,9 @@ export default function CreateChallengeForm4({ navigation, route }) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  {bodyParams.invited_by === bodyParams.home_team.group_id
-                    ? bodyParams.away_team.group_name
-                    : bodyParams.home_team.group_name}
+                  {bodyParams.invited_by === (bodyParams.home_team.group_id ?? bodyParams.home_team.user_id)
+                    ? bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`
+                    : bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
                 </Text>
               </View>
             </View>
@@ -382,7 +411,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           {/* status pending payment */}
           {/* Status accepted */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === ReservationStatus.accepted && (
+            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
               <View>
                 <Text
                   style={[
@@ -398,7 +427,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === ReservationStatus.accepted && (
+            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
               <View>
                 <Text
                   style={[
@@ -486,7 +515,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
                 onPress={() => {
-                  console.log('OK PAYMENT');
+                  navigation.navigate('PayAgainScreen', {
+                    body: bodyParams,
+                    comeFrom: ReservationStatus.pendingpayment,
+                  })
                 }}
                 marginBottom={15}
               />
@@ -499,9 +531,17 @@ export default function CreateChallengeForm4({ navigation, route }) {
           ) && (
             <TCBorderButton
               title={'GAME HOME'}
-              onPress={() => navigation.navigate('SoccerHome', {
-                gameId: bodyParams.game_id,
-              })
+              onPress={() => {
+                if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
+                  navigation.navigate('SoccerHome', {
+                    gameId: bodyParams.game_id,
+                  })
+                } else {
+                  navigation.navigate('TennisHome', {
+                    gameId: bodyParams.game_id,
+                  })
+                }
+              }
               }
               marginBottom={15}
             />
@@ -513,13 +553,13 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCLabel title={`Match · ${bodyParams.sport}`} />
               <TCInfoImageField
                 title={'Home'}
-                name={bodyParams.home_team.group_name}
+                name={bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
                 marginLeft={30}
               />
               <TCThinDivider />
               <TCInfoImageField
                 title={'Away'}
-                name={bodyParams.away_team.group_name}
+                name={bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
                 marginLeft={30}
               />
               <TCThinDivider />
@@ -699,7 +739,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
 
-          {bodyParams.status === ReservationStatus.accepted && (
+          {(bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
             <View>
               <TCBorderButton
                 title={strings.alterReservation}

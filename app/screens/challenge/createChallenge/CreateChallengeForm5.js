@@ -37,11 +37,14 @@ export default function CreateChallengeForm5({ navigation, route }) {
 
   const getFeeDetail = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
-      if (route.params.teamData[0].group_id === entity.uid) {
-        const feeBody = { ...route.params.body };
-        feeBody.start_datetime = parseFloat((feeBody.start_datetime / 1000).toFixed(0))
-        feeBody.end_datetime = parseFloat((feeBody.end_datetime / 1000).toFixed(0))
+      if (route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid) {
+        const fees = { ...route.params.body };
+        const feeBody = {}
+        feeBody.start_datetime = parseFloat((fees.start_datetime / 1000).toFixed(0))
+        feeBody.end_datetime = parseFloat((fees.end_datetime / 1000).toFixed(0))
         feeBody.manual_fee = false;
+        feeBody.userChallenge = !route.params.teamData[0].group_id
+        feeBody.sport = route.params.teamData[0].sport
         setloading(true);
         getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, feeBody, authContext)
           .then((response) => {
@@ -52,6 +55,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
               body.service_fee2_charges = response.payload.total_service_fee2;
               body.total_charges = response.payload.total_amount;
               body.total_game_charges = response.payload.total_game_fee;
+              body.manual_fee = false;
               setEstimationFee({ ...body });
             }
 
@@ -121,7 +125,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
         .then(() => {
           setloading(false);
           navigation.navigate('ChallengeSentScreen', {
-            groupObj: route.params.teamData[0].group_id === entity.uid
+            groupObj: route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid
               ? route.params.teamData[1]
               : route.params.teamData[0],
           });

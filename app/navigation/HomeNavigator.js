@@ -93,8 +93,10 @@ import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateCha
 import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
 
+import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
+import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
@@ -1344,6 +1346,13 @@ const HomeNavigator = () => (
         } }
       />
     <Stack.Screen
+        name="ChallengeAcceptedDeclinedScreen"
+        component={ ChallengeAcceptedDeclinedScreen }
+        options={ {
+          headerShown: false,
+        } }
+      />
+    <Stack.Screen
         name="AlterAcceptDeclineScreen"
         component={ AlterAcceptDeclineScreen }
         options={ {
@@ -1359,6 +1368,23 @@ const HomeNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+        name="PayAgainScreen"
+        component={ PayAgainScreen }
+        options={ {
+          title: 'Pay',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
     <Stack.Screen
         name="ChangeReservationInfoScreen"
         component={ ChangeReservationInfoScreen }

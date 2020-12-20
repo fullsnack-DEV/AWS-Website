@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, {
   useEffect, useState, useLayoutEffect, useContext,
 } from 'react';
@@ -8,15 +9,15 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
-
   FlatList,
+
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import { blockedSlots } from '../../../api/Schedule';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -41,17 +42,16 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     'Dec',
   ];
   const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const [fromDate, setfromDate] = useState();
-  const [toDate, setToDate] = useState();
+  const [fromDate, setfromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
   const [datePickerFor, setDatePickerFor] = useState();
-  const [filteredData, setFilterdData] = useState();
-
+  const [blockedSlot, setBlockedSlot] = useState();
   const [slots, setSlots] = useState();
   const [marked, setMarked] = useState();
   const isFocused = useIsFocused();
@@ -63,17 +63,29 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    return moment(new Date(dateValue)).format('MMM DD, yy      hh:mm A');
+    const a = 1000 * 60 * 30;
+    const date = new Date(dateValue); // or use any other date
+    const rounded = new Date(Math.round(date.getTime() / a) * a);
+    return moment(new Date(rounded)).format('MMM DD, yy      hh:mm A');
   };
   const getSlots = () => {
     setloading(true);
-    blockedSlots(route.params.otherTeam.group_id, authContext)
+    console.log('Other team Object:', route?.params?.otherTeam);
+    // 3d17d3d3-30b0-4b1b-a7e8-48d360dc9eea
+    // route.params.otherTeam.group_id
+    blockedSlots(
+      route.params.otherTeam.entity_type === 'player' ? 'users' : 'groups',
+      route.params.otherTeam.group_id || route.params.otherTeam.user_id,
+      authContext,
+    )
       .then((response) => {
         setloading(false);
         setSlots(response.payload);
-        console.log('BOOKED SLOT::', response.payload);
+        console.log('BOOKED SLOT::', JSON.stringify(response.payload));
 
-        const alldayBlocked = response.payload.filter((item) => item.allDay === true)
+        const alldayBlocked = response.payload.filter(
+          (item) => item.allDay === true,
+        );
         const markedDates = {};
         // eslint-disable-next-line array-callback-return
         alldayBlocked.map((e) => {
@@ -92,12 +104,11 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
               },
               text: {
                 color: colors.grayColor,
-
               },
             },
           };
           console.log('BLOCKED::', markedDates);
-        })
+        });
         setMarked(markedDates);
       })
       .catch((e) => {
@@ -113,13 +124,13 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
     Object.keys(markedDates).forEach((e) => {
       if (markedDates[e].selected && markedDates[e].disabled) {
-        markedDates[e].selected = false
+        markedDates[e].selected = false;
       } else if (markedDates[e].selected) {
-        delete markedDates[e]
+        delete markedDates[e];
       }
     });
     if (markedDates[date]) {
-      markedDates[date].selected = true
+      markedDates[date].selected = true;
     } else {
       markedDates[date] = { selected: true };
     }
@@ -138,23 +149,30 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       console.log('TO Date:', date.getTime());
       setToDate(date);
     }
-    setShow(false)
-    filterSlots(fromDate)
+    setShow(false);
+    filterSlots(fromDate);
   };
   const handleCancelPress = () => {
     setShow(false);
   };
-
+  const getSimpleDateFormat = (dateValue) => {
+    moment.locale('en');
+    return moment(new Date(dateValue)).format('yy/MM/DD');
+  };
   const filterSlots = (startDate) => {
     const resultProductData = slots.filter((a) => {
-      console.log('AA data', new Date(a.start_datetime * 1000))
-      return (new Date(a.start_datetime * 1000).getDate() === new Date(startDate).getDate()
-      && new Date(a.start_datetime * 1000).getMonth() === new Date(startDate).getMonth()
-      && new Date(a.start_datetime * 1000).getFullYear() === new Date(startDate).getFullYear());
+      console.log('AA data', new Date(a.start_datetime * 1000));
+      return (
+        new Date(a.start_datetime * 1000).getDate()
+          === new Date(startDate).getDate()
+        && new Date(a.start_datetime * 1000).getMonth()
+          === new Date(startDate).getMonth()
+        && new Date(a.start_datetime * 1000).getFullYear()
+          === new Date(startDate).getFullYear()
+      );
     });
-    console.log('filtered data', resultProductData)
-    setFilterdData(resultProductData)
-  }
+    console.log('filtered data', resultProductData);
+  };
   return (
     <>
       <ScrollView>
@@ -186,12 +204,19 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
             hideExtraDays={true}
             onDayPress={(day) => {
-              setfromDate();
-              setToDate();
+              const temp = [];
+              slots.map((e) => {
+                if (
+                  getSimpleDateFormat(new Date(e.start_datetime * 1000))
+                  === getSimpleDateFormat(new Date(day.dateString))
+                ) {
+                  temp.push(e);
+                }
+              });
+              setBlockedSlot(temp);
               setSelectedDate(day.dateString);
               getSelectedDayEvents(day.dateString);
-              filterSlots(selectedDate)
-              console.log('selected day', day);
+              filterSlots(selectedDate);
             }}
             markedDates={marked}
             // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
@@ -205,57 +230,29 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
           />
 
-          {/* <SectionList
-            sections={[
-              {
-                title: 'Tue, 17 Feb',
-                data: ['ALTERED', 'ABBY', 'ACTION U.S.A.', 'AMUCK', 'ANGUISH'],
-              },
-              {
-                title: 'Tue, 18 Feb',
-                data: [
-                  'BEST MEN',
-                  'BEYOND JUSTICE',
-                  'BLACK GUNN',
-                  'BLOOD RANCH',
-                  'BEASTIES',
-                ],
-              },
-              {
-                title: 'Tue, 19 Feb',
-                data: [
-                  'CARTEL',
-                  'CASTLE OF EVIL',
-                  'CHANCE',
-                  'COP GAME',
-                  'CROSS FIRE',
-                ],
-              },
-            ]}
-            renderItem={({ item }) => <UnavailableTimeView />}
-            renderSectionHeader={({ section }) => (
-              <Text style={styles.dateHeader}>{section.title}</Text>
-            )}
-            keyExtractor={(item, index) => index}
-          /> */}
-          {/* <Text style={styles.dateHeader}>Tue, 17 Feb</Text>
-        <UnavailableTimeView/>
-        <UnavailableTimeView/>
-        <UnavailableTimeView/>
+          {blockedSlot && <View>
+            <Text style={styles.dateHeader}>
+              {daysNames[new Date(selectedDate).getDay()]},{' '}
+              {new Date(selectedDate).getDate()}{' '}
+              {monthNames[new Date(selectedDate).getMonth()]}
+            </Text>
 
-        <Text style={styles.dateHeader}>Tue, 19 Feb</Text>
-        <UnavailableTimeView/> */}
-          {filteredData && <Text style={styles.dateHeader}>{daysNames[new Date(selectedDate).getDay()]}, {new Date(selectedDate).getDate()} {monthNames[new Date(selectedDate).getMonth()]}</Text>}
-          <FlatList
-         data={filteredData}
-         renderItem={({ item }) => <UnavailableTimeView startDate={item.start_datetime} endDate={item.end_datetime}/>}
-         keyExtractor={(item, index) => index.toString()}
+            <FlatList
+            data={blockedSlot}
+            renderItem={({ item }) => (
+              <UnavailableTimeView
+                startDate={item.start_datetime}
+                endDate={item.end_datetime}
+                allDay={item.allDay}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
           />
+          </View>}
           <View style={{ marginLeft: 15, marginRight: 15, marginTop: 20 }}>
             <View style={styles.fieldView}>
               <View
                 style={{
-
                   height: 35,
                   justifyContent: 'center',
                 }}>
@@ -264,27 +261,15 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                 </Text>
               </View>
               <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                {fromDate ? (
-                  <Text
-                    style={styles.fieldValue}
-                    numberOfLines={3}
-                    onPress={() => {
-                      setDatePickerFor('from');
-                      setShow(!show);
-                    }}>
-                    {getDateFormat(fromDate)}
-                  </Text>
-                ) : (
-                  <Text
-                    style={styles.fieldValue}
-                    numberOfLines={3}
-                    onPress={() => {
-                      setDatePickerFor('from');
-                      setShow(!show);
-                    }}>
-                    {getDateFormat(selectedDate)}
-                  </Text>
-                )}
+                <Text
+                  style={styles.fieldValue}
+                  numberOfLines={3}
+                  onPress={() => {
+                    setDatePickerFor('from');
+                    setShow(!show);
+                  }}>
+                  {getDateFormat(fromDate)}
+                </Text>
               </View>
             </View>
           </View>
@@ -292,7 +277,6 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             <View style={styles.fieldView}>
               <View
                 style={{
-
                   height: 35,
                   justifyContent: 'center',
                 }}>
@@ -301,37 +285,25 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                 </Text>
               </View>
               <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                {toDate ? (
-                  <Text
-                    style={styles.fieldValue}
-                    numberOfLines={3}
-                    onPress={() => {
-                      setDatePickerFor('to');
-                      setShow(!show);
-                    }}>
-                    {getDateFormat(toDate)}
-                  </Text>
-                ) : (
-                  <Text
-                    style={styles.fieldValue}
-                    numberOfLines={3}
-                    onPress={() => {
-                      setDatePickerFor('to');
-                      setShow(!show);
-                    }}>
-                    {getDateFormat(selectedDate)}
-                  </Text>
-                )}
-
+                <Text
+                  style={styles.fieldValue}
+                  numberOfLines={3}
+                  onPress={() => {
+                    setDatePickerFor('to');
+                    setShow(!show);
+                  }}>
+                  {getDateFormat(toDate)}
+                </Text>
               </View>
             </View>
           </View>
           <DateTimePickerView
+            date={new Date()}
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minuteInterval={30}
+            minutesGap={30}
             minimumDate={fromDate || new Date()}
             mode={'datetime'}
           />
@@ -342,7 +314,14 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       <TCGradientButton
         title={strings.applyTitle}
         onPress={() => {
-          navigation.navigate('CreateChallengeForm1', { from: fromDate || selectedDate, to: toDate || selectedDate })
+          if (toDate > fromDate) {
+            navigation.navigate('CreateChallengeForm1', {
+              from: fromDate || selectedDate,
+              to: toDate || selectedDate,
+            });
+          } else {
+            Alert.alert('Please choose correct date.');
+          }
         }}
       />
     </>

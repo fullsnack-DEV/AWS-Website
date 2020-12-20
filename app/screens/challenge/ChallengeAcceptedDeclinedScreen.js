@@ -4,35 +4,78 @@ import {
 } from 'react-native';
 
 import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import TCBorderButton from '../../components/TCBorderButton';
 import strings from '../../Constants/String';
 
-export default function ChallengeSentScreen({ navigation, route }) {
+export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
 
-      {route && route.params && route.params.status && route.params.teamObj && <View style={styles.mailContainer}>
-        <View style={styles.imageContainer}>
-          <Image source={route.params.status === 'accept' ? images.emailSent1 : images.declineChallenge} style={styles.rotateImage}/>
+      {route && route.params && route.params.status && route.params.teamObj && (
+        <View style={styles.mailContainer}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={
+                route.params.status === 'accept'
+                  ? images.emailSent1
+                  : images.declineChallenge
+              }
+              style={styles.rotateImage}
+            />
+          </View>
+          <Text style={styles.invitationText}>
+            {(route.params.status === 'accept' && 'Challenge accepted')
+              || (route.params.status === 'decline' && 'Challenge declined')
+              || (route.params.status === 'cancel' && 'Challenge cancelled')
+              || (route.params.status === 'restored' && 'Challenge Restored')}
+          </Text>
+          <Text style={styles.infoText}>
+            {(route.params.status === 'accept'
+              && `A match between ${route.params.teamObj.group_name} and your team has been scheduled.`)
+              || (route.params.status === 'decline'
+                && `The match reservation request from ${route.params.teamObj.group_name} has been declined.`)
+              || (route.params.status === 'cancel'
+                && `The match reservation from ${route.params.teamObj.group_name} has been cancelled.`)
+              || (route.params.status === 'restored'
+                && 'Reservation alteration request restored.')}
+          </Text>
         </View>
-        <Text style={styles.invitationText}>{(route.params.status === 'accept' && 'Challenge accepted') || (route.params.status === 'decline' && 'Challenge declined') || (route.params.status === 'cancel' && 'Challenge cancelled')}</Text>
-        <Text style={styles.infoText}>{(route.params.status === 'accept' && `A match between ${route.params.teamObj.group_name} and your team has been scheduled.`) || (route.params.status === 'decline' && `The match reservation request from ${route.params.teamObj.group_name} has been declined.`) || (route.params.status === 'cancel' && `The match reservation from ${route.params.teamObj.group_name} has been cancelled.`)}
-        </Text>
-      </View>}
+      )}
 
-      {route && route.params && route.params.teamObj && <TCBorderButton
-      title={`Go to ${route.params.teamObj.group_name}`}
-      textColor={colors.whiteColor}
-      borderColor={colors.whiteColor}
-      backgroundColor={'transparent'}
-      height={40} shadow={true}
-      marginBottom={20}
-      onPress={() => navigation.navigate('Account', { screen: 'HomeScreen' })}/>}
-      {route && route.params && route.params.status === 'accept' && <TCBorderButton title={strings.goToGameHome} textColor={colors.themeColor} borderColor={'transparent'} height={40} shadow={true} marginBottom={20}/>}
+      {route && route.params && route.params.teamObj && (
+        <TCBorderButton
+          title={`Go to ${route.params.teamObj.group_name}`}
+          textColor={colors.whiteColor}
+          borderColor={colors.whiteColor}
+          backgroundColor={'transparent'}
+          height={40}
+          shadow={true}
+          marginBottom={20}
+          onPress={() => navigation.navigate('Account', {
+            screen: 'HomeScreen',
+            params: {
+              uid: route.params.teamObj.group_id || route.params.teamObj.user_id,
+              backButtonVisible: true,
+              role: route.params.teamObj.entity_type === 'player' ? 'user' : route.params.teamObj.entity_type,
+            },
+          })}
+        />
+
+      )}
+      {route && route.params && route.params.status === 'accept' && (
+        <TCBorderButton
+          title={strings.goToGameHome}
+          textColor={colors.themeColor}
+          borderColor={'transparent'}
+          height={40}
+          shadow={true}
+          marginBottom={20}
+        />
+      )}
     </View>
   );
 }
@@ -87,4 +130,4 @@ const styles = StyleSheet.create({
     height: 146,
     resizeMode: 'contain',
   },
-})
+});
