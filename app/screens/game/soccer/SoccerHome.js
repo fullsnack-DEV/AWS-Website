@@ -34,8 +34,9 @@ const gameIds = [
   '1dd4f109-0a7c-40a3-b616-f0cf055ba61c', // 5 - Admin: Arvind  20-11-2020 6-50
   'fb6e4794-4fdd-4af2-b07a-a109d3f550f7', // 6  Admin: Arvind
   '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 7 - For Review
+  '4fd32621-46b8-4ed8-a145-50ab4b82ce62',
 ]
-const globalGameId = gameIds[1];
+const globalGameId = gameIds[7];
 const SoccerHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);

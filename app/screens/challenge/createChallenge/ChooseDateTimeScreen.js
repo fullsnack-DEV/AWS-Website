@@ -10,6 +10,7 @@ import {
   Alert,
 
   FlatList,
+  SectionList,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -63,15 +64,19 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    return moment(new Date(dateValue)).format('MMM DD, yy      hh:mm A');
+    const a = 1000 * 60 * 30;
+    const date = new Date(dateValue); // or use any other date
+    const rounded = new Date(Math.round(date.getTime() / a) * a)
+    return moment(new Date(rounded)).format('MMM DD, yy      hh:mm A');
   };
   const getSlots = () => {
     setloading(true);
+    console.log('Other team Object:', route?.params?.otherTeam);
     blockedSlots(route.params.otherTeam.group_id, authContext)
       .then((response) => {
         setloading(false);
         setSlots(response.payload);
-        console.log('BOOKED SLOT::', response.payload);
+        console.log('BOOKED SLOT::', JSON.stringify(response.payload));
 
         const alldayBlocked = response.payload.filter((item) => item.allDay === true)
         const markedDates = {};
@@ -205,39 +210,14 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
           />
 
-          {/* <SectionList
-            sections={[
-              {
-                title: 'Tue, 17 Feb',
-                data: ['ALTERED', 'ABBY', 'ACTION U.S.A.', 'AMUCK', 'ANGUISH'],
-              },
-              {
-                title: 'Tue, 18 Feb',
-                data: [
-                  'BEST MEN',
-                  'BEYOND JUSTICE',
-                  'BLACK GUNN',
-                  'BLOOD RANCH',
-                  'BEASTIES',
-                ],
-              },
-              {
-                title: 'Tue, 19 Feb',
-                data: [
-                  'CARTEL',
-                  'CASTLE OF EVIL',
-                  'CHANCE',
-                  'COP GAME',
-                  'CROSS FIRE',
-                ],
-              },
-            ]}
-            renderItem={({ item }) => <UnavailableTimeView />}
+          <SectionList
+            sections={slots}
+            renderItem={() => <UnavailableTimeView />}
             renderSectionHeader={({ section }) => (
               <Text style={styles.dateHeader}>{section.title}</Text>
             )}
             keyExtractor={(item, index) => index}
-          /> */}
+          />
           {/* <Text style={styles.dateHeader}>Tue, 17 Feb</Text>
         <UnavailableTimeView/>
         <UnavailableTimeView/>
@@ -327,11 +307,12 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             </View>
           </View>
           <DateTimePickerView
+          date={new Date()}
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minuteInterval={30}
+            minutesGap={30}
             minimumDate={fromDate || new Date()}
             mode={'datetime'}
           />
@@ -342,7 +323,11 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       <TCGradientButton
         title={strings.applyTitle}
         onPress={() => {
-          navigation.navigate('CreateChallengeForm1', { from: fromDate || selectedDate, to: toDate || selectedDate })
+          if (toDate > fromDate) {
+            navigation.navigate('CreateChallengeForm1', { from: fromDate || selectedDate, to: toDate || selectedDate })
+          } else {
+            Alert.alert('Please choose correct date.')
+          }
         }}
       />
     </>

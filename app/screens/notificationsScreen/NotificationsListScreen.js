@@ -14,10 +14,7 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import {
-  FlatList,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
@@ -25,9 +22,13 @@ import PRNotificationDetailMessageItem from '../../components/notificationCompon
 import NotificationProfileItem from '../../components/notificationComponent/NotificationProfileItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
-import NotificationType from '../../Constants/NotificationType'
+import NotificationType from '../../Constants/NotificationType';
 import {
-  getUnreadCount, getNotificationsList, acceptRequest, declineRequest, deleteNotification,
+  getUnreadCount,
+  getNotificationsList,
+  acceptRequest,
+  declineRequest,
+  deleteNotification,
 } from '../../api/Notificaitons';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -39,6 +40,7 @@ import AppleStyleSwipeableRow from '../../components/notificationComponent/Apple
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utils from '../challenge/ChallengeUtility';
+import * as RefereeUtils from '../referee/RefereeUtility';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -56,115 +58,189 @@ function NotificationsListScreen({ navigation }) {
   const [loading, setloading] = useState(true);
   const onDetailPress = (item) => {
     if (activeScreen) {
-      const a = JSON.parse(item.activities[0].object)?.challengeObject?.challenge_id || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id
-      setloading(true)
-      Utils.getChallengeDetail(a, authContext).then((obj) => {
-        console.log('kkkk:', obj.challengeObj);
-        console.log('Screen name kkkk:', obj.screenName);
-        navigation.navigate(obj.screenName, { challengeObj: obj.challengeObj || obj.challengeObj[0] })
-        setloading(false)
-      })
+      const verb = item.activities[0].verb;
+      if (
+        verb.includes(NotificationType.initialChallengePaymentFail)
+        || verb.includes(NotificationType.alterChallengePaymentFail)
+        || verb.includes(NotificationType.challengeAwaitingPaymentPaid)
+        || verb.includes(NotificationType.gameAutoCanceledDueToInitialPaymentFailed)
+        || verb.includes(NotificationType.gameAutoRestoredDueToAlterPaymentFailed)
+        || verb.includes(NotificationType.gameCanceledDuringAwaitingPayment)
+        || verb.includes(NotificationType.gameRestoredDuringAwaitingPayment)
+        || verb.includes(NotificationType.challengeOffered)
+        || verb.includes(NotificationType.challengeAltered)
+      ) {
+        const a = JSON.parse(item.activities[0].object)?.challengeObject
+          ?.challenge_id
+          || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id;
+        setloading(true);
+        Utils.getChallengeDetail(a, authContext).then((obj) => {
+          console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
+          console.log('Screen name of challenge:', obj.screenName);
+          navigation.navigate(obj.screenName, {
+            challengeObj: obj.challengeObj || obj.challengeObj[0],
+          });
+          setloading(false);
+        });
+      } else if (verb.includes(NotificationType.refereeReservationInitialPaymentFail)
+      || verb.includes(NotificationType.refereeReservationAlterPaymentFail)
+      || verb.includes(NotificationType.refereeReservationAwaitingPaymentPaid)
+      || verb.includes(NotificationType.refereeReservationAutoCanceledDueToInitialPaymentFailed)
+      || verb.includes(NotificationType.refereeReservationAutoRestoredDueToAlterPaymentFailed)
+      || verb.includes(NotificationType.refereeReservationCanceledDuringAwaitingPayment)
+      || verb.includes(NotificationType.refereeReservationRestoredDuringAwaitingPayment)
+      || verb.includes(NotificationType.refereeRequest)
+      || verb.includes(NotificationType.changeRefereeRequest)
+      || verb.includes(NotificationType.scorekeeperRequest)) {
+        const a = JSON.parse(item.activities[0].object)?.reservationObject
+          ?.reservation_id;
+        setloading(true);
+        RefereeUtils.getRefereeReservationDetail(a, authContext).then((obj) => {
+          console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+          console.log('Screen name of Reservation:', obj.screenName);
+          navigation.navigate(obj.screenName, {
+            reservationObj: obj.reservationObj || obj.reservationObj[0],
+          });
+          setloading(false);
+        });
+      }
     } else {
-      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
-      Alert.alert(`Do you want to switch account to ${name}?`, '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-      ],
-      { cancelable: true })
+      const name = selectedEntity.entity_type === 'player'
+        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
+        : selectedEntity.group_name;
+      Alert.alert(
+        `Do you want to switch account to ${name}?`,
+        '',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+        ],
+        { cancelable: true },
+      );
     }
   };
 
   const onMessagePress = (item) => {
     if (activeScreen) {
-      console.log('item', item)
+      console.log('item', item);
     } else {
-      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
-      Alert.alert(`Do you want to switch account to ${name}?`, '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-      ],
-      { cancelable: true })
+      const name = selectedEntity.entity_type === 'player'
+        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
+        : selectedEntity.group_name;
+      Alert.alert(
+        `Do you want to switch account to ${name}?`,
+        '',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+        ],
+        { cancelable: true },
+      );
     }
-  }
+  };
 
   const onDelete = ({ item }) => {
     if (activeScreen) {
       setloading(true);
-      const ids = item.activities.map((activity) => activity.id)
-      deleteNotification(ids, item.type, authContext).then(() => {
-        callNotificationList()
-      }).catch(() => {
-        setloading(false);
-        Alert.alert('Failed to move to trash. Try again later')
-      });
+      const ids = item.activities.map((activity) => activity.id);
+      deleteNotification(ids, item.type, authContext)
+        .then(() => {
+          callNotificationList();
+        })
+        .catch(() => {
+          setloading(false);
+          Alert.alert('Failed to move to trash. Try again later');
+        });
     } else {
-      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
-      Alert.alert(`Do you want to switch account to ${name}?`, '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-      ],
-      { cancelable: true })
+      const name = selectedEntity.entity_type === 'player'
+        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
+        : selectedEntity.group_name;
+      Alert.alert(
+        `Do you want to switch account to ${name}?`,
+        '',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+        ],
+        { cancelable: true },
+      );
     }
   };
 
   const onAccept = (requestId) => {
     if (activeScreen) {
-      setloading(true)
-      acceptRequest(requestId, authContext).then(() => {
-        callNotificationList();
-      }).catch((error) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 0.3)
-      })
+      setloading(true);
+      acceptRequest(requestId, authContext)
+        .then(() => {
+          callNotificationList();
+        })
+        .catch((error) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 0.3);
+        });
     } else {
-      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
-      Alert.alert(`Do you want to switch account to ${name}?`, '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-      ],
-      { cancelable: true })
+      const name = selectedEntity.entity_type === 'player'
+        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
+        : selectedEntity.group_name;
+      Alert.alert(
+        `Do you want to switch account to ${name}?`,
+        '',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+        ],
+        { cancelable: true },
+      );
     }
-  }
+  };
 
   const onDecline = (requestId) => {
     if (activeScreen) {
-      declineRequest(requestId, authContext).then(() => {
-        callNotificationList();
-      }).catch((error) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 0.3)
-      })
+      declineRequest(requestId, authContext)
+        .then(() => {
+          callNotificationList();
+        })
+        .catch((error) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 0.3);
+        });
     } else {
-      const name = selectedEntity.entity_type === 'player' ? `${selectedEntity.first_name} ${selectedEntity.last_name}` : selectedEntity.group_name
-      Alert.alert(`Do you want to switch account to ${name}?`, '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-      ],
-      { cancelable: true })
+      const name = selectedEntity.entity_type === 'player'
+        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
+        : selectedEntity.group_name;
+      Alert.alert(
+        `Do you want to switch account to ${name}?`,
+        '',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+        ],
+        { cancelable: true },
+      );
     }
   };
 
@@ -175,18 +251,22 @@ function NotificationsListScreen({ navigation }) {
     || verb.includes(NotificationType.invitePlayerToJoingame);
 
   const renderPendingRequestComponent = ({ item }) => (
-    <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
+    <AppleStyleSwipeableRow
+      onPress={() => onDelete({ item })}
+      color={colors.redDelColor}
+      image={images.deleteIcon}>
       {isInvite(item.activities[0].verb) && (
         <PRNotificationInviteCell
-            item={item}
-            selectedEntity={selectedEntity}
-            onAccept={() => onAccept(item.activities[0].id)}
-            onDecline={() => onDecline(item.activities[0].id)}
-            onPress={() => {}}
-          />
+          item={item}
+          selectedEntity={selectedEntity}
+          onAccept={() => onAccept(item.activities[0].id)}
+          onDecline={() => onDecline(item.activities[0].id)}
+          onPress={() => {}}
+        />
       )}
 
-      {!isInvite(item.activities[0].verb) && (<PRNotificationDetailMessageItem
+      {!isInvite(item.activities[0].verb) && (
+        <PRNotificationDetailMessageItem
           item={item}
           selectedEntity={selectedEntity}
           onDetailPress={() => onDetailPress(item)}
@@ -198,29 +278,37 @@ function NotificationsListScreen({ navigation }) {
   );
 
   const renderNotificationComponent = ({ item }) => (
-    <AppleStyleSwipeableRow onPress={() => onDelete({ item })} color={colors.redDelColor} image={images.deleteIcon}>
+    <AppleStyleSwipeableRow
+      onPress={() => onDelete({ item })}
+      color={colors.redDelColor}
+      image={images.deleteIcon}>
       <NotificationItem
-          data={item}
-          cta1={() => {}}
-          cta2={() => {}}
-          card={() => {}}
-        />
+        data={item}
+        cta1={() => {}}
+        cta2={() => {}}
+        card={() => {}}
+      />
     </AppleStyleSwipeableRow>
-  )
+  );
 
   const RenderSections = ({ item, section }) => {
     if (section.section === strings.pendingrequests) {
-      return renderPendingRequestComponent({ item: { ...item, type: 'request' } })
+      return renderPendingRequestComponent({ item: { ...item, type: 'request' } });
     }
 
-    if (section.section === strings.earlier || section.section === strings.today) {
-      return renderNotificationComponent({ item: { ...item, type: 'notification' } })
+    if (
+      section.section === strings.earlier
+      || section.section === strings.today
+    ) {
+      return renderNotificationComponent({
+        item: { ...item, type: 'notification' },
+      });
     }
 
-    return null
-  }
+    return null;
+  };
   const activeTab = async (index) => {
-    checkActiveScreen(groupList[index])
+    checkActiveScreen(groupList[index]);
     setCurrentTab(index);
     refContainer.current.scrollToIndex({
       animated: true,
@@ -248,7 +336,7 @@ function NotificationsListScreen({ navigation }) {
         if (response.status === true) {
           const { teams } = response.payload;
           const { clubs } = response.payload;
-          const groups = [authContext.entity.auth.user, ...clubs, ...teams]
+          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
           setGroupList(groups);
           setNotifAPI(1);
           setCurrentTab(0);
@@ -265,7 +353,7 @@ function NotificationsListScreen({ navigation }) {
   }, [currentTab, isFocused]);
 
   const callNotificationList = () => {
-    setloading(true)
+    setloading(true);
     setMainNotificationsList([]);
     const entity = groupList[currentTab];
     setSelectedEntity({ ...entity });
@@ -287,16 +375,30 @@ function NotificationsListScreen({ navigation }) {
         );
 
         const array = [
-          { data: [...pendingReqNotification], section: strings.pendingrequests, type: 'request' },
-          { data: [...todayNotifications], section: strings.today, type: 'notification' },
-          { data: [...erlierNotifications], section: strings.earlier, type: 'notification' },
+          {
+            data: [...pendingReqNotification],
+            section: strings.pendingrequests,
+            type: 'request',
+          },
+          {
+            data: [...todayNotifications],
+            section: strings.today,
+            type: 'notification',
+          },
+          {
+            data: [...erlierNotifications],
+            section: strings.earlier,
+            type: 'notification',
+          },
         ];
 
-        setMainNotificationsList([...array.filter((item) => item.data.length !== 0)]);
-        setloading(false)
+        setMainNotificationsList([
+          ...array.filter((item) => item.data.length !== 0),
+        ]);
+        setloading(false);
       })
       .catch((e) => {
-        setloading(false)
+        setloading(false);
         Alert.alert(e.messages);
       });
   };
@@ -308,10 +410,17 @@ function NotificationsListScreen({ navigation }) {
 
   const renderSectionFooter = ({ section }) => {
     if (section.section === strings.pendingrequests) {
-      return <View style={[styles.listItemSeparatorStyle, { height: 7, backgroundColor: colors.grayBackgroundColor }]} />
+      return (
+        <View
+          style={[
+            styles.listItemSeparatorStyle,
+            { height: 7, backgroundColor: colors.grayBackgroundColor },
+          ]}
+        />
+      );
     }
-    return <View style={styles.listItemSeparatorStyle} />
-  }
+    return <View style={styles.listItemSeparatorStyle} />;
+  };
 
   const renderGroupItem = ({ item, index }) => (
     <TouchableOpacity onPress={() => activeTab(index)} key={index}>
@@ -324,14 +433,14 @@ function NotificationsListScreen({ navigation }) {
   );
 
   const checkActiveScreen = async (entity) => {
-    const loggedInEntity = authContext.entity
-    const currentID = entity.entity_type === 'player' ? entity.user_id : entity.group_id
+    const loggedInEntity = authContext.entity;
+    const currentID = entity.entity_type === 'player' ? entity.user_id : entity.group_id;
     if (loggedInEntity.uid === currentID) {
       setActiveScreen(true);
     } else {
       setActiveScreen(false);
     }
-  }
+  };
 
   return (
     <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
@@ -355,7 +464,7 @@ function NotificationsListScreen({ navigation }) {
           renderItem={RenderSections}
           renderSectionHeader={({ section: { section } }) => (
             <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
-              <View style={styles.listItemSeparatorStyle}/>
+              <View style={styles.listItemSeparatorStyle} />
               <Text style={styles.header}>{section}</Text>
             </View>
           )}

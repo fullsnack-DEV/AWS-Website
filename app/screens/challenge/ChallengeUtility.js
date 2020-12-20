@@ -10,7 +10,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
   const Obj = {}
   // eslint-disable-next-line consistent-return
   return getChallenge(challengeID, authContext).then((response) => {
-    console.log('Challenge Utils:', response.payload);
+    console.log('Challenge Utils:', JSON.stringify(response.payload));
     if (response.payload.length > 0) {
       if (ReservationStatus.changeRequest === response.payload[0].status
         || ReservationStatus.pendingrequestpayment === response.payload[0].status) {
@@ -20,6 +20,7 @@ export const getChallengeDetail = (challengeID, authContext) => {
       }
       if (ReservationStatus.pendingpayment === response.payload[0].status
         || ReservationStatus.accepted === response.payload[0].status
+        || ReservationStatus.restored === response.payload[0].status
         || ReservationStatus.cancelled === response.payload[0].status
         || ReservationStatus.offered === response.payload[0].status) {
         Obj.challengeObj = response.payload[0]

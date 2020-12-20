@@ -1,0 +1,46 @@
+import {
+  Alert,
+} from 'react-native';
+import { getReservation } from '../../api/Challenge';
+import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
+import strings from '../../Constants/String';
+
+// eslint-disable-next-line import/prefer-default-export
+export const getRefereeReservationDetail = (reservationID, authContext) => {
+  const Obj = {}
+  // eslint-disable-next-line consistent-return
+  return getReservation(reservationID, authContext).then((response) => {
+    console.log('reservation Utils:', JSON.stringify(response.payload));
+    if (response.payload.length > 0) {
+      if (RefereeReservationStatus.changeRequest === response.payload[0].status
+          || RefereeReservationStatus.pendingrequestpayment === response.payload[0].status) {
+        Obj.reservationObj = response.payload
+        Obj.screenName = 'AlterRefereeScreen'
+        return Obj
+      }
+      if (RefereeReservationStatus.pendingpayment === response.payload[0].status
+          || RefereeReservationStatus.accepted === response.payload[0].status
+          || RefereeReservationStatus.restored === response.payload[0].status
+          || RefereeReservationStatus.cancelled === response.payload[0].status
+          || RefereeReservationStatus.offered === response.payload[0].status) {
+        Obj.reservationObj = response.payload[0]
+        Obj.screenName = 'ReservationScreen'
+        return Obj
+      }
+      if (RefereeReservationStatus.declined === response.payload[0].status) {
+        if (response.payload[0].change_requested_by) {
+          Obj.reservationObj = response.payload
+          Obj.screenName = 'ReservationScreen'
+          return Obj
+        }
+        Obj.reservationObj = response.payload[0]
+        Obj.screenName = 'ReservationScreen'
+        return Obj
+      }
+    }
+  }).catch((e) => {
+    setTimeout(() => {
+      Alert.alert(strings.alertmessagetitle, e.message);
+    }, 0.7);
+  });
+};

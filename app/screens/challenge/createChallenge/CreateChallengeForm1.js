@@ -71,44 +71,45 @@ export default function CreateChallengeForm1({ navigation, route }) {
   }, [venueTitle])
 
   useEffect(() => {
-    entity = authContext.entity
-
-    if (route && route.params && route.params.groupObj) {
-      setteams([{ ...entity.obj }, { ...route.params.groupObj }])
-      setTeamData([{ ...entity.obj }, { ...route.params.groupObj }])
-    }
-    if ((route && route.params && route.params.body) && ((route && route.params && route.params.editableAlter) || (route && route.params && route.params.editable))) {
-      if (route && route.params && route.params.editableAlter) {
-        setEditableAlter(true)
+    if (isFocused) {
+      entity = authContext.entity
+      if (route && route.params && route.params.groupObj) {
+        setteams([{ ...entity.obj }, { ...route.params.groupObj }])
+        setTeamData([{ ...entity.obj }, { ...route.params.groupObj }])
       }
-      bodyParams = route.params.body
-      setteams([{ ...route.params.body.home_team }, { ...route.params.body.away_team }])
-      setVenueData(route.params.body.venue)
-      setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_name ? 0 : 1)
-      setVenue((route.params.body.venue.venueType === 'HomeTeam' && 1) || (route.params.body.venue.venueType === 'AwayTeam' && 2) || (route.params.body.venue.venueType === 'other' && 0))
-      if (route.params.body.home_team.group_id === entity.obj.group_id) {
-        setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }])
-      } else {
-        setTeamData([{ ...entity.obj }, { ...route.params.body.home_team }])
+      if ((route && route.params && route.params.body) && ((route && route.params && route.params.editableAlter) || (route && route.params && route.params.editable))) {
+        if (route && route.params && route.params.editableAlter) {
+          setEditableAlter(true)
+        }
+        bodyParams = route.params.body
+        setteams([{ ...route.params.body.home_team }, { ...route.params.body.away_team }])
+        setVenueData(route.params.body.venue)
+        setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_name ? 0 : 1)
+        setVenue((route.params.body.venue.venueType === 'HomeTeam' && 1) || (route.params.body.venue.venueType === 'AwayTeam' && 2) || (route.params.body.venue.venueType === 'other' && 0))
+        if (route.params.body.home_team.group_id === entity.obj.group_id) {
+          setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }])
+        } else {
+          setTeamData([{ ...entity.obj }, { ...route.params.body.home_team }])
+        }
       }
-    }
 
-    if (route && route.params && route.params.venueObj) {
-      getLatLongData()
-      setVenue(0)
-      bodyParams = {
-        ...bodyParams,
-        venue: route.params.venueObj,
+      if (route && route.params && route.params.venueObj) {
+        getLatLongData()
+        setVenue(0)
+        bodyParams = {
+          ...bodyParams,
+          venue: route.params.venueObj,
+        }
+        setVenueData(route.params.venueObj)
       }
-      setVenueData(route.params.venueObj)
-    }
 
-    if (route && route.params && route.params.from) {
-      bodyParams = {
-        ...bodyParams,
-        start_datetime: new Date(route.params.from).getTime(),
-        end_datetime: new Date(route.params.to).getTime(),
+      if (route && route.params && route.params.from) {
+        bodyParams = {
+          ...bodyParams,
+          start_datetime: new Date(route.params.from).getTime(),
+          end_datetime: new Date(route.params.to).getTime(),
 
+        }
       }
     }
   }, [isFocused]);

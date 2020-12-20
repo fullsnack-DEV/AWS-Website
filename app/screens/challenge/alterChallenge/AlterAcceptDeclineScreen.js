@@ -13,12 +13,14 @@ import {
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Utility from '../../../utils';
 import {
   acceptDeclineAlterChallenge,
   acceptDeclineChallenge,
   getFeesEstimation,
   updateChallenge,
 } from '../../../api/Challenge';
+import { paymentMethods } from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -39,6 +41,7 @@ import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import CurruentVersionView from '../../../components/challenge/CurruentVersionView';
 import ReservationNumber from '../../../components/reservations/ReservationNumber';
 import GameStatus from '../../../Constants/GameStatus';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 let entity = {};
 
@@ -50,7 +53,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
   const [bodyParams, setbodyParams] = useState();
-
+  const [paymentCard, setPaymentCard] = useState();
   const [editRules, setEditRules] = useState(false);
   const [editVenue, setEditVenue] = useState(false);
   const [editReferee, setEditReferee] = useState(false);
@@ -58,15 +61,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   const [oldVersion, setOldVersion] = useState();
   const [editInfo, setEditInfo] = useState(false);
   const [editPayment, setEditPayment] = useState(false);
-  const [isPendingRequestPayment, setIsPendingRequestPayment] = useState()
+  const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
-
+  const [defaultCard, setDefaultCard] = useState()
   useEffect(() => {
     entity = authContext.entity;
-    console.log('useEffect called Alter  .....:');
+
     const { challengeObj } = route.params ?? {};
     if (challengeObj.length > 0) {
-      setIsPendingRequestPayment(true)
+      setIsPendingRequestPayment(true);
       for (let i = 0; i < challengeObj.length; i++) {
         if (challengeObj[i].status === ReservationStatus.accepted) {
           if (isOld === false) {
@@ -76,18 +79,37 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           } else {
             setbodyParams(challengeObj[0]);
           }
-          sectionEdited();
 
-          if ((challengeObj[0]?.away_team?.group_id ?? challengeObj[0]?.away_team?.user_id) === entity.uid) {
+          if (
+            (challengeObj[0]?.away_team?.group_id
+              ?? challengeObj[0]?.away_team?.user_id) === entity.uid
+          ) {
             setHomeTeam(challengeObj[0].away_team);
             setAwayTeam(challengeObj[0].home_team);
           } else {
             setHomeTeam(challengeObj[0].home_team);
             setAwayTeam(challengeObj[0].away_team);
           }
-          break
+          break;
         }
       }
+      if (!paymentCard) {
+        setPaymentCard({
+          start_datetime: challengeObj[0].start_datetime,
+          end_datetime: challengeObj[0].end_datetime,
+          currency_type: challengeObj[0].currency_type,
+          payment_method_type: challengeObj[0].payment_method_type,
+          total_game_charges: challengeObj[0].total_game_charges,
+          service_fee1_charges: challengeObj[0].service_fee1_charges,
+          service_fee2_charges: challengeObj[0].service_fee2_charges,
+          total_charges: challengeObj[0].total_charges,
+          total_stripe_fee: challengeObj[0].total_stripe_fee,
+          total_payout: challengeObj[0].total_payout,
+        })
+      }
+      console.log('challenge Object::', challengeObj[0]);
+
+      console.log('Payment Object::', paymentCard);
     } else {
       if (isOld === false) {
         setbodyParams(challengeObj);
@@ -97,29 +119,42 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       } else {
         setbodyParams(challengeObj);
       }
-      sectionEdited();
 
-      if ((challengeObj?.away_team?.group_id ?? challengeObj?.away_team?.user_id) === entity.uid) {
+      if (
+        (challengeObj?.away_team?.group_id
+          ?? challengeObj?.away_team?.user_id) === entity.uid
+      ) {
         setHomeTeam(challengeObj.away_team);
         setAwayTeam(challengeObj.home_team);
       } else {
         setHomeTeam(challengeObj.home_team);
         setAwayTeam(challengeObj.away_team);
       }
+      if (!paymentCard) {
+        setPaymentCard({
+          start_datetime: challengeObj.start_datetime,
+          end_datetime: challengeObj.end_datetime,
+          currency_type: challengeObj.currency_type,
+          payment_method_type: challengeObj.payment_method_type,
+          total_game_charges: challengeObj.total_game_charges,
+          service_fee1_charges: challengeObj.service_fee1_charges,
+          service_fee2_charges: challengeObj.service_fee2_charges,
+          total_charges: challengeObj.total_charges,
+          total_stripe_fee: challengeObj.total_stripe_fee,
+          total_payout: challengeObj.total_payout,
+        })
+      }
+      console.log('challenge Object::', challengeObj);
+
+      console.log('Payment Object::', paymentCard);
     }
+
+    getPaymentMethods()
   }, [isFocused]);
 
   useLayoutEffect(() => {
     sectionEdited();
-  }, [
-    bodyParams,
-    isOld,
-    editVenue,
-    editRules,
-    editReferee,
-    editScorekeeper,
-    editInfo,
-  ]);
+  }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
@@ -134,7 +169,6 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         bodyParams.responsible_to_secure_venue
         !== oldVersion.responsible_to_secure_venue
       ) {
-        console.log('secure venue changed');
         setEditVenue(true);
       } else {
         setEditVenue(false);
@@ -150,8 +184,10 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         setEditScoreKeeper(false);
       }
       if (
-        ((bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id) || (bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id))
-        || ((bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id) || (bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id))
+        bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
+        || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
+        || bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id
+        || bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id
         || bodyParams?.start_datetime !== oldVersion?.start_datetime
         || bodyParams?.end_datetime !== oldVersion?.end_datetime
         || bodyParams?.venue?.address !== oldVersion?.venue?.address
@@ -160,26 +196,26 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       } else {
         setEditInfo(false);
       }
-      if (bodyParams.total_game_charges !== oldVersion.total_game_charges) {
+      if (bodyParams.total_game_charges !== oldVersion.total_game_charges || bodyParams.manual_fee !== oldVersion.manual_fee) {
         setEditPayment(true);
-        getFeesEstimationDetail()
+        getFeesEstimationDetail();
       } else {
         setEditPayment(false);
       }
     }
   };
+
   const getFeesEstimationDetail = () => {
     const body = {};
+    body.challenge_id = bodyParams.challenge_id;
     body.start_datetime = bodyParams.start_datetime / 1000;
     body.end_datetime = bodyParams.end_datetime / 1000;
-    body.currency_type = 'CAD';
+    body.currency_type = bodyParams.currency_type || 'CAD';
     body.payment_method_type = 'card';
     body.manual_fee = bodyParams.manual_fee;
     if (bodyParams.manual_fee) {
       body.total_game_charges = bodyParams.total_game_charges;
     }
-
-    console.log('Body data of fee:', body);
 
     setloading(true);
     getFeesEstimation(
@@ -192,31 +228,14 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       .then((response) => {
         setloading(false);
         console.log('fee data :', response.payload);
-
-        setbodyParams({
-          ...bodyParams,
+        setPaymentCard({
+          ...paymentCard,
           total_game_charges: response.payload.total_game_fee,
           total_charges: response.payload.total_amount,
           total_payout: response.payload.total_payout,
           service_fee1_charges: response.payload.total_service_fee1,
           service_fee2_charges: response.payload.total_service_fee2,
         })
-
-        // total_stripe_fee
-
-        // if (route && route.params && route.params.body) {
-        //   body = route.params.body;
-        //   body.total_payout = response.payload.total_payout;
-        //   body.service_fee1_charges = response.payload.total_service_fee1;
-        //   body.service_fee2_charges = response.payload.total_service_fee2;
-        //   body.total_charges = response.payload.total_amount;
-        //   body.total_game_charges = response.payload.total_game_fee;
-        //   body.hourly_game_fee = 0;
-        //   body.currency_type = 'CAD';
-        //   body.payment_method_type = 'card';
-        // }
-        // console.log('fee BODY :', body);
-        // setPaymentInfo(response.payload)
       })
       .catch((e) => {
         setloading(false);
@@ -225,12 +244,12 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         }, 0.7);
       });
   };
-
   const acceptDeclineChallengeOperation = (
     teamID,
     ChallengeId,
     versionNo,
     status,
+    isRestored = false,
   ) => {
     setloading(true);
     acceptDeclineChallenge(
@@ -251,10 +270,17 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             status: 'accept',
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'decline',
-          });
+          if (isRestored) {
+            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              teamObj: awayTeam,
+              status: 'restored',
+            });
+          } else {
+            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+              teamObj: awayTeam,
+              status: 'decline',
+            });
+          }
         } else if (status === 'cancel') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
             teamObj: awayTeam,
@@ -275,14 +301,16 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     ChallengeId,
     versionNo,
     status,
+    paymentID,
   ) => {
+    console.log('funcation called');
     setloading(true);
     acceptDeclineAlterChallenge(
       teamID,
       ChallengeId,
       versionNo,
       status,
-      {},
+      paymentID && { source: paymentID },
       authContext,
     )
       .then((response) => {
@@ -374,9 +402,12 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         homeTeam
         && awayTeam
         && ((item.responsible_team_id === 'none' && 'None')
-          || (item.responsible_team_id === (homeTeam?.group_id || homeTeam?.user_id)
-            ? homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}`
-            : awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`))
+          || (item.responsible_team_id
+          === (homeTeam?.group_id || homeTeam?.user_id)
+            ? homeTeam?.group_name
+              || `${homeTeam?.first_name} ${homeTeam?.last_name}`
+            : awayTeam?.group_name
+              || `${awayTeam?.first_name} ${awayTeam?.last_name}`))
       }
       marginLeft={30}
       color={checkRefereeColor(item)}
@@ -390,15 +421,44 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         homeTeam
         && awayTeam
         && ((item.responsible_team_id === 'none' && 'None')
-          || (item.responsible_team_id === (homeTeam?.group_id || homeTeam?.user_id)
-            ? homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}`
-            : awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`))
+          || (item.responsible_team_id
+          === (homeTeam?.group_id || homeTeam?.user_id)
+            ? homeTeam?.group_name
+              || `${homeTeam?.first_name} ${homeTeam?.last_name}`
+            : awayTeam?.group_name
+              || `${awayTeam?.first_name} ${awayTeam?.last_name}`))
       }
       marginLeft={30}
       color={checkScorekeeperColor(item)}
     />
   );
+  const getPaymentMethods = () => {
+    setloading(true)
+    paymentMethods(authContext)
+      .then((response) => {
+        console.log('source ID:', bodyParams?.source)
+        console.log('payment method', response.payload)
+        for (const tempCard of response?.payload) {
+          if (tempCard?.id === bodyParams?.source) {
+            setDefaultCard(response?.payload?.card)
+            break
+          }
+        }
 
+        // setCards([...response.payload])
+        setloading(false)
+        // if (response.payload.length === 0) {
+        //   openNewCardScreen();
+        // }
+      })
+      .catch((e) => {
+        console.log('error in payment method', e)
+        setloading(false)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.3)
+      })
+  }
   // eslint-disable-next-line consistent-return
   const checkSenderOrReceiver = (challengeObj) => {
     if (!challengeObj.userChallenge) {
@@ -424,7 +484,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     }
     if (
       challengeObj.status === ReservationStatus.pendingpayment
-        || challengeObj.status === ReservationStatus.pendingrequestpayment
+      || challengeObj.status === ReservationStatus.pendingrequestpayment
     ) {
       if (challengeObj.invited_by === entity.uid) {
         return 'sender';
@@ -443,44 +503,78 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     return 'receiver';
   };
   const updateChallengeDetail = () => {
-    setloading(true)
-    const challengeID = bodyParams.challenge_id;
-    delete bodyParams.created_at;
-    delete bodyParams.created_by;
-    delete bodyParams.entity_id;
-    delete bodyParams.entity_type;
-    delete bodyParams.offer_expiry;
-    delete bodyParams.status;
-    delete bodyParams.challenge_id;
-    delete bodyParams.userChallenge;
-    delete bodyParams.game_id;
-    delete bodyParams.change_requested_by;
-    delete bodyParams.updated_by;
-    delete bodyParams.updated_at;
-    delete bodyParams.version;
-    delete bodyParams.reservations;
-    const home_id = bodyParams?.home_team?.group_id ?? bodyParams.home_team.user_id;
-    const away_id = bodyParams?.away_team?.group_id ?? bodyParams.away_team.user_id;
-    delete bodyParams.home_team;
-    delete bodyParams.away_team;
-    bodyParams.home_team = home_id;
-    bodyParams.away_team = away_id;
+    setloading(true);
+    const body = { ...bodyParams }
+    const challengeID = body.challenge_id;
+    delete body.created_at;
+    delete body.created_by;
+    delete body.entity_id;
+    delete body.entity_type;
+    delete body.offer_expiry;
+    delete body.status;
+    delete body.challenge_id;
+    delete body.userChallenge;
+    delete body.game_id;
+    delete body.change_requested_by;
+    delete body.updated_by;
+    delete body.updated_at;
+    delete body.version;
+    delete body.reservations;
+    const home_id = body?.home_team?.group_id ?? body.home_team.user_id;
+    const away_id = body?.away_team?.group_id ?? body.away_team.user_id;
+    delete body.home_team;
+    delete body.away_team;
+    body.home_team = home_id;
+    body.away_team = away_id;
+    body.total_game_charges = paymentCard.total_game_charges;
+    body.total_charges = paymentCard.total_charges;
+    body.total_payout = paymentCard.total_payout;
+    body.service_fee1_charges = paymentCard.service_fee1_charges;
+    body.service_fee2_charges = paymentCard.service_fee2_charges;
+    body.stripe_fee = paymentCard.stripe_fee;
 
-    // setbodyParams({ ...bodyParams });
+    // const challengeID = bodyParams.challenge_id;
+    // delete bodyParams.created_at;
+    // delete bodyParams.created_by;
+    // delete bodyParams.entity_id;
+    // delete bodyParams.entity_type;
+    // delete bodyParams.offer_expiry;
+    // delete bodyParams.status;
+    // delete bodyParams.challenge_id;
+    // delete bodyParams.userChallenge;
+    // delete bodyParams.game_id;
+    // delete bodyParams.change_requested_by;
+    // delete bodyParams.updated_by;
+    // delete bodyParams.updated_at;
+    // delete bodyParams.version;
+    // delete bodyParams.reservations;
+    // const home_id = bodyParams?.home_team?.group_id ?? bodyParams.home_team.user_id;
+    // const away_id = bodyParams?.away_team?.group_id ?? bodyParams.away_team.user_id;
+    // delete bodyParams.home_team;
+    // delete bodyParams.away_team;
+    // bodyParams.home_team = home_id;
+    // bodyParams.away_team = away_id;
+    // bodyParams.total_game_charges = paymentCard.total_game_charges;
+    // bodyParams.total_charges = paymentCard.total_charges;
+    // bodyParams.total_payout = paymentCard.total_payout;
+    // bodyParams.service_fee1_charges = paymentCard.service_fee1_charges;
+    // bodyParams.service_fee2_charges = paymentCard.service_fee2_charges;
+    // bodyParams.stripe_fee = paymentCard.stripe_fee;
 
-    console.log('FINAL BODY PARAMS::', bodyParams);
-    updateChallenge(challengeID, bodyParams, authContext).then((response) => {
-      setloading(false)
-      console.log('response of alter challenge::', response.payload);
-      navigation.navigate('AlterRequestSent')
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
-    });
+    console.log('FINAL BODY PARAMS::', body);
+    updateChallenge(challengeID, body, authContext)
+      .then(() => {
+        setloading(false);
+        navigation.navigate('AlterRequestSent');
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
   };
-    // eslint-disable-next-line consistent-return
+  // eslint-disable-next-line consistent-return
   const getTeamName = (challengeObject) => {
     if (!challengeObject.userChallenge) {
       if (challengeObject.home_team.group_id === entity.uid) {
@@ -509,26 +603,32 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   // };
   const getPendingRequestPaymentMessage = () => {
     if (bodyParams.change_requested_by === entity.uid) {
-      return `${getTeamName(bodyParams)} has accepted your game reservation alteration request, but `
+      return `${getTeamName(
+        bodyParams,
+      )} has accepted your game reservation alteration request, but `;
     }
 
-    return `Your team has accepted a game reservation alteration request from ${getTeamName(bodyParams)}, but `
-  }
+    return `Your team has accepted a game reservation alteration request from ${getTeamName(
+      bodyParams,
+    )}, but `;
+  };
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
       {homeTeam && awayTeam && bodyParams && (
         <View>
-          {!isPendingRequestPayment && <TouchableOpacity onPress={() => console.log('OK')}>
-            <LinearGradient
-              colors={[colors.yellowColor, colors.themeColor]}
-              style={styles.containerStyle}>
-              <Text style={styles.buttonText}>
-                Please edit the reservation details below before you send the
-                alteration request.
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>}
+          {!isPendingRequestPayment && (
+            <TouchableOpacity onPress={() => console.log('OK')}>
+              <LinearGradient
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={styles.containerStyle}>
+                <Text style={styles.buttonText}>
+                  Please edit the reservation details below before you send the
+                  alteration request.
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
           <View
             style={{
               flexDirection: 'row',
@@ -537,7 +637,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               marginLeft: 15,
               marginRight: 15,
             }}>
-            <ReservationNumber reservationNumber={bodyParams.challenge_id}/>
+            <ReservationNumber reservationNumber={bodyParams.challenge_id} />
             <CurruentVersionView
               onPress={() => {
                 navigation.navigate('CurruentReservationScreen', {
@@ -566,9 +666,13 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   style={styles.teamImage}
                 />
                 <Text style={styles.teamNameText}>
-                  {bodyParams.invited_by === (bodyParams?.home_team?.group_id ?? bodyParams?.home_team?.user_id)
-                    ? bodyParams?.home_team?.group_name || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`
-                    : bodyParams?.away_team?.group_name || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`}
+                  {bodyParams.invited_by
+                  === (bodyParams?.home_team?.group_id
+                    ?? bodyParams?.home_team?.user_id)
+                    ? bodyParams?.home_team?.group_name
+                      || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`
+                    : bodyParams?.away_team?.group_name
+                      || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`}
                 </Text>
               </View>
             </View>
@@ -590,9 +694,13 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  {bodyParams.invited_by === (bodyParams?.home_team?.group_id ?? bodyParams?.home_team?.user_id)
-                    ? bodyParams?.away_team?.group_name || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`
-                    : bodyParams?.home_team?.group_name || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`}
+                  {bodyParams.invited_by
+                  === (bodyParams?.home_team?.group_id
+                    ?? bodyParams?.home_team?.user_id)
+                    ? bodyParams?.away_team?.group_name
+                      || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`
+                    : bodyParams?.home_team?.group_name
+                      || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`}
                 </Text>
               </View>
             </View>
@@ -601,19 +709,24 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View>
-                <Text style={styles.challengeMessage}>ALTEARION REQUEST SENT</Text>
-                <Text style={styles.challengeText}>
-                  You sent a match reservation alteration request to {getTeamName(bodyParams)}.
+                <Text style={styles.challengeMessage}>
+                  ALTEARION REQUEST SENT
                 </Text>
-
+                <Text style={styles.challengeText}>
+                  You sent a match reservation alteration request to{' '}
+                  {getTeamName(bodyParams)}.
+                </Text>
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View>
-                <Text style={styles.challengeMessage}>ALTERATION REQUEST PENDING</Text>
+                <Text style={styles.challengeMessage}>
+                  ALTERATION REQUEST PENDING
+                </Text>
                 <Text style={styles.challengeText}>
-                  You received a match reservation alteration request from {getTeamName(bodyParams)}.
+                  You received a match reservation alteration request from{' '}
+                  {getTeamName(bodyParams)}.
                 </Text>
               </View>
           )}
@@ -624,32 +737,32 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             && bodyParams.status === ReservationStatus.pendingrequestpayment && (
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                <Text style={styles.challengeText}>
-                  {getPendingRequestPaymentMessage()}your payment hasnt gone through yet.
+                <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} your payment hasn't gone through yet.`}
+
                 </Text>
                 <Text style={styles.awatingNotesText}>
                   {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
                     bodyParams.offer_expiry * 1000,
                     new Date().getTime(),
                   )}
-                  \n Meanwhile, ${getTeamName(bodyParams)} can cancel acceptance of the alteration request before the payment is completed.`}
+                  \nMeanwhile, ${getTeamName(
+                    bodyParams,
+                  )} can cancel acceptance of the alteration request before the payment is completed.`}
                 </Text>
-
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.pendingrequestpayment && (
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                <Text style={styles.challengeText}>
-                  {getPendingRequestPaymentMessage()}the payment hasnt gone through yet.
+                <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} the payment hasn't gone through yet.`}
                 </Text>
                 <Text style={styles.awatingNotesText}>
                   {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
                     bodyParams.offer_expiry * 1000,
                     new Date().getTime(),
                   )}
-                  \n Meanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
+                  \nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
                 </Text>
               </View>
           )}
@@ -660,7 +773,10 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
                 onPress={() => {
-                  console.log('OK PAYMENT');
+                  navigation.navigate('PayAgainScreen', {
+                    body: { ...bodyParams, ...paymentCard },
+                    comeFrom: ReservationStatus.pendingrequestpayment,
+                  })
                 }}
                 marginBottom={15}
               />
@@ -670,13 +786,19 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <TCGradientButton
                 title={'RESTORE TO PREVIOUS VERSION'}
                 onPress={() => {
-                  console.log('OK PAYMENT');
+                  acceptDeclineChallengeOperation(
+                    entity.uid,
+                    bodyParams.challenge_id,
+                    bodyParams.version,
+                    'decline',
+                    true,
+                  );
                 }}
                 marginBottom={15}
               />
           )}
-          {(bodyParams.status === ReservationStatus.changeRequest) && (
-            <TCBorderButton
+
+          <TCBorderButton
               title={'GAME HOME'}
               onPress={() => navigation.navigate('SoccerHome', {
                 gameId: bodyParams.game_id,
@@ -684,7 +806,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               }
               marginBottom={15}
             />
-          )}
+
           <TCThickDivider />
           {bodyParams && (
             <View>
@@ -693,33 +815,39 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   title={`Match · ${bodyParams.sport}`}
                   isNew={editInfo}
                 />
-                {!isPendingRequestPayment && <TouchableOpacity
-                  style={styles.editTouchArea}
-                  hitSlop={{
-                    top: 15,
-                    bottom: 15,
-                    left: 15,
-                    right: 15,
-                  }}
-                  onPress={() => navigation.navigate('CreateChallengeForm1', {
-                    editableAlter: true,
-                    body: bodyParams,
-                  })
-                  }>
-                  <Image
-                    source={images.editSection}
-                    style={styles.editButton}
-                  />
-                </TouchableOpacity>}
+                {!isPendingRequestPayment && (
+                  <TouchableOpacity
+                    style={styles.editTouchArea}
+                    hitSlop={{
+                      top: 15,
+                      bottom: 15,
+                      left: 15,
+                      right: 15,
+                    }}
+                    onPress={() => navigation.navigate('CreateChallengeForm1', {
+                      editableAlter: true,
+                      body: bodyParams,
+                    })
+                    }>
+                    <Image
+                      source={images.editSection}
+                      style={styles.editButton}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
               <TCInfoImageField
                 title={'Home'}
-                name={bodyParams?.home_team?.group_name || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`}
+                name={
+                  bodyParams?.home_team?.group_name
+                  || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`
+                }
                 marginLeft={30}
                 color={
-                  ((bodyParams?.home_team?.group_name
-                  === oldVersion?.home_team?.group_name) || (`${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`
-                    === `${oldVersion?.home_team?.first_name} ${oldVersion?.home_team?.last_name}`))
+                  bodyParams?.home_team?.group_name
+                    === oldVersion?.home_team?.group_name
+                  || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`
+                    === `${oldVersion?.home_team?.first_name} ${oldVersion?.home_team?.last_name}`
                     ? colors.lightBlackColor
                     : colors.themeColor
                 }
@@ -727,12 +855,16 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <TCThinDivider />
               <TCInfoImageField
                 title={'Away'}
-                name={bodyParams?.away_team?.group_name || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`}
+                name={
+                  bodyParams?.away_team?.group_name
+                  || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`
+                }
                 marginLeft={30}
                 color={
-                  ((bodyParams?.away_team?.group_name
-                  === oldVersion?.away_team?.group_name) || (`${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`
-                  === `${oldVersion?.away_team?.first_name} ${oldVersion?.away_team?.last_name}`))
+                  bodyParams?.away_team?.group_name
+                    === oldVersion?.away_team?.group_name
+                  || `${bodyParams?.away_team?.first_name} ${bodyParams?.away_team?.last_name}`
+                    === `${oldVersion?.away_team?.first_name} ${oldVersion?.away_team?.last_name}`
                     ? colors.lightBlackColor
                     : colors.themeColor
                 }
@@ -808,11 +940,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 }}
                 style={styles.map}
               />
-              {editInfo && <CurruentVersionView onPress={() => {
-                navigation.navigate('CurruentReservationScreen', {
-                  body: oldVersion,
-                });
-              }}/>}
+              {editInfo && (
+                <CurruentVersionView
+                  onPress={() => {
+                    navigation.navigate('CurruentReservationScreen', {
+                      body: oldVersion,
+                    });
+                  }}
+                />
+              )}
               <TCThickDivider marginTop={20} />
             </View>
           )}
@@ -824,24 +960,26 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   title={'Responsibility  to Secure Venue'}
                   isNew={editVenue}
                 />
-                {!isPendingRequestPayment && <TouchableOpacity
-                  style={styles.editTouchArea}
-                  hitSlop={{
-                    top: 15,
-                    bottom: 15,
-                    left: 15,
-                    right: 15,
-                  }}
-                  onPress={() => navigation.navigate('CreateChallengeForm1', {
-                    editableAlter: true,
-                    body: bodyParams,
-                  })
-                  }>
-                  <Image
-                    source={images.editSection}
-                    style={styles.editButton}
-                  />
-                </TouchableOpacity>}
+                {!isPendingRequestPayment && (
+                  <TouchableOpacity
+                    style={styles.editTouchArea}
+                    hitSlop={{
+                      top: 15,
+                      bottom: 15,
+                      left: 15,
+                      right: 15,
+                    }}
+                    onPress={() => navigation.navigate('CreateChallengeForm1', {
+                      editableAlter: true,
+                      body: bodyParams,
+                    })
+                    }>
+                    <Image
+                      source={images.editSection}
+                      style={styles.editButton}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
 
               <View style={styles.viewContainer}>
@@ -849,8 +987,9 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   <Image
                     source={
                       // eslint-disable-next-line no-nested-ternary
-                      ((bodyParams?.home_team?.group_name || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`)
-                      === bodyParams?.responsible_to_secure_venue)
+                      (bodyParams?.home_team?.group_name
+                        || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`)
+                      === bodyParams?.responsible_to_secure_venue
                         ? bodyParams?.home_team?.thumbnail
                           ? { uri: bodyParams?.home_team?.thumbnail }
                           : images.teamPlaceholder
@@ -871,11 +1010,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   </Text>
                 </View>
               </View>
-              {editVenue && <CurruentVersionView onPress={() => {
-                navigation.navigate('CurruentReservationScreen', {
-                  body: oldVersion,
-                });
-              }}/>}
+              {editVenue && (
+                <CurruentVersionView
+                  onPress={() => {
+                    navigation.navigate('CurruentReservationScreen', {
+                      body: oldVersion,
+                    });
+                  }}
+                />
+              )}
 
               <TCThickDivider marginTop={20} />
             </View>
@@ -884,25 +1027,27 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             <View>
               <View style={styles.editableView}>
                 <TCLabel title={'Rules'} isNew={editRules} />
-                {!isPendingRequestPayment && <TouchableOpacity
-                  style={styles.editTouchArea}
-                  hitSlop={{
-                    top: 15,
-                    bottom: 15,
-                    left: 15,
-                    right: 15,
-                  }}
-                  onPress={() => navigation.navigate('CreateChallengeForm2', {
-                    editableAlter: true,
-                    body: bodyParams,
-                    teamData: [{ ...homeTeam }, { ...awayTeam }],
-                  })
-                  }>
-                  <Image
-                    source={images.editSection}
-                    style={styles.editButton}
-                  />
-                </TouchableOpacity>}
+                {!isPendingRequestPayment && (
+                  <TouchableOpacity
+                    style={styles.editTouchArea}
+                    hitSlop={{
+                      top: 15,
+                      bottom: 15,
+                      left: 15,
+                      right: 15,
+                    }}
+                    onPress={() => navigation.navigate('CreateChallengeForm2', {
+                      editableAlter: true,
+                      body: bodyParams,
+                      teamData: [{ ...homeTeam }, { ...awayTeam }],
+                    })
+                    }>
+                    <Image
+                      source={images.editSection}
+                      style={styles.editButton}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
               <Text
                 style={
@@ -912,11 +1057,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 }>
                 {bodyParams.special_rule}
               </Text>
-              {editRules && <CurruentVersionView onPress={() => {
-                navigation.navigate('CurruentReservationScreen', {
-                  body: oldVersion,
-                });
-              }}/>}
+              {editRules && (
+                <CurruentVersionView
+                  onPress={() => {
+                    navigation.navigate('CurruentReservationScreen', {
+                      body: oldVersion,
+                    });
+                  }}
+                />
+              )}
             </View>
           )}
           <TCThickDivider marginTop={20} />
@@ -926,22 +1075,27 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 title={'Responsibility to Secure Referees'}
                 isNew={editReferee}
               />
-              {!isPendingRequestPayment && <TouchableOpacity
-                style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
-                onPress={() => navigation.navigate('CreateChallengeForm3', {
-                  editableAlter: true,
-                  body: bodyParams,
-                  teamData: [{ ...homeTeam }, { ...awayTeam }],
-                })
-                }>
-                <Image source={images.editSection} style={styles.editButton} />
-              </TouchableOpacity>}
+              {!isPendingRequestPayment && (
+                <TouchableOpacity
+                  style={styles.editTouchArea}
+                  hitSlop={{
+                    top: 15,
+                    bottom: 15,
+                    left: 15,
+                    right: 15,
+                  }}
+                  onPress={() => navigation.navigate('CreateChallengeForm3', {
+                    editableAlter: true,
+                    body: bodyParams,
+                    teamData: [{ ...homeTeam }, { ...awayTeam }],
+                  })
+                  }>
+                  <Image
+                    source={images.editSection}
+                    style={styles.editButton}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             {bodyParams && (
               <FlatList
@@ -951,11 +1105,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 ItemSeparatorComponent={() => <TCThinDivider />}
               />
             )}
-            {editReferee && <CurruentVersionView onPress={() => {
-              navigation.navigate('CurruentReservationScreen', {
-                body: oldVersion,
-              });
-            }}/>}
+            {editReferee && (
+              <CurruentVersionView
+                onPress={() => {
+                  navigation.navigate('CurruentReservationScreen', {
+                    body: oldVersion,
+                  });
+                }}
+              />
+            )}
           </View>
           <TCThickDivider marginTop={10} />
           <View>
@@ -964,22 +1122,27 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 title={'Responsibility to Secure ScoreKeeper'}
                 isNew={editScorekeeper}
               />
-              {!isPendingRequestPayment && <TouchableOpacity
-                style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
-                onPress={() => navigation.navigate('CreateChallengeForm3', {
-                  editableAlter: true,
-                  body: bodyParams,
-                  teamData: [{ ...homeTeam }, { ...awayTeam }],
-                })
-                }>
-                <Image source={images.editSection} style={styles.editButton} />
-              </TouchableOpacity>}
+              {!isPendingRequestPayment && (
+                <TouchableOpacity
+                  style={styles.editTouchArea}
+                  hitSlop={{
+                    top: 15,
+                    bottom: 15,
+                    left: 15,
+                    right: 15,
+                  }}
+                  onPress={() => navigation.navigate('CreateChallengeForm3', {
+                    editableAlter: true,
+                    body: bodyParams,
+                    teamData: [{ ...homeTeam }, { ...awayTeam }],
+                  })
+                  }>
+                  <Image
+                    source={images.editSection}
+                    style={styles.editButton}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             {bodyParams && (
               <FlatList
@@ -989,11 +1152,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 ItemSeparatorComponent={() => <TCThinDivider />}
               />
             )}
-            {editScorekeeper && <CurruentVersionView onPress={() => {
-              navigation.navigate('CurruentReservationScreen', {
-                body: oldVersion,
-              });
-            }}/>}
+            {editScorekeeper && (
+              <CurruentVersionView
+                onPress={() => {
+                  navigation.navigate('CurruentReservationScreen', {
+                    body: oldVersion,
+                  });
+                }}
+              />
+            )}
           </View>
           <TCThickDivider marginTop={10} />
           <View style={styles.editableView}>
@@ -1005,25 +1172,27 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               }
               isNew={editPayment}
             />
-            {!isPendingRequestPayment && <TouchableOpacity
-              style={styles.editTouchArea}
-              hitSlop={{
-                top: 15,
-                bottom: 15,
-                left: 15,
-                right: 15,
-              }}
-              onPress={() => navigation.navigate('EditFeeScreen', {
-                editableAlter: true,
-                body: bodyParams,
-              })
-              }>
-              <Image source={images.editSection} style={styles.editButton} />
-            </TouchableOpacity>}
+            {!isPendingRequestPayment && (
+              <TouchableOpacity
+                style={styles.editTouchArea}
+                hitSlop={{
+                  top: 15,
+                  bottom: 15,
+                  left: 15,
+                  right: 15,
+                }}
+                onPress={() => navigation.navigate('EditFeeScreen', {
+                  editableAlter: true,
+                  body: bodyParams,
+                })
+                }>
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
+            )}
           </View>
 
           <MatchFeesCard
-            challengeObj={bodyParams}
+            challengeObj={paymentCard}
             senderOrReceiver={
               checkSenderOrReceiver(bodyParams) === 'sender'
                 ? 'sender'
@@ -1031,20 +1200,49 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             }
           />
 
+          {/* {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.changeRequest && (
+              <View style={{ marginTop: 10 }}>
+                <TCTouchableLabel
+            title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+            subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
+            showNextArrow={true}
+            onPress={() => {
+              navigation.navigate('PaymentMethodsScreen', {
+                comeFrom: 'AlterAcceptDeclineScreen',
+              })
+            }}
+          />
+              </View>
+          )} */}
+          {checkSenderOrReceiver(bodyParams) === 'sender' && (
+            <View style={{ marginTop: 10 }}>
+              <TCTouchableLabel
+            title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+            subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
+            showNextArrow={true}
+            onPress={() => {
+              navigation.navigate('PaymentMethodsScreen', {
+                comeFrom: 'AlterAcceptDeclineScreen',
+              })
+            }}
+          />
+            </View>
+          )}
           {editPayment && (
             <View style={{ marginTop: 15 }}>
-              <Text
-                style={styles.differenceText}>
+              <Text style={styles.differenceText}>
                 Difference{' '}
-                <Text
-                  style={styles.differenceSmallText}>
+                <Text style={styles.differenceSmallText}>
                   (New payment - Current payment)
                 </Text>
               </Text>
-              <View
-                style={styles.differeceView}>
+              <View style={styles.differeceView}>
                 <Text style={styles.differenceTextTitle}>Difference</Text>
-                <Text style={styles.diffenceAmount}>{'$10 CAD'}</Text>
+                <Text style={styles.diffenceAmount}>{`${
+                  bodyParams?.total_charges
+                  - oldVersion?.total_charges
+                } ${bodyParams.currency_type || 'CAD'}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
             </View>
@@ -1071,6 +1269,14 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   borderColor={colors.grayColor}
                   height={40}
                   shadow={true}
+                  onPress={() => {
+                    acceptDeclineAlterChallengeOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'cancel',
+                    );
+                  }}
                 />
               </View>
           )}
@@ -1087,6 +1293,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                       bodyParams.challenge_id,
                       bodyParams.version,
                       'accept',
+                      route?.params?.paymentMethod?.id && route?.params?.paymentMethod?.id,
                     );
                   }}
                 />
@@ -1108,41 +1315,51 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               </View>
           )}
 
-          {checkSenderOrReceiver(bodyParams) === 'sender' && !isPendingRequestPayment && (
+          {bodyParams.status === ReservationStatus.accepted && !isPendingRequestPayment && (
             <View>
               <TCGradientButton
-                title={strings.sendAlterRequest}
-                textColor={colors.grayColor}
-                startGradientColor={colors.yellowColor}
-                endGradientColor={colors.themeColor}
-                height={40}
-                shadow={true}
-                marginTop={15}
-                onPress={() => {
-                  if (editInfo || editVenue || editRules || editReferee || editScorekeeper || editPayment) {
-                    updateChallengeDetail();
-                  } else {
-                    Alert.alert('Please modify atleast one field for alter request.')
-                  }
-                }}
-              />
+                  title={strings.sendAlterRequest}
+                  textColor={colors.grayColor}
+                  startGradientColor={colors.yellowColor}
+                  endGradientColor={colors.themeColor}
+                  height={40}
+                  shadow={true}
+                  marginTop={15}
+                  onPress={() => {
+                    if (
+                      editInfo
+                      || editVenue
+                      || editRules
+                      || editReferee
+                      || editScorekeeper
+                      || editPayment
+                    ) {
+                      updateChallengeDetail();
+                    } else {
+                      Alert.alert(
+                        'Please modify atleast one field for alter request.',
+                      );
+                    }
+                  }}
+                />
               <TCBorderButton
-                title={strings.cancel}
-                textColor={colors.themeColor}
-                borderColor={colors.themeColor}
-                height={40}
-                shadow={true}
-                marginBottom={15}
-                fontSize={16}
-                onPress={() => {
-                  navigation.goBack();
-                }}
-              />
+                  title={strings.cancel}
+                  textColor={colors.themeColor}
+                  borderColor={colors.themeColor}
+                  height={40}
+                  shadow={true}
+                  marginBottom={15}
+                  fontSize={16}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
             </View>
           )}
-          {(bodyParams.status === ReservationStatus.changeRequest || bodyParams.status === ReservationStatus.pendingrequestpayment) && (
-            <View>
-              <TCBorderButton
+          {(bodyParams.status === ReservationStatus.changeRequest
+            || bodyParams.status === ReservationStatus.pendingrequestpayment) && (
+              <View>
+                <TCBorderButton
                 title={strings.cancelMatch}
                 textColor={colors.whiteColor}
                 borderColor={colors.grayColor}
@@ -1170,7 +1387,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   }
                 }}
               />
-            </View>
+              </View>
           )}
         </View>
       )}
@@ -1320,10 +1537,18 @@ const styles = StyleSheet.create({
     color: colors.themeColor,
   },
   differenceTextTitle: {
-    marginLeft: 15, alignSelf: 'center', fontFamily: fonts.RRegular, fontSize: 15, color: colors.lightBlackColor,
+    marginLeft: 15,
+    alignSelf: 'center',
+    fontFamily: fonts.RRegular,
+    fontSize: 15,
+    color: colors.lightBlackColor,
   },
   diffenceAmount: {
-    marginRight: 15, alignSelf: 'center', fontFamily: fonts.RMedium, fontSize: 15, color: colors.themeColor,
+    marginRight: 15,
+    alignSelf: 'center',
+    fontFamily: fonts.RMedium,
+    fontSize: 15,
+    color: colors.themeColor,
   },
   challengeMessage: {
     fontFamily: fonts.RBold,
@@ -1338,6 +1563,12 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     marginRight: 15,
+    marginBottom: 15,
+  },
+  awatingNotesText: {
+    color: colors.userPostTimeColor,
+    marginRight: 15,
+    marginLeft: 15,
     marginBottom: 15,
   },
 });

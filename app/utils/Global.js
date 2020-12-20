@@ -82,7 +82,7 @@ const makeAPIRequest = async ({
 
   try {
     const response = await axios(options);
-    console.log('Opetions ::', options);
+    console.log('Opetions ::', JSON.stringify(options));
     if (!response.data.status) {
       console.log('ERROR RESPONSE ::', response.data);
       throw (response.data.messages || response);
