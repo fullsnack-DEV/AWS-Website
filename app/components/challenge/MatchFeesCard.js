@@ -22,32 +22,31 @@ export default function MatchFeesCard({
         <View>
           <View style={styles.feesRow}>
             <Text style={styles.matchServiceFeeText}>
-              { (type === 'referee' && strings.refereeFeecardText) || (type === 'challenge' && strings.matchfee) || (type === 'scorekeeper' && strings.scorekeeperFee)}{' '}
+              {(type === 'referee' && strings.refereeFeecardText)
+                || (type === 'challenge' && strings.matchfee)
+                || (type === 'scorekeeper' && strings.scorekeeperFee)}{' '}
               {challengeObj.manual_fee === false && (
                 <Text style={styles.smallFeeText}>
                   {' '}
-                  ${challengeObj.hourly_game_fee}{' '}
+                  ${challengeObj.hourly_game_fee || 0}{' '}
                   {challengeObj.currency_type || 'CAD'} x{' '}
                   {getShortTimeDifForReservation(
-                    challengeObj.start_datetime.length > 10
-                      ? challengeObj.start_datetime
-                      : challengeObj.start_datetime * 1000,
-                    challengeObj.end_datetime.length > 10
-                      ? challengeObj.end_datetime
-                      : challengeObj.end_datetime * 1000,
+                    challengeObj.start_datetime,
+                    challengeObj.end_datetime,
                   )}
                 </Text>
-              )}{' '}
+              )}
             </Text>
             <Text style={styles.matchServiceFeeText}>
-              ${parseFloat(challengeObj.total_game_charges).toFixed(2)}{' '}
-              {challengeObj.currency_type || 'CAD'}
+              {`$${parseFloat(challengeObj.total_game_charges).toFixed(2)} ${
+                challengeObj.currency_type || 'CAD'
+              }`}
             </Text>
           </View>
           <View style={styles.feesRow}>
             <Text style={styles.matchServiceFeeText}>Service fee</Text>
             <Text style={styles.matchServiceFeeText}>
-              $
+              {senderOrReceiver === 'sender' ? '$' : '-$'}
               {senderOrReceiver === 'sender'
                 ? challengeObj.service_fee1_charges?.toFixed(2)
                 : challengeObj.service_fee2_charges?.toFixed(2)}{' '}

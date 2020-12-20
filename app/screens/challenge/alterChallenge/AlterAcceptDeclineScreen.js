@@ -207,11 +207,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
 
   const getFeesEstimationDetail = () => {
     const body = {};
+    // parseFloat((bodyParams.start_datetime / 1000).toFixed(0)
+
     body.challenge_id = bodyParams.challenge_id;
-    body.start_datetime = bodyParams.start_datetime / 1000;
-    body.end_datetime = bodyParams.end_datetime / 1000;
+    body.start_datetime = bodyParams.start_datetime;
+    body.end_datetime = bodyParams.end_datetime;
     body.currency_type = bodyParams.currency_type || 'CAD';
     body.payment_method_type = 'card';
+    body.userChallenge = bodyParams.userChallenge;
+    body.sport = bodyParams.sport;
     body.manual_fee = bodyParams.manual_fee;
     if (bodyParams.manual_fee) {
       body.total_game_charges = bodyParams.total_game_charges;
@@ -235,6 +239,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           total_payout: response.payload.total_payout,
           service_fee1_charges: response.payload.total_service_fee1,
           service_fee2_charges: response.payload.total_service_fee2,
+          total_stripe_fee: response.payload.total_stripe_fee,
         })
       })
       .catch((e) => {
@@ -304,7 +309,9 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     paymentID,
   ) => {
     console.log('funcation called');
+    console.log(`teamID:${teamID}challengeID:${ChallengeId}versionNo:${versionNo}status:${status}paymentID:${paymentID}`);
     setloading(true);
+
     acceptDeclineAlterChallenge(
       teamID,
       ChallengeId,
@@ -497,9 +504,11 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       }
       return 'receiver';
     }
-    if (challengeObj.updated_by.uid === entity.uid) {
+    if (challengeObj?.updated_by?.uid === entity.uid) {
+      console.log(`updatedby id::${challengeObj?.updated_by?.uid}loginid::${entity.uid}`);
       return 'sender';
     }
+    console.log(`updatedby id::${challengeObj?.updated_by?.uid}loginid::${entity.uid}`);
     return 'receiver';
   };
   const updateChallengeDetail = () => {
@@ -1315,7 +1324,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               </View>
           )}
 
-          {bodyParams.status === ReservationStatus.accepted && !isPendingRequestPayment && (
+          {(bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && !isPendingRequestPayment && (
             <View>
               <TCGradientButton
                   title={strings.sendAlterRequest}

@@ -5,10 +5,12 @@ import {
   Text,
 
 } from 'react-native';
+import moment from 'moment';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-export default function UnavailableTimeView({ startDate, endDate }) {
+export default function UnavailableTimeView({ startDate, endDate, allDay = false }) {
+  const getTimeFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('hh:mm A');
   return (
     <View style={{ marginLeft: 15, marginRight: 15 }}>
       <View style={styles.fieldView}>
@@ -18,7 +20,7 @@ export default function UnavailableTimeView({ startDate, endDate }) {
           <Text style={styles.fieldTitle} numberOfLines={1}>Blocked zone</Text>
         </View>
         <View style={{ flex: 0.6 }}>
-          <Text style={styles.fieldValue} numberOfLines={3} >{`${new Date(startDate * 1000).getHours()}:${new Date(startDate * 1000).getMinutes()} - ${new Date(endDate * 1000).getHours()}:${new Date(endDate * 1000).getMinutes()}`}</Text>
+          <Text style={styles.fieldValue} numberOfLines={3} >{allDay ? 'All day' : `${getTimeFormat(startDate)} - ${getTimeFormat(endDate)}`}</Text>
         </View>
       </View>
     </View>
