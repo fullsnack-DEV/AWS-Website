@@ -15,14 +15,14 @@ function EventBetweenUserItem({
     <View style={styles.containerStyle}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'contain'} />
+          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
         <Text style={styles.textStyle}>{firstText}</Text>
       </View>
       <Text style={styles.vsTextStyle}>{'vs'}</Text>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'contain'} />
+          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
         <Text style={styles.textStyle}>{secondText}</Text>
       </View>

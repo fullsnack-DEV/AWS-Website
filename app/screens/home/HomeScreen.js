@@ -1410,7 +1410,7 @@ export default function HomeScreen({ navigation, route }) {
                                   }
                                 }}
                                 eventBetweenSection={itemValue.game}
-                                eventOfSection={true}
+                                eventOfSection={itemValue.game && itemValue.game.referees}
                                 onThreeDotPress={() => {
                                   setSelectedEventItem(itemValue);
                                 }}

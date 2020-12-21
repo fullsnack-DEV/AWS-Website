@@ -14,7 +14,7 @@ import moment from 'moment';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts';
-// import EventOfItem from './Schedule/EventOfItem';
+import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
 
 export default function TCEventView({
@@ -22,8 +22,9 @@ export default function TCEventView({
   data,
   onThreeDotPress,
   eventBetweenSection,
-  // eventOfSection,
+  eventOfSection,
 }) {
+  console.log('Data :-', data);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -50,7 +51,11 @@ export default function TCEventView({
   }
   let description2 = '';
   if (data && data.game && data.game.away_team) {
-    description2 = data.game.away_team.group_name;
+    if (data.game.away_team.full_name) {
+      description2 = data.game.away_team.full_name;
+    } else {
+      description2 = data.game.away_team.group_name;
+    }
   }
   let title = 'Game';
   if (data && data.title) {
@@ -59,54 +64,69 @@ export default function TCEventView({
   let homeTeamName = '';
   let homeTeamImage = null;
   if (data && data.game && data.game.home_team) {
-    homeTeamName = data.game.home_team.group_name;
-    homeTeamImage = data.game.home_team.entity_type;
+    if (data.game.home_team.full_name) {
+      homeTeamName = data.game.home_team.full_name;
+    } else {
+      homeTeamName = data.game.home_team.group_name;
+    }
+    if (data.game.home_team.thumbnail) {
+      homeTeamImage = data.game.home_team.thumbnail;
+    }
   }
   let awayTeamName = '';
   let awayTeamImage = null;
   if (data && data.game && data.game.away_team) {
-    awayTeamName = data.game.away_team.group_name;
-    awayTeamImage = data.game.away_team.entity_type;
+    if (data.game.away_team.full_name) {
+      awayTeamName = data.game.away_team.full_name;
+    } else {
+      awayTeamName = data.game.away_team.group_name;
+    }
+    if (data.game.away_team.thumbnail) {
+      awayTeamImage = data.game.away_team.thumbnail;
+    }
+  }
+  let refereeImage = null;
+  if (data && data.game && data.game.referees) {
+    if (data.game.referees.length > 0) {
+      refereeImage = data.game.referees[0].thumbnail;
+    }
   }
 
   return (
-    <TouchableWithoutFeedback style={ styles.backgroundView } onPress={ onPress }>
-      <View style={ styles.backgroundView } onPress={ onPress }>
-        <View style={ [styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }] }>
-          <Text style={ styles.dateMonthText }>{moment(startDate).format('MMM')}</Text>
-          <Text style={ styles.dateText }>{moment(startDate).format('DD')}</Text>
+    <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
+      <View style={styles.backgroundView} onPress={onPress}>
+        <View style={[styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]}>
+          <Text style={styles.dateMonthText}>{moment(startDate).format('MMM')}</Text>
+          <Text style={styles.dateText}>{moment(startDate).format('DD')}</Text>
         </View>
-        <View style={ styles.eventText }>
-          <View style={ styles.eventTitlewithDot }>
-            <Text style={ [styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }] } numberOfLines={ 1 }>
+        <View style={styles.eventText}>
+          <View style={styles.eventTitlewithDot}>
+            <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
               {title}
             </Text>
             <TouchableOpacity onPress={onThreeDotPress}>
-              <Image source={ images.vertical3Dot } style={ styles.threedot } />
+              <Image source={images.vertical3Dot} style={styles.threedot} />
             </TouchableOpacity>
           </View>
-          <Text style={ styles.eventDescription } numberOfLines={ 2 }>
+          <Text style={styles.eventDescription} numberOfLines={2}>
             {description} {description2}
           </Text>
-          <View style={ styles.bottomView }>
-            <Text style={ styles.eventTime }>{`${moment(startDate).format('LT')} - `}</Text>
-            <Text style={ styles.eventTime }>{moment(endDate).format('LT')}</Text>
-            <Text style={ [styles.eventTime, { marginHorizontal: 5 }] }> | </Text>
-            <Text style={ styles.eventTime }>{location !== '' ? location : venue}</Text>
+          <View style={styles.bottomView}>
+            <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
+            <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
+            <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
+            <Text style={[styles.eventTime, { width: wp('45%') }]}>{location !== '' ? location : venue}</Text>
           </View>
           {eventBetweenSection && <EventBetweenUserItem
-            firstUserImage={homeTeamImage === 'team' ? images.team_ph : images.club_ph}
+            firstUserImage={homeTeamImage ? { uri: homeTeamImage } : images.team_ph}
             firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
-            secondUserImage={awayTeamImage === 'team' ? images.team_ph : images.club_ph}
+            secondUserImage={awayTeamImage ? { uri: awayTeamImage } : images.team_ph}
             secondText={awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'}
           />}
-          {/* {eventOfSection && <EventOfItem
-            eventOfText={'Event of'}
-            countryIcon={images.commentReport}
-            cityName={'Vancouver League'}
-            leagueIcon={images.myTeams}
-            eventTextStyle={{ color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }}
-          />} */}
+          {eventOfSection && <EventOfItem
+            eventOfText={'Referee'}
+            countryIcon={refereeImage ? { uri: refereeImage } : images.commentReport}
+          />}
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -130,6 +150,7 @@ const styles = StyleSheet.create({
   bottomView: {
     flexDirection: 'row',
     marginTop: 10,
+    alignItems: 'center',
   },
   colorView: {
     alignItems: 'center',

@@ -132,6 +132,8 @@ export default function ScheduleScreen({ navigation }) {
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
 
+  console.log('Event Data ::--', eventData);
+
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
@@ -246,7 +248,7 @@ export default function ScheduleScreen({ navigation }) {
                         }
                       }}
                       eventBetweenSection={itemValue.game}
-                      eventOfSection={true}
+                      eventOfSection={itemValue.game && itemValue.game.referees}
                       onThreeDotPress={() => {
                         setSelectedEventItem(itemValue);
                       }}
