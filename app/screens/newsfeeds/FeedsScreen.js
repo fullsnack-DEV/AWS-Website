@@ -66,7 +66,7 @@ export default function FeedsScreen({ navigation }) {
       const imageArray = data.map((dataItem) => (dataItem))
       uploadImages(imageArray, authContext, progressStatus).then((responses) => {
         const attachments = responses.map((item) => ({
-          type: 'image',
+          type: item.type,
           url: item.fullImage,
           thumbnail: item.thumbnail,
           media_height: item.height,
