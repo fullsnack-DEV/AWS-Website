@@ -26,7 +26,6 @@ function WritePost({ postDataItem, onWritePostPress }) {
           Write a post...
         </Text>
       </View>
-      <View style={ styles.separatorLine }></View>
     </View>
   );
 }
@@ -45,15 +44,6 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     resizeMode: 'cover',
     width: hp('5%'),
-  },
-  separatorLine: {
-    alignItems: 'center',
-    backgroundColor: colors.grayColor,
-    bottom: 0,
-    height: 0.5,
-    justifyContent: 'center',
-    position: 'absolute',
-    width: wp('100%'),
   },
   writePostView: {
     alignSelf: 'center',

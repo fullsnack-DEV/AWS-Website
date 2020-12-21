@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
     width: 75,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.29,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     elevation: 3,
   },
   textStyle: {

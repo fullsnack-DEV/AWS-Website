@@ -12,7 +12,12 @@ import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
 
 export default function NewsFeedList({
-  navigation, postData, onEndReached, footerLoading = false, scrollEnabled,
+  navigation,
+  postData,
+  onEndReached,
+  footerLoading = false,
+  scrollEnabled,
+  ListHeaderComponent,
 }) {
   // console.log('Post Data ::--', postData);
   const [pullRefresh, setPullRefresh] = useState(false);
@@ -51,10 +56,11 @@ export default function NewsFeedList({
             style={{
               marginTop: 10,
               height: 8,
-              backgroundColor: colors.postSeprator,
+              backgroundColor: colors.whiteGradientColor,
             }}
           />
         )}
+        ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={scrollEnabled}
         ListFooterComponent={() => (
           !footerLoading ? <View
