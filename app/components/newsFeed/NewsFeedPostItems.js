@@ -119,12 +119,20 @@ function NewsFeedPostItems({
               ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
               renderItem={({ item: attachItem }) => {
                 if (attachItem.type === 'image') {
-                  return <SingleImage data={attachItem} />;
+                  return <SingleImage
+                    item={item}
+                    data={attachItem}
+                    caller_id={caller_id}
+                    navigation={navigation}
+                  />;
                 }
                 if (attachItem.type === 'video') {
                   return (
                     <VideoPost
+                      item={item}
                       data={attachItem}
+                      caller_id={caller_id}
+                      navigation={navigation}
                     />
                   );
                 }
@@ -144,6 +152,9 @@ function NewsFeedPostItems({
                       itemNumber={index + 1}
                       attachedImages={attachedImages}
                       totalItemNumber={attachedImages.length}
+                      item={item}
+                      caller_id={caller_id}
+                      navigation={navigation}
                     />
                   );
                 }

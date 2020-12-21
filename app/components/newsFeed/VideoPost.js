@@ -11,9 +11,15 @@ import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import SingleVideoModal from './SingleVideoModal';
+// import SingleVideoModal from './SingleVideoModal';
+import SinglePostVideoView from './SinglePostVideoView';
 
-function VideoPost({ data }) {
+function VideoPost({
+  item,
+  data,
+  caller_id,
+  navigation,
+}) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
@@ -63,11 +69,20 @@ function VideoPost({ data }) {
         isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
+        supportedOrientations={['portrait', 'landscape']}
         backdropOpacity={0}>
-        <SingleVideoModal
+        {/* <SingleVideoModal
           data={data}
           uploadVideoURL={uploadVideoURL && uploadVideoURL}
           backBtnPress={() => setModalVisible(false)}
+        /> */}
+        <SinglePostVideoView
+          item={item}
+          data={data}
+          caller_id={caller_id}
+          navigation={navigation}
+          backBtnPress={() => setModalVisible(false)}
+          uploadVideoURL={uploadVideoURL && uploadVideoURL}
         />
       </Modal>
       <TouchableWithoutFeedback

@@ -5,6 +5,7 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import colors from '../../Constants/Colors';
 
 function Header({
   leftComponent,
@@ -21,7 +22,7 @@ function Header({
 }) {
   return (
     <SafeAreaView style={safeAreaStyle}>
-      <StatusBar backgroundColor={statusbarColor || '#fff'} barStyle={barStyle || 'dark-content'} translucent={translucent} />
+      <StatusBar backgroundColor={statusbarColor || colors.grayColor} barStyle={barStyle || 'dark-content'} translucent={translucent} />
       <View style={[style.mainContainerStyle, mainContainerStyle]}>
         <View style={[style.leftContainerStyle, leftContainerStyle]}>{leftComponent}</View>
         <View style={[style.centerContainerStyle, centerContainerStyle]}>{centerComponent}</View>

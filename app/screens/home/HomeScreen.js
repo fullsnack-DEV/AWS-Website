@@ -1284,6 +1284,7 @@ export default function HomeScreen({ navigation, route }) {
                       navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: [] })
                     }}
                   />}
+                  <View style={styles.sepratorView} />
                   <NewsFeedList
                     navigation={navigation}
                     postData={postData}
@@ -2361,7 +2362,7 @@ const styles = StyleSheet.create({
   sepratorStyle: {
     height: 7,
     width: ('100%'),
-    backgroundColor: colors.graySeparater,
+    backgroundColor: colors.grayBackgroundColor,
   },
   sepratorLineStyle: {
     width: wp('100%'),
@@ -2542,5 +2543,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginVertical: 5,
     backgroundColor: colors.themeColor,
+  },
+  sepratorView: {
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
   },
 });
