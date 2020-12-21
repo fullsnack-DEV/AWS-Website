@@ -675,6 +675,7 @@ const HomeNavigator = () => (
           title: 'Register as a referee',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
+            alignSelf: 'center',
             fontWeight: '500',
           },
           headerStyle: {

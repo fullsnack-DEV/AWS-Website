@@ -24,17 +24,17 @@ export const getRefereeReservationDetail = (reservationID, authContext) => {
           || RefereeReservationStatus.cancelled === response.payload[0].status
           || RefereeReservationStatus.offered === response.payload[0].status) {
         Obj.reservationObj = response.payload[0]
-        Obj.screenName = 'ReservationScreen'
+        Obj.screenName = 'RefereeReservationScreen'
         return Obj
       }
       if (RefereeReservationStatus.declined === response.payload[0].status) {
         if (response.payload[0].change_requested_by) {
           Obj.reservationObj = response.payload
-          Obj.screenName = 'ReservationScreen'
+          Obj.screenName = 'RefereeReservationScreen'
           return Obj
         }
         Obj.reservationObj = response.payload[0]
-        Obj.screenName = 'ReservationScreen'
+        Obj.screenName = 'RefereeReservationScreen'
         return Obj
       }
     }

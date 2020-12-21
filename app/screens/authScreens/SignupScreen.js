@@ -103,7 +103,7 @@ export default function SignupScreen({ navigation }) {
   // }))).catch((error) => {
   //   console.log(error);
   // });
-  const saveUserDetails = async () => auth().onAuthStateChanged(async (user) => {
+  const saveUserDetails = (user) => new Promise((resolve) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {
@@ -155,8 +155,8 @@ export default function SignupScreen({ navigation }) {
           await Utility.setStorage('userInfo', userDetail);
           await Utility.setStorage('loggedInEntity', entity);
         }
-        return user;
       });
+      setTimeout(() => resolve(user), 2000);
     }
   })
 
@@ -166,23 +166,25 @@ export default function SignupScreen({ navigation }) {
       .createUserWithEmailAndPassword(emailAddress, passwordInput)
       .then(async () => {
         firebase.auth().onAuthStateChanged((user) => {
-          user.sendEmailVerification();
+          if (user) user.sendEmailVerification();
         });
-        return saveUserDetails().then((user) => {
-          getUserDetails(user.uid, authContext)
-            .then(() => {
-              setloading(false);
-              Alert.alert('This user is already registered!');
+        auth().onAuthStateChanged(async (user) => {
+          saveUserDetails(user).then(() => {
+            getUserDetails(user.uid, authContext)
+              .then(() => {
+                setloading(false);
+                Alert.alert('This user is already registered!');
 
-              navigation.navigate('LoginScreen');
-            })
-            .catch(() => {
-              setloading(false);
-              navigation.navigate('EmailVerificationScreen', {
-                emailAddress,
-                password,
+                navigation.navigate('LoginScreen');
+              })
+              .catch(() => {
+                setloading(false);
+                navigation.navigate('EmailVerificationScreen', {
+                  emailAddress,
+                  password,
+                });
               });
-            });
+          });
         });
       })
       .catch((e) => {

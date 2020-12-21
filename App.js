@@ -42,8 +42,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    // requestPermission();
-    if (!entity) {
+    if (!entity?.isLoggedIn) {
       getLoginUserDetail();
     }
   }, []);
