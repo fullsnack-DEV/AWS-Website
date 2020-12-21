@@ -333,7 +333,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
+            teamObj: { ...awayTeam, game_id: bodyParams.game_id },
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -542,7 +542,9 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     body.service_fee1_charges = paymentCard.service_fee1_charges;
     body.service_fee2_charges = paymentCard.service_fee2_charges;
     body.stripe_fee = paymentCard.stripe_fee;
-    body.source = defaultCard.id;
+    if (defaultCard) {
+      body.source = defaultCard.id;
+    }
 
     console.log('FINAL BODY PARAMS::', body);
     updateChallenge(challengeID, body, authContext)
@@ -570,20 +572,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     }
     return `${challengeObject.home_team.first_name} ${challengeObject.home_team.last_name}`;
   };
-  // const getDayTimeDifferent = (sDate, eDate) => {
-  //   let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
-  //   const days = Math.floor(delta / 86400);
-  //   delta -= days * 86400;
-
-  //   const hours = Math.floor(delta / 3600) % 24;
-  //   delta -= hours * 3600;
-
-  //   const minutes = Math.floor(delta / 60) % 60;
-  //   delta -= minutes * 60;
-
-  //   return `${days}d ${hours}h ${minutes}m`;
-  // };
   const getPendingRequestPaymentMessage = () => {
     if (bodyParams.change_requested_by === entity.uid) {
       return `${getTeamName(
@@ -784,10 +773,18 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
 
           <TCBorderButton
               title={'GAME HOME'}
-              onPress={() => navigation.navigate('SoccerHome', {
-                gameId: bodyParams.game_id,
-              })
+              onPress={() => {
+                if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
+                  navigation.navigate('SoccerHome', {
+                    gameId: bodyParams.game_id,
+                  })
+                } else {
+                  navigation.navigate('TennisHome', {
+                    gameId: bodyParams.game_id,
+                  })
+                }
               }
+            }
               marginBottom={15}
             />
 
