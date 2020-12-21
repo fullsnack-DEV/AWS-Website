@@ -30,13 +30,13 @@ const gameIds = [
   'f88963d1-6817-48d6-897f-4edb236ca37d', // 0 - For Referees
   '6f3b91f5-a1c9-4fb7-94a4-6dfae2217469', // 1 - For Referees
   '460adeca-f36e-4cb7-9d97-8928a6f77281', // 2 -
-  '6b1dd495-9d68-4a8b-8feb-363406d279ba', // 4 - 19-11-2020 9-00
-  '1dd4f109-0a7c-40a3-b616-f0cf055ba61c', // 5 - Admin: Arvind  20-11-2020 6-50
-  'fb6e4794-4fdd-4af2-b07a-a109d3f550f7', // 6  Admin: Arvind
-  '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 7 - For Review
-  '4fd32621-46b8-4ed8-a145-50ab4b82ce62',
+  '6b1dd495-9d68-4a8b-8feb-363406d279ba', // 3 - 19-11-2020 9-00
+  '1dd4f109-0a7c-40a3-b616-f0cf055ba61c', // 4 - Admin: Arvind  20-11-2020 6-50
+  'fb6e4794-4fdd-4af2-b07a-a109d3f550f7', // 5  Admin: Arvind
+  '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 6 - For Review
+  '4fd32621-46b8-4ed8-a145-50ab4b82ce62', // 7
 ]
-const globalGameId = gameIds[7];
+const globalGameId = gameIds[1];
 const SoccerHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);

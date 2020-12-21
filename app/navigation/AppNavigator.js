@@ -6,16 +6,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
-
 import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
-
 import ReservationNavigator from './ReservationNavigator';
 import MessageNavigator from './MessageNavigator';
 import NotificationNavigator from './NotificationNavigator';
-// import HomeNavigator from './HomeNavigator';
-// import AccountDrawerNavigator from './AccountDrawerNavigator';
-
 import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import TCBadge from '../components/TCBadge';

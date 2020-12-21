@@ -35,14 +35,12 @@ export default function UserConnections({ navigation, route }) {
     if (eType === 'player') {
       getUserFollowerFollowing(user_id, 'players', tab, authContext).then((res) => {
         setData([...res?.payload]);
-      }).catch((error) => {
-        console.log('RK :', error);
+      }).catch(() => {
       }).finally(() => setLoading(false));
     } else {
       getUserFollowerFollowing(user_id, 'groups', tab, authContext).then((res) => {
         setData([...res?.payload]);
-      }).catch((error) => {
-        console.log('RK :', error);
+      }).catch(() => {
       }).finally(() => setLoading(false));
     }
     return () => setData([]);

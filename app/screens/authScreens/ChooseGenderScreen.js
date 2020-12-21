@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, Image, TouchableWithoutFeedback, StyleSheet,
+  View, Text, Image, StyleSheet, TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -9,7 +9,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import { Tooltip } from 'react-native-elements';
-import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
 import images from '../../Constants/ImagePath';
 import * as Utility from '../../utils/index';
 import TCButton from '../../components/TCButton';
@@ -19,6 +19,36 @@ import fonts from '../../Constants/Fonts';
 
 export default function ChooseGenderScreen({ navigation }) {
   const [selected, setSelected] = useState(0);
+
+  const RenderRadio = ({ isSelected, onRadioPress }) => (
+    <View style={{
+      flex: 0.1,
+      paddingHorizontal: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+      <TouchableOpacity style={{
+        borderColor: colors.whiteColor,
+        height: 22,
+        width: 22,
+        borderWidth: isSelected ? 0 : 1,
+        borderRadius: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: isSelected && 'white',
+      }}
+      onPress={onRadioPress}>
+        {isSelected && (
+          <LinearGradient
+                colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+                end={{ x: 0.0, y: 0.25 }}
+                start={{ x: 1, y: 0.5 }}
+                style={{ height: 13, width: 13, borderRadius: 50 }}>
+          </LinearGradient>
+        )}
+      </TouchableOpacity>
+    </View>
+  )
   return (
     <View style={ styles.mainContainer }>
       <Image style={ styles.background } source={ images.orangeLayer } />
@@ -33,56 +63,20 @@ export default function ChooseGenderScreen({ navigation }) {
             width={ wp('75%') }
             overlayColor={ 'transparent' }
             skipAndroidStatusBar={true}>
-        <Text style={ styles.whyAskingText } >{strings.whyAskingGenderText}</Text>
+        <Text style={ styles.whyAskingText }>{strings.whyAskingGenderText}</Text>
       </Tooltip>
 
       <View style={ { marginTop: 40, marginLeft: 20 } }>
         <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelected(0);
-          } }>
-            {selected === 0 ? (
-              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <FastImage
-              source={ images.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-            )}
-          </TouchableWithoutFeedback>
+          <RenderRadio isSelected={selected === 0} onRadioPress={() => setSelected(0)}/>
           <Text style={ styles.radioText }>{strings.maleRadioText}</Text>
         </View>
         <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelected(1);
-          } }>
-            {selected === 1 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <Image
-              source={ images.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-            )}
-          </TouchableWithoutFeedback>
+          <RenderRadio isSelected={selected === 1} onRadioPress={() => setSelected(1)}/>
           <Text style={ styles.radioText }>{strings.femaleRadioText}</Text>
         </View>
         <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback
-          onPress={ () => {
-            setSelected(2);
-          } }>
-            {selected === 2 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <Image
-              source={ images.radioUnselect }
-              style={ styles.unSelectRadioImage }
-            />
-            )}
-          </TouchableWithoutFeedback>
+          <RenderRadio isSelected={selected === 2} onRadioPress={() => setSelected(2)}/>
           <Text style={ styles.radioText }>{strings.otherRadioText}</Text>
         </View>
       </View>
@@ -142,13 +136,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 20,
   },
-  radioImage: {
-    alignSelf: 'center',
-    height: 22,
-    resizeMode: 'contain',
-    width: 22,
-
-  },
   radioText: {
     alignSelf: 'center',
     color: colors.whiteColor,
@@ -166,14 +153,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'left',
 
-  },
-
-  unSelectRadioImage: {
-    alignSelf: 'center',
-    height: 22,
-    resizeMode: 'contain',
-    tintColor: colors.whiteColor,
-    width: 22,
   },
   whyAskingText: {
     color: colors.parrotColor,

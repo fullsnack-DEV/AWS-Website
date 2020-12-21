@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,17 +21,19 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCSearchBox from '../../components/TCSearchBox';
 import {
-  QB_ACCOUNT_TYPE,
+  QB_ACCOUNT_TYPE, QBconnectAndSubscribe,
   QBcreateDialog,
   QBgetDialogs,
   QBgetUserDetail,
   QBsetupSettings,
 } from '../../utils/QuickBlox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
+import AuthContext from '../../auth/context';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 const MessageMainScreen = ({ navigation, route }) => {
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [endReachedCalled, setEndReachedCalled] = useState(false);
@@ -103,6 +105,7 @@ const MessageMainScreen = ({ navigation, route }) => {
 
   const connectAndSubscribe = async () => {
     setLoading(true);
+    await QBconnectAndSubscribe(authContext?.entity);
     await QBsetupSettings();
     await getDialogs();
     setTimeout(() => setLoading(false), 1500);
@@ -131,6 +134,8 @@ const MessageMainScreen = ({ navigation, route }) => {
   const renderAllMessages = () => (
     savedDialogsData?.dialogs?.length > 0
     && <FlatList
+        ListEmptyComponent={() => <Text>No Messages Found</Text>
+        }
         refreshing={loading}
         data={savedDialogsData.dialogs}
         keyExtractor={(item, index) => index.toString()}

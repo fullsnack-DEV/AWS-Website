@@ -225,11 +225,11 @@ const MessageChat = ({
   }
 
   const sendMessage = () => {
-    if (!uploadedFile && messageBody === '') {
+    if (!uploadedFile && messageBody.trim() === '') {
       Alert.alert('Enter Message')
       return false;
     }
-    const message = (uploadedFile && messageBody === '') ? '[attachment]' : messageBody
+    const message = (uploadedFile && messageBody.trim() === '') ? '[attachment]' : messageBody.trim()
     QBsendMessage(dialogId, message, uploadedFile).then(() => {
       setMessageBody('');
       setSelectedImage(null);
@@ -247,7 +247,7 @@ const MessageChat = ({
     }).then((image) => {
       setUploadImageInProgress(true);
       setSelectedImage(image?.path ?? null);
-      const imagePath = image?.sourceURL;
+      const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
       const validImageSize = image?.size <= MAX_FILE_SIZE;
 
       if (!validImageSize) {
