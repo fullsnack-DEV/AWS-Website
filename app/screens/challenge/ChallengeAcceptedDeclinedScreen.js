@@ -48,7 +48,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
 
       {route && route.params && route.params.teamObj && (
         <TCBorderButton
-          title={`Go to ${route.params.teamObj.group_name}`}
+          title={route.params.teamObj.group_name ? `Go to ${route.params.teamObj.group_name}` : `Go to ${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`}
           textColor={colors.whiteColor}
           borderColor={colors.whiteColor}
           backgroundColor={'transparent'}

@@ -324,7 +324,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     setVenueData({
                       ...venueData,
                       address: teamData[0].homefield_Address,
-                      title: `${teamData[0].group_name}'s Home`,
+                      title: `${teamData[0].group_name}'s Home` || `${teamData[0].first_name} ${teamData[0].last_name}'s Home`,
                       venueType: 'HomeTeam',
                       lat: teamData[0].homefield_address_latitude,
                       long: teamData[0].homefield_address_longitude,
@@ -364,7 +364,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     setVenueData({
                       ...venueData,
                       address: teamData[1].homefield_Address,
-                      title: `${teamData[1].group_name}'s Home`,
+                      title: `${teamData[1].group_name}'s Home` || `${teamData[0].first_name} ${teamData[0].last_name}'s Home`,
                       venueType: 'AwayTeam',
                       lat: teamData[1].homefield_address_latitude,
                       long: teamData[1].homefield_address_longitude,

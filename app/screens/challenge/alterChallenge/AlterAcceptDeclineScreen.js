@@ -107,6 +107,10 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           total_payout: challengeObj[0].total_payout,
         })
       }
+      if (!defaultCard && challengeObj[0].source) {
+        getPaymentMethods(challengeObj[0].source)
+      }
+
       console.log('challenge Object::', challengeObj[0]);
 
       console.log('Payment Object::', paymentCard);
@@ -144,12 +148,15 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           total_payout: challengeObj.total_payout,
         })
       }
+      if (!defaultCard && challengeObj.source) {
+        getPaymentMethods(challengeObj.source)
+      }
       console.log('challenge Object::', challengeObj);
-
       console.log('Payment Object::', paymentCard);
     }
-
-    getPaymentMethods()
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod)
+    }
   }, [isFocused]);
 
   useLayoutEffect(() => {
@@ -439,24 +446,17 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       color={checkScorekeeperColor(item)}
     />
   );
-  const getPaymentMethods = () => {
+  const getPaymentMethods = (source) => {
     setloading(true)
     paymentMethods(authContext)
       .then((response) => {
-        console.log('source ID:', bodyParams?.source)
-        console.log('payment method', response.payload)
-        for (const tempCard of response?.payload) {
-          if (tempCard?.id === bodyParams?.source) {
-            setDefaultCard(response?.payload?.card)
-            break
-          }
+        console.log('Payment api called', response.payload)
+        const matchCard = response.payload.find((card) => card.id === source)
+        if (matchCard) {
+          console.log('default payment method', matchCard)
+          setDefaultCard(matchCard)
         }
-
-        // setCards([...response.payload])
         setloading(false)
-        // if (response.payload.length === 0) {
-        //   openNewCardScreen();
-        // }
       })
       .catch((e) => {
         console.log('error in payment method', e)
@@ -505,16 +505,17 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       return 'receiver';
     }
     if (challengeObj?.updated_by?.uid === entity.uid) {
-      console.log(`updatedby id::${challengeObj?.updated_by?.uid}loginid::${entity.uid}`);
       return 'sender';
     }
-    console.log(`updatedby id::${challengeObj?.updated_by?.uid}loginid::${entity.uid}`);
     return 'receiver';
   };
   const updateChallengeDetail = () => {
     setloading(true);
     const body = { ...bodyParams }
     const challengeID = body.challenge_id;
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod)
+    }
     delete body.created_at;
     delete body.created_by;
     delete body.entity_id;
@@ -541,34 +542,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     body.service_fee1_charges = paymentCard.service_fee1_charges;
     body.service_fee2_charges = paymentCard.service_fee2_charges;
     body.stripe_fee = paymentCard.stripe_fee;
-
-    // const challengeID = bodyParams.challenge_id;
-    // delete bodyParams.created_at;
-    // delete bodyParams.created_by;
-    // delete bodyParams.entity_id;
-    // delete bodyParams.entity_type;
-    // delete bodyParams.offer_expiry;
-    // delete bodyParams.status;
-    // delete bodyParams.challenge_id;
-    // delete bodyParams.userChallenge;
-    // delete bodyParams.game_id;
-    // delete bodyParams.change_requested_by;
-    // delete bodyParams.updated_by;
-    // delete bodyParams.updated_at;
-    // delete bodyParams.version;
-    // delete bodyParams.reservations;
-    // const home_id = bodyParams?.home_team?.group_id ?? bodyParams.home_team.user_id;
-    // const away_id = bodyParams?.away_team?.group_id ?? bodyParams.away_team.user_id;
-    // delete bodyParams.home_team;
-    // delete bodyParams.away_team;
-    // bodyParams.home_team = home_id;
-    // bodyParams.away_team = away_id;
-    // bodyParams.total_game_charges = paymentCard.total_game_charges;
-    // bodyParams.total_charges = paymentCard.total_charges;
-    // bodyParams.total_payout = paymentCard.total_payout;
-    // bodyParams.service_fee1_charges = paymentCard.service_fee1_charges;
-    // bodyParams.service_fee2_charges = paymentCard.service_fee2_charges;
-    // bodyParams.stripe_fee = paymentCard.stripe_fee;
+    body.source = defaultCard.id;
 
     console.log('FINAL BODY PARAMS::', body);
     updateChallenge(challengeID, body, authContext)
@@ -621,6 +595,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       bodyParams,
     )}, but `;
   };
+  console.log('DEFAULT CARD:', defaultCard)
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
@@ -640,9 +615,9 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           )}
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              // flexDirection: 'row',
+              justifyContent: 'flex-end',
+              // alignItems: 'center',
               marginLeft: 15,
               marginRight: 15,
             }}>
@@ -1175,7 +1150,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           <View style={styles.editableView}>
             <TCLabel
               title={
-                checkSenderOrReceiver(bodyParams) === 'sender'
+                bodyParams.invited_by === entity.uid
                   ? 'Payment'
                   : 'Earning'
               }
@@ -1203,7 +1178,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           <MatchFeesCard
             challengeObj={paymentCard}
             senderOrReceiver={
-              checkSenderOrReceiver(bodyParams) === 'sender'
+              bodyParams.invited_by === entity.uid
                 ? 'sender'
                 : 'receiver'
             }
@@ -1224,11 +1199,11 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           />
               </View>
           )} */}
-          {checkSenderOrReceiver(bodyParams) === 'sender' && (
+          {bodyParams.invited_by === entity.uid && (
             <View style={{ marginTop: 10 }}>
               <TCTouchableLabel
-            title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
-            subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
+            title={ (defaultCard && defaultCard?.card?.brand) ? Utility.capitalize(defaultCard?.card?.brand) : strings.addOptionMessage}
+            subTitle={(defaultCard && defaultCard?.card?.last4) ?? defaultCard?.card?.last4 }
             showNextArrow={true}
             onPress={() => {
               navigation.navigate('PaymentMethodsScreen', {
@@ -1249,8 +1224,8 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <View style={styles.differeceView}>
                 <Text style={styles.differenceTextTitle}>Difference</Text>
                 <Text style={styles.diffenceAmount}>{`${
-                  bodyParams?.total_charges
-                  - oldVersion?.total_charges
+                  bodyParams?.total_game_charges
+                  - oldVersion?.total_game_charges
                 } ${bodyParams.currency_type || 'CAD'}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
