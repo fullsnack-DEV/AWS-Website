@@ -1,11 +1,7 @@
-import { string } from 'prop-types';
 import React from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
