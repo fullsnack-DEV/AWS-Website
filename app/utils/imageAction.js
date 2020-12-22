@@ -23,7 +23,8 @@ export const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
     url,
     timeout: 180000,
     headers: {
-      'Content-Type': `image/${type}`,
+      'Content-Type': type,
+      // 'Content-Type': `image/${type}`,
       'Content-Length': imgBuffer.length,
     },
     data: imgBuffer,
@@ -52,19 +53,22 @@ const uploadImage = (data, authContext) => {
       uploadImageOnPreSignedUrls({
         url: preSignedUrls[0],
         uri: image.path,
-        type: image.path.split('.')[1] || 'jpeg',
+        type: image.mime,
+        // type: image.path.split('.')[1] || 'jpeg',
       }),
       // FIXME: resize image here.
       uploadImageOnPreSignedUrls({
         url: preSignedUrls[1],
         uri: image.path,
-        type: image.path.split('.')[1] || 'jpeg',
+        type: image.mime,
+        // type: image.path.split('.')[1] || 'jpeg',
       }),
     ]).then(([fullImage, thumbnail]) => ({
       fullImage,
       thumbnail,
       height: image.height,
       width: image.width,
+      type: image.mime.split('/')[0],
     }))
   });
 };

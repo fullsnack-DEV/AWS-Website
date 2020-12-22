@@ -185,7 +185,7 @@ export default function WritePostScreen({ navigation, route }) {
                 ImagePicker.openPicker({
                   width: 300,
                   height: 400,
-                  cropping: true,
+                  // cropping: true,
                   multiple: true,
                   maxFiles: 10,
                 }).then((data) => {

@@ -6,17 +6,14 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 function EventOfItem({
-  eventOfText, countryIcon, leagueIcon, cityName, eventTextStyle,
+  eventOfText,
+  countryIcon,
 }) {
   return (
     <View style={styles.containerStyle}>
       <Text style={styles.eventOfTextStyle}>{eventOfText}</Text>
-      <View style={styles.eventImageTextViewStyle}>
-        <View style={styles.eventImageViewStyle}>
-          <Image source={countryIcon} style={styles.eventImageStyle} resizeMode={'contain'} />
-        </View>
-        <Text style={[styles.eventTextStyle, eventTextStyle]}>{cityName}</Text>
-        <Image source={leagueIcon} style={styles.groupImageStyle} resizeMode={'contain'} />
+      <View style={styles.eventImageViewStyle}>
+        <Image source={countryIcon} style={styles.eventImageStyle} resizeMode={'cover'} />
       </View>
     </View>
   );
@@ -24,7 +21,7 @@ function EventOfItem({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    marginTop: 10,
+    marginTop: 3,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -35,15 +32,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RLight,
     color: colors.lightBlackColor,
   },
-  eventImageTextViewStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   eventImageViewStyle: {
-    height: 20,
-    width: 20,
-    borderRadius: 10,
-    shadowOpacity: 0.2,
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    shadowOpacity: 0.4,
     shadowOffset: {
       height: 1,
       width: 0,
@@ -52,21 +45,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 8,
   },
   eventImageStyle: {
-    width: 15,
-    height: 15,
-  },
-  eventTextStyle: {
-    marginLeft: 5,
-    fontSize: 12,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  groupImageStyle: {
-    width: 20,
-    height: 20,
-    alignSelf: 'center',
+    width: 26,
+    height: 26,
+    borderRadius: 26 / 2,
   },
 });
 
