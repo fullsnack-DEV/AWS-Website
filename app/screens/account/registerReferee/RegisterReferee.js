@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
   LocationText: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('3.8%'),
+    fontSize: 16,
     marginTop: hp('2%'),
     paddingLeft: 15,
     textAlign: 'left',
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     height: 120,
     // alignSelf: 'center',
     width: wp('92%'),
-    fontSize: wp('3.8%'),
+    fontSize: 16,
     fontFamily: fonts.RRegular,
     marginTop: 12,
     alignSelf: 'center',
@@ -539,29 +539,18 @@ const styles = StyleSheet.create({
   },
 
   certificateDescription: {
-    // height: 40,
-    // alignSelf: 'center',
-    // width: wp('76%'),
-    // backgroundColor: colors.textFieldColor,
-    // paddingLeft: 10,
-    height: 40,
     width: '100%',
     alignSelf: 'center',
-
-    fontSize: wp('3.8%'),
+    fontSize: 16,
     fontFamily: fonts.RRegular,
-    paddingVertical: 12,
     paddingHorizontal: 15,
-
     color: colors.lightBlackColor,
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-
     elevation: 3,
   },
   nextButton: {
@@ -576,7 +565,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('4%'),
+    fontSize: 18,
     marginVertical: 10,
   },
   mendatory: {
@@ -605,7 +594,7 @@ const styles = StyleSheet.create({
   languageList: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+    fontSize: 18,
     marginBottom: 20,
     marginLeft: 20,
     marginTop: 20,
@@ -645,7 +634,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     flex: 1,
     fontFamily: fonts.RRegular,
-    fontSize: wp('3.8%'),
+    fontSize: 16,
     height: 40,
     width: wp('80%'),
   },
@@ -655,7 +644,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: 'black',
     elevation: 3,
-    fontSize: wp('3.5%'),
+    fontSize: 16,
     height: 40,
 
     marginTop: 12,
@@ -674,15 +663,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: 'black',
     elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
+    fontSize: 16,
     marginTop: 12,
     paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
     width: wp('92%'),
   },
 });

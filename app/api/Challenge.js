@@ -16,10 +16,25 @@ export const payAgainAlter = async (challengeID, params, authContext) => makeAPI
 
 export const payAgain = async (challengeID, params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}challenges/${challengeID}/payment`,
+  url: `${Config.BASE_URL}referees/${challengeID}/payment`,
   data: params,
   authContext,
 })
+
+export const payAgainAlterReferee = async (reservationID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}referees/${reservationID}/alterrequest/payment`,
+  data: params,
+  authContext,
+})
+
+export const payAgainReferee = async (reservationID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}referees/${reservationID}/payment`,
+  data: params,
+  authContext,
+})
+
 export const createChallenge = async (entityID, type, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}${type}/${entityID}/challenge`,
@@ -41,6 +56,12 @@ export const getReservation = async (reservationId, authContext) => makeAPIReque
 export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, status, params = {}, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}teams/${teamId}/challenge/${challengeId}/${status}?version=${versionNo}`,
+  data: params,
+  authContext,
+})
+export const acceptDeclineReservation = async (reservationID, versionNo, status, params = {}, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}referees/reservation/${reservationID}/${status}?version=${versionNo}`,
   data: params,
   authContext,
 })

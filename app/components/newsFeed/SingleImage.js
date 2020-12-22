@@ -9,10 +9,16 @@ import {
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import SingleImageModal from './SingleImageModal';
+// import SingleImageModal from './SingleImageModal';
 import images from '../../Constants/ImagePath';
+import SinglePostPortraitView from './SinglePostPortraitView';
 
-function SingleImage({ data }) {
+function SingleImage({
+  data,
+  item,
+  caller_id,
+  navigation,
+}) {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const uploadImageURL = data && typeof data.thumbnail === 'string'
@@ -25,7 +31,6 @@ function SingleImage({ data }) {
   } else {
     height = wp('96%')
   }
-  // height = data.media_height > data.media_width ? height = wp('124%') : height = wp('68%');
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -55,11 +60,20 @@ function SingleImage({ data }) {
         isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
+        supportedOrientations={['portrait', 'landscape']}
         backdropOpacity={0}>
-        <SingleImageModal
+        {/* <SingleImageModal
           uploadImageURL={uploadImageURL && uploadImageURL}
           backBtnPress={() => setModalVisible(false)}
           data={data}
+        /> */}
+        <SinglePostPortraitView
+          data={data}
+          item={item}
+          uploadImageURL={uploadImageURL && uploadImageURL}
+          backBtnPress={() => setModalVisible(false)}
+          caller_id={caller_id}
+          navigation={navigation}
         />
       </Modal>
       <TouchableWithoutFeedback onPress={() => {

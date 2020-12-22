@@ -11,6 +11,7 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin } from '@react-native-community/google-signin';
+import Config from 'react-native-config';
 import AuthContext from '../../auth/context'
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
@@ -22,6 +23,8 @@ import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
 import { getUserDetails } from '../../api/Users';
+import apiCall from '../../utils/apiCall';
+import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -123,8 +126,32 @@ export default function WelcomeScreen({ navigation }) {
       });
   }
 
+  const QBInitialLogin = (entity, response) => {
+    let qbEntity = entity
+    QBlogin(qbEntity.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
+      QBconnectAndSubscribe(qbEntity)
+      authContext.setUser(response);
+      authContext.setEntity({ ...qbEntity })
+      await Utility.setStorage('authContextUser', { ...response })
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      await Utility.setStorage('loggedInEntity', qbEntity)
+      setloading(false);
+    }).catch(async (error) => {
+      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { connected: false } }
+      authContext.setUser(response);
+      authContext.setEntity({ ...qbEntity })
+      await Utility.setStorage('authContextUser', { ...response })
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      await Utility.setStorage('loggedInEntity', qbEntity)
+      console.log('QB Login Error : ', error.message);
+      setloading(false);
+    });
+  }
+
   // Login With Google manage function
   const onGoogleButtonPress = async () => {
+    setloading(true);
     const { idToken } = await GoogleSignin.signIn();
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     auth().signInWithCredential(googleCredential).then(async (authResult) => {
@@ -138,44 +165,67 @@ export default function WelcomeScreen({ navigation }) {
               token: idTokenResult.token,
               expirationTime: idTokenResult.expirationTime,
             };
-
-            const entity = {
-              auth: { token, user_id: user.uid },
-              uid: user.uid,
-              role: 'user',
+            const userConfig = {
+              method: 'get',
+              url: `${Config.BASE_URL}/users/${user?.uid}`,
+              headers: { Authorization: `Bearer ${token?.token}` },
             }
-            await Utility.setStorage('loggedInEntity', entity);
-            await authContext.setEntity({ ...entity })
-            const flName = user.displayName.split(' ');
-
-            const userDetail = {};
-            if (flName.length >= 2) {
-              [userDetail.first_name, userDetail.last_name] = flName
-            } else if (flName.length === 1) {
-              [userDetail.first_name, userDetail.last_name] = [flName[0], '']
-            } else if (flName.length === 0) {
-              userDetail.first_name = 'Towns';
-              userDetail.last_name = 'Cup';
-            }
-            userDetail.email = user.email;
-
-            await Utility.setStorage('userInfo', userDetail);
-
-            getUserDetails(user.uid, authContext).then((response) => {
-              setloading(false);
-              if (response.status === true) {
-                Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+            apiCall(userConfig).then(async (response) => {
+              if (response.status) {
+                const entity = {
+                  uid: user.uid,
+                  role: 'user',
+                  obj: response.payload,
+                  auth: {
+                    user_id: user.uid,
+                    token,
+                    user: response.payload,
+                  },
+                }
+                QBInitialLogin(entity, response?.payload);
               } else {
-                navigation.navigate('AddBirthdayScreen')
-                // navigation.navigate('ChooseLocationScreen');
+                setloading(false);
+                Alert.alert(response.messages);
               }
-            }).catch(() => {
-              navigation.navigate('AddBirthdayScreen')
+            }).catch(async () => {
+              const entity = {
+                auth: { token, user_id: user.uid },
+                uid: user.uid,
+                role: 'user',
+              }
+              await Utility.setStorage('loggedInEntity', entity);
+              await authContext.setEntity({ ...entity })
+              const flName = user.displayName.split(' ');
+
+              const userDetail = {};
+              if (flName.length >= 2) {
+                [userDetail.first_name, userDetail.last_name] = flName
+              } else if (flName.length === 1) {
+                [userDetail.first_name, userDetail.last_name] = [flName[0], '']
+              } else if (flName.length === 0) {
+                userDetail.first_name = 'Towns';
+                userDetail.last_name = 'Cup';
+              }
+              userDetail.email = user.email;
+
+              await Utility.setStorage('userInfo', userDetail);
+
+              getUserDetails(user.uid, authContext).then((response) => {
+                setloading(false);
+                if (response.status === true) {
+                  Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+                } else {
+                  navigation.navigate('AddBirthdayScreen')
+                  // navigation.navigate('ChooseLocationScreen');
+                }
+              }).catch(() => {
+                navigation.navigate('AddBirthdayScreen')
+              });
+              setloading(false);
             });
-            setloading(false);
-          });
+          }).catch(() => setloading(false));
         }
-      });
+      }).catch(() => setloading(false));
     })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {

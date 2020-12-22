@@ -92,53 +92,60 @@ export default function FeedsScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <WritePost
+      {progressBar && <ImageProgress
+        numberOfUploaded={doneUploadCount}
+        totalUpload={totalUploadCount}
+        onCancelPress={() => {
+          console.log('Cancel Pressed!');
+        }}
+        postDataItem={postData ? postData[0] : {}}
+      />}
+      <NewsFeedList
+        navigation={navigation}
+        newsFeedData={newsFeedData}
+        postData={postData}
+        footerLoading={footerLoading && isNextDataLoading}
+        ListHeaderComponent={() => <View>
+          <WritePost
             navigation={navigation}
             postDataItem={postData ? postData[0] : {}}
             onWritePostPress={() => {
-              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: [] })
+              navigation.navigate('WritePostScreen', {
+                postData: postData ? postData[0] : {},
+                onPressDone: callthis,
+                selectedImageList: [],
+              })
               setDoneUploadCount(0);
               setTotalUploadCount(0);
             }}
           />
-      {progressBar && <ImageProgress
-            numberOfUploaded={doneUploadCount}
-            totalUpload={totalUploadCount}
-            onCancelPress={() => {
-              console.log('Cancel Pressed!');
-            }}
-            postDataItem={postData ? postData[0] : {}}
-          />}
-      <NewsFeedList
-            navigation={navigation}
-            newsFeedData={newsFeedData}
-            postData={postData}
-            footerLoading={footerLoading && isNextDataLoading}
-            onEndReached={() => {
-              setIsMoreLoading(true);
-              setFooterLoading(true);
-              const params = {
-                id_lt: postData[postData.length - 1].id,
-              };
-              if (isMoreLoading && isNextDataLoading) {
-                getNewsFeedNextList(params, authContext).then((response) => {
-                  if (response) {
-                    if (response.payload.next === '') {
-                      setIsNextDataLoading(false);
-                    }
-                    setIsMoreLoading(false);
-                    setFooterLoading(false)
-                    const data = [...postData, ...response.payload.results]
-                    setPostData(data);
-                  }
-                })
-                  .catch((error) => {
-                    setFooterLoading(false)
-                    console.log('Next Data Error :-', error);
-                  })
+          <View style={styles.sepratorView} />
+        </View>}
+        onEndReached={() => {
+          setIsMoreLoading(true);
+          setFooterLoading(true);
+          const params = {
+            id_lt: postData[postData.length - 1].id,
+          };
+          if (isMoreLoading && isNextDataLoading) {
+            getNewsFeedNextList(params, authContext).then((response) => {
+              if (response) {
+                if (response.payload.next === '') {
+                  setIsNextDataLoading(false);
+                }
+                setIsMoreLoading(false);
+                setFooterLoading(false)
+                const data = [...postData, ...response.payload.results]
+                setPostData(data);
               }
-            }}
-          />
+            })
+              .catch((error) => {
+                setFooterLoading(false)
+                console.log('Next Data Error :-', error);
+              })
+          }
+        }}
+      />
     </View>
   );
 }
@@ -154,5 +161,9 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
+  },
+  sepratorView: {
+    height: 8,
+    backgroundColor: colors.whiteGradientColor,
   },
 });

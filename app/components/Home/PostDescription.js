@@ -14,7 +14,7 @@ function PostDescription({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       {descriptions.length > 0 && (
-        <Text style={[styles.descriptionTxt, descriptionTxt]}>
+        <Text style={[styles.descriptionTxt, descriptionTxt]} onReadMorePress={onReadMorePress}>
           {readMore ? descriptions : descriptions.substring(0, character)}
           {descriptions.length > character && !readMore ? '... ' : ' '}
           {descriptions.length > character && (

@@ -36,7 +36,12 @@ const NewsFeedNavigator = () => (
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
+            // borderBottomWidth: 0.3,
+            shadowOpacity: 0.1,
+            shadowOffset: { width: 0, height: 5 },
+            shadowRadius: 5,
+            shadowColor: colors.grayColor,
+            elevation: 5,
           },
         } }
       />

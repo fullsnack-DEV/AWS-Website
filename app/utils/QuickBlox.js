@@ -4,7 +4,6 @@ import { QB_Auth_Password } from './constant';
 
 const MESSAGE_LIMIT = 50;
 const DIALOG_LIST_LIMIT = 200;
-const MAX_FILE_SIZE = 104857600;
 export const QB_UNREAD_MESSAGE_COUNT_API = 'https://api.quickblox.com/chat/Message/unread.json?token=';
 
 const MESSAGES_SORT = {
@@ -235,17 +234,6 @@ export const QBleaveDialog = (dialogId) => QBChatConnected().then((connected) =>
     return QB.chat.leaveDialog({ dialogId });
   }
   throw new Error('server-not-connected')
-})
-
-export const QBuploadFile = (image) => QBChatConnected().then(async (connected) => {
-  if (connected) {
-    const imagePath = image?.sourceURL;
-    const validImageSize = image?.size <= MAX_FILE_SIZE;
-    if (!validImageSize) throw new Error('File size should be less than 100 MB');
-    await QB.content.subscribeUploadProgress({ url: imagePath });
-    await QB.content.upload({ url: imagePath, public: false }).then((file) => file).catch((e) => e);
-  }
-  throw new Error('server-not-connected');
 })
 
 export const QBconnectAndSubscribe = async (entity) => {

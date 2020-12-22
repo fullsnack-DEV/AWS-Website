@@ -122,8 +122,8 @@ export default function ChooseSportsScreen({ navigation, route }) {
 
       authContext.setEntity({ ...entity })
       await authContext.setUser(response.payload);
-      Utility.setStorage('authContextUser', { ...response.payload })
-      QBInitialLogin(entity, response?.payload);
+      await Utility.setStorage('authContextUser', { ...response.payload })
+      QBInitialLogin(response?.payload);
     } else {
       throw new Error(response);
     }

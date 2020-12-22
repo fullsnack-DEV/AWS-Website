@@ -19,6 +19,7 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin } from '@react-native-community/google-signin';
+import Config from 'react-native-config';
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
 import AuthContext from '../../auth/context';
@@ -34,6 +35,7 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { eventDefaultColorsData } from '../../Constants/LoaderImages';
+import apiCall from '../../utils/apiCall';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -77,32 +79,36 @@ export default function LoginScreen({ navigation }) {
     return true;
   };
 
-  const onAuthStateChanged = (user) => user.getIdTokenResult().then((idTokenResult) => {
-    const token = {
-      token: idTokenResult.token,
-      expirationTime: idTokenResult.expirationTime,
-    };
-    const entity = {
-      uid: user.uid,
-      role: 'user',
-      auth: {
-        token,
-        user_id: user.uid,
-      },
+  const onAuthStateChanged = (user) => {
+    if (user) {
+      user.getIdTokenResult().then((idTokenResult) => {
+        const token = {
+          token: idTokenResult.token,
+          expirationTime: idTokenResult.expirationTime,
+        };
+        const entity = {
+          uid: user.uid,
+          role: 'user',
+          auth: {
+            token,
+            user_id: user.uid,
+          },
+        }
+        Utility.setStorage('eventColor', eventDefaultColorsData);
+        Utility.setStorage('groupEventValue', true)
+        authContext.setEntity({ ...entity })
+        console.log('authContext111', entity)
+        return getUserInfo(entity).then((data) => {
+          QBInitialLogin(entity, data.payload);
+          console.log('Function data', data);
+        }).catch((e) => {
+          setloading(false);
+          setTimeout(() => Alert.alert('Towns Cup', e.message), 1);
+          console.log('Function catch', e);
+        })
+      });
     }
-    Utility.setStorage('eventColor', eventDefaultColorsData);
-    Utility.setStorage('groupEventValue', true)
-    authContext.setEntity({ ...entity })
-    console.log('authContext111', entity)
-    return getUserInfo(entity).then((data) => {
-      QBInitialLogin(data.payload);
-      console.log('Function data', data);
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => Alert.alert('Towns Cup', e.message), 1);
-      console.log('Function catch', e);
-    })
-  });
+  }
 
   const login = async (_email, _password) => {
     setloading(true);
@@ -129,8 +135,8 @@ export default function LoginScreen({ navigation }) {
       });
   };
 
-  const QBInitialLogin = (response) => {
-    let qbEntity = authContext?.entity;
+  const QBInitialLogin = (entity, response) => {
+    let qbEntity = entity;
     QBlogin(qbEntity.uid, response).then(async (res) => {
       qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity)
@@ -206,8 +212,8 @@ export default function LoginScreen({ navigation }) {
                     },
                   }
                   await Utility.setStorage('loggedInEntity', entity)
-                  authContext.setEntity({ ...entity })
-                  authContext.setUser(response.payload)
+                  await authContext.setEntity({ ...entity })
+                  await authContext.setUser(response.payload)
                   QBInitialLogin(entity, response?.payload);
                 } else {
                   Alert.alert(response.messages);
@@ -228,7 +234,7 @@ export default function LoginScreen({ navigation }) {
         if (error.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
         }
-        setTimeout(() => Alert.alert('Towns Cup', message), 1);
+        setTimeout(() => Alert.alert('Towns Cup', message), 100);
       });
   };
 
@@ -247,7 +253,12 @@ export default function LoginScreen({ navigation }) {
                 expirationTime: idTokenResult.expirationTime,
               };
 
-              return getUserDetails(user.uid, authContext).then(async (response) => {
+              const userConfig = {
+                method: 'get',
+                url: `${Config.BASE_URL}/users/${user?.uid}`,
+                headers: { Authorization: `Bearer ${token?.token}` },
+              }
+              return apiCall(userConfig).then(async (response) => {
                 if (response.status) {
                   const entity = {
                     uid: user.uid,

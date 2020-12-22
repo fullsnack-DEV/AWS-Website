@@ -46,10 +46,10 @@ export default function GameCard({ data, onPress }) {
           ]}>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
-              {months[new Date(data.start_datetime).getMonth()]}
+              {months[new Date(data.start_datetime * 1000).getMonth()]}
             </Text>
             <Text style={styles.dateText}>
-              {new Date(data.start_datetime).getDate()}
+              {new Date(data.start_datetime * 1000).getDate()}
             </Text>
           </View>
         </View>
@@ -57,8 +57,8 @@ export default function GameCard({ data, onPress }) {
           <Text style={styles.eventTitle}>{data.sport}</Text>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
-              {formatAMPM(new Date(data.start_datetime))} -{' '}
-              {formatAMPM(new Date(data.end_datetime))}
+              {formatAMPM(new Date(data.start_datetime * 1000))} -{' '}
+              {formatAMPM(new Date(data.end_datetime * 1000))}
             </Text>
             <Text style={styles.textSaperator}> | </Text>
             <Text style={styles.addressView} numberOfLines={1}>
