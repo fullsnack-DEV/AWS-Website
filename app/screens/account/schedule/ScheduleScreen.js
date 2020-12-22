@@ -9,6 +9,8 @@ import {
   Text,
   Dimensions,
   Alert,
+  TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import moment from 'moment';
 import {
@@ -17,6 +19,7 @@ import {
 import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
+import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
@@ -40,6 +43,9 @@ import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModa
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
 import SearchView from '../../../components/Schedule/SearchView';
 import strings from '../../../Constants/String';
+import { getRefereeReservationDetails } from '../../../api/Reservations';
+import Header from '../../../components/Home/Header';
+import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 
 const { width } = Dimensions.get('window');
 
@@ -57,6 +63,8 @@ export default function ScheduleScreen({ navigation }) {
   const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
   const [loading, setloading] = useState(false);
   const [createEventModal, setCreateEventModal] = useState(false);
+  const [isRefereeModal, setIsRefereeModal] = useState(false);
+  const [refereeReservData, setRefereeReserveData] = useState([]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -132,7 +140,11 @@ export default function ScheduleScreen({ navigation }) {
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
 
-  console.log('Event Data ::--', eventData);
+  const refereeReservModal = () => {
+    setIsRefereeModal(!isRefereeModal);
+  };
+
+  console.log('Selected Event Item ::--', selectedEventItem);
 
   return (
     <View style={ styles.mainContainer }>
@@ -404,10 +416,52 @@ export default function ScheduleScreen({ navigation }) {
           }
         }}
       />
+
+      <Modal
+        isVisible={isRefereeModal}
+        backdropColor="black"
+        style={{ margin: 0, justifyContent: 'flex-end' }}
+        hasBackdrop
+        onBackdropPress={() => {
+          setIsRefereeModal(false);
+        }}
+        backdropOpacity={0}
+      >
+        <SafeAreaView style={styles.modalMainViewStyle}>
+          <Header
+            mainContainerStyle={styles.headerMainContainerStyle}
+            leftComponent={
+              <TouchableOpacity onPress={() => {
+                setIsRefereeModal(false);
+              }}>
+                <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+              </TouchableOpacity>
+            }
+            centerComponent={
+              <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
+            }
+          />
+          <View style={styles.sepratorStyle} />
+          <FlatList
+            data={refereeReservData}
+            bounces={false}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={[styles.sepratorStyle, { marginHorizontal: 15 }]} />}
+            renderItem={({ item }) => <RefereeReservationItem
+              data={item}
+            />}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </SafeAreaView>
+      </Modal>
+
       <ActionSheet
         ref={eventEditDeleteAction}
-        options={['Edit', 'Delete', 'Cancel']}
-        cancelButtonIndex={2}
+        options={selectedEventItem !== null && selectedEventItem.game
+          ? ['Edit', 'Delete', 'Referee Reservation Details', 'Cancel']
+          : ['Edit', 'Delete', 'Cancel']
+        }
+        cancelButtonIndex={3}
         destructiveButtonIndex={1}
         onPress={(index) => {
           setSelectedEventItem(null);
@@ -447,6 +501,35 @@ export default function ScheduleScreen({ navigation }) {
               ],
               { cancelable: false },
             );
+          }
+          if (index === 2 && selectedEventItem.game) {
+            setloading(true);
+            const params = {
+              caller_id: selectedEventItem.owner_id,
+            };
+            getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+              setRefereeReserveData(res.payload);
+              if (authContext.entity.uid === selectedEventItem.game.home_team.group_id && res.payload.length > 0) {
+                refereeReservModal();
+                setloading(false);
+              } else {
+                setloading(false);
+                setTimeout(() => {
+                  Alert.alert(
+                    'Towns Cup',
+                    'No referees invited or booked by you for this game',
+                    [{
+                      text: 'OK',
+                      onPress: async () => {},
+                    },
+                    ],
+                    { cancelable: false },
+                  );
+                }, 0);
+              }
+            }).catch((error) => {
+              console.log('Error :-', error);
+            });
           }
         }}
       />
@@ -519,5 +602,35 @@ const styles = StyleSheet.create({
     backgroundColor: colors.graySeparater,
     height: 0.5,
     width: wp('100%'),
+  },
+  modalMainViewStyle: {
+    shadowOpacity: 0.15,
+    shadowOffset: {
+      height: -10,
+      width: 0,
+    },
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  headerMainContainerStyle: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 15,
+  },
+  cancelImageStyle: {
+    height: 15,
+    width: 15,
+    tintColor: colors.lightBlackColor,
+  },
+  headerCenterStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  sepratorStyle: {
+    height: 1,
+    backgroundColor: colors.writePostSepratorColor,
   },
 });

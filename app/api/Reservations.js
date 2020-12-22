@@ -14,3 +14,10 @@ export const createUserReservation = (userType, params, authContext) => makeAPIR
   data: params,
   authContext,
 })
+
+export const getRefereeReservationDetails = (gameID, params, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}referees/game/${gameID}/reservation`,
+  params,
+  authContext,
+})

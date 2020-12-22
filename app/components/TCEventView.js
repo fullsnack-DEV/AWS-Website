@@ -24,7 +24,6 @@ export default function TCEventView({
   eventBetweenSection,
   eventOfSection,
 }) {
-  console.log('Data :-', data);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
