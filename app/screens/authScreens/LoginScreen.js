@@ -19,7 +19,6 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin } from '@react-native-community/google-signin';
-import Config from 'react-native-config';
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
 import AuthContext from '../../auth/context';
@@ -35,7 +34,6 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { eventDefaultColorsData } from '../../Constants/LoaderImages';
-import apiCall from '../../utils/apiCall';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -55,7 +53,10 @@ export default function LoginScreen({ navigation }) {
   const authContext = useContext(AuthContext);
   // For activity indigator
   const [loading, setloading] = useState(false);
-
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onFirebaseAuthStateChanged);
+    return subscriber;
+  }, []);
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId:
@@ -79,9 +80,10 @@ export default function LoginScreen({ navigation }) {
     return true;
   };
 
-  const onAuthStateChanged = (user) => {
+  const onFirebaseAuthStateChanged = async (user) => {
+    console.log('CALL from Login Screen');
     if (user) {
-      user.getIdTokenResult().then((idTokenResult) => {
+      user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
@@ -94,17 +96,15 @@ export default function LoginScreen({ navigation }) {
             user_id: user.uid,
           },
         }
-        Utility.setStorage('eventColor', eventDefaultColorsData);
-        Utility.setStorage('groupEventValue', true)
-        authContext.setEntity({ ...entity })
-        console.log('authContext111', entity)
-        return getUserInfo(entity).then((data) => {
+        await Utility.setStorage('eventColor', eventDefaultColorsData);
+        await Utility.setStorage('groupEventValue', true)
+        await Utility.setStorage('loggedInEntity', entity)
+        await authContext.setEntity({ ...entity })
+        getUserInfo(entity).then((data) => {
           QBInitialLogin(entity, data.payload);
-          console.log('Function data', data);
         }).catch((e) => {
           setloading(false);
           setTimeout(() => Alert.alert('Towns Cup', e.message), 1);
-          console.log('Function catch', e);
         })
       });
     }
@@ -116,9 +116,6 @@ export default function LoginScreen({ navigation }) {
     firebase
       .auth()
       .signInWithEmailAndPassword(_email, _password)
-      .then(() => {
-        auth().onAuthStateChanged(onAuthStateChanged);
-      })
       .catch((error) => {
         let message = '';
         setloading(false);
@@ -190,39 +187,6 @@ export default function LoginScreen({ navigation }) {
     );
     auth()
       .signInWithCredential(facebookCredential)
-      .then(async () => {
-        auth().onAuthStateChanged((user) => {
-          if (user) {
-            user.getIdTokenResult().then(async (idTokenResult) => {
-              const token = {
-                token: idTokenResult.token,
-                expirationTime: idTokenResult.expirationTime,
-              };
-
-              return getUserDetails(user.uid, authContext).then(async (response) => {
-                if (response.status) {
-                  const entity = {
-                    uid: user.uid,
-                    role: 'user',
-                    obj: response.payload,
-                    auth: {
-                      user_id: user.uid,
-                      token,
-                      user: response.payload,
-                    },
-                  }
-                  await Utility.setStorage('loggedInEntity', entity)
-                  await authContext.setEntity({ ...entity })
-                  await authContext.setUser(response.payload)
-                  QBInitialLogin(entity, response?.payload);
-                } else {
-                  Alert.alert(response.messages);
-                }
-              });
-            });
-          }
-        });
-      })
       .catch((error) => {
         let message = '';
         if (error.code === 'auth/user-not-found') {
@@ -244,44 +208,6 @@ export default function LoginScreen({ navigation }) {
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     auth()
       .signInWithCredential(googleCredential)
-      .then(async () => {
-        auth().onAuthStateChanged((user) => {
-          if (user) {
-            user.getIdTokenResult().then(async (idTokenResult) => {
-              const token = {
-                token: idTokenResult.token,
-                expirationTime: idTokenResult.expirationTime,
-              };
-
-              const userConfig = {
-                method: 'get',
-                url: `${Config.BASE_URL}/users/${user?.uid}`,
-                headers: { Authorization: `Bearer ${token?.token}` },
-              }
-              return apiCall(userConfig).then(async (response) => {
-                if (response.status) {
-                  const entity = {
-                    uid: user.uid,
-                    role: 'user',
-                    obj: response.payload,
-                    auth: {
-                      user_id: user.uid,
-                      token,
-                      user: response.payload,
-                    },
-                  }
-                  await Utility.setStorage('loggedInEntity', entity)
-                  authContext.setEntity({ ...entity })
-                  await authContext.setUser(response.payload);
-                  QBInitialLogin(entity, response?.payload);
-                } else {
-                  Alert.alert(response.messages);
-                }
-              });
-            });
-          }
-        });
-      })
       .catch((error) => {
         let message = ''
         if (error.code === 'auth/user-not-found') {
@@ -299,6 +225,14 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.mainContainer}>
+      <TouchableOpacity style={{
+        zIndex: 100,
+        position: 'absolute',
+        top: hp(5),
+        left: 15,
+      }} onPress={() => navigation.replace('WelcomeScreen')}>
+        <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
+      </TouchableOpacity>
       <ActivityLoader visible={loading} />
       {/* <Loader visible={getUserData.loading} /> */}
       <Image style={styles.background} source={images.orangeLayer} />

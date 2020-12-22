@@ -98,14 +98,6 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                 {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
               </View>
             }
-            rightComponent={
-              <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                <Image
-                    source={images.horizontal3Dot}
-                    resizeMode={'contain'}
-                    style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
-              </TouchableOpacity>
-            }
         />
       <ParallaxScrollView
             backgroundColor="transparent"
@@ -127,14 +119,6 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                   <View style={styles.headerCenterStyle}>
                     {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
                   </View>
-                }
-                rightComponent={
-                  <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                    <Image
-                            source={images.horizontal3Dot}
-                            resizeMode={'contain'}
-                            style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
-                  </TouchableOpacity>
                 }
               />
             )}

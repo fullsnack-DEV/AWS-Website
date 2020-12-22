@@ -13,7 +13,7 @@ import TCInnerLoader from './TCInnerLoader';
 const TCUserFollowUnfollowList = ({
   followSoccerUser,
   unFollowSoccerUser,
-  isAdmin = false,
+  isShowThreeDots = false,
   title,
   subTitle,
   is_following = false,
@@ -49,19 +49,19 @@ const TCUserFollowUnfollowList = ({
   return (
     <View>
       <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-        <View style={{ flex: 0.1, alignItems: 'center' }}>
+        <View style={{ flex: 0.15, alignItems: 'center' }}>
           <FastImage
-                resizeMode={'contain'}
+                resizeMode={'cover'}
                 source={profileImage ? { uri: profileImage } : images.profilePlaceHolder}
-                style={{ width: 25, height: 25, borderRadius: 25 }}
+                style={{ width: 30, height: 30, borderRadius: 25 }}
             />
         </View>
-        <View style={{ flex: 0.65, paddingVertical: 10, justifyContent: 'center' }}>
+        <View style={{ flex: 0.60, paddingVertical: 10, justifyContent: 'center' }}>
           <Text style={{ fontSize: 16, fontFamily: fonts.RMedium }}>{title}</Text>
           {subTitle && <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.userPostTimeColor }}>{subTitle}</Text>}
         </View>
         <View style={{ flex: 0.25, alignItems: 'center' }}>
-          {isAdmin ? (
+          {isShowThreeDots ? (
             <TouchableOpacity onPress={onThreeDotPress} style={{ alignSelf: 'flex-end', right: 10 }}>
               <Image source={ images.vertical3Dot } style={ styles.threedot } />
             </TouchableOpacity>

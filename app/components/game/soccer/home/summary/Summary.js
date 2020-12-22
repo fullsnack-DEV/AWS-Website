@@ -27,6 +27,8 @@ const Summary = ({
   getGameData,
   getGameMatchRecords,
   getSportsList,
+  getRefereeReservation,
+  getScorekeeperReservation,
 }) => {
   const [loading, setLoading] = useState(true);
   const [sliderAttributes, setSliderAttributes] = useState([]);
@@ -135,20 +137,20 @@ const Summary = ({
       <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
 
       <Referees
+          getRefereeReservation={getRefereeReservation}
           gameData={gameData}
           navigation={navigation}
-          refereesData={gameData?.referees ?? []}
           isAdmin={isAdmin}
           userRole={userRole}
           followSoccerUser={followSoccerUser}
           unFollowSoccerUser={unFollowSoccerUser}
       />
       <Scorekeepers
+          getScorekeeperReservation={getScorekeeperReservation}
           followSoccerUser={followSoccerUser}
           unFollowSoccerUser={unFollowSoccerUser}
           gameData={gameData}
           navigation={navigation}
-          scorekeepersData={gameData?.scorekeepers ?? []}
           isAdmin={isAdmin}
           userRole={userRole}
       />

@@ -15,8 +15,8 @@ import {
   approveDisapproveGameRecords,
   getGameData,
   getGameGallery,
-  getGameMatchRecords,
-  getGameReviews,
+  getGameMatchRecords, getGameRefereeReservation,
+  getGameReviews, getGameScorekeeperReservation,
   getGameStats,
   getSportsList,
 } from '../../../api/Games';
@@ -74,11 +74,15 @@ const TennisHome = ({ navigation, route }) => {
   const getTennisGameReview = (gameId) => getGameReviews(gameId, authContext)
   const getTennisGalleryData = (gameId) => getGameGallery(gameId, authContext)
   const getGameSportsList = () => getSportsList(authContext)
+  const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
+  const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
       {tabKey === 0 && (
         <Summary
+            getRefereeReservation={getRefereeReservation}
+            getScorekeeperReservation={getScorekeeperReservation}
             getSportsList={getGameSportsList}
             getSoccerGameReview={getTennisGameReview}
             getSoccerGameStats={getTennisGameStats}

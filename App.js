@@ -14,6 +14,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
+
   const updateAuth = (e) => {
     setEntity({ ...e })
   }
@@ -47,7 +48,6 @@ export default function App() {
     }
   }, []);
   QBinit();
-
   return (
     <AuthContext.Provider value={authValue}>
       <NavigationContainer theme={navigationTheme}>

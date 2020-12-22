@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext, useEffect, useRef, useState,
+} from 'react';
 import {
   Alert,
   Image,
@@ -46,11 +48,41 @@ export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
   const [fName, setFName] = useState('');
   const [lName, setLName] = useState('');
+  const emailRef = useRef('');
+  const passwordRef = useRef('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const [profilePic, setProfilePic] = useState(null);
+  function onFirebaseAuthStateChanged(user) {
+    console.log('CALL FROM SignUp Screen - Sign Up')
+    if (user) {
+      user.sendEmailVerification();
+      saveData(user);
+    }
+  }
+  const saveData = (user) => {
+    saveUserDetails(user).then(() => {
+      getUserDetails(user.uid, authContext)
+        .then(() => {
+          setloading(false);
+          Alert.alert('This user is already registered!');
+          navigation.navigate('LoginScreen');
+        })
+        .catch(() => {
+          setloading(false);
+          navigation.navigate('EmailVerificationScreen', {
+            emailAddress: emailRef.current,
+            password: passwordRef.current,
+          });
+        });
+    });
+  }
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onFirebaseAuthStateChanged)
+    return subscriber;
+  }, []);
   // For activity indigator
   const [loading, setloading] = useState(false);
   useEffect(() => {
@@ -96,13 +128,6 @@ export default function SignupScreen({ navigation }) {
     return false;
   };
 
-  // const getProfilePicUrl = (pickImages) => uploadImages([pickImages], authContext).then((responses) => responses.map((item) => ({
-  //   type: 'image',
-  //   url: item.fullImage,
-  //   thumbnail: item.thumbnail,
-  // }))).catch((error) => {
-  //   console.log(error);
-  // });
   const saveUserDetails = (user) => new Promise((resolve) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
@@ -160,54 +185,53 @@ export default function SignupScreen({ navigation }) {
     }
   })
 
-  const signupUser = (fname, lname, emailAddress, passwordInput) => {
-    setloading(true)
+  const signUpWithNewEmail = (emailAddress, passwordInput) => {
     auth()
       .createUserWithEmailAndPassword(emailAddress, passwordInput)
-      .then(async () => {
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user) user.sendEmailVerification();
-        });
-        auth().onAuthStateChanged(async (user) => {
-          saveUserDetails(user).then(() => {
-            getUserDetails(user.uid, authContext)
-              .then(() => {
-                setloading(false);
-                Alert.alert('This user is already registered!');
-
-                navigation.navigate('LoginScreen');
-              })
-              .catch(() => {
-                setloading(false);
-                navigation.navigate('EmailVerificationScreen', {
-                  emailAddress,
-                  password,
-                });
-              });
-          });
-        });
-      })
       .catch((e) => {
         setloading(false);
         let message = '';
         if (e.code === 'auth/user-not-found') {
           message = 'This email address is not registerd';
-        }
-        if (e.code === 'auth/email-already-in-use') {
+        } else if (e.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
-        }
-        if (e.code === 'auth/invalid-email') {
+        } else if (e.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
+        } else {
+          message = e.message;
         }
         setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
-  };
+  }
 
+  const checkLoginForTownsCup = () => {
+    Alert.alert('This email address is already registerd')
+  }
+
+  const signupUser = (fname, lname, emailAddress, passwordInput) => {
+    auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
+      if (isAccountThereInFirebase?.length > 0) {
+        checkLoginForTownsCup(emailAddress, passwordInput);
+      } else {
+        signUpWithNewEmail(emailAddress, passwordInput);
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
   const hideShowPassword = () => {
     setHidePassword(!hidePassword);
   };
   return (
     <View style={styles.mainContainer}>
+      <TouchableOpacity style={{
+        zIndex: 100,
+        position: 'absolute',
+        top: hp(5),
+        left: 15,
+      }} onPress={() => navigation.replace('WelcomeScreen')}>
+        <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
+      </TouchableOpacity>
       <ActivityLoader visible={loading} />
       {/* <Loader visible={true} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
@@ -253,14 +277,20 @@ export default function SignupScreen({ navigation }) {
                 placeholder={strings.emailPlaceHolder}
                 autoCapitalize="none"
                 keyboardType="email-address"
-                onChangeText={(text) => setEmail(text)}
+                onChangeText={(text) => {
+                  emailRef.current = text
+                  setEmail(text)
+                }}
                 value={email}
             />
           <View style={styles.passwordView}>
             <TextInput
                   style={{ ...styles.textInput, zIndex: 100 }}
                   placeholder={strings.passwordText}
-                  onChangeText={(text) => setPassword(text)}
+                  onChangeText={(text) => {
+                    setPassword(text)
+                    passwordRef.current = text;
+                  }}
                   value={password}
                   placeholderTextColor={colors.userPostTimeColor}
                   secureTextEntry={hidePassword}
