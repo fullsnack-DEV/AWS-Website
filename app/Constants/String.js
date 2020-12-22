@@ -60,6 +60,12 @@ const strings = {
   passwordText: 'Password (at least 8 characters)',
   confirmPasswordText: 'Confirm Password',
 
+  awaitingPayment: 'Awaiting Payment',
+  pendingPayment: 'pendingpayment',
+  requestSent: 'Request Sent',
+  offered: 'offered',
+  chiefReferee: 'CHIEF REFEREE',
+
   infoTitle: 'Info',
   recentMatchTitle: 'Recentest Match',
   aboutRatingTitle: 'Detail info about ratings',

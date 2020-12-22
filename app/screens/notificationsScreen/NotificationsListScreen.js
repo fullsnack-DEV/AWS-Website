@@ -31,6 +31,7 @@ import {
   deleteNotification,
 } from '../../api/Notificaitons';
 import AuthContext from '../../auth/context';
+import * as Utility from '../../utils/index';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -147,6 +148,78 @@ function NotificationsListScreen({ navigation }) {
     }
   };
 
+  const switchProfile = async (item) => {
+    let currentEntity = authContext.entity
+
+    if (item.entity_type === 'player') {
+      getUnreadCount(authContext).then((response) => {
+        if (response.status === true) {
+          const { teams } = response.payload;
+          const { clubs } = response.payload;
+          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+          setGroupList(groups);
+          setNotifAPI(1);
+          setCurrentTab(0);
+          checkActiveScreen(groups[0]);
+        } else {
+          // setloading(false)
+        }
+      });
+      currentEntity = {
+        ...currentEntity, uid: item.user_id, role: 'user', obj: item,
+      }
+    } else if (item.entity_type === 'team') {
+      getUnreadCount(authContext).then((response) => {
+        if (response.status === true) {
+          const { teams } = response.payload;
+          const { clubs } = response.payload;
+          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+          setGroupList(groups);
+          setNotifAPI(1);
+          setCurrentTab(0);
+          checkActiveScreen(groups[0]);
+        } else {
+          // setloading(false)
+        }
+      });
+      currentEntity = {
+        ...currentEntity, uid: item.group_id, role: 'team', obj: item,
+      }
+    } else if (item.entity_type === 'club') {
+      getUnreadCount(authContext).then((response) => {
+        if (response.status === true) {
+          const { teams } = response.payload;
+          const { clubs } = response.payload;
+          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+          setGroupList(groups);
+          setNotifAPI(1);
+          setCurrentTab(0);
+          checkActiveScreen(groups[0]);
+        } else {
+          // setloading(false)
+        }
+      });
+      currentEntity = {
+        ...currentEntity, uid: item.group_id, role: 'club', obj: item,
+      }
+    }
+    authContext.setEntity({ ...currentEntity })
+    Utility.setStorage('authContextEntity', { ...currentEntity })
+    return currentEntity
+  };
+
+  const onSwitchProfile = async (item) => {
+    setloading(true)
+    switchProfile(item).then(() => {
+      setloading(true);
+    }).catch((e) => {
+      setloading(false)
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    })
+  }
+
   const onDelete = ({ item }) => {
     if (activeScreen) {
       setloading(true);
@@ -172,7 +245,7 @@ function NotificationsListScreen({ navigation }) {
             onPress: () => console.log('Cancel Pressed'),
             style: 'cancel',
           },
-          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
+          { text: 'Yes', onPress: () => onSwitchProfile(selectedEntity) },
         ],
         { cancelable: true },
       );
