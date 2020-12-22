@@ -144,6 +144,18 @@ const getGameSlots = async (entity_type, entity_id, queryString, authContext) =>
   authContext,
 });
 
+const getGameRefereeReservation = (gameId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/referees/game/${gameId}/reservation`,
+  authContext,
+});
+
+const getGameScorekeeperReservation = (gameId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/scorekeepers/game/${gameId}/reservation?scorekeeper_detail=true`,
+  authContext,
+});
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -168,4 +180,6 @@ export {
   getRefereeReviewData,
   getGameUser,
   getGameSlots,
+  getGameRefereeReservation,
+  getGameScorekeeperReservation,
 }

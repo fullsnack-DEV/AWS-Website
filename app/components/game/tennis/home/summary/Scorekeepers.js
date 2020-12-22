@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useContext, useEffect, useRef, useState,
+} from 'react';
 import {
   Text,
   View,
@@ -6,45 +8,62 @@ import {
   FlatList,
 } from 'react-native';
 import _ from 'lodash';
+import ActionSheet from 'react-native-actionsheet';
 import fonts from '../../../../../Constants/Fonts';
 import colors from '../../../../../Constants/Colors';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../../utils';
 import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../../TCGradientButton';
+import AuthContext from '../../../../../auth/context';
 
 const Scorekeepers = ({
-  scorekeepersData,
   isAdmin,
   userRole,
   navigation,
   gameData,
   followSoccerUser,
   unFollowSoccerUser,
+  getScorekeeperReservation,
 }) => {
   const [scorekeeper, setScorekeeper] = useState([]);
+  const actionSheet = useRef();
+  const authContext = useContext(AuthContext)
 
-  useEffect(() => setScorekeeper(scorekeepersData), [scorekeepersData])
+  useEffect(() => {
+    getScorekeeperReservation(gameData?.game_id).then((res) => {
+      setScorekeeper([...res?.payload]);
+    });
+  }, [gameData]);
 
   const onFollowPress = async (userID, status) => {
-    const refre = _.cloneDeep(scorekeeper);
-    const index = refre.findIndex((item) => item?.user_id === userID);
-    if (index > -1) refre[index].is_following = status
-    setScorekeeper(refre);
+    const sKeeper = _.cloneDeep(scorekeeper);
+    const index = sKeeper.findIndex((item) => item?.scorekeeper?.user_id === userID);
+    if (index > -1) sKeeper[index].scorekeeper.is_following = status
+    setScorekeeper(sKeeper);
   };
 
-  const renderScorekeepers = ({ item }) => (
-    <TCUserFollowUnfollowList
-          userID={item?.user_id}
-          title={item?.full_name}
-          is_following={item?.is_following}
-          onFollowUnfollowPress={onFollowPress}
-          followSoccerUser={followSoccerUser}
-          unFollowSoccerUser={unFollowSoccerUser}
-          profileImage={item?.thumbnail}
-          isAdmin={isAdmin}
-          userRole={userRole}
-      />
-  )
+  const renderScorekeepers = ({ item }) => {
+    const entity = authContext?.entity;
+    const sKeeper = item?.scorekeeper;
+    if (!['declined', 'cancel'].includes(item?.status)) {
+      return (
+        <TCUserFollowUnfollowList
+              userID={sKeeper?.user_id}
+              title={sKeeper?.full_name}
+              is_following={sKeeper?.is_following}
+              onFollowUnfollowPress={onFollowPress}
+              followSoccerUser={followSoccerUser}
+              unFollowSoccerUser={unFollowSoccerUser}
+              profileImage={sKeeper?.thumbnail}
+              isAdmin={isAdmin}
+              isShowThreeDots={item?.initiated_by === entity?.uid}
+              userRole={userRole}
+              onThreeDotPress={() => actionSheet.current.show()}
+        />
+      )
+    }
+    return null;
+  }
   const handleBookScorekeeper = () => {
     navigation.navigate('BookScorekeeper', { gameData })
   }
@@ -82,6 +101,19 @@ const Scorekeepers = ({
                   outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
               />
       )}
+      <ActionSheet
+          ref={actionSheet}
+          options={[
+            'Scorekeeper Reservation Details',
+            'Cancel',
+          ]}
+          cancelButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              alert('Scorekeeper Reservation Details')
+            }
+          }}
+      />
     </View>
   </View>
   )

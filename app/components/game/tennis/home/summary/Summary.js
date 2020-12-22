@@ -28,6 +28,8 @@ const Summary = ({
   unFollowSoccerUser,
   getGameMatchRecords,
   getSportsList,
+  getRefereeReservation,
+  getScorekeeperReservation,
 }) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -143,9 +145,9 @@ const Summary = ({
 
       {/* Regerees */}
       <Referees
+          getRefereeReservation={getRefereeReservation}
           navigation={navigation}
             gameData={gameData}
-            refereesData={gameData?.referees ?? []}
             isAdmin={isAdmin}
             userRole={userRole}
             followSoccerUser={followSoccerUser}
@@ -154,9 +156,9 @@ const Summary = ({
 
       {/* Scorekeepers */}
       <Scorekeepers
+          getScorekeeperReservation={getScorekeeperReservation}
           followSoccerUser={followSoccerUser}
           unFollowSoccerUser={unFollowSoccerUser}
-          scorekeepersData={gameData?.scorekeepers ?? []}
           isAdmin={isAdmin}
           userRole={userRole}
           navigation={navigation}

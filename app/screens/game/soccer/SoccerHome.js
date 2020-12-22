@@ -15,8 +15,8 @@ import {
   approveDisapproveGameRecords,
   getGameData,
   getGameGallery,
-  getGameMatchRecords,
-  getGameReviews,
+  getGameMatchRecords, getGameRefereeReservation,
+  getGameReviews, getGameScorekeeperReservation,
   getGameStats,
   getSportsList,
 } from '../../../api/Games';
@@ -36,7 +36,7 @@ const gameIds = [
   '8385c959-ca3a-4471-9fd5-8a3637a5217e', // 6 - For Review
   '4fd32621-46b8-4ed8-a145-50ab4b82ce62', // 7
 ]
-const globalGameId = gameIds[1];
+const globalGameId = gameIds[0];
 const SoccerHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
@@ -49,6 +49,9 @@ const SoccerHome = ({ navigation, route }) => {
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
 
   useEffect(() => {
+    navigation.setOptions({
+      tabBarVisible: false,
+    })
     getGameDetails();
   }, []);
 
@@ -77,11 +80,15 @@ const SoccerHome = ({ navigation, route }) => {
   const getSoccerGameReview = (gameId) => getGameReviews(gameId, authContext)
   const getSoccerGalleryData = (gameId) => getGameGallery(gameId, authContext)
   const getGameSportsList = () => getSportsList(authContext)
+  const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
+  const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
       {tabKey === 0 && (
         <Summary
+            getRefereeReservation={getRefereeReservation}
+            getScorekeeperReservation={getScorekeeperReservation}
             getSportsList={getGameSportsList}
             getSoccerGameReview={getSoccerGameReview}
             getSoccerGameStats={getSoccerGameStats}

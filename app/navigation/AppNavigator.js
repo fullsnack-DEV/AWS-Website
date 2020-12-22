@@ -21,6 +21,7 @@ const Tab = createBottomTabNavigator();
 
 const getTabBarVisibility = (route) => {
   let routeName = '';
+  console.log('Route :', route);
   if (route.name === 'Account') {
     const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
     routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name
