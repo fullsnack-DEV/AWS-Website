@@ -97,6 +97,7 @@ import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAccep
 import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
+import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
 
 import ViewPrivacyScreen from '../screens/account/schedule/ViewPrivacyScreen';
 import EditEventScreen from '../screens/account/schedule/EditEventScreen';
@@ -1404,7 +1405,22 @@ const HomeNavigator = () => (
           },
         } }
       />
-
+    <Stack.Screen
+        name="PayAgainRefereeScreen"
+        component={ PayAgainRefereeScreen }
+        options={ {
+          title: 'Pay',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
     <Stack.Screen
         name="ChangeReservationInfoScreen"
         component={ ChangeReservationInfoScreen }

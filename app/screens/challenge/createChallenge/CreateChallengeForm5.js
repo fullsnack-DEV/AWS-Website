@@ -78,7 +78,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
       challengeBody.end_datetime = parseFloat((challengeBody.end_datetime / 1000).toFixed(0))
       challengeBody.userChallenge = false;
       challengeBody.manual_fee = false;
-      if (route.params.paymentMethod) {
+      if (route?.params?.paymentMethod) {
         challengeBody.source = route.params.paymentMethod.id
       }
 

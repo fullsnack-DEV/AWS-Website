@@ -377,8 +377,9 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} has accepted your game reservation,
-                  but your payment hasnt gone through yet.
+                  Your team has accepted a game reservation from{' '}
+                  {getTeamName(bodyParams)}, but the payment hasnt gone through
+                  yet.
                 </Text>
                 <Text style={styles.pendingRequestText}>
                   This reservation will be canceled unless the payment goes
@@ -396,9 +397,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                 <Text style={styles.challengeText}>
-                  Your team has accepted a game reservation from{' '}
-                  {getTeamName(bodyParams)}, but the payment hasnt gone through
-                  yet.
+                  {getTeamName(bodyParams)} has accepted your game reservation,
+                  but your payment hasnt gone through yet.
                 </Text>
                 <Text style={styles.awatingNotesText}>
                   {`This reservation will be canceled unless the payment goes through within${getDayTimeDifferent(

@@ -461,5 +461,7 @@ const strings = {
   locationvalidation: 'Location cannot be blank',
   addOptionMessage: '+ Add a payment method',
   selectPaymentText: 'Please select payment method.',
+  cannotAcceptText: 'Reservation can not be change after game has been started.',
+  refereeOfferExpiryText: 'Offer expired or game start time already passed.',
 };
 export default strings;

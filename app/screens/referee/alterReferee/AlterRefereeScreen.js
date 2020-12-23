@@ -472,34 +472,6 @@ export default function AlterRefereeScreen({ navigation, route }) {
     body.service_fee2_charges = paymentCard.service_fee2_charges;
     body.stripe_fee = paymentCard.stripe_fee;
 
-    // const challengeID = bodyParams.challenge_id;
-    // delete bodyParams.created_at;
-    // delete bodyParams.created_by;
-    // delete bodyParams.entity_id;
-    // delete bodyParams.entity_type;
-    // delete bodyParams.offer_expiry;
-    // delete bodyParams.status;
-    // delete bodyParams.challenge_id;
-    // delete bodyParams.userChallenge;
-    // delete bodyParams.game_id;
-    // delete bodyParams.change_requested_by;
-    // delete bodyParams.updated_by;
-    // delete bodyParams.updated_at;
-    // delete bodyParams.version;
-    // delete bodyParams.reservations;
-    // const home_id = bodyParams?.home_team?.group_id ?? bodyParams.home_team.user_id;
-    // const away_id = bodyParams?.away_team?.group_id ?? bodyParams.away_team.user_id;
-    // delete bodyParams.home_team;
-    // delete bodyParams.away_team;
-    // bodyParams.home_team = home_id;
-    // bodyParams.away_team = away_id;
-    // bodyParams.total_game_charges = paymentCard.total_game_charges;
-    // bodyParams.total_charges = paymentCard.total_charges;
-    // bodyParams.total_payout = paymentCard.total_payout;
-    // bodyParams.service_fee1_charges = paymentCard.service_fee1_charges;
-    // bodyParams.service_fee2_charges = paymentCard.service_fee2_charges;
-    // bodyParams.stripe_fee = paymentCard.stripe_fee;
-
     console.log('FINAL BODY PARAMS::', body);
     updateChallenge(challengeID, body, authContext)
       .then(() => {

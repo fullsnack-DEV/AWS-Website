@@ -8,6 +8,7 @@ import strings from '../../Constants/String';
 // eslint-disable-next-line import/prefer-default-export
 export const getRefereeReservationDetail = (reservationID, authContext) => {
   const Obj = {}
+  console.log('Authcontext::', JSON.stringify(authContext.entity.uid));
   // eslint-disable-next-line consistent-return
   return getReservation(reservationID, authContext).then((response) => {
     console.log('reservation Utils:', JSON.stringify(response.payload));

@@ -77,7 +77,7 @@ function NotificationNavigator() {
             name="RefereeReservationScreen"
             component={RefereeReservationScreen}
             options={{
-              title: 'Referee Reservation Details',
+              title: 'Referee Reservation',
               headerTintColor: colors.blackColor,
               headerTitleStyle: {
                 fontWeight: '500',

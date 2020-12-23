@@ -79,5 +79,7 @@ const colors = {
   greenShadowColor: '#7CCF6B',
   blueGradiantStart: '#004EFF',
   blueGradiantEnd: '#00BAFF',
+  requestSentColor: '#FF4E00',
+  requestConfirmColor: '#0093FF',
 };
 export default colors;

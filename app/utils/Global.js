@@ -42,7 +42,7 @@ const makeAPIRequest = async ({
   // if (!entity) {
   //   entity = await Utility.getStorage('loggedInEntity');
   // }
-  console.log('entity::456', entity, url);
+  console.log('entity::', entity, url);
   let authToken = entity.auth.token.token;
   const currentDate = new Date();
   const expiryDate = new Date(entity.auth.token.expirationTime);
@@ -71,6 +71,7 @@ const makeAPIRequest = async ({
     caller = entity.role;
   }
   const headersParams = prepareHeader(headers, authToken, caller_id, caller);
+  console.log('apiHeaders::', headersParams);
   const options = {
     method,
     url,

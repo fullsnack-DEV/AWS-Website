@@ -35,11 +35,11 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           </Text>
           <Text style={styles.infoText}>
             {(route.params.status === 'accept'
-              && `A match between ${route.params.teamObj.group_name} and your team has been scheduled.`)
+              && `A match between ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} and your team has been scheduled.`)
               || (route.params.status === 'decline'
-                && `The match reservation request from ${route.params.teamObj.group_name} has been declined.`)
+                && `The match reservation request from ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} has been declined.`)
               || (route.params.status === 'cancel'
-                && `The match reservation from ${route.params.teamObj.group_name} has been cancelled.`)
+                && `The match reservation from ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} has been cancelled.`)
               || (route.params.status === 'restored'
                 && 'Reservation alteration request restored.')}
           </Text>
@@ -48,7 +48,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
 
       {route && route.params && route.params.teamObj && (
         <TCBorderButton
-          title={`Go to ${route.params.teamObj.group_name}`}
+          title={`Go to ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`}`}
           textColor={colors.whiteColor}
           borderColor={colors.whiteColor}
           backgroundColor={'transparent'}
@@ -66,7 +66,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
         />
 
       )}
-      {route && route.params && route.params.status === 'accept' && (
+      {route?.params?.status === 'accept' && (
         <TCBorderButton
           title={strings.goToGameHome}
           textColor={colors.themeColor}
@@ -74,6 +74,18 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           height={40}
           shadow={true}
           marginBottom={20}
+          onPress={() => {
+            if (`${route?.params?.teamObj?.sport}`.toLowerCase() === 'soccer') {
+              navigation.navigate('SoccerHome', {
+                gameId: route?.params?.teamObj?.game_id,
+              })
+            } else {
+              navigation.navigate('TennisHome', {
+                gameId: route?.params?.teamObj?.game_id,
+              })
+            }
+          }
+          }
         />
       )}
     </View>
