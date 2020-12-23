@@ -92,6 +92,8 @@ import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
 import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
+import RefereeReservationItem from '../../components/Schedule/RefereeReservationItem';
+import { getRefereeReservationDetails } from '../../api/Reservations';
 
 const reviews_data = [
   {
@@ -183,6 +185,7 @@ export default function HomeScreen({ navigation, route }) {
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
+  const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [gamesChartData, setGamesChartData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [gameStatsData, setGameStatsData] = useState({
     from_date: false,
@@ -206,6 +209,7 @@ export default function HomeScreen({ navigation, route }) {
   const [sportName, setSportName] = useState('');
   const [selectRefereeData, setSelectRefereeData] = useState(null);
   const [languagesName, setLanguagesName] = useState('');
+  const [refereeReservData, setRefereeReserveData] = useState([]);
 
   const [reviewsData] = useState(reviews_data);
 
@@ -1140,6 +1144,10 @@ export default function HomeScreen({ navigation, route }) {
     setReviewerDetailModalVisible(!reviewerDetailModalVisible);
   };
 
+  const refereeReservModal = () => {
+    setIsRefereeModal(!isRefereeModal);
+  };
+
   useEffect(() => {
     if (route.params && route.params.locationName) {
       setInfoModalVisible(true);
@@ -1534,10 +1542,51 @@ export default function HomeScreen({ navigation, route }) {
                       </View>}
                     />}
                   </View>}
+
+                  <Modal
+                    isVisible={isRefereeModal}
+                    backdropColor="black"
+                    style={{ margin: 0, justifyContent: 'flex-end' }}
+                    hasBackdrop
+                    onBackdropPress={() => {
+                      setIsRefereeModal(false);
+                    }}
+                    backdropOpacity={0}
+                  >
+                    <SafeAreaView style={styles.modalMainViewStyle}>
+                      <Header
+                        mainContainerStyle={styles.refereeHeaderMainStyle}
+                        leftComponent={
+                          <TouchableOpacity onPress={() => {
+                            setIsRefereeModal(false);
+                          }}>
+                            <Image source={images.cancelImage} style={[styles.cancelImageStyle, { tintColor: colors.blackColor }]} resizeMode={'contain'} />
+                          </TouchableOpacity>
+                        }
+                        centerComponent={
+                          <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
+                        }
+                      />
+                      <View style={styles.refereeSepratorStyle} />
+                      <FlatList
+                        data={refereeReservData}
+                        bounces={false}
+                        showsHorizontalScrollIndicator={false}
+                        ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
+                        renderItem={({ item }) => <RefereeReservationItem
+                          data={item}
+                        />}
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                    </SafeAreaView>
+                  </Modal>
                   <ActionSheet
                     ref={eventEditDeleteAction}
-                    options={['Edit', 'Delete', 'Cancel']}
-                    cancelButtonIndex={2}
+                    options={selectedEventItem !== null && selectedEventItem.game
+                      ? ['Edit', 'Delete', 'Referee Reservation Details', 'Cancel']
+                      : ['Edit', 'Delete', 'Cancel']
+                    }
+                    cancelButtonIndex={3}
                     destructiveButtonIndex={1}
                     onPress={(index) => {
                       setSelectedEventItem(null);
@@ -1578,6 +1627,35 @@ export default function HomeScreen({ navigation, route }) {
                           ],
                           { cancelable: false },
                         );
+                      }
+                      if (index === 2 && selectedEventItem.game) {
+                        setloading(true);
+                        const params = {
+                          caller_id: selectedEventItem.owner_id,
+                        };
+                        getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                          setRefereeReserveData(res.payload);
+                          if (authContext.entity.uid === selectedEventItem.game.home_team.group_id && res.payload.length > 0) {
+                            refereeReservModal();
+                            setloading(false);
+                          } else {
+                            setloading(false);
+                            setTimeout(() => {
+                              Alert.alert(
+                                'Towns Cup',
+                                'No referees invited or booked by you for this game',
+                                [{
+                                  text: 'OK',
+                                  onPress: async () => {},
+                                },
+                                ],
+                                { cancelable: false },
+                              );
+                            }, 0);
+                          }
+                        }).catch((error) => {
+                          console.log('Error :-', error);
+                        });
                       }
                     }}
                   />
@@ -2549,5 +2627,30 @@ const styles = StyleSheet.create({
   sepratorView: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
+  },
+  modalMainViewStyle: {
+    shadowOpacity: 0.15,
+    shadowOffset: {
+      height: -10,
+      width: 0,
+    },
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  refereeHeaderMainStyle: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 15,
+  },
+  refereeSepratorStyle: {
+    height: 1,
+    backgroundColor: colors.writePostSepratorColor,
+  },
+  headerCenterStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
   },
 });

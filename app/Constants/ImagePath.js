@@ -97,6 +97,9 @@ const images = {
   portraitTopImage: require('../assets/images/Portrait_Top.png'),
   portraitBottomImage: require('../assets/images/Portrait_Bottom.png'),
 
+  portraitVideoImage: require('../assets/images/Portrait_Video_Image.png'),
+  landscapeVideoImage: require('../assets/images/Landscape_Video_Image.png'),
+
   tab_reservation: require('../assets/images/tab_reservation.png'),
   tab_reservation_selected: require('../assets/images/tab_reservation_selected.png'),
 

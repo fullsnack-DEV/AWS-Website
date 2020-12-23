@@ -144,8 +144,6 @@ export default function ScheduleScreen({ navigation }) {
     setIsRefereeModal(!isRefereeModal);
   };
 
-  console.log('Selected Event Item ::--', selectedEventItem);
-
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
