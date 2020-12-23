@@ -52,7 +52,6 @@ export default function App() {
     <AuthContext.Provider value={authValue}>
       <NavigationContainer theme={navigationTheme}>
         {entity?.isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
-        {/* <AppNavigator /> */}
       </NavigationContainer>
     </AuthContext.Provider>
   );

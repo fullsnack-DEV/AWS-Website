@@ -12,7 +12,6 @@ import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 import Config from 'react-native-config';
-import { CommonActions } from '@react-navigation/native';
 import AuthContext from '../../auth/context'
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
@@ -47,85 +46,12 @@ export default function WelcomeScreen({ navigation }) {
       firebase.initializeApp(config);
     }
   }, []);
-
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId: '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
     offlineAccess: false,
   });
-  function onFirebaseAuthStateChanged(user) {
-    console.log('CALL FROM Welcome Screen')
-    if (user) {
-      user.getIdTokenResult().then(async (idTokenResult) => {
-        console.log('User JWT: ', idTokenResult.token);
-        const token = {
-          token: idTokenResult.token,
-          expirationTime: idTokenResult.expirationTime,
-        };
-        const userConfig = {
-          method: 'get',
-          url: `${Config.BASE_URL}/users/${user?.uid}`,
-          headers: { Authorization: `Bearer ${token?.token}` },
-        }
-        apiCall(userConfig).then(async (response) => {
-          if (response.status) {
-            const entity = {
-              uid: user.uid,
-              role: 'user',
-              obj: response.payload,
-              auth: {
-                user_id: user.uid,
-                token,
-                user: response.payload,
-              },
-            }
-            QBInitialLogin(entity, response?.payload);
-          } else {
-            setloading(false);
-            Alert.alert(response.messages);
-          }
-        }).catch(async () => {
-          const entity = {
-            auth: { token, user_id: user.uid },
-            uid: user.uid,
-            role: 'user',
-          }
-          await Utility.setStorage('loggedInEntity', entity);
-          await authContext.setEntity({ ...entity })
-          const flName = user.displayName.split(' ');
 
-          const userDetail = {};
-          if (flName.length >= 2) {
-            [userDetail.first_name, userDetail.last_name] = flName
-          } else if (flName.length === 1) {
-            [userDetail.first_name, userDetail.last_name] = [flName[0], '']
-          } else if (flName.length === 0) {
-            userDetail.first_name = 'Towns';
-            userDetail.last_name = 'Cup';
-          }
-          userDetail.email = user.email;
-
-          await Utility.setStorage('userInfo', userDetail);
-
-          getUserDetails(user.uid, authContext).then((response) => {
-            setloading(false);
-            if (response.status === true) {
-              Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
-            } else {
-              navigation.replace('AddBirthdayScreen')
-            }
-          }).catch(() => {
-            navigation.replace('AddBirthdayScreen')
-          });
-          setloading(false);
-        });
-      }).catch(() => setloading(false));
-    }
-  }
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onFirebaseAuthStateChanged);
-    return subscriber;
-  }, []);
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
@@ -137,7 +63,56 @@ export default function WelcomeScreen({ navigation }) {
       throw new Error('Something went wrong obtaining access token');
     }
     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-    auth().signInWithCredential(facebookCredential)
+    auth().signInWithCredential(facebookCredential).then(async (authResult) => {
+      console.log('FACEBOOK DETAIL:', JSON.stringify(authResult));
+      auth().onAuthStateChanged((user) => {
+        console.log('User :-', user);
+        if (user) {
+          user.getIdTokenResult().then(async (idTokenResult) => {
+            console.log('User JWT: ', idTokenResult.token);
+            const token = {
+              token: idTokenResult.token,
+              expirationTime: idTokenResult.expirationTime,
+            };
+
+            await Utility.setStorage('UID', user.uid);
+            const flName = user.displayName.split(' ');
+
+            const userDetail = {};
+            if (flName.length >= 2) {
+              [userDetail.first_name, userDetail.last_name] = flName
+            } else if (flName.length === 1) {
+              [userDetail.first_name, userDetail.last_name] = [flName[0], ''];
+            } else if (flName.length === 0) {
+              userDetail.first_name = 'Towns';
+              userDetail.last_name = 'Cup';
+            }
+            userDetail.email = user.email;
+            const entity = {
+              auth: { token, user_id: user.uid },
+              uid: user.uid,
+              role: 'user',
+            }
+            await Utility.setStorage('userInfo', userDetail);
+            await Utility.setStorage('loggedInEntity', entity);
+            await authContext.setEntity({ ...entity })
+
+            getUserDetails(user.uid, authContext).then((response) => {
+              setloading(false);
+              if (response.status === true) {
+                Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+              } else {
+                navigation.navigate('AddBirthdayScreen')
+              }
+            }).catch(() => {
+              // Alert.alert('Towns Cup', error.message);
+              navigation.navigate('AddBirthdayScreen')
+            });
+            setloading(false);
+          });
+        }
+      });
+    })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
           Alert.alert('This email address is not registerd');
@@ -180,9 +155,78 @@ export default function WelcomeScreen({ navigation }) {
       setloading(true);
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      auth().signInWithCredential(googleCredential)
+      auth().signInWithCredential(googleCredential).then(async (authResult) => {
+        console.log('GOOGLE DETAIL:', JSON.stringify(authResult));
+        auth().onAuthStateChanged((user) => {
+          console.log('User :-', user);
+          if (user) {
+            user.getIdTokenResult().then(async (idTokenResult) => {
+              console.log('User JWT: ', idTokenResult.token);
+              const token = {
+                token: idTokenResult.token,
+                expirationTime: idTokenResult.expirationTime,
+              };
+              const userConfig = {
+                method: 'get',
+                url: `${Config.BASE_URL}/users/${user?.uid}`,
+                headers: { Authorization: `Bearer ${token?.token}` },
+              }
+              apiCall(userConfig).then(async (response) => {
+                if (response.status) {
+                  const entity = {
+                    uid: user.uid,
+                    role: 'user',
+                    obj: response.payload,
+                    auth: {
+                      user_id: user.uid,
+                      token,
+                      user: response.payload,
+                    },
+                  }
+                  QBInitialLogin(entity, response?.payload);
+                } else {
+                  setloading(false);
+                  Alert.alert(response.messages);
+                }
+              }).catch(async () => {
+                const entity = {
+                  auth: { token, user_id: user.uid },
+                  uid: user.uid,
+                  role: 'user',
+                }
+                await Utility.setStorage('loggedInEntity', entity);
+                await authContext.setEntity({ ...entity })
+                const flName = user.displayName.split(' ');
+
+                const userDetail = {};
+                if (flName.length >= 2) {
+                  [userDetail.first_name, userDetail.last_name] = flName
+                } else if (flName.length === 1) {
+                  [userDetail.first_name, userDetail.last_name] = [flName[0], '']
+                } else if (flName.length === 0) {
+                  userDetail.first_name = 'Towns';
+                  userDetail.last_name = 'Cup';
+                }
+                userDetail.email = user.email;
+
+                await Utility.setStorage('userInfo', userDetail);
+                apiCall(userConfig).then((response) => {
+                  setloading(false);
+                  if (response.status === true) {
+                    Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+                  } else {
+                    navigation.navigate('AddBirthdayScreen')
+                  }
+                }).catch(() => {
+                  navigation.navigate('AddBirthdayScreen')
+                });
+                setloading(false);
+              });
+            }).catch(() => setloading(false));
+          }
+        }).catch(() => setloading(false));
+      })
         .catch((error) => {
-          setloading(false);
           if (error.code === 'auth/user-not-found') {
             Alert.alert('This email address is not registerd');
           }
@@ -228,31 +272,14 @@ export default function WelcomeScreen({ navigation }) {
 
       <TouchableOpacity
             style={ [styles.imgWithText, styles.allButton] }
-            onPress={ () => {
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [
-                    { name: 'SignupScreen' },
-                  ],
-                }),
-              );
-            }}>
+            onPress={ () => navigation.navigate('SignupScreen')
+            }>
         <Image source={ images.email } style={ styles.signUpImg } />
         <Text style={ styles.signUpText }>{strings.signUpText}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-            onPress={ () => {
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [
-                    { name: 'LoginScreen' },
-                  ],
-                }),
-              );
-            } }
+            onPress={ () => navigation.navigate('LoginScreen') }
             style={ styles.alreadyView }>
         <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
       </TouchableOpacity>

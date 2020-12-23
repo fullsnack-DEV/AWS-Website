@@ -18,7 +18,8 @@ import {
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
-import { GoogleSignin } from '@react-native-community/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+import Config from 'react-native-config';
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
 import AuthContext from '../../auth/context';
@@ -34,6 +35,7 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { eventDefaultColorsData } from '../../Constants/LoaderImages';
+import apiCall from '../../utils/apiCall';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -53,14 +55,11 @@ export default function LoginScreen({ navigation }) {
   const authContext = useContext(AuthContext);
   // For activity indigator
   const [loading, setloading] = useState(false);
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onFirebaseAuthStateChanged);
-    return subscriber;
-  }, []);
+
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId:
-      '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
+        '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
     offlineAccess: false,
   });
 
@@ -80,10 +79,9 @@ export default function LoginScreen({ navigation }) {
     return true;
   };
 
-  const onFirebaseAuthStateChanged = async (user) => {
-    console.log('CALL from Login Screen');
+  const onAuthStateChanged = (user) => {
     if (user) {
-      user.getIdTokenResult().then(async (idTokenResult) => {
+      user.getIdTokenResult().then((idTokenResult) => {
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
@@ -96,15 +94,17 @@ export default function LoginScreen({ navigation }) {
             user_id: user.uid,
           },
         }
-        await Utility.setStorage('eventColor', eventDefaultColorsData);
-        await Utility.setStorage('groupEventValue', true)
-        await Utility.setStorage('loggedInEntity', entity)
-        await authContext.setEntity({ ...entity })
-        getUserInfo(entity).then((data) => {
+        Utility.setStorage('eventColor', eventDefaultColorsData);
+        Utility.setStorage('groupEventValue', true)
+        authContext.setEntity({ ...entity })
+        console.log('authContext111', entity)
+        return getUserInfo(entity).then((data) => {
           QBInitialLogin(entity, data.payload);
+          console.log('Function data', data);
         }).catch((e) => {
           setloading(false);
           setTimeout(() => Alert.alert('Towns Cup', e.message), 1);
+          console.log('Function catch', e);
         })
       });
     }
@@ -116,6 +116,9 @@ export default function LoginScreen({ navigation }) {
     firebase
       .auth()
       .signInWithEmailAndPassword(_email, _password)
+      .then(() => {
+        auth().onAuthStateChanged(onAuthStateChanged);
+      })
       .catch((error) => {
         let message = '';
         setloading(false);
@@ -187,6 +190,39 @@ export default function LoginScreen({ navigation }) {
     );
     auth()
       .signInWithCredential(facebookCredential)
+      .then(async () => {
+        auth().onAuthStateChanged((user) => {
+          if (user) {
+            user.getIdTokenResult().then(async (idTokenResult) => {
+              const token = {
+                token: idTokenResult.token,
+                expirationTime: idTokenResult.expirationTime,
+              };
+
+              return getUserDetails(user.uid, authContext).then(async (response) => {
+                if (response.status) {
+                  const entity = {
+                    uid: user.uid,
+                    role: 'user',
+                    obj: response.payload,
+                    auth: {
+                      user_id: user.uid,
+                      token,
+                      user: response.payload,
+                    },
+                  }
+                  await Utility.setStorage('loggedInEntity', entity)
+                  await authContext.setEntity({ ...entity })
+                  await authContext.setUser(response.payload)
+                  QBInitialLogin(entity, response?.payload);
+                } else {
+                  Alert.alert(response.messages);
+                }
+              });
+            });
+          }
+        });
+      })
       .catch((error) => {
         let message = '';
         if (error.code === 'auth/user-not-found') {
@@ -204,35 +240,83 @@ export default function LoginScreen({ navigation }) {
 
   // Login With Google manage function
   const onGoogleButtonPress = async () => {
-    const { idToken } = await GoogleSignin.signIn();
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    auth()
-      .signInWithCredential(googleCredential)
-      .catch((error) => {
-        let message = ''
-        if (error.code === 'auth/user-not-found') {
-          message = 'This email address is not registerd';
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          message = 'That email address is already in use!';
-        }
-        if (error.code === 'auth/invalid-email') {
-          message = 'That email address is invalid!';
-        }
-        setTimeout(() => Alert.alert('Towns Cup', message), 1);
-      });
-  };
+    try {
+      setloading(true);
+      const { idToken } = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      auth()
+        .signInWithCredential(googleCredential)
+        .then(async () => {
+          auth().onAuthStateChanged((user) => {
+            if (user) {
+              user.getIdTokenResult().then(async (idTokenResult) => {
+                const token = {
+                  token: idTokenResult.token,
+                  expirationTime: idTokenResult.expirationTime,
+                };
+
+                const userConfig = {
+                  method: 'get',
+                  url: `${Config.BASE_URL}/users/${user?.uid}`,
+                  headers: { Authorization: `Bearer ${token?.token}` },
+                }
+                apiCall(userConfig).then(async (response) => {
+                  if (response.status) {
+                    const entity = {
+                      uid: user.uid,
+                      role: 'user',
+                      obj: response.payload,
+                      auth: {
+                        user_id: user.uid,
+                        token,
+                        user: response.payload,
+                      },
+                    }
+                    await Utility.setStorage('loggedInEntity', entity)
+                    authContext.setEntity({ ...entity })
+                    await authContext.setUser(response.payload);
+                    QBInitialLogin(entity, response?.payload);
+                  } else {
+                    setloading(false);
+                    Alert.alert(response.messages);
+                  }
+                });
+              });
+            }
+          });
+        })
+        .catch((error) => {
+          setloading(false);
+          let message = ''
+          if (error.code === 'auth/user-not-found') {
+            message = 'This email address is not registerd';
+          }
+          if (error.code === 'auth/email-already-in-use') {
+            message = 'That email address is already in use!';
+          }
+          if (error.code === 'auth/invalid-email') {
+            message = 'That email address is invalid!';
+          }
+          setTimeout(() => Alert.alert('Towns Cup', message), 1);
+        });
+    } catch (error) {
+      let message = '';
+      setloading(false)
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        message = 'Process Cancelled'
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        message = 'Process in progress'
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        message = 'Play services are not available'
+      } else {
+        message = `Something else went wrong... ${error.toString()}`;
+      }
+      setTimeout(() => Alert.alert('Towns cup', message), 100)
+    }
+  }
 
   return (
     <View style={styles.mainContainer}>
-      <TouchableOpacity style={{
-        zIndex: 100,
-        position: 'absolute',
-        top: hp(5),
-        left: 15,
-      }} onPress={() => navigation.replace('WelcomeScreen')}>
-        <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
-      </TouchableOpacity>
       <ActivityLoader visible={loading} />
       {/* <Loader visible={getUserData.loading} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
@@ -244,24 +328,24 @@ export default function LoginScreen({ navigation }) {
       <Text style={styles.orText}>{strings.orText}</Text>
       <View style={styles.textFieldContainerStyle}>
         <TCTextField
-        style={styles.textFieldStyle}
-        placeholder={strings.emailPlaceHolder}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
+              style={styles.textFieldStyle}
+              placeholder={strings.emailPlaceHolder}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+          />
       </View>
       <View style={styles.passwordView}>
         <TextInput
-          style={styles.textInput}
-          placeholder={strings.passwordPlaceHolder}
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          placeholderTextColor={colors.themeColor}
-          secureTextEntry={hidePassword}
-          keyboardType={'default'}
-        />
+              style={styles.textInput}
+              placeholder={strings.passwordPlaceHolder}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              placeholderTextColor={colors.themeColor}
+              secureTextEntry={hidePassword}
+              keyboardType={'default'}
+          />
         <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
           {hidePassword ? (
             <Image source={images.showPassword} style={styles.passwordEyes} />
@@ -272,16 +356,16 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       <TCButton
-        title={strings.loginCapTitle}
-        extraStyle={{ marginTop: hp('3%') }}
-        onPress={() => {
-          if (validate()) {
-            login(email, password);
-          }
-        }}
-      />
+            title={strings.loginCapTitle}
+            extraStyle={{ marginTop: hp('3%') }}
+            onPress={() => {
+              if (validate()) {
+                login(email, password);
+              }
+            }}
+        />
       <TouchableOpacity
-        onPress={() => navigation.navigate('ForgotPasswordScreen')}>
+            onPress={() => navigation.navigate('ForgotPasswordScreen')}>
         <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
       </TouchableOpacity>
       <View style={{ flex: 1 }}/>
