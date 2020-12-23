@@ -9,6 +9,8 @@ import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAccep
 import colors from '../Constants/Colors';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
+import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
+import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFeeScreen';
 
 const Stack = createStackNavigator();
 
@@ -105,6 +107,38 @@ function NotificationNavigator() {
               },
             }}
         />
+      <Stack.Screen
+        name="CurruentRefereeReservationScreen"
+        component={ CurruentRefereeReservationScreen }
+        options={ {
+          title: 'Curruent Referee Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+      <Stack.Screen
+        name="EditRefereeFeeScreen"
+        component={ EditRefereeFeeScreen }
+        options={ {
+          title: 'Referee Fee',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
     </Stack.Navigator>
   );
 }

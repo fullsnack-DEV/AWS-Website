@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   newText: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
-    color: colors.themeColor,
+    color: colors.newTextColor,
     textAlign: 'right',
   },
 });

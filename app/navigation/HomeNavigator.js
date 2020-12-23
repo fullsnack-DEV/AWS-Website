@@ -119,6 +119,7 @@ import CurruentReservationScreen from '../screens/challenge/alterChallenge/Curru
 import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
 import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterRefereeSuccess';
 import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
+import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
 
 import ChangeReservationInfoScreen from '../screens/challenge/alterChallenge/ChangeReservationInfoScreen';
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
@@ -1442,6 +1443,22 @@ const HomeNavigator = () => (
         component={ CurruentReservationScreen }
         options={ {
           title: 'Curruent Match Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CurruentRefereeReservationScreen"
+        component={ CurruentRefereeReservationScreen }
+        options={ {
+          title: 'Curruent Referee Reservation',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

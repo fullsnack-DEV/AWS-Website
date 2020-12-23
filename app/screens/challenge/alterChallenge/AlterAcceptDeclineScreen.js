@@ -611,13 +611,13 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               marginRight: 15,
             }}>
             <ReservationNumber reservationNumber={bodyParams.challenge_id} />
-            <CurruentVersionView
+            {/* <CurruentVersionView
               onPress={() => {
                 navigation.navigate('CurruentReservationScreen', {
                   body: oldVersion,
                 });
               }}
-            />
+            /> */}
           </View>
 
           <View
@@ -1221,8 +1221,8 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <View style={styles.differeceView}>
                 <Text style={styles.differenceTextTitle}>Difference</Text>
                 <Text style={styles.diffenceAmount}>{`${
-                  bodyParams?.total_game_charges
-                  - oldVersion?.total_game_charges
+                  parseFloat(bodyParams?.total_charges
+                    - oldVersion?.total_charges).toFixed(2)
                 } ${bodyParams.currency_type || 'CAD'}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
