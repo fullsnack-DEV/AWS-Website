@@ -15,6 +15,7 @@ import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
+import { useIsFocused } from '@react-navigation/native';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -154,6 +155,7 @@ const history_Data = [{
 
 export default function HomeScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
   const [isUserHome, setIsUserHome] = useState(false)
   const [isClubHome, setIsClubHome] = useState(false)
   const [isTeamHome, setIsTeamHome] = useState(false)
@@ -402,7 +404,8 @@ export default function HomeScreen({ navigation, route }) {
       }, 0.3)
       setloading(false);
     });
-  }, [authContext.entity]);
+    console.log('hi');
+  }, [authContext.entity, navigation, isFocused]);
 
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
@@ -1160,7 +1163,6 @@ export default function HomeScreen({ navigation, route }) {
       navigation.navigate('GroupMembersScreen', { groupID: user_id });
     }
   }
-
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -2011,13 +2013,8 @@ export default function HomeScreen({ navigation, route }) {
                 userName={fullName}
                 feesCount={(selectRefereeData && selectRefereeData.fee) ? selectRefereeData.fee : 0}
                 onBookRefereePress={() => {
-                  const user = authContext?.entity?.auth?.user;
-                  const body = {
-                    hourly_game_fee: user?.referee_data.filter((item) => item?.sport_name === selectRefereeData?.sport_name)?.[0]?.fee,
-                    currency_type: user?.referee_data.filter((item) => item?.sport_name === selectRefereeData?.sport_name)?.[0]?.currency_type ?? 'CAD',
-                  }
                   setRefereesInModalVisible(false);
-                  navigation.navigate('RefereeBookingDateAndTime', { userData: user, body });
+                  navigation.navigate('RefereeBookingDateAndTime', { userData: currentUserData, showMatches: true, navigationName: 'HomeScreen' });
                 }}
               />
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>

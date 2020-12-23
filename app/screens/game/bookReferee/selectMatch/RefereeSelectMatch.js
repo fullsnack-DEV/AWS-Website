@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
+  Alert,
   FlatList, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -27,10 +28,15 @@ const RefereeSelectMatch = ({ navigation, route }) => {
   const [typingTimeout, setTypingTimeout] = useState(0);
   useEffect(() => {
     setLoading(true);
+    const headers = {}
+    if (authContext?.entity?.role === 'user') {
+      headers.caller_id = authContext?.entity?.uid
+    }
     getGameSlots(
       'referees',
       userData?.user_id,
       `status=accepted&sport=${gameData?.sport}&refereeDetail=true`,
+      headers,
       authContext,
     )
       .then((res) => {
@@ -79,8 +85,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
         />
 
           {/*  Match List Container */}
-          {!loading && (
-            <FlatList
+          <FlatList
             keyExtractor={(item) => item?.user_id}
             bounces={false}
               data={searchText === '' ? matchData : searchData}
@@ -88,7 +93,32 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                 <GameCard
                     data={item}
                     onPress={() => {
-                      navigation.navigation('RefereeBookingDataAndTime', { gameData: item })
+                      const game = item;
+                      let isSameReferee = false;
+                      const sameRefereeCount = game?.referees?.filter((gameReferee) => gameReferee?.user_id === userData?.user_id);
+                      if (sameRefereeCount?.length > 0) isSameReferee = true;
+                      const isCheif = userData?.chief_referee;
+                      const cheifCnt = game?.referees?.filter((chal_ref) => chal_ref?.chief_referee)?.length;
+                      const assistantCnt = game?.referees?.filter((chal_ref) => !chal_ref?.chief_referee)?.length;
+                      let message = '';
+                      if (isSameReferee) {
+                        message = 'This referee is already booked for this game.';
+                      } else if (!game.isAvailable) {
+                        message = 'There is no available slot of a referee who you can book in this game.';
+                      } else if ((game?.referees?.count ?? 0) >= 3) {
+                        message = 'There is no available slot of a referee who you can book in this game.';
+                      } else if (isCheif && cheifCnt >= 1) {
+                        message = 'There is no available slot of a chief referee who you can book in this game.';
+                      } else if (!isCheif && assistantCnt >= 2) {
+                        message = 'There is no available slot of an assistant referee who you can book in this game.';
+                      }
+                      if (message === '') {
+                        navigation.navigate('RefereeBookingDateAndTime', {
+                          gameData: item,
+                        });
+                      } else {
+                        setTimeout(() => Alert.alert('Towns Cup', message));
+                      }
                     }}
                 />
               )}
@@ -96,8 +126,6 @@ const RefereeSelectMatch = ({ navigation, route }) => {
               {searchText === '' ? 'No match found' : `No match found for '${searchText}'`}
             </Text>}
           />
-          )}
-
         </View>
       )}
     </View>

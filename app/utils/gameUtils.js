@@ -132,6 +132,8 @@ const getGameFromToDateDiff = (fromDate, thenDate) => {
     date = `${diff.minutes()}m`
   } else if (diff.days() === 0 && diff.hours() !== 0 && diff.minutes() !== 0) {
     date = `${diff.hours()}h ${diff.minutes()}m`
+  } else if (diff.days() === 0 && diff.hours() !== 0 && diff.minutes() === 0) {
+    date = `${diff.hours()}h`
   } else if (diff.days() !== 0 && diff.hours() === 0 && diff.minutes() === 0) {
     date = `${diff.days()}d`
   } else {

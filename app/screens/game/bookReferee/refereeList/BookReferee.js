@@ -19,6 +19,7 @@ import { getGameUser } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
+import TCStep from '../../../../components/TCStep';
 
 const TYPING_SPEED = 200;
 const BookReferee = ({ navigation, route }) => {
@@ -89,9 +90,9 @@ const BookReferee = ({ navigation, route }) => {
       />
       <View style={styles.headerBottomBorder} />
 
+      <TCStep totalStep={2} currentStep={1}/>
       {/* Loader */}
       <TCInnerLoader visible={loading} />
-
       {/* Content */}
       {!loading && (
         <View style={styles.contentContainer}>
@@ -132,15 +133,6 @@ const BookReferee = ({ navigation, route }) => {
               <TCGradientButton
                 title={'NEXT'}
                 onPress={() => {
-                  const body = {
-                    hourly_game_fee: selectedReferee?.referee_data.filter(
-                      (item) => item?.sport_name === gameData?.sport,
-                    )?.[0]?.fee ?? 0,
-                    currency_type:
-                      selectedReferee?.referee_data.filter(
-                        (item) => item?.sport_name === gameData?.sport,
-                      )?.[0]?.currency_type ?? 'CAD',
-                  };
                   if (gameData?.referees) {
                     if (
                       gameData?.referees?.length
@@ -149,7 +141,6 @@ const BookReferee = ({ navigation, route }) => {
                       navigation.navigate('RefereeBookingDateAndTime', {
                         userData: selectedReferee,
                         gameData,
-                        body,
                       });
                     } else {
                       Alert.alert(
@@ -161,7 +152,6 @@ const BookReferee = ({ navigation, route }) => {
                     navigation.navigate('RefereeBookingDateAndTime', {
                       userData: selectedReferee,
                       gameData,
-                      body,
                     });
                   } else {
                     Alert.alert(

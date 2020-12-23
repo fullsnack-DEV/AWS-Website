@@ -20,7 +20,7 @@ const prepareHeader = (headers, authToken, caller_id, caller) => {
     apiHeaders = { ...apiHeaders, caller };
   }
 
-  apiHeaders = { ...apiHeaders, headers };
+  apiHeaders = { ...apiHeaders, ...headers };
 
   return apiHeaders;
 };

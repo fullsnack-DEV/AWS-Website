@@ -32,10 +32,15 @@ export default function ClubCreatedScreen({ navigation, route }) {
             {route.params.groupName} has been created.
           </Text>
         </Text>
-        <TouchableOpacity style={ styles.goToProfileButton }>
+        <TouchableOpacity style={ styles.goToProfileButton } onPress={() => {
+          navigation.push('HomeScreen', {
+            uid: route.params.group_id,
+            role: route.params.entity_type,
+          });
+        }}>
           <Text style={ styles.goToProfileTitle }>{strings.goToClubText}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={ styles.inviteUserButton }>
+        <TouchableOpacity style={ styles.inviteUserButton } onPress={() => {}}>
           <Text style={ styles.goToProfileTitle }>{strings.inviteUserText}</Text>
         </TouchableOpacity>
       </View>
