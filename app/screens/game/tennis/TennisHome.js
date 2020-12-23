@@ -55,7 +55,10 @@ const TennisHome = ({ navigation, route }) => {
         const entity = authContext.entity
         setUserRole(entity?.role);
         setUserId(entity?.uid);
-        const checkIsAdmin = [res?.payload?.home_team?.user_id, res?.payload?.away_team?.user_id].includes(entity?.uid);
+        const homeTeamId = res?.payload?.singlePlayerGame ? res?.payload?.home_team?.user_id : res?.payload?.home_team?.group_id;
+        const awayTeamId = res?.payload?.singlePlayerGame ? res?.payload?.away_team?.user_id : res?.payload?.away_team?.group_id;
+        const teamIds = [homeTeamId, awayTeamId]
+        const checkIsAdmin = teamIds.includes(entity?.uid);
         setIsAdmin(checkIsAdmin)
         setGameData(res.payload);
         console.log('GET GAME DETAIL::', res.payload);

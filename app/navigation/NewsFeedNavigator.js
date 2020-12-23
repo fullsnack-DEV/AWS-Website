@@ -13,6 +13,11 @@ import HomeScreen from '../screens/home/HomeScreen';
 
 import colors from '../Constants/Colors'
 import EntitySearchScreen from '../screens/EntitySearchScreen';
+import UserConnections from '../screens/account/connections/UserConnections';
+import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
+import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
+import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
+import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
 
 const Stack = createStackNavigator();
 
@@ -163,6 +168,59 @@ const NewsFeedNavigator = () => (
             borderBottomWidth: 0.3,
           },
         } }
+      />
+    <Stack.Screen
+          name="UserConnections"
+          component={ UserConnections }
+          options={ {
+            title: 'Connections',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
+    <Stack.Screen
+          name="RefereeBookingDateAndTime"
+          component={RefereeBookingDateAndTime}
+          options={{
+            headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="RefereeSelectMatch"
+          component={RefereeSelectMatch}
+          options={{
+            headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="BookRefereeSuccess"
+          component={ BookRefereeSuccess }
+          options={ {
+            headerShown: false,
+          } }
+      />
+    <Stack.Screen
+          name="PaymentMethodsScreen"
+          component={ PaymentMethodsScreen }
+          options={ {
+            title: 'Payment Methods',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
       />
 
   </Stack.Navigator>

@@ -42,23 +42,36 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const userData = route?.params?.userData;
-  const [gameData, setGameData] = useState(route?.params?.gameData);
+  const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
   const [challengeObject, setChallengeObject] = useState(null);
   const authContext = useContext(AuthContext);
+  const [hourly_game_fee, setHourlyGameFee] = useState(0);
+  const [currency_type, setCurrencyType] = useState('CAD');
   const [loading, setLoading] = useState(false);
-
+  useEffect(() => navigation.setParams({ gameData: null }), []);
   useEffect(() => {
-    setGameData(route?.params?.gameData);
-    if (route.params?.gameData) getFeeDetail();
-  }, [route?.params?.gameData])
+    if (route?.params?.gameData) {
+      const gData = JSON.parse(JSON.stringify(route?.params?.gameData));
+      gData.start_datetime = Number(gData.start_datetime) * 1000;
+      gData.end_datetime = Number(gData.end_datetime) * 1000;
+      setGameData(gData);
+    }
+  }, [route?.params?.gameData, hourly_game_fee, currency_type]);
+  useEffect(() => {
+    getFeeDetail();
+  }, [route?.params?.gameData, hourly_game_fee, currency_type])
   const getFeeDetail = () => {
+    const hFee = userData?.referee_data.filter((item) => item?.sport_name === gameData?.sport)?.[0]?.fee;
+    const cType = userData?.referee_data.filter((item) => item?.sport_name === gameData?.sport)?.[0]?.currency_type ?? 'CAD';
+    setHourlyGameFee(hFee);
+    setCurrencyType(cType);
     setLoading(true);
     body = {
       sport: gameData?.sport,
       manual_fee: false,
-      start_datetime: gameData?.start_datetime,
-      end_datetime: gameData?.end_datetime,
+      start_datetime: gameData?.start_datetime / 1000,
+      end_datetime: gameData?.end_datetime / 1000,
     };
     getRefereeGameFeeEstimation(userData?.user_id, body, authContext).then((response) => {
       body.total_payout = response?.payload?.total_payout ?? 0;
@@ -67,16 +80,12 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
       body.total_charges = response?.payload?.total_amount ?? 0;
       body.total_game_charges = response?.payload?.total_game_fee ?? 0;
       body.payment_method_type = 'card';
-      body = { ...body, ...route.params?.body };
-
-      console.log('Route data:', route.params?.body);
-      console.log('body data:', body);
+      body = { ...body, hourly_game_fee: hFee, currency_type: cType };
       setChallengeObject(body);
       setLoading(false);
     })
-      .catch((error) => {
+      .catch(() => {
         setLoading(false);
-        Alert.alert(error.messages);
       });
   };
 
@@ -92,9 +101,9 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   }}/>
 
   const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData * 1000).format('hh:mm a');
-    const endDate = moment(toDate * 1000).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData, toDate);
+    const startDate = moment(fromData).format('hh:mm a');
+    const endDate = moment(toDate).format('hh:mm a');
+    const duration = getGameFromToDateDiff(fromData / 1000, toDate / 1000);
     return `${startDate} - ${endDate} (${duration})`
   }
 
@@ -129,14 +138,13 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     delete bodyParams.hourly_game_fee
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext).then(() => {
-      const navigationName = `${gameData?.sport}Home`;
+      const navigationName = route?.params?.navigationName ?? `${gameData?.sport}Home`;
       navigation.navigate('BookRefereeSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
       setTimeout(() => Alert.alert('Towns Cup', error?.message), 200)
     }).finally(() => setLoading(false));
     return true;
   }
-
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
@@ -154,7 +162,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
         <SafeAreaView>
           {/*  Steps */}
-          <TCStep totalStep={3} currentStep={2} style={{
+          <TCStep totalStep={2} currentStep={2} style={{
             margin: 0, padding: 0, paddingTop: 15, paddingRight: 15,
           }}/>
           <ActivityLoader visible={loading} />
@@ -177,9 +185,11 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Title text={'Choose a Match'} required={true} />
                 <TouchableOpacity onPress={() => {
-                  navigation.navigate('RefereeSelectMatch', { userData });
+                  navigation.navigate('RefereeSelectMatch', {
+                    userData,
+                  });
                 }}>
-                  {!gameData && (
+                  {route?.params?.showMatches && (
                     <FastImage
                               source={images.arrowGraterthan}
                               style={{ width: 12, height: 12 }}
@@ -197,7 +207,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                   <Title text={'Date & Time'} />
                   <TCInfoField
                             title={'Date'}
-                            value={gameData?.timestamp && moment(gameData?.timestamp * 1000).format('MMM DD, YYYY')}
+                            value={gameData?.start_datetime && moment(gameData?.start_datetime).format('MMM DD, YYYY')}
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
                   <Seperator height={2}/>
@@ -278,7 +288,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
             <Seperator/>
 
             {/* Payment Method */}
-            {Number(route?.params?.body?.hourly_game_fee) > 0 && (
+            {Number(hourly_game_fee) > 0 && (
               <View style={styles.contentContainer}>
                 <Title text={'Payment Method'} />
                 <View style={{ marginTop: 10 }}>

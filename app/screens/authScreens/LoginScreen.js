@@ -120,7 +120,7 @@ export default function LoginScreen({ navigation }) {
         auth().onAuthStateChanged(onAuthStateChanged);
       })
       .catch((error) => {
-        let message = '';
+        let message = error.message;
         setloading(false);
         if (error.code === 'auth/user-not-found') {
           message = 'This email address is not registerd';
@@ -130,6 +130,12 @@ export default function LoginScreen({ navigation }) {
         }
         if (error.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
+        }
+        if (error.code === 'auth/wrong-password') {
+          message = 'The password is invalid or the user does not have a password.';
+        }
+        if (error.code === 'auth/too-many-requests') {
+          message = 'Too many request for login ,try after sometime';
         }
         setTimeout(() => Alert.alert('Towns Cup', message), 1)
       });
@@ -278,7 +284,7 @@ export default function LoginScreen({ navigation }) {
                     QBInitialLogin(entity, response?.payload);
                   } else {
                     setloading(false);
-                    Alert.alert(response.messages);
+                    setTimeout(() => Alert.alert(response.messages), 100)
                   }
                 });
               });

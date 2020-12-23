@@ -138,9 +138,10 @@ const getRefereeReviewData = async (userID, params, authContext) => makeAPIReque
   authContext,
 })
 
-const getGameSlots = async (entity_type, entity_id, queryString, authContext) => makeAPIRequest({
+const getGameSlots = async (entity_type, entity_id, queryString, headers, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/${entity_type}/${entity_id}/slots/games?${queryString}`,
+  headers,
   authContext,
 });
 

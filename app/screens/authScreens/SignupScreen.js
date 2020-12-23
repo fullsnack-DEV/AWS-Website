@@ -95,7 +95,7 @@ export default function SignupScreen({ navigation }) {
     return false;
   };
 
-  const saveUserDetails = (user) => {
+  const saveUserDetails = async (user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {
@@ -165,12 +165,11 @@ export default function SignupScreen({ navigation }) {
               password,
             });
           });
-      });
+      }).catch(() => setloading(false));
     }
   };
 
   const signUpWithNewEmail = (emailAddress, passwordInput) => {
-    setloading(true)
     auth()
       .createUserWithEmailAndPassword(emailAddress, passwordInput)
       .then(async () => {
@@ -193,14 +192,19 @@ export default function SignupScreen({ navigation }) {
         if (e.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
         }
+        if (e.code === 'auth/too-many-requests') {
+          message = 'Too many request for signup ,try after sometime';
+        }
         setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };
   const checkLoginForTownsCup = () => {
-    Alert.alert('This email address is already registerd')
+    setloading(false);
+    setTimeout(() => Alert.alert('This email address is already registerd'), 100);
   }
 
   const signupUser = (fname, lname, emailAddress, passwordInput) => {
+    setloading(true);
     auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
       if (isAccountThereInFirebase?.length > 0) {
         checkLoginForTownsCup(emailAddress, passwordInput);
@@ -208,6 +212,7 @@ export default function SignupScreen({ navigation }) {
         signUpWithNewEmail(emailAddress, passwordInput);
       }
     }).catch((error) => {
+      setloading(false);
       console.log(error);
     })
   }

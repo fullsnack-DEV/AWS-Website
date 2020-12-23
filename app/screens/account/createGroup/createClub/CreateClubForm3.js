@@ -70,6 +70,8 @@ export default function CreateClubForm3({ navigation, route }) {
       setloading(false)
       navigation.navigate('ClubCreatedScreen', {
         groupName: response.payload.group_name,
+        group_id: response.payload.group_id,
+        entity_type: response.payload.entity_type,
       }).catch((e) => {
         setTimeout(() => {
           setloading(false)

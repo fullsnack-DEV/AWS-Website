@@ -578,8 +578,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       value={
                         bodyParams?.start_datetime && bodyParams?.end_datetime
                           ? getDateDuration(
-                              bodyParams?.start_datetime,
-                              bodyParams?.end_datetime,
+                            bodyParams?.start_datetime,
+                            bodyParams?.end_datetime,
                           )
                           : ''
                       }

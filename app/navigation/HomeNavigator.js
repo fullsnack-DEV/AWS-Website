@@ -400,16 +400,6 @@ const HomeNavigator = () => (
           component={ LeaveReview }
           options={ {
             headerShown: false,
-            // title: 'Leave a game review',
-            // headerTintColor: colors.blackColor,
-            // headerTitleStyle: {
-            //   fontWeight: '500',
-            // },
-            // headerStyle: {
-            //   backgroundColor: colors.whiteColor,
-            //   borderBottomColor: colors.grayColor,
-            //   borderBottomWidth: 0.3,
-            // },
           }}
       />
     <Stack.Screen
