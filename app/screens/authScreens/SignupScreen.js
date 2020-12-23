@@ -1,6 +1,4 @@
-import React, {
-  useContext, useEffect, useRef, useState,
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -19,7 +17,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
 import { uploadImageOnPreSignedUrls } from '../../utils/imageAction';
-import { getUserDetails } from '../../api/Users';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 
@@ -48,41 +45,11 @@ export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
   const [fName, setFName] = useState('');
   const [lName, setLName] = useState('');
-  const emailRef = useRef('');
-  const passwordRef = useRef('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   const [profilePic, setProfilePic] = useState(null);
-  function onFirebaseAuthStateChanged(user) {
-    console.log('CALL FROM SignUp Screen - Sign Up')
-    if (user) {
-      user.sendEmailVerification();
-      saveData(user);
-    }
-  }
-  const saveData = (user) => {
-    saveUserDetails(user).then(() => {
-      getUserDetails(user.uid, authContext)
-        .then(() => {
-          setloading(false);
-          Alert.alert('This user is already registered!');
-          navigation.navigate('LoginScreen');
-        })
-        .catch(() => {
-          setloading(false);
-          navigation.navigate('EmailVerificationScreen', {
-            emailAddress: emailRef.current,
-            password: passwordRef.current,
-          });
-        });
-    });
-  }
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onFirebaseAuthStateChanged)
-    return subscriber;
-  }, []);
   // For activity indigator
   const [loading, setloading] = useState(false);
   useEffect(() => {
@@ -128,13 +95,19 @@ export default function SignupScreen({ navigation }) {
     return false;
   };
 
-  const saveUserDetails = (user) => new Promise((resolve) => {
+  const saveUserDetails = (user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
         };
+        const userConfig = {
+          method: 'get',
+          url: `${Config.BASE_URL}/users/${user?.uid}`,
+          headers: { Authorization: `Bearer ${token?.token}` },
+        }
+
         const userDetail = {
           first_name: fName,
           last_name: lName,
@@ -180,30 +153,49 @@ export default function SignupScreen({ navigation }) {
           await Utility.setStorage('userInfo', userDetail);
           await Utility.setStorage('loggedInEntity', entity);
         }
+        apiCall(userConfig).then(async () => {
+          setloading(false);
+          Alert.alert('This user is already registered!');
+          navigation.navigate('LoginScreen');
+        })
+          .catch(() => {
+            setloading(false);
+            navigation.navigate('EmailVerificationScreen', {
+              emailAddress: email,
+              password,
+            });
+          });
       });
-      setTimeout(() => resolve(user), 2000);
     }
-  })
+  };
 
   const signUpWithNewEmail = (emailAddress, passwordInput) => {
+    setloading(true)
     auth()
       .createUserWithEmailAndPassword(emailAddress, passwordInput)
+      .then(async () => {
+        auth().onAuthStateChanged((user) => {
+          if (user) {
+            user.sendEmailVerification();
+            saveUserDetails(user);
+          }
+        });
+      })
       .catch((e) => {
         setloading(false);
         let message = '';
         if (e.code === 'auth/user-not-found') {
           message = 'This email address is not registerd';
-        } else if (e.code === 'auth/email-already-in-use') {
+        }
+        if (e.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
-        } else if (e.code === 'auth/invalid-email') {
+        }
+        if (e.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
-        } else {
-          message = e.message;
         }
         setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
-  }
-
+  };
   const checkLoginForTownsCup = () => {
     Alert.alert('This email address is already registerd')
   }
@@ -224,14 +216,6 @@ export default function SignupScreen({ navigation }) {
   };
   return (
     <View style={styles.mainContainer}>
-      <TouchableOpacity style={{
-        zIndex: 100,
-        position: 'absolute',
-        top: hp(5),
-        left: 15,
-      }} onPress={() => navigation.replace('WelcomeScreen')}>
-        <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
-      </TouchableOpacity>
       <ActivityLoader visible={loading} />
       {/* <Loader visible={true} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
@@ -240,24 +224,24 @@ export default function SignupScreen({ navigation }) {
         <TCKeyboardView>
           <View style={{ marginVertical: 20 }}>
             <FastImage
-              source={profilePic?.path ? { uri: profilePic?.path } : images.profilePlaceHolder}
-              style={styles.profile}
-          />
-            <TouchableOpacity
-                style={styles.profileCameraButtonStyle}
-                onPress={() => {
-                  ImagePicker.openPicker({
-                    width: 300,
-                    height: 400,
-                    cropping: true,
-                  }).then((pickImages) => {
-                    setProfilePic(pickImages);
-                  });
-                }}>
-              <FastImage
-                  source={images.certificateUpload}
-                  style={styles.cameraIcon}
+                  source={profilePic?.path ? { uri: profilePic?.path } : images.profilePlaceHolder}
+                  style={styles.profile}
               />
+            <TouchableOpacity
+                  style={styles.profileCameraButtonStyle}
+                  onPress={() => {
+                    ImagePicker.openPicker({
+                      width: 300,
+                      height: 400,
+                      cropping: true,
+                    }).then((pickImages) => {
+                      setProfilePic(pickImages);
+                    });
+                  }}>
+              <FastImage
+                    source={images.certificateUpload}
+                    style={styles.cameraIcon}
+                />
             </TouchableOpacity>
           </View>
           <TCTextField
@@ -277,20 +261,14 @@ export default function SignupScreen({ navigation }) {
                 placeholder={strings.emailPlaceHolder}
                 autoCapitalize="none"
                 keyboardType="email-address"
-                onChangeText={(text) => {
-                  emailRef.current = text
-                  setEmail(text)
-                }}
+                onChangeText={(text) => setEmail(text)}
                 value={email}
             />
           <View style={styles.passwordView}>
             <TextInput
                   style={{ ...styles.textInput, zIndex: 100 }}
                   placeholder={strings.passwordText}
-                  onChangeText={(text) => {
-                    setPassword(text)
-                    passwordRef.current = text;
-                  }}
+                  onChangeText={(text) => setPassword(text)}
                   value={password}
                   placeholderTextColor={colors.userPostTimeColor}
                   secureTextEntry={hidePassword}
