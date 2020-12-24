@@ -120,8 +120,12 @@ export default function SinglePostVideoView({
       <View style={{ flex: 1 }}>
         <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           <Image
-            source={images.landscapeTopImage}
-            resizeMode={'stretch'}
+            source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
+            resizeMode={'cover'}
+            style={{
+              height: isLandScape ? landscapeImgDimention.height : portraitImgDimention.height,
+              width: isLandScape ? landscapeImgDimention.width : portraitImgDimention.width,
+            }}
           />
           <Video
             paused={!play}

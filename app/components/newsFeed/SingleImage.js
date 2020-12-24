@@ -18,6 +18,8 @@ function SingleImage({
   item,
   caller_id,
   navigation,
+  onImageProfilePress,
+  onLikePress,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -74,6 +76,11 @@ function SingleImage({
           backBtnPress={() => setModalVisible(false)}
           caller_id={caller_id}
           navigation={navigation}
+          onImageProfilePress={() => {
+            setModalVisible(false)
+            onImageProfilePress()
+          }}
+          onLikePress={onLikePress}
         />
       </Modal>
       <TouchableWithoutFeedback onPress={() => {
