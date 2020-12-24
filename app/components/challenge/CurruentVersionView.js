@@ -11,7 +11,7 @@ import colors from '../../Constants/Colors';
 export default function CurruentVersionView({ onPress }) {
   return (
     <TouchableOpacity onPress={onPress} >
-      <Text style={styles.fieldValue} numberOfLines={3} >Current reservation {'>'}</Text>
+      <Text style={styles.fieldValue} >Current reservation {'>'}</Text>
     </TouchableOpacity>
   );
 }

@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
-import { getChallenge, acceptDeclineChallenge } from '../../api/Challenge';
+import { acceptDeclineChallenge } from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
@@ -39,10 +39,19 @@ export default function CreateChallengeForm4({ navigation, route }) {
   useEffect(() => {
     entity = authContext.entity;
     const { challengeObj } = route.params ?? {};
-    console.log('ALTER CHALLENGE OBJECT:', challengeObj);
-    getChallengeDetail(challengeObj.challenge_id);
-
     setbodyParams(challengeObj);
+    console.log('ALTER CHALLENGE OBJECT:', challengeObj);
+    // getChallengeDetail(challengeObj.challenge_id);
+    if (challengeObj.away_team.group_id === entity.uid) {
+      setHomeTeam(challengeObj.away_team);
+      setAwayTeam(challengeObj.home_team);
+      console.log('HOME::', homeTeam);
+    } else {
+      setHomeTeam(challengeObj.home_team);
+      setAwayTeam(challengeObj.away_team);
+      console.log('HOME::', homeTeam);
+      console.log('AWAY::', awayTeam);
+    }
   }, [isFocused]);
 
   const acceptDeclineChallengeOperation = (
@@ -88,30 +97,30 @@ export default function CreateChallengeForm4({ navigation, route }) {
         }, 0.7);
       });
   };
-  const getChallengeDetail = (challengeID) => {
-    getChallenge(challengeID, authContext)
-      .then((response) => {
-        setbodyParams(response.payload[0]);
-        console.log(JSON.stringify(response.payload));
-        setloading(false);
-        if (response.payload[0].away_team.group_id === entity.uid) {
-          setHomeTeam(response.payload[0].away_team);
-          setAwayTeam(response.payload[0].home_team);
-          console.log('HOME::', homeTeam);
-        } else {
-          setHomeTeam(response.payload[0].home_team);
-          setAwayTeam(response.payload[0].away_team);
-          console.log('HOME::', homeTeam);
-          console.log('AWAY::', awayTeam);
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
-      });
-  };
+  // const getChallengeDetail = (challengeID) => {
+  //   getChallenge(challengeID, authContext)
+  //     .then((response) => {
+  //       setbodyParams(response.payload[0]);
+  //       console.log(JSON.stringify(response.payload));
+  //       setloading(false);
+  //       if (response.payload[0].away_team.group_id === entity.uid) {
+  //         setHomeTeam(response.payload[0].away_team);
+  //         setAwayTeam(response.payload[0].home_team);
+  //         console.log('HOME::', homeTeam);
+  //       } else {
+  //         setHomeTeam(response.payload[0].home_team);
+  //         setAwayTeam(response.payload[0].away_team);
+  //         console.log('HOME::', homeTeam);
+  //         console.log('AWAY::', awayTeam);
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 0.7);
+  //     });
+  // };
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');

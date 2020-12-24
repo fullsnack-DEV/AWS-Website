@@ -7,6 +7,13 @@ export const getFeesEstimation = async (entityID, params, authContext) => makeAP
   data: params,
   authContext,
 })
+
+export const getRefereeFeesEstimation = async (refereeId, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}referees/reservation/${refereeId}/estimateGameFee`,
+  data: params,
+  authContext,
+})
 export const payAgainAlter = async (challengeID, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}challenges/${challengeID}/alterrequest/payment`,
@@ -65,6 +72,19 @@ export const acceptDeclineReservation = async (reservationID, versionNo, status,
   data: params,
   authContext,
 })
+
+export const acceptDeclineAlterReservation = async (reservationID, versionNo, status, params = {}, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}referees/reservation/${reservationID}/${status}/alterrequest?version=${versionNo}`,
+  data: params,
+  authContext,
+})
+export const cancelAlterReservation = async (reservationID, versionNo, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}referees/reservation/${reservationID}/cancelRequest?version=${versionNo}`,
+  authContext,
+})
+
 export const acceptDeclineAlterChallenge = async (teamId, challengeId, versionNo, status, params = {}, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}teams/${teamId}/challenge/${challengeId}/${status}/alterrequest?version=${versionNo}`,
@@ -78,7 +98,12 @@ export const updateChallenge = async (challengeId, params, authContext) => makeA
   data: params,
   authContext,
 })
-
+export const updateReservation = async (reservationId, params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}referees/reservation/${reservationId}`,
+  data: params,
+  authContext,
+})
 export const getRefereeGameFeeEstimation = async (entityID, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}referees/reservation/${entityID}/estimateGameFee`,

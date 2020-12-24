@@ -27,6 +27,18 @@ export const getChallengeDetail = (challengeID, authContext) => {
         Obj.screenName = 'AcceptDeclineChallengeScreen'
         return Obj
       }
+      if (ReservationStatus.restored === response.payload[0].status) {
+        let tempObj;
+        for (let i = 0; i < response.payload.length; i++) {
+          if (response.payload[i].status === ReservationStatus.accepted) {
+            tempObj = response.payload[i]
+            break;
+          }
+        }
+        Obj.challengeObj = tempObj
+        Obj.screenName = 'AcceptDeclineChallengeScreen'
+        return Obj
+      }
       if (ReservationStatus.declined === response.payload[0].status) {
         if (response.payload[0].change_requested_by) {
           Obj.challengeObj = response.payload

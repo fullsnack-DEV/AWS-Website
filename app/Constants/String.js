@@ -375,7 +375,9 @@ const strings = {
   decline: 'DECLINE',
   accept: 'ACCEPT',
   calcelRequest: 'CANCEL REQUEST',
+  cancelAlterRequest: 'CANCEL ALTERATION REQUEST',
   cancelMatch: 'CANCEL MATCH',
+  cancelreservation: 'CANCEL RESERVATION',
   alterReservation: 'CHANGE RESERVATION',
   sendAlterRequest: 'SEND ALTERATION REQUEST',
   cancel: 'Cancel',
@@ -463,5 +465,6 @@ const strings = {
   selectPaymentText: 'Please select payment method.',
   cannotAcceptText: 'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
+  selectCardText: 'Please select payment method.',
 };
 export default strings;

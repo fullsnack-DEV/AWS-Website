@@ -6,6 +6,7 @@ const colors = {
   kHexColorFF8A01: '#FF8A01',
   kHexColor35B9A8: '#35B9A8',
   themeColor: '#FF8A01',
+  newTextColor: '#FF4E00',
   orangeColor: '#ff7f25',
   toggleOnColor: '#31cd44',
   blockZoneText: '#707070',
