@@ -124,7 +124,7 @@ export default function LoginScreen({ navigation }) {
         setloading(false);
         let message = error.message;
         if (error.code === 'auth/user-not-found') {
-          message = 'This email address is not registerd';
+          message = 'Your email or password is incorrect.Please try again';
         }
         if (error.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
@@ -230,7 +230,7 @@ export default function LoginScreen({ navigation }) {
       .catch((error) => {
         let message = '';
         if (error.code === 'auth/user-not-found') {
-          message = 'This email address is not registerd';
+          message = 'Your email or password is incorrect.Please try again';
         }
         if (error.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
@@ -289,7 +289,7 @@ export default function LoginScreen({ navigation }) {
           setloading(false);
           let message = ''
           if (error.code === 'auth/user-not-found') {
-            message = 'This email address is not registerd';
+            message = 'Your email or password is incorrect.Please try again';
           }
           if (error.code === 'auth/email-already-in-use') {
             message = 'That email address is already in use!';
@@ -304,10 +304,8 @@ export default function LoginScreen({ navigation }) {
       setloading(false)
       if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         message = 'Play services are not available'
-      } else {
-        message = `Something else went wrong... ${error.toString()}`;
       }
-      setTimeout(() => Alert.alert('Towns cup', message), 100)
+      if (message !== '') setTimeout(() => Alert.alert('Towns cup', message), 100)
     }
   }
 

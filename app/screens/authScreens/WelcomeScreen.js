@@ -238,10 +238,8 @@ export default function WelcomeScreen({ navigation }) {
       setloading(false)
       if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         message = 'Play services are not available'
-      } else {
-        message = `Something else went wrong... ${error.toString()}`;
       }
-      setTimeout(() => Alert.alert('Towns cup', message), 100)
+      if (message !== '') setTimeout(() => Alert.alert('Towns cup', message), 100)
     }
   }
   return (

@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
   },
   followingBtn: {
     alignItems: 'center',
+    height: 25,
     backgroundColor: colors.whiteColor,
     borderColor: colors.whiteColor,
     borderRadius: 5,
