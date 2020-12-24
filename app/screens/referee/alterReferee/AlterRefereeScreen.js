@@ -463,7 +463,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
       }
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
-        if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && entity.obj.entity_type === 'team') {
+        if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && entity?.obj?.entity_type === 'team') {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
@@ -506,7 +506,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
       }
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
-        if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && entity.obj.entity_type === 'team') {
+        if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && entity?.obj?.entity_type === 'team') {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
@@ -773,7 +773,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
           {/* Status declined */}
           {/* status change requested */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.changeRequest && (
+            && bodyParams.status === RefereeReservationStatus.changeRequest && !bodyParams.automatic_request && (
               <View>
                 <Text style={[styles.challengeMessage, { color: colors.requestSentColor }]}>
                   ALTERATION REQUEST SENT
@@ -784,7 +784,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.changeRequest && (
+            && bodyParams.status === RefereeReservationStatus.changeRequest && !bodyParams.automatic_request && (
               <View>
                 <Text style={styles.challengeMessage}>
                   ALTERATION REQUEST PENDING
@@ -801,6 +801,33 @@ export default function AlterRefereeScreen({ navigation, route }) {
               </View>
           )}
           {/* status change requested */}
+          {/* status change requested automatic */}
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === RefereeReservationStatus.changeRequest && bodyParams.automatic_request && (
+              <View>
+                <Text style={[styles.challengeMessage, { color: colors.requestSentColor }]}>
+                  ALTERATION REQUEST SENT
+                </Text>
+                <Text style={styles.challengeText}>
+                  {`An alteration request was sent to ${getEntityName(bodyParams)} because the game had been rescheduled.`}
+                </Text>
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === RefereeReservationStatus.changeRequest && bodyParams.automatic_request && (
+              <View>
+                <Text style={styles.challengeMessage}>
+                  ALTERATION REQUEST PENDING
+                </Text>
+                <Text style={styles.challengeText}>
+                  {'You received a referee reservation alteration request because the game had been rescheduled.'}
+                  <Text style={{ color: colors.userPostTimeColor }}>
+                    {`\n\nIf you decline this alteration request, the reservation will be canceled by ${getEntityName(bodyParams)} and you will be paid according to the cancellation policy.`}
+                  </Text>
+                </Text>
+              </View>
+          )}
+          {/* status change requested automatic */}
 
           {/* status pending request payment */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
@@ -1082,7 +1109,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 <Text style={styles.diffenceAmount}>{`$${
                   parseFloat(bodyParams?.total_game_charges
                   - oldVersion?.total_game_charges).toFixed(2)
-                } ${bodyParams.currency_type || 'CAD'}`}</Text>
+                } ${(bodyParams.currency_type).toUpperCase() || 'CAD'}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
             </View>

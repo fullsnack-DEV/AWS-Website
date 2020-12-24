@@ -1,14 +1,70 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
-
 import LinearGradient from 'react-native-linear-gradient';
+import AuthContext from '../../auth/context';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+// import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
+import ReservationStatus from '../../Constants/ReservationStatus';
 
+let entity = {};
 export default function ReservationStatusView({ data }) {
+  const authContext = useContext(AuthContext);
+  useEffect(() => {
+    entity = authContext.entity;
+  }, [])
+  const getReservationStatus = () => {
+    if (data.responsible_to_secure_venue) {
+      if (data.status === ReservationStatus.offered) {
+        if ((data.offer_expiry < new Date().getTime() / 1000) || (data.start_datetime < new Date().getTime() / 1000)) {
+          return { status: 'RESPONSE PERIOD EXPIRED', color: colors.userPostTimeColor }
+        }
+        if (data.invited_by === entity.uid) {
+          return { status: 'RESERVATION REQUEST SENT', color: colors.darkOrangColor }
+        }
+        return { status: 'RESERVATION REQUEST PENDING', color: colors.darkOrangColor }
+      }
+      if (data.status === ReservationStatus.accepted) {
+        return { status: 'RESERVATION CONFIRMED', color: colors.requestConfirmColor }
+      }
+      if (data.status === ReservationStatus.declined) {
+        return { status: 'RESERVATION DECLINED', color: colors.googleColor }
+      }
+      if (data.status === ReservationStatus.changeRequest) {
+        if ((data.offer_expiry < new Date().getTime() / 1000) || (data.start_datetime < new Date().getTime() / 1000)) {
+          return { status: 'RESPONSE PERIOD EXPIRED', color: colors.userPostTimeColor }
+        }
+        if (data.userChallenge) {
+          if (data.updated_by.uid === entity.uid) {
+            return { status: 'ALTERATION REQUEST SENT', color: colors.darkOrangColor }
+          }
+          return { status: 'ALTERATION REQUEST PENDING', color: colors.darkOrangColor }
+        }
+
+        if (data.updated_by.group_id === entity.uid) {
+          return { status: 'ALTERATION REQUEST SENT', color: colors.darkOrangColor }
+        }
+        return { status: 'ALTERATION REQUEST PENDING', color: colors.darkOrangColor }
+      }
+      if (data.status === ReservationStatus.cancelled) {
+        return { status: 'RESERVATION CANCELLED', color: colors.userPostTimeColor }
+      }
+      if (data.status === ReservationStatus.restored) {
+        return { status: 'RESERVATION RESTORED', color: colors.darkOrangColor }
+      }
+      if (data.status === ReservationStatus.pendingpayment || data.status === ReservationStatus.pendingrequestpayment) {
+        return { status: 'AWAITING PAYMENT', color: colors.darkOrangColor }
+      }
+    } else if (data.referee) {
+      return { status: 'AWAITING PAYMENT', color: colors.darkOrangColor }
+    } else if (data.scorekeeper) {
+      return { status: 'AWAITING PAYMENT', color: colors.darkOrangColor }
+    }
+    return ''
+  }
   return (
 
     <View style={styles.reservationTitleView}>
@@ -22,8 +78,8 @@ export default function ReservationStatusView({ data }) {
         </LinearGradient>
       </TouchableOpacity>
       <View style={styles.reservationTypeView}>
-        <Text style={[styles.reservationText, { color: '#FF4E00' }]}>
-          RESERVATION REQUEST SENT
+        <Text style={[styles.reservationText, { color: getReservationStatus().color }]}>
+          {getReservationStatus().status}
         </Text>
 
         {data.responsible_to_secure_venue && (

@@ -465,7 +465,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     styles.challengeMessage,
                     { color: colors.requestConfirmColor },
                   ]}>
-                    CONFIRMED
+                    {bodyParams.automatic_request ? 'CONFIRMED - RESCHEDULED' : 'CONFIRMED'}
                   </Text>
                   <Text style={styles.challengeText}>
                     {checkRefereeOrTeam(bodyParams) === 'referee' ? `You have a confirmed referee reservation booked by ${getEntityName(bodyParams)}.` : `Your team has the confirmed referee reservation for ${getEntityName(bodyParams)}.`}
@@ -481,7 +481,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     styles.challengeMessage,
                     { color: colors.requestConfirmColor },
                   ]}>
-                    CONFIRMED
+                    {bodyParams.automatic_request ? 'CONFIRMED - RESCHEDULED' : 'CONFIRMED'}
                   </Text>
                   <Text style={styles.challengeText}>
                     {/* {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has confirmed referee reservation request sent by you.` : `${getEntityName(bodyParams)} has confirmed referee reservation request sent to you.` } */}

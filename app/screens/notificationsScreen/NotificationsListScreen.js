@@ -96,7 +96,7 @@ function NotificationsListScreen({ navigation }) {
         const a = JSON.parse(item.activities[0].object)?.reservationObject
           ?.reservation_id;
         setloading(true);
-        RefereeUtils.getRefereeReservationDetail(a, authContext).then((obj) => {
+        RefereeUtils.getRefereeReservationDetail(a, authContext.entity.uid, authContext).then((obj) => {
           console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
           console.log('Screen name of Reservation:', obj.screenName);
           navigation.navigate(obj.screenName, {
