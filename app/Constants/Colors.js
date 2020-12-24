@@ -82,5 +82,6 @@ const colors = {
   blueGradiantEnd: '#00BAFF',
   requestSentColor: '#FF4E00',
   requestConfirmColor: '#0093FF',
+  darkOrangColor: '#FF4E00',
 };
 export default colors;

@@ -55,9 +55,10 @@ export const getChallenge = async (challengeId, authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}teams/challenge/${challengeId}`,
   authContext,
 })
-export const getReservation = async (reservationId, authContext) => makeAPIRequest({
+export const getReservation = async (reservationId, callerID, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}referees/reservation/${reservationId}`,
+  headers: { caller_id: callerID },
   authContext,
 })
 export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, status, params = {}, authContext) => makeAPIRequest({

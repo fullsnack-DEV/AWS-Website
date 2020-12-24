@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, { useEffect, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image,
@@ -7,57 +8,170 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context'
+import strings from '../../Constants/String';
 
-let uid = '';
+let entity = {};
 export default function ChallengerInOutView({ data }) {
   const authContext = useContext(AuthContext)
   useEffect(() => {
-    uid = authContext.entity
+    entity = authContext.entity
   }, []);
+  const getChallengerOrChallengee = () => {
+    if (data.responsible_to_secure_venue) {
+      if (data.invited_by === entity.uid) {
+        return strings.challengee
+      }
+      return strings.challenger
+    }
+    if (data.referee || data.scorekeeper) {
+      if (data.initiated_by === entity.uid) {
+        return strings.requestee
+      }
+      return strings.requester
+    }
+  }
+  const getEntityObject = () => {
+    if (data.responsible_to_secure_venue) {
+      if (data.invited_by === entity.uid) {
+        if (data.userChallenge) {
+          if (data.invited_by === data.home_team.user_id) {
+            return { name: `${data.away_team.first_name} ${data.away_team.last_name}`, thumbnail: data?.away_team?.thumbnail }
+          }
 
+          return { name: `${data.home_team.first_name} ${data.home_team.last_name}`, thumbnail: data?.home_team?.thumbnail }
+        }
+
+        if (data.invited_by === data?.home_team?.group_id) {
+          return { name: data?.away_team?.group_name, thumbnail: data?.away_team?.thumbnail }
+        }
+
+        return { name: data?.home_team?.group_name, thumbnail: data?.home_team?.thumbnail }
+      }
+
+      if (data.userChallenge) {
+        if (data.invited_by === data.home_team.user_id) {
+          return { name: `${data.home_team.first_name} ${data.home_team.last_name}`, thumbnail: data?.home_team?.thumbnail }
+        }
+
+        return { name: `${data.away_team.first_name} ${data.away_team.last_name}`, thumbnail: data?.away_team?.thumbnail }
+      }
+
+      if (data.invited_by === data?.home_team?.group_id) {
+        return { name: data?.home_team?.group_name, thumbnail: data?.home_team?.thumbnail }
+      }
+
+      return { name: data?.away_team?.group_name, thumbnail: data?.away_team?.thumbnail }
+    }
+    if (data.referee) {
+      if (data.initiated_by === entity.uid) {
+        return { name: `${data.referee.first_name} ${data.referee.last_name}`, thumbnail: data.referee.thumbnail }
+      }
+
+      if (data.game.singlePlayerGame) {
+        if (data.initiated_by === data.game.home_team.user_id) {
+          return { name: `${data.home_team.first_name} ${data.home_team.last_name}`, thumbnail: data?.home_team?.thumbnail }
+        }
+
+        return { name: `${data.away_team.first_name} ${data.away_team.last_name}`, thumbnail: data?.away_team?.thumbnail }
+      }
+
+      if (data.initiated_by === data?.home_team?.group_id) {
+        return { name: data?.home_team?.group_name, thumbnail: data?.home_team?.thumbnail }
+      }
+
+      return { name: data?.away_team?.group_name, thumbnail: data?.away_team?.thumbnail }
+    }
+    if (data.scorekeeper) {
+      if (data.initiated_by === entity.uid) {
+        return { name: `${data.scorekeeper.first_name} ${data.scorekeeper.last_name}`, thumbnail: data.scorekeeper.thumbnail }
+      }
+
+      if (data.game.singlePlayerGame) {
+        if (data.initiated_by === data.game.home_team.user_id) {
+          return { name: `${data.home_team.first_name} ${data.home_team.last_name}`, thumbnail: data?.home_team?.thumbnail }
+        }
+
+        return { name: `${data.away_team.first_name} ${data.away_team.last_name}`, thumbnail: data?.away_team?.thumbnail }
+      }
+
+      if (data.initiated_by === data?.home_team?.group_id) {
+        return { name: data?.home_team?.group_name, thumbnail: data?.home_team?.thumbnail }
+      }
+
+      return { name: data?.away_team?.group_name, thumbnail: data?.away_team?.thumbnail }
+    }
+  }
   return (
     <>
-      {data.responsible_to_secure_venue
-      && data.invited_by === uid
-      && data.invited_to === data.home_team.user_id ? (
+      <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
+        <Image source={(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? images.requestIn : images.requestIn} style={styles.inOutImageView} />
+        <View style={styles.entityView}>
+          {getEntityObject().thumbnail ? (
+            <Image
+                    source={{ uri: getEntityObject().thumbnail }}
+                    style={styles.profileImage}
+                  />
+          ) : (
+            <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+          )}
+          <Text style={styles.entityName}>
+            {`${getEntityObject().name}   ` }
+            <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+              {getChallengerOrChallengee()}
+            </Text>
+          </Text>
+        </View>
+      </View>
+      {/* {(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? (
         <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
           <Image source={images.requestOut} style={styles.inOutImageView} />
           <View style={styles.entityView}>
-            {data.home_team.thumbnail && (
-              <Image
-                source={{ uri: data.home_team.thumbnail }}
-                style={styles.profileImage}
-              />
-            )}
-            {data.home_team && (
+                {getEntityObject().thumbnail ? (
+                  <Image
+                    source={{ uri: getEntityObject().thumbnail }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                )}
               <Text style={styles.entityName}>
-                {data.home_team.full_name}
+                {getEntityObject().name}
                 <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                  {' '}
-                  (challenger){' '}
+                  {getChallengerOrChallengee()}
                 </Text>
               </Text>
-            )}
           </View>
         </View>
         ) : (
           <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
             <Image source={images.requestIn} style={styles.inOutImageView} />
             <View style={styles.entityView}>
-              <Image source={images.teamPlaceholder} style={styles.profileImage} />
-              {/* {data.away_team.thumbnail && <Image source={{uri: data.away_team.thumbnail}} style={styles.profileImage} />} */}
-              {data.away_team && (
+                {getEntityObject().thumbnail ? (
+                  <Image
+                    source={{ uri: getEntityObject().thumbnail }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Image
+                    source={images.teamPlaceholder}
+                    style={styles.profileImage}
+                  />
+                )}
                 <Text style={styles.entityName}>
-                  {data.away_team.full_name}
+                  {getEntityObject().name}
                   <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                    {' '}
-                    (challengee){' '}
+                    {getChallengerOrChallengee()}
                   </Text>
                 </Text>
-              )}
             </View>
           </View>
-        )}
+        )} */}
 
     </>
   );
