@@ -466,5 +466,20 @@ const strings = {
   cannotAcceptText: 'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
   selectCardText: 'Please select payment method.',
+  reservationRequestSent: 'RESERVATION REQUEST SENT',
+  reservationRequestPending: 'RESERVATION REQUEST PENDING',
+  reservationConfirmed: 'RESERVATION CONFIRMED',
+  reservationDeclined: 'RESERVATION DECLINED',
+  alterationRequestSent: 'ALTERATION REQUEST SENT',
+  alterationRequestPending: 'ALTERATION REQUEST PENDING',
+  reservationCancelled: 'RESERVATION CANCELLED',
+  reservationRestored: 'RESERVATION RESTORED',
+  reservationAwaitingPayment: 'AWAITING PAYMENT',
+  alterationRequestCancelled: 'ALTERATION REQUEST CANCELLED',
+  challenger: 'Challenger',
+  challengee: 'Challengee',
+  requester: 'Requester',
+  requestee: 'Requestee',
+
 };
 export default strings;

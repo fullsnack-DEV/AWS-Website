@@ -48,46 +48,41 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const [challengeObject, setChallengeObject] = useState(null);
   const authContext = useContext(AuthContext);
   const [hourly_game_fee, setHourlyGameFee] = useState(0);
-  const [currency_type, setCurrencyType] = useState('CAD');
   const [loading, setLoading] = useState(false);
-  useEffect(() => navigation.setParams({ gameData: null }), [navigation]);
   useEffect(() => {
-    if (route?.params?.gameData) {
-      const gData = JSON.parse(JSON.stringify(route?.params?.gameData));
-      gData.start_datetime = Number(gData.start_datetime) * 1000;
-      gData.end_datetime = Number(gData.end_datetime) * 1000;
-      setGameData(gData);
-    }
-  }, [route?.params?.gameData]);
-  useEffect(() => {
+    setGameData(route?.params?.gameData);
     getFeeDetail();
-  }, [route?.params?.gameData, hourly_game_fee, currency_type])
+  }, [route?.params?.gameData])
   const getFeeDetail = () => {
-    const hFee = userData?.referee_data.filter((item) => item?.sport_name === gameData?.sport)?.[0]?.fee;
-    const cType = userData?.referee_data.filter((item) => item?.sport_name === gameData?.sport)?.[0]?.currency_type ?? 'CAD';
-    setHourlyGameFee(hFee);
-    setCurrencyType(cType);
-    setLoading(true);
-    body = {
-      sport: gameData?.sport,
-      manual_fee: false,
-      start_datetime: gameData?.start_datetime / 1000,
-      end_datetime: gameData?.end_datetime / 1000,
-    };
-    getRefereeGameFeeEstimation(userData?.user_id, body, authContext).then((response) => {
-      body.total_payout = response?.payload?.total_payout ?? 0;
-      body.service_fee1_charges = response?.payload?.total_service_fee1 ?? 0;
-      body.service_fee2_charges = response?.payload?.total_service_fee2 ?? 0;
-      body.total_charges = response?.payload?.total_amount ?? 0;
-      body.total_game_charges = response?.payload?.total_game_fee ?? 0;
-      body.payment_method_type = 'card';
-      body = { ...body, hourly_game_fee: hFee, currency_type: cType };
-      setChallengeObject(body);
-      setLoading(false);
-    })
-      .catch(() => {
+    const gData = route?.params?.gameData;
+    if (gData) {
+      const hFee = userData?.referee_data.filter((item) => item?.sport_name === gData?.sport)?.[0]?.fee ?? 0;
+      const cType = userData?.referee_data.filter((item) => item?.sport_name === gData?.sport)?.[0]?.currency_type ?? 'CAD';
+      setHourlyGameFee(hFee);
+      setLoading(true);
+      body = {
+        sport: gData?.sport,
+        manual_fee: false,
+        start_datetime: gData?.start_datetime,
+        end_datetime: gData?.end_datetime,
+      };
+      getRefereeGameFeeEstimation(userData?.user_id, body, authContext).then((response) => {
+        body.total_payout = response?.payload?.total_payout ?? 0;
+        body.service_fee1_charges = response?.payload?.total_service_fee1 ?? 0;
+        body.service_fee2_charges = response?.payload?.total_service_fee2 ?? 0;
+        body.total_charges = response?.payload?.total_amount ?? 0;
+        body.total_game_charges = response?.payload?.total_game_fee ?? 0;
+        body.payment_method_type = 'card';
+        body = { ...body, hourly_game_fee: hFee, currency_type: cType };
+        setChallengeObject(body);
         setLoading(false);
-      });
+      })
+        .catch(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
   };
 
   const Title = ({ text, required }) => (
@@ -102,9 +97,9 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   }}/>
 
   const getDateDuration = (fromData, toDate) => {
-    const startDate = moment(fromData).format('hh:mm a');
-    const endDate = moment(toDate).format('hh:mm a');
-    const duration = getGameFromToDateDiff(fromData / 1000, toDate / 1000);
+    const startDate = moment(fromData * 1000).format('hh:mm a');
+    const endDate = moment(toDate * 1000).format('hh:mm a');
+    const duration = getGameFromToDateDiff(fromData, toDate);
     return `${startDate} - ${endDate} (${duration})`
   }
 
@@ -211,7 +206,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                   <Title text={'Date & Time'} />
                   <TCInfoField
                             title={'Date'}
-                            value={gameData?.start_datetime && moment(gameData?.start_datetime).format('MMM DD, YYYY')}
+                            value={gameData?.start_datetime && moment(gameData?.start_datetime * 1000).format('MMM DD, YYYY')}
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
                   <Seperator height={2}/>

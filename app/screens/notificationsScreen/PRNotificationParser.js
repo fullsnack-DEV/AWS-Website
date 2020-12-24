@@ -52,13 +52,15 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
     challengeObject = notificationObject.newChallengeObject
   }
 
+  finalString.entityType = 'team'
+
   let team = challengeObject.away_team
 
   if (team.group_id) {
     if (team.group_id === selectedEntity.group_id) {
       team = challengeObject.home_team;
     }
-
+    finalString.entityId = team.group_id
     finalString.firstTitle = team.group_name
     finalString.expiryText = '00:00'
     if (challengeObject.status) {
@@ -83,9 +85,12 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
     finalString.doneByText = strings.doneByText
     finalString.doneByTitle = activity.actor.data.full_name || ''
   } else {
+    finalString.entityType = 'user'
     if (team.user_id === loggedInEntity.auth.user_id) {
       team = challengeObject.home_team;
     }
+
+    finalString.entityId = team.user_id
     finalString.firstTitle = `${team.first_name} ${team.last_name}`
     if (challengeObject.offer_expiry) {
       const expDate = new Date(challengeObject.offer_expiry * 1000)
@@ -104,7 +109,6 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
   }
 
   finalString.text = notificationObject.text
-  finalString.entityType = 'team'
   finalString.imgName = team.thumbnail
 
   if (data && data.created_at) {
@@ -199,15 +203,22 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
 
   let team = challengeObject.away_team
 
+  finalString.entityType = 'team'
+
   if (team.group_id) {
     if (team.group_id === selectedEntity.group_id) {
       team = challengeObject.home_team;
     }
+    finalString.entityId = team.group_id
     finalString.firstTitle = team.group_name
   } else {
+    finalString.entityType = 'user'
     if (team.user_id === loggedInEntity.auth.user_id) {
       team = challengeObject.home_team;
     }
+
+    finalString.entityId = team.user_id
+
     finalString.firstTitle = `${team.first_name} ${team.last_name}`
   }
 

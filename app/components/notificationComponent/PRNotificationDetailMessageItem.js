@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  View, StyleSheet, Text, TouchableOpacity,
+  View, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
 } from 'react-native';
 import fonts from '../../Constants/Fonts';
 import strings from '../../Constants/String'
@@ -10,7 +10,7 @@ import AuthContext from '../../auth/context'
 import { parseRequest } from '../../screens/notificationsScreen/PRNotificationParser';
 
 function PRNotificationDetailMessageItem({
-  item, selectedEntity, onPress, onDetailPress, onMessagePress,
+  item, selectedEntity, onPress, onDetailPress, onMessagePress, onPressFirstEntity,
 }) {
   const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState()
@@ -25,18 +25,24 @@ function PRNotificationDetailMessageItem({
     <View style={{ backgroundColor: colors.whiteColor }}>
       {dataDictionary && <TouchableOpacity onPress={onPress}>
         <View style={styles.viewFirstStyle}>
-          <TCProfileImage
-            entityType={dataDictionary.entityType}
-            source={ { uri: dataDictionary.imgName }}
-            containerStyle={styles.imageContainer}
-            intialChar={dataDictionary.firstTitle?.charAt(0).toUpperCase()}
-            />
+          <TouchableOpacity onPress={() => {
+            onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+          }}>
+            <TCProfileImage
+              entityType={dataDictionary.entityType}
+              source={ { uri: dataDictionary.imgName }}
+              containerStyle={styles.imageContainer}
+              intialChar={dataDictionary.firstTitle?.charAt(0).toUpperCase()}
+              />
+          </TouchableOpacity>
           <View style={styles.textContentStyle}>
             <Text style={styles.textContainerStyle}>
               {dataDictionary.preText && <Text>{`${dataDictionary.preText}`}</Text>}
-              <Text style={styles.boldTextStyle}>
-                {dataDictionary.preText ? `${dataDictionary.firstTitle}` : `${dataDictionary.firstTitle} `}
-              </Text>
+              <TouchableWithoutFeedback onPress={() => {
+                onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+              }}>
+                <Text style={styles.boldTextStyle}>{dataDictionary.preText ? `${dataDictionary.firstTitle}` : `${dataDictionary.firstTitle} `}</Text>
+              </TouchableWithoutFeedback>
               <Text>{`${dataDictionary.text} `}</Text>
               {dataDictionary.doneByText && <Text style={styles.timeStyle}>{dataDictionary.doneByText} </Text>}
               {dataDictionary.doneByTitle && <Text style={styles.smallBoldStyle}>{dataDictionary.doneByTitle} </Text>}
