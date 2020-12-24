@@ -34,8 +34,11 @@ export default function WriteCommentScreen({
   const [commentTxt, setCommentText] = useState('');
   const [commentData, setCommentData] = useState([]);
   const [loading, setloading] = useState(true);
+  const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const authContext = useContext(AuthContext)
   useEffect(() => {
+    const entity = authContext.entity;
+    setCurrentUserDetail(entity.obj || entity.auth.user);
     const params = {
       activity_id: data.id,
       reaction_type: 'comment',
@@ -52,8 +55,8 @@ export default function WriteCommentScreen({
   }, []);
 
   let userImage = '';
-  if (data && data.actor && data.actor.data) {
-    userImage = data.actor.data.thumbnail;
+  if (currentUserDetail && currentUserDetail.thumbnail) {
+    userImage = currentUserDetail.thumbnail;
   }
 
   return (

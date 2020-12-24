@@ -26,7 +26,9 @@ export default function EventInCalender({
   onThreeDotPress,
   eventBetweenSection,
   eventOfSection,
+  entity,
 }) {
+  console.log('Entity :::---::::_--', entity);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -89,6 +91,19 @@ export default function EventInCalender({
       refereeImage = data.game.referees[0].thumbnail;
     }
   }
+
+  // let moreBtnVisible = true;
+  // if (data && data.game) {
+  //   const merchantID = entity.obj.merchant_id;
+  //   if (data.game.away_team.merchant_id === merchantID
+  //     || data.game.home_team.merchant_id === merchantID
+  //     || data.game.referees
+  //   ) {
+  //     moreBtnVisible = true;
+  //   } else {
+  //     moreBtnVisible = false;
+  //   }
+  // }
 
   return (
     <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>

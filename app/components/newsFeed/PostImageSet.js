@@ -22,6 +22,8 @@ function PostImageSet({
   item,
   caller_id,
   navigation,
+  onImageProfilePress,
+  onLikePress,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const uploadImageURL = data && typeof data.thumbnail === 'string'
@@ -59,6 +61,11 @@ function PostImageSet({
           caller_id={caller_id}
           navigation={navigation}
           backBtnPress={() => setModalVisible(false)}
+          onImageProfilePress={() => {
+            setModalVisible(false)
+            onImageProfilePress()
+          }}
+          onLikePress={onLikePress}
         />
       </Modal>
       <TouchableWithoutFeedback onPress={() => {

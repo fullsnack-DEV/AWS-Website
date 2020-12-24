@@ -18,8 +18,8 @@ function ImageProgress({
   postDataItem,
 }) {
   let userImage = '';
-  if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
-    userImage = postDataItem.actor.data.thumbnail;
+  if (postDataItem && postDataItem.thumbnail) {
+    userImage = postDataItem.thumbnail;
   }
   return (
     <View style={ styles.mainContainer }>

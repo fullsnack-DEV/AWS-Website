@@ -135,6 +135,8 @@ function NewsFeedPostItems({
                       data={attachItem}
                       caller_id={caller_id}
                       navigation={navigation}
+                      onImageProfilePress={onImageProfilePress}
+                      onLikePress={onLikePress}
                     />
                   );
                 }
@@ -157,6 +159,8 @@ function NewsFeedPostItems({
                       item={item}
                       caller_id={caller_id}
                       navigation={navigation}
+                      onImageProfilePress={onImageProfilePress}
+                      onLikePress={onLikePress}
                     />
                   );
                 }
@@ -171,6 +175,8 @@ function NewsFeedPostItems({
                       item={item}
                       caller_id={caller_id}
                       navigation={navigation}
+                      onImageProfilePress={onImageProfilePress}
+                      onLikePress={onLikePress}
                     />
                   );
                 }

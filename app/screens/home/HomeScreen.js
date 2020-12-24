@@ -437,6 +437,8 @@ export default function HomeScreen({ navigation, route }) {
           .then((response) => {
             setPostData(response.payload.results)
             setProgressBar(false);
+            setDoneUploadCount(0);
+            setTotalUploadCount(0);
             getGallery(userID, authContext).then((res) => {
               setGalleryData(res.payload);
             });
@@ -1291,9 +1293,9 @@ export default function HomeScreen({ navigation, route }) {
                 {tabKey === 0 && (<View>
                   {isAdmin && <WritePost
                     navigation={navigation}
-                    postDataItem={postData ? postData[0] : {}}
+                    postDataItem={currentUserData}
                     onWritePostPress={() => {
-                      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: [] })
+                      navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: [] })
                     }}
                   />}
                   <View style={styles.sepratorView} />
@@ -1360,6 +1362,7 @@ export default function HomeScreen({ navigation, route }) {
                           })
                         }
                       }}
+                      entity={authContext.entity}
                     />
                   </View>}
 
@@ -1420,11 +1423,12 @@ export default function HomeScreen({ navigation, route }) {
                                   }
                                 }}
                                 eventBetweenSection={itemValue.game}
-                                eventOfSection={itemValue.game && itemValue.game.referees}
+                                eventOfSection={itemValue.game && itemValue.game.referees && itemValue.game.referees.length > 0}
                                 onThreeDotPress={() => {
                                   setSelectedEventItem(itemValue);
                                 }}
                                 data={itemValue}
+                                entity={authContext.entity}
                               />)}
                               ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
@@ -2420,7 +2424,7 @@ export default function HomeScreen({ navigation, route }) {
         onCancelPress={() => {
           console.log('Cancel Pressed!');
         }}
-        postDataItem={postData ? postData[0] : {}}
+        postDataItem={currentUserData}
       />}
     </View>
   );

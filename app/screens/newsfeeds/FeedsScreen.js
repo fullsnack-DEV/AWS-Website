@@ -25,9 +25,12 @@ export default function FeedsScreen({ navigation }) {
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
+  const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
+      const entity = authContext.entity;
+      setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
         .then((response) => {
           setloading(false);
@@ -43,6 +46,17 @@ export default function FeedsScreen({ navigation }) {
       unsubscribe();
     };
   }, [navigation]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const entity = authContext.entity;
+      setCurrentUserDetail(entity.obj || entity.auth.user);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [authContext.entity]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -81,6 +95,8 @@ export default function FeedsScreen({ navigation }) {
           .then((response) => {
             setPostData(response.payload.results)
             setProgressBar(false);
+            setDoneUploadCount(0);
+            setTotalUploadCount(0);
           })
           .catch((e) => {
             Alert.alert('', e.messages)
@@ -98,7 +114,7 @@ export default function FeedsScreen({ navigation }) {
         onCancelPress={() => {
           console.log('Cancel Pressed!');
         }}
-        postDataItem={postData ? postData[0] : {}}
+        postDataItem={currentUserDetail}
       />}
       <NewsFeedList
         navigation={navigation}
@@ -108,15 +124,13 @@ export default function FeedsScreen({ navigation }) {
         ListHeaderComponent={() => <View>
           <WritePost
             navigation={navigation}
-            postDataItem={postData ? postData[0] : {}}
+            postDataItem={currentUserDetail}
             onWritePostPress={() => {
               navigation.navigate('WritePostScreen', {
-                postData: postData ? postData[0] : {},
+                postData: currentUserDetail,
                 onPressDone: callthis,
                 selectedImageList: [],
               })
-              setDoneUploadCount(0);
-              setTotalUploadCount(0);
             }}
           />
           <View style={styles.sepratorView} />

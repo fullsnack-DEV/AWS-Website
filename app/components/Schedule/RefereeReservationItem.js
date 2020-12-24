@@ -13,6 +13,7 @@ function RefereeReservationItem({
   let refereeImage = null;
   let refereeName = '';
   let status = '';
+  let statusColor = '';
   if (data && data.referee) {
     if (data.referee.thumbnail) {
       refereeImage = data.referee.thumbnail;
@@ -23,9 +24,27 @@ function RefereeReservationItem({
   }
   if (data.status === strings.pendingPayment) {
     status = strings.awaitingPayment;
+    statusColor = colors.orangeColor;
   }
   if (data.status === strings.offered) {
     status = strings.requestSent;
+    statusColor = colors.orangeColor;
+  }
+  if (data.status === strings.cancelled) {
+    status = strings.Cancelled;
+    statusColor = colors.grayEventColor;
+  }
+  if (data.status === strings.requestCancelled) {
+    status = strings.reqCan;
+    statusColor = colors.orangeColor;
+  }
+  if (data.status === strings.accepted) {
+    status = strings.Accept;
+    statusColor = colors.greeColor;
+  }
+  if (data.status === strings.declined) {
+    status = strings.Decline;
+    statusColor = colors.grayEventColor;
   }
   return (
     <View style={styles.containerStyle}>
@@ -37,7 +56,9 @@ function RefereeReservationItem({
         />
         <View style={{ marginLeft: 10 }}>
           <Text style={styles.refereeNameTextStyle}>{refereeName}</Text>
-          <Text style={styles.statusTextStyle}>{status}</Text>
+          <Text style={[styles.statusTextStyle, {
+            color: statusColor,
+          }]}>{status}</Text>
         </View>
       </View>
     </View>

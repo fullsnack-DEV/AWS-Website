@@ -10,7 +10,12 @@ import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 
-export default function EventScheduleScreen({ onItemPress, eventData, onThreeDotPress }) {
+export default function EventScheduleScreen({
+  onItemPress,
+  eventData,
+  onThreeDotPress,
+  entity,
+}) {
   let filterData = [];
   let dataNotFound = true;
   if (eventData) {
@@ -69,7 +74,8 @@ export default function EventScheduleScreen({ onItemPress, eventData, onThreeDot
                   data={item}
                   onThreeDotPress={() => onThreeDotPress(item)}
                   eventBetweenSection={item.game}
-                  eventOfSection={item.game && item.game.referees}
+                  eventOfSection={item.game && item.game.referees && item.game.referees.length > 0}
+                  entity={entity}
                 />
               );
             }

@@ -23,7 +23,9 @@ export default function TCEventView({
   onThreeDotPress,
   eventBetweenSection,
   eventOfSection,
+  entity,
 }) {
+  console.log('Entity ::--', entity);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -91,6 +93,19 @@ export default function TCEventView({
     }
   }
 
+  let moreBtnVisible = true;
+  if (data && data.game) {
+    const merchantID = entity.obj.merchant_id;
+    if (data.game.away_team.merchant_id === merchantID
+      || data.game.home_team.merchant_id === merchantID
+      || data.game.referees
+    ) {
+      moreBtnVisible = true;
+    } else {
+      moreBtnVisible = false;
+    }
+  }
+
   return (
     <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
       <View style={styles.backgroundView} onPress={onPress}>
@@ -103,9 +118,9 @@ export default function TCEventView({
             <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
               {title}
             </Text>
-            <TouchableOpacity onPress={onThreeDotPress}>
+            {moreBtnVisible && <TouchableOpacity onPress={onThreeDotPress}>
               <Image source={images.vertical3Dot} style={styles.threedot} />
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
           <Text style={styles.eventDescription} numberOfLines={2}>
             {description} {description2}
