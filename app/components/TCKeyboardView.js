@@ -2,7 +2,8 @@ import React from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-function TCKeyboardView({ children }) {
+const scrollDefault = React.createRef();
+function TCKeyboardView({ children, scrollReference = scrollDefault }) {
   return (
     <KeyboardAvoidingView
     style={{ flex: 1 }}
@@ -10,7 +11,7 @@ function TCKeyboardView({ children }) {
       keyboardVerticalOffset={ Platform.OS === 'ios' ? 100 : 0 }
       enabled={ Platform.OS === 'ios' }>
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>{children}</ScrollView>
+        <ScrollView ref={scrollReference} style={{ flex: 1 }}>{children}</ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
   );

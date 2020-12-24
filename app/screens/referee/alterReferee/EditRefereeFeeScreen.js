@@ -31,7 +31,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
   }, [isFocused]);
   return (
     <View style={ styles.mainContainer }>
-      <TCLabel title={'Match Fee'}/>
+      <TCLabel title={'Referee Fee'}/>
       <View style={ styles.matchFeeView }>
         <TextInput
             placeholder={ strings.enterFeePlaceholder }
@@ -59,7 +59,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
             onPress={() => {
               console.log('BASIC FEE::', basicFee);
               if (basicFee <= 0.0 || basicFee >= 1.0) {
-                navigation.navigate('AlterRefereeScreen', {
+                navigation.navigate('EditRefereeReservation', {
                   reservationObj: {
                     ...bodyParams,
                     manual_fee: true,

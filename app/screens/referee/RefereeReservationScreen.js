@@ -531,9 +531,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 <Text
                   style={[
                     styles.challengeMessage,
-                    { color: colors.googleColor },
+                    { color: colors.userPostTimeColor },
                   ]}>
-                  RESERVATION CANCELLED
+                  CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
                   {checkRefereeOrTeam(bodyParams) === 'referee' ? `You cancelled the referee reservation request booked by ${getEntityName(bodyParams)}.` : `Your team has cancelled the referee reservation for ${getEntityName(bodyParams)}.`}
@@ -546,9 +546,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 <Text
                   style={[
                     styles.challengeMessage,
-                    { color: colors.googleColor },
+                    { color: colors.userPostTimeColor },
                   ]}>
-                  RESERVATION CANCELLED
+                  CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
                   {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has cancelled the referee reservation request booked by your team.` : `${getEntityName(bodyParams)} has cancelled the referee reservation request for you.`}
@@ -817,7 +817,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       || bodyParams?.game?.status === GameStatus.reset)
                     && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                   ) {
-                    navigation.navigate('AlterRefereeScreen', {
+                    navigation.navigate('EditRefereeReservation', {
                       reservationObj: bodyParams,
                     });
                   } else {

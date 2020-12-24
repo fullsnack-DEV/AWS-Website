@@ -7,8 +7,10 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import colors from '../Constants/Colors';
+import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
+import EditRefereeReservation from '../screens/referee/alterReferee/EditRefereeReservation';
 import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
 import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFeeScreen';
 
@@ -108,6 +110,22 @@ function NotificationNavigator() {
             }}
         />
       <Stack.Screen
+            name="EditRefereeReservation"
+            component={EditRefereeReservation}
+            options={{
+              title: 'Change Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+      <Stack.Screen
         name="CurruentRefereeReservationScreen"
         component={ CurruentRefereeReservationScreen }
         options={ {
@@ -137,6 +155,13 @@ function NotificationNavigator() {
             borderBottomColor: colors.grayColor,
             borderBottomWidth: 0.3,
           },
+        } }
+      />
+      <Stack.Screen
+        name="AlterRequestSent"
+        component={ AlterRequestSent }
+        options={ {
+          headerShown: false,
         } }
       />
     </Stack.Navigator>

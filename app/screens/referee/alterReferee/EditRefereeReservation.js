@@ -48,7 +48,7 @@ import RefereeReservationStatus from '../../../Constants/RefereeReservationStatu
 
 let entity = {};
 const scroll = React.createRef();
-export default function AlterRefereeScreen({ navigation, route }) {
+export default function EditRefereeReservation({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('');
   const isFocused = useIsFocused();
@@ -67,15 +67,22 @@ export default function AlterRefereeScreen({ navigation, route }) {
   const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
   const [defaultCard, setDefaultCard] = useState()
-
+  const [isDeclined, setIsDeclined] = useState(false)
   useEffect(() => {
     const is_chief = bodyParams?.chief_referee ? 'chief' : 'assistant'
     setChiefOrAssistant(is_chief);
   }, [bodyParams])
 
+  const getNavigationTitle = () => {
+    if (bodyParams?.status === RefereeReservationStatus.changeRequest) {
+      return 'Referee Reservation'
+    }
+
+    return 'Change Referee Reservation'
+  }
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Referee Reservation',
+      title: getNavigationTitle(),
     });
   }, [navigation, bodyParams]);
   useEffect(() => {
@@ -96,7 +103,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
           if (
             (reservationObj[0]?.game?.away_team?.group_id
-              ?? reservationObj[0]?.game?.away_team?.user_id) === entity.uid
+                ?? reservationObj[0]?.game?.away_team?.user_id) === entity.uid
           ) {
             setHomeTeam(reservationObj[0]?.game?.away_team);
             setAwayTeam(reservationObj[0]?.game?.home_team);
@@ -136,7 +143,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
       if (
         (reservationObj?.game?.away_team?.group_id
-          ?? reservationObj?.game?.away_team?.user_id) === entity.uid
+            ?? reservationObj?.game?.away_team?.user_id) === entity.uid
       ) {
         setHomeTeam(reservationObj?.game?.away_team);
         setAwayTeam(reservationObj?.game?.home_team);
@@ -181,7 +188,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
       // console.log('NEW:', bodyParams.responsible_to_secure_venue);
       if (
         bodyParams.responsible_to_secure_venue
-        !== oldVersion.responsible_to_secure_venue
+          !== oldVersion.responsible_to_secure_venue
       ) {
         setEditVenue(true);
       } else {
@@ -198,13 +205,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
         setEditScoreKeeper(false);
       }
       if (
-        bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
-        || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
-        || bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id
-        || bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id
-        || bodyParams?.start_datetime !== oldVersion?.start_datetime
-        || bodyParams?.end_datetime !== oldVersion?.end_datetime
-        || bodyParams?.venue?.address !== oldVersion?.venue?.address
+          bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
+          || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
+          || bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id
+          || bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id
+          || bodyParams?.start_datetime !== oldVersion?.start_datetime
+          || bodyParams?.end_datetime !== oldVersion?.end_datetime
+          || bodyParams?.venue?.address !== oldVersion?.venue?.address
       ) {
         setEditInfo(true);
       } else {
@@ -236,9 +243,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
     setloading(true);
     getRefereeFeesEstimation(
-      bodyParams?.referee?.user_id,
-      body,
-      authContext,
+        bodyParams?.referee?.user_id,
+        body,
+        authContext,
     )
       .then((response) => {
         setloading(false);
@@ -447,8 +454,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+        teampObj?.status === RefereeReservationStatus.pendingpayment
+        || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -490,8 +497,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
   const checkRefereeOrTeam = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-      || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+        teampObj?.status === RefereeReservationStatus.pendingpayment
+        || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -669,11 +676,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
       <ActivityLoader visible={loading} />
       {homeTeam && awayTeam && bodyParams && (
         <View style={{ marginBottom: 15 }}>
-          {(!isPendingRequestPayment) && (
+          {(!isPendingRequestPayment || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
             <TouchableOpacity onPress={() => console.log('OK')}>
               <LinearGradient
-                colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.containerStyle}>
+                  colors={[colors.yellowColor, colors.themeColor]}
+                  style={styles.containerStyle}>
                 <Text style={styles.buttonText}>
                   Please edit the reservation details below before you send the
                   alteration request.
@@ -682,24 +689,24 @@ export default function AlterRefereeScreen({ navigation, route }) {
             </TouchableOpacity>
           )}
           <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'flex-end',
-              marginLeft: 15,
-              marginRight: 15,
-            }}>
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                alignItems: 'flex-end',
+                marginLeft: 15,
+                marginRight: 15,
+              }}>
             <ReservationNumber reservationNumber={bodyParams?.reservation_id} />
 
           </View>
 
           <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              margin: 15,
-            }}>
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                margin: 15,
+              }}>
             <View style={styles.challengerView}>
               <View style={styles.teamView}>
                 <Image source={images.requestOut} style={styles.reqOutImage} />
@@ -708,9 +715,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
               <View style={styles.teamView}>
                 <Image
-                   source={getRequester(bodyParams).thumbnail ? { uri: getRequester(bodyParams).thumbnail } : images.teamPlaceholder}
-                  style={styles.teamImage}
-                />
+                     source={getRequester(bodyParams).thumbnail ? { uri: getRequester(bodyParams).thumbnail } : images.teamPlaceholder}
+                    style={styles.teamImage}
+                  />
                 <Text style={styles.teamNameText}>
                   {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester.last_name}`}
                 </Text>
@@ -724,16 +731,16 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
               <View style={styles.teamView}>
                 <Image
-                  source={bodyParams?.referee?.thumbnail ? { uri: bodyParams?.referee?.thumbnail } : images.teamPlaceholder}
-                  style={styles.teamImage}
-                />
+                    source={bodyParams?.referee?.thumbnail ? { uri: bodyParams?.referee?.thumbnail } : images.teamPlaceholder}
+                    style={styles.teamImage}
+                  />
                 <Text
-                  style={{
-                    marginLeft: 5,
-                    fontFamily: fonts.RMedium,
-                    fontSize: 16,
-                    color: colors.lightBlackColor,
-                  }}>
+                    style={{
+                      marginLeft: 5,
+                      fontFamily: fonts.RMedium,
+                      fontSize: 16,
+                      color: colors.lightBlackColor,
+                    }}>
                   {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
                 </Text>
               </View>
@@ -741,130 +748,131 @@ export default function AlterRefereeScreen({ navigation, route }) {
           </View>
           {/* Status declined */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.declined && (
-              <View>
-                <Text
-                  style={[
-                    styles.challengeMessage,
-                    { color: colors.googleColor },
-                  ]}>
-                  DECLINED
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkRefereeOrTeam(bodyParams) === 'referee' ? `You have declined a referee request from ${getEntityName(bodyParams)}.` : `Your team have declined referee reservation request from ${getEntityName(bodyParams)}.` }
-                </Text>
-              </View>
+              && bodyParams.status === RefereeReservationStatus.declined && (
+                <View>
+                  <Text
+                    style={[
+                      styles.challengeMessage,
+                      { color: colors.googleColor },
+                    ]}>
+                    DECLINED
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {checkRefereeOrTeam(bodyParams) === 'referee' ? `You have declined a referee request from ${getEntityName(bodyParams)}.` : `Your team have declined referee reservation request from ${getEntityName(bodyParams)}.` }
+                  </Text>
+                </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.declined && (
-              <View>
-                <Text
-                  style={[
-                    styles.challengeMessage,
-                    { color: colors.googleColor },
-                  ]}>
-                  DECLINED
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has declined a referee request from your team.` : `${getEntityName(bodyParams)} have declined a referee reservation request sent by you.` }
-                </Text>
-              </View>
+              && bodyParams.status === RefereeReservationStatus.declined && (
+                <View>
+                  <Text
+                    style={[
+                      styles.challengeMessage,
+                      { color: colors.googleColor },
+                    ]}>
+                    DECLINED
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has declined a referee request from your team.` : `${getEntityName(bodyParams)} have declined a referee reservation request sent by you.` }
+                  </Text>
+                </View>
           )}
           {/* Status declined */}
           {/* status change requested */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.changeRequest && (
-              <View>
-                <Text style={[styles.challengeMessage, { color: colors.requestSentColor }]}>
-                  ALTERATION REQUEST SENT
-                </Text>
-                <Text style={styles.challengeText}>
-                  {checkRefereeOrTeam(bodyParams) === 'referee' ? `You sent a referee reservation alteration request to ${getEntityName(bodyParams)}.` : `Your team sent a referee reservation alteration request to ${getEntityName(bodyParams)}`}
-                </Text>
-              </View>
+              && bodyParams.status === RefereeReservationStatus.changeRequest && (
+                <View>
+                  <Text style={[styles.challengeMessage, { color: colors.requestSentColor }]}>
+                    ALTERATION REQUEST SENT
+                  </Text>
+                  <Text style={styles.challengeText}>
+                    {checkRefereeOrTeam(bodyParams) === 'referee' ? `You sent a referee reservation alteration request to ${getEntityName(bodyParams)}.` : `Your team sent a referee reservation alteration request to ${getEntityName(bodyParams)}`}
+                  </Text>
+                </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.changeRequest && (
-              <View>
-                <Text style={styles.challengeMessage}>
-                  ALTERATION REQUEST PENDING
-                </Text>
-                <Text style={styles.challengeText}>
-                  {bodyParams?.referee?.user_id === entity.uid ? `You received a referee reservation alteration request from ${getEntityName(bodyParams)}.` : `Your team received a referee reservation alteration request from ${getEntityName(bodyParams)}.`}
-                  {' '}Please, respond within <Text style={{ color: colors.themeColor }}>
-                    {getDayTimeDifferent(
-                    bodyParams?.expiry_datetime * 1000,
-                    new Date().getTime(),
-                    )}
+              && bodyParams.status === RefereeReservationStatus.changeRequest && (
+                <View>
+                  <Text style={styles.challengeMessage}>
+                    ALTERATION REQUEST PENDING
                   </Text>
-                </Text>
-              </View>
+                  <Text style={styles.challengeText}>
+                    {bodyParams?.referee?.user_id === entity.uid ? `You received a referee reservation alteration request from ${getEntityName(bodyParams)}.` : `Your team received a referee reservation alteration request from ${getEntityName(bodyParams)}.`}
+                    {' '}Please, respond within <Text style={{ color: colors.themeColor }}>
+                      {getDayTimeDifferent(
+                      bodyParams?.expiry_datetime * 1000,
+                      new Date().getTime(),
+                      )}
+                    </Text>
+                  </Text>
+                </View>
           )}
           {/* status change requested */}
 
           {/* status pending request payment */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
-              <View>
-                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} your payment hasn't gone through yet.`}
+              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+                <View>
+                  <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                  <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} your payment hasn't gone through yet.`}
 
-                </Text>
-                <Text style={styles.awatingNotesText}>
-                  {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
-                    bodyParams.expiry_datetime * 1000,
-                    new Date().getTime(),
-                  )}
-                  \nMeanwhile, ${getEntityName(
-                    bodyParams,
-                  )} can cancel acceptance of the alteration request before the payment is completed.`}
-                </Text>
-              </View>
+                  </Text>
+                  <Text style={styles.awatingNotesText}>
+                    {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
+                      bodyParams.expiry_datetime * 1000,
+                      new Date().getTime(),
+                    )}
+                    \nMeanwhile, ${getEntityName(
+                      bodyParams,
+                    )} can cancel acceptance of the alteration request before the payment is completed.`}
+                  </Text>
+                </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
-              <View>
-                <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
-                <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} the payment hasn't gone through yet.`}
-                </Text>
-                <Text style={styles.awatingNotesText}>
-                  {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
-                    bodyParams.expiry_datetime * 1000,
-                    new Date().getTime(),
-                  )}
-                  \nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
-                </Text>
-              </View>
+              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+                <View>
+                  <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
+                  <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} the payment hasn't gone through yet.`}
+                  </Text>
+                  <Text style={styles.awatingNotesText}>
+                    {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
+                      bodyParams.expiry_datetime * 1000,
+                      new Date().getTime(),
+                    )}
+                    \nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
+                  </Text>
+                </View>
           )}
           {/* status pending request payment */}
 
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
-              <TCGradientButton
-                title={'TRY TO PAY AGAIN'}
-                onPress={() => {
-                  navigation.navigate('PayAgainRefereeScreen', {
-                    body: { ...bodyParams, ...paymentCard },
-                    comeFrom: RefereeReservationStatus.pendingrequestpayment,
-                  })
-                }}
-                marginBottom={15}
-              />
+              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+                <TCGradientButton
+                  title={'TRY TO PAY AGAIN'}
+                  onPress={() => {
+                    navigation.navigate('PayAgainRefereeScreen', {
+                      body: { ...bodyParams, ...paymentCard },
+                      comeFrom: RefereeReservationStatus.pendingrequestpayment,
+                    })
+                  }}
+                  marginBottom={15}
+                />
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
-              <TCGradientButton
-                title={'RESTORE TO PREVIOUS VERSION'}
-                onPress={() => {
-                  acceptDeclineReservationOperation(
-                    bodyParams.challenge_id,
-                    bodyParams.version,
-                    'decline',
-                    true,
-                  );
-                }}
-                marginBottom={15}
-              />
+              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+                <TCGradientButton
+                  title={'RESTORE TO PREVIOUS VERSION'}
+                  onPress={() => {
+                    acceptDeclineReservationOperation(
+                      entity.uid,
+                      bodyParams.challenge_id,
+                      bodyParams.version,
+                      'decline',
+                      true,
+                    );
+                  }}
+                  marginBottom={15}
+                />
           )}
 
           <TCThickDivider />
@@ -873,11 +881,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
             <Title text={'Referee'} />
             <View style={{ marginVertical: 10 }}>
               <TCProfileView
-                  type={'medium'}
-                  name={bodyParams?.referee?.full_name}
-                  location={`${bodyParams?.referee?.city} , ${bodyParams?.referee?.country}`}
-                  image={bodyParams?.referee?.full_image ? { uri: bodyParams?.referee?.full_image } : images.profilePlaceHolder}
-              />
+                    type={'medium'}
+                    name={bodyParams?.referee?.full_name}
+                    location={`${bodyParams?.referee?.city} , ${bodyParams?.referee?.country}`}
+                    image={bodyParams?.referee?.full_image ? { uri: bodyParams?.referee?.full_image } : images.profilePlaceHolder}
+                />
             </View>
           </View>
           <TCThickDivider />
@@ -888,17 +896,20 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Title text={'Match'} />
 
-                  {(!isPendingRequestPayment) && (
+                  {bodyParams?.referee?.user_id === entity.uid && (
                     <TouchableOpacity
-                style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
-                onPress={() => navigation.navigate('RefereeSelectMatch')
-                }>
+                  style={styles.editTouchArea}
+                  hitSlop={{
+                    top: 15,
+                    bottom: 15,
+                    left: 15,
+                    right: 15,
+                  }}
+                  onPress={() => {
+                    navigation.navigate('RefereeSelectMatch', {
+                      userData: bodyParams?.referee,
+                    });
+                  }}>
                       <Image source={images.editSection} style={styles.editButton} />
                     </TouchableOpacity>
                   )}
@@ -912,19 +923,19 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   <View style={styles.contentContainer}>
                     <Title text={'Date & Time'} />
                     <TCInfoField
-                            title={'Date'}
-                            value={bodyParams?.timestamp && moment(bodyParams?.game?.start_datetime * 1000).format('MMM DD, YYYY')}
-                            titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
-                        />
+                              title={'Date'}
+                              value={bodyParams?.timestamp && moment(bodyParams?.game?.start_datetime * 1000).format('MMM DD, YYYY')}
+                              titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
+                          />
                     <Seperator height={2}/>
                     <TCInfoField
-                            title={'Time'}
-                            value={(bodyParams?.game?.start_datetime && bodyParams?.game?.end_datetime)
-                              ? getDateDuration(bodyParams?.game?.start_datetime, bodyParams?.game?.end_datetime)
-                              : ''
-                            }
-                            titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
-                        />
+                              title={'Time'}
+                              value={(bodyParams?.game?.start_datetime && bodyParams?.game?.end_datetime)
+                                ? getDateDuration(bodyParams?.game?.start_datetime, bodyParams?.game?.end_datetime)
+                                : ''
+                              }
+                              titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
+                          />
                     <Seperator height={2}/>
                   </View>
 
@@ -932,141 +943,153 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   <View style={styles.contentContainer}>
                     <Title text={'Venue'} />
                     <TCInfoField
-                            title={'Venue'}
-                            value={bodyParams?.game?.venue?.title}
-                            titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
-                        />
+                              title={'Venue'}
+                              value={bodyParams?.game?.venue?.title}
+                              titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
+                          />
                     <TCInfoField
-                            title={'Address'}
-                            value={bodyParams?.game?.venue?.address}
-                            titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
-                        />
+                              title={'Address'}
+                              value={bodyParams?.game?.venue?.address}
+                              titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
+                          />
                     <EventMapView
-                            coordinate={{
-                              latitude: bodyParams?.game?.venue.lat ?? 0.0,
-                              longitude: bodyParams?.game?.venue.long ?? 0.0,
-                            }}
-                            region={{
-                              latitude: bodyParams?.game?.venue.lat ?? 0.0,
-                              longitude: bodyParams?.game?.venue.long ?? 0.0,
-                              latitudeDelta: 0.0922,
-                              longitudeDelta: 0.0421,
-                            }}
-                        />
+                              coordinate={{
+                                latitude: bodyParams?.game?.venue.lat ?? 0.0,
+                                longitude: bodyParams?.game?.venue.long ?? 0.0,
+                              }}
+                              region={{
+                                latitude: bodyParams?.game?.venue.lat ?? 0.0,
+                                longitude: bodyParams?.game?.venue.long ?? 0.0,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                              }}
+                          />
 
                   </View>
                 </View>
-              )}
+                )}
             </View>
           )}
           <CurruentVersionView
-                    onPress={() => {
-                      navigation.navigate('CurruentRefereeReservationScreen', {
-                        reservationObj: oldVersion,
-                      });
-                    }}
-                    />
+                      onPress={() => {
+                        navigation.navigate('CurruentRefereeReservationScreen', {
+                          reservationObj: oldVersion,
+                        });
+                      }}
+                      />
           <TCThickDivider marginTop={15}/>
           {/* {bodyParams && (
-            <View>
-              <TCLabel title={'Rules of the match'} />
-              <Text style={styles.rulesText}>{bodyParams?.game?.special_rule}</Text>
-            </View>
-          )}
-          <CurruentVersionView
-                    onPress={() => {
-                      navigation.navigate('CurruentRefereeReservationScreen', {
-                        reservationObj: oldVersion,
-                      });
-                    }}
-                    />
-          <TCThickDivider marginTop={15} /> */}
+              <View>
+                <TCLabel title={'Rules of the match'} />
+                <Text style={styles.rulesText}>{bodyParams?.game?.special_rule}</Text>
+              </View>
+            )}
+            <CurruentVersionView
+                      onPress={() => {
+                        navigation.navigate('CurruentRefereeReservationScreen', {
+                          reservationObj: oldVersion,
+                        });
+                      }}
+                      />
+            <TCThickDivider marginTop={15} /> */}
           {/* Chief or assistant */}
           <View style={styles.contentContainer}>
             <Title text={'Chief or assistant'} />
-            <View
-              style={{
-                margin: 7,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text
-                style={{
+            {['chief', 'assistant'].map((item, index) => (
+              <View
+                      key={index}
+                      style={{
+                        margin: 7,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                <Text style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
-                }}>
-                {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
-                Referee
-              </Text>
-            </View>
+                }}>{_.startCase(item)} Referee</Text>
+                <TouchableOpacity style={{
+                  borderColor: colors.magnifyIconColor, height: 22, width: 22, borderWidth: 2, borderRadius: 50, alignItems: 'center', justifyContent: 'center',
+                }}
+                    onPress={() => setChiefOrAssistant(item)}>
+                  {item === chiefOrAssistant && (
+                    <LinearGradient
+                              colors={[colors.orangeColor, colors.yellowColor]}
+                              end={{ x: 0.0, y: 0.25 }}
+                              start={{ x: 1, y: 0.5 }}
+                              style={{ height: 13, width: 13, borderRadius: 50 }}>
+                    </LinearGradient>
+                  )}
+                </TouchableOpacity>
+              </View>
+            ))}
           </View>
 
           <CurruentVersionView
-                    onPress={() => {
-                      navigation.navigate('CurruentRefereeReservationScreen', {
-                        reservationObj: oldVersion,
-                      });
-                    }}
-                    />
+                      onPress={() => {
+                        navigation.navigate('CurruentRefereeReservationScreen', {
+                          reservationObj: oldVersion,
+                        });
+                      }}
+                      />
           <TCThickDivider marginTop={15}/>
           <View style={styles.editableView}>
             <View style={{
               flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
             }}>
               <TCLabel
-                  title={
-                    checkSenderForPayment(bodyParams) === 'sender'
-                      ? 'Payment'
-                      : 'Earning'
-                  }
-                  isNew={editPayment}
-              />
+                    title={
+                      checkSenderForPayment(bodyParams) === 'sender'
+                        ? 'Payment'
+                        : 'Earning'
+                    }
+                    isNew={editPayment}
+                />
               <TouchableOpacity onPress={() => {
                 navigation.navigate('RefereeSelectMatch');
               }}>
 
               </TouchableOpacity>
             </View>
-            {(!isPendingRequestPayment) && (
+            {(!isPendingRequestPayment || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
               <TouchableOpacity
-                style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
-                onPress={() => navigation.navigate('EditRefereeFeeScreen', {
-                  editableAlter: true,
-                  body: bodyParams,
-                })
-                }>
+                  style={styles.editTouchArea}
+                  hitSlop={{
+                    top: 15,
+                    bottom: 15,
+                    left: 15,
+                    right: 15,
+                  }}
+                  onPress={() => navigation.navigate('EditRefereeFeeScreen', {
+                    editableAlter: true,
+                    body: bodyParams,
+                  })
+                  }>
                 <Image source={images.editSection} style={styles.editButton} />
               </TouchableOpacity>
             )}
           </View>
 
           <MatchFeesCard
-            challengeObj={paymentCard}
-            senderOrReceiver={
-              checkSenderForPayment(bodyParams)
-            }
-          />
+              challengeObj={paymentCard}
+              senderOrReceiver={
+                checkSenderForPayment(bodyParams)
+              }
+            />
 
           { checkSenderForPayment(bodyParams) === 'sender' && paymentCard.total_game_charges > 0 && (
             <View style={{ marginTop: 10 }}>
               <TCTouchableLabel
-            title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
-            subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
-            showNextArrow={true}
-            onPress={() => {
-              navigation.navigate('PaymentMethodsScreen', {
-                comeFrom: 'AlterRefereeScreen',
-              })
-            }}
-          />
+              title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+              subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
+              showNextArrow={true}
+              onPress={() => {
+                navigation.navigate('PaymentMethodsScreen', {
+                  comeFrom: 'AlterRefereeScreen',
+                })
+              }}
+            />
             </View>
           )}
           {editPayment && (
@@ -1081,185 +1104,188 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 <Text style={styles.differenceTextTitle}>Difference</Text>
                 <Text style={styles.diffenceAmount}>{`$${
                   parseFloat(bodyParams?.total_game_charges
-                  - oldVersion?.total_game_charges).toFixed(2)
+                    - oldVersion?.total_game_charges).toFixed(2)
                 } ${bodyParams.currency_type || 'CAD'}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>
             </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-             && (
-               <View style={{ marginTop: 15 }}>
-                 <TCBorderButton
-                  title={strings.cancelAlterRequest}
-                  textColor={colors.grayColor}
-                  borderColor={colors.grayColor}
-                  height={40}
-                  shadow={true}
-                  onPress={() => {
-                    cancelAlterReservationOperation(
-                      bodyParams.reservation_id,
-                      bodyParams.version,
-                    );
-                  }}
-                />
-               </View>
-             )}
+              && bodyParams.status === RefereeReservationStatus.changeRequest
+               && (
+                 <View style={{ marginTop: 15 }}>
+                   <TCBorderButton
+                    title={strings.cancelAlterRequest}
+                    textColor={colors.grayColor}
+                    borderColor={colors.grayColor}
+                    height={40}
+                    shadow={true}
+                    onPress={() => {
+                      cancelAlterReservationOperation(
+                        bodyParams.reservation_id,
+                        bodyParams.version,
+                      );
+                    }}
+                  />
+                 </View>
+               )}
 
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === RefereeReservationStatus.changeRequest
-            && bodyParams.expiry_datetime < new Date().getTime() && (
-              <View style={{ marginTop: 15 }}>
-                <TCGradientButton
-                  title={strings.accept}
-                  onPress={() => {
-                    acceptDeclineAlterReservationOperation(
-                      bodyParams.reservation_id,
-                      bodyParams.version,
-                      'accept',
-                      route?.params?.paymentMethod && route?.params?.paymentMethod?.id,
-                    );
-                  }}
-                />
-                <TCBorderButton
-                  title={strings.decline}
-                  textColor={colors.grayColor}
-                  borderColor={colors.grayColor}
-                  height={40}
-                  shadow={true}
-                  onPress={() => {
-                    acceptDeclineReservationOperation(
-                      bodyParams.reservation_id,
-                      bodyParams.version,
-                      'decline',
-                    );
-                  }}
-                />
-              </View>
+              && bodyParams.status === RefereeReservationStatus.changeRequest
+              && bodyParams.expiry_datetime < new Date().getTime() && (
+                <View style={{ marginTop: 15 }}>
+                  <TCGradientButton
+                    title={strings.accept}
+                    onPress={() => {
+                      acceptDeclineAlterReservationOperation(
+                        bodyParams.reservation_id,
+                        bodyParams.version,
+                        'accept',
+                        route?.params?.paymentMethod && route?.params?.paymentMethod?.id,
+                      );
+                    }}
+                  />
+                  <TCBorderButton
+                    title={strings.decline}
+                    textColor={colors.grayColor}
+                    borderColor={colors.grayColor}
+                    height={40}
+                    shadow={true}
+                    onPress={() => {
+                      acceptDeclineReservationOperation(
+                        bodyParams.reservation_id,
+                        bodyParams.version,
+                        'decline',
+                      );
+                    }}
+                  />
+                </View>
           )}
 
-          {(((bodyParams.status === RefereeReservationStatus.accepted || bodyParams.status === RefereeReservationStatus.restored) && !isPendingRequestPayment)) && (
+          {(((bodyParams.status === RefereeReservationStatus.accepted || bodyParams.status === RefereeReservationStatus.restored) && !isPendingRequestPayment) || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
             <View>
               <TCGradientButton
-                  title={strings.sendAlterRequest}
-                  textColor={colors.grayColor}
-                  startGradientColor={colors.yellowColor}
-                  endGradientColor={colors.themeColor}
+                    title={strings.sendAlterRequest}
+                    textColor={colors.grayColor}
+                    startGradientColor={colors.yellowColor}
+                    endGradientColor={colors.themeColor}
+                    height={40}
+                    shadow={true}
+                    marginTop={15}
+                    onPress={() => {
+                      if (
+                        editInfo
+                        || editPayment
+                      ) {
+                        updateReservationDetail();
+                      } else {
+                        Alert.alert(
+                          'Please modify atleast one field for alter request.',
+                        );
+                      }
+                    }}
+                  />
+              <TCBorderButton
+                    title={strings.cancel}
+                    textColor={colors.themeColor}
+                    borderColor={colors.themeColor}
+                    height={40}
+                    shadow={true}
+                    marginBottom={15}
+                    fontSize={16}
+                    onPress={() => {
+                      navigation.goBack();
+                    }}
+                  />
+            </View>
+          )}
+          {(bodyParams.status === RefereeReservationStatus.changeRequest
+              || bodyParams.status === RefereeReservationStatus.pendingrequestpayment) && (
+                <View>
+                  <TCBorderButton
+                  title={strings.cancelreservation}
+                  textColor={colors.whiteColor}
+                  borderColor={colors.grayColor}
+                  backgroundColor={colors.grayColor}
                   height={40}
                   shadow={true}
+                  marginBottom={15}
                   marginTop={15}
                   onPress={() => {
                     if (
-                      editInfo
-                      || editPayment
+                      (bodyParams?.game?.status === GameStatus.accepted
+                        || bodyParams?.game?.status === GameStatus.reset)
+                      && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                     ) {
-                      updateReservationDetail();
+                      acceptDeclineAlterReservation(
+                        bodyParams.reservation_id,
+                        bodyParams.version,
+                        'cancel',
+                      );
                     } else {
                       Alert.alert(
-                        'Please modify atleast one field for alter request.',
+                        'Reservation cannot be cancel after game time passed or offer expired.',
                       );
                     }
                   }}
                 />
+                </View>
+          )}
+          {(bodyParams.status === RefereeReservationStatus.declined && !isDeclined) && (
+            <View>
               <TCBorderButton
-                  title={strings.cancel}
-                  textColor={colors.themeColor}
-                  borderColor={colors.themeColor}
+                  title={strings.alterReservation}
+                  textColor={colors.grayColor}
+                  borderColor={colors.grayColor}
+                  height={40}
+                  shadow={true}
+                  marginTop={15}
+                  onPress={() => {
+                    setIsDeclined(true)
+                    setbodyParams(oldVersion)
+                    scroll.current.scrollTo(0, 0)
+                    // if (
+                    //   (bodyParams?.game?.status === GameStatus.accepted
+                    //     || bodyParams?.game?.status === GameStatus.reset)
+                    //   && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
+                    // ) {
+                    //   navigation.navigate('AlterRefereeScreen', {
+                    //     reservationObj: bodyParams,
+                    //   });
+                    // } else {
+                    //   Alert.alert(
+                    //     'Reservation cannot be change after game time passed or offer expired.',
+                    //   );
+                    // }
+                  }}
+                />
+              <TCBorderButton
+                  title={strings.cancelreservation}
+                  textColor={colors.whiteColor}
+                  borderColor={colors.grayColor}
+                  backgroundColor={colors.grayColor}
                   height={40}
                   shadow={true}
                   marginBottom={15}
-                  fontSize={16}
+                  marginTop={15}
                   onPress={() => {
-                    navigation.goBack();
+                    if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
+                      acceptDeclineRefereeReservation(
+                        bodyParams.reservation_id,
+                        bodyParams.version,
+                        'cancel',
+                      );
+                    } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
+                      Alert.alert(
+                        'Reservation cannot be cancel after game time passed or offer expired.',
+                      );
+                    } else {
+                      Alert.alert(
+                        'Reservation can not be change after game has been started.',
+                      );
+                    }
                   }}
                 />
-            </View>
-          )}
-          {(bodyParams.status === RefereeReservationStatus.changeRequest
-            || bodyParams.status === RefereeReservationStatus.pendingrequestpayment) && (
-              <View>
-                <TCBorderButton
-                title={strings.cancelreservation}
-                textColor={colors.whiteColor}
-                borderColor={colors.grayColor}
-                backgroundColor={colors.grayColor}
-                height={40}
-                shadow={true}
-                marginBottom={15}
-                marginTop={15}
-                onPress={() => {
-                  if (
-                    (bodyParams?.game?.status === GameStatus.accepted
-                      || bodyParams?.game?.status === GameStatus.reset)
-                    && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                  ) {
-                    acceptDeclineAlterReservation(
-                      bodyParams.reservation_id,
-                      bodyParams.version,
-                      'cancel',
-                    );
-                  } else {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
-                    );
-                  }
-                }}
-              />
-              </View>
-          )}
-          {(bodyParams.status === RefereeReservationStatus.declined) && (
-            <View>
-              <TCBorderButton
-                title={strings.alterReservation}
-                textColor={colors.grayColor}
-                borderColor={colors.grayColor}
-                height={40}
-                shadow={true}
-                marginTop={15}
-                onPress={() => {
-                  if (
-                    (bodyParams?.game?.status === GameStatus.accepted
-                      || bodyParams?.game?.status === GameStatus.reset)
-                    && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                  ) {
-                    navigation.navigate('EditRefereeReservation', {
-                      reservationObj: oldVersion,
-                    });
-                  } else {
-                    Alert.alert(
-                      'Reservation cannot be change after game time passed or offer expired.',
-                    );
-                  }
-                }}
-              />
-              <TCBorderButton
-                title={strings.cancelreservation}
-                textColor={colors.whiteColor}
-                borderColor={colors.grayColor}
-                backgroundColor={colors.grayColor}
-                height={40}
-                shadow={true}
-                marginBottom={15}
-                marginTop={15}
-                onPress={() => {
-                  if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
-                    acceptDeclineRefereeReservation(
-                      bodyParams.reservation_id,
-                      bodyParams.version,
-                      'cancel',
-                    );
-                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
-                    );
-                  } else {
-                    Alert.alert(
-                      'Reservation can not be change after game has been started.',
-                    );
-                  }
-                }}
-              />
             </View>
           )}
         </View>
