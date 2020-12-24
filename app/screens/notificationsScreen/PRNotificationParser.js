@@ -118,7 +118,7 @@ const parseChallengeRequestNotification = async (data, selectedEntity, loggedInE
   return finalString
 }
 
-const parseRefereeRequestNotification = async (data, loggedInEntity) => {
+const parseRefereeRequestNotification = async (data) => {
   const activity = data.activities[0]
   let notificationObject
   const finalString = {}
@@ -129,34 +129,38 @@ const parseRefereeRequestNotification = async (data, loggedInEntity) => {
 
   const reservationObject = notificationObject.reservationObject
 
-  if (loggedInEntity.uid === reservationObject.initiated_by
-    || loggedInEntity.auth.user_id === reservationObject.initiated_by) {
+  if (reservationObject.referee_id === reservationObject.requested_by) {
     finalString.firstTitle = `${reservationObject.updated_by.first_name} ${reservationObject.updated_by.last_name}`
-    if (reservationObject.referee.thumbnail) {
-      finalString.entityType = 'user'
+    finalString.entityType = 'user'
+    finalString.entityId = reservationObject.referee_id
+    if (reservationObject.referee?.thumbnail) {
       finalString.imgName = reservationObject.referee.thumbnail
     }
   } else if (reservationObject.game.singlePlayerGame) {
-    finalString.entityType = 'team'
-    if (reservationObject.initiated_by === reservationObject.game.away_team.user_id) {
+    finalString.entityType = 'user'
+    if (reservationObject.requested_by === reservationObject.game.away_team.user_id) {
       finalString.firstTitle = `${reservationObject.game.away_team.first_name} ${reservationObject.game.away_team.last_name}`
       if (reservationObject.game.away_team.thumbnail) {
         finalString.imgName = reservationObject.game.away_team.thumbnail
       }
+      finalString.entityId = reservationObject.game.away_team.user_id
     } else {
       finalString.firstTitle = `${reservationObject.game.home_team.first_name} ${reservationObject.game.home_team.last_name}`
       if (reservationObject.game.home_team.thumbnail) {
         finalString.imgName = reservationObject.game.home_team.thumbnail
       }
+      finalString.entityId = reservationObject.game.home_team.user_id
     }
-  } else if (reservationObject.initiated_by === reservationObject.game.away_team.group_id) {
+  } else if (reservationObject.requested_by === reservationObject.game.away_team.group_id) {
     finalString.entityType = 'team'
+    finalString.entityId = reservationObject.game.away_team.group_id
     finalString.firstTitle = reservationObject.game.away_team.group_name
     if (reservationObject.game.away_team.thumbnail) {
       finalString.imgName = reservationObject.game.away_team.thumbnail
     }
   } else {
     finalString.entityType = 'team'
+    finalString.entityId = reservationObject.game.home_team.group_id
     finalString.firstTitle = reservationObject.game.home_team.group_name
     if (reservationObject.game.home_team.thumbnail) {
       finalString.imgName = reservationObject.game.home_team.thumbnail
@@ -310,7 +314,7 @@ export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
   } if (data.activities[0].verb.includes(NotificationType.refereeRequest)
     || data.activities[0].verb.includes(NotificationType.changeRefereeRequest)
     || data.activities[0].verb.includes(NotificationType.scorekeeperRequest)) {
-    return parseRefereeRequestNotification(data, loggedInEntity)
+    return parseRefereeRequestNotification(data)
   } if (data.activities[0].verb.includes(NotificationType.refereeReservationInitialPaymentFail)
     || data.activities[0].verb.includes(NotificationType.refereeReservationAlterPaymentFail)
     || data.activities[0].verb.includes(NotificationType.refereeReservationAwaitingPaymentPaid)
@@ -318,6 +322,7 @@ export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
     || data.activities[0].verb.includes(NotificationType.refereeReservationAutoRestoredDueToAlterPaymentFailed)
     || data.activities[0].verb.includes(NotificationType.refereeReservationCanceledDuringAwaitingPayment)
     || data.activities[0].verb.includes(NotificationType.refereeReservationRestoredDuringAwaitingPayment)) {
+    console.log('parseRefereeAwaitingPaymentRequestNotification')
     return parseRefereeAwaitingPaymentRequestNotification(data, loggedInEntity)
   }
   return {}

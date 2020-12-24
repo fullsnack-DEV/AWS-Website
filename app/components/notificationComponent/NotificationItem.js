@@ -21,7 +21,9 @@ function NotificationItem({ data }) {
     <View style={{ backgroundColor: colors.whiteColor }}>
       {dataDictionary && <TouchableOpacity onPress={data.card}>
         <View style={styles.viewFirstStyle}>
-          <TouchableOpacity onPress={data.onPressFirstEntity}>
+          <TouchableOpacity onPress={() => {
+            data.onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+          }}>
             <TCProfileImage
               entityType={dataDictionary.entityType}
               source={ { uri: dataDictionary.imgName }}
