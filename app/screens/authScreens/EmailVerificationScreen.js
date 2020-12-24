@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, Image, TouchableOpacity, Alert,
 } from 'react-native';
@@ -10,20 +10,27 @@ import {
 
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function EmailVerificationScreen({ navigation, route }) {
+  const [loading, setLoading] = useState(false);
   const verifyUserEmail = () => {
+    setLoading(true);
     firebase
       .auth()
       .signInWithEmailAndPassword(route.params.emailAddress, route.params.password)
       .then((res) => {
+        setLoading(false);
         if (res.user.emailVerified) {
           navigation.navigate('AddBirthdayScreen');
         } else {
-          Alert.alert('Email not verified yet');
+          setTimeout(() => {
+            Alert.alert('Email not verified yet');
+          }, 100)
         }
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 0.7);
@@ -31,22 +38,25 @@ export default function EmailVerificationScreen({ navigation, route }) {
   };
 
   const resend = () => {
-    console.log('link send again ');
+    setLoading(true);
     const user = firebase.auth().currentUser;
     user
       .sendEmailVerification()
       .then(() => {
-        Alert.alert('Verification Link send sucessfully');
+        setLoading(false);
+        setTimeout(() => Alert.alert('Verification Link send sucessfully'), 100)
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 100);
       });
   };
 
   return (
     <View style={styles.mainContainer}>
+      <ActivityLoader visible={loading}/>
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
       <View style={{ marginTop: '80%', alignSelf: 'center', width: '80%' }}>

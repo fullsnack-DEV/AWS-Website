@@ -143,7 +143,8 @@ export default function FollowTeams({ route }) {
         </View>
         <View
             style={ {
-              flex: 0.6,
+              flex: 0.5,
+              paddingHorizontal: 10,
             } }>
           <Text style={ styles.teamNameText }>{teams[index].group_name}</Text>
           <Text style={ styles.cityText }>
@@ -151,7 +152,7 @@ export default function FollowTeams({ route }) {
             {teams[index].country}
           </Text>
         </View>
-        <View style={{ flex: 0.2 }}>
+        <View style={{ flex: 0.3 }}>
           <TouchableWithoutFeedback
             onPress={ () => {
               followUnfollowClicked({ item, index });
@@ -205,12 +206,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
     fontSize: wp('3.5%'),
-    paddingLeft: wp('4%'),
-
     textAlign: 'left',
     textAlignVertical: 'center',
-
-    width: wp('70%'),
   },
 
   followBtn: {
@@ -221,7 +218,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 25,
     justifyContent: 'center',
-    width: 70,
+    width: 80,
   },
   followText: {
     color: colors.whiteColor,
@@ -234,9 +231,8 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteColor,
     borderRadius: 5,
     borderWidth: 1,
-    height: 25,
     justifyContent: 'center',
-    width: 70,
+    width: 80,
   },
   followingText: {
     color: colors.themeColor,
@@ -245,8 +241,9 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listItemContainer: {
     flex: 1,
@@ -266,14 +263,12 @@ const styles = StyleSheet.create({
     fontSize: wp('6%'),
     marginBottom: hp('4%'),
     marginTop: hp('12%'),
-    paddingLeft: 30,
+    paddingHorizontal: 30,
     textAlign: 'left',
-    width: wp('70%'),
   },
   teamImg: {
     alignSelf: 'center',
     borderRadius: 6,
-
     height: 45,
     resizeMode: 'stretch',
     width: 45,
@@ -282,7 +277,6 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
     fontSize: wp('4%'),
-    paddingLeft: wp('4%'),
     textAlign: 'left',
     textAlignVertical: 'center',
   },
