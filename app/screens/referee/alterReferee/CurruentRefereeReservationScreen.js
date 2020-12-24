@@ -473,7 +473,7 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
                   }}
                   marginBottom={15}
                 />
-            )}
+          )}
 
           {/* {!(
               bodyParams.status === ReservationStatus.offered
@@ -541,8 +541,8 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
                         value={
                           bodyParams?.start_datetime && bodyParams?.end_datetime
                             ? getDateDuration(
-                                bodyParams?.start_datetime,
-                                bodyParams?.end_datetime,
+                              bodyParams?.start_datetime,
+                              bodyParams?.end_datetime,
                             )
                             : ''
                         }
@@ -587,7 +587,7 @@ export default function CurruentRefereeReservationScreen({ navigation, route }) 
                       />
                   </View>
                 </View>
-                )}
+              )}
             </View>
           )}
           <TCThickDivider />

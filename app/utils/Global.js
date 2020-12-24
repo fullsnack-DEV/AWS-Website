@@ -48,7 +48,7 @@ const makeAPIRequest = async ({
   const expiryDate = new Date(entity.auth.token.expirationTime);
   // FIXME when token expire, wait for new token and then call api
   if (expiryDate.getTime() <= currentDate.getTime()) {
-    firebase.auth().onAuthStateChanged((user) => {
+    const globalOnAuthStateChanged = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         user.getIdTokenResult().then(async (idTokenResult) => {
           authToken = idTokenResult.token;
@@ -62,6 +62,7 @@ const makeAPIRequest = async ({
         });
       }
     });
+    globalOnAuthStateChanged();
   }
   let caller_id;
   let caller;

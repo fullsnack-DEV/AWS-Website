@@ -19,6 +19,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
+import { useIsFocused } from '@react-navigation/native';
 import AuthContext from '../../../../auth/context';
 import Header from '../../../../components/Home/Header';
 import EventMapView from '../../../../components/Schedule/EventMapView';
@@ -41,6 +42,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
+  const isFocused = useIsFocused();
   const userData = route?.params?.userData;
   const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
@@ -49,7 +51,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const [hourly_game_fee, setHourlyGameFee] = useState(0);
   const [currency_type, setCurrencyType] = useState('CAD');
   const [loading, setLoading] = useState(false);
-  useEffect(() => navigation.setParams({ gameData: null }), []);
+  useEffect(() => navigation.setParams({ gameData: null }), [navigation, isFocused]);
   useEffect(() => {
     if (route?.params?.gameData) {
       const gData = JSON.parse(JSON.stringify(route?.params?.gameData));
