@@ -65,7 +65,7 @@ export default function WelcomeScreen({ navigation }) {
     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
     auth().signInWithCredential(facebookCredential).then(async (authResult) => {
       console.log('FACEBOOK DETAIL:', JSON.stringify(authResult));
-      auth().onAuthStateChanged((user) => {
+      const facebookSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
         console.log('User :-', user);
         if (user) {
           user.getIdTokenResult().then(async (idTokenResult) => {
@@ -105,13 +105,13 @@ export default function WelcomeScreen({ navigation }) {
                 navigation.navigate('AddBirthdayScreen')
               }
             }).catch(() => {
-              // Alert.alert('Towns Cup', error.message);
               navigation.navigate('AddBirthdayScreen')
             });
             setloading(false);
           });
         }
       });
+      facebookSignUpOnAuthChanged();
     })
       .catch((error) => {
         if (error.code === 'auth/user-not-found') {
@@ -157,7 +157,7 @@ export default function WelcomeScreen({ navigation }) {
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       auth().signInWithCredential(googleCredential).then(async (authResult) => {
         console.log('GOOGLE DETAIL:', JSON.stringify(authResult));
-        auth().onAuthStateChanged((user) => {
+        const googleSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
           console.log('User :-', user);
           if (user) {
             user.getIdTokenResult().then(async (idTokenResult) => {
@@ -172,22 +172,17 @@ export default function WelcomeScreen({ navigation }) {
                 headers: { Authorization: `Bearer ${token?.token}` },
               }
               apiCall(userConfig).then(async (response) => {
-                if (response.status) {
-                  const entity = {
-                    uid: user.uid,
-                    role: 'user',
-                    obj: response.payload,
-                    auth: {
-                      user_id: user.uid,
-                      token,
-                      user: response.payload,
-                    },
-                  }
-                  QBInitialLogin(entity, response?.payload);
-                } else {
-                  setloading(false);
-                  Alert.alert(response.messages);
+                const entity = {
+                  uid: user.uid,
+                  role: 'user',
+                  obj: response.payload,
+                  auth: {
+                    user_id: user.uid,
+                    token,
+                    user: response.payload,
+                  },
                 }
+                QBInitialLogin(entity, response?.payload);
               }).catch(async () => {
                 const entity = {
                   auth: { token, user_id: user.uid },
@@ -225,6 +220,7 @@ export default function WelcomeScreen({ navigation }) {
             }).catch(() => setloading(false));
           }
         }).catch(() => setloading(false));
+        googleSignUpOnAuthChanged();
       })
         .catch((error) => {
           if (error.code === 'auth/user-not-found') {
@@ -240,16 +236,10 @@ export default function WelcomeScreen({ navigation }) {
     } catch (error) {
       let message = '';
       setloading(false)
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        message = 'Process Cancelled'
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        message = 'Process in progress'
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         message = 'Play services are not available'
-      } else {
-        message = `Something else went wrong... ${error.toString()}`;
       }
-      setTimeout(() => Alert.alert('Towns cup', message), 100)
+      if (message !== '') setTimeout(() => Alert.alert('Towns cup', message), 100)
     }
   }
   return (

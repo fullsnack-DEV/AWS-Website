@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -48,12 +49,10 @@ const SoccerHome = ({ navigation, route }) => {
   const [userId, setUserId] = useState(null);
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
 
+  const isFocused = useIsFocused();
   useEffect(() => {
-    navigation.setOptions({
-      tabBarVisible: false,
-    })
     getGameDetails();
-  }, []);
+  }, [navigation, isFocused]);
 
   const getGameDetails = () => {
     setLoading(true)

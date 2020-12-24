@@ -41,6 +41,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 let body = {};
 const RefereeBookingDateAndTime = ({ navigation, route }) => {
+  const sportName = route?.params?.sportName;
   const userData = route?.params?.userData;
   const [gameData, setGameData] = useState(route?.params?.gameData ?? null);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
@@ -49,7 +50,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const [hourly_game_fee, setHourlyGameFee] = useState(0);
   const [currency_type, setCurrencyType] = useState('CAD');
   const [loading, setLoading] = useState(false);
-  useEffect(() => navigation.setParams({ gameData: null }), []);
+  useEffect(() => navigation.setParams({ gameData: null }), [navigation]);
   useEffect(() => {
     if (route?.params?.gameData) {
       const gData = JSON.parse(JSON.stringify(route?.params?.gameData));
@@ -57,7 +58,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
       gData.end_datetime = Number(gData.end_datetime) * 1000;
       setGameData(gData);
     }
-  }, [route?.params?.gameData, hourly_game_fee, currency_type]);
+  }, [route?.params?.gameData]);
   useEffect(() => {
     getFeeDetail();
   }, [route?.params?.gameData, hourly_game_fee, currency_type])
@@ -145,6 +146,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     }).finally(() => setLoading(false));
     return true;
   }
+  console.log('GD : ', sportName)
   return (
     <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <Header
@@ -187,6 +189,8 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                 <TouchableOpacity onPress={() => {
                   navigation.navigate('RefereeSelectMatch', {
                     userData,
+                    sport: sportName,
+                    comeFrom: 'RefereeBookingDateAndTime',
                   });
                 }}>
                   {route?.params?.showMatches && (

@@ -46,7 +46,7 @@ function NewsFeedPostItems({
       }
       return false;
     }
-    return false;
+    return null;
   });
   const [likeCount, setLikeCount] = useState(() => {
     if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
@@ -124,6 +124,8 @@ function NewsFeedPostItems({
                     data={attachItem}
                     caller_id={caller_id}
                     navigation={navigation}
+                    onImageProfilePress={onImageProfilePress}
+                    onLikePress={onLikePress}
                   />;
                 }
                 if (attachItem.type === 'video') {
@@ -166,6 +168,9 @@ function NewsFeedPostItems({
                       itemNumber={index + 1}
                       attachedImages={attachedImages}
                       totalItemNumber={attachedImages.length}
+                      item={item}
+                      caller_id={caller_id}
+                      navigation={navigation}
                     />
                   );
                 }

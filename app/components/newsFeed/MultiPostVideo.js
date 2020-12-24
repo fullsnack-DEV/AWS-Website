@@ -12,10 +12,18 @@ import images from '../../Constants/ImagePath';
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import MultipleImageModal from './MultipleImageModal';
+// import MultipleImageModal from './MultipleImageModal';
+import MultiImagePostView from './MultiImagePostView';
 
 function MultiPostVideo({
-  data, itemNumber, totalItemNumber, attachedImages, activeIndex,
+  data,
+  itemNumber,
+  totalItemNumber,
+  attachedImages,
+  // activeIndex,
+  item,
+  caller_id,
+  navigation,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
@@ -45,9 +53,17 @@ function MultiPostVideo({
         backdropColor="black"
         style={{ margin: 0 }}
         backdropOpacity={0}>
-        <MultipleImageModal
+        {/* <MultipleImageModal
           activeIndex={activeIndex}
           attachedImages={attachedImages.length > 0 ? attachedImages : []}
+          backBtnPress={() => setModalVisible(false)}
+        /> */}
+        <MultiImagePostView
+          attachedImages={attachedImages}
+          data={data}
+          item={item}
+          caller_id={caller_id}
+          navigation={navigation}
           backBtnPress={() => setModalVisible(false)}
         />
       </Modal>

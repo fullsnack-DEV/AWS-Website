@@ -165,11 +165,10 @@ export default function EditRefereeReservation({ navigation, route }) {
           total_payout: reservationObj?.total_payout,
         })
       }
-      console.log('challenge Object::', reservationObj);
-
-      console.log('Payment Object::', paymentCard);
     }
-
+    if (route?.params?.userData) {
+      setbodyParams({ ...bodyParams, game: route?.params?.userData })
+    }
     getPaymentMethods()
   }, [isFocused]);
 
@@ -896,7 +895,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Title text={'Match'} />
 
-                  {bodyParams?.referee?.user_id === entity.uid && (
+                  {bodyParams?.referee?.user_id !== entity.uid && (
                     <TouchableOpacity
                   style={styles.editTouchArea}
                   hitSlop={{
@@ -908,6 +907,8 @@ export default function EditRefereeReservation({ navigation, route }) {
                   onPress={() => {
                     navigation.navigate('RefereeSelectMatch', {
                       userData: bodyParams?.referee,
+                      sport: bodyParams?.sport,
+                      comeFrom: 'EditRefereeReservation',
                     });
                   }}>
                       <Image source={images.editSection} style={styles.editButton} />

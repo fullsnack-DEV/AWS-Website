@@ -14,6 +14,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import Video from 'react-native-video';
 import ImageZoom from 'react-native-image-pan-zoom';
 import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
@@ -37,6 +38,8 @@ export default function MultiImagePostView({
   const [scroll, setScroll] = useState(true);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
   const [isLandScape, setIsLandScape] = useState(false);
+  const [mute] = useState(true);
+  const [play] = useState(false);
   const [like, setLike] = useState(() => {
     let filterLike = [];
     if (item.own_reactions && item.own_reactions.clap) {
@@ -97,35 +100,35 @@ export default function MultiImagePostView({
         <Carousel
             data={attachedImages}
             renderItem={({ item: multiAttachItem }) => {
+              let portraitImgWidth = wp('100%');
+              let portraitImgHeight = hp('50%');
+              let landscapeImgWidth = hp('50%');
+              let landscapeImgHeight = wp('100%');
+              if (!isLandScape) {
+                if (multiAttachItem.media_height > multiAttachItem.media_width) {
+                  portraitImgWidth = wp('100%');
+                  portraitImgHeight = hp('72%');
+                } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
+                  portraitImgWidth = wp('100%');
+                  portraitImgHeight = hp('28%');
+                } else {
+                  portraitImgWidth = wp('100%');
+                  portraitImgHeight = hp('50%');
+                }
+              }
+              if (isLandScape) {
+                if (multiAttachItem.media_height > multiAttachItem.media_width) {
+                  landscapeImgWidth = hp('28%');
+                  landscapeImgHeight = wp('100%');
+                } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
+                  landscapeImgWidth = hp('72%');
+                  landscapeImgHeight = wp('100%');
+                } else {
+                  landscapeImgWidth = hp('50%');
+                  landscapeImgHeight = wp('100%');
+                }
+              }
               if (multiAttachItem.type === 'image') {
-                let portraitImgWidth = wp('100%');
-                let portraitImgHeight = hp('50%');
-                let landscapeImgWidth = hp('50%');
-                let landscapeImgHeight = wp('100%');
-                if (!isLandScape) {
-                  if (multiAttachItem.media_height > multiAttachItem.media_width) {
-                    portraitImgWidth = wp('100%');
-                    portraitImgHeight = hp('72%');
-                  } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
-                    portraitImgWidth = wp('100%');
-                    portraitImgHeight = hp('28%');
-                  } else {
-                    portraitImgWidth = wp('100%');
-                    portraitImgHeight = hp('50%');
-                  }
-                }
-                if (isLandScape) {
-                  if (multiAttachItem.media_height > multiAttachItem.media_width) {
-                    landscapeImgWidth = hp('28%');
-                    landscapeImgHeight = wp('100%');
-                  } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
-                    landscapeImgWidth = hp('72%');
-                    landscapeImgHeight = wp('100%');
-                  } else {
-                    landscapeImgWidth = hp('50%');
-                    landscapeImgHeight = wp('100%');
-                  }
-                }
                 return (
                   <ImageZoom
                     cropWidth={Dimensions.get('window').width}
@@ -168,6 +171,35 @@ export default function MultiImagePostView({
                         resizeMode={'stretch'}
                     />
                   </ImageZoom>
+                );
+              }
+              if (multiAttachItem.type === 'video') {
+                return (
+                  <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                    <Image
+                      source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
+                      resizeMode={'cover'}
+                      style={{
+                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                      }}
+                    />
+                    <Video
+                      paused={!play}
+                      muted={!mute}
+                      source={{ uri: multiAttachItem.url }}
+                      style={[styles.singleImageDisplayStyle, {
+                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                        position: 'absolute',
+                      }]}
+                      resizeMode={'cover'}
+                      controls={true}
+                      onRestoreUserInterfaceForPictureInPictureStop={() => {
+                        console.log('Load Start');
+                      }}
+                    />
+                  </View>
                 );
               }
               return <View />;

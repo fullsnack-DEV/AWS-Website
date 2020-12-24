@@ -793,8 +793,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   {bodyParams?.referee?.user_id === entity.uid ? `You received a referee reservation alteration request from ${getEntityName(bodyParams)}.` : `Your team received a referee reservation alteration request from ${getEntityName(bodyParams)}.`}
                   {' '}Please, respond within <Text style={{ color: colors.themeColor }}>
                     {getDayTimeDifferent(
-                    bodyParams?.expiry_datetime * 1000,
-                    new Date().getTime(),
+                      bodyParams?.expiry_datetime * 1000,
+                      new Date().getTime(),
                     )}
                   </Text>
                 </Text>

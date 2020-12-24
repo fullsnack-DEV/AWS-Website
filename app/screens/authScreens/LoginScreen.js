@@ -103,7 +103,7 @@ export default function LoginScreen({ navigation }) {
           console.log('Function data', data);
         }).catch((e) => {
           setloading(false);
-          setTimeout(() => Alert.alert('Towns Cup', e.message), 1);
+          setTimeout(() => Alert.alert('Towns Cup', e.message), 100);
           console.log('Function catch', e);
         })
       });
@@ -117,13 +117,14 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .signInWithEmailAndPassword(_email, _password)
       .then(() => {
-        auth().onAuthStateChanged(onAuthStateChanged);
+        const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
+        loginOnAuthStateChanged();
       })
       .catch((error) => {
-        let message = error.message;
         setloading(false);
+        let message = error.message;
         if (error.code === 'auth/user-not-found') {
-          message = 'This email address is not registerd';
+          message = 'Your email or password is incorrect.Please try again';
         }
         if (error.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
@@ -137,7 +138,7 @@ export default function LoginScreen({ navigation }) {
         if (error.code === 'auth/too-many-requests') {
           message = 'Too many request for login ,try after sometime';
         }
-        setTimeout(() => Alert.alert('Towns Cup', message), 1)
+        setTimeout(() => Alert.alert('Towns Cup', message), 100)
       });
   };
 
@@ -197,7 +198,7 @@ export default function LoginScreen({ navigation }) {
     auth()
       .signInWithCredential(facebookCredential)
       .then(async () => {
-        auth().onAuthStateChanged((user) => {
+        const facebookOnAuthStateChanged = auth().onAuthStateChanged((user) => {
           if (user) {
             user.getIdTokenResult().then(async (idTokenResult) => {
               const token = {
@@ -206,33 +207,30 @@ export default function LoginScreen({ navigation }) {
               };
 
               return getUserDetails(user.uid, authContext).then(async (response) => {
-                if (response.status) {
-                  const entity = {
-                    uid: user.uid,
-                    role: 'user',
-                    obj: response.payload,
-                    auth: {
-                      user_id: user.uid,
-                      token,
-                      user: response.payload,
-                    },
-                  }
-                  await Utility.setStorage('loggedInEntity', entity)
-                  await authContext.setEntity({ ...entity })
-                  await authContext.setUser(response.payload)
-                  QBInitialLogin(entity, response?.payload);
-                } else {
-                  Alert.alert(response.messages);
+                const entity = {
+                  uid: user.uid,
+                  role: 'user',
+                  obj: response.payload,
+                  auth: {
+                    user_id: user.uid,
+                    token,
+                    user: response.payload,
+                  },
                 }
+                await Utility.setStorage('loggedInEntity', entity)
+                await authContext.setEntity({ ...entity })
+                await authContext.setUser(response.payload)
+                QBInitialLogin(entity, response?.payload);
               });
             });
           }
         });
+        facebookOnAuthStateChanged();
       })
       .catch((error) => {
         let message = '';
         if (error.code === 'auth/user-not-found') {
-          message = 'This email address is not registerd';
+          message = 'Your email or password is incorrect.Please try again';
         }
         if (error.code === 'auth/email-already-in-use') {
           message = 'That email address is already in use!';
@@ -253,7 +251,7 @@ export default function LoginScreen({ navigation }) {
       auth()
         .signInWithCredential(googleCredential)
         .then(async () => {
-          auth().onAuthStateChanged((user) => {
+          const googleOnAuthStateChanged = auth().onAuthStateChanged((user) => {
             if (user) {
               user.getIdTokenResult().then(async (idTokenResult) => {
                 const token = {
@@ -267,35 +265,31 @@ export default function LoginScreen({ navigation }) {
                   headers: { Authorization: `Bearer ${token?.token}` },
                 }
                 apiCall(userConfig).then(async (response) => {
-                  if (response.status) {
-                    const entity = {
-                      uid: user.uid,
-                      role: 'user',
-                      obj: response.payload,
-                      auth: {
-                        user_id: user.uid,
-                        token,
-                        user: response.payload,
-                      },
-                    }
-                    await Utility.setStorage('loggedInEntity', entity)
-                    authContext.setEntity({ ...entity })
-                    await authContext.setUser(response.payload);
-                    QBInitialLogin(entity, response?.payload);
-                  } else {
-                    setloading(false);
-                    setTimeout(() => Alert.alert(response.messages), 100)
+                  const entity = {
+                    uid: user.uid,
+                    role: 'user',
+                    obj: response.payload,
+                    auth: {
+                      user_id: user.uid,
+                      token,
+                      user: response.payload,
+                    },
                   }
+                  await Utility.setStorage('loggedInEntity', entity)
+                  authContext.setEntity({ ...entity })
+                  await authContext.setUser(response.payload);
+                  QBInitialLogin(entity, response?.payload);
                 });
               });
             }
           });
+          googleOnAuthStateChanged();
         })
         .catch((error) => {
           setloading(false);
           let message = ''
           if (error.code === 'auth/user-not-found') {
-            message = 'This email address is not registerd';
+            message = 'Your email or password is incorrect.Please try again';
           }
           if (error.code === 'auth/email-already-in-use') {
             message = 'That email address is already in use!';
@@ -303,21 +297,15 @@ export default function LoginScreen({ navigation }) {
           if (error.code === 'auth/invalid-email') {
             message = 'That email address is invalid!';
           }
-          setTimeout(() => Alert.alert('Towns Cup', message), 1);
+          setTimeout(() => Alert.alert('Towns Cup', message), 100);
         });
     } catch (error) {
       let message = '';
       setloading(false)
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        message = 'Process Cancelled'
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        message = 'Process in progress'
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         message = 'Play services are not available'
-      } else {
-        message = `Something else went wrong... ${error.toString()}`;
       }
-      setTimeout(() => Alert.alert('Towns cup', message), 100)
+      if (message !== '') setTimeout(() => Alert.alert('Towns cup', message), 100)
     }
   }
 

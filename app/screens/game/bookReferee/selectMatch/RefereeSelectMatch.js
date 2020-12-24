@@ -18,7 +18,7 @@ import GameCard from '../../../../components/TCGameCard';
 const TYPING_SPEED = 200;
 
 const RefereeSelectMatch = ({ navigation, route }) => {
-  const gameData = route?.params?.gameData;
+  const sport = route?.params?.sport;
   const userData = route?.params?.userData;
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState('');
@@ -35,7 +35,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
     getGameSlots(
       'referees',
       userData?.user_id,
-      `status=accepted&sport=${gameData?.sport}&refereeDetail=true`,
+      `status=accepted&sport=${sport}&refereeDetail=true`,
       headers,
       authContext,
     )
@@ -113,7 +113,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                         message = 'There is no available slot of an assistant referee who you can book in this game.';
                       }
                       if (message === '') {
-                        navigation.navigate('RefereeBookingDateAndTime', {
+                        navigation.navigate(route?.params?.comeFrom, {
                           gameData: item,
                         });
                       } else {

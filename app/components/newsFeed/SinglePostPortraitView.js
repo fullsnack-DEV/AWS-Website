@@ -17,6 +17,7 @@ import {
 import ImageZoom from 'react-native-image-pan-zoom';
 import FastImage from 'react-native-fast-image';
 import Orientation from 'react-native-orientation';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import Header from '../Home/Header';
@@ -32,6 +33,8 @@ export default function SinglePostPortraitView({
   item,
   caller_id,
   navigation,
+  onImageProfilePress,
+  onLikePress,
 }) {
   const [topDesc, setTopDesc] = useState(false);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
@@ -175,13 +178,15 @@ export default function SinglePostPortraitView({
             }
           />
           <View style={styles.mainContainer}>
-            <Image
-                style={styles.background}
-                source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
-                resizeMode={'cover'}
-            />
+            <TouchableWithoutFeedback onPress={onImageProfilePress}>
+              <Image
+                  style={styles.background}
+                  source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
+                  resizeMode={'cover'}
+              />
+            </TouchableWithoutFeedback>
             <View style={styles.userNameView}>
-              <Text style={styles.userNameTxt}>{item.actor.data.full_name}</Text>
+              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
               <Text style={styles.activeTimeAgoTxt}>
                 {commentPostTimeCalculate(item.time)}
               </Text>
@@ -301,7 +306,7 @@ export default function SinglePostPortraitView({
                   } else {
                     setLikeCount(likeCount + 1);
                   }
-                  // onLikePress()
+                  onLikePress()
                 }}
                 style={styles.imageTouchStyle}>
                 {like === true ? (

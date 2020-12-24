@@ -155,7 +155,7 @@ export default function SignupScreen({ navigation }) {
         }
         apiCall(userConfig).then(async () => {
           setloading(false);
-          Alert.alert('This user is already registered!');
+          Alert.alert('User is already registered!');
           navigation.navigate('LoginScreen');
         })
           .catch(() => {
@@ -173,12 +173,13 @@ export default function SignupScreen({ navigation }) {
     auth()
       .createUserWithEmailAndPassword(emailAddress, passwordInput)
       .then(async () => {
-        auth().onAuthStateChanged((user) => {
+        const signUpOnAuthChanged = auth().onAuthStateChanged((user) => {
           if (user) {
             user.sendEmailVerification();
             saveUserDetails(user);
           }
         });
+        signUpOnAuthChanged();
       })
       .catch((e) => {
         setloading(false);
