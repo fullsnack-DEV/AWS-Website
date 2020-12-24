@@ -106,22 +106,7 @@ function NotificationsListScreen({ navigation }) {
         });
       }
     } else {
-      const name = selectedEntity.entity_type === 'player'
-        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
-        : selectedEntity.group_name;
-      Alert.alert(
-        `Do you want to switch account to ${name}?`,
-        '',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-        ],
-        { cancelable: true },
-      );
+      showSwitchProfilePopup()
     }
   };
 
@@ -129,22 +114,7 @@ function NotificationsListScreen({ navigation }) {
     if (activeScreen) {
       console.log('item', item);
     } else {
-      const name = selectedEntity.entity_type === 'player'
-        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
-        : selectedEntity.group_name;
-      Alert.alert(
-        `Do you want to switch account to ${name}?`,
-        '',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-        ],
-        { cancelable: true },
-      );
+      showSwitchProfilePopup()
     }
   };
 
@@ -152,53 +122,14 @@ function NotificationsListScreen({ navigation }) {
     let currentEntity = authContext.entity
 
     if (item.entity_type === 'player') {
-      getUnreadCount(authContext).then((response) => {
-        if (response.status === true) {
-          const { teams } = response.payload;
-          const { clubs } = response.payload;
-          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-          setGroupList(groups);
-          setNotifAPI(1);
-          setCurrentTab(0);
-          checkActiveScreen(groups[0]);
-        } else {
-          // setloading(false)
-        }
-      });
       currentEntity = {
         ...currentEntity, uid: item.user_id, role: 'user', obj: item,
       }
     } else if (item.entity_type === 'team') {
-      getUnreadCount(authContext).then((response) => {
-        if (response.status === true) {
-          const { teams } = response.payload;
-          const { clubs } = response.payload;
-          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-          setGroupList(groups);
-          setNotifAPI(1);
-          setCurrentTab(0);
-          checkActiveScreen(groups[0]);
-        } else {
-          // setloading(false)
-        }
-      });
       currentEntity = {
         ...currentEntity, uid: item.group_id, role: 'team', obj: item,
       }
     } else if (item.entity_type === 'club') {
-      getUnreadCount(authContext).then((response) => {
-        if (response.status === true) {
-          const { teams } = response.payload;
-          const { clubs } = response.payload;
-          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-          setGroupList(groups);
-          setNotifAPI(1);
-          setCurrentTab(0);
-          checkActiveScreen(groups[0]);
-        } else {
-          // setloading(false)
-        }
-      });
       currentEntity = {
         ...currentEntity, uid: item.group_id, role: 'club', obj: item,
       }
@@ -211,13 +142,33 @@ function NotificationsListScreen({ navigation }) {
   const onSwitchProfile = async (item) => {
     setloading(true)
     switchProfile(item).then(() => {
-      setloading(true);
+      setloading(false);
+      setActiveScreen(true)
     }).catch((e) => {
       setloading(false)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
       }, 0.7);
     })
+  }
+
+  const showSwitchProfilePopup = () => {
+    const name = selectedEntity.entity_type === 'player'
+      ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
+      : selectedEntity.group_name;
+    Alert.alert(
+      `Do you want to switch account to ${name}?`,
+      '',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => onSwitchProfile(selectedEntity) },
+      ],
+      { cancelable: true },
+    );
   }
 
   const onDelete = ({ item }) => {
@@ -233,22 +184,7 @@ function NotificationsListScreen({ navigation }) {
           Alert.alert('Failed to move to trash. Try again later');
         });
     } else {
-      const name = selectedEntity.entity_type === 'player'
-        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
-        : selectedEntity.group_name;
-      Alert.alert(
-        `Do you want to switch account to ${name}?`,
-        '',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'Yes', onPress: () => onSwitchProfile(selectedEntity) },
-        ],
-        { cancelable: true },
-      );
+      showSwitchProfilePopup()
     }
   };
 
@@ -266,22 +202,7 @@ function NotificationsListScreen({ navigation }) {
           }, 0.3);
         });
     } else {
-      const name = selectedEntity.entity_type === 'player'
-        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
-        : selectedEntity.group_name;
-      Alert.alert(
-        `Do you want to switch account to ${name}?`,
-        '',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-        ],
-        { cancelable: true },
-      );
+      showSwitchProfilePopup()
     }
   };
 
@@ -298,22 +219,7 @@ function NotificationsListScreen({ navigation }) {
           }, 0.3);
         });
     } else {
-      const name = selectedEntity.entity_type === 'player'
-        ? `${selectedEntity.first_name} ${selectedEntity.last_name}`
-        : selectedEntity.group_name;
-      Alert.alert(
-        `Do you want to switch account to ${name}?`,
-        '',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'Yes', onPress: () => console.log('Yes Pressed') },
-        ],
-        { cancelable: true },
-      );
+      showSwitchProfilePopup()
     }
   };
 
@@ -322,6 +228,10 @@ function NotificationsListScreen({ navigation }) {
     || verb.includes(NotificationType.invitePlayerToJoinClub)
     || verb.includes(NotificationType.inviteToConnectProfile)
     || verb.includes(NotificationType.invitePlayerToJoingame);
+
+  const openHomePage = (item) => {
+    console.log('item', item)
+  }
 
   const renderPendingRequestComponent = ({ item }) => (
     <AppleStyleSwipeableRow
@@ -335,6 +245,7 @@ function NotificationsListScreen({ navigation }) {
           onAccept={() => onAccept(item.activities[0].id)}
           onDecline={() => onDecline(item.activities[0].id)}
           onPress={() => {}}
+          onPressFirstEntity={openHomePage}
         />
       )}
 
@@ -345,6 +256,7 @@ function NotificationsListScreen({ navigation }) {
           onDetailPress={() => onDetailPress(item)}
           onMessagePress={() => onMessagePress(item)}
           onPress={() => {}}
+          onPressFirstEntity={openHomePage}
         />
       )}
     </AppleStyleSwipeableRow>
@@ -357,8 +269,8 @@ function NotificationsListScreen({ navigation }) {
       image={images.deleteIcon}>
       <NotificationItem
         data={item}
-        cta1={() => {}}
-        cta2={() => {}}
+        onPressFirstEntity={openHomePage}
+        onPressSecondEntity={openHomePage}
         card={() => {}}
       />
     </AppleStyleSwipeableRow>
@@ -369,10 +281,7 @@ function NotificationsListScreen({ navigation }) {
       return renderPendingRequestComponent({ item: { ...item, type: 'request' } });
     }
 
-    if (
-      section.section === strings.earlier
-      || section.section === strings.today
-    ) {
+    if (section.section === strings.earlier || section.section === strings.today) {
       return renderNotificationComponent({
         item: { ...item, type: 'notification' },
       });
@@ -380,6 +289,7 @@ function NotificationsListScreen({ navigation }) {
 
     return null;
   };
+
   const activeTab = async (index) => {
     checkActiveScreen(groupList[index]);
     setCurrentTab(index);
