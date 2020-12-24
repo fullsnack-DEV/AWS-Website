@@ -206,7 +206,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
                   <Title text={'Date & Time'} />
                   <TCInfoField
                             title={'Date'}
-                            value={gameData?.start_datetime && moment(gameData?.start_datetime).format('MMM DD, YYYY')}
+                            value={gameData?.start_datetime && moment(gameData?.start_datetime * 1000).format('MMM DD, YYYY')}
                             titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                         />
                   <Seperator height={2}/>
