@@ -19,6 +19,8 @@ function VideoPost({
   data,
   caller_id,
   navigation,
+  onImageProfilePress,
+  onLikePress,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
@@ -83,6 +85,11 @@ function VideoPost({
           navigation={navigation}
           backBtnPress={() => setModalVisible(false)}
           uploadVideoURL={uploadVideoURL && uploadVideoURL}
+          onImageProfilePress={() => {
+            setModalVisible(false)
+            onImageProfilePress()
+          }}
+          onLikePress={onLikePress}
         />
       </Modal>
       <TouchableWithoutFeedback

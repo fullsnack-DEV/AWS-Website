@@ -15,6 +15,7 @@ import {
 import moment from 'moment';
 import {
   widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {
   TouchableWithoutFeedback,
@@ -196,6 +197,7 @@ export default function ScheduleScreen({ navigation }) {
                 })
               }
             }}
+            entity={authContext.entity}
           />
           {!createEventModal && <CreateEventButton
             source={images.plus}
@@ -258,11 +260,12 @@ export default function ScheduleScreen({ navigation }) {
                         }
                       }}
                       eventBetweenSection={itemValue.game}
-                      eventOfSection={itemValue.game && itemValue.game.referees}
+                      eventOfSection={itemValue.game && itemValue.game.referees && itemValue.game.referees.length > 0}
                       onThreeDotPress={() => {
                         setSelectedEventItem(itemValue);
                       }}
                       data={itemValue}
+                      entity={authContext.entity}
                     />)}
                     ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
                       <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
@@ -506,8 +509,12 @@ export default function ScheduleScreen({ navigation }) {
               caller_id: selectedEventItem.owner_id,
             };
             getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+              console.log('Res :-', res);
               setRefereeReserveData(res.payload);
-              if (authContext.entity.uid === selectedEventItem.game.home_team.group_id && res.payload.length > 0) {
+              if ((authContext.entity.uid === selectedEventItem.game.home_team.group_id
+                || authContext.entity.uid === selectedEventItem.game.away_team.group_id)
+                && res.payload.length > 0
+              ) {
                 refereeReservModal();
                 setloading(false);
               } else {
@@ -610,6 +617,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    maxHeight: hp('32%'),
   },
   headerMainContainerStyle: {
     borderTopLeftRadius: 20,

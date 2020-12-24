@@ -12,8 +12,8 @@ import fonts from '../../Constants/Fonts';
 
 function WritePost({ postDataItem, onWritePostPress }) {
   let userImage = '';
-  if (postDataItem && postDataItem.actor && postDataItem.actor.data) {
-    userImage = postDataItem.actor.data.thumbnail;
+  if (postDataItem && postDataItem.thumbnail) {
+    userImage = postDataItem.thumbnail;
   }
 
   return (

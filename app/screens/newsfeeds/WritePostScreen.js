@@ -39,9 +39,14 @@ export default function WritePostScreen({ navigation, route }) {
   const { params: { postData, onPressDone } } = route;
   let userImage = '';
   let userName = '';
-  if (postData && postData.actor && postData.actor.data) {
-    userName = postData.actor.data.full_name;
-    userImage = postData.actor.data.thumbnail;
+  if (postData && postData.thumbnail) {
+    userImage = postData.thumbnail;
+  }
+  if (postData && postData.full_name) {
+    userName = postData.full_name;
+  }
+  if (postData && postData.group_name) {
+    userName = postData.group_name;
   }
 
   const toggleModal = () => {
@@ -189,7 +194,14 @@ export default function WritePostScreen({ navigation, route }) {
                   multiple: true,
                   maxFiles: 10,
                 }).then((data) => {
-                  setSelectImage(data);
+                  let allSelectData = [];
+                  if (selectImage.length > 0) {
+                    allSelectData = [...selectImage, ...data];
+                    setSelectImage(allSelectData);
+                  } else {
+                    setSelectImage(data);
+                  }
+                  // setSelectImage(data);
                   // uploadImage({ data: data[0] }).then((res) => {
                   //   console.log('uploadImage :-', res);
                   // }).catch((e) => {

@@ -24,6 +24,8 @@ function MultiPostVideo({
   item,
   caller_id,
   navigation,
+  onImageProfilePress,
+  onLikePress,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
@@ -65,6 +67,11 @@ function MultiPostVideo({
           caller_id={caller_id}
           navigation={navigation}
           backBtnPress={() => setModalVisible(false)}
+          onImageProfilePress={() => {
+            setModalVisible(false)
+            onImageProfilePress()
+          }}
+          onLikePress={onLikePress}
         />
       </Modal>
       <TouchableWithoutFeedback
