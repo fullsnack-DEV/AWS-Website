@@ -78,6 +78,7 @@ const TCMessage = ({
                 key={item}
                 resizeMode={'cover'}
                 style={{
+                  backgroundColor: 'rgba(0,0,0,0.7)',
                   marginTop: hp(1),
                   overflow: 'hidden',
                   borderBottomRightRadius: type === 'receiver' ? wp(3) : wp(0),

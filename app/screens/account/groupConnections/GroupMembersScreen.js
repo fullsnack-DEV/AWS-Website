@@ -206,15 +206,15 @@ export default function GroupMembersScreen({ navigation, route }) {
                   onPressMessage={() => {
                     const accountType = getQBAccountType(item?.entity_type);
                     QBcreateUser(item?.user_id, item, accountType).then(() => {
-                      navigation.navigate('Message', {
-                        screen: 'MessageMainScreen',
+                      navigation.navigate('MessageChat', {
+                        screen: 'MessageChatRoom',
                         params: { userId: item.user_id },
-                      })
+                      });
                     }).catch(() => {
-                      navigation.navigate('Message', {
-                        screen: 'MessageMainScreen',
+                      navigation.navigate('MessageChat', {
+                        screen: 'MessageChatRoom',
                         params: { userId: item.user_id },
-                      })
+                      });
                     })
                   }}
                   />}

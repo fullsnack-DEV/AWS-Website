@@ -23,6 +23,10 @@ export default function TCSearchBox({
     <View style={{ ...styles.sectionStyle, ...style } } {...props}>
       <Image source={ images.searchLocation } style={ styles.searchImg } />
       <TextInput
+          autoCapitalize={'none'}
+          autoCompleteType={'off'}
+          textContentType={'none'}
+          autoCorrect={false}
           value={value}
             style={ styles.textInput }
             placeholder={ placeholderText }

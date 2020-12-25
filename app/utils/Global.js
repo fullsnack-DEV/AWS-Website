@@ -37,33 +37,51 @@ const makeAPIRequest = async ({
   if (!netStat || !netStat.isConnected) {
     Alert.alert('Error: Internet not available');
     throw new Error('no-internet');
+  } else {
+    const entity = authContext?.entity;
+    let authToken = entity.auth.token.token;
+    const currentDate = new Date();
+    const expiryDate = new Date(entity.auth.token.expirationTime);
+    // const expiryDate = new Date('25 Dec 2020 14:30');
+    if (expiryDate.getTime() <= currentDate.getTime()) {
+      console.log('Token Expired');
+      const globalOnAuthStateChanged = await firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          user.getIdTokenResult().then(async (idTokenResult) => {
+            authToken = idTokenResult.token;
+            const token = {
+              token: idTokenResult.token,
+              expirationTime: idTokenResult.expirationTime,
+            };
+            entity.auth.token = token;
+            await authContext.setEntity({ ...entity });
+            await Utility.setStorage('authContextEntity', { ...entity })
+            return globalApiCall({
+              method, url, data, headers, params, responseType, authContext, authToken,
+            })
+          });
+        }
+      });
+      globalOnAuthStateChanged();
+    }
+    return globalApiCall({
+      method, url, data, headers, params, responseType, authContext, authToken,
+    })
   }
+});
+
+const globalApiCall = async ({
+  method,
+  url,
+  data,
+  headers,
+  params,
+  responseType,
+  authContext,
+  authToken,
+}) => {
   const entity = authContext?.entity;
-  // if (!entity) {
-  //   entity = await Utility.getStorage('loggedInEntity');
-  // }
   console.log('entity::', entity, url);
-  let authToken = entity.auth.token.token;
-  const currentDate = new Date();
-  const expiryDate = new Date(entity.auth.token.expirationTime);
-  // FIXME when token expire, wait for new token and then call api
-  if (expiryDate.getTime() <= currentDate.getTime()) {
-    const globalOnAuthStateChanged = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        user.getIdTokenResult().then(async (idTokenResult) => {
-          authToken = idTokenResult.token;
-          const token = {
-            token: idTokenResult.token,
-            expirationTime: idTokenResult.expirationTime,
-          };
-          entity.auth.token = token;
-          authContext.setEntity({ ...entity });
-          Utility.setStorage('authContextEntity', { ...entity })
-        });
-      }
-    });
-    globalOnAuthStateChanged();
-  }
   let caller_id;
   let caller;
   console.log('entity.role', entity.role);
@@ -74,12 +92,7 @@ const makeAPIRequest = async ({
   const headersParams = prepareHeader(headers, authToken, caller_id, caller);
   console.log('apiHeaders::', headersParams);
   const options = {
-    method,
-    url,
-    data,
-    headers: headersParams,
-    params,
-    responseType,
+    method, url, data, headers: headersParams, params, responseType,
   };
 
   try {
@@ -94,6 +107,6 @@ const makeAPIRequest = async ({
   } catch (e) {
     throw new Error(e);
   }
-});
+};
 
 export default makeAPIRequest;

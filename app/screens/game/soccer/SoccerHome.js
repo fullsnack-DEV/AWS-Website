@@ -41,6 +41,7 @@ const globalGameId = gameIds[0];
 const SoccerHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId ?? globalGameId);
+  console.log(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(false);
