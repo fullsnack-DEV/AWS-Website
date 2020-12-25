@@ -66,6 +66,8 @@ export default function EditRefereeReservation({ navigation, route }) {
   const [editPayment, setEditPayment] = useState(false);
   const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
+  const [refereeUpdate, setRefereeUpdate] = useState(false);
+
   const [defaultCard, setDefaultCard] = useState()
   const [isDeclined, setIsDeclined] = useState(false)
   useEffect(() => {
@@ -84,7 +86,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     navigation.setOptions({
       title: getNavigationTitle(),
     });
-  }, [navigation, bodyParams]);
+  }, [navigation, bodyParams, refereeUpdate]);
   useEffect(() => {
     entity = authContext.entity;
 
@@ -166,8 +168,8 @@ export default function EditRefereeReservation({ navigation, route }) {
         })
       }
     }
-    if (route?.params?.userData) {
-      setbodyParams({ ...bodyParams, game: route?.params?.userData })
+    if (route?.params?.gameData) {
+      setbodyParams({ ...bodyParams, game: route?.params?.gameData })
     }
     getPaymentMethods()
   }, [isFocused]);
@@ -269,11 +271,13 @@ export default function EditRefereeReservation({ navigation, route }) {
 
   const cancelAlterReservationOperation = (
     reservationId,
+    callerID,
     versionNo,
   ) => {
     setloading(true);
     cancelAlterReservation(
       reservationId,
+      callerID,
       versionNo,
       authContext,
     )
@@ -312,26 +316,26 @@ export default function EditRefereeReservation({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'accept',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationRequestAccepted,
+            imageAnimation: true,
           });
         } else if (status === 'decline') {
           if (isRestored) {
-            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-              teamObj: awayTeam,
-              status: 'restored',
+            navigation.navigate('RefereeRequestSent', {
+              operationType: strings.reservationRequestRestored,
+              imageAnimation: false,
             });
           } else {
-            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-              teamObj: awayTeam,
-              status: 'decline',
+            navigation.navigate('RefereeRequestSent', {
+              operationType: strings.reservationRequestDeclined,
+              imageAnimation: false,
             });
           }
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'cancel',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationRequestCancelled,
+            imageAnimation: false,
           });
         }
       })
@@ -345,6 +349,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
   const acceptDeclineAlterReservationOperation = (
     reservationId,
+    callerID,
     versionNo,
     status,
     paymentID,
@@ -353,6 +358,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
     acceptDeclineAlterReservation(
       reservationId,
+      callerID,
       versionNo,
       status,
       paymentID && { source: paymentID },
@@ -572,7 +578,11 @@ export default function EditRefereeReservation({ navigation, route }) {
 
     const reservationId = bodyParams?.reservation_id;
     console.log('FINAL BODY PARAMS::', body);
-    updateReservation(reservationId, body, authContext)
+    let callerId;
+    if (bodyParams?.referee?.user_id !== entity.uid) {
+      callerId = entity.uid
+    }
+    updateReservation(reservationId, callerId, body, authContext)
       .then(() => {
         setloading(false);
         navigation.navigate('AlterRequestSent');
@@ -1013,7 +1023,10 @@ export default function EditRefereeReservation({ navigation, route }) {
                 <TouchableOpacity style={{
                   borderColor: colors.magnifyIconColor, height: 22, width: 22, borderWidth: 2, borderRadius: 50, alignItems: 'center', justifyContent: 'center',
                 }}
-                    onPress={() => setChiefOrAssistant(item)}>
+                    onPress={() => {
+                      setRefereeUpdate(true)
+                      setChiefOrAssistant(item)
+                    }}>
                   {item === chiefOrAssistant && (
                     <LinearGradient
                               colors={[colors.orangeColor, colors.yellowColor]}
@@ -1087,7 +1100,7 @@ export default function EditRefereeReservation({ navigation, route }) {
               showNextArrow={true}
               onPress={() => {
                 navigation.navigate('PaymentMethodsScreen', {
-                  comeFrom: 'AlterRefereeScreen',
+                  comeFrom: 'EditRefereeReservation',
                 })
               }}
             />
@@ -1122,8 +1135,13 @@ export default function EditRefereeReservation({ navigation, route }) {
                     height={40}
                     shadow={true}
                     onPress={() => {
+                      let callerId;
+                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                        callerId = entity.uid
+                      }
                       cancelAlterReservationOperation(
                         bodyParams.reservation_id,
+                        callerId,
                         bodyParams.version,
                       );
                     }}
@@ -1138,8 +1156,13 @@ export default function EditRefereeReservation({ navigation, route }) {
                   <TCGradientButton
                     title={strings.accept}
                     onPress={() => {
+                      let callerId;
+                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                        callerId = entity.uid
+                      }
                       acceptDeclineAlterReservationOperation(
                         bodyParams.reservation_id,
+                        callerId,
                         bodyParams.version,
                         'accept',
                         route?.params?.paymentMethod && route?.params?.paymentMethod?.id,
@@ -1176,6 +1199,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                     onPress={() => {
                       if (
                         editInfo
+                        || refereeUpdate
                         || editPayment
                       ) {
                         updateReservationDetail();
@@ -1218,8 +1242,13 @@ export default function EditRefereeReservation({ navigation, route }) {
                         || bodyParams?.game?.status === GameStatus.reset)
                       && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                     ) {
-                      acceptDeclineAlterReservation(
+                      let callerId;
+                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                        callerId = entity.uid
+                      }
+                      acceptDeclineAlterReservationOperation(
                         bodyParams.reservation_id,
+                        callerId,
                         bodyParams.version,
                         'cancel',
                       );

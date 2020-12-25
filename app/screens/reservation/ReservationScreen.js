@@ -28,7 +28,7 @@ export default function ReservationScreen({ navigation }) {
   }, [isFocused]);
 
   const getReservationListByCaller = async () => {
-    getReservationList(authContext).then((response) => {
+    getReservationList(authContext.entity.uid, authContext).then((response) => {
       setloading(false);
       const upcomingData = [];
       const pastData = [];

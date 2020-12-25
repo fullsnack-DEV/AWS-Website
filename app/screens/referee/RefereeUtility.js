@@ -10,7 +10,7 @@ export const getRefereeReservationDetail = (reservationID, callerID, authContext
   const Obj = {}
   console.log('Authcontext::', JSON.stringify(authContext.entity.uid));
   // eslint-disable-next-line consistent-return
-  return getReservation(reservationID, callerID, authContext).then((response) => {
+  return getReservation(reservationID, callerID && callerID, authContext).then((response) => {
     console.log('reservation Utils:', JSON.stringify(response.payload));
     if (RefereeReservationStatus.changeRequest === response.payload[0].status
           || RefereeReservationStatus.pendingrequestpayment === response.payload[0].status) {

@@ -14,7 +14,6 @@ import { useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
 
-import * as Utility from '../../../utils';
 import {
   acceptDeclineAlterReservation,
   acceptDeclineReservation,
@@ -39,7 +38,6 @@ import TCBorderButton from '../../../components/TCBorderButton';
 import MatchFeesCard from '../../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../../components/reservations/ReservationNumber';
 import GameStatus from '../../../Constants/GameStatus';
-import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCProfileView from '../../../components/TCProfileView';
 import TCGameCard from '../../../components/TCGameCard';
 import { getGameFromToDateDiff } from '../../../utils/gameUtils';
@@ -263,11 +261,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
   const cancelAlterReservationOperation = (
     reservationId,
+    callerID,
     versionNo,
   ) => {
     setloading(true);
     cancelAlterReservation(
       reservationId,
+      callerID,
       versionNo,
       authContext,
     )
@@ -339,6 +339,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
   const acceptDeclineAlterReservationOperation = (
     reservationId,
+    callerID,
     versionNo,
     status,
     paymentID,
@@ -347,6 +348,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
     acceptDeclineAlterReservation(
       reservationId,
+      callerID,
       versionNo,
       status,
       paymentID && { source: paymentID },
@@ -566,7 +568,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
     const reservationId = bodyParams?.reservation_id;
     console.log('FINAL BODY PARAMS::', body);
-    updateReservation(reservationId, body, authContext)
+    let callerId;
+    if (bodyParams?.referee?.user_id !== entity.uid) {
+      callerId = entity.uid
+    }
+    updateReservation(reservationId, callerId, body, authContext)
       .then(() => {
         setloading(false);
         navigation.navigate('AlterRequestSent');
@@ -830,7 +836,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
           {/* status change requested automatic */}
 
           {/* status pending request payment */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+          {bodyParams?.referee?.user_id !== entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
@@ -848,7 +854,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 </Text>
               </View>
           )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+          {bodyParams?.referee?.user_id === entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
@@ -865,7 +871,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
           )}
           {/* status pending request payment */}
 
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+          {bodyParams?.referee?.user_id !== entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
               <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
@@ -878,7 +884,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 marginBottom={15}
               />
           )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+          {bodyParams?.referee?.user_id === entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
               <TCGradientButton
                 title={'RESTORE TO PREVIOUS VERSION'}
@@ -1081,21 +1087,6 @@ export default function AlterRefereeScreen({ navigation, route }) {
               checkSenderForPayment(bodyParams)
             }
           />
-
-          { checkSenderForPayment(bodyParams) === 'sender' && paymentCard.total_game_charges > 0 && (
-            <View style={{ marginTop: 10 }}>
-              <TCTouchableLabel
-            title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
-            subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
-            showNextArrow={true}
-            onPress={() => {
-              navigation.navigate('PaymentMethodsScreen', {
-                comeFrom: 'AlterRefereeScreen',
-              })
-            }}
-          />
-            </View>
-          )}
           {editPayment && (
             <View style={{ marginTop: 15 }}>
               <Text style={styles.differenceText}>
@@ -1125,8 +1116,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   height={40}
                   shadow={true}
                   onPress={() => {
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     cancelAlterReservationOperation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                     );
                   }}
@@ -1141,8 +1137,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 <TCGradientButton
                   title={strings.accept}
                   onPress={() => {
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineAlterReservationOperation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'accept',
                       route?.params?.paymentMethod && route?.params?.paymentMethod?.id,
@@ -1221,8 +1222,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
                       || bodyParams?.game?.status === GameStatus.reset)
                     && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                   ) {
-                    acceptDeclineAlterReservation(
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
+                    acceptDeclineAlterReservationOperation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'cancel',
                     );

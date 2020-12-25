@@ -8,7 +8,7 @@ import {
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
 import _ from 'lodash';
-import { acceptDeclineReservation } from '../../api/Challenge';
+import { acceptDeclineReservation, getReservation } from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
@@ -46,8 +46,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
     entity = authContext.entity;
     const { reservationObj } = route.params ?? {};
     console.log('ALTER REFEREE RESERVATION OBJECT:', reservationObj);
-    console.log('ALTER REFEREE RESERVATION Home team OBJECT:', homeTeam);
-    // if (reservationObj?.reservation_id) { getReservationDetails(reservationObj?.reservation_id); }
+    console.log('ALTER REFEREE RESERVATION Home team OBJECT:', awayTeam);
+    if (route?.params?.isRefresh) {
+      getReservationDetails(reservationObj?.reservation_id);
+    }
     setbodyParams(reservationObj);
     if ((reservationObj?.game?.away_team?.group_id || reservationObj?.game?.away_team?.user_id) === entity.uid) {
       setHomeTeam(reservationObj?.game?.away_team);
@@ -56,7 +58,6 @@ export default function RefereeReservationScreen({ navigation, route }) {
       setHomeTeam(reservationObj?.game?.home_team);
       setAwayTeam(reservationObj?.game?.away_team);
     }
-    // requester = getRequester()
   }, [isFocused]);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,12 +73,14 @@ export default function RefereeReservationScreen({ navigation, route }) {
   }
   const acceptDeclineRefereeReservation = (
     reservationID,
+    callerID,
     versionNo,
     status,
   ) => {
     setloading(true);
     acceptDeclineReservation(
       reservationID,
+      callerID,
       versionNo,
       status,
       {},
@@ -88,19 +91,19 @@ export default function RefereeReservationScreen({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'accept',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationRequestAccepted,
+            imageAnimation: true,
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'decline',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationRequestDeclined,
+            imageAnimation: false,
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'cancel',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationRequestCancelled,
+            imageAnimation: false,
           });
         }
       })
@@ -111,31 +114,27 @@ export default function RefereeReservationScreen({ navigation, route }) {
         }, 0.7);
       });
   };
-  // const getReservationDetails = (reservationId) => {
-  //   getReservation(reservationId, authContext)
-  //     .then((response) => {
-  //       setloading(false);
-  //       // For Test
-  //       // Start
-  //       // setReservationObj(response.payload);
-  //       // End
-  //       setbodyParams(response.payload[0]);
-  //       if ((response.payload[0]?.game?.away_team?.group_id || response.payload[0]?.game?.away_team?.user_id) === entity.uid) {
-  //         setHomeTeam(response.payload[0]?.game?.away_team);
-  //         setAwayTeam(response.payload[0]?.game?.home_team);
-  //       } else {
-  //         setHomeTeam(response.payload[0]?.game?.home_team);
-  //         setAwayTeam(response.payload[0]?.game?.away_team);
-  //       }
-  //       console.log(homeTeam);
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setTimeout(() => {
-  //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 0.7);
-  //     });
-  // };
+  const getReservationDetails = (reservationId) => {
+    getReservation(reservationId, authContext.entity.uid, authContext)
+      .then((response) => {
+        setloading(false);
+        setbodyParams(response.payload[0]);
+        if ((response.payload[0]?.game?.away_team?.group_id || response.payload[0]?.game?.away_team?.user_id) === entity.uid) {
+          setHomeTeam(response.payload[0]?.game?.away_team);
+          setAwayTeam(response.payload[0]?.game?.home_team);
+        } else {
+          setHomeTeam(response.payload[0]?.game?.home_team);
+          setAwayTeam(response.payload[0]?.game?.away_team);
+        }
+        console.log(homeTeam);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
+  };
 
   const getDayTimeDifferent = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
@@ -751,8 +750,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   height={40}
                   shadow={true}
                   onPress={() => {
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'cancel',
                     );
@@ -775,8 +779,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     } else if ((bodyParams?.expiry_datetime < new Date().getTime() / 1000) || (bodyParams?.game?.start_datetime < new Date().getTime() / 1000)) {
                       Alert.alert(strings.refereeOfferExpiryText)
                     } else {
+                      let callerId;
+                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                        callerId = entity.uid
+                      }
                       acceptDeclineRefereeReservation(
                         bodyParams.reservation_id,
+                        callerId,
                         bodyParams.version,
                         'accept',
                       );
@@ -791,8 +800,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   marginBottom={15}
                   shadow={true}
                   onPress={() => {
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'decline',
                     );
@@ -838,8 +852,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 marginTop={15}
                 onPress={() => {
                   if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'cancel',
                     );
@@ -872,8 +891,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       || bodyParams.game_status === GameStatus.reset)
                     && bodyParams.start_datetime * 1000 > new Date().getTime()
                   ) {
+                    let callerId;
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'cancel',
                     );

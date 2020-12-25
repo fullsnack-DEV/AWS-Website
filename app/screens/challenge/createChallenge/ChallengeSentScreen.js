@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   View, StyleSheet, Image, Text,
+  TouchableOpacity,
 } from 'react-native';
 
 import images from '../../../Constants/ImagePath';
@@ -11,8 +12,24 @@ import TCBorderButton from '../../../components/TCBorderButton';
 export default function ChallengeSentScreen({ navigation, route }) {
   return (
     <View style={styles.mainContainer}>
+
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
+      <TouchableOpacity onPress={() => {
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'HomeScreen',
+            params: {
+              uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
+              backButtonVisible: true,
+              role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
+            },
+          }],
+        });
+      }}>
+        <Image style={styles.backButtonImage} source={images.backArrow} />
+      </TouchableOpacity>
       <View style={styles.mailContainer}>
         <Text style={styles.invitationText}>Challenge sent</Text>
         <View style={styles.imageContainer}>
@@ -22,18 +39,24 @@ export default function ChallengeSentScreen({ navigation, route }) {
           match reservation request, you will be notified.</Text>
       </View>
       {route && route.params && route.params.groupObj && <TCBorderButton
-      title={`GO TO ${route.params.groupObj.group_name || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`}`}
+      title={`GO TO ${(route.params.groupObj.group_name).toUpperCase() || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`.toUpperCase()}`}
       textColor={colors.whiteColor}
       borderColor={colors.whiteColor}
       backgroundColor={'transparent'}
       height={40} shadow={true}
-      marginBottom={20}
+      marginBottom={60}
       onPress={() => {
-        navigation.navigate('HomeScreen', {
-          uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
-          backButtonVisible: true,
-          role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
-        })
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'HomeScreen',
+            params: {
+              uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
+              backButtonVisible: true,
+              role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
+            },
+          }],
+        });
       }}/>}
 
     </View>
@@ -50,6 +73,14 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     resizeMode: 'stretch',
+  },
+  backButtonImage: {
+    marginTop: 55,
+    marginLeft: 15,
+    height: 15,
+    width: 15,
+    tintColor: colors.whiteColor,
+    resizeMode: 'cover',
   },
   mailContainer: {
     alignSelf: 'center',

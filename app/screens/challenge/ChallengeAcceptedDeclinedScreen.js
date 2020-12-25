@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React from 'react';
 import {
   View, StyleSheet, Image, Text,
@@ -48,21 +49,16 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
 
       {route && route.params && route.params.teamObj && (
         <TCBorderButton
-          title={`Go to ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`}`}
+          title={`GO TO ${(route.params.teamObj.group_name).toUpperCase() || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`.toUpperCase()}`}
           textColor={colors.whiteColor}
           borderColor={colors.whiteColor}
           backgroundColor={'transparent'}
           height={40}
           shadow={true}
           marginBottom={20}
-          onPress={() => navigation.navigate('Account', {
-            screen: 'HomeScreen',
-            params: {
-              uid: route.params.teamObj.group_id || route.params.teamObj.user_id,
-              backButtonVisible: true,
-              role: route.params.teamObj.entity_type === 'player' ? 'user' : route.params.teamObj.entity_type,
-            },
-          })}
+          onPress={() => {
+
+          }}
         />
 
       )}
@@ -73,7 +69,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           borderColor={'transparent'}
           height={40}
           shadow={true}
-          marginBottom={20}
+          marginBottom={55}
           onPress={() => {
             if (`${route?.params?.teamObj?.sport}`.toLowerCase() === 'soccer') {
               navigation.navigate('SoccerHome', {

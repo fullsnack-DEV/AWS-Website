@@ -29,9 +29,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
   useEffect(() => {
     setLoading(true);
     const headers = {}
-    if (authContext?.entity?.role === 'user') {
-      headers.caller_id = authContext?.entity?.uid
-    }
+    headers.caller_id = authContext?.entity?.uid;
     getGameSlots(
       'referees',
       userData?.user_id,

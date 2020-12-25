@@ -772,7 +772,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           )}
 
           <TCBorderButton
-              title={'GAME HOME'}
+              title={strings.gameHomeText}
               onPress={() => {
                 if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
                   navigation.navigate('SoccerHome', {

@@ -305,7 +305,7 @@ const strings = {
 
   doneByText: 'Done by',
   detailText: 'DETAILS',
-  respondWithinText: 'RESPOND within',
+  respondWithinText: 'RESPOND',
   noReservationFountText: 'No Reservations Found',
   // member connection
   connectAccountText: 'Invite or Connect Account',
@@ -474,14 +474,14 @@ const strings = {
   cannotAcceptText: 'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
   selectCardText: 'Please select payment method.',
-  reservationRequestSent: 'RESERVATION REQUEST SENT',
-  reservationRequestPending: 'RESERVATION REQUEST PENDING',
-  reservationConfirmed: 'RESERVATION CONFIRMED',
-  reservationDeclined: 'RESERVATION DECLINED',
+  reservationRequestSent: 'SENT',
+  reservationRequestPending: 'PENDING',
+  reservationConfirmed: 'CONFIRMED',
+  reservationDeclined: 'DECLINED',
   alterationRequestSent: 'ALTERATION REQUEST SENT',
   alterationRequestPending: 'ALTERATION REQUEST PENDING',
-  reservationCancelled: 'RESERVATION CANCELLED',
-  reservationRestored: 'RESERVATION RESTORED',
+  reservationCancelled: 'CANCELLED',
+  reservationRestored: 'RESTORED',
   reservationAwaitingPayment: 'AWAITING PAYMENT',
   alterationRequestCancelled: 'ALTERATION REQUEST CANCELLED',
   challenger: 'Challenger',
@@ -489,5 +489,13 @@ const strings = {
   requester: 'Requester',
   requestee: 'Requestee',
 
+  // reservation request
+
+  reservationRequestAccepted: 'Reservation request accepted',
+  reservationRequestDeclined: 'Reservation request declined',
+  reservationRequestCancelled: 'Reservation request cancelled',
+  reservationRequestRestored: 'Reservation request restored',
+
+  gameHomeText: 'GAME HOME',
 };
 export default strings;

@@ -69,17 +69,17 @@ export default function ChallengerInOutView({ data }) {
 
       if (data.game.singlePlayerGame) {
         if (data.initiated_by === data.game.home_team.user_id) {
-          return { name: `${data.home_team.first_name} ${data.home_team.last_name}`, thumbnail: data?.home_team?.thumbnail }
+          return { name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`, thumbnail: data?.game?.home_team?.thumbnail }
         }
 
-        return { name: `${data.away_team.first_name} ${data.away_team.last_name}`, thumbnail: data?.away_team?.thumbnail }
+        return { name: `${data.game.away_team.first_name} ${data.game.away_team.last_name}`, thumbnail: data?.game?.away_team?.thumbnail }
       }
 
-      if (data.initiated_by === data?.home_team?.group_id) {
-        return { name: data?.home_team?.group_name, thumbnail: data?.home_team?.thumbnail }
+      if (data.initiated_by === data?.game?.home_team?.group_id) {
+        return { name: data?.game?.home_team?.group_name, thumbnail: data?.game?.home_team?.thumbnail }
       }
 
-      return { name: data?.away_team?.group_name, thumbnail: data?.away_team?.thumbnail }
+      return { name: data?.game?.away_team?.group_name, thumbnail: data?.game?.away_team?.thumbnail }
     }
     if (data.scorekeeper) {
       if (data.initiated_by === entity.uid) {
@@ -88,23 +88,23 @@ export default function ChallengerInOutView({ data }) {
 
       if (data.game.singlePlayerGame) {
         if (data.initiated_by === data.game.home_team.user_id) {
-          return { name: `${data.home_team.first_name} ${data.home_team.last_name}`, thumbnail: data?.home_team?.thumbnail }
+          return { name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`, thumbnail: data?.game?.home_team?.thumbnail }
         }
 
-        return { name: `${data.away_team.first_name} ${data.away_team.last_name}`, thumbnail: data?.away_team?.thumbnail }
+        return { name: `${data.game.away_team.first_name} ${data.game.away_team.last_name}`, thumbnail: data?.game?.away_team?.thumbnail }
       }
 
-      if (data.initiated_by === data?.home_team?.group_id) {
-        return { name: data?.home_team?.group_name, thumbnail: data?.home_team?.thumbnail }
+      if (data.initiated_by === data?.game?.home_team?.group_id) {
+        return { name: data?.game?.home_team?.group_name, thumbnail: data?.game?.home_team?.thumbnail }
       }
 
-      return { name: data?.away_team?.group_name, thumbnail: data?.away_team?.thumbnail }
+      return { name: data?.game?.away_team?.group_name, thumbnail: data?.game?.away_team?.thumbnail }
     }
   }
   return (
     <>
       <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-        <Image source={(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? images.requestIn : images.requestIn} style={styles.inOutImageView} />
+        <Image source={(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? images.requestIn : images.requestOut} style={styles.inOutImageView} />
         <View style={styles.entityView}>
           {getEntityObject().thumbnail ? (
             <Image
@@ -119,59 +119,12 @@ export default function ChallengerInOutView({ data }) {
           )}
           <Text style={styles.entityName}>
             {`${getEntityObject().name}   ` }
-            <Text style={[styles.requesterText, { color: colors.greeColor }]}>
+            <Text style={[styles.requesterText, { color: (getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? colors.themeColor : colors.greeColor }]}>
               {getChallengerOrChallengee()}
             </Text>
           </Text>
         </View>
       </View>
-      {/* {(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? (
-        <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-          <Image source={images.requestOut} style={styles.inOutImageView} />
-          <View style={styles.entityView}>
-                {getEntityObject().thumbnail ? (
-                  <Image
-                    source={{ uri: getEntityObject().thumbnail }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                )}
-              <Text style={styles.entityName}>
-                {getEntityObject().name}
-                <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                  {getChallengerOrChallengee()}
-                </Text>
-              </Text>
-          </View>
-        </View>
-        ) : (
-          <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
-            <Image source={images.requestIn} style={styles.inOutImageView} />
-            <View style={styles.entityView}>
-                {getEntityObject().thumbnail ? (
-                  <Image
-                    source={{ uri: getEntityObject().thumbnail }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Image
-                    source={images.teamPlaceholder}
-                    style={styles.profileImage}
-                  />
-                )}
-                <Text style={styles.entityName}>
-                  {getEntityObject().name}
-                  <Text style={[styles.requesterText, { color: colors.greeColor }]}>
-                    {getChallengerOrChallengee()}
-                  </Text>
-                </Text>
-            </View>
-          </View>
-        )} */}
 
     </>
   );
