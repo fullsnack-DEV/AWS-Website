@@ -13,7 +13,7 @@ function ActivityLoader({ visible = false }) {
     <Modal visible={ true } transparent={ true } style={ { backgroundColor: '#fff' } }>
       <View style={ styles.containerStyle }>
         <View style={ styles.indicatorViewStyle }>
-          <ActivityIndicator size={ 'large' } color={ colors.blackColor } />
+          <ActivityIndicator size={ 'large' } color={ colors.whiteColor } />
         </View>
       </View>
     </Modal>
@@ -23,7 +23,7 @@ function ActivityLoader({ visible = false }) {
 const styles = StyleSheet.create({
   containerStyle: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     height: '100%',
     justifyContent: 'center',
     position: 'absolute',
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   indicatorViewStyle: {
     alignItems: 'center',
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     borderRadius: wp(3),
     height: wp(25),
     justifyContent: 'center',

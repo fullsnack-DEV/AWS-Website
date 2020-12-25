@@ -73,7 +73,7 @@ export default function EntitySearchScreen({ navigation }) {
       <ActivityLoader visible={loading} />
 
       <View style={styles.searchBarView}>
-        <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) } marginTop={70}/>
+        <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) } marginTop={70} />
       </View>
       <FlatList
         data={groups}

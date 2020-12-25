@@ -18,6 +18,8 @@ import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDa
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
+import MessageDrawerNavigator from './MessageDrawerNavigator';
+import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 
 const Stack = createStackNavigator();
 
@@ -221,6 +223,40 @@ const NewsFeedNavigator = () => (
               borderBottomWidth: 0.3,
             },
           } }
+      />
+    <Stack.Screen
+          name="GroupMembersScreen"
+          component={ GroupMembersScreen }
+          options={ {
+            title: 'Connection',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
+    <Stack.Screen
+          name="MessageChat"
+          component={MessageDrawerNavigator}
+          options={{
+
+            title: 'Message Chat',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          }}
       />
 
   </Stack.Navigator>

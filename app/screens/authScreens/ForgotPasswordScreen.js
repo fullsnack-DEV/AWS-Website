@@ -15,10 +15,11 @@ import strings from '../../Constants/String';
 import images from '../../Constants/ImagePath'
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
-
+  const [loading, setLoading] = useState(false);
   // Basic input validation
   const checkValidation = () => {
     if (email === '') {
@@ -41,10 +42,13 @@ export default function ForgotPasswordScreen({ navigation }) {
   }
   // Firebase forgot pasword function
   const forgotPassword = (emailText) => {
+    setLoading(true);
     firebase.auth().sendPasswordResetEmail(emailText)
       .then(() => {
+        setLoading(false);
         navigation.navigate('ForgotPasswordLinkSentScreen');
       }).catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 0.7);
@@ -53,12 +57,13 @@ export default function ForgotPasswordScreen({ navigation }) {
   return (
 
     <View style={ styles.mainContainer }>
+      <ActivityLoader visible={loading}/>
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
       <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
       <Text style={ styles.resetText }>{strings.resetText}</Text>
       <TCTextField
-      style={styles.textFieldStyle}
+      style={{ ...styles.textFieldStyle }}
         placeholder={ strings.enterEmailPlaceholder }
         secureText={ false }
         autoCapitalize="none"
@@ -127,7 +132,7 @@ const styles = StyleSheet.create({
   textFieldStyle: {
     backgroundColor: colors.whiteColor,
     fontFamily: fonts.RRegular,
-
+    flex: 0,
     marginBottom: 10,
     marginLeft: 32,
     marginRight: 32,

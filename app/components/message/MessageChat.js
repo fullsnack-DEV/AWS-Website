@@ -28,7 +28,7 @@ import TCMessage from '../TCMessage';
 import AuthContext from '../../auth/context'
 import {
   QB_ACCOUNT_TYPE,
-  QB_DIALOG_TYPE, QBgetMessages, QBgetUserDetail, QBsendMessage,
+  QB_DIALOG_TYPE, QBcreateDialog, QBgetMessages, QBgetUserDetail, QBsendMessage,
 } from '../../utils/QuickBlox';
 
 const MAX_FILE_SIZE = 104857600;
@@ -51,34 +51,94 @@ const MessageChat = ({
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const {
-    id: dialogId,
-    name,
-    occupantsIds,
-    type: dialogType,
-    isJoined,
-  } = route?.params?.dialog
-  const chatType = occupantsIds.length > 2 ? QB_DIALOG_TYPE.GROUP : QB_DIALOG_TYPE.SINGLE
+  const [dialogData, setDialogData] = useState(null);
+
+  // const {
+  //   id: dialogId,
+  //   name,
+  //   occupantsIds,
+  //   type: dialogType,
+  //   isJoined,
+  // } = route?.params?.dialog
+  const [chatType, setChatType] = useState('');
+  const [headingTitle, setHeadingTitle] = useState('');
   const [myUserId, setMyUserId] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [messageBody, setMessageBody] = useState('');
   const [savedMessagesData, setSavedMessagesData] = useState([]);
   const [occupantsData, setOccupantsData] = useState([]);
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
-  let headingTitle = name;
-  if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-    if (name.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
-      headingTitle = name.slice(2, name.length)
+
+  useEffect(() => {
+    const setData = (data) => {
+      const dialogDatas = {
+        dialogId: data?.id,
+        name: data?.name,
+        occupantsIds: data?.occupantsIds,
+        dialogType: data?.type,
+        isJoined: data?.isJoined,
+      }
+      setChatType(dialogDatas?.occupantsIds.length > 2 ? QB_DIALOG_TYPE.GROUP : QB_DIALOG_TYPE.SINGLE);
+      if (dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+        if (dialogDatas?.name.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
+          setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
+        } else {
+          setHeadingTitle(dialogDatas?.name);
+        }
+      }
+      setDialogData(dialogDatas);
     }
-  }
+    if (route?.params?.dialog) {
+      setData(route?.params?.dialog);
+    }
+  }, [route?.params?.dialog])
+
+  useEffect(() => {
+    setLoading(true);
+    const uid = route?.params?.userId;
+    const setData = (data) => {
+      const dialogDatas = {
+        dialogId: data?.id,
+        name: data?.name,
+        occupantsIds: data?.occupantsIds,
+        dialogType: data?.type,
+        isJoined: data?.isJoined,
+      }
+      setChatType(dialogDatas?.occupantsIds.length > 2 ? QB_DIALOG_TYPE.GROUP : QB_DIALOG_TYPE.SINGLE);
+      if (dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+        if (dialogDatas?.name.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
+          setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
+        } else {
+          setHeadingTitle(dialogDatas?.name);
+        }
+      }
+      setDialogData(dialogDatas);
+    }
+
+    if (uid) {
+      QBgetUserDetail(
+        QB.users.USERS_FILTER.FIELD.LOGIN,
+        QB.users.USERS_FILTER.TYPE.STRING,
+        [uid].join(),
+      ).then((userData) => {
+        const user = userData.users.filter((item) => item.login === uid)[0];
+        QBcreateDialog([user.id]).then((res) => {
+          setData(res);
+        }).catch((error) => {
+          setLoading(false);
+          console.log(error);
+        })
+      }).catch(() => setLoading(false))
+    }
+  }, [route?.params?.userId])
   const newMessageHandler = (event) => {
     const {
       type,
       payload,
     } = event
     if (type === QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE) {
-      if (payload.dialogId === dialogId) {
+      if (payload.dialogId === dialogData?.dialogId) {
         let messages = refSavedMessagesData.current || [];
         if (messages.filter((item) => item.id === payload.id).length === 0) {
           messages = [...messages, payload]
@@ -102,14 +162,14 @@ const MessageChat = ({
     QBgetUserDetail(
       QB.users.USERS_FILTER.FIELD.ID,
       QB.users.USERS_FILTER.TYPE.NUMBER,
-      occupantsIds.join(),
+      dialogData?.occupantsIds.join(),
     ).then((res) => {
       setOccupantsData(res.users);
     }).catch((e) => {
       console.log(e);
     })
-    if (chatType === QB_DIALOG_TYPE.GROUP && !isJoined) {
-      QB.chat.joinDialog({ dialogId });
+    if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
+      QB.chat.joinDialog({ dialogId: dialogData?.dialogId });
     }
     QbMessageEmitter.addListener(
       QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
@@ -119,11 +179,11 @@ const MessageChat = ({
     return () => {
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE)
     }
-  }, [])
+  }, [dialogData])
 
   const getMessages = async (onRefreshCalled = false) => {
     try {
-      const response = await QBgetMessages(dialogId, savedMessagesData.length);
+      const response = await QBgetMessages(dialogData?.dialogId, savedMessagesData.length);
       if (onRefreshCalled) {
         refSavedMessagesData.current = [...response.message, ...savedMessagesData]
         setSavedMessagesData((data) => [...response.message, ...data]);
@@ -160,9 +220,7 @@ const MessageChat = ({
     const displayDate = getDateTime('l', 'D MMM')
     const displayTime = getDateTime('lll', 'hh: mm A')
     let fullName = userData && userData[0] ? userData[0].fullName : headingTitle;
-    // if (fullName.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
     fullName = fullName.slice(2, fullName.length)
-    // }
     let finalImage = images.profilePlaceHolder;
     if (isReceiver) {
       const customData = userData.length > 0 && userData[0]?.customData ? JSON.parse(userData[0].customData) : {};
@@ -230,7 +288,7 @@ const MessageChat = ({
       return false;
     }
     const message = (uploadedFile && messageBody.trim() === '') ? '[attachment]' : messageBody.trim()
-    QBsendMessage(dialogId, message, uploadedFile).then(() => {
+    QBsendMessage(dialogData?.dialogId, message, uploadedFile).then(() => {
       setMessageBody('');
       setSelectedImage(null);
       setUploadedFile(null);
@@ -269,7 +327,7 @@ const MessageChat = ({
     if (scrollRef && scrollRef.current) scrollRef.current.scrollToEnd({ animated: false });
   }
   let headingMainTitle = headingTitle;
-  if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+  if (dialogData?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
     const firstTwoChar = headingTitle.slice(0, 2);
     if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
       headingMainTitle = headingTitle.slice(2, headingTitle.length)
@@ -277,6 +335,7 @@ const MessageChat = ({
   }
   return (
     <SafeAreaView style={ styles.mainContainer }>
+      <ActivityLoader visible={loading} />
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack() }>
@@ -295,7 +354,6 @@ const MessageChat = ({
           </TouchableOpacity>
         }
       />
-      <ActivityLoader visible={loading} />
       <View style={ styles.sperateLine } />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <FlatList

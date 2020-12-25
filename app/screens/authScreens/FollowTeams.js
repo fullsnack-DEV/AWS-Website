@@ -12,7 +12,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import FastImage from 'react-native-fast-image';
 import { getUserDetails, createUser } from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -177,8 +177,8 @@ export default function FollowTeams({ route }) {
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
+      <FastImage resizeMode='stretch' style={ styles.background } source={ images.orangeLayer } />
+      <FastImage resizeMode='stretch' style={ styles.background } source={ images.bgImage } />
 
       <Text style={ styles.sportText }>Follow sport teams.</Text>
       <FlatList
@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
   background: {
     height: '100%',
     position: 'absolute',
-    resizeMode: 'stretch',
     width: '100%',
   },
 
