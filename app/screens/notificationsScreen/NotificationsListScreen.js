@@ -230,6 +230,13 @@ function NotificationsListScreen({ navigation }) {
     || verb.includes(NotificationType.invitePlayerToJoingame);
 
   const openHomePage = (item) => {
+    if (item?.entityType && item?.entityId) {
+      navigation.navigate('HomeScreen', {
+        uid: item?.entityId,
+        backButtonVisible: true,
+        role: item?.entityType,
+      })
+    }
     console.log('item', item)
   }
 
@@ -424,7 +431,7 @@ function NotificationsListScreen({ navigation }) {
       setActiveScreen(false);
     }
   };
-  console.log('main notification list :', mainNotificationsList);
+
   return (
     <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
       <View>

@@ -7,6 +7,7 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import colors from '../Constants/Colors';
+import HomeScreen from '../screens/home/HomeScreen';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
@@ -164,6 +165,7 @@ function NotificationNavigator() {
           headerShown: false,
         } }
       />
+      <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
     </Stack.Navigator>
   );
 }
