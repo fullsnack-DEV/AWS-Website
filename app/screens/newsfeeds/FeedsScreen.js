@@ -113,6 +113,19 @@ export default function FeedsScreen({ navigation }) {
         totalUpload={totalUploadCount}
         onCancelPress={() => {
           console.log('Cancel Pressed!');
+          Alert.alert(
+            'Cancel Upload?',
+            'If you cancel your upload now, your post will not be saved.',
+            [{
+              text: 'Go back',
+            },
+            {
+              text: 'Cancel upload',
+              onPress: async () => {
+              },
+            },
+            ],
+          );
         }}
         postDataItem={currentUserDetail}
       />}
