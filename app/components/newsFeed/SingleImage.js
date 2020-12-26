@@ -70,6 +70,7 @@ function SingleImage({
           data={data}
         /> */}
         <SinglePostPortraitView
+            openPostModal ={() => setModalVisible(true)}
           data={data}
           item={item}
           uploadImageURL={uploadImageURL && uploadImageURL}

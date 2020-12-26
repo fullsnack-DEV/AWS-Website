@@ -32,6 +32,7 @@ export default function SinglePostVideoView({
   navigation,
   onImageProfilePress,
   onLikePress,
+  openPostModal,
 }) {
   const [topDesc, setTopDesc] = useState(false);
   const [mute] = useState(true);
@@ -229,6 +230,7 @@ export default function SinglePostVideoView({
                       backBtnPress()
                       navigation.navigate('WriteCommentScreen', {
                         data: item,
+                        onDonePress: () => openPostModal(),
                       });
                     }}
                     style={styles.imageTouchStyle}>

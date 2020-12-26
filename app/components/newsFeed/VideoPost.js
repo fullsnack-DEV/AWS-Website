@@ -79,6 +79,7 @@ function VideoPost({
           backBtnPress={() => setModalVisible(false)}
         /> */}
         <SinglePostVideoView
+          openPostModal={() => setModalVisible(true)}
           item={item}
           data={data}
           caller_id={caller_id}

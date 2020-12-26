@@ -61,6 +61,7 @@ function MultiPostVideo({
           backBtnPress={() => setModalVisible(false)}
         /> */}
         <MultiImagePostView
+          openPostModal={() => setModalVisible(true)}
           attachedImages={attachedImages}
           data={data}
           item={item}
