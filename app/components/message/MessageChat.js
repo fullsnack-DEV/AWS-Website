@@ -53,13 +53,6 @@ const MessageChat = ({
   const [uploadedFile, setUploadedFile] = useState(null);
   const [dialogData, setDialogData] = useState(null);
 
-  // const {
-  //   id: dialogId,
-  //   name,
-  //   occupantsIds,
-  //   type: dialogType,
-  //   isJoined,
-  // } = route?.params?.dialog
   const [chatType, setChatType] = useState('');
   const [headingTitle, setHeadingTitle] = useState('');
   const [myUserId, setMyUserId] = useState();

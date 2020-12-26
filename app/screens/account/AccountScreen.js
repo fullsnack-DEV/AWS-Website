@@ -322,9 +322,9 @@ export default function AccountScreen({ navigation }) {
         onPress: async () => {
           QBLogout();
           await firebase.auth().signOut();
-          await Utility.clearStorage();
           authContext.setEntity(null)
           authContext.setUser(null);
+          await Utility.clearStorage();
         },
       },
       {

@@ -1006,6 +1006,7 @@ export default function HomeScreen({ navigation, route }) {
 
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
+    // navigation.navigate('RegisterReferee');
     if (refereeInObject) {
       const entity = authContext.entity;
       if (refereeInObject.language.length > 0) {

@@ -35,6 +35,7 @@ export default function SinglePostPortraitView({
   navigation,
   onImageProfilePress,
   onLikePress,
+  openPostModal,
 }) {
   const [topDesc, setTopDesc] = useState(false);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
@@ -123,6 +124,7 @@ export default function SinglePostPortraitView({
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
         <ImageZoom
+            doubleClickInterval={250}
             cropWidth={Dimensions.get('window').width}
             cropHeight={Dimensions.get('window').height}
             imageWidth={isLandScape ? landscapeImgDimention.width : portraitImgDimention.width}
@@ -241,6 +243,7 @@ export default function SinglePostPortraitView({
                       backBtnPress()
                       navigation.navigate('WriteCommentScreen', {
                         data: item,
+                        onDonePress: () => openPostModal(),
                       });
                     }}
                     style={styles.imageTouchStyle}>

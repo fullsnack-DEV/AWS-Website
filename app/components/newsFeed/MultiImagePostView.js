@@ -36,6 +36,7 @@ export default function MultiImagePostView({
   navigation,
   onImageProfilePress,
   onLikePress,
+  openPostModal,
 }) {
   const [topDesc, setTopDesc] = useState(false);
   const [scroll, setScroll] = useState(true);
@@ -134,6 +135,7 @@ export default function MultiImagePostView({
               if (multiAttachItem.type === 'image') {
                 return (
                   <ImageZoom
+                      doubleClickInterval={250}
                     cropWidth={Dimensions.get('window').width}
                     cropHeight={Dimensions.get('window').height}
                     imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth}
@@ -299,6 +301,7 @@ export default function MultiImagePostView({
                       backBtnPress()
                       navigation.navigate('WriteCommentScreen', {
                         data: item,
+                        onDonePress: () => openPostModal(),
                       });
                     }}
                     style={styles.imageTouchStyle}>

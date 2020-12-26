@@ -42,6 +42,9 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utils from '../challenge/ChallengeUtility';
 import * as RefereeUtils from '../referee/RefereeUtility';
+import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
+import { getUserDetails } from '../../api/Users';
+import { getGroupDetails } from '../../api/Groups';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
@@ -112,7 +115,35 @@ function NotificationsListScreen({ navigation }) {
 
   const onMessagePress = (item) => {
     if (activeScreen) {
-      console.log('item', item);
+      const entityId = item?.entityId;
+      const entityType = item?.entityType;
+      const navigateToMessage = (userId) => {
+        setloading(false);
+        navigation.navigate('MessageChat', {
+          screen: 'MessageChatRoom',
+          params: { userId },
+        })
+      }
+      const createQBUser = (userData) => {
+        const accountType = getQBAccountType(entityType);
+        QBcreateUser(entityId, userData, accountType).then(() => {
+          navigateToMessage(entityId);
+        }).catch(() => {
+          navigateToMessage(entityId);
+        })
+      }
+      if (entityType && entityId) {
+        setloading(true);
+        if (entityType === 'player') {
+          getUserDetails(entityId, authContext).then((uData) => {
+            createQBUser(uData?.payload);
+          }).catch(() => setloading(false))
+        } else {
+          getGroupDetails(entityId, authContext).then((gData) => {
+            createQBUser(gData?.payload);
+          }).catch(() => setloading(false))
+        }
+      }
     } else {
       showSwitchProfilePopup()
     }
