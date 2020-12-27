@@ -246,7 +246,7 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
   return finalString
 }
 
-const parseRefereeAwaitingPaymentRequestNotification = async (data, loggedInEntity) => {
+const parseRefereeAwaitingPaymentRequestNotification = async (data) => {
   const activity = data.activities[0]
   let notificationObject
   const finalString = {}
@@ -255,35 +255,33 @@ const parseRefereeAwaitingPaymentRequestNotification = async (data, loggedInEnti
     notificationObject = JSON.parse(activity.object);
   }
 
+  finalString.firstTitle = notificationObject.team_name
+  finalString.entityType = notificationObject.entity_type
+  finalString.entityId = notificationObject.team_id
+  finalString.text = notificationObject.text
+
   const reservationObject = notificationObject.reservationObject
 
-  if (loggedInEntity.uid === reservationObject.initiated_by
-      || loggedInEntity.auth.user_id === reservationObject.initiated_by) {
-    if (reservationObject.referee.thumbnail) {
-      finalString.entityType = 'user'
+  if (finalString.entityId === reservationObject.referee_id) {
+    if (reservationObject.referee?.thumbnail) {
       finalString.imgName = reservationObject.referee.thumbnail
     }
   } else if (reservationObject.game.singlePlayerGame) {
-    finalString.entityType = 'team'
-    if (reservationObject.initiated_by === reservationObject.game.away_team.user_id) {
+    if (finalString.entityId === reservationObject.game.away_team.user_id) {
       if (reservationObject.game.away_team.thumbnail) {
         finalString.imgName = reservationObject.game.away_team.thumbnail
       }
     } else if (reservationObject.game.home_team.thumbnail) {
       finalString.imgName = reservationObject.game.home_team.thumbnail
     }
-  } else if (reservationObject.initiated_by === reservationObject.game.away_team.group_id) {
-    finalString.entityType = 'team'
+  } else if (finalString.entityId === reservationObject.game.away_team.group_id) {
     if (reservationObject.game.away_team.thumbnail) {
       finalString.imgName = reservationObject.game.away_team.thumbnail
     }
   } else if (reservationObject.game.home_team.thumbnail) {
-    finalString.entityType = 'team'
     finalString.imgName = reservationObject.game.home_team.thumbnail
   }
 
-  finalString.firstTitle = notificationObject.team_name
-  finalString.text = notificationObject.text
   const parts = notificationObject.text.split(notificationObject.team_name)
   if (parts[0]) {
     finalString.preText = parts[0]
@@ -298,6 +296,7 @@ const parseRefereeAwaitingPaymentRequestNotification = async (data, loggedInEnti
 
   return finalString
 }
+
 export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
   if (data.activities[0].verb.includes(NotificationType.challengeOffered)
     || data.activities[0].verb.includes(NotificationType.challengeAltered)) {
@@ -322,8 +321,7 @@ export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
     || data.activities[0].verb.includes(NotificationType.refereeReservationAutoRestoredDueToAlterPaymentFailed)
     || data.activities[0].verb.includes(NotificationType.refereeReservationCanceledDuringAwaitingPayment)
     || data.activities[0].verb.includes(NotificationType.refereeReservationRestoredDuringAwaitingPayment)) {
-    console.log('parseRefereeAwaitingPaymentRequestNotification')
-    return parseRefereeAwaitingPaymentRequestNotification(data, loggedInEntity)
+    return parseRefereeAwaitingPaymentRequestNotification(data)
   }
   return {}
 }
@@ -363,18 +361,19 @@ const parseNormalNotification = async (data) => {
     notificationObject = JSON.parse(activity.object);
   }
 
-  finalString.firstTitle = activity.actor.data.full_name
-
-  // if (data.data.actor_count > 2) {
-  //   firstTitle = `${firstTitle}, ${data.data.activities[1].actor.data.full_name}`
-  //   const count = data.data.actor_count - 2
-  //   secondTitle = count > 1 ? `${count} ${strings.others}` : `${count} ${strings.other}`
-  // } else if (data.data.actor_count > 1) {
-  //   secondTitle = data.data.activities[1].actor.data.full_name
-  // }
-
   finalString.text = notificationObject.text
   finalString.entityType = activity.actor.data.entity_type === 'player' ? 'user' : activity.actor.data.entity_type
+  finalString.entityId = activity.actor.id
+  finalString.firstTitle = activity.actor.data.full_name
+
+  if (data.actor_count > 2) {
+    finalString.firstTitle = `${finalString.firstTitle}, ${data.activities[1].actor.data.full_name}`
+    const count = data.actor_count - 2
+    finalString.secondTitle = count > 1 ? `${count} ${strings.others}` : `${count} ${strings.other}`
+  } else if (data.actor_count > 1) {
+    finalString.secondTitle = data.activities[1].actor.data.full_name
+  }
+
   if (activity.actor.data.thumbnail) {
     finalString.imgName = activity.actor.data.thumbnail
   }

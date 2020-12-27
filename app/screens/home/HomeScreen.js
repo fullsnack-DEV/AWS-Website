@@ -287,7 +287,6 @@ export default function HomeScreen({ navigation, route }) {
       getGallery(uid, authContext)]
     Promise.all(promises).then(([res1, res2, res3, res4]) => {
       const userDetails = res1.payload;
-
       if (!userDetails.games) {
         userDetails.games = []
       }
@@ -995,7 +994,7 @@ export default function HomeScreen({ navigation, route }) {
   }
 
   const onChallengePress = async () => {
-    if (authContext.entity.obj.sport === currentUserData.sport) {
+    if (authContext.entity.obj.sport.toLowerCase() === currentUserData.sport.toLowerCase()) {
       navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
     } else {
       Alert.alert(strings.alertmessagetitle, 'Sport must be same for both teams')

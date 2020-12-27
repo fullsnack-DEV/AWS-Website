@@ -79,7 +79,7 @@ function BackgroundProfile({
           />
           <View style={styles.userViewStyle}>
             <Text style={styles.userTextStyle}>{fullName}</Text>
-            {currentUserData.description && <Text style={styles.sloganTextStyle}>{currentUserData.description}</Text>}
+            {currentUserData.description?.length > 0 && <Text style={styles.sloganTextStyle}>{currentUserData.description}</Text>}
             <View style={{
               flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
             }}>

@@ -59,7 +59,9 @@ function PRNotificationDetailMessageItem({
               <TouchableOpacity style={styles.detailBtnStyle} onPress={onDetailPress}>
                 <Text style={styles.detailBtnTextStyle}>{strings.detailText}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.messageBtnStyle} onPress={onMessagePress}>
+              <TouchableOpacity style={styles.messageBtnStyle} onPress={() => {
+                onMessagePress({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+              }}>
                 <Text style={[styles.detailBtnTextStyle, { color: colors.kHexColor45C1C0 }]}>{strings.message.toUpperCase()}</Text>
               </TouchableOpacity>
             </View>

@@ -182,6 +182,7 @@ export default function CreateTeamForm1({ navigation, route }) {
               value: '',
             }}
             items={[
+              { label: 'Soccer', value: 'soccer' },
               { label: 'Football', value: 'football' },
               { label: 'Baseball', value: 'baseball' },
               { label: 'Tennis', value: 'tennis' },

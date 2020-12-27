@@ -8,7 +8,9 @@ import strings from '../../Constants/String'
 import TCProfileImage from '../TCProfileImage'
 import { parseNotification } from '../../screens/notificationsScreen/PRNotificationParser';
 
-function NotificationItem({ data }) {
+function NotificationItem({
+  data, onPressFirstEntity, onPressSecondEntity, onPressCard,
+}) {
   const [dataDictionary, setDataDictionary] = useState()
 
   useEffect(() => {
@@ -19,10 +21,10 @@ function NotificationItem({ data }) {
 
   return (
     <View style={{ backgroundColor: colors.whiteColor }}>
-      {dataDictionary && <TouchableOpacity onPress={data.card}>
+      {dataDictionary && <TouchableOpacity onPress={onPressCard}>
         <View style={styles.viewFirstStyle}>
           <TouchableOpacity onPress={() => {
-            data.onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+            onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
           }}>
             <TCProfileImage
               entityType={dataDictionary.entityType}
@@ -33,15 +35,18 @@ function NotificationItem({ data }) {
           </TouchableOpacity>
           <View style={styles.textContentStyle}>
             <Text style={styles.textContainerStyle}>
-              <TouchableWithoutFeedback onPress={data.onPressFirstEntity}>
+              <TouchableWithoutFeedback onPress={() => {
+                onPressFirstEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+              }}>
                 <Text style={styles.boldTextStyle}>
                   {`${dataDictionary.firstTitle} `}
                 </Text>
               </TouchableWithoutFeedback>
               {dataDictionary.secondTitle && <Text>{`${strings.and} `}</Text>}
-
-              {dataDictionary.secondTitle && <TouchableWithoutFeedback onPress={data.onPressSecondEntity}>
-                <Text style={styles.boldTextStyle} onPress={data.onPressSecondEntity}>{`${dataDictionary.secondTitle} `}</Text>
+              {dataDictionary.secondTitle && <TouchableWithoutFeedback onPress={() => {
+                onPressSecondEntity({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
+              }}>
+                <Text style={styles.boldTextStyle}>{`${dataDictionary.secondTitle} `}</Text>
               </TouchableWithoutFeedback>}
               <Text>{`${dataDictionary.text} `}</Text>
               <Text style={styles.timeStyle}>{dataDictionary.notificationTime}</Text>
