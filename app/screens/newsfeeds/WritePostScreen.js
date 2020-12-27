@@ -49,6 +49,8 @@ export default function WritePostScreen({ navigation, route }) {
     userName = postData.group_name;
   }
 
+  console.log('Selected Images ::--', selectImage);
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -67,34 +69,34 @@ export default function WritePostScreen({ navigation, route }) {
           <View style={ styles.writePostViewStyle }>
             <Text style={ styles.writePostTextStyle }>Write Post</Text>
           </View>
-          <View style={ styles.doneViewStyle }>
-            <Text
-              style={ styles.doneTextStyle }
-              onPress={ () => {
-                if (searchText.trim().length === 0 && selectImage.length === 0) {
-                  Alert.alert('Please write some text or select any image.');
-                } else if (searchText.trim().length > 0 && selectImage.length === 0) {
-                  const data = {
-                    text: searchText,
-                  };
-                  createPost(data, authContext)
-                    .then(() => getNewsFeed(authContext))
-                    .then(() => {
-                      navigation.goBack()
-                      setloading(false);
-                    })
-                    .catch((e) => {
-                      Alert.alert('', e.messages)
-                      setloading(false);
-                    });
-                } else {
-                  navigation.goBack();
-                  onPressDone(selectImage, searchText);
-                }
-              } }>
-              Done
-            </Text>
-          </View>
+          <TouchableOpacity
+            style={styles.doneViewStyle}
+            onPress={() => {
+              setloading(true);
+              if (searchText.trim().length === 0 && selectImage.length === 0) {
+                Alert.alert('Please write some text or select any image.');
+              } else if (searchText.trim().length > 0 && selectImage.length === 0) {
+                const data = {
+                  text: searchText,
+                };
+                createPost(data, authContext)
+                  .then(() => getNewsFeed(authContext))
+                  .then(() => {
+                    navigation.goBack()
+                    setloading(false);
+                  })
+                  .catch((e) => {
+                    Alert.alert('', e.messages)
+                    setloading(false);
+                  });
+              } else {
+                navigation.goBack();
+                onPressDone(selectImage, searchText);
+              }
+            }}
+          >
+            <Text style={styles.doneTextStyle}>Done</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
       <View style={ styles.sperateLine } />
@@ -195,8 +197,16 @@ export default function WritePostScreen({ navigation, route }) {
                   maxFiles: 10,
                 }).then((data) => {
                   let allSelectData = [];
+                  const secondData = [];
                   if (selectImage.length > 0) {
-                    allSelectData = [...selectImage, ...data];
+                    data.filter((dataItem) => {
+                      const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
+                      if (filter_data.length === 0) {
+                        secondData.push(dataItem)
+                      }
+                      return null;
+                    })
+                    allSelectData = [...selectImage, ...secondData];
                     setSelectImage(allSelectData);
                   } else {
                     setSelectImage(data);
@@ -258,9 +268,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   doneViewStyle: {
-    alignItems: 'flex-end',
     justifyContent: 'center',
-    width: wp('17%'),
+    alignSelf: 'flex-end',
   },
   onlyMeTextStyle: {
     color: colors.googleColor,

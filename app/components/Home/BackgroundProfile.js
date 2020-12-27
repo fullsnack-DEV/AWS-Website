@@ -73,7 +73,7 @@ function BackgroundProfile({
         />
       </View>
       <View style={{ backgroundColor: colors.whiteColor }} >
-        <View style={{ width: '100%' }}>
+        <View style={{ width: '100%', marginBottom: 20 }}>
           <Image style={[styles.profileImageStyle, profileImageStyle]}
             source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
           />

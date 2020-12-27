@@ -97,7 +97,7 @@ const strings = {
   leagueTeamTitle: 'UEFA Champions League',
 
   locationText: 'Your Location',
-  locationPlaceholderText: 'Search cities or postal codes',
+  locationPlaceholderText: 'Search city or postal code',
   sportText: 'Select your favourite sport event.',
 
   // Add Birthday screen

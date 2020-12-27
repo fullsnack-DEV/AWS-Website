@@ -206,7 +206,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setEditScoreKeeper(false);
       }
       if (
-          bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
+        bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
           || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
           || bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id
           || bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id
@@ -244,9 +244,9 @@ export default function EditRefereeReservation({ navigation, route }) {
 
     setloading(true);
     getRefereeFeesEstimation(
-        bodyParams?.referee?.user_id,
-        body,
-        authContext,
+      bodyParams?.referee?.user_id,
+      body,
+      authContext,
     )
       .then((response) => {
         setloading(false);
@@ -459,7 +459,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
-        teampObj?.status === RefereeReservationStatus.pendingpayment
+      teampObj?.status === RefereeReservationStatus.pendingpayment
         || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
@@ -502,7 +502,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   const checkRefereeOrTeam = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
-        teampObj?.status === RefereeReservationStatus.pendingpayment
+      teampObj?.status === RefereeReservationStatus.pendingpayment
         || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
@@ -809,8 +809,8 @@ export default function EditRefereeReservation({ navigation, route }) {
                     {bodyParams?.referee?.user_id === entity.uid ? `You received a referee reservation alteration request from ${getEntityName(bodyParams)}.` : `Your team received a referee reservation alteration request from ${getEntityName(bodyParams)}.`}
                     {' '}Please, respond within <Text style={{ color: colors.themeColor }}>
                       {getDayTimeDifferent(
-                      bodyParams?.expiry_datetime * 1000,
-                      new Date().getTime(),
+                        bodyParams?.expiry_datetime * 1000,
+                        new Date().getTime(),
                       )}
                     </Text>
                   </Text>
@@ -978,7 +978,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
                   </View>
                 </View>
-                )}
+              )}
             </View>
           )}
           <CurruentVersionView

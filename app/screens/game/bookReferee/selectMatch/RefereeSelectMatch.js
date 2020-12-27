@@ -46,8 +46,9 @@ const RefereeSelectMatch = ({ navigation, route }) => {
     if (typingTimeout) clearTimeout(typingTimeout);
     setSearchText(text);
     const search = () => {
+      console.log(matchData);
       if (text !== '') {
-        const data = getSearchData(matchData, ['full_name', 'city', 'country'], text)
+        const data = getSearchData(matchData, ['sport'], text)
         if (data?.length > 0) setSearchData([...data]);
         else setSearchData([]);
       }

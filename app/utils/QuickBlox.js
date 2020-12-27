@@ -82,7 +82,8 @@ export const QBcreateUser = (
   customData,
   userAccountType,
 ) => {
-  const fullName = userAccountType + _.get(customData, ['full_name'], 'Full Name')
+  const nameType = customData?.full_name ? 'full_name' : 'group_name';
+  const fullName = userAccountType + _.get(customData, [nameType], 'Full Name')
   const {
     country = '',
     city = '',

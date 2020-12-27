@@ -36,6 +36,7 @@ import TCTextField from '../../components/TCTextField';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { eventDefaultColorsData } from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
+import TCKeyboardView from '../../components/TCKeyboardView';
 
 const config = {
   apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
@@ -49,8 +50,8 @@ const config = {
 };
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('patidar.arvind1+3@gmail.com');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('kishan@gmail.com');
+  const [password, setPassword] = useState('Kishan@123');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
   // For activity indigator
@@ -315,13 +316,13 @@ export default function LoginScreen({ navigation }) {
       {/* <Loader visible={getUserData.loading} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
-
-      <Text style={styles.loginText}>{strings.loginText}</Text>
-      <FacebookButton onPress={() => onFacebookButtonPress()} />
-      <GoogleButton onPress={() => onGoogleButtonPress()} />
-      <Text style={styles.orText}>{strings.orText}</Text>
-      <View style={styles.textFieldContainerStyle}>
-        <TCTextField
+      <TCKeyboardView>
+        <Text style={styles.loginText}>{strings.loginText}</Text>
+        <FacebookButton onPress={() => onFacebookButtonPress()} />
+        <GoogleButton onPress={() => onGoogleButtonPress()} />
+        <Text style={styles.orText}>{strings.orText}</Text>
+        <View style={styles.textFieldContainerStyle}>
+          <TCTextField
               style={styles.textFieldStyle}
               placeholder={strings.emailPlaceHolder}
               autoCapitalize="none"
@@ -329,9 +330,9 @@ export default function LoginScreen({ navigation }) {
               onChangeText={(text) => setEmail(text)}
               value={email}
           />
-      </View>
-      <View style={styles.passwordView}>
-        <TextInput
+        </View>
+        <View style={styles.passwordView}>
+          <TextInput
               style={styles.textInput}
               placeholder={strings.passwordPlaceHolder}
               onChangeText={(text) => setPassword(text)}
@@ -340,16 +341,16 @@ export default function LoginScreen({ navigation }) {
               secureTextEntry={hidePassword}
               keyboardType={'default'}
           />
-        <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
-          {hidePassword ? (
-            <Image source={images.showPassword} style={styles.passwordEyes} />
-          ) : (
-            <Image source={images.hidePassword} style={styles.passwordEyes} />
-          )}
-        </TouchableWithoutFeedback>
-      </View>
+          <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
+            {hidePassword ? (
+              <Image source={images.showPassword} style={styles.passwordEyes} />
+            ) : (
+              <Image source={images.hidePassword} style={styles.passwordEyes} />
+            )}
+          </TouchableWithoutFeedback>
+        </View>
 
-      <TCButton
+        <TCButton
             title={strings.loginCapTitle}
             extraStyle={{ marginTop: hp('3%') }}
             onPress={() => {
@@ -358,30 +359,29 @@ export default function LoginScreen({ navigation }) {
               }
             }}
         />
-      <TouchableOpacity
+        <TouchableOpacity
             onPress={() => navigation.navigate('ForgotPasswordScreen')}>
-        <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
-      </TouchableOpacity>
-      <View style={{ flex: 1 }}/>
-      <View style={{ marginBottom: 20 }}>
-        <Text style={styles.bottomText}>
-          <Text>By continuing you agree to Towny`s </Text>
+          <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
+        </TouchableOpacity>
+        <View style={{ marginTop: 15 }}>
+          <Text style={styles.bottomText}>
+            <Text>By continuing you agree to Towny`s </Text>
 
-          <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Terms and services..')}>Terms of Service</Text>
+            <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Terms and services..')}>Terms of Service</Text>
 
-          <Text style={styles.hyperlinkText} onPress={() => alert('Terms and services..')}>Terms of Service</Text>
+            <Text style={styles.hyperlinkText} onPress={() => alert('Terms and services..')}>Terms of Service</Text>
 
-          <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Privacy policy..')}>Privacy Policy</Text>
+            <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Privacy policy..')}>Privacy Policy</Text>
 
-          <Text style={styles.hyperlinkText} onPress={() => alert('Privacy policy..')}>Privacy Policy</Text>
+            <Text style={styles.hyperlinkText} onPress={() => alert('Privacy policy..')}>Privacy Policy</Text>
 
-          <Text style={styles.hyperlinkText} onPress={() => Alert.alert('cookie policy..')}>Cookie Policy.</Text>
+            <Text style={styles.hyperlinkText} onPress={() => Alert.alert('cookie policy..')}>Cookie Policy.</Text>
 
-          <Text style={styles.hyperlinkText} onPress={() => alert('cookie policy..')}>Cookie Policy.</Text>
+            <Text style={styles.hyperlinkText} onPress={() => alert('cookie policy..')}>Cookie Policy.</Text>
 
-        </Text>
-      </View>
-
+          </Text>
+        </View>
+      </TCKeyboardView>
     </View>
   );
 }

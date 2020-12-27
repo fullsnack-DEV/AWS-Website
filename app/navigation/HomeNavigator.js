@@ -130,6 +130,7 @@ import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekee
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
+import MessageDrawerNavigator from './MessageDrawerNavigator';
 
 const Stack = createStackNavigator();
 
@@ -1620,6 +1621,24 @@ const HomeNavigator = () => (
             borderBottomWidth: 0.3,
           },
         } }
+      />
+    <Stack.Screen
+          name="MessageChat"
+          component={MessageDrawerNavigator}
+          options={{
+
+            title: 'Message Chat',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          }}
       />
 
   </Stack.Navigator>

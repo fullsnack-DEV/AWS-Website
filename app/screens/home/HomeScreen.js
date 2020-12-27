@@ -839,19 +839,22 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   const onMessageButtonPress = (user) => {
+    setloading(true);
     const accountType = getQBAccountType(user?.entity_type);
     const uid = user?.entity_type === 'player' ? user?.user_id : user?.group_id;
     QBcreateUser(uid, user, accountType).then(() => {
-      navigation.navigate('Message', {
-        screen: 'MessageMainScreen',
+      navigation.navigate('MessageChat', {
+        screen: 'MessageChatRoom',
         params: { userId: uid },
-      })
+      });
+      setloading(false);
     }).catch(() => {
-      navigation.navigate('Message', {
-        screen: 'MessageMainScreen',
+      navigation.navigate('MessageChat', {
+        screen: 'MessageChatRoom',
         params: { userId: uid },
-      })
-    })
+      });
+      setloading(false);
+    });
   }
   const clubLeaveTeam = async () => {
     const e = authContext.entity
@@ -1003,6 +1006,7 @@ export default function HomeScreen({ navigation, route }) {
 
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
+    // navigation.navigate('RegisterReferee');
     if (refereeInObject) {
       const entity = authContext.entity;
       if (refereeInObject.language.length > 0) {

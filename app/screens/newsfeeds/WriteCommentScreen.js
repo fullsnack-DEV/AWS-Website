@@ -28,7 +28,7 @@ import colors from '../../Constants/Colors';
 export default function WriteCommentScreen({
   navigation,
   route: {
-    params: { data },
+    params: { data, onDonePress },
   },
 }) {
   const [commentTxt, setCommentText] = useState('');
@@ -74,8 +74,8 @@ export default function WriteCommentScreen({
             <Text
               style={ styles.doneTextStyle }
               onPress={ () => {
-                console.log('Done Pressed');
                 navigation.goBack();
+                if (onDonePress) onDonePress();
               } }>
               Done
             </Text>

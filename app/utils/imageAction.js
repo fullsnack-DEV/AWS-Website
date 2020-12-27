@@ -68,7 +68,7 @@ const uploadImage = (data, authContext) => {
       thumbnail,
       height: image.height,
       width: image.width,
-      type: image.mime.split('/')[0],
+      type: image?.mime?.split('/')?.[0],
     }))
   });
 };

@@ -22,9 +22,7 @@ import fonts from '../../Constants/Fonts';
 import TCSearchBox from '../../components/TCSearchBox';
 import {
   QB_ACCOUNT_TYPE, QBconnectAndSubscribe,
-  QBcreateDialog,
   QBgetDialogs,
-  QBgetUserDetail,
   QBsetupSettings,
 } from '../../utils/QuickBlox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
@@ -32,7 +30,7 @@ import AuthContext from '../../auth/context';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
-const MessageMainScreen = ({ navigation, route }) => {
+const MessageMainScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -52,30 +50,11 @@ const MessageMainScreen = ({ navigation, route }) => {
       QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
       newDialogHandler,
     )
-    if (route?.params?.userId) navigateToMessageChat(route.params.userId);
     return () => {
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE);
     }
   }, [navigation, isFocused])
 
-  const navigateToMessageChat = async (uid) => {
-    QBgetUserDetail(
-      QB.users.USERS_FILTER.FIELD.LOGIN,
-      QB.users.USERS_FILTER.TYPE.STRING,
-      [uid].join(),
-    ).then((userData) => {
-      const user = userData.users.filter((item) => item.login === uid)[0];
-      QBcreateDialog([user.id]).then((res) => {
-        navigation.setParams({ userId: null })
-        navigation.navigate('MessageChat', {
-          screen: 'MessageChatRoom',
-          params: { dialog: res },
-        });
-      }).catch((error) => {
-        console.log(error);
-      })
-    })
-  }
   const newDialogHandler = () => {
     getDialogs();
   }
@@ -132,12 +111,12 @@ const MessageMainScreen = ({ navigation, route }) => {
   }, [searchText])
 
   const renderAllMessages = () => (
-    savedDialogsData?.dialogs?.length > 0
-    && <FlatList
-        ListEmptyComponent={() => <Text>No Messages Found</Text>
-        }
+    <FlatList
+        ListEmptyComponent={<Text style={{
+          fontFamily: fonts.RLight, marginTop: 15, fontSize: 16, color: colors.lightBlackColor,
+        }}>No Messages Found</Text>}
         refreshing={loading}
-        data={savedDialogsData.dialogs}
+        data={savedDialogsData.dialogs ?? []}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => {
           let fullName = item.name;
