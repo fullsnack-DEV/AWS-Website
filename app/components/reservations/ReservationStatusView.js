@@ -168,9 +168,9 @@ export default function ReservationStatusView({ data }) {
   }
   const getDate = () => {
     if (data.game) {
-      return `${moment(data.game.start_datetime).format('MMM')}\n${moment(data.game.start_datetime).format('DD')}`
+      return `${moment(data.game.start_datetime * 1000).format('MMM')}\n${moment(data.game.start_datetime * 1000).format('DD')}`
     }
-    return `${moment(data.start_datetime).format('MMM')}\n${moment(data.start_datetime).format('DD')}`
+    return `${moment(data.start_datetime * 1000).format('MMM')}\n${moment(data.start_datetime * 1000).format('DD')}`
   }
   const getChallengerOrChallengee = () => {
     if (data.responsible_to_secure_venue) {
@@ -216,7 +216,7 @@ export default function ReservationStatusView({ data }) {
         )}
       </View>
       <View style={styles.amountView}>
-        <Text style={styles.amountText}>${data.total_game_charges} CAD</Text>
+        <Text style={styles.amountText}>${data.total_game_charges || 0} CAD</Text>
         {/* <Text style={styles.cancelAmountText}>$35 CAD</Text> */}
       </View>
     </View>

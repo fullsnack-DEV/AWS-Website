@@ -14,17 +14,21 @@ import TCNoDataView from '../../components/TCNoDataView';
 import strings from '../../Constants/String';
 import TCScrollableTabs from '../../components/TCScrollableTabs';
 import AuthContext from '../../auth/context'
+import * as RefereeUtils from '../referee/RefereeUtility';
+import * as Utils from '../challenge/ChallengeUtility';
 
 export default function ReservationScreen({ navigation }) {
   const isFocused = useIsFocused();
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
   const authContext = useContext(AuthContext)
 
   useEffect(() => {
-    setloading(true);
-    getReservationListByCaller();
+    if (isFocused) {
+      setloading(true);
+      getReservationListByCaller();
+    }
   }, [isFocused]);
 
   const getReservationListByCaller = async () => {
@@ -33,9 +37,9 @@ export default function ReservationScreen({ navigation }) {
       const upcomingData = [];
       const pastData = [];
       for (const temp of response.payload) {
-        const date = new Date(temp.timestamp);
-        const curruentDate = new Date();
-        if (curruentDate < date === 1) {
+        const date = temp?.start_datetime || temp?.game?.start_datetime;
+        const curruentDate = new Date().getTime() / 1000;
+        if (curruentDate < date) {
           upcomingData.push(temp);
         } else {
           pastData.push(temp);
@@ -50,7 +54,33 @@ export default function ReservationScreen({ navigation }) {
       }, 0.7);
     });
   };
-
+  const goToReservationDetail = (data) => {
+    if (data?.responsible_to_secure_venue) {
+      setloading(true);
+      Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
+        setloading(false);
+        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
+        console.log('Screen name of challenge:', obj.screenName);
+        navigation.navigate(obj.screenName, {
+          challengeObj: obj.challengeObj || obj.challengeObj[0],
+        });
+        setloading(false);
+      });
+    } else if (data?.scorekeeper) {
+      console.log('Screen name of Reservation:');
+    } else {
+      setloading(true);
+      RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+        setloading(false);
+        console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+        console.log('Screen name of Reservation:', obj.screenName);
+        navigation.navigate(obj.screenName, {
+          reservationObj: obj.reservationObj || obj.reservationObj[0],
+        });
+        setloading(false);
+      });
+    }
+  }
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -65,7 +95,8 @@ export default function ReservationScreen({ navigation }) {
                       <MatchReservation
                             data={item}
                             onPressButon={() => {
-                              navigation.navigate('ReservationDetailScreen');
+                              console.log('Selected Item::', item);
+                              goToReservationDetail(item)
                             }}
                        />
                     )}
@@ -81,7 +112,8 @@ export default function ReservationScreen({ navigation }) {
                         <MatchReservation
                             data={item}
                             onPressButon={() => {
-                              navigation.navigate('ReservationDetailScreen');
+                              console.log('Selected Item::', item);
+                              goToReservationDetail(item)
                             }}
                           />
                       )}

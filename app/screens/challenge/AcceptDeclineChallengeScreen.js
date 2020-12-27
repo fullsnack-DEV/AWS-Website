@@ -31,7 +31,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
   const [bodyParams, setbodyParams] = useState();
@@ -562,12 +562,14 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCLabel title={`Match · ${bodyParams.sport}`} />
               <TCInfoImageField
                 title={'Home'}
+                image = {bodyParams?.home_team?.thumbnail && bodyParams.home_team.thumbnail}
                 name={bodyParams.home_team.group_name || `${bodyParams.home_team.first_name} ${bodyParams.home_team.last_name}`}
                 marginLeft={30}
               />
               <TCThinDivider />
               <TCInfoImageField
                 title={'Away'}
+                image = {bodyParams?.away_team?.thumbnail && bodyParams.away_team.thumbnail}
                 name={bodyParams.away_team.group_name || `${bodyParams.away_team.first_name} ${bodyParams.away_team.last_name}`}
                 marginLeft={30}
               />

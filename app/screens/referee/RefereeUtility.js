@@ -8,10 +8,8 @@ import strings from '../../Constants/String';
 // eslint-disable-next-line import/prefer-default-export
 export const getRefereeReservationDetail = (reservationID, callerID, authContext) => {
   const Obj = {}
-  console.log('Authcontext::', JSON.stringify(authContext.entity.uid));
   // eslint-disable-next-line consistent-return
   return getReservation(reservationID, callerID && callerID, authContext).then((response) => {
-    console.log('reservation Utils:', JSON.stringify(response.payload));
     if (RefereeReservationStatus.changeRequest === response.payload[0].status
           || RefereeReservationStatus.pendingrequestpayment === response.payload[0].status) {
       Obj.reservationObj = response.payload
@@ -34,7 +32,6 @@ export const getRefereeReservationDetail = (reservationID, callerID, authContext
       for (let i = 0; i < response.payload.length; i++) {
         if (response.payload[i].status === RefereeReservationStatus.accepted) {
           tempObj = response.payload[i]
-          console.log('If condition true');
           break;
         }
       }

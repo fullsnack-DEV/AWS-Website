@@ -74,8 +74,8 @@ export default function CreateChallengeForm5({ navigation, route }) {
   const createChallengeTeam = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
       const challengeBody = { ...route.params.body };
-      challengeBody.start_datetime = parseFloat((challengeBody.start_datetime / 1000).toFixed(0))
-      challengeBody.end_datetime = parseFloat((challengeBody.end_datetime / 1000).toFixed(0))
+      challengeBody.start_datetime = parseFloat((challengeBody.start_datetime).toFixed(0))
+      challengeBody.end_datetime = parseFloat((challengeBody.end_datetime).toFixed(0))
       challengeBody.userChallenge = false;
       challengeBody.manual_fee = false;
       if (route?.params?.paymentMethod) {
@@ -155,7 +155,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
         <MatchFeesCard challengeObj={estimationFee} senderOrReceiver={'sender'} />
       </View>
 
-      <View style={styles.viewMarginStyle}>
+      {estimationFee?.total_game_charges > 0 && <View style={styles.viewMarginStyle}>
         <TCLabel title={'Payment Method'} />
         <View>
           <TCTouchableLabel
@@ -169,7 +169,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
             }}
           />
         </View>
-      </View>
+      </View>}
 
       <View style={styles.viewMarginStyle}>
         <TCLabel title={'Cancellation Policy'} />

@@ -1,10 +1,9 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   View, Text, StyleSheet,
 } from 'react-native';
 
 import TCGameCard from '../TCGameCard';
-
 import ReservationPendingButton from './ReservationPendingButton';
 import ReservationDetailButton from './ReservationDetailButton';
 import ReservationNumber from './ReservationNumber';
@@ -20,42 +19,8 @@ import colors from '../../Constants/Colors';
 export default function MatchReservation({ data, onPressButon }) {
   const authContext = useContext(AuthContext)
   useEffect(() => {
-  }, []);
-  // const checkStatus = (invited_by, invited_to, myid) => {
-  //   if (data.responsible_to_secure_venue) {
-  //     if (data.invited_by == myID) {
-  //       if (data.userChallenge) {
-  //         if (data.home_team.user_id == myID) {
-  //           console.log('not usefull');
-  //           return true;
-  //         }
 
-  //         console.log('pick data from away team');
-  //         return false;
-  //       }
-
-  //       console.log('Team to team challenge');
-
-  //       console.log('i am requester');
-  //     } else {
-  //       if (data.userChallenge) {
-  //         if (data.home_team.user_id == myID) {
-  //           console.log('not usefull');
-  //           return true;
-  //         }
-
-  //         console.log('pick data from away team');
-  //         return false;
-  //       }
-
-  //       console.log('Team to team challenge');
-
-  //       console.log('i am requstee');
-  //     }
-  //   } else {
-  //     console.log('Referee or Scorekeeper');
-  //   }
-  // };
+  }, [data]);
   const isPendingButtonOrDetailButton = () => {
     if (data.game) {
       if (data.status === RefereeReservationStatus.offered) {
@@ -128,6 +93,21 @@ export default function MatchReservation({ data, onPressButon }) {
     }
     return false
   }
+  const getDayTimeDifferent = (sDate, eDate) => {
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    return `${days}d ${hours}h ${minutes}m`;
+  };
+
   return (
     <View>
       <ReservationNumber reservationNumber={data.reservation_id || data.challenge_id}/>
@@ -135,7 +115,10 @@ export default function MatchReservation({ data, onPressButon }) {
       <ChallengerInOutView data={data}/>
       <TCGameCard data={data.game || data} />
       {isPendingButtonOrDetailButton() ? <ReservationPendingButton onPressButon={onPressButon}/> : <ReservationDetailButton onPressButon={onPressButon}/>}
-      {isOfferExpired() && <Text style={styles.expiryText}>The reponse time will be expired within <Text style={styles.timeText}>4d 23h 59m.</Text></Text>}
+      {isOfferExpired() && <Text style={styles.expiryText}>The reponse time will be expired within <Text style={styles.timeText}>{`${getDayTimeDifferent(
+        (data.offer_expiry || data.expiry_datetime) * 1000,
+        new Date().getTime(),
+      )}.`}</Text></Text>}
       <TCThickDivider height={7} marginTop={isOfferExpired() ? 0 : 25}/>
     </View>
   );

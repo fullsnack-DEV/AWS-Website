@@ -442,7 +442,6 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   but your payment hasn't gone through yet.
                 </Text>
                 <Text style={styles.awatingNotesText}>
-
                   This reservation will be canceled unless the payment goes
                   through within{' '}
                   {getDayTimeDifferent(
@@ -886,11 +885,11 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (
-                    (bodyParams.game_status === GameStatus.accepted
-                      || bodyParams.game_status === GameStatus.reset)
-                    && bodyParams.start_datetime * 1000 > new Date().getTime()
-                  ) {
+                  if (!(bodyParams?.game?.status === GameStatus.accepted || bodyParams?.game?.status === GameStatus.reset)) {
+                    Alert.alert(strings.cannotAcceptText)
+                  } else if ((bodyParams?.expiry_datetime < new Date().getTime() / 1000) || (bodyParams?.game?.start_datetime < new Date().getTime() / 1000)) {
+                    Alert.alert(strings.refereeOfferExpiryText)
+                  } else {
                     let callerId;
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
@@ -900,10 +899,6 @@ export default function RefereeReservationScreen({ navigation, route }) {
                       callerId,
                       bodyParams.version,
                       'cancel',
-                    );
-                  } else {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
                     );
                   }
                 }}

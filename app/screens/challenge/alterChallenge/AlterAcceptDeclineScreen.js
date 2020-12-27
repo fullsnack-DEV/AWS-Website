@@ -740,7 +740,37 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               </View>
           )}
           {/* status pending request payment */}
-
+          {checkSenderOrReceiver(bodyParams) === 'sender'
+            && bodyParams.status === ReservationStatus.declined && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.googleColor },
+                  ]}>
+                  DECLINED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {`Your team have declined referee reservation request from ${getTeamName(bodyParams)}.` }
+                </Text>
+              </View>
+          )}
+          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            && bodyParams.status === ReservationStatus.declined && (
+              <View>
+                <Text
+                  style={[
+                    styles.challengeMessage,
+                    { color: colors.googleColor },
+                  ]}>
+                  DECLINED
+                </Text>
+                <Text style={styles.challengeText}>
+                  {`${getTeamName(bodyParams)} have declined a referee reservation request sent by you.` }
+                </Text>
+              </View>
+          )}
+          {/* Status declined */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.pendingrequestpayment && (
               <TCGradientButton
@@ -1295,7 +1325,60 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 />
               </View>
           )}
-
+          {(bodyParams.status === ReservationStatus.declined) && (
+            <View>
+              <TCBorderButton
+                title={strings.alterReservation}
+                textColor={colors.grayColor}
+                borderColor={colors.grayColor}
+                height={40}
+                shadow={true}
+                marginTop={15}
+                onPress={() => {
+                  if (
+                    (bodyParams?.game?.status === GameStatus.accepted
+                      || bodyParams?.game?.status === GameStatus.reset)
+                    && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
+                  ) {
+                    navigation.navigate('EditChallenge', {
+                      challengeObj: oldVersion,
+                    });
+                  } else {
+                    Alert.alert(
+                      'Reservation cannot be change after game time passed or offer expired.',
+                    );
+                  }
+                }}
+              />
+              <TCBorderButton
+                title={strings.cancelreservation}
+                textColor={colors.whiteColor}
+                borderColor={colors.grayColor}
+                backgroundColor={colors.grayColor}
+                height={40}
+                shadow={true}
+                marginBottom={15}
+                marginTop={15}
+                onPress={() => {
+                  if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
+                    acceptDeclineChallengeOperation(
+                      bodyParams.reservation_id,
+                      bodyParams.version,
+                      'cancel',
+                    );
+                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
+                    Alert.alert(
+                      'Reservation cannot be cancel after game time passed or offer expired.',
+                    );
+                  } else {
+                    Alert.alert(
+                      'Reservation can not be change after game has been started.',
+                    );
+                  }
+                }}
+              />
+            </View>
+          )}
           {(bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && !isPendingRequestPayment && (
             <View>
               <TCGradientButton

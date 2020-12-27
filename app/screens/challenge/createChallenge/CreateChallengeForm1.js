@@ -502,7 +502,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
               if (route && route.params && route.params.editable) {
                 navigation.navigate('CreateChallengeForm4', { teamData: teams, body: configureParams() })
               } else if (editableAlter) {
-                navigation.navigate('AlterAcceptDeclineScreen', {
+                navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...bodyParams,
                     home_team: teams[0],

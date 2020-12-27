@@ -7,7 +7,6 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import colors from '../Constants/Colors';
-import HomeScreen from '../screens/home/HomeScreen';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
@@ -24,6 +23,7 @@ import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterA
 import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
+import EditChallenge from '../screens/challenge/alterChallenge/EditChallenge';
 
 import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
 import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
@@ -133,6 +133,22 @@ function NotificationNavigator() {
             component={EditRefereeReservation}
             options={{
               title: 'Change Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+      <Stack.Screen
+            name="EditChallenge"
+            component={EditChallenge}
+            options={{
+              title: 'Change Reservation',
               headerTintColor: colors.blackColor,
               headerTitleStyle: {
                 fontWeight: '500',
@@ -398,7 +414,7 @@ function NotificationNavigator() {
           },
         } }
       />
-      <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } />
+      {/* <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } /> */}
     </Stack.Navigator>
   );
 }

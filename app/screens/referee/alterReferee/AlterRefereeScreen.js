@@ -589,10 +589,10 @@ export default function AlterRefereeScreen({ navigation, route }) {
     if (bodyParams?.change_requested_by === entity.uid) {
       return `${getEntityName(
         bodyParams,
-      )} has accepted your game reservation alteration request, but `;
+      )} has accepted your referee reservation alteration request, but `;
     }
 
-    return `Your team has accepted a game reservation alteration request from ${getEntityName(
+    return `Your team has accepted a referee reservation alteration request from ${getEntityName(
       bodyParams,
     )}, but `;
   };
@@ -874,7 +874,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
           {bodyParams?.referee?.user_id !== entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
               <TCGradientButton
-                title={'TRY TO PAY AGAIN'}
+                title={strings.tryToPayText}
                 onPress={() => {
                   navigation.navigate('PayAgainRefereeScreen', {
                     body: { ...bodyParams, ...paymentCard },
@@ -887,7 +887,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
           {bodyParams?.referee?.user_id === entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
               <TCGradientButton
-                title={'RESTORE TO PREVIOUS VERSION'}
+                title={strings.restorePreviousText}
                 onPress={() => {
                   acceptDeclineReservationOperation(
                     bodyParams.challenge_id,

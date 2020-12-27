@@ -45,10 +45,10 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(route?.params?.body ? route?.params?.body?.start_datetime * 1000 : new Date());
+  const [selectedDate, setSelectedDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
 
-  const [fromDate, setfromDate] = useState(route?.params?.body ? route?.params?.body?.start_datetime * 1000 : new Date());
-  const [toDate, setToDate] = useState(route?.params?.body ? route?.params?.body?.end_datetime * 1000 : new Date());
+  const [fromDate, setfromDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
+  const [toDate, setToDate] = useState(route?.params?.body?.end_datetime * 1000 || new Date());
   const [datePickerFor, setDatePickerFor] = useState();
   const [blockedSlot, setBlockedSlot] = useState();
   const [slots, setSlots] = useState();

@@ -497,5 +497,7 @@ const strings = {
   reservationRequestRestored: 'Reservation request restored',
 
   gameHomeText: 'GAME HOME',
+  restorePreviousText: 'RESTORE TO PREVIOUS VERSION',
+  tryToPayText: 'TRY TO PAY AGAIN',
 };
 export default strings;

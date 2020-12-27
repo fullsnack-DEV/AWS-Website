@@ -57,6 +57,8 @@ const colors = {
   writePostSepratorColor: '#E0E0E0',
   reservationAmountColor: '#FF8A01',
   yellowEventColor: '#ffd780',
+  startGrayGrdient: '#CCCCCC',
+  endGrayGradient: '#AAAAAA',
   sepratorColor: '#e8e8e8',
   grayEventColor: '#AAAAAA',
   orangeEventColor: '#FFAE01',

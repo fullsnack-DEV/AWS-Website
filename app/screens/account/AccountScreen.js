@@ -547,7 +547,16 @@ export default function AccountScreen({ navigation }) {
                   data={sectionId === 3 ? teamList : clubList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => (
-                    <TouchableWithoutFeedback style={styles.listContainer}>
+                    <TouchableWithoutFeedback
+                    style={styles.listContainer}
+                    onPress={() => {
+                      navigation.navigate('HomeScreen', {
+                        uid: item.group_id,
+                        backButtonVisible: false,
+                        role: item.entity_type,
+                      })
+                    }}
+                    >
                       <View style={styles.entityTextContainer}>
                         {item.entity_type === 'team' && (<Image
                             source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image, FlatList, TouchableOpacity,
 } from 'react-native';
-
+import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -21,20 +21,6 @@ import AuthContext from '../../../auth/context'
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
   const authContext = useContext(AuthContext)
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
   const isFocused = useIsFocused();
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
@@ -61,33 +47,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
     }
   }, [isFocused]);
 
-  const tConvert = (timeString) => {
-    const timeString12hr = new Date(
-      `1970-01-01T${timeString}Z`,
-    ).toLocaleTimeString(
-      {},
-      {
-        timeZone: 'UTC',
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      },
-    );
-    return timeString12hr;
-  };
-  const time_format = (d) => {
-    const hours = format_two_digits(d.getHours());
-    const minutes = format_two_digits(d.getMinutes());
-    const seconds = format_two_digits(d.getSeconds());
-    return tConvert(`${hours}:${minutes}:${seconds}`);
-  };
-  const format_two_digits = (n) => (n < 10 ? `0${n}` : n);
-  // eslint-disable-next-line consistent-return
-  const getTimeDifferent = (sDate, eDate) => {
-    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
-
-    const days = Math.floor(delta / 86400);
-    delta -= days * 86400;
+  const getTimeDifForReservation = (sDate, eDate) => {
+    let delta = Math.abs(parseFloat((sDate / 1000).toFixed(0)) - parseFloat((eDate / 1000).toFixed(0)));
 
     const hours = Math.floor(delta / 3600) % 24;
     delta -= hours * 3600;
@@ -95,7 +56,25 @@ export default function CreateChallengeForm4({ navigation, route }) {
     const minutes = Math.floor(delta / 60) % 60;
     delta -= minutes * 60;
 
-    return `${hours} hours ${minutes} minutes`;
+    let time = ''
+
+    if (hours > 0) {
+      if (hours === 1) {
+        time = `${hours} hour `
+      } else {
+        time = `${hours} hours `
+      }
+    }
+
+    if (minutes > 0) {
+      if (minutes === 1) {
+        time = `${time}${minutes} minute`
+      } else {
+        time = `${time}${minutes} minutes`
+      }
+    }
+
+    return time;
   };
 
   const renderSecureReferee = ({ item, index }) => (
@@ -105,7 +84,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
       marginLeft={30}
     />
   );
-
+  const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy  HH:MM a');
   const renderSecureScorekeeper = ({ item, index }) => (
     <TCInfoImageField
       title={`Scorekeeper ${index + 1}`}
@@ -198,22 +177,23 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <TCThinDivider />
           <TCInfoField
             title={'Time'}
-            value={`${
-              monthNames[new Date(bodyParams.start_datetime).getMonth()]
-            } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
-              bodyParams.start_datetime,
-            ).getFullYear()} ${time_format(
-              new Date(new Date(bodyParams.start_datetime)),
-            )} - \n${
-              monthNames[new Date(bodyParams.end_datetime).getMonth()]
-            } ${new Date(bodyParams.end_datetime).getDate()}, ${new Date(
-              bodyParams.end_datetime,
-            ).getFullYear()} ${time_format(
-              new Date(new Date(bodyParams.end_datetime)),
-            )}\n( ${getTimeDifferent(
-              new Date(bodyParams.start_datetime),
-              new Date(bodyParams.end_datetime),
-            )} )`}
+            value={`${getDateFormat(bodyParams.start_datetime)} -\n${getDateFormat(bodyParams.end_datetime)}\n(${getTimeDifForReservation(bodyParams.start_datetime * 1000, bodyParams.end_datetime * 1000)})`}
+            // value={`${
+            //   monthNames[new Date(bodyParams.start_datetime).getMonth()]
+            // } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
+            //   bodyParams.start_datetime,
+            // ).getFullYear()} ${time_format(
+            //   new Date(new Date(bodyParams.start_datetime)),
+            // )} - \n${
+            //   monthNames[new Date(bodyParams.end_datetime).getMonth()]
+            // } ${new Date(bodyParams.end_datetime).getDate()}, ${new Date(
+            //   bodyParams.end_datetime,
+            // ).getFullYear()} ${time_format(
+            //   new Date(new Date(bodyParams.end_datetime)),
+            // )}\n( ${getTimeDifferent(
+            //   new Date(bodyParams.start_datetime),
+            //   new Date(bodyParams.end_datetime),
+            // )} )`}
             marginLeft={30}
             titleStyle={{ fontSize: 16 }}
           />
