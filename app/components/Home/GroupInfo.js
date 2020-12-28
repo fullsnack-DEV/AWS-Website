@@ -16,7 +16,6 @@ import TCClubClipView from '../TCClubClipView'
 import NewsFeedDescription from '../newsFeed/NewsFeedDescription'
 import images from '../../Constants/ImagePath';
 import TCGradientButton from '../TCGradientButton';
-// import MapMarkerAutoZoom from './MapMarkerAutoZoom';
 
 export default function GroupInfo({
   navigation, groupDetails, isAdmin, onGroupPress, onMemberPress, onGroupListPress,
@@ -165,8 +164,7 @@ export default function GroupInfo({
 
   const signUpString = (signUpDate) => `${Utility.monthNames[new Date(signUpDate * 1000).getMonth()]} ${new Date(signUpDate * 1000).getDate()}, ${new Date(signUpDate * 1000).getFullYear()}`
 
-  const region = Utility.getRegionFromMarkers(coordinates)
-
+  // const region = Utility.getRegionFromMarkers(coordinates)
   return (
     <View>
       {/* Bio section */}
@@ -237,17 +235,17 @@ export default function GroupInfo({
         <TCInfoField titleStyle={styles.infoFieldTitle} title={strings.phone} value={phone} marginLeft={10}/>
         <TCInfoField titleStyle={styles.infoFieldTitle} title={strings.office} value={office} marginLeft={10}/>
         <TCInfoField titleStyle={styles.infoFieldTitle} title={strings.homefield} value={homefield} marginLeft={10}/>
-        {/* {coordinates.length > 0 && <MapMarkerAutoZoom style={styles.mapViewStyle} markers={markers}/>} */}
         {coordinates.length > 0 && <MapView
-          region={region}
           style={styles.mapViewStyle}>
           {markers.map((marker) => (
             <Marker
               key={marker.id}
               identifier={marker.id}
               coordinate={{
-                latitude: marker.latitude,
-                longitude: marker.longitude,
+                latitude: marker.latitude.toString(),
+                longitude: marker.longitude.toString(),
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
               }}
               description={marker.adddress}
               title={marker.name}
@@ -255,7 +253,7 @@ export default function GroupInfo({
             />
           ))}
         </MapView>
-        }
+         }
       </View>
       {/* Gray divider */}
       <View style={{ height: 7, backgroundColor: colors.grayBackgroundColor }}></View>

@@ -679,7 +679,7 @@ function RefereeInfoSection({
                 }
                 const newDataList = [];
                 data.referee_data.forEach((item) => {
-                  if (item.sport_name === selectRefereeData.sport_name) {
+                  if (item.sport_name.toLowerCase() === selectRefereeData.sport_name.toLowerCase()) {
                     newDataList.push(refereeEditParams);
                   } else {
                     newDataList.push(item);

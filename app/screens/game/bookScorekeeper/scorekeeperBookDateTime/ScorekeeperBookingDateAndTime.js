@@ -17,6 +17,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
+import _ from 'lodash';
 import AuthContext from '../../../../auth/context';
 import Header from '../../../../components/Home/Header';
 import EventMapView from '../../../../components/Schedule/EventMapView';
@@ -76,7 +77,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
       game_id: gameData?.game_id,
     }
     createUserReservation('scorekeepers', bodyParams, authContext).then(() => {
-      const navigationName = `${gameData?.sport}Home`;
+      const navigationName = `${_.startCase(gameData?.sport)}Home`;
       navigation.navigate('BookScorekeeperSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
       Alert.alert('Towns Cup', error?.message)

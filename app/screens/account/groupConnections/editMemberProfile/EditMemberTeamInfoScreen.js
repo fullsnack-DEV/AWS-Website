@@ -43,7 +43,6 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
     setGroupMemberDetail(route.params.groupMemberDetail)
     setPlayerStatus(route.params.groupMemberDetail.status)
     setPositions(route.params.groupMemberDetail.positions || [{}])
-
     console.log('MEMBER DETAIL ::', groupMemberDetail);
     const getAuthEntity = async () => {
       entity = authContext.entity

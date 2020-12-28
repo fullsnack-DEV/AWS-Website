@@ -56,8 +56,8 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const getFeeDetail = () => {
     const gData = route?.params?.gameData;
     if (gData) {
-      const hFee = userData?.referee_data.filter((item) => item?.sport_name === gData?.sport)?.[0]?.fee ?? 0;
-      const cType = userData?.referee_data.filter((item) => item?.sport_name === gData?.sport)?.[0]?.currency_type ?? 'CAD';
+      const hFee = userData?.referee_data.filter((item) => item?.sport_name.toLowerCase() === gData?.sport.toLowerCase())?.[0]?.fee ?? 0;
+      const cType = userData?.referee_data.filter((item) => item?.sport_name.toLowerCase() === gData?.sport.toLowerCase())?.[0]?.currency_type ?? 'CAD';
       setHourlyGameFee(hFee);
       setLoading(true);
       body = {
@@ -134,7 +134,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     delete bodyParams.hourly_game_fee
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext).then(() => {
-      const navigationName = route?.params?.navigationName ?? `${gameData?.sport}Home`;
+      const navigationName = route?.params?.navigationName ?? `${_.startCase(gameData?.sport)}Home`;
       navigation.navigate('BookRefereeSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
       setTimeout(() => Alert.alert('Towns Cup', error?.message), 200)
@@ -179,25 +179,38 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
 
             {/* Choose Match */}
             <View style={styles.contentContainer}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+
+              <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('RefereeSelectMatch', {
+                        userData,
+                        sport: sportName,
+                        comeFrom: 'RefereeBookingDateAndTime',
+                      });
+                    }}
+                    disabled={!route?.params?.showMatches}
+                    activeOpacity={!route?.params?.showMatches ? 1 : 0.7}
+                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Title text={'Choose a Match'} required={true} />
-                <TouchableOpacity onPress={() => {
-                  navigation.navigate('RefereeSelectMatch', {
-                    userData,
-                    sport: sportName,
-                    comeFrom: 'RefereeBookingDateAndTime',
-                  });
-                }}>
-                  {route?.params?.showMatches && (
+                {route?.params?.showMatches && (
+                  <View onPress={() => {
+                    navigation.navigate('RefereeSelectMatch', {
+                      userData,
+                      sport: sportName,
+                      comeFrom: 'RefereeBookingDateAndTime',
+                    });
+                  }}>
+
                     <FastImage
                               source={images.arrowGraterthan}
                               style={{ width: 12, height: 12 }}
                           />
-                  )}
-                </TouchableOpacity>
-              </View>
+                  </View>
+                )}
+              </TouchableOpacity>
+
               {gameData && <TCGameCard data={gameData} onPress={() => {
-                const routeName = `${gameData?.sport}Home`;
+                const routeName = `${_.startCase(gameData?.sport)}Home`;
                 navigation.push(routeName, { gameId: gameData?.game_id })
               }} />}
             </View>

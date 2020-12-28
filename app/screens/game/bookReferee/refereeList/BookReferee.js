@@ -42,7 +42,7 @@ const BookReferee = ({ navigation, route }) => {
 
   const renderRefereeData = ({ item }) => {
     const referee = item?.referee_data?.filter(
-      (refereeItem) => refereeItem?.sport_name === gameData?.sport,
+      (refereeItem) => refereeItem?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
     );
     return (
       <RenderReferee

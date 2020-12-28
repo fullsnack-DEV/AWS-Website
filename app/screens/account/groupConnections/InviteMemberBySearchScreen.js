@@ -1,8 +1,8 @@
 import React, {
-  useLayoutEffect, useState, useEffect,
+  useLayoutEffect, useState, useEffect, useContext,
 } from 'react';
 import {
-  Text, View, StyleSheet, FlatList, Alert, useContext,
+  Text, View, StyleSheet, FlatList, Alert,
 } from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';

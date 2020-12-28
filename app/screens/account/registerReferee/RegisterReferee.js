@@ -259,7 +259,7 @@ export default function RegisterReferee({ navigation }) {
     }
     setError(null);
 
-    const isExist = refereesData?.filter((item) => item?.sport_name === sports);
+    const isExist = refereesData?.filter((item) => item?.sport_name.toLowerCase() === sports.toLowerCase());
     if (isExist?.length) {
       Alert.alert('Towns Cup', `You are already registrated as a referee in ${sports}`);
       return false;
@@ -332,7 +332,7 @@ export default function RegisterReferee({ navigation }) {
           <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            value={ selectedLanguages.toString() }
+            value={ selectedLanguages?.join(' , ')?.toString() ?? ''}
             editable={ false }
             pointerEvents="none"></TextInput>
         </TouchableOpacity>
@@ -539,6 +539,7 @@ const styles = StyleSheet.create({
   },
 
   certificateDescription: {
+    paddingVertical: 10,
     width: '100%',
     alignSelf: 'center',
     fontSize: 16,

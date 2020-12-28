@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+  useState, useEffect, useContext, useLayoutEffect,
+} from 'react';
 import {
-  Text, View, StyleSheet, Image, Alert, Linking,
+  Text, View, StyleSheet, Image, Alert, Linking, TouchableOpacity,
 } from 'react-native';
 
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -17,7 +19,17 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
   const [switchUser, setSwitchUser] = useState({})
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => (navigation.navigate('HomeScreen'))}>
+          <Image source={images.backArrow} style={{
+            height: 20, width: 15, marginLeft: 15, tintColor: colors.whiteColor,
+          }} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   useEffect(() => {
     const getAuthEntity = async () => {
       entity = authContext.entity

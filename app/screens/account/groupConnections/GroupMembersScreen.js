@@ -18,6 +18,7 @@ import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import QB from 'quickblox-react-native-sdk';
 import AuthContext from '../../../auth/context'
 import UserRoleView from '../../../components/groupConnections/UserRoleView';
 import TCSearchBox from '../../../components/TCSearchBox';
@@ -33,7 +34,9 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import TCThinDivider from '../../../components/TCThinDivider';
 import strings from '../../../Constants/String';
-import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
+import {
+  getQBAccountType, QB_DIALOG_TYPE, QBcreateDialog, QBcreateUser, QBgetUserDetail,
+} from '../../../utils/QuickBlox';
 
 // FIXME -this is static source for now we will inject with api call
 const filterArray = [
@@ -187,6 +190,44 @@ export default function GroupMembersScreen({ navigation, route }) {
       }
     </TouchableWithoutFeedback>
   );
+
+  const navigateToGroupMessage = () => {
+    setloading(true);
+    const UIDs = [];
+    if (members.length) {
+      members.filter((data) => {
+        if (data?.group_member_detail?.connected) {
+          UIDs.push(data?.user_id);
+          return data;
+        }
+        return null;
+      });
+    }
+    if (UIDs.length > 0) {
+      QBgetUserDetail(
+        QB.users.USERS_FILTER.FIELD.LOGIN,
+        QB.users.USERS_FILTER.TYPE.STRING,
+        [UIDs].join(),
+      ).then((userData) => {
+        const IDs = [];
+        userData.users.map((item) => IDs.push(item?.id));
+        const groupName = authContext?.entity?.obj?.group_name;
+        QBcreateDialog(IDs, QB_DIALOG_TYPE.GROUP, groupName).then((dialog) => {
+          setloading(false);
+          navigation.navigate('MessageChat', {
+            screen: 'MessageChatRoom',
+            params: { dialog },
+          });
+        }).catch((error) => {
+          setloading(false);
+          console.log(error);
+        })
+      }).catch((error) => {
+        console.log(error);
+        setloading(false)
+      })
+    }
+  }
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -230,7 +271,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                 // destructiveButtonIndex={1}
                 onPress={(index) => {
                   if (index === 0) {
-                    // navigation.navigate('InvitationSentScreen');
+                    navigateToGroupMessage()
                   } else if (index === 1) {
                     actionSheetInvite.current.show();
                   } else if (index === 2) {
