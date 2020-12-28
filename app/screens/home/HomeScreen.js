@@ -26,6 +26,7 @@ import {
   getGameStatsChartData,
   getGameStatsData,
   getRefereeReviewData,
+  getScroreboardGameDetails,
 } from '../../api/Games';
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
@@ -95,6 +96,7 @@ import * as Utility from '../../utils';
 import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
 import RefereeReservationItem from '../../components/Schedule/RefereeReservationItem';
 import { getRefereeReservationDetails } from '../../api/Reservations';
+import TCSearchBox from '../../components/TCSearchBox';
 
 const reviews_data = [
   {
@@ -199,6 +201,9 @@ export default function HomeScreen({ navigation, route }) {
 
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
+  const [scoreboardGameData, setScoreboardGameData] = useState([]);
+  const [filterScoreboardGameData, setFilterScoreboardGameData] = useState([]);
+  const [scoreboardSearchText, setScoreboardSearchText] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [filterEventData, setFilterEventData] = useState([]);
   const [filterTimeTable, setFilterTimeTable] = useState([]);
@@ -264,6 +269,13 @@ export default function HomeScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message)
         }, 0.3)
       })
+
+      getScroreboardGameDetails(uid, authContext).then((res) => {
+        console.log('Get Scoreboard Game Details Res :-', res);
+        setScoreboardGameData(res.payload);
+      }).catch((error) => {
+        console.log('error :-', error);
+      });
       return null;
     });
     return () => {
@@ -1040,6 +1052,9 @@ export default function HomeScreen({ navigation, route }) {
             }
             return null;
           });
+        } else {
+          setRefereeUpcomingMatch([]);
+          setRefereeRecentMatch([]);
         }
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
@@ -1329,7 +1344,35 @@ export default function HomeScreen({ navigation, route }) {
                     onMemberPress={onMemberPress}
                   />}
                 </View>)}
-                {tabKey === 2 && (<View style={{ flex: 1 }} />)}
+                {tabKey === 2 && (<View style={{ flex: 1 }}>
+                  <TCSearchBox
+                    onChangeText={(text) => {
+                      setScoreboardSearchText(text);
+                      const result = scoreboardGameData.filter(
+                        (x) => (
+                          (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))
+                        || (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))),
+                      );
+                      setFilterScoreboardGameData(result);
+                    }}
+                    marginTop={20}
+                    marginBottom={5}
+                    alignSelf={'center'}
+                    width={wp('94%')}
+                    borderRadius={0}
+                    backgroundColor={colors.grayBackgroundColor}
+                    height={40}
+                    shadowOpacity={0}
+                  />
+                  <ScoreboardSportsScreen
+                    sportsData={scoreboardSearchText.length > 0 ? filterScoreboardGameData : scoreboardGameData}
+                    navigation={navigation}
+                    onItemPress={() => {
+                      setRefereeMatchModalVisible(false);
+                      setRefereesInModalVisible(false);
+                    }}
+                  />
+                </View>)}
                 {tabKey === 3 && (<View style={{ flex: 1 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                     <View style={{ padding: 5, height: 16, width: 16 }} />
@@ -1983,9 +2026,19 @@ export default function HomeScreen({ navigation, route }) {
               />
               {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
                 sportsData={recentMatchData}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScoreboardModalVisible(false);
+                  setPlaysInModalVisible(false);
+                }}
               />}
               {scoreboardTabNumber === 1 && <UpcomingMatchScreen
                 sportsData={upcomingMatchData}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScoreboardModalVisible(false);
+                  setPlaysInModalVisible(false);
+                }}
               />}
             </SafeAreaView>
           </Modal>
@@ -2299,10 +2352,20 @@ export default function HomeScreen({ navigation, route }) {
                 sportsData={refereeRecentMatch}
                 showEventNumbers={true}
                 showAssistReferee={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setRefereeMatchModalVisible(false);
+                  setRefereesInModalVisible(false);
+                }}
               />}
               {scoreboardTabNumber === 1 && <UpcomingMatchScreen
                 sportsData={refereeUpcomingMatch}
                 showEventNumbers={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScoreboardModalVisible(false);
+                  setPlaysInModalVisible(false);
+                }}
               />}
             </SafeAreaView>
           </Modal>

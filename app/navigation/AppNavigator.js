@@ -56,6 +56,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ReservationDetailScreen'
     || routeName === 'MembersProfileScreen'
     || routeName === 'TagUserScreen'
+    || routeName === 'UserTagSelectionListScreen'
     || routeName === 'InvitationSentScreen'
     || routeName === 'UserFoundScreen'
     || routeName === 'UserNotFoundScreen'

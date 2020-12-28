@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableWithoutFeedback,
-  TouchableOpacity,
+  // TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -19,17 +19,22 @@ import strings from '../../Constants/String';
 
 export default function RecentMatchItems({
   data,
-  onThreeDotPress,
+  // onThreeDotPress,
   showEventNumbers,
   showAssistReferee,
+  onItemPress,
 }) {
   let startDate = '';
-  if (data && data.actual_startdatetime) {
+  if (data && data.actual_startdatetime !== undefined) {
     startDate = new Date(data.actual_startdatetime * 1000);
+  } else {
+    startDate = new Date(data.start_datetime * 1000);
   }
   let endDate = '';
-  if (data && data.actual_enddatetime) {
+  if (data && data.actual_enddatetime !== undefined) {
     endDate = new Date(data.actual_enddatetime * 1000);
+  } else {
+    endDate = new Date(data.end_datetime * 1000);
   }
   let eventColor = colors.themeColor;
   if (data && data.eventColor) {
@@ -69,7 +74,7 @@ export default function RecentMatchItems({
   }
 
   return (
-    <TouchableWithoutFeedback style={styles.backgroundView}>
+    <TouchableWithoutFeedback style={styles.backgroundView} onPress={onItemPress}>
       <View style={styles.backgroundView}>
         <View style={[styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]}>
           <Text style={styles.dateMonthText}>{moment(startDate).format('MMM')}</Text>
@@ -83,9 +88,9 @@ export default function RecentMatchItems({
               </Text>
               {showEventNumbers && <Text style={styles.eventNumberStyle}>{'(1/3)'}</Text>}
             </View>
-            <TouchableOpacity onPress={onThreeDotPress}>
+            {/* <TouchableOpacity onPress={onThreeDotPress}>
               <Image source={images.vertical3Dot} style={styles.threedot} resizeMode={'contain'} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
@@ -179,14 +184,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  threedot: {
-    height: 12,
-    right: 6,
-    marginTop: 5,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    width: 12,
-  },
+  // threedot: {
+  //   height: 12,
+  //   right: 6,
+  //   marginTop: 5,
+  //   resizeMode: 'contain',
+  //   tintColor: colors.grayColor,
+  //   width: 12,
+  // },
   timeCityDividerStyle: {
     width: 1,
     backgroundColor: colors.linesepratorColor,

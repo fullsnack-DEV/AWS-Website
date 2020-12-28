@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
+import RNUrlPreview from 'react-native-url-preview';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import { createPost, getNewsFeed } from '../../api/NewsFeeds';
@@ -49,7 +50,18 @@ export default function WritePostScreen({ navigation, route }) {
     userName = postData.group_name;
   }
 
-  console.log('Selected Images ::--', selectImage);
+  useEffect(() => {
+    let tagName = '';
+    if (route.params && route.params.selectedTagList) {
+      if (route.params.selectedTagList.length > 0) {
+        route.params.selectedTagList.map((tagItem, index) => {
+          tagName = `${tagName + (index ? ',' : '')} @${tagItem.title}`;
+          return null;
+        })
+        setSearchText(searchText + tagName);
+      }
+    }
+  }, [route.params]);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -145,6 +157,10 @@ export default function WritePostScreen({ navigation, route }) {
           style={ styles.textInputField }
           multiline={ true }
         />
+        {searchText.length > 0 && <RNUrlPreview
+          text={searchText}
+          containerStyle={styles.previewContainerStyle}
+        />}
         {selectImage.length > 0 && <FlatList
           data={ selectImage }
           horizontal={ true }
@@ -222,9 +238,10 @@ export default function WritePostScreen({ navigation, route }) {
             />
             <ImageButton
               source={ images.tagImage }
-              imageStyle={ { width: 22, height: 22, marginLeft: wp('2%') } }
-              onImagePress={ () => {
-              } }
+              imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
+              onImagePress={() => {
+                navigation.navigate('UserTagSelectionListScreen');
+              }}
             />
           </View>
         </View>
@@ -290,8 +307,9 @@ const styles = StyleSheet.create({
   textInputField: {
     alignSelf: 'center',
     fontSize: 16,
-    height: hp('15%'),
+    maxHeight: hp('15%'),
     width: wp('92%'),
+    marginBottom: 10,
   },
   userDetailView: {
     flexDirection: 'row',
@@ -324,5 +342,12 @@ const styles = StyleSheet.create({
       height: -3,
       width: 0,
     },
+  },
+  previewContainerStyle: {
+    margin: 5,
+    borderWidth: 1,
+    borderColor: colors.grayBackgroundColor,
+    padding: 8,
+    borderRadius: 10,
   },
 });

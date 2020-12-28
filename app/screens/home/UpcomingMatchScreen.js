@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,11 +9,16 @@ import moment from 'moment';
 import UpcomingMatchItems from '../../components/Home/UpcomingMatchItems';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
+import AuthContext from '../../auth/context';
+import { getEventById } from '../../api/Schedule';
 
 export default function UpcomingMatchScreen({
   sportsData,
   showEventNumbers,
+  navigation,
+  onItemPress,
 }) {
+  const authContext = useContext(AuthContext)
   let filterData = [];
   let dataNotFound = true;
   if (sportsData) {
@@ -66,7 +71,22 @@ export default function UpcomingMatchScreen({
           renderItem={ ({ item }) => (
             <UpcomingMatchItems
               data={item}
-              onThreeDotPress={() => {}}
+              // onThreeDotPress={() => {}}
+              onItemPress={() => {
+                const entity = authContext.entity
+                if (item.game_id) {
+                  navigation.navigate('SoccerHome', {
+                    gameId: item.game_id,
+                  })
+                } else {
+                  getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
+                    navigation.navigate('EventScreen', { data: response.payload, gameData: item });
+                  }).catch((e) => {
+                    console.log('Error :-', e);
+                  })
+                }
+                onItemPress();
+              }}
               showEventNumbers={showEventNumbers}
             />
           ) }

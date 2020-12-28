@@ -25,7 +25,6 @@ export default function TCEventView({
   eventOfSection,
   entity,
 }) {
-  console.log('Entity ::--', entity);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
