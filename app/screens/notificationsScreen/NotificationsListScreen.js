@@ -261,14 +261,18 @@ function NotificationsListScreen({ navigation }) {
     || verb.includes(NotificationType.invitePlayerToJoingame);
 
   const openHomePage = (item) => {
-    if (item?.entityType && item?.entityId) {
-      navigation.navigate('HomeScreen', {
-        uid: item?.entityId,
-        backButtonVisible: true,
-        role: item?.entityType,
-      })
+    if (activeScreen) {
+      if (item?.entityType && item?.entityId) {
+        navigation.navigate('HomeScreen', {
+          uid: item?.entityId,
+          backButtonVisible: true,
+          role: item?.entityType,
+        })
+      }
+      console.log('item', item)
+    } else {
+      showSwitchProfilePopup()
     }
-    console.log('item', item)
   }
 
   const renderPendingRequestComponent = ({ item }) => (
@@ -292,7 +296,7 @@ function NotificationsListScreen({ navigation }) {
           item={item}
           selectedEntity={selectedEntity}
           onDetailPress={() => onDetailPress(item)}
-          onMessagePress={() => onMessagePress(item)}
+          onMessagePress={onMessagePress}
           onPress={() => {}}
           onPressFirstEntity={openHomePage}
         />
@@ -309,7 +313,7 @@ function NotificationsListScreen({ navigation }) {
         data={item}
         onPressFirstEntity={openHomePage}
         onPressSecondEntity={openHomePage}
-        card={() => {}}
+        onPressCard={() => {}}
       />
     </AppleStyleSwipeableRow>
   );
