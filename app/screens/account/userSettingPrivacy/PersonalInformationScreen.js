@@ -17,14 +17,12 @@ import {
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
-import { useIsFocused } from '@react-navigation/native';
 import { updateUserProfile } from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -33,29 +31,25 @@ import strings from '../../../Constants/String';
 import * as Utility from '../../../utils/index';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import TCLabel from '../../../components/TCLabel';
+import TCMessageButton from '../../../components/TCMessageButton';
 
 export default function PersonalInformationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
+
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [fullName, setFullName] = useState('');
+  const [userInfo, setUserInfo] = useState(authContext.entity.obj)
 
-  const [fName, setFName] = useState('');
-  const [lName, setLName] = useState('');
-  const [email, setEmail] = useState('');
-
-  const [phoneNumbers, setPhoneNumbers] = useState([]);
-
-  const [location, setLocation] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [country, setCountry] = useState('');
+  const [phoneNumbers, setPhoneNumbers] = useState(authContext.entity.obj.phone_numbers || [{
+    id: 0,
+    phone_number: '',
+    country_code: '',
+  }]);
 
   const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [languages, setLanguages] = useState([]);
+  const [languages, setLanguages] = useState(authContext.entity.obj.language || []);
   const selectedLanguage = [];
 
   const language = [
@@ -86,99 +80,52 @@ export default function PersonalInformationScreen({ navigation, route }) {
         ),
       });
     }
-  }, [navigation, editMode]);
+  }, [navigation, editMode, languages, phoneNumbers]);
 
   useEffect(() => {
-    getUserInformation();
     const arr = [];
-    for (const tempData of language) {
-      tempData.isChecked = false;
-      arr.push(tempData);
+    for (const temp of language) {
+      if (userInfo.language.includes(temp.language)) {
+        temp.isChecked = true
+      } else {
+        temp.isChecked = false
+      }
+      arr.push(temp)
     }
     setLanguages(arr);
 
     if (route.params && route.params.city) {
-      setLocation(
-        `${route.params.city
-        }, ${
-          route.params.state
-        }, ${
-          route.params.country}`,
-      );
-      setCity(route.params.city);
-      setState(route.params.state);
-      setCountry(route.params.country);
-    } else {
-      setCity('');
-      setState('');
-      setCountry('');
-      setLocation('');
+      setUserInfo({ ...userInfo, city: route.params.city })
+      setUserInfo({ ...userInfo, state_abbr: route.params.state })
+      setUserInfo({ ...userInfo, country: route.params.country })
     }
-  }, [isFocused]);
-
+  }, []);
+  const addPhoneNumber = () => {
+    const obj = {
+      id: phoneNumbers.length === 0 ? 0 : phoneNumbers.length,
+      code: '',
+      number: '',
+    }
+    setPhoneNumbers([...phoneNumbers, obj]);
+  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
   // Form Validation
   const checkValidation = () => {
-    if (fName === '') {
+    if (userInfo.first_name === '') {
       Alert.alert('Towns Cup', 'First name cannot be blank');
       return false
-    } if (lName === '') {
+    } if (userInfo.last_name === '') {
       Alert.alert('Towns Cup', 'Last name cannot be blank');
       return false
-    } if (location === '') {
+    } if (userInfo.city && userInfo.state_abbr && userInfo.country === '') {
       Alert.alert('Towns Cup', 'Location cannot be blank');
       return false
     }
 
     return true
   };
-
-  // Get user information from async store
-  const getUserInformation = async () => {
-    const entity = authContext.entity
-    const userDetails = entity.obj
-    setFName(userDetails.first_name);
-    setLName(userDetails.last_name);
-    setFullName(userDetails.full_name);
-    setEmail(userDetails.email);
-    setCity(userDetails.city);
-    setState(userDetails.state_abbr);
-    setCountry(userDetails.country);
-    setLocation(
-      `${userDetails.city
-      }, ${
-        userDetails.state_abbr
-      }, ${
-        userDetails.country}`,
-    );
-    setPhoneNumbers(userDetails.phone_numbers);
-
-    const arr = [];
-    const tempArr = []
-    let match = false;
-    for (const temp of language) {
-      for (const tempLang of userDetails.language) {
-        if (tempLang === temp.language) {
-          match = true;
-          break
-        } else {
-          match = false;
-        }
-      }
-      if (match) {
-        temp.isChecked = true;
-        arr.push(temp);
-        tempArr.push(temp.language);
-      } else {
-        temp.isChecked = false;
-        arr.push(temp);
-      }
-    }
-    setLanguages(arr);
-    setSelectedLanguages(tempArr);
-  }
 
   // Change Edit mode states
   const changeEditMode = () => {
@@ -197,8 +144,9 @@ export default function PersonalInformationScreen({ navigation, route }) {
         selectedLanguage.push(temp.language);
       }
     }
-    setSelectedLanguages(selectedLanguage);
-    console.log('language Checked ?:::', selectedLanguage);
+    setUserInfo({ ...userInfo, language: selectedLanguage })
+    // setSelectedLanguages(selectedLanguage);
+    console.log('language Checked :::', selectedLanguage);
   };
   const renderLanguage = ({ item, index }) => (
     <TouchableWithoutFeedback
@@ -209,7 +157,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
       <View>
         <Text style={ styles.languageList }>{item.language}</Text>
         <View style={ styles.checkbox }>
-          {languages[index].isChecked ? (
+          {item.isChecked ? (
             <Image
                 source={ images.checkWhiteLanguage }
                 style={ styles.checkboxImg }
@@ -223,8 +171,8 @@ export default function PersonalInformationScreen({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
   const renderPhoneNumber = ({ item, index }) => (
-    <View style={ styles.fieldView }>
 
+    <View style={ styles.fieldView }>
       <View
           style={ {
             flexDirection: 'row',
@@ -249,6 +197,9 @@ export default function PersonalInformationScreen({ navigation, route }) {
               const tmpphoneNumbers = [...phoneNumbers];
               tmpphoneNumbers[index].country_code = value;
               setPhoneNumbers(tmpphoneNumbers);
+
+              const filteredNumber = phoneNumbers.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
+              setUserInfo({ ...userInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
             } }
             value={ item.country_code }
             disabled={ !editMode }
@@ -306,9 +257,8 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 const tempphoneNumbers = [...phoneNumbers];
                 tempphoneNumbers[index].phone_number = text;
                 setPhoneNumbers(tempphoneNumbers);
-                console.log('====================================');
-                console.log('::', phoneNumbers);
-                console.log('====================================');
+                const filteredNumber = phoneNumbers.filter((obj) => ![null, undefined, ''].includes(obj.phone_number && obj.country_code))
+                setUserInfo({ ...userInfo, phone_numbers: filteredNumber.map(({ country_code, phone_number }) => ({ country_code, phone_number })) })
               } }
               editable={ editMode }
               value={ item.phone_number }></TextInput>
@@ -321,52 +271,48 @@ export default function PersonalInformationScreen({ navigation, route }) {
     <>
       <ScrollView style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
-        <Text style={ styles.LocationText }>
-          Name
-        </Text>
+        <TCLabel title={'Name'}/>
         {editMode && <View><TextInput
             placeholder={ strings.fnameText }
             style={ styles.matchFeeTxt }
-            onChangeText={ (text) => setFName(text) }
+            onChangeText={ (text) => {
+              setUserInfo({ ...userInfo, first_name: text })
+            }}
             editable={ editMode }
-            value={ fName }></TextInput>
+            value={ userInfo.first_name }></TextInput>
           <TextInput
             placeholder={ strings.lnameText }
             style={ styles.matchFeeTxt }
-            onChangeText={ (text) => setLName(text) }
+            onChangeText={ (text) => {
+              setUserInfo({ ...userInfo, last_name: text })
+            }}
             editable={ editMode }
-            value={ lName }></TextInput></View>}
+            value={ userInfo.last_name }></TextInput></View>}
 
         {!editMode && <TextInput
             placeholder={ 'Name' }
             style={ styles.matchFeeTxt }
-            onChangeText={ (text) => setFullName(text) }
             editable={ editMode }
-            value={ fullName }></TextInput>
+            value={ `${userInfo.first_name} ${userInfo.last_name}` }></TextInput>
         }
 
-        <Text style={ styles.LocationText }>
-          E-mail
-        </Text>
+        <TCLabel title={'E-mail'}/>
         <TextInput
             placeholder={ strings.emailPlaceHolder }
             style={ styles.matchFeeTxt }
-            onChangeText={ (text) => setEmail(text) }
             editable={ false }
-            value={ email }></TextInput>
+            value={ userInfo.email }></TextInput>
 
-        <Text style={ styles.LocationText }>Phone</Text>
+        <TCLabel title={'Phone'}/>
         <FlatList
             data={ phoneNumbers }
             keyExtractor={(index) => index.toString()}
             renderItem={ renderPhoneNumber }
         />
-
+        <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
         <View style={ styles.fieldView }>
-          <Text style={ styles.LocationText }>
-            {strings.locationTitle}
 
-          </Text>
+          <TCLabel title={strings.locationTitle}/>
           <TouchableOpacity
               onPress={ () => {
                 // eslint-disable-next-line no-unused-expressions
@@ -378,17 +324,13 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <TextInput
                 placeholder={ strings.searchCityPlaceholder }
                 style={ styles.matchFeeTxt }
-                value={ location }
+                value={userInfo.city && `${userInfo.city} ,${userInfo.state_abbr} ,${userInfo.country}`}
                 editable={ false }
                 pointerEvents="none"
                 ></TextInput>
           </TouchableOpacity>
         </View>
-
-        <Text style={ styles.LocationText }>
-          {strings.languageTitle}
-
-        </Text>
+        <TCLabel title={strings.languageTitle}/>
         <View style={ styles.searchView }>
           <TouchableOpacity
            onPress={ () => {
@@ -398,7 +340,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            value={ selectedLanguages.toString() }
+            value={ userInfo.language.toString() }
             editable={ false }
             pointerEvents="none"></TextInput>
           </TouchableOpacity>
@@ -485,27 +427,31 @@ export default function PersonalInformationScreen({ navigation, route }) {
             // console.log('bodyPARAMS:: ', JSON.stringify(bodyParams));
 
             // navigation.navigate('RegisterPlayerForm2',{bodyParams: bodyParams})
-            bodyParams.first_name = fName;
-            bodyParams.last_name = lName;
-            bodyParams.full_name = `${fName} ${lName}`;
-            bodyParams.city = city;
-            bodyParams.state_abbr = state;
-            bodyParams.country = country;
-            bodyParams.language = selectedLanguages;
-            bodyParams.phone_numbers = phoneNumbers;
+            bodyParams.first_name = userInfo.first_name;
+            bodyParams.last_name = userInfo.last_name;
+            bodyParams.full_name = `${userInfo.first_name} ${userInfo.last_name}`;
+            bodyParams.city = userInfo.city;
+            bodyParams.state_abbr = userInfo.state_abbr;
+            bodyParams.country = userInfo.country;
+            if (userInfo.language) {
+              bodyParams.language = userInfo.language;
+            }
+            if (phoneNumbers) {
+              bodyParams.phone_numbers = userInfo.phone_numbers;
+            }
+            console.log('bodyPARAMS:: ', bodyParams);
             setloading(true);
             updateUserProfile(bodyParams, authContext).then(async (response) => {
-              if (response.status === true) {
-                Alert.alert('Towns Cup', 'Profile changed sucessfully');
-                // FIXME:
-                await Utility.setStorage('user', response.payload);
-                setEditMode(false);
-                authContext.setUser(response.payload);
-                Utility.setStorage('authContextUser', { ...response.payload })
-              } else {
-                Alert.alert('Towns Cup', 'Something went wrong');
+              const currentEntity = {
+                ...authContext.entity, obj: response.payload,
               }
+              authContext.setEntity({ ...currentEntity })
+              Utility.setStorage('authContextEntity', { ...currentEntity })
+              setEditMode(false);
               setloading(false);
+              setTimeout(() => {
+                Alert.alert('Towns Cup', 'Profile changed sucessfully');
+              }, 0.7);
             })
           }
         } }>
@@ -520,14 +466,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
-  LocationText: {
-    marginTop: hp('2%'),
-    color: colors.lightBlackColor,
-    fontSize: wp('3.8%'),
-    textAlign: 'left',
-    // fontFamily: fonts.RBold,
-    paddingLeft: 15,
-  },
 
   checkbox: {
     alignSelf: 'center',

@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, { useContext, useEffect } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity,
@@ -17,7 +18,7 @@ export default function ReservationStatusView({ data }) {
   const authContext = useContext(AuthContext);
   useEffect(() => {
     entity = authContext.entity;
-  }, [])
+  }, [data])
   const getReservationStatus = () => {
     if (data.responsible_to_secure_venue) {
       if (data.status === ReservationStatus.offered) {
@@ -167,16 +168,30 @@ export default function ReservationStatusView({ data }) {
   }
   const getDate = () => {
     if (data.game) {
-      return `${moment(data.game.start_datetime).format('MMM')}\n${moment(data.game.start_datetime).format('DD')}`
+      return `${moment(data.game.start_datetime * 1000).format('MMM')}\n${moment(data.game.start_datetime * 1000).format('DD')}`
     }
-    return `${moment(data.start_datetime).format('MMM')}\n${moment(data.start_datetime).format('DD')}`
+    return `${moment(data.start_datetime * 1000).format('MMM')}\n${moment(data.start_datetime * 1000).format('DD')}`
+  }
+  const getChallengerOrChallengee = () => {
+    if (data.responsible_to_secure_venue) {
+      if (data.invited_by === entity.uid) {
+        return strings.challengee
+      }
+      return strings.challenger
+    }
+    if (data.referee || data.scorekeeper) {
+      if (data.initiated_by === entity.uid) {
+        return strings.requestee
+      }
+      return strings.requester
+    }
   }
   return (
 
     <View style={styles.reservationTitleView}>
       <TouchableOpacity>
         <LinearGradient
-            colors={[colors.yellowColor, colors.themeColor]}
+            colors={(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? [colors.yellowColor, colors.themeColor] : [colors.greenGradientStart, colors.greenGradientEnd]}
             style={styles.borderView}>
           <View style={styles.dateView}>
             <Text style={styles.dateText}>{getDate()}</Text>
@@ -201,7 +216,7 @@ export default function ReservationStatusView({ data }) {
         )}
       </View>
       <View style={styles.amountView}>
-        <Text style={styles.amountText}>${data.total_game_charges} CAD</Text>
+        <Text style={styles.amountText}>${data.total_game_charges || 0} CAD</Text>
         {/* <Text style={styles.cancelAmountText}>$35 CAD</Text> */}
       </View>
     </View>

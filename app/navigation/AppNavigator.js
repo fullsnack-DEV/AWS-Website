@@ -78,7 +78,11 @@ const getTabBarVisibility = (route) => {
     || routeName === 'TennisRecording'
     || routeName === 'RegisterRefereeSuccess'
     || routeName === 'BookRefereeSuccess'
+    || routeName === 'RefereeRequestSent'
     || routeName === 'BookScorekeeperSuccess'
+    || routeName === 'ChallengeSentScreen'
+    || routeName === 'ChallengeAcceptedDeclinedScreen'
+    || routeName === 'AlterRequestSent'
   ) {
     return false;
   }

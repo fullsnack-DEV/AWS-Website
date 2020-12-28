@@ -5,9 +5,11 @@ import {
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
+import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
+import ReservationStatus from '../Constants/ReservationStatus';
 
 export default function GameCard({ data, onPress }) {
   const months = [
@@ -39,11 +41,9 @@ export default function GameCard({ data, onPress }) {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.backgroundView}>
-        <View
-          style={[
-            styles.colorView,
-            { backgroundColor: colors.yellowEventColor },
-          ]}>
+        <LinearGradient
+        colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
+          style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
               {months[new Date(data.start_datetime * 1000).getMonth()]}
@@ -52,7 +52,7 @@ export default function GameCard({ data, onPress }) {
               {new Date(data.start_datetime * 1000).getDate()}
             </Text>
           </View>
-        </View>
+        </LinearGradient>
         <View style={styles.eventText}>
           <Text style={styles.eventTitle}>{data.sport}</Text>
           <View style={styles.bottomView}>

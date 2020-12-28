@@ -7,9 +7,9 @@ import {
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
-  ScrollView,
   TextInput,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -26,7 +26,7 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 
-export default function ChangePasswordScreen() {
+export default function ChangePasswordScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -77,10 +77,34 @@ export default function ChangePasswordScreen() {
   //   }).catch((error) => { console.log(error); });
   // }
 
+  const onSavePress = () => {
+    if (checkValidation()) {
+      setloading(true);
+      console.log('EMAIL::', authContext?.entity?.obj?.email);
+      const credential = firebase.auth.EmailAuthProvider.credential(authContext?.entity?.obj?.email, oldPassword);
+      console.log('CREDENTIAL::', credential);
+      firebase.auth().currentUser.reauthenticateWithCredential(credential).then(() => {
+        firebase.auth().currentUser.updatePassword(newPassword).then(() => {
+          setNewPassword('');
+          setOldPassword('');
+          setConfirmPassword('');
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert('Towns Cup', 'Your new password has beed set successfully');
+          }, 0.7);
+          navigation.goBack()
+        })
+      }).catch((error) => {
+        setloading(false);
+        if (error.code === 'auth/wrong-password') {
+          Alert.alert('Towns Cup', 'The password is invalid or the user does not have a password.');
+        }
+      });
+    }
+  }
   return (
-    <ScrollView style={ styles.mainContainer }>
+    <View style={ styles.mainContainer }>
       <ActivityLoader visible={ loading } />
-
       <TextInput
             placeholder={ strings.oldPassword }
             secureTextEntry={ true }
@@ -112,33 +136,14 @@ export default function ChangePasswordScreen() {
           {hideConfirmPassword ? <Image source={ images.showPassword } style={ styles.passwordEyes } /> : <Image source={ images.hidePassword } style={ styles.passwordEyes } />}
         </TouchableWithoutFeedback>
       </View>
-      <TouchableWithoutFeedback onPress={ () => {
-        setloading(true);
-        if (checkValidation()) {
-          const credential = firebase.auth.EmailAuthProvider.credential(authContext.user.email, oldPassword);
-          firebase.auth().currentUser.reauthenticateWithCredential(credential).then(() => {
-            firebase.auth().currentUser.updatePassword(newPassword).then(() => {
-              setNewPassword('');
-              setOldPassword('');
-              setConfirmPassword('');
-              setloading(false);
-              Alert.alert('Towns Cup', 'Your new password has beed set succesfully');
-            })
-          }).catch((error) => {
-            if (error.code === 'auth/wrong-password') {
-              Alert.alert('Towns Cup', 'The password is invalid or the user does not have a password.');
-            }
-          });
-          setloading(false);
-        }
-      } }>
+      <TouchableOpacity onPress={onSavePress}>
         <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
           <Text style={ styles.nextButtonText }>{strings.saveTitle}</Text>
         </LinearGradient>
-      </TouchableWithoutFeedback>
-    </ScrollView>
+      </TouchableOpacity>
+    </View>
   );
 }
 const styles = StyleSheet.create({

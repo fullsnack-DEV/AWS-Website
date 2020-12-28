@@ -11,6 +11,7 @@ import {
   TextInput,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+import moment from 'moment';
 import { getLatLong } from '../../../api/External';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -30,21 +31,6 @@ let entity = {};
 let bodyParams = {};
 export default function CreateChallengeForm1({ navigation, route }) {
   const authContext = useContext(AuthContext)
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
   const isFocused = useIsFocused();
   const [venue, setVenue] = useState(0);
   const [cordinate, setCordinate] = useState({
@@ -81,7 +67,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
         if (route && route.params && route.params.editableAlter) {
           setEditableAlter(true)
         }
-        bodyParams = route.params.body
+        bodyParams = route.params.body;
+        console.log('BODY::-', bodyParams);
         setteams([{ ...route.params.body.home_team }, { ...route.params.body.away_team }])
         setVenueData(route.params.body.venue)
         setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_name ? 0 : 1)
@@ -134,14 +121,13 @@ export default function CreateChallengeForm1({ navigation, route }) {
         long: response.results[0].geometry.location.lng,
         title: venueTitle,
       });
-      console.log('LAT LONG::', JSON.stringify(response));
     });
   };
 
   const swapTeam = () => {
     setteams([teams[1], teams[0]]);
   };
-
+  const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy');
   const tConvert = (timeString) => {
     const timeString12hr = new Date(
       `1970-01-01T${timeString}Z`,
@@ -277,7 +263,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('ChooseDateTimeScreen', {
-                    otherTeam: route.params.groupObj || bodyParams,
+                    otherTeam: route.params.groupObj,
+                    body: bodyParams,
                   })
                 }}
                 style={styles.containerStyle}>
@@ -287,11 +274,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   style={styles.textInput}
                   value={
                     (bodyParams && bodyParams.start_datetime && bodyParams.end_datetime
-                      && `${getTimeDifForReservation(bodyParams.start_datetime, bodyParams.end_datetime)}\n${
-                        monthNames[new Date(bodyParams.start_datetime).getMonth()]
-                      } ${new Date(bodyParams.start_datetime).getDate()}, ${new Date(
-                        bodyParams.start_datetime,
-                      ).getFullYear()}  ${time_format(new Date(bodyParams.start_datetime))} - ${time_format(new Date(bodyParams.end_datetime))}`)
+                      && `${getTimeDifForReservation(bodyParams.start_datetime * 1000, bodyParams.end_datetime * 1000)}\n${getDateFormat(bodyParams.start_datetime)
+                      }  ${time_format(new Date(bodyParams.start_datetime * 1000))} - ${time_format(new Date(bodyParams.end_datetime * 1000))}`)
                   }
                   editable={false}
                   pointerEvents="none"
@@ -518,7 +502,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
               if (route && route.params && route.params.editable) {
                 navigation.navigate('CreateChallengeForm4', { teamData: teams, body: configureParams() })
               } else if (editableAlter) {
-                navigation.navigate('AlterAcceptDeclineScreen', {
+                navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...bodyParams,
                     home_team: teams[0],

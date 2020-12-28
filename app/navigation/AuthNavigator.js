@@ -25,6 +25,7 @@ const Stack = createStackNavigator();
 const AuthNavigator = () => (
   <Stack.Navigator
       screenOptions={ {
+        gestureEnabled: false,
         headerTintColor: colors.whiteColor,
         headerTransparent: true,
         headerTitle: false,
@@ -38,12 +39,12 @@ const AuthNavigator = () => (
     <Stack.Screen
         name="ForgotPasswordScreen"
         component={ ForgotPasswordScreen }
-        options={ {} }
+        options={ { } }
       />
     <Stack.Screen
         name="ForgotPasswordLinkSentScreen"
         component={ ForgotPasswordLinkSentScreen }
-        options={ {} }
+        options={ { } }
       />
     <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {} } />
     <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {} } />
