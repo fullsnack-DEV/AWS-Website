@@ -131,6 +131,7 @@ import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeS
 import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
+import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 
 const Stack = createStackNavigator();
 
@@ -231,6 +232,14 @@ const HomeNavigator = () => (
     />
 
     <Stack.Screen
+      name="UserTagSelectionListScreen"
+      component={UserTagSelectionListScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
         name="WriteCommentScreen"
         component={ WriteCommentScreen }
         options={ {
@@ -239,6 +248,7 @@ const HomeNavigator = () => (
           headerTitleStyle: {
             fontWeight: '500',
           },
+          headerShown: false,
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,

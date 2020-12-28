@@ -13,7 +13,9 @@ import {
 } from 'react-native-responsive-screen';
 import { Text } from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
-
+import Share from 'react-native-share';
+import Clipboard from '@react-native-community/clipboard';
+import RNUrlPreview from 'react-native-url-preview';
 import Carousel from 'react-native-snap-carousel';
 import images from '../../Constants/ImagePath';
 import SingleImage from './SingleImage';
@@ -61,6 +63,7 @@ function NewsFeedPostItems({
     }
   }, [item]);
   const actionSheet = useRef();
+  const shareActionSheet = useRef();
   // let like = false;
 
   let userImage = '';
@@ -69,7 +72,7 @@ function NewsFeedPostItems({
   }
 
   let attachedImages = [];
-  let descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
+  let descriptions = '';
   if (item.object) {
     if (JSON.parse(item.object).attachments !== undefined && JSON.parse(item.object).attachments.length > 0) {
       attachedImages = JSON.parse(item.object).attachments;
@@ -108,8 +111,8 @@ function NewsFeedPostItems({
       </View>
       <View>
         {
-                attachedImages && attachedImages.length === 1 ? (
-                  <FlatList
+          attachedImages && attachedImages.length === 1 ? (
+            <FlatList
               data={attachedImages}
               horizontal={true}
               bounces={false}
@@ -144,8 +147,8 @@ function NewsFeedPostItems({
               }}
               keyExtractor={(index) => index.toString()}
             />
-                ) : (
-                  <Carousel
+          ) : (
+            <Carousel
               data={attachedImages}
               renderItem={({ item: multiAttachItem, index }) => {
                 if (multiAttachItem.type === 'image') {
@@ -187,8 +190,16 @@ function NewsFeedPostItems({
               sliderWidth={wp(100)}
               itemWidth={wp(94)}
             />
-                )
-              }
+          )
+        }
+        {(descriptions.toLowerCase().indexOf('http://') === 0
+          || descriptions.toLowerCase().indexOf('https://') === 0) && <RNUrlPreview
+          text={descriptions}
+          containerStyle={styles.urlPreviewContainerStyle}
+          imageProps={{ resizeMode: 'cover' }}
+          imageStyle={styles.previewImageStyle}
+        />}
+
         {attachedImages.length > 0 ? (
           <NewsFeedDescription descriptions={descriptions} character={140} />
         ) : (
@@ -238,7 +249,9 @@ function NewsFeedPostItems({
                 marginLeft: 10,
               }}>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() => {
+                  shareActionSheet.current.show();
+                }}
                 style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
@@ -246,7 +259,7 @@ function NewsFeedPostItems({
                   resizeMode={'contain'}
                 />
               </TouchableOpacity>
-              <Text style={styles.commentlengthStyle}>99,999</Text>
+              <Text style={styles.commentlengthStyle}>{''}</Text>
             </View>
           </View>
 
@@ -296,19 +309,43 @@ function NewsFeedPostItems({
           </View>
         </View>
         <ActionSheet
-                ref={actionSheet}
-                title={'News Feed Post'}
-                options={['Edit Post', 'Delete Post', 'Cancel']}
-                cancelButtonIndex={2}
-                destructiveButtonIndex={1}
-                onPress={(index) => {
-                  if (index === 0) {
-                    navigation.navigate('EditPostScreen', { data: item });
-                  } else if (index === 1) {
-                    onDeletePost();
-                  }
-                }}
-              />
+          ref={actionSheet}
+          title={'News Feed Post'}
+          options={['Edit Post', 'Delete Post', 'Cancel']}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              navigation.navigate('EditPostScreen', { data: item });
+            } else if (index === 1) {
+              onDeletePost();
+            }
+          }}
+        />
+
+        <ActionSheet
+          ref={shareActionSheet}
+          title={'News Feed Post'}
+          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
+          cancelButtonIndex={3}
+          // destructiveButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              const options = {
+                message: descriptions,
+              }
+              Share.open(options)
+                .then((res) => {
+                  console.log('res :-', res);
+                })
+                .catch((err) => {
+                  console.log('err :-', err);
+                });
+            } else if (index === 1) {
+              Clipboard.setString(descriptions);
+            }
+          }}
+        />
       </View>
     </View>
   );
@@ -372,6 +409,19 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginLeft: wp('4%'),
     width: wp('70%'),
+  },
+  urlPreviewContainerStyle: {
+    flexDirection: 'column',
+    margin: 5,
+    borderWidth: 1,
+    borderColor: colors.grayBackgroundColor,
+    padding: 8,
+    borderRadius: 10,
+  },
+  previewImageStyle: {
+    alignSelf: 'center',
+    height: 100,
+    width: wp('90%'),
   },
 });
 

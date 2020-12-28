@@ -31,6 +31,7 @@ const colors = {
   medianGrayColor: '#C4C4C4',
   blueColor: '#3166d1',
   lightBlueColor: '#c1d2f2',
+  skyBlue: '#2269aa',
   pinkColor: '#FF658E',
   yellowColor: '#FFAE01',
   darkGrayColor: '#565656',

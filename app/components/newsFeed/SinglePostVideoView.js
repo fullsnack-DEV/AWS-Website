@@ -16,6 +16,7 @@ import {
 import Video from 'react-native-video';
 import Orientation from 'react-native-orientation';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import Header from '../Home/Header';
@@ -131,6 +132,22 @@ export default function SinglePostVideoView({
               width: isLandScape ? landscapeImgDimention.width : portraitImgDimention.width,
             }}
           />
+          <View
+            style={[
+              styles.singleImageDisplayStyle,
+              {
+                width: isLandScape ? landscapeImgDimention.width : portraitImgDimention.width,
+                height: isLandScape ? landscapeImgDimention.height : portraitImgDimention.height,
+                position: 'absolute',
+              },
+            ]}>
+            <FastImage
+              style={styles.loadimageStyle}
+              source={images.imageLoadingGIF}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+            <Text style={styles.loadingTextStyle}>Loading...</Text>
+          </View>
           <Video
             paused={!play}
             muted={!mute}
@@ -375,5 +392,15 @@ const styles = StyleSheet.create({
     width: wp('98%'),
     alignSelf: 'center',
     alignItems: 'center',
+  },
+  loadimageStyle: {
+    height: 50,
+    width: 50,
+  },
+  loadingTextStyle: {
+    color: colors.googleColor,
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    marginTop: 25,
   },
 });

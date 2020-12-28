@@ -157,6 +157,12 @@ const getGameScorekeeperReservation = (gameId, authContext) => makeAPIRequest({
   authContext,
 });
 
+const getScroreboardGameDetails = (userID, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}teams/${userID}/games?status=ended`,
+  authContext,
+});
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -183,4 +189,5 @@ export {
   getGameSlots,
   getGameRefereeReservation,
   getGameScorekeeperReservation,
+  getScroreboardGameDetails,
 }

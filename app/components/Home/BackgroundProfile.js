@@ -48,6 +48,10 @@ function BackgroundProfile({
   if (currentUserData && currentUserData.first_name === undefined) {
     fullName = currentUserData.group_name;
   }
+  let description = '';
+  if (currentUserData && currentUserData.description) {
+    description = currentUserData.description;
+  }
   let city = '';
   let country = '';
   if (currentUserData) {
@@ -79,7 +83,7 @@ function BackgroundProfile({
           />
           <View style={styles.userViewStyle}>
             <Text style={styles.userTextStyle}>{fullName}</Text>
-            {currentUserData.description && <Text style={styles.sloganTextStyle}>{currentUserData.description}</Text>}
+            {description !== '' && <Text style={styles.sloganTextStyle}>{description}</Text>}
             <View style={{
               flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
             }}>
