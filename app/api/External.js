@@ -3,7 +3,7 @@ import apiCall from '../utils/apiCall';
 
 export const searchLocations = async (query) => apiCall({
   method: 'get',
-  url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
+  url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(regions)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
 })
 
 export const searchVenue = async (query, authContext) => makeAPIRequest({

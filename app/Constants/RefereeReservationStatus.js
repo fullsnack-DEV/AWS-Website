@@ -9,7 +9,7 @@ const RefereeReservationStatus = {
   cancelled: 'cancelled',
   pendingpayment: 'pendingpayment',
   pendingrequestpayment: 'pendingrequestpayment',
-  requestcancelled: 'cancelRequest',
+  requestcancelled: 'requestcancelled',
 };
 
 export default RefereeReservationStatus

@@ -6,6 +6,7 @@ import NotificationsListScreen from '../screens/notificationsScreen/Notification
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
+
 import colors from '../Constants/Colors';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
@@ -14,6 +15,8 @@ import EditRefereeReservation from '../screens/referee/alterReferee/EditRefereeR
 import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
 import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFeeScreen';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
+import ReservationAcceptDeclineScreen from '../screens/referee/ReservationAcceptDeclineScreen';
+
 import ChangeReservationInfoScreen from '../screens/challenge/alterChallenge/ChangeReservationInfoScreen';
 import CurruentReservationScreen from '../screens/challenge/alterChallenge/CurruentReservationScreen';
 import SoccerHome from '../screens/game/soccer/SoccerHome';
@@ -31,6 +34,8 @@ import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateCha
 import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateChallengeForm4';
 import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
+
+import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 
 const Stack = createStackNavigator();
 
@@ -96,6 +101,14 @@ function NotificationNavigator() {
            headerShown: false,
          }}
         />
+      <Stack.Screen
+         name="ReservationAcceptDeclineScreen"
+         component={ReservationAcceptDeclineScreen}
+         options={{
+           headerShown: false,
+         }}
+        />
+
       <Stack.Screen
             name="RefereeReservationScreen"
             component={RefereeReservationScreen}
@@ -403,6 +416,22 @@ function NotificationNavigator() {
         component={ ChooseDateTimeScreen }
         options={ {
           title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+      <Stack.Screen
+        name="PaymentMethodsScreen"
+        component={ PaymentMethodsScreen }
+        options={ {
+          title: 'Payment Methods',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

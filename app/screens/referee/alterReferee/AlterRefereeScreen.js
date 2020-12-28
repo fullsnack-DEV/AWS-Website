@@ -117,6 +117,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
           total_charges: reservationObj[0]?.total_charges,
           total_stripe_fee: reservationObj[0]?.total_stripe_fee,
           total_payout: reservationObj[0]?.total_payout,
+          hourly_game_fee: reservationObj[0]?.hourly_game_fee,
+          manual_fee: reservationObj[0]?.manual_fee,
+
         })
       }
       console.log('challenge Object::', reservationObj[0]);
@@ -154,6 +157,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
           total_charges: reservationObj?.total_charges,
           total_stripe_fee: reservationObj?.total_stripe_fee,
           total_payout: reservationObj?.total_payout,
+          hourly_game_fee: reservationObj?.hourly_game_fee,
+          manual_fee: reservationObj?.manual_fee,
         })
       }
       console.log('challenge Object::', reservationObj);
@@ -249,6 +254,8 @@ export default function AlterRefereeScreen({ navigation, route }) {
           service_fee1_charges: response.payload.total_service_fee1,
           service_fee2_charges: response.payload.total_service_fee2,
           total_stripe_fee: response.payload.total_stripe_fee,
+          hourly_game_fee: bodyParams.hourly_game_fee,
+          manual_fee: bodyParams.manual_fee,
         })
       })
       .catch((e) => {
@@ -274,7 +281,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
       .then((response) => {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-        navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        navigation.navigate('ReservationAcceptDeclineScreen', {
           teamObj: awayTeam,
           status: 'cancel',
         });
@@ -306,24 +313,24 @@ export default function AlterRefereeScreen({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'accept',
           });
         } else if (status === 'decline') {
           if (isRestored) {
-            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            navigation.navigate('ReservationAcceptDeclineScreen', {
               teamObj: awayTeam,
               status: 'restored',
             });
           } else {
-            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+            navigation.navigate('ReservationAcceptDeclineScreen', {
               teamObj: awayTeam,
               status: 'decline',
             });
           }
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'cancel',
           });
@@ -359,17 +366,17 @@ export default function AlterRefereeScreen({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'accept',
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'decline',
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'cancel',
           });
@@ -568,7 +575,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
     const reservationId = bodyParams?.reservation_id;
     console.log('FINAL BODY PARAMS::', body);
-    let callerId;
+    let callerId = '';
     if (bodyParams?.referee?.user_id !== entity.uid) {
       callerId = entity.uid
     }
@@ -647,17 +654,17 @@ export default function AlterRefereeScreen({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'accept',
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'decline',
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.navigate('ReservationAcceptDeclineScreen', {
             teamObj: awayTeam,
             status: 'cancel',
           });
@@ -1116,7 +1123,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   height={40}
                   shadow={true}
                   onPress={() => {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
@@ -1137,7 +1144,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 <TCGradientButton
                   title={strings.accept}
                   onPress={() => {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
@@ -1222,7 +1229,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                       || bodyParams?.game?.status === GameStatus.reset)
                     && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                   ) {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }

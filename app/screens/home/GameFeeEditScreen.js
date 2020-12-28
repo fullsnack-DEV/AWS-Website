@@ -22,6 +22,7 @@ import fonts from '../../Constants/Fonts';
 import TCPicker from '../../components/TCPicker';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
+import DataSource from '../../Constants/DataSource';
 
 export default function GameFeeEditScreen({ navigation, route }) {
   // For activity indicator
@@ -98,10 +99,7 @@ export default function GameFeeEditScreen({ navigation, route }) {
             </View>
             <View style={{ width: '30%' }}>
               <TCPicker
-                dataSource={[
-                  { label: 'CAD', value: 'CAD' },
-                  { label: 'USD', value: 'USD' },
-                ]}
+                dataSource={DataSource.CurrencyType}
                 placeholder={strings.currencyplacholder}
                 value={currency}
                 onValueChange={(value) => {

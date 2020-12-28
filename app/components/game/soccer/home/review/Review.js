@@ -37,7 +37,7 @@ const Review = ({
       console.log(error);
     });
     getSportsList(authContext).then((sports) => {
-      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name.toLowerCase() === gameData?.sport.toLowerCase())[0]
+      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
       const teamReviewProp = soccerSportData?.team_review_properties ?? []
       const sliderReviewProp = [];
       const starReviewProp = [];

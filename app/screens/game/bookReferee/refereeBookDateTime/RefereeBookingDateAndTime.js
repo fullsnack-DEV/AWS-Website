@@ -56,8 +56,8 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
   const getFeeDetail = () => {
     const gData = route?.params?.gameData;
     if (gData) {
-      const hFee = userData?.referee_data.filter((item) => item?.sport_name.toLowerCase() === gData?.sport.toLowerCase())?.[0]?.fee ?? 0;
-      const cType = userData?.referee_data.filter((item) => item?.sport_name.toLowerCase() === gData?.sport.toLowerCase())?.[0]?.currency_type ?? 'CAD';
+      const hFee = userData?.referee_data.filter((item) => item?.sport_name?.toLowerCase() === gData?.sport?.toLowerCase())?.[0]?.fee ?? 0;
+      const cType = userData?.referee_data.filter((item) => item?.sport_name?.toLowerCase() === gData?.sport?.toLowerCase())?.[0]?.currency_type ?? 'CAD';
       setHourlyGameFee(hFee);
       setLoading(true);
       body = {

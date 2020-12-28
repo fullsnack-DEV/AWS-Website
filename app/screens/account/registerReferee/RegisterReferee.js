@@ -258,8 +258,7 @@ export default function RegisterReferee({ navigation }) {
       return false;
     }
     setError(null);
-
-    const isExist = refereesData?.filter((item) => item?.sport_name.toLowerCase() === sports.toLowerCase());
+    const isExist = refereesData?.filter((item) => item?.sport_name?.toLowerCase() === sports?.toLowerCase());
     if (isExist?.length) {
       Alert.alert('Towns Cup', `You are already registrated as a referee in ${sports}`);
       return false;

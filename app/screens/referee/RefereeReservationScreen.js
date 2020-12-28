@@ -749,7 +749,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   height={40}
                   shadow={true}
                   onPress={() => {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
@@ -778,7 +778,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     } else if ((bodyParams?.expiry_datetime < new Date().getTime() / 1000) || (bodyParams?.game?.start_datetime < new Date().getTime() / 1000)) {
                       Alert.alert(strings.refereeOfferExpiryText)
                     } else {
-                      let callerId;
+                      let callerId = '';
                       if (bodyParams?.referee?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }
@@ -799,7 +799,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   marginBottom={15}
                   shadow={true}
                   onPress={() => {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
@@ -851,7 +851,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 marginTop={15}
                 onPress={() => {
                   if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
@@ -890,7 +890,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   } else if ((bodyParams?.expiry_datetime < new Date().getTime() / 1000) || (bodyParams?.game?.start_datetime < new Date().getTime() / 1000)) {
                     Alert.alert(strings.refereeOfferExpiryText)
                   } else {
-                    let callerId;
+                    let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }

@@ -33,7 +33,7 @@ export default function TeamCreatedScreen({ navigation, route }) {
 
         <Text style={ styles.LocationText }>
           <Text style={ styles.foundText }>
-            {route.params.groupName} has been created.
+            {`${route.params.groupName}\nhas been created.`}
           </Text>
         </Text>
         {/* <TouchableOpacity style={ styles.goToProfileButton }>

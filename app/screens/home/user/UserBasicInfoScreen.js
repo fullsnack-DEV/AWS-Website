@@ -17,6 +17,7 @@ import fonts from '../../../Constants/Fonts';
 import TCDateTimePicker from '../../../components/TCDateTimePicker';
 import TCPicker from '../../../components/TCPicker';
 import AuthContext from '../../../auth/context';
+import DataSource from '../../../Constants/DataSource';
 
 export default function UserBasicInfoScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -145,10 +146,7 @@ export default function UserBasicInfoScreen({ navigation, route }) {
         <View>
           <TCLabel title={strings.gender} />
           <TCPicker
-            dataSource={[
-              { label: 'Male', value: 'male' },
-              { label: 'Female', value: 'female' },
-            ]}
+            dataSource={DataSource.Gender}
             placeholder={strings.selectGenderPlaceholder}
             value={userData.gender}
             onValueChange={(value) => {

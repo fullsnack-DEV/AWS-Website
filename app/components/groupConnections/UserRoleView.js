@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
     height: 40,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 40,
     borderRadius: 80,
 

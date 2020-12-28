@@ -16,7 +16,15 @@ export default function AlterRequestSent({ navigation }) {
     images.emailSent5,
   ];
   useEffect(() => {
-    const timer = setInterval(() => navigation.navigate('NotificationsListScreen'), 5000);
+    const timer = setInterval(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{
+          name: 'NotificationsListScreen',
+        }],
+      });
+    },
+    5000);
     return () => clearInterval(timer)
   }, []);
   return (

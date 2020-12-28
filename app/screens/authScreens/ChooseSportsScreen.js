@@ -136,19 +136,19 @@ export default function ChooseSportsScreen({ navigation, route }) {
           isIconCheckedOrNot({ item, index });
         } }>
 
-      {item.sport_name === 'Soccer' && (
+      {item.sport_name?.toLowerCase() === 'soccer' && (
         <FastImage resizeMode={'contain'} source={ images.footballSport } style={ styles.sportImg } />
       )}
-      {item.sport_name === 'Tennis' && (
+      {item.sport_name?.toLowerCase() === 'tennis' && (
         <FastImage resizeMode={'contain'} source={ images.bandySport } style={ styles.sportImg } />
       )}
-      {item.sport_name === 'Football' && (
+      {item.sport_name?.toLowerCase() === 'football' && (
         <FastImage resizeMode={'contain'} source={ images.footballSport } style={ styles.sportImg } />
       )}
-      {item.sport_name === 'Baseball' && (
+      {item.sport_name?.toLowerCase() === 'baseball' && (
         <FastImage resizeMode={'contain'} source={ images.baseballSport } style={ styles.sportImg } />
       )}
-      {item.sport_name === 'Volleyball' && (
+      {item.sport_name?.toLowerCase() === 'volleyball' && (
         <FastImage resizeMode={'contain'} source={ images.archerySport } style={ styles.sportImg } />
       )}
 
