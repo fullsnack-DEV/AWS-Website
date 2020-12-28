@@ -23,6 +23,7 @@ import TCTouchableLabel from '../../../../components/TCTouchableLabel';
 import TCDateTimePicker from '../../../../components/TCDateTimePicker';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import AuthContext from '../../../../auth/context'
+import DataSource from '../../../../Constants/DataSource';
 
 let entity = {};
 
@@ -217,11 +218,7 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
       </View>
       <View >
         <TCLable title={'Gender'}/>
-        <TCPicker dataSource={[
-          { label: 'Male', value: 'male' },
-          { label: 'Female', value: 'female' },
-          { label: 'Other', value: 'other' },
-        ]}
+        <TCPicker dataSource={DataSource.Gender}
             placeholder={strings.selectGenderPlaceholder}
             value={memberInfo.gender} onValueChange={(value) => value !== '' && setMemberInfo({ ...memberInfo, gender: value })}/>
       </View>

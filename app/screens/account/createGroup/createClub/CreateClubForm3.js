@@ -25,6 +25,7 @@ import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context'
+import DataSource from '../../../../Constants/DataSource';
 
 export default function CreateClubForm3({ navigation, route }) {
   const [membershipFee, setMembershipFee] = useState(0);
@@ -114,12 +115,7 @@ export default function CreateClubForm3({ navigation, route }) {
                 label: strings.feeCyclePlaceholder,
                 value: null,
               } }
-              items={ [
-                { label: 'Weekly', value: 'weekly' },
-                { label: 'Biweekly', value: 'biweekly' },
-                { label: 'Monthly', value: 'monthly' },
-                { label: 'Yearly', value: 'yearly' },
-              ] }
+              items={ DataSource.FeeCycle }
               onValueChange={ (value) => {
                 setFeeCycle(value);
               } }

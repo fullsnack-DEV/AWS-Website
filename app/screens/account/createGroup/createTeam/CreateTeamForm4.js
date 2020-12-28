@@ -106,7 +106,7 @@ export default function CreateTeamForm4({ navigation, route }) {
             keyboardType={ 'decimal-pad' }
             onChangeText={ (text) => setMatchFee(text) }
             value={ matchFee }></TextInput>
-          <Text style={ styles.curruency }>CAD</Text>
+          <Text style={ styles.curruency }>{route?.params?.createTeamForm3?.currency_type}</Text>
         </View>
         <View>
           <Text style={ styles.membershipText }>

@@ -29,13 +29,14 @@ export default function ClubCreatedScreen({ navigation, route }) {
 
         <Text style={ styles.LocationText }>
           <Text style={ styles.foundText }>
-            {route.params.groupName} has been created.
+            {`${route.params.groupName}\nhas been created.`}
           </Text>
         </Text>
         <TouchableOpacity style={ styles.goToProfileButton } onPress={() => {
           navigation.push('HomeScreen', {
             uid: route.params.group_id,
             role: route.params.entity_type,
+            backButtonVisible: false,
           });
         }}>
           <Text style={ styles.goToProfileTitle }>{strings.goToClubText}</Text>

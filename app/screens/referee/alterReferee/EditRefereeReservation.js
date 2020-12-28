@@ -128,6 +128,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           total_charges: reservationObj[0]?.total_charges,
           total_stripe_fee: reservationObj[0]?.total_stripe_fee,
           total_payout: reservationObj[0]?.total_payout,
+          hourly_game_fee: reservationObj[0]?.hourly_game_fee,
+          manual_fee: reservationObj[0]?.manual_fee,
         })
       }
       console.log('challenge Object::', reservationObj[0]);
@@ -165,6 +167,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           total_charges: reservationObj?.total_charges,
           total_stripe_fee: reservationObj?.total_stripe_fee,
           total_payout: reservationObj?.total_payout,
+          hourly_game_fee: reservationObj?.hourly_game_fee,
+          manual_fee: reservationObj?.manual_fee,
         })
       }
     }
@@ -259,6 +263,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           service_fee1_charges: response.payload.total_service_fee1,
           service_fee2_charges: response.payload.total_service_fee2,
           total_stripe_fee: response.payload.total_stripe_fee,
+          hourly_game_fee: bodyParams?.hourly_game_fee,
+          manual_fee: bodyParams?.manual_fee,
         })
       })
       .catch((e) => {
@@ -284,7 +290,7 @@ export default function EditRefereeReservation({ navigation, route }) {
       .then((response) => {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-        navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        navigation.navigate('ReservationAcceptDeclineScreen', {
           teamObj: awayTeam,
           status: 'cancel',
         });
@@ -578,7 +584,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
     const reservationId = bodyParams?.reservation_id;
     console.log('FINAL BODY PARAMS::', body);
-    let callerId;
+    let callerId = '';
     if (bodyParams?.referee?.user_id !== entity.uid) {
       callerId = entity.uid
     }
@@ -1135,7 +1141,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                     height={40}
                     shadow={true}
                     onPress={() => {
-                      let callerId;
+                      let callerId = '';
                       if (bodyParams?.referee?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }
@@ -1156,7 +1162,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                   <TCGradientButton
                     title={strings.accept}
                     onPress={() => {
-                      let callerId;
+                      let callerId = '';
                       if (bodyParams?.referee?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }
@@ -1242,7 +1248,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                         || bodyParams?.game?.status === GameStatus.reset)
                       && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                     ) {
-                      let callerId;
+                      let callerId = '';
                       if (bodyParams?.referee?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }

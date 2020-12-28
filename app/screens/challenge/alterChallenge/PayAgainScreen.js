@@ -44,9 +44,9 @@ export default function PayAgainScreen({ navigation, route }) {
       bodyParams.payment_method_type = 'card'
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
-        payAgainAlter(challengeObj.challenge_id, bodyParams, authContext).then((response) => {
+        payAgainAlter(challengeObj.challenge_id, bodyParams, authContext).then(() => {
           setloading(false)
-          console.log(response.payload);
+          navigation.navigate('NotificationsListScreen')
         }).catch((e) => {
           setloading(false)
           setTimeout(() => {
@@ -54,9 +54,9 @@ export default function PayAgainScreen({ navigation, route }) {
           }, 0.7);
         })
       } else {
-        payAgain(challengeObj.challenge_id, bodyParams, authContext).then((response) => {
+        payAgain(challengeObj.challenge_id, bodyParams, authContext).then(() => {
           setloading(false)
-          console.log(response.payload);
+          navigation.navigate('NotificationsListScreen')
         }).catch((e) => {
           setloading(false)
           setTimeout(() => {

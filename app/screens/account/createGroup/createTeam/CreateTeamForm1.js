@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,11 +15,13 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
 import { useIsFocused } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
-
+import { getSportsList } from '../../../../api/Games';
+import AuthContext from '../../../../auth/context';
+import DataSource from '../../../../Constants/DataSource';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
@@ -29,7 +31,10 @@ import TCThickDivider from '../../../../components/TCThickDivider';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext);
+  const [loading, setloading] = useState(false);
   const [sports, setSports] = useState('');
+  const [sportList, setSportList] = useState([]);
   const [gender, setGender] = useState('');
   const [minAge, setMinAge] = useState(0);
   const [maxAge, setMaxAge] = useState(0);
@@ -38,6 +43,7 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [player1ID, setPlayer1ID] = useState('');
   const [player2ID, setPlayer2ID] = useState('');
   const [parentGroupID, setParentGroupID] = useState();
+  const [curruency, setCurruency] = useState('CAD');
 
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
@@ -48,60 +54,63 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [country, setCountry] = useState('');
 
   useEffect(() => {
-    const minAgeArray = [];
-    let maxAgeArray = [];
-    for (let i = 1; i <= 70; i++) {
-      const dataSource = {
-        label: `${i}`,
-        value: i,
-      };
-      minAgeArray.push(dataSource);
-    }
-    for (let i = minAge; i <= 70; i++) {
-      const dataSource = {
-        label: `${i}`,
-        value: i,
-      };
-      maxAgeArray.push(dataSource);
-    }
-    if (minAge === 0) {
-      maxAgeArray = [];
-      setMaxAge(maxAgeArray);
-    }
-    setMinAgeValue(minAgeArray);
-    setMaxAgeValue(maxAgeArray);
-
-    if (route.params && route.params.clubObject) {
-      setParentGroupID(route.params.clubObject.group_id);
-    }
-    if (route.params && route.params.city) {
-      setCity(route.params.city);
-      setState(route.params.state);
-      setCountry(route.params.country);
-      setLocation(
-        `${route.params.city}, ${route.params.state}, ${route.params.country}`,
-      );
-    } else {
-      setCity('');
-      setState('');
-      setCountry('');
-      setLocation('');
-    }
-    if (route.params && route.params.user) {
-      if (route.params.selectedPlayer === 1) {
-        setPlayer1(
-          `${route.params.user.first_name} ${route.params.user.last_name}`,
-        );
-        setPlayer1ID(route.params.user.user_id);
-      } else if (route.params.selectedPlayer === 2) {
-        setPlayer2(
-          `${route.params.user.first_name} ${route.params.user.last_name}`,
-        );
-        setPlayer2ID(route.params.user.user_id);
+    if (isFocused) {
+      getSports()
+      const minAgeArray = [];
+      let maxAgeArray = [];
+      for (let i = 1; i <= 70; i++) {
+        const dataSource = {
+          label: `${i}`,
+          value: i,
+        };
+        minAgeArray.push(dataSource);
       }
-    } else {
-      setPlayer1('');
-      setPlayer2('');
+      for (let i = minAge; i <= 70; i++) {
+        const dataSource = {
+          label: `${i}`,
+          value: i,
+        };
+        maxAgeArray.push(dataSource);
+      }
+      if (minAge === 0) {
+        maxAgeArray = [];
+        setMaxAge(maxAgeArray);
+      }
+      setMinAgeValue(minAgeArray);
+      setMaxAgeValue(maxAgeArray);
+
+      if (route.params && route.params.clubObject) {
+        setParentGroupID(route.params.clubObject.group_id);
+      }
+      if (route.params && route.params.city) {
+        setCity(route.params.city);
+        setState(route.params.state);
+        setCountry(route.params.country);
+        setLocation(
+          `${route.params.city}, ${route.params.state}, ${route.params.country}`,
+        );
+      } else {
+        setCity('');
+        setState('');
+        setCountry('');
+        setLocation('');
+      }
+      if (route.params && route.params.user) {
+        if (route.params.selectedPlayer === 1) {
+          setPlayer1(
+            `${route.params.user.first_name} ${route.params.user.last_name}`,
+          );
+          setPlayer1ID(route.params.user.user_id);
+        } else if (route.params.selectedPlayer === 2) {
+          setPlayer2(
+            `${route.params.user.first_name} ${route.params.user.last_name}`,
+          );
+          setPlayer2ID(route.params.user.user_id);
+        }
+      } else {
+        setPlayer1('');
+        setPlayer2('');
+      }
     }
   }, [minAge, isFocused]);
 
@@ -124,9 +133,29 @@ export default function CreateTeamForm1({ navigation, route }) {
     }
   };
 
+  const getSports = () => {
+    getSportsList(authContext).then((response) => {
+      const arr = [];
+      for (const tempData of response.payload) {
+        const obj = {};
+        obj.label = tempData.sport_name;
+        obj.value = tempData.sport_name;
+        arr.push(obj);
+      }
+      setSportList(arr);
+      setTimeout(() => setloading(false), 1000);
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
+  }
+
   return (
     <>
       <ScrollView style={styles.mainContainer}>
+        <ActivityLoader visible={ loading } />
         <View style={styles.formSteps}>
           <View style={styles.form1}></View>
           <View style={styles.form2}></View>
@@ -181,13 +210,7 @@ export default function CreateTeamForm1({ navigation, route }) {
               label: strings.selectSportPlaceholder,
               value: '',
             }}
-            items={[
-              { label: 'Soccer', value: 'soccer' },
-              { label: 'Football', value: 'football' },
-              { label: 'Baseball', value: 'baseball' },
-              { label: 'Tennis', value: 'tennis' },
-              { label: 'Hockey', value: 'hockey' },
-            ]}
+            items={sportList}
             onValueChange={(value) => {
               setPlayer1ID('');
               setPlayer2ID('');
@@ -210,7 +233,7 @@ export default function CreateTeamForm1({ navigation, route }) {
             onChangeText={(text) => setTeamName(text)}
             value={teamName}></TextInput>
         </View>
-        {sports === 'tennis' && (
+        {sports.toLowerCase() === 'tennis'.toLowerCase() && (
           <View>
             <Text style={styles.fieldTitle}>{strings.playerTitle}</Text>
             <View style={styles.fieldView}>
@@ -252,7 +275,7 @@ export default function CreateTeamForm1({ navigation, route }) {
             </View>
           </View>
         )}
-        {sports !== 'tennis' && (
+        {sports.toLowerCase() !== 'tennis'.toLowerCase() && (
           <View style={styles.fieldView}>
             <TCLabel title={strings.genderTitle}/>
             <RNPickerSelect
@@ -260,10 +283,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                 label: strings.selectGenderPlaceholder,
                 value: '',
               }}
-              items={[
-                { label: 'Male', value: 'male' },
-                { label: 'Female', value: 'female' },
-              ]}
+              items={DataSource.Gender}
               onValueChange={(value) => {
                 setGender(value);
               }}
@@ -279,11 +299,11 @@ export default function CreateTeamForm1({ navigation, route }) {
         )}
 
         <View style={styles.fieldView}>
-          {sports !== 'tennis' && (
+          {sports.toLowerCase() !== 'tennis'.toLowerCase() && (
 
             <TCLabel title={strings.membersAgeTitle}/>
           )}
-          {sports !== 'tennis' && (
+          {sports.toLowerCase() !== 'tennis'.toLowerCase() && (
             <View
               style={{
                 flexDirection: 'row',
@@ -402,7 +422,23 @@ export default function CreateTeamForm1({ navigation, route }) {
               />
             </View>
           )}
-
+          <View style={styles.fieldView}>
+            <TCLabel title={strings.curruencyType}/>
+            <RNPickerSelect
+              placeholder={{}}
+              items={DataSource.CurrencyType}
+              onValueChange={(value) => {
+                setCurruency(value)
+              }}
+              useNativeAndroidPickerStyle={false}
+              // eslint-disable-next-line no-sequences
+              style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+              value={curruency}
+              Icon={() => (
+                <Image source={images.dropDownArrow} style={styles.downArrow} />
+              )}
+            />
+          </View>
           <View style={styles.fieldView}>
             <TCLabel title={strings.locationTitle} required={true}/>
             <TouchableOpacity
@@ -445,6 +481,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                       parent_group_id: parentGroupID,
                       player1: player1ID,
                       player2: player2ID,
+                      currency_type: curruency,
                     },
                   });
                 } else {
@@ -459,6 +496,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                       state_abbr: state,
                       country,
                       parent_group_id: parentGroupID,
+                      currency_type: curruency,
                     },
                   });
                 }
@@ -488,7 +526,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                       city,
                       state_abbr: state,
                       country,
-
+                      currency_type: curruency,
                       player1: player1ID,
                       player2: player2ID,
                     },
@@ -505,6 +543,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                       city,
                       state_abbr: state,
                       country,
+                      currency_type: curruency,
                     },
                   });
                 }

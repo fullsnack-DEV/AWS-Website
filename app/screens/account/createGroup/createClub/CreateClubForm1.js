@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -18,14 +18,19 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
-
+import { getSportsList } from '../../../../api/Games';
+import AuthContext from '../../../../auth/context';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
+import DataSource from '../../../../Constants/DataSource';
 
 export default function CreateClubForm1({ navigation, route }) {
   const isFocused = useIsFocused();
+  const authContext = useContext(AuthContext);
+  const [loading, setloading] = useState(false);
   const [sports, setSports] = useState('');
   const [gender, setGender] = useState('');
   const [minAge, setMinAge] = useState(0);
@@ -35,11 +40,13 @@ export default function CreateClubForm1({ navigation, route }) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
+  const [sportList, setSportList] = useState([]);
 
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
 
   useEffect(() => {
+    getSports()
     const minAgeArray = [];
     let maxAgeArray = [];
     for (let i = 1; i <= 70; i++) {
@@ -90,9 +97,28 @@ export default function CreateClubForm1({ navigation, route }) {
       Alert.alert('Towns Cup', 'Location cannot be blank');
     }
   };
+  const getSports = () => {
+    getSportsList(authContext).then((response) => {
+      const arr = [];
+      for (const tempData of response.payload) {
+        const obj = {};
+        obj.label = tempData.sport_name;
+        obj.value = tempData.sport_name;
+        arr.push(obj);
+      }
+      setSportList(arr);
+      setTimeout(() => setloading(false), 1000);
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
+  }
   return (
     <>
       <ScrollView style={ styles.mainContainer }>
+        <ActivityLoader visible={ loading } />
         <View style={ styles.formSteps }>
           <View style={ styles.form1 }></View>
           <View style={ styles.form2 }></View>
@@ -108,12 +134,7 @@ export default function CreateClubForm1({ navigation, route }) {
               label: strings.selectSportPlaceholder,
               value: '',
             } }
-            items={ [
-              { label: 'Football', value: 'football' },
-              { label: 'Baseball', value: 'baseball' },
-              { label: 'Tennis', value: 'tennis' },
-              { label: 'Hockey', value: 'hockey' },
-            ] }
+            items={ sportList }
             onValueChange={ (value) => {
               setSports(value);
             } }
@@ -182,10 +203,7 @@ export default function CreateClubForm1({ navigation, route }) {
               label: strings.selectGenderPlaceholder,
               value: '',
             } }
-            items={ [
-              { label: 'Male', value: 'male' },
-              { label: 'Female', value: 'female' },
-            ] }
+            items={ DataSource.Gender }
             onValueChange={ (value) => {
               setGender(value);
             } }

@@ -23,7 +23,7 @@ export const payAgainAlter = async (challengeID, params, authContext) => makeAPI
 
 export const payAgain = async (challengeID, params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}referees/${challengeID}/payment`,
+  url: `${Config.BASE_URL}challenges/${challengeID}/payment`,
   data: params,
   authContext,
 })

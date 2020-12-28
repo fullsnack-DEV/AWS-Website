@@ -52,7 +52,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
             name: 'HomeScreen',
             params: {
               uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
-              backButtonVisible: true,
+              backButtonVisible: false,
               role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
             },
           }],

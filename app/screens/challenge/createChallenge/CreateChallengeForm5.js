@@ -40,8 +40,8 @@ export default function CreateChallengeForm5({ navigation, route }) {
       if (route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid) {
         const fees = { ...route.params.body };
         const feeBody = {}
-        feeBody.start_datetime = parseFloat((fees.start_datetime / 1000).toFixed(0))
-        feeBody.end_datetime = parseFloat((fees.end_datetime / 1000).toFixed(0))
+        feeBody.start_datetime = parseFloat((fees.start_datetime).toFixed(0))
+        feeBody.end_datetime = parseFloat((fees.end_datetime).toFixed(0))
         feeBody.manual_fee = false;
         feeBody.userChallenge = !route.params.teamData[0].group_id
         feeBody.sport = route.params.teamData[0].sport

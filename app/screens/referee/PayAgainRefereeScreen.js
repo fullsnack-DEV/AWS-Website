@@ -44,9 +44,9 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
       bodyParams.payment_method_type = 'card'
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
-        payAgainAlterReferee(reservationObj.reservation_id, bodyParams, authContext).then((response) => {
+        payAgainAlterReferee(reservationObj.reservation_id, bodyParams, authContext).then(() => {
           setloading(false)
-          console.log(response.payload);
+          navigation.navigate('NotificationsListScreen')
         }).catch((e) => {
           setloading(false)
           setTimeout(() => {
@@ -54,9 +54,9 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
           }, 0.7);
         })
       } else {
-        payAgainReferee(reservationObj.reservation_id, bodyParams, authContext).then((response) => {
+        payAgainReferee(reservationObj.reservation_id, bodyParams, authContext).then(() => {
           setloading(false)
-          console.log(response.payload);
+          navigation.navigate('NotificationsListScreen')
         }).catch((e) => {
           setloading(false)
           setTimeout(() => {

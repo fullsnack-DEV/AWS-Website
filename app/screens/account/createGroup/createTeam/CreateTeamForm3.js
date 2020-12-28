@@ -22,6 +22,7 @@ import strings from '../../../../Constants/String';
 
 import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
+import DataSource from '../../../../Constants/DataSource';
 
 export default function CreateTeamForm3({ navigation, route }) {
   const [basicFee, setBasicFee] = useState(0.0);
@@ -53,7 +54,7 @@ export default function CreateTeamForm3({ navigation, route }) {
             onChangeText={ (text) => setBasicFee(text) }
             value={ basicFee }
             keyboardType={ 'decimal-pad' }></TextInput>
-          <Text style={ styles.curruency }>CAD</Text>
+          <Text style={ styles.curruency }>{route?.params?.createTeamForm2?.currency_type}</Text>
         </View>
 
         <View style={ styles.fieldView }>
@@ -92,12 +93,7 @@ export default function CreateTeamForm3({ navigation, route }) {
                 label: strings.feeCyclePlaceholder,
                 value: null,
               } }
-              items={ [
-                { label: 'Weekly', value: 'weekly' },
-                { label: 'Biweekly', value: 'biweekly' },
-                { label: 'Monthly', value: 'monthly' },
-                { label: 'Yearly', value: 'yearly' },
-              ] }
+              items={ DataSource.FeeCycle}
               onValueChange={ (value) => {
                 setFeeCycle(value);
               } }
@@ -154,7 +150,7 @@ export default function CreateTeamForm3({ navigation, route }) {
                 keyboardType={ 'decimal-pad' }
                 onChangeText={ (text) => setMembershipFee(text) }
                 value={ membershipFee }></TextInput>
-              <Text style={ styles.curruency }>CAD</Text>
+              <Text style={ styles.curruency }>{route?.params?.createTeamForm2?.currency_type}</Text>
             </View>
           </View>
         </View>
