@@ -45,10 +45,10 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const [show, setShow] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
 
-  const [fromDate, setfromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(new Date());
+  const [fromDate, setfromDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
+  const [toDate, setToDate] = useState(route?.params?.body?.end_datetime * 1000 || new Date());
   const [datePickerFor, setDatePickerFor] = useState();
   const [blockedSlot, setBlockedSlot] = useState();
   const [slots, setSlots] = useState();
@@ -73,8 +73,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     // 3d17d3d3-30b0-4b1b-a7e8-48d360dc9eea
     // route.params.otherTeam.group_id
     blockedSlots(
-      route.params.otherTeam.entity_type === 'player' ? 'users' : 'groups',
-      route.params.otherTeam.group_id || route.params.otherTeam.user_id,
+      route?.params?.otherTeam?.entity_type === 'player' ? 'users' : 'groups',
+      route?.params?.otherTeam?.group_id || route?.params?.otherTeam?.user_id,
       authContext,
     )
       .then((response) => {
@@ -315,8 +315,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
         onPress={() => {
           if (toDate > fromDate) {
             navigation.navigate('CreateChallengeForm1', {
-              from: fromDate,
-              to: toDate,
+              from: fromDate / 1000,
+              to: toDate / 1000,
             });
           } else {
             Alert.alert('Please choose correct date.');

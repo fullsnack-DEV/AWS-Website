@@ -277,7 +277,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                   },
                 });
               } else if (editableAlter === true) {
-                navigation.navigate('AlterAcceptDeclineScreen', {
+                navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...route.params.body,
                     special_rule: rules,

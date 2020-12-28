@@ -2,10 +2,11 @@ import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
 
 // eslint-disable-next-line import/prefer-default-export
-export const getReservationList = async (authContext) => makeAPIRequest({
+export const getReservationList = async (callerId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/reservations?referenceObject=true`,
   authContext,
+  headers: { caller_id: callerId },
 })
 
 export const createUserReservation = (userType, params, authContext) => makeAPIRequest({

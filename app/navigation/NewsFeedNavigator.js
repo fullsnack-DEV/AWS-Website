@@ -20,6 +20,7 @@ import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScree
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
+import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 
 const Stack = createStackNavigator();
 
@@ -69,6 +70,13 @@ const NewsFeedNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+      name="UserTagSelectionListScreen"
+      component={UserTagSelectionListScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
     <Stack.Screen
         name="EditPostScreen"
         component={ EditPostScreen }

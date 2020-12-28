@@ -17,7 +17,7 @@ export default function ReservationPendingButton({ onPressButon }) {
       <LinearGradient
                     colors={[colors.yellowColor, colors.themeColor]}
                     style={styles.pendingButton}>
-        <Text style={styles.pendingTimerText}>{strings.respondWithinText} 1d 23h 59m</Text>
+        <Text style={styles.pendingTimerText}>{strings.respondWithinText}</Text>
       </LinearGradient>
     </TouchableOpacity>
 
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 30,
     justifyContent: 'center',
-    marginBottom: 30,
+    marginBottom: 5,
     marginTop: 30,
     width: wp('86%'),
   },

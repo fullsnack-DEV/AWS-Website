@@ -67,22 +67,25 @@ export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, sta
   data: params,
   authContext,
 })
-export const acceptDeclineReservation = async (reservationID, versionNo, status, params = {}, authContext) => makeAPIRequest({
+export const acceptDeclineReservation = async (reservationID, callerID, versionNo, status, params = {}, authContext) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}referees/reservation/${reservationID}/${status}?version=${versionNo}`,
   data: params,
+  headers: { caller_id: callerID },
   authContext,
 })
 
-export const acceptDeclineAlterReservation = async (reservationID, versionNo, status, params = {}, authContext) => makeAPIRequest({
+export const acceptDeclineAlterReservation = async (reservationID, callerID, versionNo, status, params = {}, authContext) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}referees/reservation/${reservationID}/${status}/alterrequest?version=${versionNo}`,
   data: params,
+  headers: { caller_id: callerID },
   authContext,
 })
-export const cancelAlterReservation = async (reservationID, versionNo, authContext) => makeAPIRequest({
+export const cancelAlterReservation = async (reservationID, callerID, versionNo, authContext) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}referees/reservation/${reservationID}/cancelRequest?version=${versionNo}`,
+  headers: { caller_id: callerID },
   authContext,
 })
 
@@ -99,10 +102,11 @@ export const updateChallenge = async (challengeId, params, authContext) => makeA
   data: params,
   authContext,
 })
-export const updateReservation = async (reservationId, params, authContext) => makeAPIRequest({
+export const updateReservation = async (reservationId, callerID, params, authContext) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}referees/reservation/${reservationId}`,
   data: params,
+  headers: { caller_id: callerID },
   authContext,
 })
 export const getRefereeGameFeeEstimation = async (entityID, params, authContext) => makeAPIRequest({

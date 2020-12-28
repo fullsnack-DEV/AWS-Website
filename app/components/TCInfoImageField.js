@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
   imageView: {
     width: 25,
     height: 25,
+    borderRadius: 13,
     resizeMode: 'cover',
   },
 });

@@ -129,7 +129,9 @@ import ScorekeeperBookingDateAndTime
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 import UserConnections from '../screens/account/connections/UserConnections';
+import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
+import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 
 const Stack = createStackNavigator();
 
@@ -139,6 +141,7 @@ const HomeNavigator = () => (
         // headerTintColor: colors.blackColor,
         // headerTransparent: true,
         // headerTitle: true,
+        gestureEnabled: false,
         headerBackTitleVisible: false,
       }}>
 
@@ -229,6 +232,14 @@ const HomeNavigator = () => (
     />
 
     <Stack.Screen
+      name="UserTagSelectionListScreen"
+      component={UserTagSelectionListScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
         name="WriteCommentScreen"
         component={ WriteCommentScreen }
         options={ {
@@ -237,6 +248,7 @@ const HomeNavigator = () => (
           headerTitleStyle: {
             fontWeight: '500',
           },
+          headerShown: false,
           headerStyle: {
             backgroundColor: colors.whiteColor,
             borderBottomColor: colors.grayColor,
@@ -1354,6 +1366,17 @@ const HomeNavigator = () => (
     <Stack.Screen
         name="ChallengeSentScreen"
         component={ ChallengeSentScreen }
+        // options={({ navigation }) => ({
+        //   headerTintColor: colors.whiteColor,
+        //   headerTransparent: true,
+        //   headerTitle: false,
+        //   headerLeft: (props) => (
+        //     <HeaderBackButton
+        //       {...props}
+        //       onPress={() => navigation.popToTop()}
+        //     />
+        //   ),
+        // })}
         options={ {
           headerShown: false,
         } }
@@ -1480,6 +1503,13 @@ const HomeNavigator = () => (
     <Stack.Screen
         name="AlterRequestSent"
         component={ AlterRequestSent }
+        options={ {
+          headerShown: false,
+        } }
+      />
+    <Stack.Screen
+        name="RefereeRequestSent"
+        component={ RefereeRequestSent }
         options={ {
           headerShown: false,
         } }

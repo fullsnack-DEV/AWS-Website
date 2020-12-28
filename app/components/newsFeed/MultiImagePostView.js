@@ -189,6 +189,21 @@ export default function MultiImagePostView({
                         height: isLandScape ? landscapeImgHeight : portraitImgHeight,
                       }}
                     />
+                    <View
+                      style={[
+                        styles.singleImageDisplayStyle,
+                        {
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                        },
+                      ]}>
+                      <FastImage
+                        style={styles.loadimageStyle}
+                        source={images.imageLoadingGIF}
+                        resizeMode={FastImage.resizeMode.contain}
+                      />
+                      <Text style={styles.loadingTextStyle}>Loading...</Text>
+                    </View>
                     <Video
                       paused={!play}
                       muted={!mute}
@@ -444,5 +459,21 @@ const styles = StyleSheet.create({
   imageTouchStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  singleImageDisplayStyle: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
+  loadimageStyle: {
+    height: 50,
+    width: 50,
+  },
+  loadingTextStyle: {
+    color: colors.googleColor,
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    marginTop: 25,
   },
 });

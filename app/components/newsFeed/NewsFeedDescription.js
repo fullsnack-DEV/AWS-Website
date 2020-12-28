@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
+import Hyperlink from 'react-native-hyperlink'
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -30,28 +31,32 @@ function NewsFeedDescription({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       {descriptions.length > 0 && (
-        <Text style={[styles.descText, descText]}>
-          <ParsedText
-            style={[styles.text, descriptionTxt]}
-            parse={
-              [{
-                pattern: /@(\w+)/,
-                style: styles.username,
-                onPress: handleNamePress,
-                renderText,
-              }]
-            }
-            childrenProps={{ allowFontScaling: false }}
-          >
-            {readMore ? descriptions : descriptions.substring(0, character)}
-          </ParsedText>
-          {descriptions.length > character && !readMore ? '... ' : ' '}
-          {descriptions.length > character && (
-            <Text onPress={ () => toggleNumberOfLines() } style={[styles.descText, descText]}>
-              {readMore ? 'less' : 'more'}
-            </Text>
-          )}
-        </Text>
+        <Hyperlink
+        linkStyle={{ color: colors.skyBlue }}
+        >
+          <Text style={[styles.descText, descText]}>
+            <ParsedText
+              style={[styles.text, descriptionTxt]}
+              parse={
+                [{
+                  pattern: /@(\w+)/,
+                  style: styles.username,
+                  onPress: handleNamePress,
+                  renderText,
+                }]
+              }
+              childrenProps={{ allowFontScaling: false }}
+            >
+              {readMore ? descriptions : descriptions.substring(0, character)}
+            </ParsedText>
+            {descriptions.length > character && !readMore ? '... ' : ' '}
+            {descriptions.length > character && (
+              <Text onPress={ () => toggleNumberOfLines() } style={[styles.descText, descText]}>
+                {readMore ? 'less' : 'more'}
+              </Text>
+            )}
+          </Text>
+        </Hyperlink>
       )}
     </View>
   );

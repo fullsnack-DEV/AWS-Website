@@ -48,6 +48,10 @@ function BackgroundProfile({
   if (currentUserData && currentUserData.first_name === undefined) {
     fullName = currentUserData.group_name;
   }
+  let description = '';
+  if (currentUserData && currentUserData.description) {
+    description = currentUserData.description;
+  }
   let city = '';
   let country = '';
   if (currentUserData) {

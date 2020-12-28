@@ -214,12 +214,12 @@ export default function CurruentReservationScreen({ route }) {
               <TCInfoField
                   title={'Time'}
                   value={`${getDateFormat(
-                    bodyParams.start_datetime,
+                    bodyParams.start_datetime * 1000,
                   )} -\n${getDateFormat(
-                    bodyParams.end_datetime,
+                    bodyParams.end_datetime * 1000,
                   )}\n${getTimeDifferent(
-                    new Date(bodyParams.start_datetime),
-                    new Date(bodyParams.end_datetime),
+                    new Date(bodyParams.start_datetime * 1000),
+                    new Date(bodyParams.end_datetime * 1000),
                   )}`}
                   marginLeft={30}
                   titleStyle={{ fontSize: 16 }}

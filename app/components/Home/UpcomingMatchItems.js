@@ -3,9 +3,9 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
+  // Image,
   TouchableWithoutFeedback,
-  TouchableOpacity,
+  // TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -18,16 +18,17 @@ import MatchBetweenUpcomingView from './MatchBetweenUpcomingView';
 
 export default function UpcomingMatchItems({
   data,
-  onThreeDotPress,
+  // onThreeDotPress,
   showEventNumbers,
+  onItemPress,
 }) {
   let startDate = '';
-  if (data && data.actual_startdatetime) {
-    startDate = new Date(data.actual_startdatetime * 1000);
+  if (data && data.start_datetime) {
+    startDate = new Date(data.start_datetime * 1000);
   }
   let endDate = '';
-  if (data && data.actual_enddatetime) {
-    endDate = new Date(data.actual_enddatetime * 1000);
+  if (data && data.end_datetime) {
+    endDate = new Date(data.end_datetime * 1000);
   }
   let eventColor = colors.themeColor;
   if (data && data.eventColor) {
@@ -63,7 +64,7 @@ export default function UpcomingMatchItems({
   }
 
   return (
-    <TouchableWithoutFeedback style={styles.backgroundView}>
+    <TouchableWithoutFeedback style={styles.backgroundView} onPress={onItemPress}>
       <View style={styles.backgroundView}>
         <View style={[styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]}>
           <Text style={styles.dateMonthText}>{moment(startDate).format('MMM')}</Text>
@@ -77,9 +78,9 @@ export default function UpcomingMatchItems({
               </Text>
               {showEventNumbers && <Text style={styles.eventNumberStyle}>{'(1/3)'}</Text>}
             </View>
-            <TouchableOpacity onPress={onThreeDotPress}>
+            {/* <TouchableOpacity onPress={onThreeDotPress}>
               <Image source={images.vertical3Dot} style={styles.threedot} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <Text style={styles.eventDescription} numberOfLines={1}>
             {description}
@@ -179,14 +180,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  threedot: {
-    height: 12,
-    right: 6,
-    marginTop: 5,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    width: 12,
-  },
+  // threedot: {
+  //   height: 12,
+  //   right: 6,
+  //   marginTop: 5,
+  //   resizeMode: 'contain',
+  //   tintColor: colors.grayColor,
+  //   width: 12,
+  // },
   timeCityDividerStyle: {
     width: 1,
     backgroundColor: colors.linesepratorColor,

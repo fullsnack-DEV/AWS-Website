@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,12 +9,17 @@ import moment from 'moment';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import RecentMatchItems from '../../components/Home/RecentMatchItems';
+import AuthContext from '../../auth/context';
+import { getEventById } from '../../api/Schedule';
 
 export default function ScoreboardSportsScreen({
   sportsData,
   showEventNumbers,
   showAssistReferee,
+  navigation,
+  onItemPress,
 }) {
+  const authContext = useContext(AuthContext)
   let filterData = [];
   let dataNotFound = true;
   if (sportsData) {
@@ -67,9 +72,24 @@ export default function ScoreboardSportsScreen({
           renderItem={ ({ item }) => (
             <RecentMatchItems
               data={item}
-              onThreeDotPress={() => {}}
+              // onThreeDotPress={() => {}}
               showEventNumbers={showEventNumbers}
               showAssistReferee={showAssistReferee}
+              onItemPress={() => {
+                const entity = authContext.entity
+                if (item.game_id) {
+                  navigation.navigate('SoccerHome', {
+                    gameId: item.game_id,
+                  })
+                } else {
+                  getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
+                    navigation.navigate('EventScreen', { data: response.payload, gameData: item });
+                  }).catch((e) => {
+                    console.log('Error :-', e);
+                  })
+                }
+                onItemPress();
+              }}
             />
           ) }
           renderSectionHeader={ ({ section }) => (
