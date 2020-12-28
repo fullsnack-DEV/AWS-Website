@@ -107,12 +107,10 @@ export default function CreateMemberProfileForm1({ navigation }) {
   };
   // Email input format validation
   const ValidateEmail = (emailAddress) => {
-    if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(emailAddress)) {
-      return (true)
-    }
-
-    return (false)
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(emailAddress).toLowerCase());
   }
+
   const deleteImage = () => {
     setMemberInfo({ ...memberInfo, full_image: undefined })
   }
@@ -202,12 +200,14 @@ export default function CreateMemberProfileForm1({ navigation }) {
                 data={phoneNumber}
                 renderItem={renderPhoneNumber}
                 keyExtractor={(item, index) => index.toString()}
-                // style={styles.flateListStyle}
                 >
         </FlatList>
 
       </View>
-      <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
+      {phoneNumber?.length < 5 && (
+        <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
+      )}
+
       <View>
         <TCLable title={'Street Address'} />
         <TCTextField value={memberInfo.street_address}

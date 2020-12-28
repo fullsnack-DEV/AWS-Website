@@ -42,16 +42,27 @@ const MessageInviteeDrawerScreen = ({
       )}
     </View>
   )
+  const onParticipantsPress = (userData) => {
+    const uid = userData?.entity_type === 'player' ? userData?.user_id : userData?.group_id;
+    if (uid && userData?.entity_type) {
+      navigation.closeDrawer();
+      navigation.push('HomeScreen', {
+        uid,
+        backButtonVisible: true,
+        role: userData.entity_type === 'player' ? 'user' : userData?.entity_type,
+      })
+    }
+  }
 
   const renderRow = ({ item }) => {
     const customData = JSON.parse(item?.customData);
     const fullImage = customData?.full_image ?? '';
     const finalImage = fullImage ? { uri: fullImage } : images.profilePlaceHolder;
     return (
-      <View style={styles.rowContainer}>
+      <TouchableOpacity style={styles.rowContainer} onPress={() => onParticipantsPress(customData)}>
         <Image style={styles.inviteImage} source={finalImage}/>
         <Text style={styles.rowText}>{customData?.full_name}</Text>
-      </View>)
+      </TouchableOpacity>)
   }
   const leaveRoom = () => {
     const okPress = () => {

@@ -191,7 +191,7 @@ export default function EditChallenge({ navigation, route }) {
         setEditScoreKeeper(false);
       }
       if (
-          bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
+        bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
           || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
           || bodyParams?.away_team?.group_id !== oldVersion?.away_team?.group_id
           || bodyParams?.away_team?.user_id !== oldVersion?.away_team?.user_id

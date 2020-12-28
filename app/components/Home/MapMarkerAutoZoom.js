@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 /**
  * @param markers is an array of objects containing keys latitude, longitude and name of the markers to be shown on the map
  */
-const MapMarkerAutoZoom = ({ markers, style }) => {
+const MapMarkerAutoZoom = ({ region, markers, style }) => {
   const mapRef = useRef();
 
   // Call fitToSuppliedMarkers() method on the MapView after markers get updated
@@ -17,7 +17,7 @@ const MapMarkerAutoZoom = ({ markers, style }) => {
   }, [markers]);
 
   return (
-    <MapView style={style} ref={mapRef}>
+    <MapView region={region} style={style} ref={mapRef}>
       {markers.map((marker) => (
         <Marker
           key={marker.id}

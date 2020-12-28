@@ -23,6 +23,8 @@ const TCUserFollowUnfollowList = ({
   userRole,
   myUserId,
   userID,
+  statusTitle,
+  statusColor,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +60,15 @@ const TCUserFollowUnfollowList = ({
         </View>
         <View style={{ flex: 0.60, paddingVertical: 10, justifyContent: 'center' }}>
           <Text style={{ fontSize: 16, fontFamily: fonts.RMedium }}>{title}</Text>
-          {subTitle && <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.userPostTimeColor }}>{subTitle}</Text>}
+          <View style={{ flexDirection: 'row' }}>
+            {subTitle !== '' && (
+              <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.userPostTimeColor }}>
+                {`${subTitle} `}
+                {statusTitle !== '' && <Text style={{ color: statusColor ?? colors.userPostTimeColor, fontFamily: fonts.RBold }}>{`${statusTitle} `}</Text>}
+              </Text>
+            )}
+
+          </View>
         </View>
         <View style={{ flex: 0.25, alignItems: 'center' }}>
           {isShowThreeDots ? (

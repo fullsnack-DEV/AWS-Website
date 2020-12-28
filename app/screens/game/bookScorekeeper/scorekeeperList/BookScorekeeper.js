@@ -34,7 +34,7 @@ const BookScorekeeper = ({ navigation, route }) => {
   }, [])
 
   const renderScorekeepersData = ({ item }) => {
-    const scorekeeper = item?.scorekeeper_data?.filter((scorekeeperItem) => scorekeeperItem?.sport_name === gameData?.sport);
+    const scorekeeper = item?.scorekeeper_data?.filter((scorekeeperItem) => scorekeeperItem?.sport_name.toLowerCase() === gameData?.sport.toLowerCase());
     return (
       <RenderScorekeeper
             isSelected={item?.user_id === selectedScorekeeper?.user_id}

@@ -62,7 +62,9 @@ const MessageChat = ({
   const [occupantsData, setOccupantsData] = useState([]);
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
-
+  useEffect(() => () => {
+    navigation.setParams({ participants: [occupantsData] });
+  }, [])
   useEffect(() => {
     const setData = (data) => {
       const dialogDatas = {
@@ -74,11 +76,9 @@ const MessageChat = ({
       }
       setChatType(dialogDatas?.occupantsIds.length > 2 ? QB_DIALOG_TYPE.GROUP : QB_DIALOG_TYPE.SINGLE);
       if (dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-        if (dialogDatas?.name.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
-          setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
-        } else {
-          setHeadingTitle(dialogDatas?.name);
-        }
+        setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
+      } else {
+        setHeadingTitle(dialogDatas?.name);
       }
       setDialogData(dialogDatas);
     }
@@ -319,13 +319,13 @@ const MessageChat = ({
   const onInputBoxFocus = () => {
     if (scrollRef && scrollRef.current) scrollRef.current.scrollToEnd({ animated: false });
   }
-  let headingMainTitle = headingTitle;
-  if (dialogData?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-    const firstTwoChar = headingTitle.slice(0, 2);
-    if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
-      headingMainTitle = headingTitle.slice(2, headingTitle.length)
-    }
-  }
+  // let headingMainTitle = headingTitle;
+  // if (dialogData?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+  //   const firstTwoChar = headingTitle.slice(0, 2);
+  //   if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
+  //     headingMainTitle = headingTitle.slice(2, headingTitle.length)
+  //   }
+  // }
   return (
     <SafeAreaView style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
@@ -336,7 +336,7 @@ const MessageChat = ({
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>{headingMainTitle}</Text>
+          <Text style={styles.eventTextStyle}>{headingTitle}</Text>
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={() => {
