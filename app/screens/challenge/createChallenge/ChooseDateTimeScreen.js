@@ -214,6 +214,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
               });
               setBlockedSlot(temp);
               setSelectedDate(day.dateString);
+              setfromDate(day.dateString)
+              setToDate(day.dateString)
               getSelectedDayEvents(day.dateString);
               filterSlots(selectedDate);
             }}

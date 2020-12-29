@@ -32,7 +32,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
   const [currentRefereeData, setCurrentRefereeData] = useState([]);
   useEffect(() => {
     getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
-      setCurrentRefereeData(res?.payload?.referee_data);
+      setCurrentRefereeData(res?.payload?.referee_data || []);
     }).catch((error) => {
       console.log(error);
     })
@@ -41,6 +41,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
+      console.log('Body params of referee:', bodyParams);
       bodyParams.referee_data[0].fee = matchFee;
       if (selected === 0) {
         bodyParams.referee_data[0].cancellation_policy = 'strict';

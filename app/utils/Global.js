@@ -13,7 +13,7 @@ const prepareHeader = (headers, authToken, caller_id, caller) => {
   if (authToken) {
     apiHeaders = { ...apiHeaders, Authorization: `Bearer ${authToken}` };
   }
-  if (caller_id && caller_id !== '') {
+  if (caller_id) {
     apiHeaders = { ...apiHeaders, caller_id };
   }
   if (caller) {

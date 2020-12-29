@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: 'row',
     height: 102,
-    marginTop: 15,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,

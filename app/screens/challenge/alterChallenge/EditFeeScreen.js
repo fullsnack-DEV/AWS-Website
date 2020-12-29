@@ -59,7 +59,7 @@ export default function EditFeeScreen({ navigation, route }) {
             onPress={() => {
               console.log('BASIC FEE::', basicFee);
               if (basicFee <= 0.0 || basicFee >= 1.0) {
-                navigation.navigate('AlterAcceptDeclineScreen', {
+                navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...bodyParams,
                     manual_fee: true,

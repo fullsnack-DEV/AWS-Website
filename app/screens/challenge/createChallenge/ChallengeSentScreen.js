@@ -39,7 +39,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
           match reservation request, you will be notified.</Text>
       </View>
       {route && route.params && route.params.groupObj && <TCBorderButton
-      title={`GO TO ${(route.params.groupObj.group_name).toUpperCase() || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`.toUpperCase()}`}
+      title={`GO TO ${(route.params.groupObj.group_name)?.toUpperCase() || `${route.params.groupObj.first_name?.toUpperCase()} ${route.params.groupObj.last_name?.toUpperCase()}`}`}
       textColor={colors.whiteColor}
       borderColor={colors.whiteColor}
       backgroundColor={'transparent'}

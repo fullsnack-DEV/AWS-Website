@@ -280,7 +280,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                 navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...route.params.body,
-                    special_rule: rules,
+                    special_rule: specialRules,
                   },
                 });
               } else {

@@ -823,7 +823,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             <View>
               <View style={styles.editableView}>
                 <TCLabel
-                  title={`Match · ${bodyParams.sport}`}
+                  title={`Match · ${bodyParams.sport.charAt(0).toUpperCase() + bodyParams.sport.slice(1)}`}
                   isNew={editInfo}
                 />
                 {!isPendingRequestPayment && (

@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-unused-expressions */
 import React, {
   useState, useContext,
 } from 'react';
@@ -40,33 +42,39 @@ export default function RegisterPlayerForm2({ navigation, route }) {
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      bodyParams.fee = matchFee;
-      if (selected === 0) {
-        bodyParams.cancellation_policy = 'strict';
-      } else if (selected === 1) {
-        bodyParams.cancellation_policy = 'moderate';
+
+      if (authContext?.user?.registered_sports.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
+        Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
       } else {
-        bodyParams.cancellation_policy = 'flexible';
-      }
-      console.log('bodyPARAMS:: ', bodyParams);
-      const registerdPlayerData = authContext.user.registered_sports
-      registerdPlayerData.push(bodyParams);
-      const body = {
-        registered_sports: registerdPlayerData,
-      }
-      patchPlayer(body, authContext).then(async (response) => {
-        if (response.status === true) {
-          // FIXME:
-          await Utility.setStorage('user', response.payload);
-          authContext.setUser(response.payload)
-          Alert.alert('Towns Cup', 'Player sucessfully registered');
-          navigation.navigate('AccountScreen');
+        bodyParams.fee = matchFee;
+        if (selected === 0) {
+          bodyParams.cancellation_policy = 'strict';
+        } else if (selected === 1) {
+          bodyParams.cancellation_policy = 'moderate';
         } else {
-          Alert.alert('Towns Cup', response.messages);
+          bodyParams.cancellation_policy = 'flexible';
         }
-        console.log('RESPONSE IS:: ', response);
-        setloading(false);
-      });
+        console.log('bodyPARAMS:: ', bodyParams);
+
+        const registerdPlayerData = authContext?.user?.registered_sports || []
+        registerdPlayerData.push(bodyParams);
+        const body = {
+          registered_sports: registerdPlayerData,
+        }
+        patchPlayer(body, authContext).then(async (response) => {
+          if (response.status === true) {
+            // FIXME:
+            await Utility.setStorage('user', response.payload);
+            authContext.setUser(response.payload)
+            Alert.alert('Towns Cup', 'Player sucessfully registered');
+            navigation.navigate('AccountScreen');
+          } else {
+            Alert.alert('Towns Cup', response.messages);
+          }
+          console.log('RESPONSE IS:: ', response);
+          setloading(false);
+        });
+      }
     }
   };
 
@@ -201,7 +209,9 @@ export default function RegisterPlayerForm2({ navigation, route }) {
             </Text>
           </View>
         )}
-        <TouchableOpacity onPress={ () => registerPlayerCall() }>
+        <TouchableOpacity onPress={ () => {
+          registerPlayerCall()
+        } }>
           <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>

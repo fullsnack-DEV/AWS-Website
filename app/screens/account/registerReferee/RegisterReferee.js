@@ -410,7 +410,7 @@ export default function RegisterReferee({ navigation }) {
                   certificate.pop();
                   let bodyParams = {};
                   const referee_data = [];
-                  bodyParams.sport_name = sports;
+                  bodyParams.sport_name = sports.charAt(0).toUpperCase() + sports.slice(1);
                   bodyParams.descriptions = description;
                   bodyParams.language = selectedLanguages;
                   bodyParams.certificate = certificate;

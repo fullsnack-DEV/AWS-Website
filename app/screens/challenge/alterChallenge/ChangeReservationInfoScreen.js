@@ -126,7 +126,7 @@ export default function ChangeReservationInfoScreen({ navigation, route }) {
         title={screenName === 'change' ? strings.nextTitle : strings.cancelMatch}
         onPress={() => {
           if (screenName === 'change') {
-            navigation.navigate('AlterAcceptDeclineScreen', { challengeObj: bodyParams });
+            navigation.navigate('EditChallenge', { challengeObj: bodyParams });
           } else {
             Alert.alert(
               'Are you sure that you want to cancel the match reservation?',

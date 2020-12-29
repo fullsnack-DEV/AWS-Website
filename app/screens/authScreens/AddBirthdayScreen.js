@@ -69,10 +69,9 @@ export default function AddBirthdayScreen({ navigation }) {
         title={ strings.continueCapTitle }
         onPress={ async () => {
           const user = await Utility.getStorage('userInfo');
-
           const userBirthday = {
             ...user,
-            birthday: dateValue,
+            birthday: new Date(dateValue).getTime() / 1000,
           }
 
           await Utility.setStorage('userInfo', userBirthday);

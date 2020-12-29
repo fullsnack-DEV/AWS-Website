@@ -647,7 +647,7 @@ export default function EditChallenge({ navigation, route }) {
             <View>
               <View style={styles.editableView}>
                 <TCLabel
-                    title={`Match · ${bodyParams.sport}`}
+                     title={`Match · ${bodyParams.sport.charAt(0).toUpperCase() + bodyParams.sport.slice(1)}`}
                     isNew={editInfo}
                   />
                 {!isPendingRequestPayment && (
@@ -1075,8 +1075,8 @@ export default function EditChallenge({ navigation, route }) {
               <View style={styles.differeceView}>
                 <Text style={styles.differenceTextTitle}>Difference</Text>
                 <Text style={styles.diffenceAmount}>{`${
-                  parseFloat(bodyParams?.total_charges
-                      - oldVersion?.total_charges).toFixed(2)
+                  parseFloat(bodyParams?.total_game_charges
+                      - oldVersion?.total_game_charges).toFixed(2)
                 } ${bodyParams.currency_type || 'CAD'}`}</Text>
                 {/* <Text style={styles.diffenceAmount}>{checkSenderOrReceiver(bodyParams) === 'sender' ? `$${bodyParams.total_charges - oldVersion.total_charges} CAD` : `$${bodyParams.total_payout - oldVersion.total_payout} CAD`}</Text> */}
               </View>

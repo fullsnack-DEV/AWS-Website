@@ -559,7 +559,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <TCThickDivider />
           {bodyParams && (
             <View>
-              <TCLabel title={`Match · ${bodyParams.sport}`} />
+              <TCLabel title={`Match · ${bodyParams.sport.charAt(0).toUpperCase() + bodyParams.sport.slice(1)}`} />
               <TCInfoImageField
                 title={'Home'}
                 image = {bodyParams?.home_team?.thumbnail && bodyParams.home_team.thumbnail}

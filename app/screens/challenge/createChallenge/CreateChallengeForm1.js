@@ -196,7 +196,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
         </View>}
 
         <View>
-          <TCLabel title={`Match · ${teamData[0]?.sport || teamData[1]?.sport}`} />
+          <TCLabel title={`Match · ${teamData[0]?.sport.charAt(0).toUpperCase() + teamData[0]?.sport.slice(1) || teamData[1]?.sport.charAt(0).toUpperCase() + teamData[1]?.sport.slice(1)}`} />
+
           <TCThickDivider />
         </View>
         <View>

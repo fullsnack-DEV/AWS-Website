@@ -498,8 +498,14 @@ const strings = {
   reservationRequestCancelled: 'Reservation request cancelled',
   reservationRequestRestored: 'Reservation request restored',
 
+  reservationAlterRequestAccepted: 'Alteration request accepted',
+  reservationAlterRequestDeclined: 'Alteration request declined',
+  reservationAlterRequestCancelled: 'Alteration request cancelled',
+
   gameHomeText: 'GAME HOME',
   restorePreviousText: 'RESTORE TO PREVIOUS VERSION',
   tryToPayText: 'TRY TO PAY AGAIN',
+
+  sportAlreadyRegisterd: 'This sport already registerd.',
 };
 export default strings;

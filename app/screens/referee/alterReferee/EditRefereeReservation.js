@@ -132,9 +132,6 @@ export default function EditRefereeReservation({ navigation, route }) {
           manual_fee: reservationObj[0]?.manual_fee,
         })
       }
-      console.log('challenge Object::', reservationObj[0]);
-
-      console.log('Payment Object::', paymentCard);
     } else {
       if (isOld === false) {
         setbodyParams(reservationObj);
@@ -172,15 +169,16 @@ export default function EditRefereeReservation({ navigation, route }) {
         })
       }
     }
-    if (route?.params?.gameData) {
-      setbodyParams({ ...bodyParams, game: route?.params?.gameData })
-    }
-    getPaymentMethods()
   }, [isFocused]);
 
+  useEffect(() => {
+    if (bodyParams?.referee?.user_id !== entity.uid) {
+      getPaymentMethods()
+    }
+  }, [defaultCard])
   useLayoutEffect(() => {
     sectionEdited();
-  }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo]);
+  }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
@@ -373,21 +371,20 @@ export default function EditRefereeReservation({ navigation, route }) {
       .then((response) => {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'accept',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationAlterRequestAccepted,
+            imageAnimation: true,
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'decline',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationAlterRequestDeclined,
+            imageAnimation: false,
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'cancel',
+          navigation.navigate('RefereeRequestSent', {
+            operationType: strings.reservationAlterRequestCancelled,
+            imageAnimation: false,
           });
         }
       })
@@ -431,20 +428,15 @@ export default function EditRefereeReservation({ navigation, route }) {
     setloading(true)
     paymentMethods(authContext)
       .then((response) => {
-        console.log('source ID:', bodyParams?.source)
-        console.log('payment method', response.payload)
-        for (const tempCard of response?.payload) {
+        // setDefaultCard(response.payload[0].card)
+        for (const tempCard of response.payload) {
           if (tempCard?.id === bodyParams?.source) {
-            setDefaultCard(response?.payload?.card)
+            console.log('temp::', tempCard?.card)
+            setDefaultCard(tempCard?.card)
             break
           }
         }
-
-        // setCards([...response.payload])
         setloading(false)
-        // if (response.payload.length === 0) {
-        //   openNewCardScreen();
-        // }
       })
       .catch((e) => {
         console.log('error in payment method', e)
@@ -496,9 +488,6 @@ export default function EditRefereeReservation({ navigation, route }) {
     } else {
       teampObj.requested_by = teampObj.created_by.uid;
     }
-
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (teampObj?.requested_by === entity.uid) {
       return 'sender'
     }
@@ -540,8 +529,6 @@ export default function EditRefereeReservation({ navigation, route }) {
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    console.log('Temp Object::', teampObj);
-    console.log(`${teampObj?.requested_by}:::${entity.uid}`);
     if (entity.uid === teampObj?.referee?.user_id) {
       if (teampObj?.requested_by === entity.uid) {
         return 'referee'
@@ -686,6 +673,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         }, 0.7);
       });
   };
+  console.log('Default card:', defaultCard);
   return (
     <TCKeyboardView scrollReference ={scroll}>
       <ActivityLoader visible={loading} />
@@ -1104,8 +1092,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           { checkSenderForPayment(bodyParams) === 'sender' && paymentCard.total_game_charges > 0 && (
             <View style={{ marginTop: 10 }}>
               <TCTouchableLabel
-              title={ (defaultCard && defaultCard.brand) ?? route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
-              subTitle={(defaultCard && defaultCard.last4) ?? route.params.paymentMethod?.card.last4 }
+              title={ (defaultCard && defaultCard?.brand) ?? route?.params?.paymentMethod ? Utility.capitalize(route?.params?.paymentMethod?.card?.brand) : strings.addOptionMessage}
+              subTitle={(defaultCard && defaultCard?.last4) ?? route?.params?.paymentMethod?.card.last4 }
               showNextArrow={true}
               onPress={() => {
                 navigation.navigate('PaymentMethodsScreen', {
