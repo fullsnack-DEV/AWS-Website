@@ -202,6 +202,7 @@ export default function MembersProfileScreen({ navigation, route }) {
                           switchID={entity.uid}
                           edit={editTeam}
                           onEditPressed={() => {
+                            console.log(item);
                             navigation.navigate(
                               'EditMemberTeamInfoScreen',
                               {

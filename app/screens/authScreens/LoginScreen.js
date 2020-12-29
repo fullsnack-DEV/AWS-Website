@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -38,17 +38,6 @@ import { eventDefaultColorsData } from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
 import TCKeyboardView from '../../components/TCKeyboardView';
 
-const config = {
-  apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
-  authDomain: 'townscup-fee6e.firebaseapp.com',
-  databaseURL: 'https://townscup-fee6e.firebaseio.com',
-  projectId: 'townscup-fee6e',
-  storageBucket: 'townscup-fee6e.appspot.com',
-  messagingSenderId: '1003329053001',
-  appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
-  measurementId: 'G-N44NC0Z1Q7',
-};
-
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('patidar.arvind1+3@gmail.com');
   const [password, setPassword] = useState('123456');
@@ -64,11 +53,6 @@ export default function LoginScreen({ navigation }) {
     offlineAccess: false,
   });
 
-  useEffect(() => {
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(config);
-    }
-  }, []);
   const validate = () => {
     if (email === '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');

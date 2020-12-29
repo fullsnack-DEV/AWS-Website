@@ -140,7 +140,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                               width: 25,
                             }}>
                               <FastImage
-                                  resizeMode={'contain'}
+                                  resizeMode={'cover'}
                                   source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.teamPlaceholder }
                                   style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
                               />
@@ -154,7 +154,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                               ...styles.teamLogoContainer, height: 25, width: 25, marginRight: wp(2),
                             }}>
                               <FastImage
-                                  resizeMode={'contain'}
+                                  resizeMode={'cover'}
                                   source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.teamPlaceholder }
                                   style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
                               />

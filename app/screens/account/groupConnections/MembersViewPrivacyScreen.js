@@ -17,8 +17,10 @@ import fonts from '../../../Constants/Fonts'
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context'
 import TCGradientButton from '../../../components/TCGradientButton';
+import * as Utility from '../../../utils';
 
 let entity = {};
+const privacyData = ['everyone', 'followers', 'members', 'admins'];
 export default function MembersViewPrivacyScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -34,8 +36,19 @@ export default function MembersViewPrivacyScreen({ navigation }) {
       setSwitchUser(entity)
     }
     getAuthEntity()
+    getSelectedData()
   }, [])
 
+  const getSelectedData = () => {
+    const privacyMember = entity?.auth?.user?.privacy_members;
+    const privacyFollowers = entity?.auth?.user?.privacy_followers;
+    const privacyProfile = entity?.auth?.user?.privacy_profile;
+    const getIndexFromPrivacy = (privacy) => privacyData?.findIndex((item) => item === privacy)
+    setMember(getIndexFromPrivacy(privacyMember));
+    setFollower(getIndexFromPrivacy(privacyFollowers));
+    if (privacyProfile === 'members') setProfile(0);
+    else setProfile(1);
+  }
   const sendClubSetting = async () => {
     setloading(true)
     const bodyParams = {
@@ -44,9 +57,15 @@ export default function MembersViewPrivacyScreen({ navigation }) {
       privacy_profile: (profile === 0 && 'members') || (profile === 1 && 'admins'),
     }
     console.log('BODY :', bodyParams);
-    patchGroup(switchUser.uid, bodyParams, authContext).then((response) => {
-      setloading(false)
+    patchGroup(switchUser.uid, bodyParams, authContext).then(async (response) => {
       console.log('Response :', response.payload);
+      const cloneEntity = JSON.parse(JSON.stringify(entity));
+      cloneEntity.auth.user = response.payload;
+      authContext.setUser({ ...response.payload });
+      authContext.setEntity({ ...cloneEntity });
+      await Utility.setStorage('authContextEntity', { ...cloneEntity })
+      await Utility.setStorage('authContextUser', { ...response.payload });
+      setloading(false)
       navigation.goBack()
     })
       .catch((e) => {
