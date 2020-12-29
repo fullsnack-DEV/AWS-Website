@@ -1017,7 +1017,6 @@ export default function HomeScreen({ navigation, route }) {
 
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
-    // navigation.navigate('RegisterReferee');
     if (refereeInObject) {
       const entity = authContext.entity;
       if (refereeInObject.language.length > 0) {
@@ -1063,7 +1062,7 @@ export default function HomeScreen({ navigation, route }) {
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
     } else {
-      // add New Referee
+      navigation.navigate('RegisterReferee');
     }
   };
 
@@ -1131,7 +1130,7 @@ export default function HomeScreen({ navigation, route }) {
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
     } else {
-      // in case add new
+      navigation.navigate('RegisterPlayer');
     }
   };
 
@@ -1201,10 +1200,11 @@ export default function HomeScreen({ navigation, route }) {
           if (index === 0) {
             // Add Playing
             console.log('add playing')
+            navigation.navigate('RegisterPlayer');
           } else if (index === 1) {
             // Add Refereeing
             console.log('add refereeing')
-            setRefereesInModalVisible(!refereesInModalVisible);
+            navigation.navigate('RegisterReferee');
           }
         }}
       />

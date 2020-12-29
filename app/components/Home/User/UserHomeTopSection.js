@@ -49,7 +49,6 @@ export default function UserHomeTopSection({
         title={item.sport_name}
         thumbURL={images.gameGoal}
         onRefereesInPress={() => {
-          console.log('renderRefereesIn')
           if (onRefereesInPress) {
             onRefereesInPress(item)
           }

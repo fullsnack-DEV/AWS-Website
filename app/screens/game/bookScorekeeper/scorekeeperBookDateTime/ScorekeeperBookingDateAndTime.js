@@ -128,7 +128,10 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
               />
               )}
             </View>
-            {gameData && <TCGameCard data={gameData} />}
+            {gameData && <TCGameCard data={gameData} onPress={() => {
+              const routeName = `${_.startCase(gameData?.sport)}Home`;
+              navigation.push(routeName, { gameId: gameData?.game_id })
+            }} />}
           </View>
 
           {/* Date & Time */}

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Alert,
   Image,
@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
@@ -30,17 +29,6 @@ import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context'
 import apiCall from '../../utils/apiCall';
 
-const config = {
-  apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
-  authDomain: 'townscup-fee6e.firebaseapp.com',
-  databaseURL: 'https://townscup-fee6e.firebaseio.com',
-  projectId: 'townscup-fee6e',
-  storageBucket: 'townscup-fee6e.appspot.com',
-  messagingSenderId: '1003329053001',
-  appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
-  measurementId: 'G-N44NC0Z1Q7',
-};
-
 export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
   const [fName, setFName] = useState('');
@@ -52,11 +40,6 @@ export default function SignupScreen({ navigation }) {
   const [profilePic, setProfilePic] = useState(null);
   // For activity indigator
   const [loading, setloading] = useState(false);
-  useEffect(() => {
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(config);
-    }
-  }, []);
 
   const validate = () => {
     if (fName === '') {

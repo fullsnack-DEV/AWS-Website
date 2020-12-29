@@ -945,7 +945,10 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
                 </View>
               </View>
-              {bodyParams?.game && <TCGameCard data={bodyParams?.game} />}
+              {bodyParams?.game && <TCGameCard data={bodyParams?.game} onPress={() => {
+                const routeName = `${_.startCase(bodyParams?.game?.sport)}Home`;
+                navigation.push(routeName, { gameId: bodyParams?.game?.game_id })
+              }} />}
               {/* Date & Time */}
               {bodyParams?.game && (
                 <View>

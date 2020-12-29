@@ -29,6 +29,7 @@ const Referees = ({
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => {
     getRefereeReservation(gameData?.game_id).then((res) => {
+      console.log('REF: ', res?.payload)
       const refData = res?.payload?.filter((item) => !['declined', 'cancelled'].includes(item?.status));
       const cloneRefData = [];
       refData.map((item) => {

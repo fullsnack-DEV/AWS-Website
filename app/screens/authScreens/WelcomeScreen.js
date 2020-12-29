@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View, Text, Image, TouchableOpacity, Alert, StyleSheet,
 } from 'react-native';
@@ -7,7 +7,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
@@ -26,26 +25,11 @@ import { getUserDetails } from '../../api/Users';
 import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
-const config = {
-  apiKey: 'AIzaSyDgnt9jN8EbVwRPMClVf3Ac1tYQKtaLdrU',
-  authDomain: 'townscup-fee6e.firebaseapp.com',
-  databaseURL: 'https://townscup-fee6e.firebaseio.com',
-  projectId: 'townscup-fee6e',
-  storageBucket: 'townscup-fee6e.appspot.com',
-  messagingSenderId: '1003329053001',
-  appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
-  measurementId: 'G-N44NC0Z1Q7',
-};
-
 export default function WelcomeScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
-  useEffect(() => {
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(config);
-    }
-  }, []);
+
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId: '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
