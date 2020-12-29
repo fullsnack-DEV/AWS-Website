@@ -1,24 +1,19 @@
 import React, {
-  useState, useEffect, useMemo, useContext,
+  useState, useEffect, useMemo,
 } from 'react';
-
-import { NavigationContainer } from '@react-navigation/native';
+import firebase from '@react-native-firebase/app';
 import AuthContext from './app/auth/context';
-import AuthNavigator from './app/navigation/AuthNavigator';
-import AppNavigator from './app/navigation/AppNavigator';
-import navigationTheme from './app/navigation/navigationTheme';
-import * as Utility from './app/utils/index';
 import { QBinit } from './app/utils/QuickBlox';
+import NavigationMainContainer from './NavigationMainContainer';
+import { firebaseConfig } from './app/utils/constant';
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
-
   const updateAuth = (e) => {
     setEntity({ ...e })
   }
-  const authContext = useContext(AuthContext);
   const authValue = useMemo(
     () => ({
       role,
@@ -32,27 +27,16 @@ export default function App() {
     [role, user, entity],
   );
 
-  const getLoginUserDetail = async () => {
-    const authContextEntity = await Utility.getStorage('authContextEntity');
-    const authContextUser = await Utility.getStorage('authContextUser');
-    if (authContextEntity) {
-      setEntity({ ...authContextEntity })
-      authContext.setEntity({ ...entity })
-      authContext.setUser({ ...authContextUser });
-    }
-  };
-
   useEffect(() => {
-    if (!entity?.isLoggedIn) {
-      getLoginUserDetail();
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(firebaseConfig);
     }
   }, []);
+
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>
-      <NavigationContainer theme={navigationTheme}>
-        {entity?.isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
-      </NavigationContainer>
+      <NavigationMainContainer/>
     </AuthContext.Provider>
   );
 }

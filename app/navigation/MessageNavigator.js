@@ -10,6 +10,7 @@ import MessageMainScreen from '../screens/message/MessageMainScreen';
 import MessageInviteScreen from '../screens/message/MessageInviteScreen';
 import MessageNewGroupScreen from '../screens/message/MessageNewGroupScreen';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
+import HomeScreen from '../screens/home/HomeScreen';
 
 const Stack = createStackNavigator();
 
@@ -90,6 +91,23 @@ const MessageNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+          name="HomeScreen"
+          component={ HomeScreen }
+          options={ {
+            title: 'Home',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
   </Stack.Navigator>
 );
 

@@ -43,7 +43,6 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
     setGroupMemberDetail(route.params.groupMemberDetail)
     setPlayerStatus(route.params.groupMemberDetail.status)
     setPositions(route.params.groupMemberDetail.positions || [{}])
-
     console.log('MEMBER DETAIL ::', groupMemberDetail);
     const getAuthEntity = async () => {
       entity = authContext.entity
@@ -162,56 +161,56 @@ export default function EditMemberTeamInfoScreen({ navigation, route }) {
         <TCLable title={'Appearance'}/>
         <TCTextField value={groupMemberDetail.appearance} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, appearance: text })} placeholder={strings.AppearancePlaceholder} keyboardType={'default'}/>
       </View>
-      <View style={styles.mainCheckBoxContainer}>
-        <Text style={styles.checkBoxTitle}>Status</Text>
-        <View style={styles.checkBoxContainer}>
-          <TouchableOpacity
-          onPress={() => {
-            if (playerStatus.indexOf('Injured') !== -1) {
-              const i = playerStatus.indexOf('Injured')
-              playerStatus.splice(i, 1);
-            } else {
-              playerStatus.push('Injured')
-            }
-            setPlayerStatus(playerStatus)
-            setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus })
-          }}>
-            <Image source={playerStatus.indexOf('Injured') !== -1 ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Injured</Text>
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <TouchableOpacity onPress={() => {
-            if (playerStatus.indexOf('Long-term Away') !== -1) {
-              const i = playerStatus.indexOf('Long-term Away')
-              playerStatus.splice(i, 1);
-            } else {
-              playerStatus.push('Long-term Away')
-            }
-            setPlayerStatus(playerStatus)
-            setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus })
-          }}>
-            <Image source={playerStatus.some((el) => el === 'Long-term Away') ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Long-term Away</Text>
-        </View>
-        <View style={styles.checkBoxContainer}>
-          <TouchableOpacity
-          onPress={() => {
-            if (playerStatus.indexOf('Suspended') !== -1) {
-              const i = playerStatus.indexOf('Suspended')
-              playerStatus.splice(i, 1);
-            } else {
-              playerStatus.push('Suspended')
-            }
-            setPlayerStatus(playerStatus)
-            setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus })
-          }}>
-            <Image source={playerStatus.some((el) => el === 'Suspended') ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/>
-          </TouchableOpacity>
-          <Text style={styles.checkBoxItemText}>Suspended</Text>
-        </View>
-      </View>
+      {/* <View style={styles.mainCheckBoxContainer}> */}
+      {/*  <Text style={styles.checkBoxTitle}>Status</Text> */}
+      {/*  <View style={styles.checkBoxContainer}> */}
+      {/*    <TouchableOpacity */}
+      {/*    onPress={() => { */}
+      {/*      if (playerStatus.indexOf('Injured') !== -1) { */}
+      {/*        const i = playerStatus.indexOf('Injured') */}
+      {/*        playerStatus.splice(i, 1); */}
+      {/*      } else { */}
+      {/*        playerStatus.push('Injured') */}
+      {/*      } */}
+      {/*      setPlayerStatus(playerStatus) */}
+      {/*      setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus }) */}
+      {/*    }}> */}
+      {/*      <Image source={playerStatus.indexOf('Injured') !== -1 ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/> */}
+      {/*    </TouchableOpacity> */}
+      {/*    <Text style={styles.checkBoxItemText}>Injured</Text> */}
+      {/*  </View> */}
+      {/*  <View style={styles.checkBoxContainer}> */}
+      {/*    <TouchableOpacity onPress={() => { */}
+      {/*      if (playerStatus.indexOf('Long-term Away') !== -1) { */}
+      {/*        const i = playerStatus.indexOf('Long-term Away') */}
+      {/*        playerStatus.splice(i, 1); */}
+      {/*      } else { */}
+      {/*        playerStatus.push('Long-term Away') */}
+      {/*      } */}
+      {/*      setPlayerStatus(playerStatus) */}
+      {/*      setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus }) */}
+      {/*    }}> */}
+      {/*      <Image source={playerStatus.some((el) => el === 'Long-term Away') ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/> */}
+      {/*    </TouchableOpacity> */}
+      {/*    <Text style={styles.checkBoxItemText}>Long-term Away</Text> */}
+      {/*  </View> */}
+      {/*  <View style={styles.checkBoxContainer}> */}
+      {/*    <TouchableOpacity */}
+      {/*    onPress={() => { */}
+      {/*      if (playerStatus.indexOf('Suspended') !== -1) { */}
+      {/*        const i = playerStatus.indexOf('Suspended') */}
+      {/*        playerStatus.splice(i, 1); */}
+      {/*      } else { */}
+      {/*        playerStatus.push('Suspended') */}
+      {/*      } */}
+      {/*      setPlayerStatus(playerStatus) */}
+      {/*      setGroupMemberDetail({ ...groupMemberDetail, status: playerStatus }) */}
+      {/*    }}> */}
+      {/*      <Image source={playerStatus.some((el) => el === 'Suspended') ? images.checkGreenBG : images.uncheckWhite} style={{ height: 22, width: 22, resizeMode: 'contain' }}/> */}
+      {/*    </TouchableOpacity> */}
+      {/*    <Text style={styles.checkBoxItemText}>Suspended</Text> */}
+      {/*  </View> */}
+      {/* </View> */}
       <View>
         <TCLable title={'Note'}/>
         <TCTextField value={groupMemberDetail.note} height={100} multiline={true} onChangeText={(text) => setGroupMemberDetail({ ...groupMemberDetail, note: text })} placeholder={strings.writeNotesPlaceholder} keyboardType={'default'}/>

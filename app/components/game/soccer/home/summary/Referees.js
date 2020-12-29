@@ -29,7 +29,17 @@ const Referees = ({
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => {
     getRefereeReservation(gameData?.game_id).then((res) => {
-      setRefree([...res?.payload]);
+      console.log('REF: ', res?.payload)
+      const refData = res?.payload?.filter((item) => !['declined', 'cancelled'].includes(item?.status));
+      const cloneRefData = [];
+      refData.map((item) => {
+        const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
+        if (!(item?.status === 'offered' && !isExpired)) {
+          cloneRefData.push(item);
+        }
+        return false;
+      })
+      setRefree([...cloneRefData]);
     });
   }, [gameData])
 
@@ -44,12 +54,28 @@ const Referees = ({
     setMyUserId(authContext.entity.uid);
   }
 
+  const getRefereeStatusMessage = (item, type) => {
+    const status = item?.status;
+    let statusData = '';
+    const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
+    switch (status) {
+      case 'pendingpayment': statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
+      case 'offered':
+        if (isExpired) statusData = { status: 'REFEREE RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
+        else statusData = { status: 'OFFERED', color: colors.userPostTimeColor };
+        break;
+      default: statusData = { status: '' };
+    }
+    return statusData[type];
+  }
   const renderReferees = ({ item }) => {
     const entity = authContext?.entity;
     const referee = item?.referee;
-    if (!['declined', 'cancel'].includes(item?.status)) {
+    if (!['declined', 'cancelled'].includes(item?.status)) {
       return (
         <TCUserFollowUnfollowList
+            statusColor={getRefereeStatusMessage(item, 'color')}
+              statusTitle={getRefereeStatusMessage(item, 'status')}
               myUserId={myUserId}
               followSoccerUser={followSoccerUser}
               unFollowSoccerUser={unFollowSoccerUser}

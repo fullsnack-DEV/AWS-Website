@@ -1,7 +1,7 @@
 import axios from 'axios';
-import firebase from '@react-native-firebase/app';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import * as Utility from '.';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
@@ -43,30 +43,27 @@ const makeAPIRequest = async ({
     const currentDate = new Date();
     const expiryDate = new Date(entity.auth.token.expirationTime);
     // const expiryDate = new Date('25 Dec 2020 14:30');
-    if (expiryDate.getTime() <= currentDate.getTime()) {
-      console.log('Token Expired');
-      const globalOnAuthStateChanged = await firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          user.getIdTokenResult().then(async (idTokenResult) => {
-            authToken = idTokenResult.token;
-            const token = {
-              token: idTokenResult.token,
-              expirationTime: idTokenResult.expirationTime,
-            };
-            entity.auth.token = token;
-            await authContext.setEntity({ ...entity });
-            await Utility.setStorage('authContextEntity', { ...entity })
-            return globalApiCall({
-              method, url, data, headers, params, responseType, authContext, authToken,
-            })
-          });
-        }
-      });
-      globalOnAuthStateChanged();
+    if (expiryDate.getTime() > currentDate.getTime()) {
+      return globalApiCall({
+        method, url, data, headers, params, responseType, authContext, authToken,
+      })
     }
-    return globalApiCall({
-      method, url, data, headers, params, responseType, authContext, authToken,
-    })
+    console.log('Token Expired');
+    return auth().currentUser.getIdTokenResult()
+      .then(async (idTokenResult) => {
+        console.log('Call 1')
+        authToken = idTokenResult.token;
+        const token = {
+          token: idTokenResult.token,
+          expirationTime: idTokenResult.expirationTime,
+        };
+        entity.auth.token = token;
+        await authContext.setEntity({ ...entity });
+        await Utility.setStorage('authContextEntity', { ...entity })
+        return globalApiCall({
+          method, url, data, headers, params, responseType, authContext, authToken,
+        })
+      });
   }
 });
 

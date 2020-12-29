@@ -131,7 +131,7 @@ export default function EditGroupContactScreen({ navigation, route }) {
     })
   }
 
-  const region = Utility.getRegionFromMarkers(coordinates)
+  // const region = Utility.getRegionFromMarkers(coordinates)
 
   return (
     <>
@@ -189,7 +189,6 @@ export default function EditGroupContactScreen({ navigation, route }) {
         </View>
 
         {coordinates.length > 0 && <MapView
-          region={region}
           style={styles.mapViewStyle}>
           {markers.map((marker) => (
             <Marker
@@ -198,6 +197,8 @@ export default function EditGroupContactScreen({ navigation, route }) {
               coordinate={{
                 latitude: marker.latitude,
                 longitude: marker.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
               }}
               description={marker.adddress}
               title={marker.name}

@@ -196,7 +196,23 @@ export default function MembersProfileScreen({ navigation, route }) {
           {memberDetail.group && <GroupMembership groupData = {memberDetail.group} switchID={entity.uid} edit={editTeam} onEditPressed={() => navigation.navigate('EditMemberClubInfoScreen', { groupMemberDetail: memberDetail.group })}/>}
           <FlatList
                   data={memberDetail.teams}
-                  renderItem={({ item }) => <GroupMembership groupData = {item} switchID={entity.uid} edit={editTeam} onEditPressed={() => navigation.navigate('EditMemberTeamInfoScreen', { groupMemberDetail: item })}/>}
+                  renderItem={({ item }) => (
+                    <GroupMembership
+                          groupData = {item}
+                          switchID={entity.uid}
+                          edit={editTeam}
+                          onEditPressed={() => {
+                            console.log(item);
+                            navigation.navigate(
+                              'EditMemberTeamInfoScreen',
+                              {
+                                groupMemberDetail: item,
+                              },
+                            )
+                          }
+                          }
+                      />
+                  )}
                   keyExtractor={(item, index) => index.toString()}
                   scrollEnabled={false}
                   />

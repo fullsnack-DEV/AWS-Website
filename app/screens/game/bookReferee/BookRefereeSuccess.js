@@ -16,7 +16,7 @@ const BookRefereeSuccess = ({ navigation, route }) => {
   const navigationScreenName = route?.params?.navigationScreenName;
   useEffect(() => {
     setTimeout(() => navigation.navigate(navigationScreenName.toString()), 2000);
-  })
+  }, [])
   return (
     <View style={styles.mainContainer}>
       <FastImage
