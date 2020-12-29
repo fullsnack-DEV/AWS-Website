@@ -18,6 +18,7 @@ export default function NewsFeedList({
   footerLoading = false,
   scrollEnabled,
   ListHeaderComponent,
+  onPressDone,
 }) {
   // console.log('Post Data ::--', postData);
   const [pullRefresh, setPullRefresh] = useState(false);
@@ -76,6 +77,7 @@ export default function NewsFeedList({
             item={item}
             navigation={navigation}
             caller_id={userID}
+            onPressDone={onPressDone}
             onImageProfilePress={() => onProfilePress(item) }
             onLikePress={() => {
               const bodyParams = {
@@ -113,6 +115,10 @@ export default function NewsFeedList({
         onEndReachedThreshold={0.5}
         refreshing={pullRefresh}
         onRefresh={() => {
+          const entity = authContext.entity
+          if (entity) {
+            setUserID(entity.uid || entity.auth.user_id);
+          }
           setPullRefresh(true);
           getNewsFeed(authContext)
             .then((response) => {

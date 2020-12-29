@@ -33,7 +33,7 @@ import images from '../../Constants/ImagePath';
 export default function EditPostScreen({
   navigation,
   route: {
-    params: { data },
+    params: { data, onPressDone },
   },
 }) {
   let postText = '';
@@ -87,24 +87,10 @@ export default function EditPostScreen({
                     '',
                     'Please write some text or select any image.',
                   );
-                } else {
-                  //   setloading(true);
-                  const attachments = [];
-                  selectImage.forEach((imageItem) => {
-                    const obj = {
-                      type: 'image',
-                      url: imageItem.url ? imageItem.url : imageItem.path,
-                      thumbnail: imageItem.thumbnail
-                        ? imageItem.thumbnail
-                        : imageItem.path,
-                    };
-                    attachments.push(obj);
-                  });
-
+                } else if (searchText.trim().length > 0 && selectImage.length === 0) {
                   const params = {
                     activity_id: data.id,
                     text: searchText,
-                    attachments,
                   };
                   updatePost(params, authContext)
                     .then(() => getNewsFeed(authContext))
@@ -116,6 +102,41 @@ export default function EditPostScreen({
                       Alert.alert('', e.messages);
                       setloading(false);
                     });
+                } else {
+                  //   setloading(true);
+                  // const attachments = [];
+                  // selectImage.forEach((imageItem) => {
+                  //   console.log('ImageItem :-', imageItem);
+                  //   console.log('data :-', data);
+                  //   const obj = {
+                  //     type: imageItem.type ? imageItem.type : imageItem.mime,
+                  //     url: imageItem.url ? imageItem.url : imageItem.path,
+                  //     thumbnail: imageItem.thumbnail
+                  //       ? imageItem.thumbnail
+                  //       : imageItem.path,
+                  //     media_height: imageItem.media_height ? imageItem.media_height : imageItem.height,
+                  //     media_width: imageItem.media_width ? imageItem.media_width : imageItem.width,
+                  //   };
+                  //   attachments.push(obj);
+                  // });
+                  onPressDone(selectImage, searchText, data);
+                  navigation.goBack();
+                  // const params = {
+                  //   activity_id: data.id,
+                  //   text: searchText,
+                  //   attachments: selectImage,
+                  // };
+                  // console.log('Params :-', params);
+                  // updatePost(params, authContext)
+                  //   .then(() => getNewsFeed(authContext))
+                  //   .then(() => {
+                  //     navigation.goBack();
+                  //     setloading(false);
+                  //   })
+                  //   .catch((e) => {
+                  //     Alert.alert('', e.messages);
+                  //     setloading(false);
+                  //   });
                 }
               }}>
               Done
@@ -218,11 +239,26 @@ export default function EditPostScreen({
                 ImagePicker.openPicker({
                   width: 300,
                   height: 400,
-                  cropping: true,
+                  // cropping: true,
                   multiple: true,
                   maxFiles: 10,
                 }).then((image) => {
-                  setSelectImage(image);
+                  // setSelectImage(image);
+                  let allSelectData = [];
+                  const secondData = [];
+                  if (selectImage.length > 0) {
+                    image.filter((dataItem) => {
+                      const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
+                      if (filter_data.length === 0) {
+                        secondData.push(dataItem)
+                      }
+                      return null;
+                    })
+                    allSelectData = [...selectImage, ...secondData];
+                    setSelectImage(allSelectData);
+                  } else {
+                    setSelectImage(image);
+                  }
                 });
               }}
             />

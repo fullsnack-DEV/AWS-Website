@@ -32,7 +32,7 @@ function NewsFeedDescription({
     <View style={[styles.containerStyle, containerStyle]}>
       {descriptions.length > 0 && (
         <Hyperlink
-        linkStyle={{ color: colors.skyBlue }}
+        // linkStyle={{ color: colors.skyBlue }}
         >
           <Text style={[styles.descText, descText]}>
             <ParsedText
