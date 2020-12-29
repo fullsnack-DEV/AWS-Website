@@ -45,7 +45,7 @@ export const deletePost = async (data, authContext) => makeAPIRequest({
 export const updatePost = async (params, authContext) => makeAPIRequest({
   method: 'put',
   url: `${Config.BASE_URL}/posts`,
-  params,
+  data: params,
   authContext,
 });
 

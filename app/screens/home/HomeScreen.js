@@ -187,6 +187,7 @@ export default function HomeScreen({ navigation, route }) {
   const [progressBar, setProgressBar] = useState(false);
   const [recentMatchData, setRecentMatchData] = useState([]);
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
+  const [refereeRecentMatchDisplay, setRefereeRecentMatchDisplay] = useState(false);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
@@ -1017,6 +1018,8 @@ export default function HomeScreen({ navigation, route }) {
 
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
+    // navigation.navigate('RegisterReferee');
+    setRefereeRecentMatchDisplay(false);
     if (refereeInObject) {
       const entity = authContext.entity;
       if (refereeInObject.language.length > 0) {
@@ -1046,11 +1049,13 @@ export default function HomeScreen({ navigation, route }) {
               setRefereeUpcomingMatch([...upcomingMatch]);
             } else {
               recentMatch.push(event_item);
+              setRefereeRecentMatchDisplay(true);
               setRefereeRecentMatch([...recentMatch]);
             }
             return null;
           });
         } else {
+          setRefereeRecentMatchDisplay(true);
           setRefereeUpcomingMatch([]);
           setRefereeRecentMatch([]);
         }
@@ -1190,6 +1195,7 @@ export default function HomeScreen({ navigation, route }) {
       navigation.navigate('GroupMembersScreen', { groupID: user_id });
     }
   }
+
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -1242,7 +1248,9 @@ export default function HomeScreen({ navigation, route }) {
         ref={scrollToTop}
         backgroundColor="white"
         contentBackgroundColor="white"
-        parallaxHeaderHeight={310}
+        parallaxHeaderHeight={currentUserData
+          && currentUserData.description
+          && currentUserData.description.length > 60 ? 350 : 310}
         stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
         fadeOutForeground={false}
         renderFixedHeader={() => (
@@ -2201,9 +2209,9 @@ export default function HomeScreen({ navigation, route }) {
                     refereeMatchModal();
                   }}
                 >
-                  <RecentMatchView
+                  {refereeRecentMatchDisplay && <RecentMatchView
                     data={refereeRecentMatch.length > 0 ? refereeRecentMatch[0] : null}
-                  />
+                  />}
                 </RefereesInItem>
 
                 <RefereesInItem
@@ -2349,7 +2357,7 @@ export default function HomeScreen({ navigation, route }) {
               />
               {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
                 sportsData={refereeRecentMatch}
-                showEventNumbers={true}
+                showEventNumbers={false}
                 showAssistReferee={true}
                 navigation={navigation}
                 onItemPress={() => {

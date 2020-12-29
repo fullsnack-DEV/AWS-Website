@@ -8,7 +8,12 @@ import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import { createPost, getNewsFeed, getNewsFeedNextList } from '../../api/NewsFeeds';
+import {
+  createPost,
+  getNewsFeed,
+  getNewsFeedNextList,
+  updatePost,
+} from '../../api/NewsFeeds';
 import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
@@ -30,6 +35,7 @@ export default function FeedsScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = authContext.entity;
+      console.log('Entity :-', entity);
       setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
         .then((response) => {
@@ -105,6 +111,53 @@ export default function FeedsScreen({ navigation }) {
     }
   }
 
+  const editPostDoneCall = (data, postDesc, selectEditItem) => {
+    let attachmentsData = [];
+    const alreadyUrlDone = [];
+    const createUrlData = [];
+    if (data) {
+      if (data.length > 0) {
+        data.map((dataItem) => {
+          if (dataItem.thumbnail) {
+            alreadyUrlDone.push(dataItem);
+          } else {
+            createUrlData.push(dataItem);
+          }
+          return null;
+        })
+      }
+      setTotalUploadCount(data.length || 1);
+      setProgressBar(true);
+      const imageArray = createUrlData.map((dataItem) => (dataItem))
+      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }))
+        attachmentsData = [...alreadyUrlDone, ...attachments];
+        const params = {
+          activity_id: selectEditItem.id,
+          text: postDesc,
+          attachments: attachmentsData,
+        };
+        updatePost(params, authContext)
+          .then(() => getNewsFeed(authContext))
+          .then((response) => {
+            setPostData(response.payload.results)
+            setProgressBar(false);
+            setDoneUploadCount(0);
+            setTotalUploadCount(0);
+          })
+          .catch((e) => {
+            Alert.alert('', e.messages)
+          });
+      })
+    }
+  }
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -133,6 +186,7 @@ export default function FeedsScreen({ navigation }) {
         navigation={navigation}
         newsFeedData={newsFeedData}
         postData={postData}
+        onPressDone={editPostDoneCall}
         footerLoading={footerLoading && isNextDataLoading}
         ListHeaderComponent={() => <View>
           <WritePost

@@ -211,7 +211,7 @@ function RefereeInfoSection({
     currentCity: `${data.city || ''}`,
   });
   const [bioText, setBioText] = useState(selectRefereeData.descriptions);
-  const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates);
+  const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates ? selectRefereeData.certificates : []);
   const [refereeFeeCount, setRefereeFeeCount] = useState(selectRefereeData.fee || 0);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);

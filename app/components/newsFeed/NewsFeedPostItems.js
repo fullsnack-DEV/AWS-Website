@@ -38,6 +38,7 @@ function NewsFeedPostItems({
   caller_id,
   onDeletePost,
   onImageProfilePress,
+  onPressDone,
 }) {
   const [like, setLike] = useState(() => {
     let filterLike = [];
@@ -79,6 +80,12 @@ function NewsFeedPostItems({
     }
     descriptions = JSON.parse(item.object).text;
   }
+  let threeDotBtnDisplay = false;
+  if (item.foreign_id === caller_id) {
+    threeDotBtnDisplay = true;
+  } else {
+    threeDotBtnDisplay = false;
+  }
 
   return (
     <View key={key}>
@@ -97,7 +104,7 @@ function NewsFeedPostItems({
             {commentPostTimeCalculate(item.time)}
           </Text>
         </View>
-        <TouchableOpacity
+        {threeDotBtnDisplay && <TouchableOpacity
           style={styles.dotImageTouchStyle}
           onPress={() => {
             actionSheet.current.show();
@@ -107,7 +114,7 @@ function NewsFeedPostItems({
             source={images.horizontalThreeDot}
             resizeMode={'contain'}
           />
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>
       <View>
         {
@@ -316,7 +323,10 @@ function NewsFeedPostItems({
           destructiveButtonIndex={1}
           onPress={(index) => {
             if (index === 0) {
-              navigation.navigate('EditPostScreen', { data: item });
+              navigation.navigate('EditPostScreen', {
+                data: item,
+                onPressDone,
+              });
             } else if (index === 1) {
               onDeletePost();
             }
