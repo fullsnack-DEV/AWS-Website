@@ -30,14 +30,14 @@ export const QB_DIALOG_TYPE = {
   GROUP: 'group',
 }
 const appSettings = {
-  // appId: '79537',
-  // authKey: 'bMFuNaWXVNJGqzY',
-  // authSecret: 'bpm8-gfaay9DWWv',
-  // accountKey: 'idPrZuxa3UseWLaRFRQU',
-  appId: '86953',
-  authKey: '62JSShsNZqtNrfN',
-  authSecret: 'KMJLjnxr3drT-AR',
-  accountKey: '8LSpkznPxy1C9XSJcd91',
+  appId: '79537',
+  authKey: 'bMFuNaWXVNJGqzY',
+  authSecret: 'bpm8-gfaay9DWWv',
+  accountKey: 'idPrZuxa3UseWLaRFRQU',
+  // appId: '86953',
+  // authKey: '62JSShsNZqtNrfN',
+  // authSecret: 'KMJLjnxr3drT-AR',
+  // accountKey: '8LSpkznPxy1C9XSJcd91',
 };
 
 export const QBChatConnected = async () => QB.chat.isConnected()
