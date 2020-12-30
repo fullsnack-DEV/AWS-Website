@@ -13,7 +13,6 @@ import ActivityLoader from './app/components/loader/ActivityLoader';
 
 export default function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
-  const [entity, setEntity] = useState(authContext?.entity);
 
   const [appInitialize, setAppInitialize] = useState(false);
 
@@ -32,14 +31,12 @@ export default function NavigationMainContainer() {
           };
           contextEntity.auth.token = token;
           await QBconnectAndSubscribe(contextEntity);
-          setEntity({ ...contextEntity });
           await authContext.setEntity({ ...contextEntity });
           await authContext.setUser({ ...authContextUser });
           await Utility.setStorage('authContextEntity', { ...contextEntity })
           setAppInitialize(true);
         });
       } else {
-        setEntity({ ...contextEntity });
         await QBconnectAndSubscribe(contextEntity);
         await authContext.setEntity({ ...contextEntity })
         await authContext.setUser({ ...authContextUser });
@@ -58,7 +55,7 @@ export default function NavigationMainContainer() {
     <Fragment>
       {appInitialize ? (
         <NavigationContainer theme={navigationTheme}>
-          {entity?.isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
+          {authContext?.entity?.isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
         </NavigationContainer>
       ) : (
         <ActivityLoader visible={true}/>

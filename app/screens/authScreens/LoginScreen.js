@@ -264,6 +264,12 @@ export default function LoginScreen({ navigation }) {
                   authContext.setEntity({ ...entity })
                   await authContext.setUser(response.payload);
                   QBInitialLogin(entity, response?.payload);
+                }).catch((error) => {
+                  setloading(false);
+                  setTimeout(() => Alert.alert(
+                    'TownsCup',
+                    error.message,
+                  ), 100)
                 });
               });
             }
