@@ -194,7 +194,12 @@ export default function LoginScreen({ navigation }) {
                 expirationTime: idTokenResult.expirationTime,
               };
 
-              return getUserDetails(user.uid, authContext).then(async (response) => {
+              const userConfig = {
+                method: 'get',
+                url: `${Config.BASE_URL}/users/${user?.uid}`,
+                headers: { Authorization: `Bearer ${token?.token}` },
+              }
+              apiCall(userConfig).then(async (response) => {
                 const entity = {
                   uid: user.uid,
                   role: 'user',
@@ -206,11 +211,16 @@ export default function LoginScreen({ navigation }) {
                   },
                 }
                 await Utility.setStorage('loggedInEntity', entity)
-                await authContext.setEntity({ ...entity })
-                await authContext.setUser(response.payload)
+                authContext.setEntity({ ...entity })
+                await authContext.setUser(response.payload);
                 QBInitialLogin(entity, response?.payload);
+              }).catch((error) => {
                 setloading(false);
-              }).catch(() => setloading(false));
+                setTimeout(() => Alert.alert(
+                  'TownsCup',
+                  error.message,
+                ), 100)
+              });
             });
           } else {
             setloading(false);
@@ -229,6 +239,9 @@ export default function LoginScreen({ navigation }) {
         }
         if (error.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';
+        }
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          message = 'You are already registrated with different login method ';
         }
         setTimeout(() => Alert.alert('Towns Cup', message), 100);
       });
@@ -294,6 +307,9 @@ export default function LoginScreen({ navigation }) {
           }
           if (error.code === 'auth/invalid-email') {
             message = 'That email address is invalid!';
+          }
+          if (error.code === 'auth/account-exists-with-different-credential') {
+            message = 'You are already registrated with different login method ';
           }
           setTimeout(() => Alert.alert('Towns Cup', message), 100);
         });

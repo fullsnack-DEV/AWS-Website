@@ -21,7 +21,6 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
-import { getUserDetails } from '../../api/Users';
 import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
@@ -38,12 +37,15 @@ export default function WelcomeScreen({ navigation }) {
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
+    setloading(true);
     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
     if (result.isCancelled) {
+      setloading(false);
       throw new Error('User cancelled the login process');
     }
     const data = await AccessToken.getCurrentAccessToken();
     if (!data) {
+      setloading(false);
       throw new Error('Something went wrong obtaining access token');
     }
     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
@@ -58,56 +60,78 @@ export default function WelcomeScreen({ navigation }) {
               token: idTokenResult.token,
               expirationTime: idTokenResult.expirationTime,
             };
-
-            await Utility.setStorage('UID', user.uid);
-            const flName = user.displayName.split(' ');
-
-            const userDetail = {};
-            if (flName.length >= 2) {
-              [userDetail.first_name, userDetail.last_name] = flName
-            } else if (flName.length === 1) {
-              [userDetail.first_name, userDetail.last_name] = [flName[0], ''];
-            } else if (flName.length === 0) {
-              userDetail.first_name = 'Towns';
-              userDetail.last_name = 'Cup';
+            const userConfig = {
+              method: 'get',
+              url: `${Config.BASE_URL}/users/${user?.uid}`,
+              headers: { Authorization: `Bearer ${token?.token}` },
             }
-            userDetail.email = user.email;
-            const entity = {
-              auth: { token, user_id: user.uid },
-              uid: user.uid,
-              role: 'user',
-            }
-            await Utility.setStorage('userInfo', userDetail);
-            await Utility.setStorage('loggedInEntity', entity);
-            await authContext.setEntity({ ...entity })
-
-            getUserDetails(user.uid, authContext).then((response) => {
-              setloading(false);
-              if (response.status === true) {
-                Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
-              } else {
-                navigation.navigate('AddBirthdayScreen')
+            apiCall(userConfig).then(async (response) => {
+              const entity = {
+                uid: user.uid,
+                role: 'user',
+                obj: response.payload,
+                auth: {
+                  user_id: user.uid,
+                  token,
+                  user: response.payload,
+                },
               }
-            }).catch(() => {
-              navigation.navigate('AddBirthdayScreen')
+              QBInitialLogin(entity, response?.payload);
+            }).catch(async () => {
+              const entity = {
+                auth: { token, user_id: user.uid },
+                uid: user.uid,
+                role: 'user',
+              }
+              await Utility.setStorage('loggedInEntity', entity);
+              await authContext.setEntity({ ...entity })
+              const flName = user.displayName.split(' ');
+
+              const userDetail = {};
+              if (flName.length >= 2) {
+                [userDetail.first_name, userDetail.last_name] = flName
+              } else if (flName.length === 1) {
+                [userDetail.first_name, userDetail.last_name] = [flName[0], '']
+              } else if (flName.length === 0) {
+                userDetail.first_name = 'Towns';
+                userDetail.last_name = 'Cup';
+              }
+              userDetail.email = user.email;
+
+              await Utility.setStorage('userInfo', userDetail);
+              apiCall(userConfig).then((response) => {
+                setloading(false);
+                if (response.status === true) {
+                  Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
+                } else {
+                  navigation.navigate('AddBirthdayScreen')
+                }
+              }).catch(() => {
+                navigation.navigate('AddBirthdayScreen')
+              });
+              setloading(false);
             });
-            setloading(false);
-          });
+          }).catch(() => setloading(false));
         }
       });
       facebookSignUpOnAuthChanged();
-    })
-      .catch((error) => {
-        if (error.code === 'auth/user-not-found') {
-          Alert.alert('This email address is not registerd');
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          Alert.alert('That email address is already in use!');
-        }
-        if (error.code === 'auth/invalid-email') {
-          Alert.alert('That email address is invalid!');
-        }
-      });
+    }).catch((error) => {
+      setloading(false);
+      let message = '';
+      if (error.code === 'auth/user-not-found') {
+        message = 'Your email or password is incorrect.Please try again';
+      }
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'That email address is already in use!';
+      }
+      if (error.code === 'auth/invalid-email') {
+        message = 'That email address is invalid!';
+      }
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        message = 'You are already registrated with different login method ';
+      }
+      setTimeout(() => Alert.alert('Towns Cup', message), 100);
+    });
   }
 
   const QBInitialLogin = (entity, response) => {
@@ -205,18 +229,23 @@ export default function WelcomeScreen({ navigation }) {
           }
         }).catch(() => setloading(false));
         googleSignUpOnAuthChanged();
-      })
-        .catch((error) => {
-          if (error.code === 'auth/user-not-found') {
-            Alert.alert('This email address is not registerd');
-          }
-          if (error.code === 'auth/email-already-in-use') {
-            Alert.alert('That email address is already in use!');
-          }
-          if (error.code === 'auth/invalid-email') {
-            Alert.alert('That email address is invalid!');
-          }
-        });
+      }).catch((error) => {
+        setloading(false);
+        let message = ''
+        if (error.code === 'auth/user-not-found') {
+          message = 'Your email or password is incorrect.Please try again';
+        }
+        if (error.code === 'auth/email-already-in-use') {
+          message = 'That email address is already in use!';
+        }
+        if (error.code === 'auth/invalid-email') {
+          message = 'That email address is invalid!';
+        }
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          message = 'You are already registrated with different login method ';
+        }
+        setTimeout(() => Alert.alert('Towns Cup', message), 100);
+      });
     } catch (error) {
       let message = '';
       setloading(false)

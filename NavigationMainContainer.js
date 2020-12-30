@@ -8,7 +8,7 @@ import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
 import * as Utility from './app/utils/index';
-import { QBconnectAndSubscribe } from './app/utils/QuickBlox';
+import { QBconnectAndSubscribe, QBLogout } from './app/utils/QuickBlox';
 import ActivityLoader from './app/components/loader/ActivityLoader';
 
 export default function NavigationMainContainer() {
@@ -24,18 +24,29 @@ export default function NavigationMainContainer() {
       const expiryDate = new Date(contextEntity.auth.token.expirationTime);
       if (expiryDate.getTime() <= currentDate.getTime()) {
         console.log('Token Expired From App State');
-        firebase.auth().currentUser.getIdTokenResult().then(async (idTokenResult) => {
-          const token = {
-            token: idTokenResult.token,
-            expirationTime: idTokenResult.expirationTime,
-          };
-          contextEntity.auth.token = token;
-          await QBconnectAndSubscribe(contextEntity);
-          await authContext.setEntity({ ...contextEntity });
-          await authContext.setUser({ ...authContextUser });
-          await Utility.setStorage('authContextEntity', { ...contextEntity })
-          setAppInitialize(true);
-        });
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            firebase.auth().currentUser.getIdTokenResult(true)
+              .then(async (idTokenResult) => {
+                const token = {
+                  token: idTokenResult.token,
+                  expirationTime: idTokenResult.expirationTime,
+                };
+                contextEntity.auth.token = token;
+                await authContext.setEntity({ ...contextEntity });
+                await Utility.setStorage('authContextEntity', { ...contextEntity })
+              }).catch((error) => {
+                console.log('Token Related: ', error);
+              });
+          } else {
+            console.log('No user is signed in.');
+            QBLogout();
+            firebase.auth().signOut();
+            authContext.setEntity(null)
+            authContext.setUser(null);
+            Utility.clearStorage();
+          }
+        })
       } else {
         await QBconnectAndSubscribe(contextEntity);
         await authContext.setEntity({ ...contextEntity })

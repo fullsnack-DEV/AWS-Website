@@ -116,9 +116,9 @@ const MessageInviteScreen = ({ navigation, route }) => {
   const Item = ({
     item, onPress, style, isChecked,
   }) => {
-    const customData = item && item.customData ? JSON.parse(item.customData) : {};
+    const customData = item?.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
-    const fullName = _.get(customData, ['full_name'], '')
+    const fullName = _.get(customData, ['full_name'], '') ?? _.get(customData, ['group_name'], '')
     const fullImage = _.get(customData, ['full_image'], '')
     const city = _.get(customData, ['city'], '')
     const placeHolderImage = entityType === 'player'

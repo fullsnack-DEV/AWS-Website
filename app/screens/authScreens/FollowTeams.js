@@ -113,7 +113,6 @@ export default function FollowTeams({ route }) {
     const entity = authContext.entity
     console.log('USER ENTITY:', entity);
     const response = await getUserDetails(entity.auth.user_id, authContext);
-
     if (response.status) {
       entity.obj = response.payload
       entity.auth.user = response.payload
