@@ -135,7 +135,9 @@ export default function ChooseSportsScreen({ navigation, route }) {
         onPress={ () => {
           isIconCheckedOrNot({ item, index });
         } }>
-
+      {item.sport_name?.toLowerCase() === 'carom' && (
+        <FastImage resizeMode={'contain'} source={ images.bandySport } style={ styles.sportImg } />
+      )}
       {item.sport_name?.toLowerCase() === 'soccer' && (
         <FastImage resizeMode={'contain'} source={ images.footballSport } style={ styles.sportImg } />
       )}

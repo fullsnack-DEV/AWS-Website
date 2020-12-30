@@ -166,15 +166,18 @@ export default function LoginScreen({ navigation }) {
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
+    setloading(true);
     const result = await LoginManager.logInWithPermissions([
       'public_profile',
       'email',
     ]);
     if (result.isCancelled) {
+      setloading(false);
       throw new Error('User cancelled the login process')
     }
     const data = await AccessToken.getCurrentAccessToken();
     if (!data) {
+      setloading(false);
       throw new Error('Something went wrong obtaining access token')
     }
     const facebookCredential = auth.FacebookAuthProvider.credential(
@@ -206,13 +209,17 @@ export default function LoginScreen({ navigation }) {
                 await authContext.setEntity({ ...entity })
                 await authContext.setUser(response.payload)
                 QBInitialLogin(entity, response?.payload);
-              });
+                setloading(false);
+              }).catch(() => setloading(false));
             });
+          } else {
+            setloading(false);
           }
         });
         facebookOnAuthStateChanged();
       })
       .catch((error) => {
+        setloading(false);
         let message = '';
         if (error.code === 'auth/user-not-found') {
           message = 'Your email or password is incorrect.Please try again';

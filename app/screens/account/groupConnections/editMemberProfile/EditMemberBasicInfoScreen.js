@@ -103,31 +103,37 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
     return (false)
   }
   const editMemberBasicInfo = () => {
-    setloading(true)
+    // setloading(true)
     const bodyParams = {};
     if (memberInfo.email && memberInfo.email !== '') {
       bodyParams.email = memberInfo.email;
     }
-    if (memberInfo.phone_numbers.length) {
-      bodyParams.phone_numbers = memberInfo.phone_numbers;
-    } if (memberInfo.street_address && memberInfo.street_address !== '') {
+    if (memberInfo?.phone_numbers?.length) {
+      bodyParams.phone_numbers = memberInfo?.phone_numbers;
+    }
+    if (memberInfo.street_address && memberInfo.street_address !== '') {
       bodyParams.street_address = memberInfo.street_address;
-    } if (memberInfo.city && memberInfo.city !== '') {
+    }
+    if (memberInfo.city && memberInfo.city !== '') {
       bodyParams.city = memberInfo.city;
-    } if (memberInfo.state_abbr && memberInfo.state_abbr !== '') {
+    }
+    if (memberInfo.state_abbr && memberInfo.state_abbr !== '') {
       bodyParams.state_abbr = memberInfo.state_abbr;
-    } if (memberInfo.country && memberInfo.country !== '') {
+    }
+    if (memberInfo.country && memberInfo.country !== '') {
       bodyParams.country = memberInfo.country;
-    } if (memberInfo.postal_code && memberInfo.postal_code !== '') {
+    }
+    if (memberInfo.postal_code && memberInfo.postal_code !== '') {
       bodyParams.postal_code = memberInfo.postal_code;
-    } if (memberInfo.birthday && memberInfo.birthday !== '') {
+    }
+    if (memberInfo.birthday && memberInfo.birthday !== '') {
       bodyParams.birthday = memberInfo.birthday;
-    } if (memberInfo.gender && memberInfo.gender !== '') {
+    }
+    if (memberInfo.gender && memberInfo.gender !== '') {
       bodyParams.gender = memberInfo.gender;
     }
-
     console.log('BODY PARAMS::', bodyParams);
-    patchMember(memberInfo.group.group_id, memberInfo.user_id, bodyParams, authContext).then((response) => {
+    patchMember(entity?.uid, memberInfo.user_id, bodyParams, authContext).then((response) => {
       if (response.status) {
         console.log('EDIT INFO RESPONSE::', response);
         setloading(false)

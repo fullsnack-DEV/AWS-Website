@@ -1058,7 +1058,7 @@ export default function EditChallenge({ navigation, route }) {
               showNextArrow={true}
               onPress={() => {
                 navigation.navigate('PaymentMethodsScreen', {
-                  comeFrom: 'AlterAcceptDeclineScreen',
+                  comeFrom: 'EditChallenge',
                 })
               }}
             />
