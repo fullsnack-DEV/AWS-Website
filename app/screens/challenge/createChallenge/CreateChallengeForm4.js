@@ -31,7 +31,6 @@ export default function CreateChallengeForm4({ navigation, route }) {
       entity = authContext.entity
       if (route && route.params && route.params.teamData) {
         if (route.params.teamData[0].group_id === entity.uid) {
-          console.log('TEams::', route.params.teamData);
           setHomeTeam(route.params.teamData[0]);
           setAwayTeam(route.params.teamData[1]);
         } else {
@@ -42,6 +41,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
     };
     getAuthEntity();
     if (route && route.params && route.params.body) {
+      console.log('BODY PARAMS of FORM 4 From Date:', new Date(route.params.body.start_datetime));
+      console.log('BODY PARAMS of FORM 4 To Date:', new Date(route.params.body.end_datetime));
       console.log('BODY PARAMS of FORM 4:', route.params.body);
       setbodyParams(route.params.body);
     }
@@ -84,7 +85,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
       marginLeft={30}
     />
   );
-  const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy  HH:MM a');
+  const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy  hh:mm a');
   const renderSecureScorekeeper = ({ item, index }) => (
     <TCInfoImageField
       title={`Scorekeeper ${index + 1}`}

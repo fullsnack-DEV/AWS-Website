@@ -507,5 +507,8 @@ const strings = {
   tryToPayText: 'TRY TO PAY AGAIN',
 
   sportAlreadyRegisterd: 'This sport already registerd.',
+  choosePayment: 'Please choose payment method.',
+  chooseFutureDate: 'Please choose future date for challenge.',
+  chooseCorrectDate: 'Please choose correct date.',
 };
 export default strings;

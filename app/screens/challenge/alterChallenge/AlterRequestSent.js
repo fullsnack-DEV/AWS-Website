@@ -17,12 +17,7 @@ export default function AlterRequestSent({ navigation }) {
   ];
   useEffect(() => {
     const timer = setInterval(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{
-          name: 'NotificationsListScreen',
-        }],
-      });
+      navigation.goBack()
     },
     5000);
     return () => clearInterval(timer)

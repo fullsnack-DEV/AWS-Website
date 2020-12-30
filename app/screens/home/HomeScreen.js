@@ -1793,7 +1793,7 @@ export default function HomeScreen({ navigation, route }) {
                 margin: 20, color: colors.whiteColor, fontSize: 20, fontFamily: fonts.RBlack,
               }} onPress={() => {
                 setPlaysInModalVisible(!playsInModalVisible)
-                navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData })
+                navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
               }}>
                 CHALLENGE
               </Text>

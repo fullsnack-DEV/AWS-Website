@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
 import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet, View, Text, Alert,
@@ -22,6 +24,8 @@ export default function CreateChallengeForm5({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
+  const [totalZero, setTotalZero] = useState(false);
+
   const [estimationFee, setEstimationFee] = useState();
 
   useEffect(() => {
@@ -43,8 +47,10 @@ export default function CreateChallengeForm5({ navigation, route }) {
         feeBody.start_datetime = parseFloat((fees.start_datetime).toFixed(0))
         feeBody.end_datetime = parseFloat((fees.end_datetime).toFixed(0))
         feeBody.manual_fee = false;
+        feeBody.payment_method_type = 'card';
+        feeBody.currency_type = 'cad';
         feeBody.userChallenge = !route.params.teamData[0].group_id
-        feeBody.sport = route.params.teamData[0].sport
+        feeBody.sport = route.params.body.sport
         setloading(true);
         getFeesEstimation(route.params.teamData[1].group_id || route.params.teamData[1].user_id, feeBody, authContext)
           .then((response) => {
@@ -56,6 +62,21 @@ export default function CreateChallengeForm5({ navigation, route }) {
               body.total_charges = response.payload.total_amount;
               body.total_game_charges = response.payload.total_game_fee;
               body.manual_fee = false;
+
+              if (!route?.params?.teamData[1]?.group_id) {
+                const matchSport = route.params.teamData[1].registered_sports.map((e) => {
+                  if (route.params.body.sport.toLowerCase() === e.sport_name.toLowerCase()) {
+                    return e
+                  }
+                })
+                body.hourly_game_fee = matchSport[0]?.fee || 0
+              }
+
+              if (response.payload.total_game_fee === 0) {
+                setTotalZero(true)
+              } else {
+                setTotalZero(false)
+              }
               setEstimationFee({ ...body });
             }
 
@@ -82,60 +103,64 @@ export default function CreateChallengeForm5({ navigation, route }) {
         challengeBody.source = route.params.paymentMethod.id
       }
 
-      challengeBody.payment_method_type = 'card';
-      challengeBody.currency_type = challengeBody.currency_type || 'CAD'
-
-      const home_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
-      const away_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
-      delete challengeBody.home_team;
-      delete challengeBody.away_team;
-      challengeBody.home_team = home_id;
-      challengeBody.away_team = away_id;
-      if (route.params.teamData[0].group_id) {
-        challengeBody.userChallenge = false;
+      if (!totalZero && !route?.params?.paymentMethod) {
+        Alert.alert(strings.alertmessagetitle, strings.choosePayment);
       } else {
-        challengeBody.userChallenge = true;
-      }
-      setloading(true);
+        challengeBody.payment_method_type = 'card';
+        challengeBody.currency_type = challengeBody.currency_type || 'CAD'
 
-      let entityID;
-      let type;
-      if (route.params.teamData[0].group_id) {
-        type = 'teams'
-        if (route.params.teamData[0].group_id === entity.uid) {
-          entityID = route.params.teamData[1].group_id
+        const home_id = route.params.teamData[0].group_id || route.params.teamData[0].user_id
+        const away_id = route.params.teamData[1].group_id || route.params.teamData[1].user_id
+        delete challengeBody.home_team;
+        delete challengeBody.away_team;
+        challengeBody.home_team = home_id;
+        challengeBody.away_team = away_id;
+        if (route.params.teamData[0].group_id) {
+          challengeBody.userChallenge = false;
         } else {
-          entityID = route.params.teamData[0].group_id
+          challengeBody.userChallenge = true;
         }
-      } else {
-        type = 'users'
-        if (route.params.teamData[0].user_id === entity.uid) {
-          entityID = route.params.teamData[1].user_id
+        setloading(true);
+
+        let entityID;
+        let type;
+        if (route.params.teamData[0].group_id) {
+          type = 'teams'
+          if (route.params.teamData[0].group_id === entity.uid) {
+            entityID = route.params.teamData[1].group_id
+          } else {
+            entityID = route.params.teamData[0].group_id
+          }
         } else {
-          entityID = route.params.teamData[0].user_id
+          type = 'users'
+          if (route.params.teamData[0].user_id === entity.uid) {
+            entityID = route.params.teamData[1].user_id
+          } else {
+            entityID = route.params.teamData[0].user_id
+          }
         }
-      }
-      console.log('Challenge Body:', JSON.stringify(challengeBody));
-      createChallenge(
-        entityID,
-        type,
-        challengeBody,
-        authContext,
-      )
-        .then(() => {
-          setloading(false);
-          navigation.navigate('ChallengeSentScreen', {
-            groupObj: route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid
-              ? route.params.teamData[1]
-              : route.params.teamData[0],
+        console.log('Challenge Body:', JSON.stringify(challengeBody));
+        createChallenge(
+          entityID,
+          type,
+          challengeBody,
+          authContext,
+        )
+          .then(() => {
+            setloading(false);
+            navigation.navigate('ChallengeSentScreen', {
+              groupObj: route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid
+                ? route.params.teamData[1]
+                : route.params.teamData[0],
+            });
+          })
+          .catch((e) => {
+            setloading(false);
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 0.3);
           });
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.3);
-        });
+      }
     }
   };
 

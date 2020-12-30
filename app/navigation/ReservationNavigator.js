@@ -154,7 +154,7 @@ const ReservationNavigator = () => (
             name="EditChallenge"
             component={EditChallenge}
             options={{
-              title: 'Change Reservation',
+              title: 'Change Match Reservation',
               headerTintColor: colors.blackColor,
               headerTitleStyle: {
                 fontWeight: '500',

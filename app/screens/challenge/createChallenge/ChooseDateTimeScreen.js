@@ -40,6 +40,13 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     'Nov',
     'Dec',
   ];
+  const getNearDateTime = (date) => {
+    const start = moment(date);
+    const nearTime = 30 - (start.minute() % 30);
+    const dateTime = moment(start).add(nearTime, 'minutes').format('MMM DD, yy      hh:mm A')
+    console.log('date/time::', dateTime);
+    return dateTime;
+  }
   const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const authContext = useContext(AuthContext);
   // For activity indigator
@@ -47,8 +54,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   const [show, setShow] = useState(false);
   const [selectedDate, setSelectedDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
 
-  const [fromDate, setfromDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
-  const [toDate, setToDate] = useState(route?.params?.body?.end_datetime * 1000 || new Date());
+  const [fromDate, setfromDate] = useState(route?.params?.body?.start_datetime * 1000 || getNearDateTime(new Date()));
+  const [toDate, setToDate] = useState(route?.params?.body?.end_datetime * 1000 || getNearDateTime(new Date()));
   const [datePickerFor, setDatePickerFor] = useState();
   const [blockedSlot, setBlockedSlot] = useState();
   const [slots, setSlots] = useState();
@@ -62,10 +69,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    const a = 1000 * 60 * 30;
-    const date = new Date(dateValue); // or use any other date
-    const rounded = new Date(Math.round(date.getTime() / a) * a);
-    return moment(new Date(rounded)).format('MMM DD, yy      hh:mm A');
+
+    return moment(new Date(dateValue)).format('MMM DD, yy      hh:mm A');
   };
   const getSlots = () => {
     setloading(true);
@@ -140,12 +145,11 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   };
 
   const handleDonePress = (date) => {
+    console.log('From date:', date);
     setShow(!show);
     if (datePickerFor === 'from') {
-      console.log('From Date:', Math.trunc(date.getTime() / 1000));
       setfromDate(date);
     } else {
-      console.log('TO Date:', date.getTime());
       setToDate(date);
     }
     setShow(false);
@@ -203,21 +207,26 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
             hideExtraDays={true}
             onDayPress={(day) => {
-              const temp = [];
-              slots.map((e) => {
-                if (
-                  getSimpleDateFormat(new Date(e.start_datetime * 1000))
-                  === getSimpleDateFormat(new Date(day.dateString))
-                ) {
-                  temp.push(e);
-                }
-              });
-              setBlockedSlot(temp);
-              setSelectedDate(day.dateString);
-              setfromDate(day.dateString)
-              setToDate(day.dateString)
-              getSelectedDayEvents(day.dateString);
-              filterSlots(selectedDate);
+              if (new Date().getMonth() + new Date().getDate() + new Date().getFullYear() > new Date(day.dateString).getMonth() + new Date(day.dateString).getDate() + new Date(day.dateString).getFullYear()) {
+                Alert.alert(strings.chooseFutureDate);
+              } else {
+                const temp = [];
+                slots.map((e) => {
+                  if (
+                    getSimpleDateFormat(new Date(e.start_datetime * 1000))
+                    === getSimpleDateFormat(new Date(day.dateString))
+                  ) {
+                    temp.push(e);
+                  }
+                });
+                setBlockedSlot(temp);
+
+                setSelectedDate(new Date(day.dateString));
+                setfromDate(new Date(day.dateString))
+                setToDate(new Date(day.dateString))
+                getSelectedDayEvents(day.dateString);
+                filterSlots(selectedDate);
+              }
             }}
             markedDates={marked}
             // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
@@ -299,15 +308,18 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             </View>
           </View>
           <DateTimePickerView
-            date={new Date()}
+
+            date={selectedDate}
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             minutesGap={30}
-            minimumDate={fromDate || new Date()}
+            minimumDate={selectedDate || new Date()}
+            maximumDate = {new Date(selectedDate).setHours(23, 59, 59, 999) || new Date().setHours(23, 59, 59, 999)}
             mode={'datetime'}
           />
+
           <View style={{ flex: 1 }}></View>
         </SafeAreaView>
       </ScrollView>
@@ -315,13 +327,15 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       <TCGradientButton
         title={strings.applyTitle}
         onPress={() => {
-          if (toDate > fromDate) {
+          if (fromDate < new Date().getTime() / 1000) {
+            Alert.alert(strings.chooseFutureDate);
+          } else if (toDate > fromDate) {
             navigation.navigate('CreateChallengeForm1', {
               from: fromDate / 1000,
               to: toDate / 1000,
             });
           } else {
-            Alert.alert('Please choose correct date.');
+            Alert.alert(strings.chooseCorrectDate);
           }
         }}
       />

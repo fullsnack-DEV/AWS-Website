@@ -19,6 +19,7 @@ import TCLabel from '../../../components/TCLabel';
 import TCTextField from '../../../components/TCTextField';
 import TCPicker from '../../../components/TCPicker';
 import images from '../../../Constants/ImagePath';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function CreateChallengeForm2({ navigation, route }) {
   const [rules, setRules] = useState('');
@@ -37,7 +38,11 @@ export default function CreateChallengeForm2({ navigation, route }) {
 
   useEffect(() => {
     if (route && route.params && route.params.editable && route.params.body) {
-      setRules(route.params.body.special_rule);
+      if (route.params.body.sport.toLowerCase() === 'tennis') {
+        setSpecialRules(route.params.body.special_rule);
+      } else {
+        setRules(route.params.body.special_rule);
+      }
     }
     if (
       route
@@ -48,7 +53,8 @@ export default function CreateChallengeForm2({ navigation, route }) {
       setEditableAlter(true);
       setRules(route.params.body.special_rule);
     }
-    if (route?.params?.body?.sport === ('tennis' || 'Tennis')) {
+    console.log('Body :', route.params.body);
+    if (route?.params?.body.sport.toLowerCase() === 'tennis') {
       console.log('Body in rules:', route.params.body);
       setUserChallenge(true);
     } else {
@@ -72,7 +78,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
   };
   // eslint-disable-next-line no-return-assign
   return (
-    <>
+    <TCKeyboardView>
       {editableAlter === false && (
         <View style={styles.formSteps}>
           <View style={styles.form1}></View>
@@ -273,14 +279,14 @@ export default function CreateChallengeForm2({ navigation, route }) {
                   teamData: route.params.teamData,
                   body: {
                     ...route.params.body,
-                    special_rule: rules,
+                    special_rule: rules || specialRules,
                   },
                 });
               } else if (editableAlter === true) {
                 navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...route.params.body,
-                    special_rule: specialRules,
+                    special_rule: specialRules || rules,
                   },
                 });
               } else {
@@ -318,7 +324,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
             }
           }}/>
       </View>
-    </>
+    </TCKeyboardView>
   );
 }
 

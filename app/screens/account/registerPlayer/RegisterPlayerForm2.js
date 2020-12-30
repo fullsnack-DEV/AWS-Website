@@ -42,7 +42,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      if (authContext?.user?.registered_sports?.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
+      if ((authContext?.user?.registered_sports || []).some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
         Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
       } else {
         bodyParams.fee = matchFee;
@@ -64,8 +64,8 @@ export default function RegisterPlayerForm2({ navigation, route }) {
           if (response.status === true) {
             await Utility.setStorage('user', response.payload);
             authContext.setUser(response.payload)
+            Alert.alert('Towns Cup', 'Player sucessfully registered');
             navigation.navigate('HomeScreen');
-            setTimeout(() => Alert.alert('Towns Cup', 'Player sucessfully registered'), 100);
           } else {
             Alert.alert('Towns Cup', response.messages);
           }

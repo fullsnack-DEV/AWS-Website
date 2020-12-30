@@ -43,7 +43,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
   const [teamData, setTeamData] = useState();
   const [editableAlter, setEditableAlter] = useState(false);
   const [venueTitle, setVenueTitle] = useState('');
-
+  const [sport] = useState(route.params.groupObj.sport);
   const [venueData, setVenueData] = useState({
     lat: null,
     long: null,
@@ -61,6 +61,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
       entity = authContext.entity
       if (route && route.params && route.params.groupObj) {
         setteams([{ ...entity.obj }, { ...route.params.groupObj }])
+        console.log('Home:::-', entity.obj);
+        console.log('Away:::-', route.params.groupObj);
         setTeamData([{ ...entity.obj }, { ...route.params.groupObj }])
       }
       if ((route && route.params && route.params.body) && ((route && route.params && route.params.editableAlter) || (route && route.params && route.params.editable))) {
@@ -169,15 +171,16 @@ export default function CreateChallengeForm1({ navigation, route }) {
   };
 
   const configureParams = () => {
-    if ((route && route.params && route.params.editable && route.params.body) || (route && route.params && route.params.editableAlter && route.params.body)) {
-      bodyParams = { ...route.params.body }
-    }
+    // if ((route && route.params && route.params.editable && route.params.body) || (route && route.params && route.params.editableAlter && route.params.body)) {
+    //   bodyParams = { ...route.params.body }
+    // }
+
     bodyParams.home_team = teams[0]
     bodyParams.away_team = teams[1]
     bodyParams.hourly_game_fee = route.params.groupObj.game_fee
     bodyParams.currency_type = route.params.groupObj.currency_type || 'CAD'
     bodyParams.venue = venueData
-    bodyParams.sport = teamData[0].sport || teamData[1].sport
+    bodyParams.sport = sport
     bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`
 
     console.log('FORM ! BODY PARAMS', bodyParams);
@@ -196,7 +199,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
         </View>}
 
         <View>
-          <TCLabel title={`Match · ${teamData[0]?.sport.charAt(0).toUpperCase() + teamData[0]?.sport.slice(1) || teamData[1]?.sport.charAt(0).toUpperCase() + teamData[1]?.sport.slice(1)}`} />
+          <TCLabel title={`Match · ${sport}`} />
 
           <TCThickDivider />
         </View>
@@ -509,7 +512,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     home_team: teams[0],
                     away_team: teams[1],
                     venue: venueData,
-                    sport: teamData[0].sport,
+                    sport,
                     responsible_to_secure_venue: secureVenue === 0 ? teamData[0].group_name : teamData[1].group_name,
                   },
                 })

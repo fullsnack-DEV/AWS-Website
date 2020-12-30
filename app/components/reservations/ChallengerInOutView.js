@@ -103,7 +103,9 @@ export default function ChallengerInOutView({ data }) {
   }
   return (
     <>
-      <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 20 }}>
+      <View style={{
+        flexDirection: 'row', marginLeft: 20, marginTop: 15, marginBottom: 15,
+      }}>
         <Image source={(getChallengerOrChallengee() === strings.challenger || getChallengerOrChallengee() === strings.requester) ? images.requestIn : images.requestOut} style={styles.inOutImageView} />
         <View style={styles.entityView}>
           {getEntityObject()?.thumbnail ? (

@@ -85,7 +85,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
   useEffect(() => {
     const arr = [];
     for (const temp of language) {
-      if (userInfo.language.includes(temp.language)) {
+      if (userInfo?.language?.includes(temp.language)) {
         temp.isChecked = true
       } else {
         temp.isChecked = false
@@ -340,7 +340,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            value={ userInfo.language.toString() }
+            value={ userInfo?.language?.toString() }
             editable={ false }
             pointerEvents="none"></TextInput>
           </TouchableOpacity>

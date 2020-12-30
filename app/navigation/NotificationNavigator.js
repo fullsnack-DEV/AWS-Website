@@ -34,6 +34,7 @@ import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateCha
 import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateChallengeForm4';
 import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
+import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 
@@ -416,6 +417,22 @@ function NotificationNavigator() {
         component={ ChooseDateTimeScreen }
         options={ {
           title: 'Challenge',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+      <Stack.Screen
+        name="ChooseAddressScreen"
+        component={ ChooseAddressScreen }
+        options={ {
+          title: 'Venue',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
