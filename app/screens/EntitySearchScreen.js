@@ -56,6 +56,7 @@ export default function EntitySearchScreen({ navigation }) {
     navigation.navigate('HomeScreen', {
       uid: item.group_id ? item.group_id : item.user_id,
       backButtonVisible: true,
+      menuBtnVisible: false,
       role: item.entity_type === 'player' ? 'user' : item.entity_type,
     })
   }

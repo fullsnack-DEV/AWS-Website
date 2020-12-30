@@ -58,6 +58,7 @@ function PersonalSportsInfo({
   onSavePress,
   sportName,
 }) {
+  console.log('Data :-', data);
   let latVal = null;
   let longVal = null;
   if (locationDetail) {
@@ -102,12 +103,12 @@ function PersonalSportsInfo({
   const [info, setInfo] = useState({
     genderText: data.gender || 'Male',
     birthdayText: data.birthday ? new Date(data.birthday * 1000) : '',
-    heightText: data.height.substring(0, data.height.indexOf(' ')) || '',
-    weightText: data.weight.substring(0, data.weight.indexOf(' ')) || '',
+    heightText: data.height ? data.height : '',
+    weightText: data.weight ? data.weight : '',
     currentCity: `${data.city || ''}`,
-    homePlaceText: homePlaceDefault,
-    latiValue: latiDefault,
-    longiValue: longiDefault,
+    homePlaceText: homePlaceDefault || '',
+    latiValue: latiDefault || 0.0,
+    longiValue: longiDefault || 0.0,
   });
   const [bioText, setBioText] = useState(bioDefault);
   const [ntrpSelect, setNtrpSelect] = useState(ntrpDefault);
@@ -116,6 +117,8 @@ function PersonalSportsInfo({
   const [editModal, setEditModal] = useState(false);
   const [privacyData, setPrivacyData] = useState(privacy_Data);
   const [dateModalVisible, setDateModalVisible] = useState(false);
+
+  console.log('Info :-', info);
 
   const actionSheet = useRef();
 
@@ -400,8 +403,8 @@ function PersonalSportsInfo({
                   }],
                   gender: info.genderText,
                   birthday: (info.birthdayText / 1000),
-                  height: info.heightText ? `${info.heightText} cm` : '',
-                  weight: info.weightText ? `${info.weightText} kg` : '',
+                  height: info.heightText ? `${info.heightText}` : '',
+                  weight: info.weightText ? `${info.weightText}` : '',
                 }
                 onSavePress(params);
                 setEditModal(false)

@@ -60,6 +60,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
             navigation.navigate('HomeScreen', {
               uid: route.params.teamObj ? route.params.teamObj.group_id : route.params.teamObj.user_id,
               backButtonVisible: true,
+              menuBtnVisible: false,
               role: route.params.teamObj.entity_type === 'player' ? 'user' : route.params.teamObj.entity_type,
             })
           }}

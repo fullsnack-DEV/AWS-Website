@@ -34,6 +34,7 @@ export default function RefereeReviewerList({
     navigation.navigate('HomeScreen', {
       uid: item.actor.id,
       backButtonVisible: true,
+      menuBtnVisible: false,
       role: item.actor.data.entity_type === 'player' ? 'user' : item.actor.data.entity_type,
     })
   }

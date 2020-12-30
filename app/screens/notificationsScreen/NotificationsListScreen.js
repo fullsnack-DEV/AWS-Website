@@ -266,10 +266,10 @@ function NotificationsListScreen({ navigation }) {
         navigation.navigate('HomeScreen', {
           uid: item?.entityId,
           backButtonVisible: true,
+          menuBtnVisible: false,
           role: item?.entityType,
         })
       }
-      console.log('item', item)
     } else {
       showSwitchProfilePopup()
     }
