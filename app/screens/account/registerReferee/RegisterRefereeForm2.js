@@ -43,6 +43,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
       const bodyParams = { ...route.params.bodyParams };
       console.log('Body params of referee:', bodyParams);
       bodyParams.referee_data[0].fee = matchFee;
+      bodyParams.referee_data[0].is_published = true;
       if (selected === 0) {
         bodyParams.referee_data[0].cancellation_policy = 'strict';
       } else if (selected === 1) {

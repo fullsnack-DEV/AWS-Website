@@ -44,7 +44,7 @@ export default function FeedsScreen({ navigation }) {
         })
         .catch((e) => {
           setloading(false);
-          Alert.alert('', e.messages)
+          setTimeout(() => Alert.alert('', e.message), 100)
         });
     });
 

@@ -420,7 +420,6 @@ export default function HomeScreen({ navigation, route }) {
       }, 0.3)
       setloading(false);
     });
-    console.log('hi');
   }, [authContext.entity, navigation, isFocused]);
 
   const progressStatus = (completed, total) => {
