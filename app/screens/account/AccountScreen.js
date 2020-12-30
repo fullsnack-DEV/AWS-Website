@@ -553,6 +553,7 @@ export default function AccountScreen({ navigation }) {
                       navigation.navigate('HomeScreen', {
                         uid: item.group_id,
                         backButtonVisible: false,
+                        menuBtnVisible: false,
                         role: item.entity_type,
                       })
                     }}

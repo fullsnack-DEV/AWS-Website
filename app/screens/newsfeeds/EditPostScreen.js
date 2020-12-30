@@ -40,7 +40,9 @@ export default function EditPostScreen({
   let postAttachments = [];
   if (data && data.object) {
     postText = JSON.parse(data.object).text;
-    postAttachments = JSON.parse(data.object).attachments;
+    if (JSON.parse(data.object).attachments) {
+      postAttachments = JSON.parse(data.object).attachments;
+    }
   }
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState(postText);
@@ -75,73 +77,40 @@ export default function EditPostScreen({
           <View style={styles.writePostViewStyle}>
             <Text style={styles.writePostTextStyle}>Edit Post</Text>
           </View>
-          <View style={styles.doneViewStyle}>
-            <Text
-              style={styles.doneTextStyle}
-              onPress={() => {
-                if (
-                  searchText.trim().length === 0
-                  && selectImage.length === 0
-                ) {
-                  Alert.alert(
-                    '',
-                    'Please write some text or select any image.',
-                  );
-                } else if (searchText.trim().length > 0 && selectImage.length === 0) {
-                  const params = {
-                    activity_id: data.id,
-                    text: searchText,
-                  };
-                  updatePost(params, authContext)
-                    .then(() => getNewsFeed(authContext))
-                    .then(() => {
-                      navigation.goBack();
-                      setloading(false);
-                    })
-                    .catch((e) => {
-                      Alert.alert('', e.messages);
-                      setloading(false);
-                    });
-                } else {
-                  //   setloading(true);
-                  // const attachments = [];
-                  // selectImage.forEach((imageItem) => {
-                  //   console.log('ImageItem :-', imageItem);
-                  //   console.log('data :-', data);
-                  //   const obj = {
-                  //     type: imageItem.type ? imageItem.type : imageItem.mime,
-                  //     url: imageItem.url ? imageItem.url : imageItem.path,
-                  //     thumbnail: imageItem.thumbnail
-                  //       ? imageItem.thumbnail
-                  //       : imageItem.path,
-                  //     media_height: imageItem.media_height ? imageItem.media_height : imageItem.height,
-                  //     media_width: imageItem.media_width ? imageItem.media_width : imageItem.width,
-                  //   };
-                  //   attachments.push(obj);
-                  // });
-                  onPressDone(selectImage, searchText, data);
-                  navigation.goBack();
-                  // const params = {
-                  //   activity_id: data.id,
-                  //   text: searchText,
-                  //   attachments: selectImage,
-                  // };
-                  // console.log('Params :-', params);
-                  // updatePost(params, authContext)
-                  //   .then(() => getNewsFeed(authContext))
-                  //   .then(() => {
-                  //     navigation.goBack();
-                  //     setloading(false);
-                  //   })
-                  //   .catch((e) => {
-                  //     Alert.alert('', e.messages);
-                  //     setloading(false);
-                  //   });
-                }
-              }}>
-              Done
-            </Text>
-          </View>
+          <TouchableOpacity
+            style={styles.doneViewStyle}
+            onPress={() => {
+              if (
+                searchText.trim().length === 0
+                && selectImage.length === 0
+              ) {
+                Alert.alert(
+                  '',
+                  'Please write some text or select any image.',
+                );
+              } else if (searchText.trim().length > 0 && selectImage.length === 0) {
+                const params = {
+                  activity_id: data.id,
+                  text: searchText,
+                };
+                updatePost(params, authContext)
+                  .then(() => getNewsFeed(authContext))
+                  .then(() => {
+                    navigation.goBack();
+                    setloading(false);
+                  })
+                  .catch((e) => {
+                    Alert.alert('', e.messages);
+                    setloading(false);
+                  });
+              } else {
+                onPressDone(selectImage, searchText, data);
+                navigation.goBack();
+              }
+            }}
+          >
+            <Text style={styles.doneTextStyle}>Done</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
       <View style={styles.sperateLine} />
@@ -311,7 +280,6 @@ const styles = StyleSheet.create({
   doneViewStyle: {
     alignItems: 'flex-end',
     justifyContent: 'center',
-    width: wp('17%'),
   },
   onlyMeTextStyle: {
     color: colors.googleColor,

@@ -23,6 +23,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
             params: {
               uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
               backButtonVisible: true,
+              menuBtnVisible: false,
               role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
             },
           }],

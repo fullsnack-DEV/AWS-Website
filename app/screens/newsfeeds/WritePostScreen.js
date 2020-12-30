@@ -54,8 +54,8 @@ export default function WritePostScreen({ navigation, route }) {
     let tagName = '';
     if (route.params && route.params.selectedTagList) {
       if (route.params.selectedTagList.length > 0) {
-        route.params.selectedTagList.map((tagItem, index) => {
-          tagName = `${tagName + (index ? ',' : '')} @${tagItem.title}`;
+        route.params.selectedTagList.map((tagItem) => {
+          tagName = `${tagName} @${tagItem.title.replace(/\s/g, '')}`;
           return null;
         })
         setSearchText(searchText + tagName);

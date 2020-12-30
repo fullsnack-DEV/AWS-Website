@@ -26,6 +26,7 @@ export default function GroupListScreen({ navigation, route }) {
     navigation.push('HomeScreen', {
       uid: group.group_id,
       backButtonVisible: true,
+      menuBtnVisible: false,
       role: group.entity_type,
     })
   }
