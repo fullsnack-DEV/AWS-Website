@@ -4,6 +4,7 @@ import { QB_Auth_Password } from './constant';
 
 const MESSAGE_LIMIT = 50;
 const DIALOG_LIST_LIMIT = 200;
+const USERS_LIST_LIMIT = 500;
 export const QB_UNREAD_MESSAGE_COUNT_API = 'https://api.quickblox.com/chat/Message/unread.json?token=';
 
 const MESSAGES_SORT = {
@@ -82,8 +83,9 @@ export const QBcreateUser = (
   customData,
   userAccountType,
 ) => {
-  const nameType = customData?.full_name ? 'full_name' : 'group_name';
+  const nameType = customData?.entity_type === 'player' ? 'full_name' : 'group_name';
   const fullName = userAccountType + _.get(customData, [nameType], 'Full Name')
+  const pureName = _.get(customData, [nameType], 'Full Name')
   const {
     country = '',
     city = '',
@@ -96,9 +98,11 @@ export const QBcreateUser = (
     createdBy = {},
     group_name = '',
   } = customData;
+
   const custData = {
     country, city, entity_type, full_image, full_name, user_id, createdAt, createdBy, group_id, group_name,
   }
+  custData.full_name = pureName;
   return QB.users.create({
     fullName,
     login: uniqueID.trim(),
@@ -205,7 +209,7 @@ export const QBgetAllUsers = () => QBChatConnected().then((connected) => {
       type: QB.users.USERS_FILTER.TYPE.NUMBER,
       value: '',
     };
-    return QB.users.getUsers({ filter });
+    return QB.users.getUsers({ append: true, perPage: USERS_LIST_LIMIT, filter });
   }
   throw new Error('server-not-connected')
 });

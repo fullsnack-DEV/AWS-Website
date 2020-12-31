@@ -30,7 +30,6 @@ import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-import { getUserDetails } from '../../api/Users';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
@@ -71,26 +70,38 @@ export default function LoginScreen({ navigation }) {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
         };
-        const entity = {
-          uid: user.uid,
-          role: 'user',
-          auth: {
-            token,
-            user_id: user.uid,
-          },
-        }
         Utility.setStorage('eventColor', eventDefaultColorsData);
         Utility.setStorage('groupEventValue', true)
-        authContext.setEntity({ ...entity })
-        console.log('authContext111', entity)
-        return getUserInfo(entity).then((data) => {
-          QBInitialLogin(entity, data.payload);
-          console.log('Function data', data);
-        }).catch((e) => {
+        const userConfig = {
+          method: 'get',
+          url: `${Config.BASE_URL}/users/${user?.uid}`,
+          headers: { Authorization: `Bearer ${token?.token}` },
+        }
+        apiCall(userConfig).then(async (response) => {
+          const entity = {
+            uid: user.uid,
+            role: 'user',
+            obj: response.payload,
+            auth: {
+              user_id: user.uid,
+              token,
+              user: response.payload,
+            },
+          }
+          authContext.setUser({ ...response.payload });
+          await Utility.setStorage('authContextEntity', { ...entity })
+          await Utility.setStorage('authContextUser', { ...response.payload })
+          await Utility.setStorage('loggedInEntity', entity)
+          authContext.setEntity({ ...entity })
+          await authContext.setUser(response.payload);
+          QBInitialLogin(entity, response?.payload);
+        }).catch((error) => {
           setloading(false);
-          setTimeout(() => Alert.alert('Towns Cup', e.message), 100);
-          console.log('Function catch', e);
-        })
+          setTimeout(() => Alert.alert(
+            'TownsCup',
+            error.message,
+          ), 100)
+        });
       });
     }
   }
@@ -142,22 +153,6 @@ export default function LoginScreen({ navigation }) {
       console.log('QB Login Error : ', error.message);
       setloading(false);
     });
-  }
-  const getUserInfo = (e) => {
-    const ac = authContext
-    const entity = e
-    ac.entity = entity
-
-    return getUserDetails(entity.auth.user_id, ac).then((response) => {
-      entity.auth.user = response.payload;
-      entity.obj = response.payload;
-      authContext.setEntity({ ...entity })
-      authContext.setUser({ ...response.payload });
-      Utility.setStorage('authContextEntity', { ...entity })
-      Utility.setStorage('authContextUser', { ...response.payload })
-
-      return true;
-    })
   }
   // Psaaword Hide/Show function for setState
   const hideShowPassword = () => {
@@ -282,6 +277,9 @@ export default function LoginScreen({ navigation }) {
                   }
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
+                  authContext.setUser({ ...response.payload });
+                  await Utility.setStorage('authContextEntity', { ...entity })
+                  await Utility.setStorage('authContextUser', { ...response.payload })
                   await authContext.setUser(response.payload);
                   QBInitialLogin(entity, response?.payload);
                 }).catch((error) => {

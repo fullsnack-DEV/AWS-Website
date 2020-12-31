@@ -118,7 +118,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
   }) => {
     const customData = item?.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
-    const fullName = _.get(customData, ['full_name'], '') ?? _.get(customData, ['group_name'], '')
+    const fullName = customData?.full_name ?? customData?.group_name;
     const fullImage = _.get(customData, ['full_image'], '')
     const city = _.get(customData, ['city'], '')
     const placeHolderImage = entityType === 'player'
@@ -204,14 +204,12 @@ const MessageInviteScreen = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item }) => {
-    console.log('item :-', item);
     const isChecked = selectedInvitees.some((val) => {
       if (val.id === item.id) {
         return true;
       }
       return false
     })
-    console.log('is CHecled :-', isChecked);
     return (
       <Item
         item={item}
