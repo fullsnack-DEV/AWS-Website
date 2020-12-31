@@ -1204,7 +1204,7 @@ export default function HomeScreen({ navigation, route }) {
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
-            navigation.navigate('RegisterPlayer');
+            navigation.navigate('RegisterPlayer', { comeFrom: 'HomeScreen' });
           } else if (index === 1) {
             // Add Refereeing
             navigation.navigate('RegisterReferee');
@@ -1795,7 +1795,7 @@ export default function HomeScreen({ navigation, route }) {
                 setPlaysInModalVisible(!playsInModalVisible)
                 navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
               }}>
-                CHALLENGE
+                Challenge
               </Text>
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem

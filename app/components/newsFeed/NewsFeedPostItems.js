@@ -40,32 +40,27 @@ function NewsFeedPostItems({
   onImageProfilePress,
   onPressDone,
 }) {
-  const [like, setLike] = useState(() => {
-    let filterLike = [];
-    if (item.own_reactions && item.own_reactions.clap) {
-      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
-      if (filterLike.length > 0) {
-        return true;
-      }
-      return false;
-    }
-    return null;
-  });
-  const [likeCount, setLikeCount] = useState(() => {
-    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
-      return item.reaction_counts.clap;
-    }
-    return 0;
-  });
+  const [like, setLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
+    let filterLike = [];
     if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
       setLikeCount(item.reaction_counts.clap);
+    }
+    if (item.own_reactions && item.own_reactions.clap !== undefined) {
+      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
+      if (filterLike.length > 0) {
+        setLike(true);
+      } else {
+        setLike(false);
+      }
+    } else {
+      setLike(false);
     }
   }, [item]);
   const actionSheet = useRef();
   const shareActionSheet = useRef();
-  // let like = false;
 
   let userImage = '';
   if (item.actor && item.actor.data) {
@@ -86,6 +81,9 @@ function NewsFeedPostItems({
   } else {
     threeDotBtnDisplay = false;
   }
+  console.log('Description ::--', descriptions);
+
+  console.log('Description Text With ::--', descriptions.substr(descriptions.indexOf('@') + 1));
 
   return (
     <View key={key}>
@@ -299,19 +297,11 @@ function NewsFeedPostItems({
                 onLikePress()
               }}
               style={styles.imageTouchStyle}>
-              {like === true ? (
-                <Image
-                  style={styles.commentImage}
-                  source={images.likeImage}
-                  resizeMode={'contain'}
-                />
-              ) : (
-                <Image
-                  style={styles.commentImage}
-                  source={images.unlikeImage}
-                  resizeMode={'contain'}
-                />
-              )}
+              <Image
+                style={styles.commentImage}
+                source={like ? images.likeImage : images.unlikeImage}
+                resizeMode={'contain'}
+              />
             </TouchableOpacity>
           </View>
         </View>

@@ -74,14 +74,14 @@ export default function EntitySearchScreen({ navigation }) {
       <ActivityLoader visible={loading} />
 
       <View style={styles.searchBarView}>
-        <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) } marginTop={70} />
+        <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) } />
       </View>
       <FlatList
         data={groups}
         renderItem={renderList}
         onPressProfile = {() => navigation.navigate('MembersProfileScreen')}
         keyExtractor={(item, index) => index.toString()}
-        style={{ marginBottom: 160 }}
+        ListFooterComponent={() => <View style={{ marginBottom: 90 }} />}
       />
     </View>
   );
