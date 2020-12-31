@@ -120,7 +120,7 @@ export default function FollowTeams({ route }) {
       await Utility.setStorage('loggedInEntity', entity)
       await authContext.setUser(response.payload);
       Utility.setStorage('authContextUser', { ...response.payload })
-      QBInitialLogin(entity, response?.payload);
+      QBInitialLogin(response?.payload);
     } else {
       setloading(false);
       throw new Error(response);
