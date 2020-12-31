@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
 import {
-  View, StyleSheet, Image, Text,
+  View, StyleSheet, Image, Text, Alert,
 } from 'react-native';
 
 import images from '../../Constants/ImagePath';
@@ -82,14 +82,19 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           shadow={true}
           marginBottom={55}
           onPress={() => {
-            if (`${route?.params?.teamObj?.sport}`.toLowerCase() === 'soccer') {
-              navigation.navigate('SoccerHome', {
-                gameId: route?.params?.teamObj?.game_id,
-              })
+            if (route?.params?.teamObj?.gameId) {
+              if (route?.params?.teamObj?.sport?.toLowerCase() === 'soccer') {
+                navigation.navigate('SoccerHome', {
+                  gameId: route?.params?.teamObj?.game_id,
+                })
+              } else {
+                navigation.navigate('TennisHome', {
+                  gameId: route?.params?.teamObj?.game_id,
+                })
+              }
             } else {
-              navigation.navigate('TennisHome', {
-                gameId: route?.params?.teamObj?.game_id,
-              })
+              Alert.alert('Game ID not exist');
+              console.log('Game ID not exist');
             }
           }
           }
