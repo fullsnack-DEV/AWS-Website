@@ -173,7 +173,13 @@ export default function EditEventScreen({ navigation, route }) {
   }
 
   const handleEndDatePress = (date) => {
-    setEventEnddateTime(date);
+    let dateValue = new Date();
+    if (toggle) {
+      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`
+      setEventEnddateTime(dateValue);
+    } else {
+      setEventEnddateTime(date);
+    }
     setEndDateVisible(!endDateVisible)
   }
 
@@ -181,6 +187,8 @@ export default function EditEventScreen({ navigation, route }) {
     setEventUntildateTime(date);
     setUntilDateVisible(!untilDateVisible)
   }
+
+  console.log('Event End Date Time :-', moment(eventEndDateTime));
 
   return (
     <SafeAreaView style={ styles.mainContainerStyle }>
@@ -201,7 +209,7 @@ export default function EditEventScreen({ navigation, route }) {
             const u_id = entity.uid || entity.auth.user_id;
             const entityRole = entity.role === 'user' ? 'users' : 'groups';
             const params = {
-              title: event_Title,
+              title: eventTitle,
               descriptions: aboutDesc,
               color: singleSelectEventColor,
               start_datetime: new Date(eventStartDateTime).getTime() / 1000,
@@ -480,6 +488,7 @@ export default function EditEventScreen({ navigation, route }) {
           onDone={handleUntilDatePress}
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
+          minimumDate={eventEndDateTime || new Date()}
           mode={toggle ? 'date' : 'datetime'}
         />
       </ScrollView>

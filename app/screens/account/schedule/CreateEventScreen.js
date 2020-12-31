@@ -86,7 +86,14 @@ export default function CreateEventScreen({ navigation, route }) {
   }
 
   const handleEndDatePress = (date) => {
-    setEventEnddateTime(date);
+    let dateValue = new Date();
+    if (toggle) {
+      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`
+      console.log('Date Value :-', dateValue);
+      setEventEnddateTime(dateValue);
+    } else {
+      setEventEnddateTime(date);
+    }
     setEndDateVisible(!endDateVisible)
   }
 
@@ -379,6 +386,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onDone={handleUntilDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            minimumDate={eventEndDateTime || new Date()}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DefaultColorModal

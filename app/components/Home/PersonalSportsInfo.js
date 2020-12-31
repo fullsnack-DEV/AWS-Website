@@ -58,7 +58,6 @@ function PersonalSportsInfo({
   onSavePress,
   sportName,
 }) {
-  console.log('Data :-', data);
   let latVal = null;
   let longVal = null;
   if (locationDetail) {
@@ -117,8 +116,6 @@ function PersonalSportsInfo({
   const [editModal, setEditModal] = useState(false);
   const [privacyData, setPrivacyData] = useState(privacy_Data);
   const [dateModalVisible, setDateModalVisible] = useState(false);
-
-  console.log('Info :-', info);
 
   const actionSheet = useRef();
 

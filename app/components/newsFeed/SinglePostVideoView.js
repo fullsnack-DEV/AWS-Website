@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -15,6 +15,9 @@ import {
 } from 'react-native-responsive-screen';
 import Video from 'react-native-video';
 import Orientation from 'react-native-orientation';
+import Share from 'react-native-share';
+import Clipboard from '@react-native-community/clipboard';
+import ActionSheet from 'react-native-actionsheet';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
@@ -52,27 +55,23 @@ export default function SinglePostVideoView({
   });
   const [landscapeImgDimention, setLandscapeImgDimention] = useState({ width: hp('72%'), height: wp('100%') });
   const [isLandScape, setIsLandScape] = useState(false);
-  const [like, setLike] = useState(() => {
-    let filterLike = [];
-    if (item.own_reactions && item.own_reactions.clap) {
-      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
-      if (filterLike.length > 0) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  });
-  const [likeCount, setLikeCount] = useState(() => {
-    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
-      return item.reaction_counts.clap;
-    }
-    return 0;
-  });
+  const [like, setLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
+    let filterLike = [];
     if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
       setLikeCount(item.reaction_counts.clap);
+    }
+    if (item.own_reactions && item.own_reactions.clap !== undefined) {
+      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
+      if (filterLike.length > 0) {
+        setLike(true);
+      } else {
+        setLike(false);
+      }
+    } else {
+      setLike(false);
     }
   }, [item]);
 
@@ -117,6 +116,8 @@ export default function SinglePostVideoView({
       }
     }
   };
+
+  const shareActionSheet = useRef();
 
   return (
     <KeyboardAvoidingView
@@ -275,7 +276,9 @@ export default function SinglePostVideoView({
                   marginLeft: 10,
                 }}>
                 <TouchableOpacity
-                    onPress={() => {}}
+                    onPress={() => {
+                      shareActionSheet.current.show();
+                    }}
                     style={styles.imageTouchStyle}>
                   <Image
                     style={styles.commentImage}
@@ -283,7 +286,7 @@ export default function SinglePostVideoView({
                     resizeMode={'contain'}
                     />
                 </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>99,999</Text>
+                <Text style={styles.commentlengthStyle}>{''}</Text>
               </View>
             </View>
 
@@ -333,6 +336,28 @@ export default function SinglePostVideoView({
             </View>
           </View>
         </SafeAreaView>
+        <ActionSheet
+          ref={shareActionSheet}
+          title={'News Feed Post'}
+          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
+          cancelButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              const options = {
+                message: descriptions,
+              }
+              Share.open(options)
+                .then((res) => {
+                  console.log('res :-', res);
+                })
+                .catch((err) => {
+                  console.log('err :-', err);
+                });
+            } else if (index === 1) {
+              Clipboard.setString(descriptions);
+            }
+          }}
+        />
       </View>
     </KeyboardAvoidingView>
   );

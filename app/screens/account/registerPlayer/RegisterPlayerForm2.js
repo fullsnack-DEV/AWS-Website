@@ -39,11 +39,14 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const [selected, setSelected] = useState(0);
 
   const registerPlayerCall = () => {
+    console.log('Calleddd');
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      if ((authContext?.user?.registered_sports || []).some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
-        Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
+      if (authContext.user.registered_sports) {
+        if (authContext?.user?.registered_sports.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
+          Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
+        }
       } else {
         bodyParams.fee = matchFee;
         if (selected === 0) {
@@ -53,7 +56,6 @@ export default function RegisterPlayerForm2({ navigation, route }) {
         } else {
           bodyParams.cancellation_policy = 'flexible';
         }
-        console.log('bodyPARAMS:: ', bodyParams);
 
         const registerdPlayerData = authContext?.user?.registered_sports || []
         registerdPlayerData.push(bodyParams);
@@ -65,7 +67,11 @@ export default function RegisterPlayerForm2({ navigation, route }) {
             await Utility.setStorage('user', response.payload);
             authContext.setUser(response.payload)
             Alert.alert('Towns Cup', 'Player sucessfully registered');
-            navigation.navigate('HomeScreen');
+            if (route.params && route.params.comeFrom === 'HomeScreen') {
+              navigation.navigate('HomeScreen');
+            } else {
+              navigation.navigate('AccountScreen');
+            }
           } else {
             Alert.alert('Towns Cup', response.messages);
           }

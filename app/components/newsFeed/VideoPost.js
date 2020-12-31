@@ -37,7 +37,6 @@ function VideoPost({
   } else {
     height = wp('96%')
   }
-  // height = data.media_height > data.media_width ? height = wp('124%') : height = wp('68%');
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);

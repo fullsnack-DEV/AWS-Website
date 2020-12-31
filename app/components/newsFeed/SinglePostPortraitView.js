@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -17,6 +17,9 @@ import {
 import ImageZoom from 'react-native-image-pan-zoom';
 import FastImage from 'react-native-fast-image';
 import Orientation from 'react-native-orientation';
+import Share from 'react-native-share';
+import Clipboard from '@react-native-community/clipboard';
+import ActionSheet from 'react-native-actionsheet';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -52,27 +55,23 @@ export default function SinglePostPortraitView({
   });
   const [landscapeImgDimention, setLandscapeImgDimention] = useState({ width: hp('72%'), height: wp('100%') });
   const [isLandScape, setIsLandScape] = useState(false);
-  const [like, setLike] = useState(() => {
-    let filterLike = [];
-    if (item.own_reactions && item.own_reactions.clap) {
-      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
-      if (filterLike.length > 0) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  });
-  const [likeCount, setLikeCount] = useState(() => {
-    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
-      return item.reaction_counts.clap;
-    }
-    return 0;
-  });
+  const [like, setLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
+    let filterLike = [];
     if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
       setLikeCount(item.reaction_counts.clap);
+    }
+    if (item.own_reactions && item.own_reactions.clap !== undefined) {
+      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
+      if (filterLike.length > 0) {
+        setLike(true);
+      } else {
+        setLike(false);
+      }
+    } else {
+      setLike(false);
     }
   }, [item]);
 
@@ -84,6 +83,13 @@ export default function SinglePostPortraitView({
   let descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
   if (item.object) {
     descriptions = JSON.parse(item.object).text;
+  }
+
+  let threeDotBtnDisplay = false;
+  if (item.foreign_id === caller_id) {
+    threeDotBtnDisplay = true;
+  } else {
+    threeDotBtnDisplay = false;
   }
 
   useEffect(() => {
@@ -117,6 +123,8 @@ export default function SinglePostPortraitView({
       }
     }
   };
+
+  const shareActionSheet = useRef();
 
   return (
     <KeyboardAvoidingView
@@ -171,7 +179,7 @@ export default function SinglePostPortraitView({
               </TouchableOpacity>
             }
             rightComponent={
-              <TouchableOpacity onPress={() => {}}>
+              threeDotBtnDisplay && <TouchableOpacity onPress={() => {}}>
                 <Image
                     source={images.vertical3Dot}
                     resizeMode={'contain'}
@@ -271,7 +279,9 @@ export default function SinglePostPortraitView({
                   marginLeft: 10,
                 }}>
                 <TouchableOpacity
-                    onPress={() => {}}
+                    onPress={() => {
+                      shareActionSheet.current.show();
+                    }}
                     style={styles.imageTouchStyle}>
                   <Image
                     style={styles.commentImage}
@@ -279,7 +289,7 @@ export default function SinglePostPortraitView({
                     resizeMode={'contain'}
                     />
                 </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>99,999</Text>
+                <Text style={styles.commentlengthStyle}>{''}</Text>
               </View>
             </View>
 
@@ -329,6 +339,28 @@ export default function SinglePostPortraitView({
             </View>
           </View>
         </SafeAreaView>
+        <ActionSheet
+          ref={shareActionSheet}
+          title={'News Feed Post'}
+          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
+          cancelButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              const options = {
+                message: descriptions,
+              }
+              Share.open(options)
+                .then((res) => {
+                  console.log('res :-', res);
+                })
+                .catch((err) => {
+                  console.log('err :-', err);
+                });
+            } else if (index === 1) {
+              Clipboard.setString(descriptions);
+            }
+          }}
+        />
       </View>
     </KeyboardAvoidingView>
   );

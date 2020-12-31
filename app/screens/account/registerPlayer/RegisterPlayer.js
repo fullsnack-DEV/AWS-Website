@@ -30,7 +30,7 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 
-export default function RegisterPlayer({ navigation }) {
+export default function RegisterPlayer({ navigation, route }) {
   const [sports, setSports] = useState('');
   const [description, setDescription] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
@@ -245,7 +245,10 @@ export default function RegisterPlayer({ navigation }) {
             // registered_sports[0]=bodyParams;
             // bodyParams={registered_sports};
 
-            navigation.navigate('RegisterPlayerForm2', { bodyParams })
+            navigation.navigate('RegisterPlayerForm2', {
+              bodyParams,
+              comeFrom: (route && route.params && route.params.comeFrom) ? route.params.comeFrom : null,
+            })
           }
         } }>
           <LinearGradient
