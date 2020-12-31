@@ -12,7 +12,9 @@ import UserCategoryView from './UserCategoryView';
 export default function ProfileViewSection({
   profileImage,
   userName,
+  currentUserData,
 }) {
+  console.log('Current User Darta :-', currentUserData);
   return (
 
     <View style={styles.topViewContainer}>

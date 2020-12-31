@@ -39,7 +39,6 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const [selected, setSelected] = useState(0);
 
   const registerPlayerCall = () => {
-    console.log('Calleddd');
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };

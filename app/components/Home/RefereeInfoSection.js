@@ -228,6 +228,7 @@ function RefereeInfoSection({
   const [languageList, setLanguageList] = useState(language_list);
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     if (selectRefereeData.language && selectRefereeData.language.length > 0) {
+      console.log('Select Referee Data :-', selectRefereeData);
       languageList.map((listItem) => {
         const listValue = listItem;
         selectRefereeData.language.map((default_lang) => {
@@ -309,6 +310,7 @@ function RefereeInfoSection({
   useEffect(() => {
     const selectData = [];
     if (languageList.length > 0) {
+      console.log('Language List :-', languageList);
       languageList.filter((val) => {
         if (val.isChecked) {
           selectData.push(val);
@@ -376,7 +378,7 @@ function RefereeInfoSection({
       >
         <BasicInfoItem
           title={strings.gender}
-          value={info.genderText}
+          value={data.gender}
         />
         <BasicInfoItem
           title={strings.yearOfBirth}

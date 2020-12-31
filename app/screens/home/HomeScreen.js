@@ -88,7 +88,7 @@ import RefereesProfileSection from '../../components/Home/User/RefereesProfileSe
 import CertificatesItemView from '../../components/Home/CertificatesItemView';
 import LanguageViewInInfo from '../../components/Home/LanguageViewInInfo';
 import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
-import ReviewRatingView from '../../components/Home/ReviewRatingView';
+// import ReviewRatingView from '../../components/Home/ReviewRatingView';
 import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
@@ -187,7 +187,7 @@ export default function HomeScreen({ navigation, route }) {
   const [progressBar, setProgressBar] = useState(false);
   const [recentMatchData, setRecentMatchData] = useState([]);
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
-  const [refereeRecentMatchDisplay, setRefereeRecentMatchDisplay] = useState(false);
+  // const [refereeRecentMatchDisplay, setRefereeRecentMatchDisplay] = useState(false);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
@@ -1018,11 +1018,22 @@ export default function HomeScreen({ navigation, route }) {
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
     // navigation.navigate('RegisterReferee');
-    setRefereeRecentMatchDisplay(false);
+    // setRefereeRecentMatchDisplay(false);
+    console.log('Current User Data :-=', currentUserData);
     if (refereeInObject) {
       const entity = authContext.entity;
-      if (refereeInObject.language.length > 0) {
-        refereeInObject.language.map((langItem, index) => {
+      let languagesListName = [];
+      if (currentUserData) {
+        currentUserData.referee_data.map((refereeItem) => {
+          if (refereeItem.sport_name === refereeInObject.sport_name) {
+            setSelectRefereeData(refereeItem);
+            languagesListName = refereeItem.language;
+          }
+          return null;
+        })
+      }
+      if (languagesListName.length > 0) {
+        languagesListName.map((langItem, index) => {
           language_string = language_string + (index ? ', ' : '') + langItem.language_name;
           return null;
         })
@@ -1030,7 +1041,7 @@ export default function HomeScreen({ navigation, route }) {
       }
       setRefereesInModalVisible(!refereesInModalVisible);
       setSportName(refereeInObject.sport_name);
-      setSelectRefereeData(refereeInObject);
+      // setSelectRefereeData(refereeInObject);
 
       const params = {
         sport: refereeInObject.sport_name,
@@ -1048,13 +1059,13 @@ export default function HomeScreen({ navigation, route }) {
               setRefereeUpcomingMatch([...upcomingMatch]);
             } else {
               recentMatch.push(event_item);
-              setRefereeRecentMatchDisplay(true);
+              // setRefereeRecentMatchDisplay(true);
               setRefereeRecentMatch([...recentMatch]);
             }
             return null;
           });
         } else {
-          setRefereeRecentMatchDisplay(true);
+          // setRefereeRecentMatchDisplay(true);
           setRefereeUpcomingMatch([]);
           setRefereeRecentMatch([]);
         }
@@ -1154,17 +1165,17 @@ export default function HomeScreen({ navigation, route }) {
     setScoreboardModalVisible(!scoreboardModalVisible);
   };
 
-  const refereeMatchModal = () => {
-    setRefereeMatchModalVisible(!refereeMatchModalVisible);
-  };
+  // const refereeMatchModal = () => {
+  //   setRefereeMatchModalVisible(!refereeMatchModalVisible);
+  // };
 
   const statsModal = () => {
     setStatsModalVisible(!statsModalVisible);
   };
 
-  const reviewsModal = () => {
-    setReviewsModalVisible(!reviewsModalVisible);
-  };
+  // const reviewsModal = () => {
+  //   setReviewsModalVisible(!reviewsModalVisible);
+  // };
 
   const reviewerDetailModal = () => {
     setReviewerDetailModalVisible(!reviewerDetailModalVisible);
@@ -1795,7 +1806,7 @@ export default function HomeScreen({ navigation, route }) {
                 setPlaysInModalVisible(!playsInModalVisible)
                 navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
               }}>
-                Challenge
+                CHALLENGE
               </Text>
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem
@@ -2187,7 +2198,7 @@ export default function HomeScreen({ navigation, route }) {
                   />
                 </RefereesInItem>
 
-                <RefereesInItem
+                {/* <RefereesInItem
                   title={strings.refereeRecentMatchTitle}
                   onItemPress={() => {
                     refereeMatchModal();
@@ -2231,7 +2242,7 @@ export default function HomeScreen({ navigation, route }) {
                       keyExtractor={(item, index) => index.toString()}
                     />
                   </View>
-                </RefereesInItem>
+                </RefereesInItem> */}
               </ScrollView>
             </SafeAreaView>
           </View>
@@ -2278,12 +2289,30 @@ export default function HomeScreen({ navigation, route }) {
                 searchLocation={searchLocation}
                 languagesName={languagesName}
                 onSavePress={(params) => {
+                  let languagesListName = [];
                   patchRegisterRefereeDetails(params, authContext).then((res) => {
                     const changedata = currentUserData;
                     changedata.referee_data = res.payload.referee_data;
                     changedata.gender = res.payload.gender;
                     changedata.birthday = res.payload.birthday;
                     setCurrentUserData(changedata);
+
+                    if (res.payload.referee_data) {
+                      res.payload.referee_data.map((refereeItem) => {
+                        if (refereeItem.sport_name === sportName) {
+                          setSelectRefereeData(refereeItem);
+                          languagesListName = refereeItem.language;
+                        }
+                        return null;
+                      })
+                    }
+                    if (languagesListName.length > 0) {
+                      languagesListName.map((langItem, index) => {
+                        language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+                        return null;
+                      })
+                      setLanguagesName(language_string);
+                    }
                   }).catch((error) => {
                     console.log('error coming', error)
                     Alert.alert(strings.alertmessagetitle, error.message)
@@ -2667,22 +2696,22 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
   },
-  backgroundView: {
-    backgroundColor: colors.matchViewColor,
-    borderRadius: 5,
-    elevation: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    marginVertical: 10,
-  },
-  lastReviewItemSeprator: {
-    height: 1,
-    marginHorizontal: 15,
-    marginVertical: 5,
-    backgroundColor: colors.themeColor,
-  },
+  // backgroundView: {
+  //   backgroundColor: colors.matchViewColor,
+  //   borderRadius: 5,
+  //   elevation: 5,
+  //   shadowColor: colors.googleColor,
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.5,
+  //   shadowRadius: 5,
+  //   marginVertical: 10,
+  // },
+  // lastReviewItemSeprator: {
+  //   height: 1,
+  //   marginHorizontal: 15,
+  //   marginVertical: 5,
+  //   backgroundColor: colors.themeColor,
+  // },
   sepratorView: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,

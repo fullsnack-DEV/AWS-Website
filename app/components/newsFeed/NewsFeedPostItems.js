@@ -81,9 +81,6 @@ function NewsFeedPostItems({
   } else {
     threeDotBtnDisplay = false;
   }
-  console.log('Description ::--', descriptions);
-
-  console.log('Description Text With ::--', descriptions.substr(descriptions.indexOf('@') + 1));
 
   return (
     <View key={key}>

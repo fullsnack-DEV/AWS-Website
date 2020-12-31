@@ -35,6 +35,7 @@ export default function RegisterPlayer({ navigation, route }) {
   const [description, setDescription] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [languagesName, setLanguagesName] = useState('');
   const [languages, setLanguages] = useState([]);
   const selectedLanguage = [];
 
@@ -83,6 +84,18 @@ export default function RegisterPlayer({ navigation, route }) {
     }
     setSelectedLanguages(selectedLanguage);
   };
+
+  useEffect(() => {
+    let languageText = '';
+    if (selectedLanguages) {
+      selectedLanguages.map((langItem, index) => {
+        languageText = languageText + (index ? ', ' : '') + langItem;
+        return null;
+      })
+      setLanguagesName(languageText);
+    }
+  }, [selectedLanguages]);
+
   const renderLanguage = ({ item, index }) => (
     <TouchableWithoutFeedback
         style={ styles.listItem }
@@ -160,7 +173,7 @@ export default function RegisterPlayer({ navigation, route }) {
             <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            value={ selectedLanguages.toString() }
+            value={languagesName}
             editable={ false }
             pointerEvents="none"></TextInput>
           </TouchableOpacity>
