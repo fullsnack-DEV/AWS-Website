@@ -31,10 +31,18 @@ export const QB_DIALOG_TYPE = {
   GROUP: 'group',
 }
 const appSettings = {
-  appId: '79537',
-  authKey: 'bMFuNaWXVNJGqzY',
-  authSecret: 'bpm8-gfaay9DWWv',
+  // Kishan Account - TC-New
+  appId: '88176',
+  authKey: 'bV7yDSst4mujpdV',
+  authSecret: 'C2ngELuNtr5uesg',
   accountKey: 'idPrZuxa3UseWLaRFRQU',
+
+  // Kishan Account
+  // appId: '79537',
+  // authKey: 'bMFuNaWXVNJGqzY',
+  // authSecret: 'bpm8-gfaay9DWWv',
+  // accountKey: 'idPrZuxa3UseWLaRFRQU',
+  // Raj Account
   // appId: '86953',
   // authKey: '62JSShsNZqtNrfN',
   // authSecret: 'KMJLjnxr3drT-AR',
@@ -218,11 +226,13 @@ export const QBgetUserDetail = (field, fieldType, value) => QBChatConnected().th
   if (connected) {
     const filter = {
       field,
-      operator: QB.users.USERS_FILTER.OPERATOR.IN,
       type: fieldType,
+      operator: QB.users.USERS_FILTER.OPERATOR.IN,
       value,
     };
-    return QB.users.getUsers({ filter })
+    return QB.users.getUsers({
+      append: true, perPage: USERS_LIST_LIMIT, filter,
+    })
   }
   throw new Error('server-not-connected');
 })

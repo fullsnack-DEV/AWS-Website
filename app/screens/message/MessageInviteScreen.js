@@ -75,7 +75,6 @@ const MessageInviteScreen = ({ navigation, route }) => {
     setLoading(true);
     QBgetAllUsers().then((res) => {
       getAllTypesData(res.users)
-      setLoading(false);
     }).catch(() => {
       setInviteeData([]);
       setLoading(false);
