@@ -57,6 +57,7 @@ function PersonalSportsInfo({
   locationDetail,
   onSavePress,
   sportName,
+  selectPlayerData,
 }) {
   let latVal = null;
   let longVal = null;
@@ -111,6 +112,7 @@ function PersonalSportsInfo({
   });
   const [bioText, setBioText] = useState(bioDefault);
   const [ntrpSelect, setNtrpSelect] = useState(ntrpDefault);
+  const [gameFeeCount, setGameFeeCount] = useState(selectPlayerData.fee || 0);
   const [mostusetFootSelect, setMostUsedFootSelect] = useState('');
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -191,6 +193,19 @@ function PersonalSportsInfo({
           value={info.currentCity}
           fieldView={{ marginBottom: 10 }}
         />
+      </EditEventItem>
+      <View style={styles.dividerStyle} />
+      <EditEventItem
+        title={strings.gameFee}
+        subTitle={strings.perHour}
+        onEditPress={() => {
+          setEditPressTitle(strings.gameFee);
+          setTimeout(() => {
+            actionSheet.current.show();
+          }, 200);
+        }}
+      >
+        <Text style={styles.ntrpValueStyle}>{`$${gameFeeCount} CAD/match`}</Text>
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
@@ -379,6 +394,7 @@ function PersonalSportsInfo({
                 <Text style={styles.playInTextStyle}>{'Edit'} {
                   (editPressTitle === strings.bio && strings.bio)
                   || (editPressTitle === strings.basicinfotitle && strings.basicinfotitle)
+                  || (editPressTitle === strings.gameFee && 'Fee')
                   || (editPressTitle === strings.ntrpTitle && strings.ntrpTitle)
                   || (editPressTitle === strings.homePlaceTitle && strings.homePlaceTitle)
                 }</Text>
@@ -390,7 +406,7 @@ function PersonalSportsInfo({
                   registered_sports: [{
                     cancellation_policy: 'strict',
                     descriptions: bioText,
-                    fee: 0.0,
+                    fee: gameFeeCount,
                     ntrp: ntrpSelect,
                     point: 500,
                     sport_name: sportName,
@@ -516,6 +532,19 @@ function PersonalSportsInfo({
             </EventItemRender>
           </View>}
 
+          {editPressTitle === strings.gameFee && <EventTextInput
+            value={gameFeeCount.toString()}
+            onChangeText={(text) => {
+              setGameFeeCount(text);
+            }}
+            keyboardType={'numeric'}
+            displayLastTitle={true}
+            displayFirstTitle={true}
+            valueFirstTitle={gameFeeCount.toString().length > 0 ? '$' : ''}
+            valueEndTitle={' CAD/match'}
+            containerStyle={{ justifyContent: 'space-between' }}
+          />}
+
           {editPressTitle === strings.ntrpTitle && <View style={{ marginTop: 20 }}>
             <TCPicker
               dataSource={[
@@ -556,6 +585,7 @@ function PersonalSportsInfo({
         options={[
           (editPressTitle === strings.bio && 'Edit Bio')
           || (editPressTitle === strings.basicinfotitle && 'Edit Basic Info')
+          || (editPressTitle === strings.gameFee && 'Edit Fee')
           || (editPressTitle === strings.ntrpTitle && 'Edit NTRP')
           || (editPressTitle === strings.homePlaceTitle && 'Edit Home Place'),
           'Privacy Setting',
@@ -568,12 +598,14 @@ function PersonalSportsInfo({
             || editPressTitle === strings.basicinfotitle
             || editPressTitle === strings.ntrpTitle
             || editPressTitle === strings.homePlaceTitle
+            || editPressTitle === strings.gameFee
           )) {
             editInfoModal();
           } else if (index === 1 && (
             editPressTitle === strings.bio
             || editPressTitle === strings.ntrpTitle
             || editPressTitle === strings.homePlaceTitle
+            || editPressTitle === strings.gameFee
           )) {
             privacySettingModal();
           } else if (index === 2) {

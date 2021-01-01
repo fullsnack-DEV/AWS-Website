@@ -216,6 +216,7 @@ export default function HomeScreen({ navigation, route }) {
   const [locationDetail, setLocationDetail] = useState(null);
   const [sportName, setSportName] = useState('');
   const [selectRefereeData, setSelectRefereeData] = useState(null);
+  const [selectPlayerData, setSelectPlayerData] = useState(null);
   const [languagesName, setLanguagesName] = useState('');
   const [refereeReservData, setRefereeReserveData] = useState([]);
 
@@ -1019,7 +1020,6 @@ export default function HomeScreen({ navigation, route }) {
     console.log('refereeInObject', refereeInObject)
     // navigation.navigate('RegisterReferee');
     // setRefereeRecentMatchDisplay(false);
-    console.log('Current User Data :-=', currentUserData);
     if (refereeInObject) {
       const entity = authContext.entity;
       let languagesListName = [];
@@ -1041,7 +1041,6 @@ export default function HomeScreen({ navigation, route }) {
       }
       setRefereesInModalVisible(!refereesInModalVisible);
       setSportName(refereeInObject.sport_name);
-      // setSelectRefereeData(refereeInObject);
 
       const params = {
         sport: refereeInObject.sport_name,
@@ -1099,6 +1098,14 @@ export default function HomeScreen({ navigation, route }) {
         looser: 0,
         draw: 0,
       })
+      if (currentUserData) {
+        currentUserData.registered_sports.map((playsInItem) => {
+          if (playsInItem.sport_name === playInObject.sport_name) {
+            setSelectPlayerData(playsInItem);
+          }
+          return null;
+        })
+      }
       const params = {
         sport: playInObject.sport_name,
         role: 'player',
@@ -1798,6 +1805,7 @@ export default function HomeScreen({ navigation, route }) {
               <ProfileViewSection
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
+                feesCount={(selectPlayerData && selectPlayerData.fee) ? selectPlayerData.fee : 0}
               />
 
               <Text style={{
@@ -1952,6 +1960,7 @@ export default function HomeScreen({ navigation, route }) {
               <PersonalSportsInfo
                 data={currentUserData}
                 navigation={navigation}
+                selectPlayerData={selectPlayerData}
                 onItemPress={() => {
                   setInfoModalVisible(false);
                   setPlaysInModalVisible(false);
@@ -1968,6 +1977,15 @@ export default function HomeScreen({ navigation, route }) {
                     changedata.height = res.payload.height;
                     changedata.weight = res.payload.weight;
                     setCurrentUserData(changedata);
+
+                    if (res.payload.registered_sports) {
+                      res.payload.registered_sports.map((playsInItem) => {
+                        if (playsInItem.sport_name === sportName) {
+                          setSelectPlayerData(playsInItem);
+                        }
+                        return null;
+                      })
+                    }
                   }).catch((error) => {
                     console.log('error coming', error)
                     Alert.alert(strings.alertmessagetitle, error.message)

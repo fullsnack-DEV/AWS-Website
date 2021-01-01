@@ -80,7 +80,7 @@ export default function SinglePostVideoView({
     userImage = item.actor.data.full_image;
   }
 
-  let descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
+  let descriptions = '';
   if (item.object) {
     descriptions = JSON.parse(item.object).text;
   }
@@ -166,7 +166,10 @@ export default function SinglePostVideoView({
           <Header
             mainContainerStyle={{ paddingVertical: 5, width: dimention.width }}
             leftComponent={
-              <TouchableOpacity onPress={backBtnPress}>
+              <TouchableOpacity onPress={() => {
+                Orientation.lockToPortrait();
+                backBtnPress()
+              }}>
                 <Image
                   source={images.backArrow}
                   resizeMode={'contain'}

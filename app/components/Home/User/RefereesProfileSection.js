@@ -24,10 +24,6 @@ export default function RefereesProfileSection({
         <View style={styles.topTextContainer}>
           <Text style={styles.userNameTextStyle}>{userName}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <UserCategoryView title='Player' titleColor={colors.blueColor}/>
-            <UserCategoryView title='Coach' titleColor={colors.greeColor}/>
-            <UserCategoryView title='Tainer' titleColor={colors.yellowColor}/>
-            <UserCategoryView title='scorekeeper' titleColor={colors.playerBadgeColor}/>
             <UserCategoryView title='Referees' titleColor={colors.redDelColor}/>
           </View>
         </View>
