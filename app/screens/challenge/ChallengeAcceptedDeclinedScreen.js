@@ -82,14 +82,14 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           shadow={true}
           marginBottom={55}
           onPress={() => {
-            if (route?.params?.teamObj?.gameId) {
+            if (route?.params?.game_id) {
               if (route?.params?.teamObj?.sport?.toLowerCase() === 'soccer') {
                 navigation.navigate('SoccerHome', {
-                  gameId: route?.params?.teamObj?.game_id,
+                  gameId: route?.params?.game_id,
                 })
-              } else {
+              } else if (route?.params?.teamObj?.sport?.toLowerCase() === 'tennis') {
                 navigation.navigate('TennisHome', {
-                  gameId: route?.params?.teamObj?.game_id,
+                  gameId: route?.params?.game_id,
                 })
               }
             } else {

@@ -102,6 +102,10 @@ export default function ChooseAddressScreen({ navigation, route }) {
       <View style={ styles.sectionStyle }>
         <Image source={ images.searchLocation } style={ styles.searchImg } />
         <TextInput
+          autoCapitalize={'none'}
+          autoCompleteType={'off'}
+          textContentType={'none'}
+          autoCorrect={false}
           style={ styles.textInput }
           placeholder={ strings.searchHereText }
           clearButtonMode="always"

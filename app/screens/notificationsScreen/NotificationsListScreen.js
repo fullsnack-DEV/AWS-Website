@@ -333,7 +333,10 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const activeTab = async (index) => {
-    checkActiveScreen(groupList[index]);
+    const gList = JSON.parse(JSON.stringify(groupList));
+    gList[index].unread = 0;
+    setGroupList(gList);
+    checkActiveScreen(gList[index]);
     setCurrentTab(index);
     refContainer.current.scrollToIndex({
       animated: true,

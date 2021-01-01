@@ -1389,9 +1389,15 @@ export default function HomeScreen({ navigation, route }) {
                       onItemPress={async (item) => {
                         const entity = authContext.entity;
                         if (item.game_id) {
-                          navigation.navigate('SoccerHome', {
-                            gameId: item.game_id,
-                          })
+                          if (item.game.sport.toLowerCase() === 'soccer') {
+                            navigation.navigate('SoccerHome', {
+                              gameId: item.game_id,
+                            })
+                          } else if (item.game.sport.toLowerCase() === 'tennis') {
+                            navigation.navigate('TennisHome', {
+                              gameId: item.game_id,
+                            })
+                          }
                         } else {
                           getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
                             navigation.navigate('EventScreen', { data: response.payload, gameData: item });
@@ -1788,15 +1794,16 @@ export default function HomeScreen({ navigation, route }) {
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
               />
-
-              <Text style={{
-                margin: 20, color: colors.whiteColor, fontSize: 20, fontFamily: fonts.RBlack,
-              }} onPress={() => {
-                setPlaysInModalVisible(!playsInModalVisible)
-                navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
-              }}>
-                Challenge
-              </Text>
+              {authContext?.entity?.uid !== currentUserData?.user_id && sportName.toLowerCase() === 'tennis' && (
+                <Text style={{
+                  margin: 20, color: colors.whiteColor, fontSize: 20, fontFamily: fonts.RBlack,
+                }} onPress={() => {
+                  setPlaysInModalVisible(!playsInModalVisible)
+                  navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
+                }}>
+                  Challenge
+                </Text>
+              )}
               <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
                 <RefereesInItem
                   title={strings.infoTitle}

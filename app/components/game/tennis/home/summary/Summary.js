@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 20,
     color: colors.lightBlackColor,
-    marginBottom: -25,
   },
 })
 export default Summary;

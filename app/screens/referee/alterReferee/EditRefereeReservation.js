@@ -651,7 +651,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
+            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
             status: 'accept',
           });
         } else if (status === 'decline') {

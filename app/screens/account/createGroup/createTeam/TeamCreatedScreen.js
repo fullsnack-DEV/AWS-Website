@@ -25,6 +25,7 @@ export default function TeamCreatedScreen({ navigation, route }) {
             height: 20,
             width: 20,
             resizeMode: 'contain',
+            tintColor: colors.whiteColor,
           } }
         />
       </TouchableOpacity>
@@ -36,9 +37,15 @@ export default function TeamCreatedScreen({ navigation, route }) {
             {`${route.params.groupName}\nhas been created.`}
           </Text>
         </Text>
-        {/* <TouchableOpacity style={ styles.goToProfileButton }>
-          <Text style={ styles.goToProfileTitle }>Switch to Team Account</Text>
-        </TouchableOpacity> */}
+        <TouchableOpacity style={ styles.goToProfileButton } onPress={() => {
+          navigation.push('HomeScreen', {
+            uid: route.params.group_id,
+            role: route.params.entity_type,
+            backButtonVisible: true,
+          });
+        }}>
+          <Text style={ styles.goToProfileTitle }>Go to team home</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -79,5 +86,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
+  },
+  goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 40,
+    borderWidth: 1,
+    height: 50,
+    marginTop: wp('20%'),
+    width: '86%',
+  },
+  goToProfileTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 17,
+    height: 50,
+    padding: 12,
+    textAlign: 'center',
   },
 });
