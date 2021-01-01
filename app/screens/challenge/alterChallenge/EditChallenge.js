@@ -278,7 +278,7 @@ export default function EditChallenge({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
+            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -333,7 +333,7 @@ export default function EditChallenge({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams.game_id },
+            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
             status: 'accept',
           });
         } else if (status === 'decline') {
