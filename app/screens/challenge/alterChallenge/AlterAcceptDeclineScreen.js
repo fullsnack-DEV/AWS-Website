@@ -315,7 +315,6 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     status,
     paymentID,
   ) => {
-    console.log('funcation called');
     console.log(`teamID:${teamID}challengeID:${ChallengeId}versionNo:${versionNo}status:${status}paymentID:${paymentID}`);
     setloading(true);
 

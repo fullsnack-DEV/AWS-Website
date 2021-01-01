@@ -10,6 +10,7 @@ import {
   ScrollView,
   Alert,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -207,7 +208,11 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
             hideExtraDays={true}
             onDayPress={(day) => {
-              if (new Date().getMonth() + new Date().getDate() + new Date().getFullYear() > new Date(day.dateString).getMonth() + new Date(day.dateString).getDate() + new Date(day.dateString).getFullYear()) {
+              const todayDate = new Date(`${new Date().getMonth() + 1} ${new Date().getDate()} ${new Date().getFullYear()}`)
+              const selectDate = new Date(`${new Date(day.dateString).getMonth() + 1} ${new Date(day.dateString).getDate()} ${new Date(day.dateString).getFullYear()}`)
+              // console.log(`date::${new Date().getMonth() + 1}/${new Date().getDate()}/${new Date().getFullYear()}date::${new Date(day.dateString).getMonth() + 1}/${new Date(day.dateString).getDate()}/${new Date(day.dateString).getFullYear()}`);
+              console.log(`Today::${todayDate}Selected::${selectDate}`);
+              if (todayDate > selectDate) {
                 Alert.alert(strings.chooseFutureDate);
               } else {
                 const temp = [];
@@ -259,7 +264,13 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             keyExtractor={(item, index) => index.toString()}
           />
           </View>}
-          <View style={{ marginLeft: 15, marginRight: 15, marginTop: 20 }}>
+          <TouchableOpacity
+          style={{ marginLeft: 15, marginRight: 15, marginTop: 20 }}
+          onPress={() => {
+            setDatePickerFor('from');
+            setShow(!show);
+          }}
+          >
             <View style={styles.fieldView}>
               <View
                 style={{
@@ -273,17 +284,19 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
               <View style={{ marginRight: 15, flexDirection: 'row' }}>
                 <Text
                   style={styles.fieldValue}
-                  numberOfLines={3}
-                  onPress={() => {
-                    setDatePickerFor('from');
-                    setShow(!show);
-                  }}>
+                  numberOfLines={3}>
                   {getDateFormat(fromDate)}
                 </Text>
               </View>
             </View>
-          </View>
-          <View style={{ marginLeft: 15, marginRight: 15 }}>
+          </TouchableOpacity>
+          <TouchableOpacity
+          style={{ marginLeft: 15, marginRight: 15 }}
+          onPress={() => {
+            setDatePickerFor('to');
+            setShow(!show);
+          }}
+          >
             <View style={styles.fieldView}>
               <View
                 style={{
@@ -297,19 +310,24 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
               <View style={{ marginRight: 15, flexDirection: 'row' }}>
                 <Text
                   style={styles.fieldValue}
-                  numberOfLines={3}
-                  onPress={() => {
-                    setDatePickerFor('to');
-                    setShow(!show);
-                  }}>
+                  numberOfLines={3}>
                   {getDateFormat(toDate)}
                 </Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
           <DateTimePickerView
 
-            date={selectedDate}
+            // date={selectedDate}
+            // visible={show}
+            // onDone={handleDonePress}
+            // onCancel={handleCancelPress}
+            // onHide={handleCancelPress}
+            // minutesGap={30}
+            // minimumDate={selectedDate || new Date()}
+            // maximumDate = {new Date(selectedDate).setHours(23, 59, 59, 999) || new Date().setHours(23, 59, 59, 999)}
+            // mode={'datetime'}
+
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
@@ -317,7 +335,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             minutesGap={30}
             minimumDate={selectedDate || new Date()}
             maximumDate = {new Date(selectedDate).setHours(23, 59, 59, 999) || new Date().setHours(23, 59, 59, 999)}
-            mode={'datetime'}
+            mode={'time'}
           />
 
           <View style={{ flex: 1 }}></View>

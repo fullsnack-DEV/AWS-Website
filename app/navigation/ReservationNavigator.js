@@ -26,6 +26,7 @@ import PayAgainScreen from '../screens/challenge/alterChallenge/PayAgainScreen';
 import PayAgainRefereeScreen from '../screens/referee/PayAgainRefereeScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
 import EditChallenge from '../screens/challenge/alterChallenge/EditChallenge';
+import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 
 import CreateChallengeForm1 from '../screens/challenge/createChallenge/CreateChallengeForm1';
 import CreateChallengeForm2 from '../screens/challenge/createChallenge/CreateChallengeForm2';
@@ -420,6 +421,23 @@ const ReservationNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+        name="PaymentMethodsScreen"
+        component={ PaymentMethodsScreen }
+        options={ {
+          title: 'Payment Methods',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
   </Stack.Navigator>
 );
 

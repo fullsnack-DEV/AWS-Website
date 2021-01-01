@@ -510,5 +510,7 @@ const strings = {
   choosePayment: 'Please choose payment method.',
   chooseFutureDate: 'Please choose future date for challenge.',
   chooseCorrectDate: 'Please choose correct date.',
+  max5Referee: 'Maximum 5 referees can be added.',
+  max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
 };
 export default strings;

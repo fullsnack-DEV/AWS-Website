@@ -100,11 +100,11 @@ const globalApiCall = async ({
     caller = entity.role;
   }
   const headersParams = prepareHeader(headers, authToken, caller_id, caller);
-  console.log('apiHeaders::', headersParams);
+
   const options = {
     method, url, data, headers: headersParams, params, responseType,
   };
-
+  console.log('API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
     console.log('Opetions ::', JSON.stringify(options));
