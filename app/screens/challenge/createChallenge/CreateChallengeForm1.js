@@ -135,29 +135,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
     setteams([teams[1], teams[0]]);
   };
   const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy');
-  const tConvert = (timeString) => {
-    const timeString12hr = new Date(
-      `1970-01-01T${timeString}Z`,
-    ).toLocaleTimeString(
-      {},
-      {
-        timeZone: 'UTC',
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      },
-    );
-    return timeString12hr;
-  };
-
-  const time_format = (d) => {
-    const hours = format_two_digits(d.getHours());
-    const minutes = format_two_digits(d.getMinutes());
-    const seconds = format_two_digits(d.getSeconds());
-    return tConvert(`${hours}:${minutes}:${seconds}`);
-  }
-
-  const format_two_digits = (n) => (n < 10 ? `0${n}` : n)
+  const time_format = (d) => moment(new Date(d)).format('hh:mm A')
 
   const checkValidation = () => {
     if ((route?.params?.body?.start_datetime === null && route?.params?.body?.end_datetime === null)) {

@@ -12,7 +12,7 @@ import colors from '../../Constants/Colors';
 export default function UnavailableTimeView({ startDate, endDate, allDay = false }) {
   const getTimeFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('hh:mm A');
   return (
-    <View style={{ marginLeft: 15, marginRight: 15 }}>
+    <View style={{ marginLeft: 15, marginRight: 15, marginBottom: 1 }}>
       <View style={styles.fieldView}>
         <View style={{
           backgroundColor: colors.lightgrayColor, flex: 0.4, height: 25, justifyContent: 'center', alignItems: 'center', borderRadius: 5,

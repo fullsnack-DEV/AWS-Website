@@ -180,12 +180,13 @@ export default function EditChallenge({ navigation, route }) {
       } else {
         setEditVenue(false);
       }
-      if (bodyParams.referee !== oldVersion.referee) {
+      if (JSON.stringify(bodyParams.referee) !== JSON.stringify(oldVersion.referee)) {
         setEditReferee(true);
       } else {
         setEditReferee(false);
       }
-      if (bodyParams.scorekeeper !== oldVersion.scorekeeper) {
+
+      if (JSON.stringify(bodyParams.scorekeeper) !== JSON.stringify(oldVersion.scorekeeper)) {
         setEditScoreKeeper(true);
       } else {
         setEditScoreKeeper(false);
@@ -378,20 +379,16 @@ export default function EditChallenge({ navigation, route }) {
   };
 
   const checkRefereeColor = (item) => {
-    if (!oldVersion.referee.includes(item)) {
-      console.log('Orange');
+    if (oldVersion.referee.filter((e) => e.is_chief === item.is_chief && e.responsible_team_id === item.responsible_team_id).length === 0) {
       return `${colors.themeColor}`;
     }
-    console.log('Black');
     return `${colors.lightBlackColor}`;
   };
 
   const checkScorekeeperColor = (item) => {
-    if (!oldVersion.scorekeeper.includes(item)) {
-      console.log('Orange');
+    if (oldVersion.scorekeeper.filter((e) => e.is_chief === item.is_chief && e.responsible_team_id === item.responsible_team_id).length === 0) {
       return `${colors.themeColor}`;
     }
-    console.log('Black');
     return `${colors.lightBlackColor}`;
   };
   const renderSecureReferee = ({ item, index }) => (
@@ -399,6 +396,8 @@ export default function EditChallenge({ navigation, route }) {
         title={
           index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`
         }
+        image={item.responsible_team_id !== 'none' && item.responsible_team_id
+        === (homeTeam?.group_id || homeTeam?.user_id) ? homeTeam?.thumbnail && homeTeam.thumbnail : awayTeam?.thumbnail && awayTeam.thumbnail}
         name={
           homeTeam
           && awayTeam
@@ -418,6 +417,8 @@ export default function EditChallenge({ navigation, route }) {
   const renderSecureScorekeeper = ({ item, index }) => (
     <TCInfoImageField
         title={`Scorekeeper ${index + 1}`}
+        image={item.responsible_team_id !== 'none' && item.responsible_team_id
+        === (homeTeam?.group_id || homeTeam?.user_id) ? homeTeam?.thumbnail && homeTeam.thumbnail : awayTeam?.thumbnail && awayTeam.thumbnail}
         name={
           homeTeam
           && awayTeam

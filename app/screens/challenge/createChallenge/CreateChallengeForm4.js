@@ -30,7 +30,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
     const getAuthEntity = async () => {
       entity = authContext.entity
       if (route && route.params && route.params.teamData) {
-        if (route.params.teamData[0].group_id === entity.uid) {
+        if ((route.params.teamData[0].group_id || route.params.teamData[0].user_id) === entity.uid) {
           setHomeTeam(route.params.teamData[0]);
           setAwayTeam(route.params.teamData[1]);
         } else {
@@ -81,6 +81,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const renderSecureReferee = ({ item, index }) => (
     <TCInfoImageField
       title={index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`}
+      image={item.responsible_team_id !== 'none' && item.responsible_team_id
+      === (homeTeam?.group_id || homeTeam?.user_id) ? homeTeam?.thumbnail && homeTeam.thumbnail : awayTeam?.thumbnail && awayTeam.thumbnail}
       name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam?.group_id || (item.responsible_team_id === homeTeam?.user_id) ? homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}` : awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`)))}
       marginLeft={30}
     />
@@ -89,6 +91,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const renderSecureScorekeeper = ({ item, index }) => (
     <TCInfoImageField
       title={`Scorekeeper ${index + 1}`}
+      image={item.responsible_team_id !== 'none' && item.responsible_team_id
+      === (homeTeam?.group_id || homeTeam?.user_id) ? homeTeam?.thumbnail && homeTeam.thumbnail : awayTeam?.thumbnail && awayTeam.thumbnail}
       name={(homeTeam && awayTeam && ((item.responsible_team_id === 'none' && 'None') || (item.responsible_team_id === homeTeam?.group_id || (item.responsible_team_id === homeTeam?.user_id) ? homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}` : awayTeam?.group_name || `${awayTeam?.first_name} ${awayTeam?.last_name}`)))}
       marginLeft={30}
     />
@@ -126,7 +130,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           </View>
 
           <View style={styles.teamView}>
-            <Image source={images.teamPlaceholder} style={styles.teamImage} />
+            <Image source={homeTeam?.thumbnail ? { uri: homeTeam?.thumbnail } : images.teamPlaceholder} style={styles.teamImage} />
             <Text style={styles.teamNameText}>{homeTeam?.group_name || `${homeTeam?.first_name} ${homeTeam?.last_name}`}</Text>
           </View>
 
@@ -138,7 +142,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           </View>
 
           <View style={styles.teamView}>
-            <Image source={images.teamPlaceholder} style={styles.teamImage} />
+            <Image source={awayTeam?.thumbnail ? { uri: awayTeam?.thumbnail } : images.teamPlaceholder} style={styles.teamImage} />
             <Text
                 style={{
                   marginLeft: 5,
@@ -166,12 +170,14 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
           <TCInfoImageField
             title={'Home'}
+            image = {route.params.teamData[0]?.thumbnail && route.params.teamData[0].thumbnail}
             name={route.params.teamData[0].group_name || `${route.params.teamData[0].first_name} ${route.params.teamData[0].last_name}`}
             marginLeft={30}
           />
           <TCThinDivider />
           <TCInfoImageField
             title={'Away'}
+            image = {route.params.teamData[1]?.thumbnail && route.params.teamData[1].thumbnail}
             name={route.params.teamData[1].group_name || `${route.params.teamData[1].first_name} ${route.params.teamData[1].last_name}`}
             marginLeft={30}
           />
@@ -242,6 +248,15 @@ export default function CreateChallengeForm4({ navigation, route }) {
           </View>
           <TCInfoImageField
       title={'Venue'}
+      image={
+        (bodyParams?.home_team?.group_name
+          || `${bodyParams?.home_team?.first_name} ${bodyParams?.home_team?.last_name}`)
+        === bodyParams?.responsible_to_secure_venue
+          ? bodyParams?.home_team?.thumbnail
+            && bodyParams?.home_team?.thumbnail
+          : bodyParams?.away_team?.thumbnail
+            && bodyParams?.away_team?.thumbnail
+      }
       name={bodyParams.responsible_to_secure_venue}
       marginLeft={30}
     />
@@ -394,6 +409,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     resizeMode: 'cover',
+    borderRadius: 10,
   },
   teamNameText: {
     marginLeft: 5,

@@ -34,6 +34,9 @@ import CreateChallengeForm3 from '../screens/challenge/createChallenge/CreateCha
 import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateChallengeForm4';
 import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
+import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
+
+import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 
 import colors from '../Constants/Colors'
 
@@ -437,7 +440,39 @@ const ReservationNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+        name="ChooseAddressScreen"
+        component={ ChooseAddressScreen }
+        options={ {
+          title: 'Venue',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
 
+    <Stack.Screen
+         name="NotificationsListScreen"
+         component={NotificationsListScreen}
+         options={{
+           title: 'Notification',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
   </Stack.Navigator>
 );
 

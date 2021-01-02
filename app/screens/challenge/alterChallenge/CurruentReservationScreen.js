@@ -110,17 +110,23 @@ export default function CurruentReservationScreen({ route }) {
   // eslint-disable-next-line consistent-return
   const checkSenderOrReceiver = (challengeObj) => {
     if (!challengeObj.userChallenge) {
+      if (
+        challengeObj.status === ReservationStatus.pendingpayment
+        || challengeObj.status === ReservationStatus.pendingrequestpayment
+      ) {
+        if (challengeObj.invited_by === entity.uid) {
+          return 'sender';
+        }
+        return 'receiver';
+      }
       if (challengeObj.status === ReservationStatus.offered) {
         if (entity.uid === bodyParams.created_by.group_id) {
           return 'sender';
         }
         return 'receiver';
       }
-      if (
-        challengeObj
-          && challengeObj.updated_by
-          && challengeObj.updated_by.group_id === entity.uid
-      ) {
+
+      if (challengeObj.updated_by.group_id === entity.uid) {
         return 'sender';
       }
       return 'receiver';
@@ -130,6 +136,30 @@ export default function CurruentReservationScreen({ route }) {
       // return 'receiver';
     }
     console.log('challenge for user to user');
+    if (
+      challengeObj.status === ReservationStatus.pendingpayment
+      || challengeObj.status === ReservationStatus.pendingrequestpayment
+    ) {
+      if (challengeObj.invited_by === entity.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+    if (challengeObj.status === ReservationStatus.offered) {
+      if (entity.uid === bodyParams.created_by.uid) {
+        return 'sender';
+      }
+      return 'receiver';
+    }
+
+    if (challengeObj.updated_by.uid === entity.uid) {
+      return 'sender';
+    }
+    return 'receiver';
+    // if (challengeObj.change_requested_by === entity.uid) {
+    //   return 'sender';
+    // }
+    // return 'receiver';
   };
 
   return (

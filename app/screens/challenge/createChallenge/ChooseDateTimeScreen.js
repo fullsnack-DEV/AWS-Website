@@ -56,7 +56,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   const [selectedDate, setSelectedDate] = useState(route?.params?.body?.start_datetime * 1000 || new Date());
 
   const [fromDate, setfromDate] = useState(route?.params?.body?.start_datetime * 1000 || getNearDateTime(new Date()));
-  const [toDate, setToDate] = useState(route?.params?.body?.end_datetime * 1000 || getNearDateTime(new Date()));
+  const [toDate, setToDate] = useState(route?.params?.body?.end_datetime * 1000 || getNearDateTime(new Date().setMinutes(new Date().getMinutes() + 30)));
   const [datePickerFor, setDatePickerFor] = useState();
   const [blockedSlot, setBlockedSlot] = useState();
   const [slots, setSlots] = useState();
@@ -70,7 +70,6 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-
     return moment(new Date(dateValue)).format('MMM DD, yy      hh:mm A');
   };
   const getSlots = () => {
@@ -147,6 +146,20 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const handleDonePress = (date) => {
     console.log('From date:', date);
+    if (new Date(fromDate).getTime() === new Date(toDate).getTime()) {
+      const todayDate = new Date(`${new Date().getMonth() + 1} ${new Date().getDate()} ${new Date().getFullYear()}`)
+      const selectDate = new Date(`${new Date(date).getMonth() + 1} ${new Date(date).getDate()} ${new Date(date).getFullYear()}`)
+      if (todayDate.getTime() === selectDate.getTime()) {
+        setSelectedDate(new Date(date).setHours(new Date(getNearDateTime(new Date())).getHours(), new Date(getNearDateTime(new Date())).getMinutes(), 0, 0));
+        setfromDate(new Date(date).setHours(new Date(getNearDateTime(new Date())).getHours(), new Date(getNearDateTime(new Date())).getMinutes(), 0, 0))
+        setToDate(new Date(date).setHours(new Date(getNearDateTime(new Date())).getHours(), new Date(getNearDateTime(new Date())).getMinutes() + 30, 0, 0))
+      } else {
+        setSelectedDate(new Date(date).setHours(0, 0, 0, 0));
+        setfromDate(new Date(date).setHours(0, 0, 0, 0))
+        setToDate(new Date(date).setHours(0, 30, 0, 0))
+      }
+    }
+
     setShow(!show);
     if (datePickerFor === 'from') {
       setfromDate(date);
@@ -179,7 +192,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   };
   return (
     <>
-      <ScrollView>
+      <ScrollView style={{ flex: 1 }}>
         <ActivityLoader visible={loading} />
         <SafeAreaView>
           <Calendar
@@ -226,9 +239,18 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                 });
                 setBlockedSlot(temp);
 
-                setSelectedDate(new Date(day.dateString));
-                setfromDate(new Date(day.dateString))
-                setToDate(new Date(day.dateString))
+                if (todayDate.getTime() === selectDate.getTime()) {
+                  console.log('date matched::::::');
+
+                  setSelectedDate(new Date(day.dateString).setHours(new Date(getNearDateTime(new Date())).getHours(), new Date(getNearDateTime(new Date())).getMinutes(), 0, 0));
+                  setfromDate(new Date(day.dateString).setHours(new Date(getNearDateTime(new Date())).getHours(), new Date(getNearDateTime(new Date())).getMinutes(), 0, 0))
+                  setToDate(new Date(day.dateString).setHours(new Date(getNearDateTime(new Date())).getHours(), new Date(getNearDateTime(new Date())).getMinutes() + 30, 0, 0))
+                } else {
+                  setSelectedDate(new Date(day.dateString).setHours(0, 0, 0, 0));
+                  setfromDate(new Date(day.dateString).setHours(0, 0, 0, 0))
+                  setToDate(new Date(day.dateString).setHours(0, 30, 0, 0))
+                }
+
                 getSelectedDayEvents(day.dateString);
                 filterSlots(selectedDate);
               }
@@ -245,7 +267,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
           />
 
-          {blockedSlot && <View>
+          {blockedSlot && <View style={{ paddingBottom: 5 }}>
             <Text style={styles.dateHeader}>
               {daysNames[new Date(selectedDate).getDay()]},{' '}
               {new Date(selectedDate).getDate()}{' '}
@@ -262,6 +284,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
               />
             )}
             keyExtractor={(item, index) => index.toString()}
+
           />
           </View>}
           <TouchableOpacity
@@ -291,7 +314,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-          style={{ marginLeft: 15, marginRight: 15 }}
+          style={{ marginLeft: 15, marginRight: 15, marginBottom: 2 }}
           onPress={() => {
             setDatePickerFor('to');
             setShow(!show);
@@ -327,13 +350,13 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             // minimumDate={selectedDate || new Date()}
             // maximumDate = {new Date(selectedDate).setHours(23, 59, 59, 999) || new Date().setHours(23, 59, 59, 999)}
             // mode={'datetime'}
-
+            date={datePickerFor === 'from' ? fromDate : toDate}
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             minutesGap={30}
-            minimumDate={selectedDate || new Date()}
+            minimumDate={datePickerFor === 'from' ? fromDate : toDate || new Date()}
             maximumDate = {new Date(selectedDate).setHours(23, 59, 59, 999) || new Date().setHours(23, 59, 59, 999)}
             mode={'time'}
           />
@@ -345,6 +368,9 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       <TCGradientButton
         title={strings.applyTitle}
         onPress={() => {
+          console.log('From date::------>', moment(fromDate).format('MMM DD, yy      hh:mm A'));
+          console.log('End date::------>', moment(toDate).format('MMM DD, yy      hh:mm A'));
+
           if (fromDate < new Date().getTime() / 1000) {
             Alert.alert(strings.chooseFutureDate);
           } else if (toDate > fromDate) {
