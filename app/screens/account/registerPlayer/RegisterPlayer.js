@@ -29,6 +29,8 @@ import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
+import TCLabel from '../../../components/TCLabel';
+import DataSource from '../../../Constants/DataSource';
 
 export default function RegisterPlayer({ navigation, route }) {
   const [sports, setSports] = useState('');
@@ -37,6 +39,7 @@ export default function RegisterPlayer({ navigation, route }) {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [languagesName, setLanguagesName] = useState('');
   const [languages, setLanguages] = useState([]);
+  const [currencyType, setCurrencyType] = useState('CAD');
   const selectedLanguage = [];
 
   useEffect(() => {
@@ -164,6 +167,27 @@ export default function RegisterPlayer({ navigation, route }) {
           placeholder={ strings.descriptionPlaceholder }
         />
 
+        <View style={styles.fieldView}>
+          <TCLabel
+            title={strings.curruencyType}
+            style={[styles.LocationText, { paddingLeft: 0, marginBottom: 0 }]}
+          />
+          <RNPickerSelect
+            placeholder={{}}
+            items={DataSource.CurrencyType}
+            onValueChange={(value) => {
+              setCurrencyType(value)
+            }}
+            useNativeAndroidPickerStyle={false}
+            // eslint-disable-next-line no-sequences
+            style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+            value={currencyType}
+            Icon={() => (
+              <Image source={images.dropDownArrow} style={styles.downArrow} />
+            )}
+          />
+        </View>
+
         <Text style={ styles.LocationText }>
           {strings.languageTitle}
           <Text style={ styles.smallTxt }> {strings.opetionalText} </Text>
@@ -253,6 +277,7 @@ export default function RegisterPlayer({ navigation, route }) {
             bodyParams.sport_name = sports;
             bodyParams.Tennis = 'single-multiplayer';
             bodyParams.descriptions = description;
+            bodyParams.currencyType = currencyType;
             bodyParams.language = selectedLanguages;
 
             // registered_sports[0]=bodyParams;
