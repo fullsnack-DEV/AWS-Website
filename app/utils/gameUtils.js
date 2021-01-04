@@ -3,6 +3,13 @@ import images from '../Constants/ImagePath';
 
 const REVIEW_EXPIRY_DAYS = 5;
 
+const GAME_HOME = {
+  soccer: 'SoccerHome',
+  tennis: 'TennisHome',
+}
+
+const getGameHomeScreen = (sportName) => GAME_HOME[sportName?.toLowerCase()];
+
 // Soccer
 const soccerGameStats = {
   start: 'started',
@@ -191,5 +198,6 @@ export {
   getGameConvertMinsToTime,
   getNumberSuffix,
   getGameFromToDateDiff,
+  getGameHomeScreen,
 
 }

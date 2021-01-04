@@ -52,8 +52,8 @@ const Scorekeepers = ({
               title={sKeeper?.full_name}
               is_following={sKeeper?.is_following}
               onFollowUnfollowPress={onFollowPress}
-              followSoccerUser={followSoccerUser}
-              unFollowSoccerUser={unFollowSoccerUser}
+              followUser={followSoccerUser}
+              unFollowUser={unFollowSoccerUser}
               profileImage={sKeeper?.thumbnail}
               isAdmin={isAdmin}
               isShowThreeDots={item?.initiated_by === entity?.uid}

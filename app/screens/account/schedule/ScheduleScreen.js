@@ -47,6 +47,7 @@ import strings from '../../../Constants/String';
 import { getRefereeReservationDetails } from '../../../api/Reservations';
 import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
+import { getGameHomeScreen } from '../../../utils/gameUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -185,10 +186,13 @@ export default function ScheduleScreen({ navigation }) {
             }}
             onItemPress={async (item) => {
               const entity = authContext.entity
-              if (item.game_id) {
-                navigation.navigate('SoccerHome', {
-                  gameId: item.game_id,
-                })
+              if (item?.game_id) {
+                if (item?.game?.sport) {
+                  const gameHome = getGameHomeScreen(item.game.sport);
+                  navigation.navigate(gameHome, {
+                    gameId: item?.game_id,
+                  })
+                }
               } else {
                 getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
                   navigation.navigate('EventScreen', { data: response.payload, gameData: item });
@@ -247,10 +251,13 @@ export default function ScheduleScreen({ navigation }) {
                     renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
                       onPress={async () => {
                         const entity = authContext.entity
-                        if (itemValue.game_id) {
-                          navigation.navigate('SoccerHome', {
-                            gameId: itemValue.game_id,
-                          })
+                        if (itemValue?.game_id) {
+                          if (itemValue?.game?.sport) {
+                            const gameHome = getGameHomeScreen(itemValue.game.sport);
+                            navigation.navigate(gameHome, {
+                              gameId: itemValue?.game_id,
+                            })
+                          }
                         } else {
                           getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
                             navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });

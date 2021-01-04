@@ -11,8 +11,8 @@ import { heightPercentageToDP as hp } from '../utils';
 import TCInnerLoader from './TCInnerLoader';
 
 const TCUserFollowUnfollowList = ({
-  followSoccerUser,
-  unFollowSoccerUser,
+  followUser,
+  unFollowUser,
   isShowThreeDots = false,
   title,
   subTitle,
@@ -34,7 +34,7 @@ const TCUserFollowUnfollowList = ({
       entity_type: 'player',
     };
     if (!is_following) {
-      followSoccerUser(params, userID).then(() => {
+      followUser(params, userID).then(() => {
         onFollowUnfollowPress(userID, true)
       }).catch((error) => {
         setTimeout(() => {
@@ -42,7 +42,7 @@ const TCUserFollowUnfollowList = ({
         }, 0.1)
       }).finally(() => setLoading(false));
     } else {
-      unFollowSoccerUser(params, userID).then(() => {
+      unFollowUser(params, userID).then(() => {
         onFollowUnfollowPress(userID, false);
       }).finally(() => setLoading(false));
     }

@@ -179,7 +179,7 @@ export default function SignupScreen({ navigation }) {
         if (e.code === 'auth/too-many-requests') {
           message = 'Too many request for signup ,try after sometime';
         }
-        setTimeout(() => Alert.alert('Towns Cup', message), 50);
+        if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };
   const checkLoginForTownsCup = () => {

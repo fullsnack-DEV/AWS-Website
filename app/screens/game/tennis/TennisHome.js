@@ -9,14 +9,13 @@ import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgro
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/tennis/home/summary/Summary';
 import Stats from '../../../components/game/common/stats/Stats';
-import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
   approveDisapproveGameRecords,
   getGameData,
   getGameGallery,
   getGameMatchRecords, getGameRefereeReservation,
-  getGameReviews, getGameScorekeeperReservation,
+  getGameScorekeeperReservation,
   getGameStats,
   getSportsList,
 } from '../../../api/Games';
@@ -69,12 +68,11 @@ const TennisHome = ({ navigation, route }) => {
   }
 
   const getTennisGameData = (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext);
-  const followSoccerUser = (params, userID) => followUser(params, userID, authContext);
-  const unFollowSoccerUser = (params, userID) => unfollowUser(params, userID, authContext);
+  const followTennisUser = (params, userID) => followUser(params, userID, authContext);
+  const unFollowTennisUser = (params, userID) => unfollowUser(params, userID, authContext);
   const getTennisGameMatchRecords = (gameId) => getGameMatchRecords(gameId, authContext);
   const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext)
   const getTennisGameStats = (gameId) => getGameStats(gameId, authContext)
-  const getTennisGameReview = (gameId) => getGameReviews(gameId, authContext)
   const getTennisGalleryData = (gameId) => getGameGallery(gameId, authContext)
   const getGameSportsList = () => getSportsList(authContext)
   const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
@@ -87,16 +85,14 @@ const TennisHome = ({ navigation, route }) => {
             getRefereeReservation={getRefereeReservation}
             getScorekeeperReservation={getScorekeeperReservation}
             getSportsList={getGameSportsList}
-            getSoccerGameReview={getTennisGameReview}
-            getSoccerGameStats={getTennisGameStats}
             getGameData={getTennisGameData}
             approveDisapproveGameScore={approveDisapproveGameScore}
             getGameMatchRecords={getTennisGameMatchRecords}
-            unFollowSoccerUser={unFollowSoccerUser}
-            followSoccerUser={followSoccerUser}
+            followTennisUser={followTennisUser}
+            unFollowTennisUser={unFollowTennisUser}
             navigation={navigation}
             gameData={gameData}
-            isAdmin={true}
+            isAdmin={isAdmin}
             userRole={userRole}
             userId={userId}
         />
@@ -113,12 +109,12 @@ const TennisHome = ({ navigation, route }) => {
               gameData={gameData}
           />
       )}
-      {tabKey === 2 && <Review navigation={navigation} getSoccerGameReview={getTennisGameReview} isAdmin={isAdmin} gameData={gameData}/>}
+      {tabKey === 2 && <></>}
       {tabKey === 3 && (
         <Gallery
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
               gameData={gameData}
-              getSoccerGalleryData={getTennisGalleryData}
+              getGalleryData={getTennisGalleryData}
               navigation={navigation}/>
       )}
     </View>

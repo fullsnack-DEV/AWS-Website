@@ -37,6 +37,7 @@ import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDat
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
+import MessageDrawerNavigator from './MessageDrawerNavigator';
 
 const Stack = createStackNavigator();
 
@@ -460,6 +461,26 @@ function NotificationNavigator() {
           },
         } }
       />
+
+      <Stack.Screen
+            name="MessageChat"
+            component={MessageDrawerNavigator}
+            options={{
+
+              title: 'Message Chat',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerShown: false,
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+
       {/* <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } /> */}
     </Stack.Navigator>
   );

@@ -24,8 +24,8 @@ const Summary = ({
   isAdmin,
   userRole,
   navigation,
-  followSoccerUser,
-  unFollowSoccerUser,
+  followTennisUser,
+  unFollowTennisUser,
   getGameMatchRecords,
   getSportsList,
   getRefereeReservation,
@@ -38,8 +38,8 @@ const Summary = ({
   useEffect(() => {
     setLoading(true);
     getSportsList(authContext).then((sports) => {
-      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
-      const teamReviewProp = soccerSportData?.team_review_properties ?? []
+      const sportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
+      const teamReviewProp = sportData?.team_review_properties ?? []
       const sliderReviewProp = [];
       const starReviewProp = [];
       if (teamReviewProp?.length) {
@@ -150,15 +150,15 @@ const Summary = ({
             gameData={gameData}
             isAdmin={isAdmin}
             userRole={userRole}
-            followSoccerUser={followSoccerUser}
-            unFollowSoccerUser={unFollowSoccerUser}
+            followTennisUser={followTennisUser}
+            unFollowTennisUser={unFollowTennisUser}
         />
 
       {/* Scorekeepers */}
       <Scorekeepers
           getScorekeeperReservation={getScorekeeperReservation}
-          followSoccerUser={followSoccerUser}
-          unFollowSoccerUser={unFollowSoccerUser}
+          followTennisUser={followTennisUser}
+          unFollowTennisUser={unFollowTennisUser}
           isAdmin={isAdmin}
           userRole={userRole}
           navigation={navigation}

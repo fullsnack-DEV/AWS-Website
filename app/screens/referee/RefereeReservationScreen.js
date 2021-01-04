@@ -27,7 +27,7 @@ import TCBorderButton from '../../components/TCBorderButton';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../components/reservations/ReservationNumber';
 import TCGameCard from '../../components/TCGameCard';
-import { getGameFromToDateDiff } from '../../utils/gameUtils';
+import { getGameFromToDateDiff, getGameHomeScreen } from '../../utils/gameUtils';
 import TCProfileView from '../../components/TCProfileView';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 
@@ -612,7 +612,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
             <View>
               <TCLabel title="Match" />
               {bodyParams?.game && <TCGameCard data={bodyParams?.game} onPress={() => {
-                const routeName = `${_.startCase(bodyParams?.game?.sport)}Home`;
+                const routeName = getGameHomeScreen(bodyParams?.game?.sport);
                 navigation.push(routeName, { gameId: bodyParams?.game?.game_id })
               }}/>}
               {/* Date & Time */}

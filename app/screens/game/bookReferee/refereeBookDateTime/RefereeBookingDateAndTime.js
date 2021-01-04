@@ -30,7 +30,7 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCProfileView from '../../../../components/TCProfileView';
 import TCGameCard from '../../../../components/TCGameCard';
 import TCInfoField from '../../../../components/TCInfoField';
-import { getGameFromToDateDiff } from '../../../../utils/gameUtils';
+import { getGameFromToDateDiff, getGameHomeScreen } from '../../../../utils/gameUtils';
 import { getRefereeGameFeeEstimation } from '../../../../api/Challenge';
 import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
 import { createUserReservation } from '../../../../api/Reservations';
@@ -134,7 +134,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
     delete bodyParams.hourly_game_fee
     setLoading(true);
     createUserReservation('referees', bodyParams, authContext).then(() => {
-      const navigationName = route?.params?.navigationName ?? `${_.startCase(gameData?.sport)}Home`;
+      const navigationName = route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
       navigation.navigate('BookRefereeSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
       setTimeout(() => Alert.alert('Towns Cup', error?.message), 200)
@@ -210,7 +210,7 @@ const RefereeBookingDateAndTime = ({ navigation, route }) => {
               </TouchableOpacity>
 
               {gameData && <TCGameCard data={gameData} onPress={() => {
-                const routeName = `${_.startCase(gameData?.sport)}Home`;
+                const routeName = getGameHomeScreen(gameData?.sport);
                 navigation.push(routeName, { gameId: gameData?.game_id })
               }} />}
             </View>

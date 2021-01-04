@@ -11,6 +11,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import { getEventById } from '../../api/Schedule';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function UpcomingMatchScreen({
   sportsData,
@@ -74,10 +75,13 @@ export default function UpcomingMatchScreen({
               // onThreeDotPress={() => {}}
               onItemPress={() => {
                 const entity = authContext.entity
-                if (item.game_id) {
-                  navigation.navigate('SoccerHome', {
-                    gameId: item.game_id,
-                  })
+                if (item?.game_id) {
+                  if (item?.game?.sport) {
+                    const gameHome = getGameHomeScreen(item.game.sport);
+                    navigation.navigate(gameHome, {
+                      gameId: item?.game_id,
+                    })
+                  }
                 } else {
                   getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
                     navigation.navigate('EventScreen', { data: response.payload, gameData: item });

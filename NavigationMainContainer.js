@@ -33,7 +33,7 @@ export default function NavigationMainContainer() {
       const expiryDate = new Date(contextEntity.auth.token.expirationTime);
       if (expiryDate.getTime() <= currentDate.getTime()) {
         console.log('Token Expired From App State');
-        firebase.auth().onAuthStateChanged((user) => {
+        const appAuthStateChanged = firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             firebase.auth().currentUser.getIdTokenResult(true)
               .then(async (idTokenResult) => {
@@ -54,7 +54,8 @@ export default function NavigationMainContainer() {
             console.log('No user is signed in.');
             resetApp();
           }
-        })
+        });
+        appAuthStateChanged();
       } else {
         await QBconnectAndSubscribe(contextEntity);
         await authContext.setEntity({ ...contextEntity })

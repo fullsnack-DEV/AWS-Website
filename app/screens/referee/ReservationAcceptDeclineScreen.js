@@ -9,6 +9,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCBorderButton from '../../components/TCBorderButton';
 import strings from '../../Constants/String';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ReservationAcceptDeclineScreen({ navigation, route }) {
   return (
@@ -75,17 +76,11 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
           shadow={true}
           marginBottom={55}
           onPress={() => {
-            if (`${route?.params?.teamObj?.sport}`.toLowerCase() === 'soccer') {
-              navigation.navigate('SoccerHome', {
-                gameId: route?.params?.teamObj?.game_id,
-              })
-            } else {
-              navigation.navigate('TennisHome', {
-                gameId: route?.params?.teamObj?.game_id,
-              })
-            }
-          }
-          }
+            const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
+            navigation.navigate(gameHome, {
+              gameId: route?.params?.teamObj?.game_id,
+            })
+          }}
         />
       )}
     </View>

@@ -42,6 +42,7 @@ import CurruentVersionView from '../../../components/challenge/CurruentVersionVi
 import ReservationNumber from '../../../components/reservations/ReservationNumber';
 import GameStatus from '../../../Constants/GameStatus';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import { getGameHomeScreen } from '../../../utils/gameUtils';
 
 let entity = {};
 
@@ -832,15 +833,10 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           <TCBorderButton
             title={strings.gameHomeText}
             onPress={() => {
-              if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
-                navigation.navigate('SoccerHome', {
-                  gameId: bodyParams.game_id,
-                });
-              } else {
-                navigation.navigate('TennisHome', {
-                  gameId: bodyParams.game_id,
-                });
-              }
+              const gameHome = getGameHomeScreen(bodyParams.sport);
+              navigation.navigate(gameHome, {
+                gameId: bodyParams.game_id,
+              });
             }}
             marginBottom={15}
           />
