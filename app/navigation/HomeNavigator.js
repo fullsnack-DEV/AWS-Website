@@ -93,6 +93,7 @@ import CreateChallengeForm4 from '../screens/challenge/createChallenge/CreateCha
 import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateChallengeForm5';
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
 
+import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
@@ -121,6 +122,7 @@ import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterR
 import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
 import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
 
+import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import ChangeReservationInfoScreen from '../screens/challenge/alterChallenge/ChangeReservationInfoScreen';
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
 import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/BookScorekeeper';
@@ -132,7 +134,6 @@ import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
-import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 
 const Stack = createStackNavigator();
 
@@ -715,7 +716,22 @@ const HomeNavigator = () => (
             headerShown: false,
           } }
       />
-
+    <Stack.Screen
+         name="AcceptDeclineChallengeScreen"
+         component={AcceptDeclineChallengeScreen}
+         options={{
+           title: 'Challenge',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
     <Stack.Screen
         name="CreateTeamForm1"
         component={ CreateTeamForm1 }
@@ -905,6 +921,22 @@ const HomeNavigator = () => (
           },
         } }
       />
+    <Stack.Screen
+            name="RefereeReservationScreen"
+            component={RefereeReservationScreen}
+            options={{
+              title: 'Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
     <Stack.Screen
         name="GroupSettingPrivacyScreen"
         component={ GroupSettingPrivacyScreen }
@@ -1644,22 +1676,6 @@ const HomeNavigator = () => (
               fontWeight: '500',
             },
             headerShown: false,
-            headerStyle: {
-              backgroundColor: colors.whiteColor,
-              borderBottomColor: colors.grayColor,
-              borderBottomWidth: 0.3,
-            },
-          }}
-      />
-    <Stack.Screen
-          name="AcceptDeclineChallengeScreen"
-          component={AcceptDeclineChallengeScreen}
-          options={{
-            title: 'Challenge',
-            headerTintColor: colors.blackColor,
-            headerTitleStyle: {
-              fontWeight: '500',
-            },
             headerStyle: {
               backgroundColor: colors.whiteColor,
               borderBottomColor: colors.grayColor,

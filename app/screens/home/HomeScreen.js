@@ -232,8 +232,9 @@ export default function HomeScreen({ navigation, route }) {
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
-      const entityRole = entity.role === 'user' ? 'users' : 'groups';
-      const uid = entity.uid || entity.auth.user_id;
+      const entityRole = (route?.params?.role === 'user' ? 'users' : 'groups') || (entity.role === 'user' ? 'users' : 'groups');
+
+      const uid = route?.params?.uid || (entity.uid || entity.auth.user_id);
       const eventdata = [];
       const timetabledata = [];
       let eventTimeTableData = [];

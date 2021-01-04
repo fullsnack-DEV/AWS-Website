@@ -41,17 +41,13 @@ export default function CreateChallengeForm4({ navigation, route }) {
     entity = authContext.entity;
     const { challengeObj } = route.params ?? {};
     setbodyParams(challengeObj);
-    console.log('ALTER CHALLENGE OBJECT:', challengeObj);
     // getChallengeDetail(challengeObj.challenge_id);
-    if (challengeObj.away_team.group_id === entity.uid) {
+    if ((challengeObj.away_team.group_id || challengeObj.away_team.user_id) === entity.uid) {
       setHomeTeam(challengeObj.away_team);
       setAwayTeam(challengeObj.home_team);
-      console.log('HOME::', homeTeam);
     } else {
       setHomeTeam(challengeObj.home_team);
       setAwayTeam(challengeObj.away_team);
-      console.log('HOME::', homeTeam);
-      console.log('AWAY::', awayTeam);
     }
   }, [isFocused]);
 
@@ -72,11 +68,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
     )
       .then((response) => {
         setloading(false);
-        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
+            teamObj: { ...awayTeam, game_id: response.payload.game_id, sport: bodyParams.sport },
             status: 'accept',
           });
         } else if (status === 'decline') {

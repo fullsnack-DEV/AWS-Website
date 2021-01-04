@@ -12,6 +12,8 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../../TCGradientButton';
 import AuthContext from '../../../../../auth/context'
+import * as RefereeUtils from '../../../../../screens/referee/RefereeUtility';
+import ActivityLoader from '../../../../loader/ActivityLoader';
 
 const Referees = ({
   gameData,
@@ -24,8 +26,11 @@ const Referees = ({
 }) => {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext)
+  const [loading, setloading] = useState(false);
   const [refree, setRefree] = useState([])
   const [myUserId, setMyUserId] = useState(null);
+  const [selectedRefereeData, setSelectedRefereeData] = useState(null);
+
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => {
     getRefereeReservation(gameData?.game_id).then((res) => {
@@ -34,7 +39,7 @@ const Referees = ({
       const cloneRefData = [];
       refData.map((item) => {
         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
-        if (!(item?.status === 'offered' && !isExpired)) {
+        if (item?.status === 'offered' && !isExpired) {
           cloneRefData.push(item);
         }
         return false;
@@ -42,7 +47,20 @@ const Referees = ({
       setRefree([...cloneRefData]);
     });
   }, [gameData])
-
+  const goToRefereReservationDetail = (data) => {
+    if (data?.referee) {
+      setloading(true);
+      RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+        setloading(false);
+        console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+        console.log('Screen name of Reservation:', obj.screenName);
+        navigation.navigate(obj.screenName, {
+          reservationObj: obj.reservationObj || obj.reservationObj[0],
+        });
+        setloading(false);
+      });
+    }
+  }
   const onFollowPress = (userID, status) => {
     const refre = _.cloneDeep(refree);
     const index = refre.findIndex((item) => item?.referee?.user_id === userID);
@@ -62,7 +80,7 @@ const Referees = ({
       case 'pendingpayment': statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
       case 'offered':
         if (isExpired) statusData = { status: 'REFEREE RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
-        else statusData = { status: 'OFFERED', color: colors.userPostTimeColor };
+        else statusData = { status: 'REFEREE RESERVATION REUEST SENT', color: colors.yellowColor };
         break;
       default: statusData = { status: '' };
     }
@@ -86,7 +104,10 @@ const Referees = ({
               onFollowUnfollowPress={onFollowPress}
               profileImage={referee?.thumbnail}
               isShowThreeDots={item?.initiated_by === entity?.uid}
-              onThreeDotPress={() => actionSheet.current.show()}
+              onThreeDotPress={() => {
+                setSelectedRefereeData(item)
+                actionSheet.current.show()
+              }}
               userRole={userRole}
           />
       )
@@ -99,6 +120,7 @@ const Referees = ({
   }
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
+      <ActivityLoader visible={loading} />
       <Text style={styles.title}>
         Referees
       </Text>
@@ -139,7 +161,8 @@ const Referees = ({
               cancelButtonIndex={1}
               onPress={(index) => {
                 if (index === 0) {
-                  alert('Referee Reservation Details')
+                  console.log(gameData);
+                  goToRefereReservationDetail(selectedRefereeData)
                 }
               }}
           />

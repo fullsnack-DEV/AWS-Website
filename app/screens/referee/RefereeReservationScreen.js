@@ -324,7 +324,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   style={styles.teamImage}
                 />
                   <Text style={styles.teamNameText}>
-                    {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester.last_name}`}
+                    {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester(bodyParams).last_name}`}
                   </Text>
                 </View>
               </View>
