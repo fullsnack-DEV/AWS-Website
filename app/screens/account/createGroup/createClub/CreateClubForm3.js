@@ -26,6 +26,7 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context'
 import DataSource from '../../../../Constants/DataSource';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function CreateClubForm3({ navigation, route }) {
   const [membershipFee, setMembershipFee] = useState(0);
@@ -83,7 +84,7 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={ styles.mainContainer }>
 
         <ActivityLoader visible={loading} />
@@ -199,7 +200,7 @@ export default function CreateClubForm3({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 

@@ -30,6 +30,7 @@ import * as Utility from '../../../utils/index';
 import { patchPlayer } from '../../../api/Users';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function RegisterPlayerForm2({ navigation, route }) {
   // For activity indigator
@@ -81,7 +82,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   };
 
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
         <View style={ styles.formSteps }>
@@ -221,7 +222,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
@@ -266,36 +267,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     // fontFamily: fonts.RBold,
   },
-  descriptionTxt: {
-    height: 120,
-    // alignSelf: 'center',
-    width: wp('92%'),
-    fontSize: wp('3.8%'),
-    marginTop: 12,
-    alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: 'black',
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-  // curruency: {
-  //   height: 40,
-  //   width: 50,
-  //   marginTop: 12,
-  //   backgroundColor: colors.textFieldColor,
-  //   textAlign: 'center',
-  //   lineHeight: 37,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   fontSize: wp('4%'),
-  // },
   curruency: {
     alignSelf: 'center',
     color: colors.lightBlackColor,
@@ -307,12 +278,6 @@ const styles = StyleSheet.create({
     fontSize: wp('3.8%'),
     width: '84%',
   },
-  // matchFeeView: {
-  //   flexDirection: 'row',
-  //   height: 40,
-
-  //   marginBottom: 14,
-  // },
   matchFeeView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
@@ -335,139 +300,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     width: wp('92%'),
   },
-  matchFeeTxt: {
-    alignSelf: 'center',
-    backgroundColor: colors.textFieldColor,
-    fontSize: wp('4%'),
-    height: 40,
-    paddingLeft: 10,
-
-    width: wp('77%'),
-    // marginTop: 12,
-  },
-
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('3.5%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: wp('92%'),
-  },
-  inputAndroid: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    fontSize: wp('4%'),
-    height: 40,
-
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-
-    width: wp('92%'),
-  },
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
-  },
-  doneButton: {
-    alignSelf: 'center',
-    backgroundColor: colors.doneButtonColor,
-    borderRadius: 8,
-    bottom: 30,
-    height: 45,
-
-    marginLeft: '7%',
-    marginRight: '5%',
-    marginTop: hp('2%'),
-    position: 'absolute',
-    width: '75%',
-  },
-  signUpText: {
-    fontSize: 17,
-    // fontFamily: fonts.RBold,
-    height: 50,
-    padding: 12,
-    textAlign: 'center',
-    color: colors.whiteColor,
-  },
-  downArrow: {
-    alignSelf: 'center',
-    height: 18,
-    resizeMode: 'contain',
-
-    right: 25,
-    tintColor: colors.grayColor,
-    top: 22,
-    width: 18,
-  },
-  certificateImg: {
-    alignSelf: 'center',
-    backgroundColor: colors.textFieldColor,
-    borderRadius: 10,
-
-    height: 45,
-
-    marginRight: 15,
-    resizeMode: 'contain',
-    width: 45,
-  },
-  chooseImage: {
-    bottom: -8,
-    height: 20,
-    position: 'absolute',
-    resizeMode: 'contain',
-    right: 8,
-    width: 20,
-  },
-  addCertificateView: {
-    flexDirection: 'row',
-    // backgroundColor: 'red',
-    marginTop: 12,
-    marginBottom: 12,
-    width: wp('92%'),
-    alignSelf: 'center',
-  },
-  addCertificateButton: {
-    alignItems: 'center',
-
-    alignSelf: 'center',
-    borderColor: colors.blackColor,
-    borderRadius: 6,
-    borderWidth: 1,
-    height: 30,
-    justifyContent: 'center',
-    marginTop: '5%',
-    width: '35%',
-  },
-  addCertificateText: {
-    fontSize: 12,
-    // fontFamily: fonts.RBold,
-
-    color: colors.blackColor,
-  },
-  delete: { alignSelf: 'flex-end', color: colors.fbTextColor, marginRight: 15 },
-
   nextButton: {
     alignSelf: 'center',
     borderRadius: 30,
@@ -516,9 +348,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 15,
     marginTop: 20,
-  },
-  mendatory: {
-    color: 'red',
   },
   membershipSubText: {
     color: colors.veryLightBlack,

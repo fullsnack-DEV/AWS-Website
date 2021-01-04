@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, {
+  useContext, useMemo, useRef, useState,
+} from 'react';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import {
   Image, Platform, StyleSheet, Text, TouchableOpacity, View,
@@ -6,15 +8,25 @@ import {
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
+import ActionSheet from 'react-native-actionsheet';
 import Header from '../../../Home/Header';
 import images from '../../../../Constants/ImagePath';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import { widthPercentageToDP as wp } from '../../../../utils';
+import GameStatus from '../../../../Constants/GameStatus';
+import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtility';
+import AuthContext from '../../../../auth/context';
+import ActivityLoader from '../../../loader/ActivityLoader';
 
 const bgImage = images.soccerBackground;
-const TopBackgroundHeader = ({ gameData, navigation, children }) => {
+const TopBackgroundHeader = ({
+  gameData, navigation, children, isAdmin,
+}) => {
+  const threeDotActionSheet = useRef();
   const [headerTitleShown, setHeaderTitleShown] = useState(true);
+  const [loading, setloading] = useState(false);
+  const authContext = useContext(AuthContext);
   const renderForeground = () => (
     <LinearGradient
       colors={ ['transparent', 'rgba(0,0,0,0.4)'] }
@@ -26,7 +38,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
             <View style={{ ...styles.teamLogoContainer, marginRight: wp(2) }}>
               <FastImage
                 resizeMode={'cover'}
-                source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.teamPlaceholder }
+                source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.teamPlaceholder }
               style={{ height: 22, width: 22, borderRadius: 50 }}
             />
             </View>
@@ -41,7 +53,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
             <View style={{ ...styles.teamLogoContainer, marginLeft: wp(2) }}>
               <FastImage
                 resizeMode={'cover'}
-                    source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.teamPlaceholder }
+                    source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.teamPlaceholder }
                     style={{ height: 22, width: 22, borderRadius: 50 }}
                 />
             </View>
@@ -83,8 +95,26 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
     )
   }
 
+  const onThreeDorPress = () => {
+    threeDotActionSheet.current.show();
+  }
+
+  const goToChallengeDetail = (data) => {
+    if (data?.responsible_to_secure_venue) {
+      setloading(true);
+      getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
+        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
+        console.log('Screen name of challenge:', obj.screenName);
+        setloading(false);
+        navigation.navigate(obj.screenName, {
+          challengeObj: obj.challengeObj || obj.challengeObj[0],
+        });
+      }).catch(() => setloading(false));
+    }
+  }
   return (
     <View style={{ flex: 1 }}>
+      <ActivityLoader visible={loading}/>
       <Header
           barStyle={'light-content'}
             safeAreaStyle={{ position: 'absolute' }}
@@ -120,6 +150,13 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                     {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
                   </View>
                 }
+                rightComponent={isAdmin
+                  && <TouchableOpacity onPress={onThreeDorPress}>
+                    <Image source={images.threeDotIcon} style={{
+                      height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
+                    }} />
+                  </TouchableOpacity>
+                }
               />
             )}
             renderStickyHeader={() => (
@@ -141,7 +178,7 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                             }}>
                               <FastImage
                                   resizeMode={'cover'}
-                                  source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.teamPlaceholder }
+                                  source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.teamPlaceholder }
                                   style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
                               />
                             </View>
@@ -155,11 +192,18 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                             }}>
                               <FastImage
                                   resizeMode={'cover'}
-                                  source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.teamPlaceholder }
+                                  source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.teamPlaceholder }
                                   style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
                               />
                             </View>
                           </View>
+                        }
+                        rightComponent={isAdmin
+                          && <TouchableOpacity onPress={onThreeDorPress}>
+                            <Image source={images.threeDotIcon} style={{
+                              height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
+                            }} />
+                          </TouchableOpacity>
                         }
                     />
               </View>
@@ -172,6 +216,40 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                   style={styles.topBackgroundImage} />
             )}
         >
+        {useMemo(() => {
+          let destructiveButtonIndex = null;
+          const options = [];
+          if (gameData?.status === GameStatus?.accepted) {
+            options.push('Game Reservation Details');
+          }
+          options.push('Winner & Stats');
+          if (gameData?.status !== GameStatus?.accepted) {
+            options.push('Reset Match');
+            destructiveButtonIndex = options?.length - 1;
+          }
+          options.push('Cancel');
+          const cancelButtonIndex = options?.length - 1;
+          const onItemPress = (index) => {
+            const item = options[index];
+            if (item === 'Game Reservation Details') {
+              goToChallengeDetail(gameData);
+            } else if (item === 'Winner & Stats') {
+              alert('Winner & Stats')
+            } else if (item === 'Reset Match') {
+              alert('Reset Match')
+            }
+          }
+          return (
+            <ActionSheet
+                  ref={threeDotActionSheet}
+                  options={options}
+                  cancelButtonIndex={cancelButtonIndex}
+                  destructiveButtonIndex={destructiveButtonIndex}
+                  onPress={onItemPress}
+              />
+          )
+        }, [gameData])}
+
         {children}
       </ParallaxScrollView>
     </View>

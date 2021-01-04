@@ -3,7 +3,7 @@ import React, {
   useEffect, useState, useContext, useLayoutEffect,
 } from 'react';
 import {
-  StyleSheet, View, Text, Image, Alert,
+  StyleSheet, View, Text, Image, Alert, ScrollView,
 } from 'react-native';
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
@@ -300,60 +300,61 @@ export default function RefereeReservationScreen({ navigation, route }) {
 
   return (
     <TCKeyboardView>
-      <ActivityLoader visible={loading} />
-      { bodyParams && (
-        <View>
-          <ReservationNumber reservationNumber={bodyParams.reservation_id} />
-          <View
+      <ScrollView style={{ flex: 1 }}>
+        <ActivityLoader visible={loading} />
+        { bodyParams && (
+          <View>
+            <ReservationNumber reservationNumber={bodyParams.reservation_id} />
+            <View
             style={{
               flex: 1,
               flexDirection: 'row',
               justifyContent: 'space-between',
               margin: 15,
             }}>
-            <View style={styles.challengerView}>
-              <View style={styles.teamView}>
-                <Image source={images.requestOut} style={styles.reqOutImage} />
-                <Text style={styles.challengerText}>Resv. Requester</Text>
-              </View>
+              <View style={styles.challengerView}>
+                <View style={styles.teamView}>
+                  <Image source={images.requestOut} style={styles.reqOutImage} />
+                  <Text style={styles.challengerText}>Resv. Requester</Text>
+                </View>
 
-              <View style={styles.teamView}>
-                <Image
+                <View style={styles.teamView}>
+                  <Image
                   source={getRequester(bodyParams).thumbnail ? { uri: getRequester(bodyParams).thumbnail } : images.teamPlaceholder}
                   style={styles.teamImage}
                 />
-                <Text style={styles.teamNameText}>
-                  {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester.last_name}`}
-                </Text>
+                  <Text style={styles.teamNameText}>
+                    {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester.last_name}`}
+                  </Text>
+                </View>
               </View>
-            </View>
-            <View style={styles.challengeeView}>
-              <View style={styles.teamView}>
-                <Image source={images.requestIn} style={styles.reqOutImage} />
-                <Text style={styles.challengeeText}>Resv. Requestee</Text>
-              </View>
+              <View style={styles.challengeeView}>
+                <View style={styles.teamView}>
+                  <Image source={images.requestIn} style={styles.reqOutImage} />
+                  <Text style={styles.challengeeText}>Resv. Requestee</Text>
+                </View>
 
-              <View style={styles.teamView}>
-                <Image
+                <View style={styles.teamView}>
+                  <Image
                   source={bodyParams?.referee?.thumbnail ? { uri: bodyParams?.referee?.thumbnail } : images.teamPlaceholder}
                   style={styles.teamImage}
                 />
-                <Text
+                  <Text
                   style={{
                     marginLeft: 5,
                     fontFamily: fonts.RMedium,
                     fontSize: 16,
                     color: colors.lightBlackColor,
                   }}>
-                  {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
-                </Text>
+                    {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-          <TCThinDivider />
+            <TCThinDivider />
 
-          {/* status offered */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+            {/* status offered */}
+            {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === RefereeReservationStatus.offered && (
               <View>
                 {bodyParams.expiry_datetime > new Date().getTime() ? (
@@ -383,8 +384,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   </Text>
                 )}
               </View>
-          )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            )}
+            {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === RefereeReservationStatus.offered && (
               <View>
                 {bodyParams.expiry_datetime > new Date().getTime() ? (
@@ -414,9 +415,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   </Text>
                 )}
               </View>
-          )}
-          {/* status pending payment */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+            )}
+            {/* status pending payment */}
+            {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === RefereeReservationStatus.pendingpayment && (
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
@@ -432,8 +433,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   )}.\nYou can cancel the referee reservation without a penalty before the payment will go through.`}
                 </Text>
               </View>
-          )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            )}
+            {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === RefereeReservationStatus.pendingpayment && (
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
@@ -451,10 +452,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   .
                 </Text>
               </View>
-          )}
-          {/* status pending payment */}
-          {/* Status accepted */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+            )}
+            {/* status pending payment */}
+            {/* Status accepted */}
+            {checkSenderOrReceiver(bodyParams) === 'sender'
             && (bodyParams.status === RefereeReservationStatus.accepted
               || bodyParams.status === RefereeReservationStatus.restored || bodyParams.status === RefereeReservationStatus.requestcancelled) && (
                 <View>
@@ -469,8 +470,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     {checkRefereeOrTeam(bodyParams) === 'referee' ? `You have a confirmed referee reservation booked by ${getEntityName(bodyParams)}.` : `Your team has the confirmed referee reservation for ${getEntityName(bodyParams)}.`}
                   </Text>
                 </View>
-          )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            )}
+            {checkSenderOrReceiver(bodyParams) === 'receiver'
             && (bodyParams.status === RefereeReservationStatus.accepted
               || bodyParams.status === RefereeReservationStatus.restored || bodyParams.status === RefereeReservationStatus.requestcancelled) && (
                 <View>
@@ -486,10 +487,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     { `${getEntityName(bodyParams)} has confirmed referee reservation request sent by you.`}
                   </Text>
                 </View>
-          )}
-          {/* Status accepted */}
-          {/* Status declined */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+            )}
+            {/* Status accepted */}
+            {/* Status declined */}
+            {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === RefereeReservationStatus.declined && (
               <View>
                 <Text
@@ -504,8 +505,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
 
                 </Text>
               </View>
-          )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            )}
+            {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === RefereeReservationStatus.declined && (
               <View>
                 <Text
@@ -520,10 +521,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   .
                 </Text>
               </View>
-          )}
-          {/* Status declined */}
-          {/* Status cancelled */}
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+            )}
+            {/* Status declined */}
+            {/* Status cancelled */}
+            {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === RefereeReservationStatus.cancelled && (
               <View>
                 <Text
@@ -537,8 +538,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   {checkRefereeOrTeam(bodyParams) === 'referee' ? `You cancelled the referee reservation request booked by ${getEntityName(bodyParams)}.` : `Your team has cancelled the referee reservation for ${getEntityName(bodyParams)}.`}
                 </Text>
               </View>
-          )}
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            )}
+            {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === RefereeReservationStatus.cancelled && (
               <View>
                 <Text
@@ -552,9 +553,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has cancelled the referee reservation request booked by your team.` : `${getEntityName(bodyParams)} has cancelled the referee reservation request for you.`}
                 </Text>
               </View>
-          )}
+            )}
 
-          {bodyParams?.referee?.user_id !== entity.uid
+            {bodyParams?.referee?.user_id !== entity.uid
             && bodyParams.status === RefereeReservationStatus.pendingpayment && (
               <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
@@ -566,9 +567,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 }}
                 marginBottom={15}
               />
-          )}
+            )}
 
-          {/* {!(
+            {/* {!(
             bodyParams.status === RefereeReservationStatus.offered
             || bodyParams.status === RefereeReservationStatus.cancelled
             || bodyParams.status === RefereeReservationStatus.declined
@@ -590,12 +591,12 @@ export default function RefereeReservationScreen({ navigation, route }) {
             />
           )} */}
 
-          <TCThickDivider marginTop={15}/>
-          {/* Name and country */}
-          <View style={styles.contentContainer}>
-            <Title text={'Referee'} />
-            <View style={{ marginVertical: 10 }}>
-              <TCProfileView
+            <TCThickDivider marginTop={15}/>
+            {/* Name and country */}
+            <View style={styles.contentContainer}>
+              <Title text={'Referee'} />
+              <View style={{ marginVertical: 10 }}>
+                <TCProfileView
                 type={'medium'}
                 name={bodyParams?.referee?.full_name}
                 location={`${bodyParams?.referee?.city} , ${bodyParams?.referee?.country}`}
@@ -605,22 +606,22 @@ export default function RefereeReservationScreen({ navigation, route }) {
                     : images.profilePlaceHolder
                 }
               />
+              </View>
             </View>
-          </View>
-          <TCThickDivider />
-          {bodyParams && (
-            <View>
-              <TCLabel title="Match" />
-              {bodyParams?.game && <TCGameCard data={bodyParams?.game} onPress={() => {
-                const routeName = getGameHomeScreen(bodyParams?.game?.sport);
-                navigation.push(routeName, { gameId: bodyParams?.game?.game_id })
-              }}/>}
-              {/* Date & Time */}
-              {bodyParams?.game && (
-                <View>
-                  <View style={styles.contentContainer}>
-                    <Title text={'Date & Time'} />
-                    <TCInfoField
+            <TCThickDivider />
+            {bodyParams && (
+              <View>
+                <TCLabel title="Match" />
+                {bodyParams?.game && <TCGameCard data={bodyParams?.game} onPress={() => {
+                  const routeName = getGameHomeScreen(bodyParams?.game?.sport);
+                  navigation.push(routeName, { gameId: bodyParams?.game?.game_id })
+                }}/>}
+                {/* Date & Time */}
+                {bodyParams?.game && (
+                  <View>
+                    <View style={styles.contentContainer}>
+                      <Title text={'Date & Time'} />
+                      <TCInfoField
                       title={'Date'}
                       value={
                         bodyParams?.start_datetime
@@ -631,8 +632,8 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         fontFamily: fonts.RRegular,
                       }}
                     />
-                    <Seperator height={2} />
-                    <TCInfoField
+                      <Seperator height={2} />
+                      <TCInfoField
                       title={'Time'}
                       value={
                         bodyParams?.start_datetime && bodyParams?.end_datetime
@@ -647,13 +648,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         fontFamily: fonts.RRegular,
                       }}
                     />
-                    <Seperator height={2} />
-                  </View>
+                      <Seperator height={2} />
+                    </View>
 
-                  {/* Venue */}
-                  <View style={styles.contentContainer}>
-                    <Title text={'Venue'} />
-                    <TCInfoField
+                    {/* Venue */}
+                    <View style={styles.contentContainer}>
+                      <Title text={'Venue'} />
+                      <TCInfoField
                       title={'Venue'}
                       value={bodyParams?.game?.venue?.title}
                       titleStyle={{
@@ -661,7 +662,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         fontFamily: fonts.RRegular,
                       }}
                     />
-                    <TCInfoField
+                      <TCInfoField
                       title={'Address'}
                       value={bodyParams?.game?.venue?.address}
                       titleStyle={{
@@ -669,7 +670,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         fontFamily: fonts.RRegular,
                       }}
                     />
-                    <EventMapView
+                      <EventMapView
                       coordinate={{
                         latitude: bodyParams?.game?.venue.lat ?? 0.0,
                         longitude: bodyParams?.game?.venue.long ?? 0.0,
@@ -681,13 +682,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
                         longitudeDelta: 0.0421,
                       }}
                     />
+                    </View>
                   </View>
-                </View>
-              )}
-            </View>
-          )}
-          <TCThickDivider />
-          {/* {bodyParams && (
+                )}
+              </View>
+            )}
+            <TCThickDivider />
+            {/* {bodyParams && (
             <View>
               <TCLabel title={'Rules of the match'} />
               <Text style={styles.rulesText}>
@@ -697,29 +698,29 @@ export default function RefereeReservationScreen({ navigation, route }) {
           )}
           <TCThickDivider marginTop={20} /> */}
 
-          {/* Chief or assistant */}
-          <View style={styles.contentContainer}>
-            <Title text={'Chief or assistant'} />
-            <View
+            {/* Chief or assistant */}
+            <View style={styles.contentContainer}>
+              <Title text={'Chief or assistant'} />
+              <View
               style={{
                 margin: 7,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text
+                <Text
                 style={{
                   fontFamily: fonts.RRegular,
                   fontSize: 16,
                   color: colors.lightBlackColor,
                 }}>
-                {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
-                Referee
-              </Text>
+                  {_.startCase(bodyParams?.chief_referee ? 'Chief' : 'Assistant')}{' '}
+                  Referee
+                </Text>
+              </View>
             </View>
-          </View>
-          <TCThickDivider />
-          <TCLabel
+            <TCThickDivider />
+            <TCLabel
             title={
               checkSenderOrReceiver(bodyParams) === 'sender'
                 ? 'Payment'
@@ -727,7 +728,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
             }
           />
 
-          <MatchFeesCard
+            <MatchFeesCard
             challengeObj={{
               ...bodyParams,
               start_datetime: bodyParams.start_datetime * 1000,
@@ -740,7 +741,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
             }
           />
 
-          {checkSenderOrReceiver(bodyParams) === 'sender'
+            {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === RefereeReservationStatus.offered
             && bodyParams.expiry_datetime < new Date().getTime() && (
               <View>
@@ -765,9 +766,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   }}
                 />
               </View>
-          )}
+            )}
 
-          {checkSenderOrReceiver(bodyParams) === 'receiver'
+            {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === RefereeReservationStatus.offered
             && bodyParams.expiry_datetime < new Date().getTime() && (
               <View style={{ marginTop: 15 }}>
@@ -815,9 +816,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   }}
                 />
               </View>
-          )}
+            )}
 
-          {(bodyParams.status === RefereeReservationStatus.accepted
+            {(bodyParams.status === RefereeReservationStatus.accepted
             || bodyParams.status === RefereeReservationStatus.restored || bodyParams.status === RefereeReservationStatus.requestcancelled) && (
               <View>
                 <TCBorderButton
@@ -876,9 +877,9 @@ export default function RefereeReservationScreen({ navigation, route }) {
                 }}
               />
               </View>
-          )}
-          {bodyParams.status === RefereeReservationStatus.pendingpayment && (
-            <TCBorderButton
+            )}
+            {bodyParams.status === RefereeReservationStatus.pendingpayment && (
+              <TCBorderButton
                 title={strings.cancelreservation}
                 textColor={colors.whiteColor}
                 borderColor={colors.grayColor}
@@ -906,9 +907,10 @@ export default function RefereeReservationScreen({ navigation, route }) {
                   }
                 }}
               />
-          )}
-        </View>
-      )}
+            )}
+          </View>
+        )}
+      </ScrollView>
     </TCKeyboardView>
   );
 }

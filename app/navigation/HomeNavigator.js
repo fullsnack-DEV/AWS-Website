@@ -132,6 +132,7 @@ import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
+import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 
 const Stack = createStackNavigator();
 
@@ -1650,7 +1651,22 @@ const HomeNavigator = () => (
             },
           }}
       />
-
+    <Stack.Screen
+          name="AcceptDeclineChallengeScreen"
+          component={AcceptDeclineChallengeScreen}
+          options={{
+            title: 'Challenge',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          }}
+      />
   </Stack.Navigator>
 );
 

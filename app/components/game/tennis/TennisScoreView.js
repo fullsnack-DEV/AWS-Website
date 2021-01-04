@@ -18,7 +18,6 @@ let homeTeamMatchPoint = 0;
 let awayTeamMatchPoint = 0;
 export default function TennisScoreView({ scoreDataSource }) {
   useEffect(() => {
-    setsData = [];
     if (scoreDataSource?.scoreboard) {
       if (Object.keys(scoreDataSource?.scoreboard).length > 0) {
         const reversSets = scoreDataSource?.scoreboard?.sets?.reverse();
@@ -32,39 +31,49 @@ export default function TennisScoreView({ scoreDataSource }) {
         calculateMatchScore();
         calculateGameScore();
         console.log('scoreDataSource', setsData);
+      } else {
+        setsData = [{}, {}, {}];
       }
     }
   }, [scoreDataSource]);
 
-  const renderScores = ({ item, index }) => (item?.s_id === scoreDataSource?.scoreboard?.game_inprogress?.s_id ? (
-    <View style={{ alignItems: 'center' }}>
-      <Text style={styles.scoreTitle}>{index + 1}</Text>
-      <LinearGradient
-          colors={[colors.yellowColor, colors.themeColor]}
-          style={styles.scoreView}>
-        <Text style={[styles.player1Score, { color: colors.whiteColor }]}>
-          {item?.s_id ? item?.home_team_win_count : '-'}
-        </Text>
-        <TCThinDivider />
-        <Text style={[styles.player2Score, { color: colors.whiteColor }]}>
-          {item?.s_id ? item?.away_team_win_count : '-'}
-        </Text>
-      </LinearGradient>
-    </View>
-  ) : (
-    <View style={{ alignItems: 'center' }}>
-      <Text style={styles.scoreTitle}>{index + 1}</Text>
-      <View style={styles.scoreView}>
-        <Text style={styles.player1Score}>
-          {item?.s_id ? item?.home_team_win_count : '-'}
-        </Text>
-        <TCThinDivider />
-        <Text style={styles.player2Score}>
-          {item?.s_id ? item?.away_team_win_count : '-'}
-        </Text>
+  const renderScores = ({ item, index }) => {
+    if (item?.s_id) {
+      if (item?.s_id === scoreDataSource?.scoreboard?.game_inprogress?.s_id) {
+        console.log('SID : ', item?.s_id)
+        return (
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.scoreTitle}>{index + 1}</Text>
+            <LinearGradient
+                  colors={[colors.yellowColor, colors.themeColor]}
+                  style={styles.scoreView}>
+              <Text style={[styles.player1Score, { color: colors.whiteColor }]}>
+                {item?.s_id ? item?.home_team_win_count : '-'}
+              </Text>
+              <TCThinDivider/>
+              <Text style={[styles.player2Score, { color: colors.whiteColor }]}>
+                {item?.s_id ? item?.away_team_win_count : '-'}
+              </Text>
+            </LinearGradient>
+          </View>
+        )
+      }
+    }
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text style={styles.scoreTitle}>{index + 1}</Text>
+        <View style={styles.scoreView}>
+          <Text style={styles.player1Score}>
+            {item?.s_id ? item?.home_team_win_count : '-'}
+          </Text>
+          <TCThinDivider/>
+          <Text style={styles.player2Score}>
+            {item?.s_id ? item?.away_team_win_count : '-'}
+          </Text>
+        </View>
       </View>
-    </View>
-  ));
+    )
+  }
 
   const renderCurruentScores = ({ index }) => (
     <View style={{ alignItems: 'center' }}>
@@ -86,7 +95,7 @@ export default function TennisScoreView({ scoreDataSource }) {
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count ?? '-'))
+              && (scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count ?? '0'))
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
 
@@ -103,7 +112,7 @@ export default function TennisScoreView({ scoreDataSource }) {
           }>
           {(index === 0 && `${awayTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count ?? '-'))
+              && (scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count ?? '0'))
             || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
 

@@ -79,7 +79,6 @@ const MessageInviteScreen = ({ navigation, route }) => {
       setInviteeData([]);
       setLoading(false);
     })
-    setLoading(false);
   }
 
   const getAllTypesData = async (AllUsers) => {
