@@ -11,6 +11,7 @@ import fonts from '../../Constants/Fonts';
 import RecentMatchItems from '../../components/Home/RecentMatchItems';
 import AuthContext from '../../auth/context';
 import { getEventById } from '../../api/Schedule';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ScoreboardSportsScreen({
   sportsData,
@@ -77,10 +78,13 @@ export default function ScoreboardSportsScreen({
               showAssistReferee={showAssistReferee}
               onItemPress={() => {
                 const entity = authContext.entity
-                if (item.game_id) {
-                  navigation.navigate('SoccerHome', {
-                    gameId: item.game_id,
-                  })
+                if (item?.game_id) {
+                  if (item?.game?.sport) {
+                    const gameHome = getGameHomeScreen(item.game.sport);
+                    navigation.navigate(gameHome, {
+                      gameId: item?.game_id,
+                    })
+                  }
                 } else {
                   getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
                     navigation.navigate('EventScreen', { data: response.payload, gameData: item });

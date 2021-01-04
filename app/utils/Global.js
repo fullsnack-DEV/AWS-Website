@@ -51,7 +51,7 @@ const makeAPIRequest = async ({
     }
     console.log('Token Expired');
     return new Promise((resolve, reject) => {
-      firebase.auth().onAuthStateChanged((user) => {
+      const globalAuthStateChanged = firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           auth().currentUser.getIdTokenResult(true)
             .then(async (idTokenResult) => {
@@ -76,6 +76,7 @@ const makeAPIRequest = async ({
           console.log('No user is signed in.');
         }
       });
+      globalAuthStateChanged();
     })
   }
 });

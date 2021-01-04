@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useContext,
+  useEffect, useContext, useState,
 } from 'react';
 import {
   View,
@@ -17,7 +17,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
-import _ from 'lodash';
 import AuthContext from '../../../../auth/context';
 import Header from '../../../../components/Home/Header';
 import EventMapView from '../../../../components/Schedule/EventMapView';
@@ -29,13 +28,15 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import TCProfileView from '../../../../components/TCProfileView';
 import TCGameCard from '../../../../components/TCGameCard';
 import TCInfoField from '../../../../components/TCInfoField';
-import { getGameFromToDateDiff } from '../../../../utils/gameUtils';
+import { getGameFromToDateDiff, getGameHomeScreen } from '../../../../utils/gameUtils';
 // import { getFeesEstimation } from '../../../../api/Challenge';
 import { createUserReservation } from '../../../../api/Reservations';
+import ActivityLoader from '../../../../components/loader/ActivityLoader';
 
 const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
   const userData = route?.params?.userData;
   const gameData = route?.params?.gameData;
+  const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
 
   // const getFeeEstimation = () => {
@@ -72,16 +73,17 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
   }
 
   const handleOnNext = () => {
+    setLoading(true);
     const bodyParams = {
       scorekeeper_id: userData?.user_id,
       game_id: gameData?.game_id,
     }
     createUserReservation('scorekeepers', bodyParams, authContext).then(() => {
-      const navigationName = `${_.startCase(gameData?.sport)}Home`;
+      const navigationName = getGameHomeScreen(gameData?.sport);
       navigation.navigate('BookScorekeeperSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
       Alert.alert('Towns Cup', error?.message)
-    })
+    }).finally(() => setLoading(false));
     return true;
   }
   return (
@@ -100,9 +102,10 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
       <ScrollView bounces={false}>
         <SafeAreaView>
           {/*  Steps */}
-          <TCStep totalStep={3} currentStep={2} style={{
+          <TCStep totalStep={2} currentStep={2} style={{
             margin: 0, padding: 0, paddingTop: 15, paddingRight: 15,
           }}/>
+          <ActivityLoader visible={loading} />
 
           {/* Name and country */}
           <View style={styles.contentContainer}>
@@ -129,7 +132,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
               )}
             </View>
             {gameData && <TCGameCard data={gameData} onPress={() => {
-              const routeName = `${_.startCase(gameData?.sport)}Home`;
+              const routeName = getGameHomeScreen(gameData?.sport);
               navigation.push(routeName, { gameId: gameData?.game_id })
             }} />}
           </View>

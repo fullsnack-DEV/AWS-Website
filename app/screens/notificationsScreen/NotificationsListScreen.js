@@ -134,7 +134,7 @@ function NotificationsListScreen({ navigation }) {
       }
       if (entityType && entityId) {
         setloading(true);
-        if (entityType === 'player') {
+        if (entityType === 'player' || entityType === 'user') {
           getUserDetails(entityId, authContext).then((uData) => {
             createQBUser(uData?.payload);
           }).catch(() => setloading(false))

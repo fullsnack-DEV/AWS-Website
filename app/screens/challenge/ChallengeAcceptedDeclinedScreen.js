@@ -9,6 +9,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCBorderButton from '../../components/TCBorderButton';
 import strings from '../../Constants/String';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
   return (
@@ -83,15 +84,10 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           marginBottom={55}
           onPress={() => {
             if (route?.params?.game_id) {
-              if (route?.params?.teamObj?.sport?.toLowerCase() === 'soccer') {
-                navigation.navigate('SoccerHome', {
-                  gameId: route?.params?.game_id,
-                })
-              } else if (route?.params?.teamObj?.sport?.toLowerCase() === 'tennis') {
-                navigation.navigate('TennisHome', {
-                  gameId: route?.params?.game_id,
-                })
-              }
+              const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
+              navigation.navigate(gameHome, {
+                gameId: route?.params?.game_id,
+              })
             } else {
               Alert.alert('Game ID not exist');
               console.log('Game ID not exist');

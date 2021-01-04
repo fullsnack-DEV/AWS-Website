@@ -42,7 +42,7 @@ import GameStatus from '../../../Constants/GameStatus';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCProfileView from '../../../components/TCProfileView';
 import TCGameCard from '../../../components/TCGameCard';
-import { getGameFromToDateDiff } from '../../../utils/gameUtils';
+import { getGameFromToDateDiff, getGameHomeScreen } from '../../../utils/gameUtils';
 import CurruentVersionView from '../../../components/challenge/CurruentVersionView';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
 
@@ -922,7 +922,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                 </View>
               </View>
               {bodyParams?.game && <TCGameCard data={bodyParams?.game} onPress={() => {
-                const routeName = `${_.startCase(bodyParams?.game?.sport)}Home`;
+                const routeName = getGameHomeScreen(bodyParams?.game?.sport);
                 navigation.push(routeName, { gameId: bodyParams?.game?.game_id })
               }}/>}
               {/* Date & Time */}

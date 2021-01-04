@@ -17,7 +17,7 @@ const Gallery = ({
   setUploadImageProgressData,
   navigation,
   gameData,
-  getSoccerGalleryData,
+  getGalleryData,
 }) => {
   const authContext = useContext(AuthContext);
   const [allData, setAllData] = useState([]);
@@ -28,7 +28,7 @@ const Gallery = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getSoccerGalleryData(gameData?.game_id).then((res) => {
+    getGalleryData(gameData?.game_id).then((res) => {
       setAllData(res.payload);
     }).catch((error) => {
       console.log(error);
@@ -71,7 +71,7 @@ const Gallery = ({
           .then((response) => {
             setPostData(response?.payload?.results ?? [])
             setProgressBar(false);
-            getSoccerGalleryData(gameData?.game_id).then((res) => {
+            getGalleryData(gameData?.game_id).then((res) => {
               setAllData(res?.payload ?? []);
             });
           })

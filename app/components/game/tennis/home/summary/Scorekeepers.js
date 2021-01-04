@@ -17,12 +17,12 @@ import TCGradientButton from '../../../../TCGradientButton';
 import AuthContext from '../../../../../auth/context';
 
 const Scorekeepers = ({
+  navigation,
   isAdmin,
   userRole,
-  navigation,
   gameData,
-  followSoccerUser,
-  unFollowSoccerUser,
+  followTennisUser,
+  unFollowTennisUser,
   getScorekeeperReservation,
 }) => {
   const [scorekeeper, setScorekeeper] = useState([]);
@@ -52,14 +52,14 @@ const Scorekeepers = ({
               title={sKeeper?.full_name}
               is_following={sKeeper?.is_following}
               onFollowUnfollowPress={onFollowPress}
-              followSoccerUser={followSoccerUser}
-              unFollowSoccerUser={unFollowSoccerUser}
+              followUser={followTennisUser}
+              unFollowUser={unFollowTennisUser}
               profileImage={sKeeper?.thumbnail}
               isAdmin={isAdmin}
               isShowThreeDots={item?.initiated_by === entity?.uid}
               userRole={userRole}
               onThreeDotPress={() => actionSheet.current.show()}
-        />
+          />
       )
     }
     return null;
@@ -87,8 +87,8 @@ const Scorekeepers = ({
               )}/>
       {isAdmin && gameData?.status !== 'ended' && (
         <TCGradientButton
-            onPress={handleBookScorekeeper}
-            startGradientColor={colors.whiteColor}
+                  onPress={handleBookScorekeeper}
+                  startGradientColor={colors.whiteColor}
                   endGradientColor={colors.whiteColor}
                   title={'BOOK SCOREKEEPERS'}
                   style={{
@@ -102,18 +102,18 @@ const Scorekeepers = ({
               />
       )}
       <ActionSheet
-          ref={actionSheet}
-          options={[
-            'Scorekeeper Reservation Details',
-            'Cancel',
-          ]}
-          cancelButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              alert('Scorekeeper Reservation Details')
-            }
-          }}
-      />
+              ref={actionSheet}
+              options={[
+                'Scorekeeper Reservation Details',
+                'Cancel',
+              ]}
+              cancelButtonIndex={1}
+              onPress={(index) => {
+                if (index === 0) {
+                  alert('Scorekeeper Reservation Details')
+                }
+              }}
+          />
     </View>
   </View>
   )

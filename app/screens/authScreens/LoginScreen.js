@@ -238,7 +238,7 @@ export default function LoginScreen({ navigation }) {
         if (error.code === 'auth/account-exists-with-different-credential') {
           message = 'You are already registrated with different login method ';
         }
-        setTimeout(() => Alert.alert('Towns Cup', message), 100);
+        if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
       });
   };
 
@@ -309,7 +309,7 @@ export default function LoginScreen({ navigation }) {
           if (error.code === 'auth/account-exists-with-different-credential') {
             message = 'You are already registrated with different login method ';
           }
-          setTimeout(() => Alert.alert('Towns Cup', message), 100);
+          if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
         });
     } catch (error) {
       let message = '';

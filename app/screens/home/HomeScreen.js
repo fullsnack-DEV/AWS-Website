@@ -97,6 +97,7 @@ import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
 import RefereeReservationItem from '../../components/Schedule/RefereeReservationItem';
 import { getRefereeReservationDetails } from '../../api/Reservations';
 import TCSearchBox from '../../components/TCSearchBox';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 const reviews_data = [
   {
@@ -1406,14 +1407,11 @@ export default function HomeScreen({ navigation, route }) {
                       }}
                       onItemPress={async (item) => {
                         const entity = authContext.entity;
-                        if (item.game_id) {
-                          if (item.game.sport.toLowerCase() === 'soccer') {
-                            navigation.navigate('SoccerHome', {
-                              gameId: item.game_id,
-                            })
-                          } else if (item.game.sport.toLowerCase() === 'tennis') {
-                            navigation.navigate('TennisHome', {
-                              gameId: item.game_id,
+                        if (item?.game_id) {
+                          if (item?.game?.sport) {
+                            const gameHome = getGameHomeScreen(item.game.sport);
+                            navigation.navigate(gameHome, {
+                              gameId: item?.game_id,
                             })
                           }
                         } else {
@@ -1472,10 +1470,13 @@ export default function HomeScreen({ navigation, route }) {
                               data={item}
                               renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
                                 onPress={async () => {
-                                  if (itemValue.game_id) {
-                                    navigation.navigate('SoccerHome', {
-                                      gameId: itemValue.game_id,
-                                    })
+                                  if (itemValue?.game_id) {
+                                    if (itemValue?.game?.sport) {
+                                      const gameHome = getGameHomeScreen(itemValue.game.sport);
+                                      navigation.navigate(gameHome, {
+                                        gameId: itemValue.game_id,
+                                      })
+                                    }
                                   } else {
                                     getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
                                       navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });

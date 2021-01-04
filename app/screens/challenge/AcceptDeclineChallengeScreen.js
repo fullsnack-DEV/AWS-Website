@@ -25,6 +25,7 @@ import GameStatus from '../../Constants/GameStatus';
 import TCBorderButton from '../../components/TCBorderButton';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../components/reservations/ReservationNumber';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
@@ -552,17 +553,11 @@ export default function CreateChallengeForm4({ navigation, route }) {
             <TCBorderButton
               title={'GAME HOME'}
               onPress={() => {
-                if (`${bodyParams.sport}`.toLowerCase() === 'soccer') {
-                  navigation.navigate('SoccerHome', {
-                    gameId: bodyParams.game_id,
-                  })
-                } else {
-                  navigation.navigate('TennisHome', {
-                    gameId: bodyParams.game_id,
-                  })
-                }
-              }
-              }
+                const gameHome = getGameHomeScreen(bodyParams.sport);
+                navigation.navigate(gameHome, {
+                  gameId: bodyParams.game_id,
+                })
+              }}
               marginBottom={15}
             />
           )}

@@ -15,6 +15,7 @@ import AuthContext from '../../../../auth/context'
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
 import { getUserList } from '../../../../api/Users';
+import TCStep from '../../../../components/TCStep';
 
 const TYPING_SPEED = 200;
 const BookScorekeeper = ({ navigation, route }) => {
@@ -72,6 +73,7 @@ const BookScorekeeper = ({ navigation, route }) => {
         />
       <View style={styles.headerBottomBorder}/>
 
+      <TCStep totalStep={2} currentStep={1}/>
       {/* Loader */}
       <TCInnerLoader visible={loading}/>
 

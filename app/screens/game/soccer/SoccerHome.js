@@ -121,7 +121,7 @@ const SoccerHome = ({ navigation, route }) => {
         <Gallery
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
               gameData={gameData}
-              getSoccerGalleryData={getSoccerGalleryData}
+              getGalleryData={getSoccerGalleryData}
               navigation={navigation}/>
       )}
     </View>
