@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useState, useLayoutEffect, useRef, useEffect, useContext,
 } from 'react';
@@ -35,6 +36,9 @@ import EventInCalender from '../../../components/Schedule/EventInCalender';
 import EventAgendaSection from '../../../components/Schedule/EventAgendaSection';
 import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
 import AuthContext from '../../../auth/context'
+import * as RefereeUtils from '../../referee/RefereeUtility';
+import * as Utils from '../../challenge/ChallengeUtility';
+
 import {
   deleteEvent, getEventById, getEvents, getSlots,
 } from '../../../api/Schedule';
@@ -137,6 +141,8 @@ export default function ScheduleScreen({ navigation }) {
     }
   }, [selectedEventItem]);
 
+  const refereeFound = (data) => (data?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id)
+
   const actionSheet = useRef();
   const eventEditDeleteAction = useRef();
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
@@ -146,6 +152,41 @@ export default function ScheduleScreen({ navigation }) {
     setIsRefereeModal(!isRefereeModal);
   };
 
+  const findCancelButtonIndex = (data) => {
+    if (data?.game && refereeFound(data)) {
+      return 2
+    }
+    if (data?.game) {
+      return 3
+    }
+    return 2
+  }
+  const goToChallengeDetail = (data) => {
+    if (data?.responsible_to_secure_venue) {
+      setloading(true);
+      Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
+        setloading(false);
+        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
+        console.log('Screen name of challenge:', obj.screenName);
+        navigation.navigate(obj.screenName, {
+          challengeObj: obj.challengeObj || obj.challengeObj[0],
+        });
+        setloading(false);
+      });
+    }
+  }
+  const goToRefereReservationDetail = (data) => {
+    setloading(true);
+    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+      setloading(false);
+      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+      console.log('Screen name of Reservation:', obj.screenName);
+      navigation.navigate(obj.screenName, {
+        reservationObj: obj.reservationObj || obj.reservationObj[0],
+      });
+      setloading(false);
+    });
+  }
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
@@ -457,6 +498,11 @@ export default function ScheduleScreen({ navigation }) {
             ItemSeparatorComponent={() => <View style={[styles.sepratorStyle, { marginHorizontal: 15 }]} />}
             renderItem={({ item }) => <RefereeReservationItem
               data={item}
+              onPressButton = {() => {
+                setIsRefereeModal(false);
+                console.log('choose Referee:', item);
+                goToRefereReservationDetail(item)
+              }}
             />}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -466,83 +512,91 @@ export default function ScheduleScreen({ navigation }) {
       <ActionSheet
         ref={eventEditDeleteAction}
         options={selectedEventItem !== null && selectedEventItem.game
-          ? ['Edit', 'Delete', 'Referee Reservation Details', 'Cancel']
+          ? refereeFound(selectedEventItem) ? ['Referee Reservation Details', 'Change Events Color', 'Cancel'] : ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
           : ['Edit', 'Delete', 'Cancel']
         }
-        cancelButtonIndex={3}
-        destructiveButtonIndex={1}
+        cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
+        destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
         onPress={(index) => {
-          setSelectedEventItem(null);
           if (index === 0) {
-            navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+            if (index === 0 && selectedEventItem.game) {
+              console.log('selected Event Item:', selectedEventItem);
+              if (refereeFound(selectedEventItem)) {
+                goToRefereReservationDetail(selectedEventItem)
+              } else {
+                console.log('Selected Event Item::', selectedEventItem);
+                goToChallengeDetail(selectedEventItem.game)
+              }
+            } else {
+              navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+            }
           }
           if (index === 1) {
-            Alert.alert(
-              'Do you want to delete this event ?',
-              '',
-              [{
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
-                  setloading(true);
-                  const entity = authContext.entity
-                  const uid = entity.uid || entity.auth.user_id;
-                  const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                  deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
-                    .then(() => getEvents(entityRole, uid, authContext))
-                    .then((response) => {
-                      setloading(false);
-                      setEventData(response.payload);
-                      setTimeTable(response.payload);
-                    })
-                    .catch((e) => {
-                      setloading(false);
-                      Alert.alert('', e.messages)
-                    });
+            if (index === 1 && selectedEventItem.game) {
+              setloading(true);
+              const params = {
+                caller_id: selectedEventItem.owner_id,
+              };
+              getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                console.log('Res :-', res);
+                setRefereeReserveData(res.payload);
+                if (res.payload.length > 0) {
+                  refereeReservModal();
+                  setloading(false);
+                } else {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(
+                      'Towns Cup',
+                      'No referees invited or booked by you for this game',
+                      [{
+                        text: 'OK',
+                        onPress: async () => {},
+                      },
+                      ],
+                      { cancelable: false },
+                    );
+                  }, 0);
+                }
+              }).catch((error) => {
+                console.log('Error :-', error);
+              });
+            } else {
+              Alert.alert(
+                'Do you want to delete this event ?',
+                '',
+                [{
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    setloading(true);
+                    const entity = authContext.entity
+                    const uid = entity.uid || entity.auth.user_id;
+                    const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                    deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
+                      .then(() => getEvents(entityRole, uid, authContext))
+                      .then((response) => {
+                        setloading(false);
+                        setEventData(response.payload);
+                        setTimeTable(response.payload);
+                      })
+                      .catch((e) => {
+                        setloading(false);
+                        Alert.alert('', e.messages)
+                      });
+                  },
                 },
-              },
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
 
-              ],
-              { cancelable: false },
-            );
+                ],
+                { cancelable: false },
+              );
+            }
           }
-          if (index === 2 && selectedEventItem.game) {
-            setloading(true);
-            const params = {
-              caller_id: selectedEventItem.owner_id,
-            };
-            getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-              console.log('Res :-', res);
-              setRefereeReserveData(res.payload);
-              if ((authContext.entity.uid === selectedEventItem.game.home_team.group_id
-                || authContext.entity.uid === selectedEventItem.game.away_team.group_id)
-                && res.payload.length > 0
-              ) {
-                refereeReservModal();
-                setloading(false);
-              } else {
-                setloading(false);
-                setTimeout(() => {
-                  Alert.alert(
-                    'Towns Cup',
-                    'No referees invited or booked by you for this game',
-                    [{
-                      text: 'OK',
-                      onPress: async () => {},
-                    },
-                    ],
-                    { cancelable: false },
-                  );
-                }, 0);
-              }
-            }).catch((error) => {
-              console.log('Error :-', error);
-            });
-          }
+          setSelectedEventItem(null);
         }}
       />
     </View>

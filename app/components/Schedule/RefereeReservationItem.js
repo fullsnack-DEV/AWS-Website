@@ -1,7 +1,9 @@
 import React from 'react';
 import {
+  TouchableOpacity,
   StyleSheet, View, Text, Image,
 } from 'react-native';
+
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -9,6 +11,7 @@ import strings from '../../Constants/String';
 
 function RefereeReservationItem({
   data,
+  onPressButton,
 }) {
   let refereeImage = null;
   let refereeName = '';
@@ -47,7 +50,7 @@ function RefereeReservationItem({
     statusColor = colors.grayEventColor;
   }
   return (
-    <View style={styles.containerStyle}>
+    <TouchableOpacity style={styles.containerStyle} onPress={onPressButton}>
       <Text style={styles.chiefTextStyle}>{strings.chiefReferee}</Text>
       <View style={styles.refereeDataViewStyle}>
         <Image
@@ -61,7 +64,7 @@ function RefereeReservationItem({
           }]}>{status}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

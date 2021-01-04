@@ -37,7 +37,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           </Text>
           <Text style={styles.infoText}>
             {(route.params.status === 'accept'
-              && `A match between ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} and your team has been scheduled.`)
+              && `A match between ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} and ${route?.params?.teamObj?.group_name ? 'your team' : 'you'} has been scheduled.`)
               || (route.params.status === 'decline'
                 && `The match reservation request from ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} has been declined.`)
               || (route.params.status === 'cancel'
@@ -56,7 +56,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           backgroundColor={'transparent'}
           height={40}
           shadow={true}
-          marginBottom={55}
+          marginBottom={route?.params?.status === 'accept' ? 15 : 55}
           onPress={() => {
             navigation.reset({
               index: 0,
@@ -83,14 +83,13 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           shadow={true}
           marginBottom={55}
           onPress={() => {
-            if (route?.params?.game_id) {
+            if (route?.params?.teamObj) {
               const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
               navigation.navigate(gameHome, {
-                gameId: route?.params?.game_id,
+                gameId: route?.params?.teamObj?.game_id,
               })
             } else {
               Alert.alert('Game ID not exist');
-              console.log('Game ID not exist');
             }
           }
           }

@@ -7,12 +7,10 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
 import images from '../Constants/ImagePath';
-import colors from '../Constants/Colors'
+import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
@@ -91,13 +89,25 @@ export default function TCEventView({
       refereeImage = data.game.referees[0].thumbnail;
     }
   }
-
+  const refereeFound = (dataObj) => (dataObj?.game?.referees || []).some((e) => entity.uid === e.referee_id)
   let moreBtnVisible = true;
   if (data && data.game) {
-    const merchantID = entity.obj.merchant_id;
-    if (data.game.away_team.merchant_id === merchantID
-      || data.game.home_team.merchant_id === merchantID
-      || data.game.referees
+    // const merchantID = entity.obj.merchant_id;
+    // if (
+    //   data.game.away_team.merchant_id === merchantID
+    //   || data.game.home_team.merchant_id === merchantID
+    //   || data.game.referees
+    // ) {
+    //   moreBtnVisible = true;
+    // } else {
+    //   moreBtnVisible = false;
+    // }
+    const userID = entity.uid;
+    if (
+      (data?.game?.home_team?.user_id || data?.game?.home_team?.group_id)
+        === userID
+      || (data?.game?.away_team?.user_id || data?.game?.away_team?.group_id)
+        === userID || refereeFound(data)
     ) {
       moreBtnVisible = true;
     } else {
@@ -108,38 +118,70 @@ export default function TCEventView({
   return (
     <TouchableWithoutFeedback style={styles.backgroundView} onPress={onPress}>
       <View style={styles.backgroundView} onPress={onPress}>
-        <View style={[styles.colorView, { backgroundColor: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]}>
-          <Text style={styles.dateMonthText}>{moment(startDate).format('MMM')}</Text>
+        <View
+          style={[
+            styles.colorView,
+            {
+              backgroundColor:
+                eventColor[0] !== '#' ? `#${eventColor}` : eventColor,
+            },
+          ]}>
+          <Text style={styles.dateMonthText}>
+            {moment(startDate).format('MMM')}
+          </Text>
           <Text style={styles.dateText}>{moment(startDate).format('DD')}</Text>
         </View>
         <View style={styles.eventText}>
           <View style={styles.eventTitlewithDot}>
-            <Text style={[styles.eventTitle, { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor }]} numberOfLines={1}>
+            <Text
+              style={[
+                styles.eventTitle,
+                { color: eventColor[0] !== '#' ? `#${eventColor}` : eventColor },
+              ]}
+              numberOfLines={1}>
               {title}
             </Text>
-            {moreBtnVisible && <TouchableOpacity onPress={onThreeDotPress}>
-              <Image source={images.vertical3Dot} style={styles.threedot} />
-            </TouchableOpacity>}
+            {moreBtnVisible && (
+              <TouchableOpacity onPress={onThreeDotPress}>
+                <Image source={images.vertical3Dot} style={styles.threedot} />
+              </TouchableOpacity>
+            )}
           </View>
           <Text style={styles.eventDescription} numberOfLines={2}>
             {description} {description2}
           </Text>
           <View style={styles.bottomView}>
-            <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
+            <Text style={styles.eventTime}>{`${moment(startDate).format(
+              'LT',
+            )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
-            <Text style={[styles.eventTime, { width: wp('45%') }]}>{location !== '' ? location : venue}</Text>
+            <Text style={[styles.eventTime, { width: wp('45%') }]}>
+              {location !== '' ? location : venue}
+            </Text>
           </View>
-          {eventBetweenSection && <EventBetweenUserItem
-            firstUserImage={homeTeamImage ? { uri: homeTeamImage } : images.team_ph}
-            firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
-            secondUserImage={awayTeamImage ? { uri: awayTeamImage } : images.team_ph}
-            secondText={awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'}
-          />}
-          {eventOfSection && <EventOfItem
-            eventOfText={'Referee'}
-            countryIcon={refereeImage ? { uri: refereeImage } : images.commentReport}
-          />}
+          {eventBetweenSection && (
+            <EventBetweenUserItem
+              firstUserImage={
+                homeTeamImage ? { uri: homeTeamImage } : images.team_ph
+              }
+              firstText={homeTeamName !== '' ? homeTeamName : 'Newyork City FC'}
+              secondUserImage={
+                awayTeamImage ? { uri: awayTeamImage } : images.team_ph
+              }
+              secondText={
+                awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'
+              }
+            />
+          )}
+          {eventOfSection && (
+            <EventOfItem
+              eventOfText={'Referee'}
+              countryIcon={
+                refereeImage ? { uri: refereeImage } : images.commentReport
+              }
+            />
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>
