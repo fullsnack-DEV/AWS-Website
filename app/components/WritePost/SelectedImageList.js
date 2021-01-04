@@ -27,6 +27,7 @@ function SelectedImageList({
         style={styles.uploadedImage}
         resizeMode={'cover'}
         paused={true}
+        controls={true}
       />}
       <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
         <Image source={images.cancelImage} style={styles.cancelImageStyle} />

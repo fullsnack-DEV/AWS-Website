@@ -86,6 +86,8 @@ const strings = {
   infoTeamCity: 'Vancouver, BC',
   ntrpTitle: 'NTRP',
   refereeFee: 'Referee Fee',
+  cancellationPolicy: 'Cancellation Policies',
+  gameFee: 'Game Fee',
   perHour: ' (per hours)',
   ntrpSubTitle: ' (The national tennis rating program)',
   homePlaceTitle: 'Home place',

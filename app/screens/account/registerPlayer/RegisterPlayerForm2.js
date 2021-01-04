@@ -39,7 +39,6 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const [selected, setSelected] = useState(0);
 
   const registerPlayerCall = () => {
-    console.log('Calleddd');
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
@@ -66,7 +65,6 @@ export default function RegisterPlayerForm2({ navigation, route }) {
           if (response.status === true) {
             await Utility.setStorage('user', response.payload);
             authContext.setUser(response.payload)
-            Alert.alert('Towns Cup', 'Player sucessfully registered');
             if (route.params && route.params.comeFrom === 'HomeScreen') {
               navigation.navigate('HomeScreen');
             } else {

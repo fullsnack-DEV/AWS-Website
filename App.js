@@ -2,6 +2,7 @@ import React, {
   useState, useEffect, useMemo,
 } from 'react';
 import firebase from '@react-native-firebase/app';
+import Orientation from 'react-native-orientation';
 import AuthContext from './app/auth/context';
 import { QBinit } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
@@ -35,6 +36,12 @@ export default function App() {
     }),
     [role, user, entity],
   );
+  useEffect(() => {
+    Orientation.lockToPortrait()
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  }, []);
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>

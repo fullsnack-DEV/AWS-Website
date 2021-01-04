@@ -19,6 +19,7 @@ import {
 } from 'react-native-responsive-screen';
 
 // import ActionSheet from 'react-native-actionsheet';
+import { useIsDrawerOpen } from '@react-navigation/drawer';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -135,7 +136,7 @@ export default function AccountScreen({ navigation }) {
       });
     }
     getData()
-  }, [authContext.entity, isFocused, navigation]);
+  }, [authContext.entity, isFocused, navigation, useIsDrawerOpen()]);
 
   const getParentClub = (item) => {
     setloading(true)

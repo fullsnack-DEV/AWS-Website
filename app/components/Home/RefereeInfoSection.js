@@ -17,6 +17,7 @@ import {
 } from 'react-native-responsive-screen';
 import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ImagePicker from 'react-native-image-crop-picker';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -223,6 +224,18 @@ function RefereeInfoSection({
   const [currentCityPrivacy, setCurrentCityPrivacy] = useState(currentCity_privacy);
   const [dateModalVisible, setDateModalVisible] = useState(false);
   const [selectedCerti, setSelectedCerti] = useState([]);
+  const [selected, setSelected] = useState(() => {
+    if (selectRefereeData.cancellation_policy === 'flexible') {
+      return 2;
+    }
+    if (selectRefereeData.cancellation_policy === 'moderate') {
+      return 1;
+    }
+    if (selectRefereeData.cancellation_policy === 'moderate') {
+      return 0;
+    }
+    return 0;
+  });
   const [addCertiTitle, setAddCertiTitle] = useState('');
   const [searchLanguageText, setSearchLanguageText] = useState('');
   const [languageList, setLanguageList] = useState(language_list);
@@ -376,7 +389,7 @@ function RefereeInfoSection({
       >
         <BasicInfoItem
           title={strings.gender}
-          value={info.genderText}
+          value={data.gender}
         />
         <BasicInfoItem
           title={strings.yearOfBirth}
@@ -433,6 +446,22 @@ function RefereeInfoSection({
         }}
       >
         <Text style={styles.ntrpValueStyle}>{`$${refereeFeeCount} CAD/match`}</Text>
+      </EditEventItem>
+      <View style={styles.dividerStyle} />
+      <EditEventItem
+        title={strings.cancellationPolicy}
+        onEditPress={() => {
+          setEditPressTitle(strings.cancellationPolicy);
+          setTimeout(() => {
+            actionSheet.current.show();
+          }, 200);
+        }}
+      >
+        <Text style={styles.ntrpValueStyle}>
+          {(selected === 0 && 'Strict')
+          || (selected === 1 && 'Moderate')
+          || (selected === 2 && 'Flexible')}
+        </Text>
       </EditEventItem>
 
       <Modal
@@ -653,6 +682,7 @@ function RefereeInfoSection({
                   || (editPressTitle === strings.basicinfotitle && strings.basicinfotitle)
                   || (editPressTitle === strings.certificateTitle && strings.certificateTitle)
                   || (editPressTitle === strings.refereeFeesTitle && 'Fee')
+                  || (editPressTitle === strings.cancellationPolicy && 'Policy')
                 }</Text>
               </View>
             }
@@ -668,8 +698,17 @@ function RefereeInfoSection({
                   return null;
                 })
 
+                let policyValue = 'strict';
+                if (selected === 1) {
+                  policyValue = 'moderate';
+                } else if (selected === 2) {
+                  policyValue = 'flexible';
+                } else {
+                  policyValue = 'strict';
+                }
+
                 const refereeEditParams = {
-                  cancellation_policy: 'strict',
+                  cancellation_policy: policyValue,
                   certificates: certificatesData,
                   descriptions: bioText,
                   fee: refereeFeeCount,
@@ -868,6 +907,116 @@ function RefereeInfoSection({
             valueEndTitle={' CAD/match'}
             containerStyle={{ justifyContent: 'space-between' }}
           />}
+
+          {editPressTitle === strings.cancellationPolicy && <View>
+            <View>
+              <Text style={ styles.LocationText }>
+                {strings.cancellationPolicyTitle}
+              </Text>
+            </View>
+            <View style={ styles.radioButtonView }>
+              <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
+                {selected === 0 ? (
+                  <Image source={ images.radioSelect } style={ styles.radioImage } />
+                ) : (
+                  <Image
+                    source={ images.radioUnselect }
+                    style={ styles.unSelectRadioImage }
+                  />
+                )}
+              </TouchableWithoutFeedback>
+              <Text style={ styles.radioText }>{strings.strictText}</Text>
+            </View>
+            <View style={ styles.radioButtonView }>
+              <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
+                {selected === 1 ? (
+                  <Image source={ images.radioSelect } style={ styles.radioImage } />
+                ) : (
+                  <Image
+                    source={ images.radioUnselect }
+                    style={ styles.unSelectRadioImage }
+                  />
+                )}
+              </TouchableWithoutFeedback>
+              <Text style={ styles.radioText }>{strings.moderateText}</Text>
+            </View>
+            <View style={ styles.radioButtonView }>
+              <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
+                {selected === 2 ? (
+                  <Image source={ images.radioSelect } style={ styles.radioImage } />
+                ) : (
+                  <Image
+                    source={ images.radioUnselect }
+                    style={ styles.unSelectRadioImage }
+                  />
+                )}
+              </TouchableWithoutFeedback>
+              <Text style={ styles.radioText }>{strings.flexibleText}</Text>
+            </View>
+            {selected === 0 && (
+              <View>
+                <Text style={ styles.membershipText }>{strings.strictText} </Text>
+                <Text style={ styles.whoJoinText }>
+                  <Text style={ styles.membershipSubText }>
+                    {strings.strictPoint1Title}
+                  </Text>
+                  {'\n'}
+                  {strings.strictPoint1Desc}
+                  {'\n'}
+                  {'\n'}
+                  <Text style={ styles.membershipSubText }>
+                    {strings.strictPoint2Title}
+                  </Text>
+                  {'\n'}
+                  {strings.strictPoint2Desc}
+                </Text>
+              </View>
+            )}
+            {selected === 1 && (
+              <View>
+                <Text style={ styles.membershipText }>{strings.moderateText} </Text>
+                <Text style={ styles.whoJoinText }>
+                  <Text style={ styles.membershipSubText }>
+                    {strings.moderatePoint1Title}
+                  </Text>
+                  {'\n'}
+                  {strings.moderatePoint1Desc}
+                  {'\n'}
+                  {'\n'}
+                  <Text style={ styles.membershipSubText }>
+                    {strings.moderatePoint2Title}
+                  </Text>
+                  {'\n'}
+                  {strings.moderatePoint2Desc}
+                  {'\n'}
+                  {'\n'}
+                  <Text style={ styles.membershipSubText }>
+                    {strings.moderatePoint3Title}
+                  </Text>
+                  {strings.moderatePoint3Desc}
+                </Text>
+              </View>
+            )}
+            {selected === 2 && (
+              <View>
+                <Text style={ styles.membershipText }>{strings.flexibleText} </Text>
+                <Text style={ styles.whoJoinText }>
+                  <Text style={ styles.membershipSubText }>
+                    {strings.flexiblePoint1Title}
+                  </Text>
+                  {'\n'}
+                  {strings.flexiblePoint1Desc}
+                  {'\n'}
+                  {'\n'}
+                  <Text style={ styles.membershipSubText }>
+                    {strings.flexiblePoint2Title}
+                  </Text>
+                  {'\n'}
+                  {strings.flexiblePoint2Desc}
+                </Text>
+              </View>
+            )}
+          </View>}
         </SafeAreaView>
 
         <Modal
@@ -948,7 +1097,8 @@ function RefereeInfoSection({
           (editPressTitle === strings.bio && 'Edit Bio')
           || (editPressTitle === strings.basicinfotitle && 'Edit Basic Info')
           || (editPressTitle === strings.certificateTitle && 'Edit Certificates')
-          || (editPressTitle === strings.refereeFee && 'Edit Fee'),
+          || (editPressTitle === strings.refereeFee && 'Edit Fee')
+          || (editPressTitle === strings.cancellationPolicy && 'Edit Policy'),
           'Privacy Setting',
           'Cancel',
         ]}
@@ -959,6 +1109,7 @@ function RefereeInfoSection({
             || editPressTitle === strings.basicinfotitle
             || editPressTitle === strings.certificateTitle
             || editPressTitle === strings.refereeFee
+            || editPressTitle === strings.cancellationPolicy
           )) {
             editInfoModal();
           } else if (index === 1 && (
@@ -966,6 +1117,7 @@ function RefereeInfoSection({
             || editPressTitle === strings.basicinfotitle
             || editPressTitle === strings.certificateTitle
             || editPressTitle === strings.refereeFee
+            || editPressTitle === strings.cancellationPolicy
           )) {
             privacySettingModal();
           } else if (index === 2) {
@@ -1085,6 +1237,63 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
     height: 50,
+  },
+  LocationText: {
+    marginTop: hp('2%'),
+    color: colors.lightBlackColor,
+    fontSize: wp('3.8%'),
+    textAlign: 'left',
+    paddingLeft: 15,
+  },
+  radioButtonView: {
+    flexDirection: 'row',
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 15,
+  },
+  radioText: {
+    alignSelf: 'center',
+    color: colors.lightBlackColor,
+    fontSize: wp('3.8%'),
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  radioImage: {
+    height: 22,
+    width: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  unSelectRadioImage: {
+    alignSelf: 'center',
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
+    width: 22,
+  },
+  membershipText: {
+    color: colors.veryLightBlack,
+    fontFamily: fonts.RBold,
+    fontSize: 16,
+    marginLeft: 15,
+    marginTop: 20,
+  },
+  membershipSubText: {
+    color: colors.veryLightBlack,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    fontWeight: 'bold',
+    lineHeight: 20,
+    marginLeft: 15,
+    marginTop: 20,
+  },
+  whoJoinText: {
+    color: colors.veryLightBlack,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    marginBottom: 20,
+    marginLeft: 15,
+    marginTop: 10,
   },
 });
 

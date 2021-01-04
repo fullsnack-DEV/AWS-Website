@@ -33,6 +33,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import TCMessageButton from '../../../components/TCMessageButton';
+import Header from '../../../components/Home/Header';
 
 export default function PersonalInformationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -41,6 +42,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [userInfo, setUserInfo] = useState(authContext.entity.obj)
+  const [languagesName, setLanguagesName] = useState('')
 
   const [phoneNumbers, setPhoneNumbers] = useState(authContext.entity.obj.phone_numbers || [{
     id: 0,
@@ -83,14 +85,27 @@ export default function PersonalInformationScreen({ navigation, route }) {
   }, [navigation, editMode, languages, phoneNumbers]);
 
   useEffect(() => {
+    let languageText = '';
+    if (userInfo.language) {
+      userInfo.language.map((langItem, index) => {
+        languageText = languageText + (index ? ', ' : '') + langItem;
+        return null;
+      })
+      setLanguagesName(languageText);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
     const arr = [];
     for (const temp of language) {
-      if (userInfo?.language?.includes(temp.language)) {
-        temp.isChecked = true
-      } else {
-        temp.isChecked = false
+      if (userInfo.language) {
+        if (userInfo.language.includes(temp.language)) {
+          temp.isChecked = true
+        } else {
+          temp.isChecked = false
+        }
+        arr.push(temp)
       }
-      arr.push(temp)
     }
     setLanguages(arr);
 
@@ -324,7 +339,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <TextInput
                 placeholder={ strings.searchCityPlaceholder }
                 style={ styles.matchFeeTxt }
-                value={userInfo.city && `${userInfo.city} ,${userInfo.state_abbr} ,${userInfo.country}`}
+                value={userInfo.city && `${userInfo.city}, ${userInfo.state_abbr}, ${userInfo.country}`}
                 editable={ false }
                 pointerEvents="none"
                 ></TextInput>
@@ -340,7 +355,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            value={ userInfo?.language?.toString() }
+            value={ userInfo.language ? languagesName : '' }
             editable={ false }
             pointerEvents="none"></TextInput>
           </TouchableOpacity>
@@ -349,6 +364,10 @@ export default function PersonalInformationScreen({ navigation, route }) {
         <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
+        hasBackdrop={true}
+        onBackdropPress={() => {
+          setModalVisible(false)
+        }}
         backdropOpacity={ 0 }
         style={ { marginLeft: 0, marginRight: 0, marginBottom: 0 } }>
           <View
@@ -365,18 +384,22 @@ export default function PersonalInformationScreen({ navigation, route }) {
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.5,
             shadowRadius: 5,
+            elevation: 10,
           } }>
-            <Text
-            style={ {
-              alignSelf: 'center',
-              marginTop: 20,
-              marginBottom: 20,
-              fontSize: 16,
-              fontFamily: fonts.RBold,
-              color: colors.lightBlackColor,
-            } }>
-              Languages
-            </Text>
+            <Header
+              mainContainerStyle={{ marginTop: 15 }}
+              centerComponent={
+                <Text style={styles.headerCenterStyle}>{'Languages'}</Text>
+              }
+              rightComponent={
+                <TouchableOpacity onPress={() => {
+                  setModalVisible(false)
+                }}>
+                  <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                </TouchableOpacity>
+              }
+            />
+            <View style={styles.sepratorStyle} />
             <View style={ styles.separatorLine }></View>
             <FlatList
             data={ languages }
@@ -538,7 +561,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
-    marginBottom: '22%',
   },
   matchFeeTxt: {
     alignSelf: 'center',
@@ -604,6 +626,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     flexDirection: 'row',
     height: 40,
+    marginBottom: 10,
 
     marginTop: 12,
     paddingLeft: 15,
@@ -621,5 +644,15 @@ const styles = StyleSheet.create({
     marginTop: 14,
     width: wp('92%'),
   },
-
+  cancelImageStyle: {
+    height: 15,
+    width: 15,
+    tintColor: colors.lightBlackColor,
+  },
+  headerCenterStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
 });
