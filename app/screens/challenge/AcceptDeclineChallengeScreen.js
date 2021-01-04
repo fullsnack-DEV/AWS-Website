@@ -75,7 +75,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
+            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -97,6 +97,13 @@ export default function CreateChallengeForm4({ navigation, route }) {
         }, 0.7);
       });
   };
+  const singlePlayerText = () => {
+    if (bodyParams?.sport?.toLowerCase() === 'tennis') {
+      return 'You'
+    }
+
+    return 'Your team'
+  }
   // const getChallengeDetail = (challengeID) => {
   //   getChallenge(challengeID, authContext)
   //     .then((response) => {
@@ -162,6 +169,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
       title={
         index === 0 ? `Referee ${index + 1} (Chief)` : `Referee ${index + 1}`
       }
+      image={item.responsible_team_id !== 'none' && item.responsible_team_id
+        === (homeTeam?.group_id || homeTeam?.user_id) ? homeTeam?.thumbnail && homeTeam.thumbnail : awayTeam?.thumbnail && awayTeam.thumbnail}
       name={
         homeTeam
         && awayTeam
@@ -177,6 +186,8 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const renderSecureScorekeeper = ({ item, index }) => (
     <TCInfoImageField
       title={`Scorekeeper ${index + 1}`}
+      image={item.responsible_team_id !== 'none' && item.responsible_team_id
+        === (homeTeam?.group_id || homeTeam?.user_id) ? homeTeam?.thumbnail && homeTeam.thumbnail : awayTeam?.thumbnail && awayTeam.thumbnail}
       name={
         homeTeam
         && awayTeam
@@ -335,7 +346,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   </Text>
                 ) : (
                   <Text style={styles.challengeText}>
-                    Your team sent a match reservation request to{' '}
+                    {singlePlayerText()} sent a match reservation request to{' '}
                     {getTeamName(bodyParams)}. This request will be expired in{' '}
                     <Text style={styles.timeText}>
                       {getDayTimeDifferent(
@@ -367,7 +378,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   </Text>
                 ) : (
                   <Text style={styles.challengeText}>
-                    Your team received a match reservation request from{' '}
+                    {singlePlayerText()} received a match reservation request from{' '}
                     {getTeamName(bodyParams)}. This request will be expired in{' '}
                     <Text style={styles.timeText}>
                       {getDayTimeDifferent(
@@ -386,7 +397,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                 <Text style={styles.challengeText}>
-                  Your team has accepted a game reservation from{' '}
+                  {singlePlayerText()} has accepted a game reservation from{' '}
                   {getTeamName(bodyParams)}, but the payment hasnt gone through
                   yet.
                 </Text>
@@ -430,7 +441,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   RESERVATION CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
-                  Your team has the confirmed game reservation against{' '}
+                  {singlePlayerText()} has the confirmed game reservation against{' '}
                   {getTeamName(bodyParams)}.
                 </Text>
               </View>
@@ -447,7 +458,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 </Text>
                 <Text style={styles.challengeText}>
                   {getTeamName(bodyParams)} has the confirmed game reservation
-                  against your team.
+                  against {singlePlayerText()}.
                 </Text>
               </View>
           )}
@@ -464,7 +475,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   RESERVATION REQUEST DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
-                  Your team declined the match reservation request from{' '}
+                  {singlePlayerText()} declined the match reservation request from{' '}
                   {getTeamName(bodyParams)}.
                 </Text>
               </View>
@@ -498,7 +509,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   RESERVATION CANCELLED
                 </Text>
                 <Text style={styles.challengeText}>
-                  Your team cancelled the match reservation from{' '}
+                  {singlePlayerText()} cancelled the match reservation from{' '}
                   {getTeamName(bodyParams)}.
                 </Text>
               </View>

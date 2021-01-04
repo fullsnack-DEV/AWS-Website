@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
 import {
-  View, StyleSheet, Image, Text,
+  View, StyleSheet, Image, Text, Alert,
 } from 'react-native';
 
 import images from '../../Constants/ImagePath';
@@ -49,7 +49,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
 
       {route && route.params && route.params.teamObj && (
         <TCBorderButton
-          title={`GO TO ${(route.params.teamObj.group_name).toUpperCase() || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`.toUpperCase()}`}
+          title={`GO TO ${(route.params.teamObj.group_name?.toUpperCase()) || `${route.params.teamObj.first_name?.toUpperCase()} ${route.params.teamObj.last_name?.toUpperCase()}`}`}
           textColor={colors.whiteColor}
           borderColor={colors.whiteColor}
           backgroundColor={'transparent'}
@@ -82,14 +82,19 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           shadow={true}
           marginBottom={55}
           onPress={() => {
-            if (`${route?.params?.teamObj?.sport}`.toLowerCase() === 'soccer') {
-              navigation.navigate('SoccerHome', {
-                gameId: route?.params?.teamObj?.game_id,
-              })
+            if (route?.params?.game_id) {
+              if (route?.params?.teamObj?.sport?.toLowerCase() === 'soccer') {
+                navigation.navigate('SoccerHome', {
+                  gameId: route?.params?.game_id,
+                })
+              } else if (route?.params?.teamObj?.sport?.toLowerCase() === 'tennis') {
+                navigation.navigate('TennisHome', {
+                  gameId: route?.params?.game_id,
+                })
+              }
             } else {
-              navigation.navigate('TennisHome', {
-                gameId: route?.params?.teamObj?.game_id,
-              })
+              Alert.alert('Game ID not exist');
+              console.log('Game ID not exist');
             }
           }
           }

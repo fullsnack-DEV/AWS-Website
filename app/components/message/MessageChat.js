@@ -63,8 +63,11 @@ const MessageChat = ({
   const scrollRef = useRef(null);
   const refSavedMessagesData = useRef(savedMessagesData);
   useEffect(() => () => {
-    navigation.setParams({ participants: [occupantsData] });
-  }, [])
+    if (occupantsData?.length) {
+      navigation.setParams({ participants: occupantsData });
+    }
+  }, [occupantsData]);
+
   useEffect(() => {
     const setData = (data) => {
       const dialogDatas = {
@@ -144,31 +147,33 @@ const MessageChat = ({
   }
 
   useEffect(() => {
-    const getUser = async () => {
-      setMyUserId(authContext.entity.QB.id);
-      setLoading(true);
-      await getMessages();
-      setTimeout(() => onInputBoxFocus(), 200)
-      setLoading(false);
+    if (dialogData) {
+      const getUser = async () => {
+        setMyUserId(authContext.entity.QB.id);
+        setLoading(true);
+        await getMessages();
+        setTimeout(() => onInputBoxFocus(), 200)
+        setLoading(false);
+      }
+      getUser();
+      QBgetUserDetail(
+        QB.users.USERS_FILTER.FIELD.ID,
+        QB.users.USERS_FILTER.TYPE.STRING,
+        dialogData?.occupantsIds.join(),
+      ).then((res) => {
+        console.log('USER: ', res.users)
+        setOccupantsData([...res.users]);
+      }).catch((e) => {
+        console.log(e);
+      })
+      if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
+        QB.chat.joinDialog({ dialogId: dialogData?.dialogId });
+      }
+      QbMessageEmitter.addListener(
+        QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+        newMessageHandler,
+      )
     }
-    getUser();
-    QBgetUserDetail(
-      QB.users.USERS_FILTER.FIELD.ID,
-      QB.users.USERS_FILTER.TYPE.NUMBER,
-      dialogData?.occupantsIds.join(),
-    ).then((res) => {
-      setOccupantsData(res.users);
-    }).catch((e) => {
-      console.log(e);
-    })
-    if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
-      QB.chat.joinDialog({ dialogId: dialogData?.dialogId });
-    }
-    QbMessageEmitter.addListener(
-      QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-      newMessageHandler,
-    )
-
     return () => {
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE)
     }

@@ -43,7 +43,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
   const [teamData, setTeamData] = useState();
   const [editableAlter, setEditableAlter] = useState(false);
   const [venueTitle, setVenueTitle] = useState('');
-  const [sport] = useState(route.params.groupObj.sport);
+  const [sport, setSport] = useState(route?.params?.groupObj?.sport);
   const [venueData, setVenueData] = useState({
     lat: null,
     long: null,
@@ -55,7 +55,9 @@ export default function CreateChallengeForm1({ navigation, route }) {
   useLayoutEffect(() => {
 
   }, [venueTitle])
-
+  useEffect(() => {
+    bodyParams = {}
+  }, [])
   useEffect(() => {
     if (isFocused) {
       entity = authContext.entity
@@ -69,21 +71,24 @@ export default function CreateChallengeForm1({ navigation, route }) {
         if (route && route.params && route.params.editableAlter) {
           setEditableAlter(true)
         }
-        bodyParams = route.params.body;
+        bodyParams = { ...route.params.body };
         console.log('BODY::-', bodyParams);
         setteams([{ ...route.params.body.home_team }, { ...route.params.body.away_team }])
+        setVenueTitle(route.params.body.venue.title)
         setVenueData(route.params.body.venue)
+        getLatLongData(route.params.body.venue.address)
+        setSport(route.params.body.sport)
         setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_name ? 0 : 1)
         setVenue((route.params.body.venue.venueType === 'HomeTeam' && 1) || (route.params.body.venue.venueType === 'AwayTeam' && 2) || (route.params.body.venue.venueType === 'other' && 0))
-        if (route.params.body.home_team.group_id === entity.obj.group_id) {
+
+        if ((route?.params?.body?.home_team?.user_id || route?.params?.body?.home_team?.group_id) === (entity.obj.user_id || entity.obj.group_id)) {
           setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }])
         } else {
           setTeamData([{ ...entity.obj }, { ...route.params.body.home_team }])
         }
       }
-
       if (route && route.params && route.params.venueObj) {
-        getLatLongData()
+        getLatLongData(route.params.venueObj.description)
         setVenue(0)
         bodyParams = {
           ...bodyParams,
@@ -103,8 +108,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
     }
   }, [isFocused]);
 
-  const getLatLongData = () => {
-    getLatLong(route.params.venueObj.description, authContext).then((response) => {
+  const getLatLongData = (addressDescription) => {
+    getLatLong(addressDescription, authContext).then((response) => {
       setCordinate({
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
@@ -117,7 +122,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
       });
       setVenueData({
         ...venueData,
-        address: route.params.venueObj.description,
+        address: addressDescription,
         venueType: 'other',
         lat: response.results[0].geometry.location.lat,
         long: response.results[0].geometry.location.lng,
@@ -130,40 +135,18 @@ export default function CreateChallengeForm1({ navigation, route }) {
     setteams([teams[1], teams[0]]);
   };
   const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy');
-  const tConvert = (timeString) => {
-    const timeString12hr = new Date(
-      `1970-01-01T${timeString}Z`,
-    ).toLocaleTimeString(
-      {},
-      {
-        timeZone: 'UTC',
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      },
-    );
-    return timeString12hr;
-  };
-
-  const time_format = (d) => {
-    const hours = format_two_digits(d.getHours());
-    const minutes = format_two_digits(d.getMinutes());
-    const seconds = format_two_digits(d.getSeconds());
-    return tConvert(`${hours}:${minutes}:${seconds}`);
-  }
-
-  const format_two_digits = (n) => (n < 10 ? `0${n}` : n)
+  const time_format = (d) => moment(new Date(d)).format('hh:mm A')
 
   const checkValidation = () => {
-    if (!route && !route.params && !route.params.from) {
+    if ((route?.params?.body?.start_datetime === null && route?.params?.body?.end_datetime === null)) {
       Alert.alert('Towns Cup', 'Please choose start and end time.');
       return false
     }
-    if (venueData.title === '') {
+    if (venueData.title === null) {
       Alert.alert('Towns Cup', 'Venue title cannot be blank');
       return false
     }
-    if (venueData.address === '') {
+    if (venueData.address === null) {
       Alert.alert('Towns Cup', 'Venue address cannot be blank');
       return false
     }
@@ -380,7 +363,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 onPress={() => {
                   setVenue(0);
                   if (route && route.params && route.params.venueObj) {
-                    getLatLongData()
+                    getLatLongData(route.params.venueObj.description)
                   }
                 }}>
                 <Image
@@ -408,8 +391,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
               <TCTouchableLabel
               placeholder={'Address'}
                 title={
-                  route && route.params && route.params.venueObj
-                    && route.params.venueObj.description
+                  (route && route.params && route.params.venueObj
+                    && route.params.venueObj.description) || venueData.address
 
                 }
                 style={{ marginTop: 10, marginBottom: 10 }}
@@ -502,6 +485,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
         <TCGradientButton
           title={editableAlter ? strings.doneTitle : strings.nextTitle}
           onPress={() => {
+            console.log('Before Body params::', bodyParams);
             if (checkValidation()) {
               if (route && route.params && route.params.editable) {
                 navigation.navigate('CreateChallengeForm4', { teamData: teams, body: configureParams() })
@@ -513,7 +497,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     away_team: teams[1],
                     venue: venueData,
                     sport,
-                    responsible_to_secure_venue: secureVenue === 0 ? teamData[0].group_name : teamData[1].group_name,
+                    responsible_to_secure_venue: secureVenue === 0 ? (teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`) : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`,
                   },
                 })
               } else {

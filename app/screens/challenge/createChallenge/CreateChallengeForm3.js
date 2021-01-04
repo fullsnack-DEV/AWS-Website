@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
+  Alert,
   StyleSheet,
   View,
   Text,
@@ -51,20 +52,28 @@ export default function CreateChallengeForm3({ navigation, route }) {
     }
   }, [isFocused]);
   const addReferee = () => {
-    const obj = {
-      id: referees.length === 0 ? 0 : referees.length,
-      is_chief: false,
-      responsible_team_id: 'none',
+    if (referees.length < 5) {
+      const obj = {
+        id: referees.length === 0 ? 0 : referees.length,
+        is_chief: false,
+        responsible_team_id: 'none',
+      }
+      setReferees([...referees, obj]);
+    } else {
+      Alert.alert(strings.titleBasic, strings.max5Referee)
     }
-    setReferees([...referees, obj]);
   };
   const addScorekeeper = () => {
-    const obj = {
-      id: scorekeeper.length === 0 ? 0 : scorekeeper.length,
-      is_chief: false,
-      responsible_team_id: 'none',
+    if (scorekeeper.length < 5) {
+      const obj = {
+        id: scorekeeper.length === 0 ? 0 : scorekeeper.length,
+        is_chief: false,
+        responsible_team_id: 'none',
+      }
+      setScorekeeper([...scorekeeper, obj]);
+    } else {
+      Alert.alert(strings.titleBasic, strings.max5Scorekeeper)
     }
-    setScorekeeper([...scorekeeper, obj]);
   };
   const renderReferee = ({ index }) => (
     <View>

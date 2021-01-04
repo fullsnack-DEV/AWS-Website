@@ -9,10 +9,12 @@ const Drawer = createDrawerNavigator();
 
 const MessageDrawerNavigator = () => (
   <Drawer.Navigator
-        drawerContent={(props) => <MessageInviteeDrawerScreen {...props}
-        participants={props?.state?.routes[0]?.params?.participants ?? []}
-        dialog={props?.state?.routes[0]?.params?.dialog ?? null}
-        />}
+        drawerContent={(props) => (
+          <MessageInviteeDrawerScreen {...props}
+                participants={props?.state?.routes[0]?.params?.participants ?? []}
+                dialog={props?.state?.routes[0]?.params?.dialog ?? null}
+            />
+        )}
         drawerPosition={'right'}
         drawerContentOptions={{
           activeTintColor: 'red',

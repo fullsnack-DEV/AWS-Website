@@ -9,6 +9,15 @@ import NavigationMainContainer from './NavigationMainContainer';
 import { firebaseConfig } from './app/utils/constant';
 
 export default function App() {
+  useEffect(() => {
+    const firebaseAppInitialize = async () => {
+      if (firebase.apps.length === 0) {
+        await firebase.initializeApp(firebaseConfig);
+      }
+    }
+    firebaseAppInitialize();
+  })
+
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
@@ -27,14 +36,12 @@ export default function App() {
     }),
     [role, user, entity],
   );
-
   useEffect(() => {
     Orientation.lockToPortrait()
     if (firebase.apps.length === 0) {
       firebase.initializeApp(firebaseConfig);
     }
   }, []);
-
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>

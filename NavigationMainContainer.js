@@ -16,6 +16,15 @@ export default function NavigationMainContainer() {
 
   const [appInitialize, setAppInitialize] = useState(false);
 
+  const resetApp = async () => {
+    QBLogout();
+    firebase.auth().signOut();
+    authContext.setEntity(null)
+    authContext.setUser(null);
+    await Utility.clearStorage();
+    setAppInitialize(true);
+  }
+
   const checkToken = async () => {
     const contextEntity = await Utility.getStorage('authContextEntity');
     const authContextUser = await Utility.getStorage('authContextUser');
@@ -35,16 +44,15 @@ export default function NavigationMainContainer() {
                 contextEntity.auth.token = token;
                 await authContext.setEntity({ ...contextEntity });
                 await Utility.setStorage('authContextEntity', { ...contextEntity })
+                setAppInitialize(true);
               }).catch((error) => {
+                setAppInitialize(true);
                 console.log('Token Related: ', error);
+                resetApp();
               });
           } else {
             console.log('No user is signed in.');
-            QBLogout();
-            firebase.auth().signOut();
-            authContext.setEntity(null)
-            authContext.setUser(null);
-            Utility.clearStorage();
+            resetApp();
           }
         })
       } else {

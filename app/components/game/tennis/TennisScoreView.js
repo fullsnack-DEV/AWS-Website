@@ -19,33 +19,35 @@ let awayTeamMatchPoint = 0;
 export default function TennisScoreView({ scoreDataSource }) {
   useEffect(() => {
     setsData = [];
-    if (scoreDataSource?.scoreboard !== {}) {
-      const reversSets = scoreDataSource?.scoreboard?.sets.reverse();
-      for (let i = 0; i < scoreDataSource?.score_rules?.total_sets; i++) {
-        if (reversSets[i]) {
-          setsData.push(reversSets[i]);
-        } else {
-          setsData.push({});
+    if (scoreDataSource?.scoreboard) {
+      if (Object.keys(scoreDataSource?.scoreboard).length > 0) {
+        const reversSets = scoreDataSource?.scoreboard?.sets?.reverse();
+        for (let i = 0; i < scoreDataSource?.score_rules?.total_sets; i++) {
+          if (reversSets[i]) {
+            setsData.push(reversSets[i]);
+          } else {
+            setsData.push({});
+          }
         }
+        calculateMatchScore();
+        calculateGameScore();
+        console.log('scoreDataSource', setsData);
       }
-      calculateMatchScore();
-      calculateGameScore();
-      console.log('scoreDataSource', setsData);
     }
   }, [scoreDataSource]);
 
-  const renderScores = ({ item, index }) => (item.s_id === scoreDataSource?.scoreboard?.game_inprogress?.s_id ? (
+  const renderScores = ({ item, index }) => (item?.s_id === scoreDataSource?.scoreboard?.game_inprogress?.s_id ? (
     <View style={{ alignItems: 'center' }}>
       <Text style={styles.scoreTitle}>{index + 1}</Text>
       <LinearGradient
           colors={[colors.yellowColor, colors.themeColor]}
           style={styles.scoreView}>
         <Text style={[styles.player1Score, { color: colors.whiteColor }]}>
-          {item.s_id ? item.home_team_win_count : '-'}
+          {item?.s_id ? item?.home_team_win_count : '-'}
         </Text>
         <TCThinDivider />
         <Text style={[styles.player2Score, { color: colors.whiteColor }]}>
-          {item.s_id ? item.away_team_win_count : '-'}
+          {item?.s_id ? item?.away_team_win_count : '-'}
         </Text>
       </LinearGradient>
     </View>
@@ -54,11 +56,11 @@ export default function TennisScoreView({ scoreDataSource }) {
       <Text style={styles.scoreTitle}>{index + 1}</Text>
       <View style={styles.scoreView}>
         <Text style={styles.player1Score}>
-          {item.s_id ? item.home_team_win_count : '-'}
+          {item?.s_id ? item?.home_team_win_count : '-'}
         </Text>
         <TCThinDivider />
         <Text style={styles.player2Score}>
-          {item.s_id ? item.away_team_win_count : '-'}
+          {item?.s_id ? item?.away_team_win_count : '-'}
         </Text>
       </View>
     </View>
@@ -76,15 +78,15 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint > awayTeamMatchPoint)
             || (index === 1
-              && scoreDataSource?.scoreboard?.sets[0]?.home_team_win_count
-                > scoreDataSource?.scoreboard?.sets[0]?.away_team_win_count)
+              && scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count
+                > scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count)
             || (index === 2 && homeTeamGamePoint > awayTeamGamePoint)
               ? [styles.player1Score, { color: colors.themeColor }]
               : styles.player1Score
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
             || (index === 1
-              && (`${scoreDataSource?.scoreboard?.sets[0]?.home_team_win_count}` || '-'))
+              && (scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count ?? '-'))
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
 
@@ -93,15 +95,15 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint < awayTeamMatchPoint)
             || (index === 1
-              && scoreDataSource?.scoreboard?.sets[0]?.home_team_win_count
-                < scoreDataSource?.scoreboard?.sets[0]?.away_team_win_count)
+              && scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count
+                < scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count)
             || (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
               ? [styles.player2Score, { color: colors.themeColor }]
               : styles.player2Score
           }>
           {(index === 0 && `${awayTeamMatchPoint}`)
             || (index === 1
-              && (`${scoreDataSource?.scoreboard?.sets[0]?.away_team_win_count}` || '-'))
+              && (scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count ?? '-'))
             || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
 
@@ -208,7 +210,7 @@ export default function TennisScoreView({ scoreDataSource }) {
           )}
           keyExtractor={(item, index) => index.toString()}
           style={{ alignSelf: 'center' }}
-        />
+         />
       </View>
     </View>
   );
