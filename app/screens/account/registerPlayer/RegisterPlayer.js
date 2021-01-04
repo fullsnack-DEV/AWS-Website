@@ -31,6 +31,7 @@ import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import TCLabel from '../../../components/TCLabel';
 import DataSource from '../../../Constants/DataSource';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function RegisterPlayer({ navigation, route }) {
   const [sports, setSports] = useState('');
@@ -122,7 +123,7 @@ export default function RegisterPlayer({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={ styles.mainContainer }>
         <View style={ styles.formSteps }>
           <View style={ styles.form1 }></View>
@@ -296,7 +297,7 @@ export default function RegisterPlayer({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({

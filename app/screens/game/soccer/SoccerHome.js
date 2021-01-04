@@ -128,7 +128,7 @@ const SoccerHome = ({ navigation, route }) => {
   )
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />
-    <TopBackgroundHeader navigation={navigation} gameData={gameData}>
+    <TopBackgroundHeader isAdmin={isAdmin} navigation={navigation} gameData={gameData}>
       <TCScrollableProfileTabs
         tabItem={TAB_ITEMS}
         onChangeTab={(ChangeTab) => {

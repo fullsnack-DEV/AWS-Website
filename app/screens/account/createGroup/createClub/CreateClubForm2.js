@@ -21,6 +21,7 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function CreateClubForm2({ navigation, route }) {
   const [registrationFee, setRegistrationFee] = useState('');
@@ -28,83 +29,84 @@ export default function CreateClubForm2({ navigation, route }) {
   const [membershipTeamSelected, setMembershipTeamSelected] = useState(0);
 
   return (
-    <ScrollView style={ styles.mainContainer }>
-      <View style={ styles.formSteps }>
-        <View style={ styles.form1 }></View>
-        <View style={ styles.form2 }></View>
-        <View style={ styles.form3 }></View>
-      </View>
+    <TCKeyboardView>
+      <ScrollView style={ styles.mainContainer }>
+        <View style={ styles.formSteps }>
+          <View style={ styles.form1 }></View>
+          <View style={ styles.form2 }></View>
+          <View style={ styles.form3 }></View>
+        </View>
 
-      <Text style={ styles.whoJoinText }>{strings.whoJoinText}</Text>
+        <Text style={ styles.whoJoinText }>{strings.whoJoinText}</Text>
 
-      <View style={ styles.radioButtonView }>
-        <TouchableWithoutFeedback onPress={ () => setMembershipUserSelected(0) }>
-          {membershipUserSelected === 0 ? (
-            <Image source={ images.radioSelect } style={ styles.radioImage } />
-          ) : (
-            <Image
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback onPress={ () => setMembershipUserSelected(0) }>
+            {membershipUserSelected === 0 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-          )}
-        </TouchableWithoutFeedback>
-        <Text style={ styles.radioText }>{strings.everyoneText}</Text>
-      </View>
-      <View style={ styles.radioButtonView }>
-        <TouchableWithoutFeedback onPress={ () => setMembershipUserSelected(1) }>
-          {membershipUserSelected === 1 ? (
-            <Image source={ images.radioSelect } style={ styles.radioImage } />
-          ) : (
-            <Image
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.everyoneText}</Text>
+        </View>
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback onPress={ () => setMembershipUserSelected(1) }>
+            {membershipUserSelected === 1 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-          )}
-        </TouchableWithoutFeedback>
-        <Text style={ styles.radioText }>{strings.onlyPersonText}</Text>
-      </View>
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.onlyPersonText}</Text>
+        </View>
 
-      <Text style={ styles.whoJoinText }>{strings.whoseApprovalText}</Text>
+        <Text style={ styles.whoJoinText }>{strings.whoseApprovalText}</Text>
 
-      <View style={ styles.radioButtonView }>
-        <TouchableWithoutFeedback onPress={ () => setMembershipTeamSelected(0) }>
-          {membershipTeamSelected === 0 ? (
-            <Image source={ images.radioSelect } style={ styles.radioImage } />
-          ) : (
-            <Image
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback onPress={ () => setMembershipTeamSelected(0) }>
+            {membershipTeamSelected === 0 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-          )}
-        </TouchableWithoutFeedback>
-        <Text style={ styles.radioText }>{strings.noneText}</Text>
-      </View>
-      <View style={ styles.radioButtonView }>
-        <TouchableWithoutFeedback onPress={ () => setMembershipTeamSelected(1) }>
-          {membershipTeamSelected === 1 ? (
-            <Image source={ images.radioSelect } style={ styles.radioImage } />
-          ) : (
-            <Image
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.noneText}</Text>
+        </View>
+        <View style={ styles.radioButtonView }>
+          <TouchableWithoutFeedback onPress={ () => setMembershipTeamSelected(1) }>
+            {membershipTeamSelected === 1 ? (
+              <Image source={ images.radioSelect } style={ styles.radioImage } />
+            ) : (
+              <Image
               source={ images.radioUnselect }
               style={ styles.unSelectRadioImage }
             />
-          )}
-        </TouchableWithoutFeedback>
-        <Text style={ styles.radioText }>{strings.clubAdminText}</Text>
-      </View>
-      <View style={ styles.fieldView }>
-        <Text style={ styles.fieldTitle }>{strings.registerTitle}</Text>
-      </View>
-      <View style={ styles.matchFeeView }>
-        <TextInput
+            )}
+          </TouchableWithoutFeedback>
+          <Text style={ styles.radioText }>{strings.clubAdminText}</Text>
+        </View>
+        <View style={ styles.fieldView }>
+          <Text style={ styles.fieldTitle }>{strings.registerTitle}</Text>
+        </View>
+        <View style={ styles.matchFeeView }>
+          <TextInput
           placeholder={ strings.enterFeePlaceholder }
           style={ styles.feeText }
           onChangeText={ (text) => setRegistrationFee(text) }
           value={ registrationFee }
           keyboardType={ 'decimal-pad' }></TextInput>
-        <Text style={ styles.curruency }>CAD</Text>
-      </View>
-      <TouchableOpacity
+          <Text style={ styles.curruency }>CAD</Text>
+        </View>
+        <TouchableOpacity
         onPress={ () => {
           const form2 = {};
           if (membershipUserSelected === 0) {
@@ -124,13 +126,14 @@ export default function CreateClubForm2({ navigation, route }) {
             createClubForm2: { ...route.params.createClubForm1, ...form2 },
           });
         } }>
-        <LinearGradient
+          <LinearGradient
           colors={ [colors.yellowColor, colors.themeColor] }
           style={ styles.nextButton }>
-          <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    </ScrollView>
+            <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({

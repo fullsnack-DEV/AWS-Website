@@ -8,7 +8,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  FlatList,
+  FlatList, ScrollView,
 
 } from 'react-native';
 
@@ -169,96 +169,96 @@ export default function CreateMemberProfileForm1({ navigation }) {
   );
   return (
     <TCKeyboardView>
+      <ScrollView style={{ flex: 1 }}>
+        <View style={styles.formSteps}>
+          <View style={styles.form1}></View>
+          <View style={styles.form2}></View>
+          {role === 'club' && <View style={styles.form3}></View>}
+        </View>
 
-      <View style={styles.formSteps}>
-        <View style={styles.form1}></View>
-        <View style={styles.form2}></View>
-        {role === 'club' && <View style={styles.form3}></View>}
-      </View>
+        <View style={styles.profileView}>
+          <Image source={memberInfo.full_image ? { uri: memberInfo.full_image } : images.profilePlaceHolder} style={styles.profileChoose}/>
+          <TouchableOpacity style={styles.choosePhoto} onPress={() => onProfileImageClicked()}>
+            <Image source={images.certificateUpload} style={styles.choosePhoto}/>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.profileView}>
-        <Image source={memberInfo.full_image ? { uri: memberInfo.full_image } : images.profilePlaceHolder} style={styles.profileChoose}/>
-        <TouchableOpacity style={styles.choosePhoto} onPress={() => onProfileImageClicked()}>
-          <Image source={images.certificateUpload} style={styles.choosePhoto}/>
-        </TouchableOpacity>
-      </View>
+        <View>
+          <TCLable title={'Name'} required={true}/>
+          <TCTextField value={memberInfo.first_name} onChangeText={(text) => setMemberInfo({ ...memberInfo, first_name: text })} placeholder={strings.firstName}/>
+          <TCTextField value={memberInfo.last_name} onChangeText={(text) => setMemberInfo({ ...memberInfo, last_name: text })} placeholder={strings.lastName} style={{ marginTop: 12 }}/>
+        </View>
 
-      <View>
-        <TCLable title={'Name'} required={true}/>
-        <TCTextField value={memberInfo.first_name} onChangeText={(text) => setMemberInfo({ ...memberInfo, first_name: text })} placeholder={strings.firstName}/>
-        <TCTextField value={memberInfo.last_name} onChangeText={(text) => setMemberInfo({ ...memberInfo, last_name: text })} placeholder={strings.lastName} style={{ marginTop: 12 }}/>
-      </View>
+        <View>
+          <TCLable title={'E-Mail'} required={true}/>
+          <TCTextField value={memberInfo.email} onChangeText={(text) => setMemberInfo({ ...memberInfo, email: text })} placeholder={strings.addressPlaceholder} keyboardType={'email-address'}/>
+        </View>
 
-      <View>
-        <TCLable title={'E-Mail'} required={true}/>
-        <TCTextField value={memberInfo.email} onChangeText={(text) => setMemberInfo({ ...memberInfo, email: text })} placeholder={strings.addressPlaceholder} keyboardType={'email-address'}/>
-      </View>
+        <View>
+          <TCLable title={'Phone'}/>
 
-      <View>
-        <TCLable title={'Phone'}/>
-
-        <FlatList
+          <FlatList
                 data={phoneNumber}
                 renderItem={renderPhoneNumber}
                 keyExtractor={(item, index) => index.toString()}
                 >
-        </FlatList>
+          </FlatList>
 
-      </View>
-      {phoneNumber?.length < 5 && (
-        <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
-      )}
+        </View>
+        {phoneNumber?.length < 5 && (
+          <TCMessageButton title={strings.addPhone} width={85} alignSelf = 'center' marginTop={15} onPress={() => addPhoneNumber()}/>
+        )}
 
-      <View>
-        <TCLable title={'Street Address'} />
-        <TCTextField value={memberInfo.street_address}
+        <View>
+          <TCLable title={'Street Address'} />
+          <TCTextField value={memberInfo.street_address}
         onChangeText={(text) => setMemberInfo({ ...memberInfo, street_address: text })}
         placeholder={strings.addressPlaceholder}
         keyboardType={'default'}
         onFocus={() => setLocationFieldVisible(true)}/>
-      </View>
-      {locationFieldVisible && <View>
-        <TCLable title={'city'} />
-        <TCTextField value={memberInfo.city} onChangeText={(text) => setMemberInfo({ ...memberInfo, city: text })} placeholder={strings.cityText} keyboardType={'default'}/>
-      </View>}
-      {locationFieldVisible && <View>
-        <TCLable title={'State/Province/Region'} />
-        <TCTextField value={memberInfo.state_abbr} onChangeText={(text) => setMemberInfo({ ...memberInfo, state_abbr: text })} placeholder={strings.stateText} keyboardType={'default'}/>
-      </View>}
-      {locationFieldVisible && <View>
-        <TCLable title={'Country'} />
-        <TCTextField value={memberInfo.country} onChangeText={(text) => setMemberInfo({ ...memberInfo, country: text })} placeholder={strings.countryText} keyboardType={'default'}/>
-      </View>}
-      {locationFieldVisible && <View>
-        <TCLable title={'Postal Code/Zip'} />
-        <TCTextField value={memberInfo.postal_code} onChangeText={(text) => setMemberInfo({ ...memberInfo, postal_code: text })} placeholder={strings.postalCodeText} keyboardType={'default'}/>
-      </View>}
-      <View>
-        <TCLable title={'Birthday'} />
-        {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
+        </View>
+        {locationFieldVisible && <View>
+          <TCLable title={'city'} />
+          <TCTextField value={memberInfo.city} onChangeText={(text) => setMemberInfo({ ...memberInfo, city: text })} placeholder={strings.cityText} keyboardType={'default'}/>
+        </View>}
+        {locationFieldVisible && <View>
+          <TCLable title={'State/Province/Region'} />
+          <TCTextField value={memberInfo.state_abbr} onChangeText={(text) => setMemberInfo({ ...memberInfo, state_abbr: text })} placeholder={strings.stateText} keyboardType={'default'}/>
+        </View>}
+        {locationFieldVisible && <View>
+          <TCLable title={'Country'} />
+          <TCTextField value={memberInfo.country} onChangeText={(text) => setMemberInfo({ ...memberInfo, country: text })} placeholder={strings.countryText} keyboardType={'default'}/>
+        </View>}
+        {locationFieldVisible && <View>
+          <TCLable title={'Postal Code/Zip'} />
+          <TCTextField value={memberInfo.postal_code} onChangeText={(text) => setMemberInfo({ ...memberInfo, postal_code: text })} placeholder={strings.postalCodeText} keyboardType={'default'}/>
+        </View>}
+        <View>
+          <TCLable title={'Birthday'} />
+          {/* <TCTextField value={teamName} onChangeText={(text) => setTeamName(text)} placeholder={strings.addressPlaceholder} keyboardType={'default'}/> */}
 
-        <TCTouchableLabel
+          <TCTouchableLabel
         title={memberInfo.birthday && `${`${monthNames[new Date(memberInfo.birthday).getMonth()]} ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(memberInfo.birthday).getFullYear()}`}
       placeholder={strings.birthDatePlaceholder}
       onPress={() => setShow(!show)} />
-      </View>
-      <View >
-        <TCLable title={'Gender'}/>
-        <TCPicker dataSource={DataSource.Gender}
+        </View>
+        <View >
+          <TCLable title={'Gender'}/>
+          <TCPicker dataSource={DataSource.Gender}
           placeholder={strings.selectGenderPlaceholder}
           value={memberInfo.gender} onValueChange={(value) => {
             setMemberInfo({ ...memberInfo, gender: value })
           }}
           />
-      </View>
-      <View style={{ marginLeft: 15, marginTop: 15 }}>
-        <Text style={styles.smallTxt}>
-          (<Text style={styles.mendatory}>{strings.star} </Text>
-          {strings.requiredText})
-        </Text>
-      </View>
-      <View style={{ marginBottom: 20 }}/>
-      <ActionSheet
+        </View>
+        <View style={{ marginLeft: 15, marginTop: 15 }}>
+          <Text style={styles.smallTxt}>
+            (<Text style={styles.mendatory}>{strings.star} </Text>
+            {strings.requiredText})
+          </Text>
+        </View>
+        <View style={{ marginBottom: 20 }}/>
+        <ActionSheet
                 ref={actionSheet}
                 options={memberInfo.full_image ? [strings.camera, strings.album, strings.deleteTitle, strings.cancelTitle] : [strings.camera, strings.album, strings.cancelTitle]}
                 destructiveButtonIndex={memberInfo.full_image && 2}
@@ -274,7 +274,8 @@ export default function CreateMemberProfileForm1({ navigation }) {
                 }}
               />
 
-      <TCDateTimePicker title={'Choose Birthday'} visible={show} onDone={handleDonePress} onCancel={handleCancelPress}/>
+        <TCDateTimePicker title={'Choose Birthday'} visible={show} onDone={handleDonePress} onCancel={handleCancelPress}/>
+      </ScrollView>
     </TCKeyboardView>
 
   );

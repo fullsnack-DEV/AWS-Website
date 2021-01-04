@@ -16,7 +16,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -26,6 +25,7 @@ import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function CreateTeamForm4({ navigation, route }) {
   const [selected, setSelected] = useState(0);
@@ -87,7 +87,7 @@ export default function CreateTeamForm4({ navigation, route }) {
   };
 
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={ styles.mainContainer }>
         <ActivityLoader visible={loading} />
         <View style={ styles.formSteps }>
@@ -234,7 +234,7 @@ export default function CreateTeamForm4({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
@@ -375,13 +375,6 @@ const styles = StyleSheet.create({
     fontSize: wp('5%'),
     marginLeft: 15,
     marginTop: 20,
-  },
-  smallTxt: {
-    color: colors.grayColor,
-    fontSize: wp('2.8%'),
-    marginTop: hp('2%'),
-
-    textAlign: 'left',
   },
   unSelectRadioImage: {
     alignSelf: 'center',

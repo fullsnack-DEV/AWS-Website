@@ -3,8 +3,8 @@ import _ from 'lodash';
 import { QB_Auth_Password } from './constant';
 
 const MESSAGE_LIMIT = 50;
-const DIALOG_LIST_LIMIT = 200;
-const USERS_LIST_LIMIT = 500;
+const DIALOG_LIST_LIMIT = 1000;
+const USERS_LIST_LIMIT = 1000;
 export const QB_UNREAD_MESSAGE_COUNT_API = 'https://api.quickblox.com/chat/Message/unread.json?token=';
 
 const MESSAGES_SORT = {

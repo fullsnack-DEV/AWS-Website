@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import {
   Alert,
   Image,
-  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -209,14 +208,13 @@ export default function SignupScreen({ navigation }) {
       {/* <Loader visible={true} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
-      <ScrollView>
-        <TCKeyboardView>
-          <View style={{ marginVertical: 20 }}>
-            <FastImage
+      <TCKeyboardView>
+        <View style={{ marginVertical: 20 }}>
+          <FastImage
                   source={profilePic?.path ? { uri: profilePic?.path } : images.profilePlaceHolder}
                   style={styles.profile}
               />
-            <TouchableOpacity
+          <TouchableOpacity
                   style={styles.profileCameraButtonStyle}
                   onPress={() => {
                     ImagePicker.openPicker({
@@ -227,25 +225,25 @@ export default function SignupScreen({ navigation }) {
                       setProfilePic(pickImages);
                     });
                   }}>
-              <FastImage
+            <FastImage
                     source={images.certificateUpload}
                     style={styles.cameraIcon}
                 />
-            </TouchableOpacity>
-          </View>
-          <TCTextField
+          </TouchableOpacity>
+        </View>
+        <TCTextField
                 style={styles.textFieldStyle}
                 placeholder={strings.fnameText}
                 onChangeText={(text) => setFName(text)}
                 value={fName}
             />
-          <TCTextField
+        <TCTextField
                 style={styles.textFieldStyle}
                 placeholder={strings.lnameText}
                 onChangeText={(text) => setLName(text)}
                 value={lName}
             />
-          <TCTextField
+        <TCTextField
                 style={styles.textFieldStyle}
                 placeholder={strings.emailPlaceHolder}
                 autoCapitalize="none"
@@ -253,8 +251,8 @@ export default function SignupScreen({ navigation }) {
                 onChangeText={(text) => setEmail(text)}
                 value={email}
             />
-          <View style={styles.passwordView}>
-            <TextInput
+        <View style={styles.passwordView}>
+          <TextInput
                   style={{ ...styles.textInput, zIndex: 100 }}
                   placeholder={strings.passwordText}
                   onChangeText={(text) => setPassword(text)}
@@ -263,12 +261,12 @@ export default function SignupScreen({ navigation }) {
                   secureTextEntry={hidePassword}
                   keyboardType={'default'}
               />
-            <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
-              <Image source={hidePassword ? images.hidePassword : images.showPassword} style={styles.passwordEyes} />
-            </TouchableWithoutFeedback>
-          </View>
+          <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
+            <Image source={hidePassword ? images.hidePassword : images.showPassword} style={styles.passwordEyes} />
+          </TouchableWithoutFeedback>
+        </View>
 
-          <TCTextField
+        <TCTextField
                 style={styles.textFieldStyle}
                 placeholder={strings.confirmPasswordText}
                 autoCapitalize="none"
@@ -277,7 +275,7 @@ export default function SignupScreen({ navigation }) {
                 value={cPassword}
             />
 
-          <TCButton
+        <TCButton
                 title={strings.signUpCapitalText}
                 extraStyle={{ marginTop: hp('10%') }}
                 onPress={() => {
@@ -286,8 +284,7 @@ export default function SignupScreen({ navigation }) {
                   }
                 }}
             />
-        </TCKeyboardView>
-      </ScrollView>
+      </TCKeyboardView>
     </View>
   );
 }

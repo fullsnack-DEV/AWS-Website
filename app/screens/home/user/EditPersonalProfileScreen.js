@@ -286,8 +286,8 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
                   }
                 }}
               />
-      <TCKeyboardView>
-        <ScrollView style={styles.mainContainer}>
+      <ScrollView>
+        <TCKeyboardView>
           <ActivityLoader visible={loading} />
           <TCProfileImageControl
         profileImage={ profile.thumbnail ? { uri: profile.thumbnail } : undefined }
@@ -337,17 +337,13 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
 
             />
           </View>
-        </ScrollView>
-      </TCKeyboardView>
+        </TCKeyboardView>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
   validationSign: {
     fontSize: 20,
     marginLeft: 4,

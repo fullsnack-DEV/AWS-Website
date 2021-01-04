@@ -23,6 +23,7 @@ import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
 import DataSource from '../../../../Constants/DataSource';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function CreateTeamForm3({ navigation, route }) {
   const [basicFee, setBasicFee] = useState(0.0);
@@ -32,7 +33,7 @@ export default function CreateTeamForm3({ navigation, route }) {
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
 
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={ styles.mainContainer }>
         <View style={ styles.formSteps }>
           <View style={ styles.form1 }></View>
@@ -184,7 +185,7 @@ export default function CreateTeamForm3({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 

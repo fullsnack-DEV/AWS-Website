@@ -162,7 +162,6 @@ export default function CreateMemberProfileTeamForm2({ navigation, route }) {
   );
   return (
     <TCKeyboardView>
-
       <ActivityLoader visible={loading} />
       <View style={styles.formSteps}>
         <View style={styles.form1}></View>

@@ -30,6 +30,7 @@ import AuthContext from '../../../auth/context';
 import uploadImages from '../../../utils/imageAction';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import { getUserDetails } from '../../../api/Users';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function RegisterReferee({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -267,16 +268,17 @@ export default function RegisterReferee({ navigation }) {
   };
 
   return (
-    <ScrollView style={styles.mainContainer}>
-      <View style={styles.formSteps}>
-        <View style={styles.form1}></View>
-        <View style={styles.form2}></View>
-      </View>
-      <Text style={styles.LocationText}>
-        {strings.sportsEventsTitle}
-        <Text style={styles.mendatory}> {strings.star}</Text>
-      </Text>
-      <RNPickerSelect
+    <TCKeyboardView>
+      <ScrollView style={styles.mainContainer}>
+        <View style={styles.formSteps}>
+          <View style={styles.form1}></View>
+          <View style={styles.form2}></View>
+        </View>
+        <Text style={styles.LocationText}>
+          {strings.sportsEventsTitle}
+          <Text style={styles.mendatory}> {strings.star}</Text>
+        </Text>
+        <RNPickerSelect
         placeholder={{
           label: strings.selectSportPlaceholder,
           value: null,
@@ -299,14 +301,14 @@ export default function RegisterReferee({ navigation }) {
         )}
       />
 
-      <View
+        <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <Text style={styles.LocationText}>{strings.descriptionText}</Text>
-      </View>
-      <TextInput
+          <Text style={styles.LocationText}>{strings.descriptionText}</Text>
+        </View>
+        <TextInput
         style={styles.descriptionTxt}
         onChangeText={(text) => onChangeText(text)}
         value={description}
@@ -315,34 +317,34 @@ export default function RegisterReferee({ navigation }) {
         placeholder={strings.descriptionRefereePlaceholder}
       />
 
-      <Text style={styles.LocationText}>{strings.certificateTitle}</Text>
-      <Text style={styles.certificateSubText}>
-        {strings.certificateSubTitle}
-      </Text>
+        <Text style={styles.LocationText}>{strings.certificateTitle}</Text>
+        <Text style={styles.certificateSubText}>
+          {strings.certificateSubTitle}
+        </Text>
 
-      <FlatList
+        <FlatList
         scrollEnabled={false}
         data={certificate}
         renderItem={renderItem}
       />
-      <Text style={styles.LocationText}>{strings.languageTitle}</Text>
-      <View style={styles.searchView}>
-        <TouchableOpacity onPress={toggleModal}>
-          <TextInput
+        <Text style={styles.LocationText}>{strings.languageTitle}</Text>
+        <View style={styles.searchView}>
+          <TouchableOpacity onPress={toggleModal}>
+            <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
             value={ selectedLanguages?.join(' , ')?.toString() ?? ''}
             editable={ false }
             pointerEvents="none"></TextInput>
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
 
-      <Modal
+        <Modal
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0}
         style={{ marginLeft: 0, marginRight: 0, marginBottom: 0 }}>
-        <View
+          <View
           style={{
             width: '100%',
             height: Dimensions.get('window').height / 2,
@@ -357,7 +359,7 @@ export default function RegisterReferee({ navigation }) {
             shadowOpacity: 0.5,
             shadowRadius: 5,
           }}>
-          <Text
+            <Text
             style={{
               alignSelf: 'center',
               marginTop: 20,
@@ -366,16 +368,16 @@ export default function RegisterReferee({ navigation }) {
               fontFamily: fonts.RBold,
               color: colors.lightBlackColor,
             }}>
-            Languages
-          </Text>
-          <View style={styles.separatorLine}></View>
-          <FlatList
+              Languages
+            </Text>
+            <View style={styles.separatorLine}></View>
+            <FlatList
             data={languages}
             keyExtractor={(item, i) => i.toString()}
             renderItem={renderLanguage}
             style={{ marginBottom: '25%' }}
           />
-          <View
+            <View
             style={{
               width: '100%',
               height: '25%',
@@ -389,21 +391,21 @@ export default function RegisterReferee({ navigation }) {
               shadowOpacity: 0.5,
               shadowRadius: 5,
             }}>
-            <TouchableOpacity
+              <TouchableOpacity
               onPress={() => {
                 toggleModal();
               }}>
-              <LinearGradient
+                <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
                 style={styles.languageApplyButton}>
-                <Text style={styles.nextButtonText}>{strings.applyTitle}</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                  <Text style={styles.nextButtonText}>{strings.applyTitle}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-      {!imageUploadingLoader && (
-        <TouchableOpacity
+        </Modal>
+        {!imageUploadingLoader && (
+          <TouchableOpacity
               onPress={() => {
                 const isValid = checkValidation();
                 if (isValid) {
@@ -419,14 +421,15 @@ export default function RegisterReferee({ navigation }) {
                   navigation.navigate('RegisterRefereeForm2', { bodyParams, refereesData });
                 }
               }}>
-          <LinearGradient
+            <LinearGradient
                 colors={[colors.yellowColor, colors.themeColor]}
                 style={styles.nextButton}>
-            <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      )}
-    </ScrollView>
+              <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
