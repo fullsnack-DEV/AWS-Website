@@ -33,29 +33,20 @@ export default function NavigationMainContainer() {
       const expiryDate = new Date(contextEntity.auth.token.expirationTime);
       if (expiryDate.getTime() <= currentDate.getTime()) {
         console.log('Token Expired From App State');
-        const appAuthStateChanged = firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            firebase.auth().currentUser.getIdTokenResult(true)
-              .then(async (idTokenResult) => {
-                const token = {
-                  token: idTokenResult.token,
-                  expirationTime: idTokenResult.expirationTime,
-                };
-                contextEntity.auth.token = token;
-                await authContext.setEntity({ ...contextEntity });
-                await Utility.setStorage('authContextEntity', { ...contextEntity })
-                setAppInitialize(true);
-              }).catch((error) => {
-                setAppInitialize(true);
-                console.log('Token Related: ', error);
-                resetApp();
-              });
-          } else {
-            console.log('No user is signed in.');
+        await firebase.auth()?.currentUser?.getIdTokenResult()
+          .then(async (idTokenResult) => {
+            const token = {
+              token: idTokenResult.token,
+              expirationTime: idTokenResult.expirationTime,
+            };
+            contextEntity.auth.token = token;
+            await authContext.setEntity({ ...contextEntity });
+            await Utility.setStorage('authContextEntity', { ...contextEntity })
+            setAppInitialize(true);
+          }).catch((error) => {
+            console.log('Token Related: ', error);
             resetApp();
-          }
-        });
-        appAuthStateChanged();
+          });
       } else {
         await QBconnectAndSubscribe(contextEntity);
         await authContext.setEntity({ ...contextEntity })

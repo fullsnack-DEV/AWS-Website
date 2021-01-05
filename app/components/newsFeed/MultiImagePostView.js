@@ -41,6 +41,7 @@ export default function MultiImagePostView({
   onLikePress,
   openPostModal,
 }) {
+  const videoPlayerRef = useRef();
   const [topDesc, setTopDesc] = useState(false);
   const [scroll, setScroll] = useState(true);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
@@ -206,6 +207,9 @@ export default function MultiImagePostView({
                       <Text style={styles.loadingTextStyle}>Loading...</Text>
                     </View>
                     <Video
+                        ref={videoPlayerRef}
+                        fullscreen={true}
+                        onLoad={() => videoPlayerRef.current.seek(0)}
                       paused={!play}
                       muted={!mute}
                       source={{ uri: multiAttachItem.url }}
@@ -216,10 +220,7 @@ export default function MultiImagePostView({
                       }]}
                       resizeMode={'cover'}
                       controls={true}
-                      onRestoreUserInterfaceForPictureInPictureStop={() => {
-                        console.log('Load Start');
-                      }}
-                    />
+                     />
                   </View>
                 );
               }

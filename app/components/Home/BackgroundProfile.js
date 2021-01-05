@@ -68,15 +68,14 @@ function BackgroundProfile({
   if (currentUserData.joined_teams && currentUserData.joined_teams.length > 0) {
     teamCount = currentUserData.joined_teams.length;
   }
-
   return (
     <View style={{ width: wp('100%'), margin: 0 }}>
-      <View style={[styles.bgImageStyle, bgImageStyle]}>
-        <Image
-        source={bgImage ? { uri: bgImage } : images.profilePlaceHolder}
-        style={[styles.bgImageStyle, bgImageStyle]}
-        />
-      </View>
+      {/* <View style={[styles.bgImageStyle, bgImageStyle]}> */}
+      {/*  <Image */}
+      {/*  source={bgImage ? { uri: bgImage } : images.profilePlaceHolder} */}
+      {/*  style={[styles.bgImageStyle, bgImageStyle]} */}
+      {/*  /> */}
+      {/* </View> */}
       <View style={{ backgroundColor: colors.whiteColor }} >
         <View style={{ width: '100%', marginBottom: 20 }}>
           <Image style={[styles.profileImageStyle, profileImageStyle]}
@@ -145,11 +144,10 @@ function BackgroundProfile({
 }
 
 const styles = StyleSheet.create({
-  bgImageStyle: {
-    aspectRatio: 375 / 173,
-    backgroundColor: colors.grayBackgroundColor,
-    opacity: 0,
-  },
+  // bgImageStyle: {
+  //   backgroundColor: colors.grayBackgroundColor,
+  //   opacity: 0,
+  // },
   profileImageStyle: {
     height: 82,
     width: 82,
@@ -159,7 +157,6 @@ const styles = StyleSheet.create({
   },
   statusViewStyle: {
     paddingHorizontal: 15,
-    height: 24,
     justifyContent: 'space-around',
     flexDirection: 'row',
     width: '100%',

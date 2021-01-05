@@ -1290,9 +1290,7 @@ export default function HomeScreen({ navigation, route }) {
         ref={scrollToTop}
         backgroundColor="white"
         contentBackgroundColor="white"
-        parallaxHeaderHeight={currentUserData
-          && currentUserData.description
-          && currentUserData.description.length > 60 ? 350 : 310}
+        parallaxHeaderHeight={hp(30)}
         stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
         fadeOutForeground={false}
         renderFixedHeader={() => (
@@ -1324,14 +1322,11 @@ export default function HomeScreen({ navigation, route }) {
         )}
         renderBackground={() => (
           bgImage ? <Image source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
-        )}
-        renderForeground={() => (
-          <BackgroundProfile
+        )}>
+        <BackgroundProfile
             currentUserData={currentUserData}
             onConnectionButtonPress={onConnectionButtonPress}
-          />
-        )}
-        >
+        />
         <View style={{ flex: 1 }}>
           {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                     isAdmin={isAdmin}

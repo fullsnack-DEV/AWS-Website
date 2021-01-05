@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity, Image, TouchableWithoutFeedback,
 } from 'react-native';
@@ -27,6 +27,7 @@ function MultiPostVideo({
   onImageProfilePress,
   onLikePress,
 }) {
+  const videoPlayerRef = useRef();
   const [isModalVisible, setModalVisible] = useState(false);
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
@@ -80,6 +81,7 @@ function MultiPostVideo({
           toggleModal();
         }}>
         <Video
+          ref={videoPlayerRef}
           paused={!play}
           muted={!mute}
           source={{ uri: data.url }}
@@ -87,6 +89,7 @@ function MultiPostVideo({
           resizeMode={'cover'}
           onLoad={() => {
             setVideoLoad(true);
+            videoPlayerRef.current.seek(0);
           }}
         />
       </TouchableWithoutFeedback>

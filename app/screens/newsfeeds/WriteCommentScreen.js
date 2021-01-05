@@ -66,7 +66,15 @@ export default function WriteCommentScreen({
       <ActivityLoader visible={ loading } />
       <SafeAreaView>
         <View style={ styles.containerStyle }>
-          <View style={ styles.backIconViewStyle } />
+          <TouchableOpacity
+              style={{ alignItems: 'center', justifyContent: 'center' }}
+              onPress={ () => {
+                navigation.goBack();
+                if (onDonePress) onDonePress();
+              } }
+          >
+            <Image style={styles.backButtonImage} source={images.backArrow} />
+          </TouchableOpacity>
           <View style={ styles.writePostViewStyle }>
             <Text style={ styles.writePostTextStyle }>{commentData.length > 0 ? ((commentData.length === 1 && `${commentData.length} Comment`) || (commentData.length > 1 && `${commentData.length} Comments`)) : 'Write Comments'}</Text>
           </View>
@@ -151,9 +159,12 @@ export default function WriteCommentScreen({
 }
 
 const styles = StyleSheet.create({
-  backIconViewStyle: {
+  backButtonImage: {
     justifyContent: 'center',
-    width: wp('17%'),
+    alignSelf: 'center',
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
   bottomImgView: {
     alignSelf: 'center',

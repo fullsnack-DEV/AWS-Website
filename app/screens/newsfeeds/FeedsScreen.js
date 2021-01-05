@@ -31,6 +31,7 @@ export default function FeedsScreen({ navigation }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
+  const [cancelPressed, setCancelPressed] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -96,18 +97,27 @@ export default function FeedsScreen({ navigation }) {
           text: postDesc && postDesc,
           attachments,
         };
-        createPost(dataParams, authContext)
-          .then(() => getNewsFeed(authContext))
-          .then((response) => {
-            setPostData(response.payload.results)
-            setProgressBar(false);
-            setDoneUploadCount(0);
-            setTotalUploadCount(0);
-          })
-          .catch((e) => {
-            Alert.alert('', e.messages)
-          });
+        createPostAfterUpload(dataParams);
       })
+    }
+  }
+
+  const createPostAfterUpload = (dataParams) => {
+    if (!cancelPressed) {
+      createPost(dataParams, authContext)
+        .then(() => getNewsFeed(authContext))
+        .then((response) => {
+          setPostData(response.payload.results)
+          setProgressBar(false);
+          setDoneUploadCount(0);
+          setTotalUploadCount(0);
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages)
+        });
+    } else {
+      Alert('You Pressed Cancel');
+      setCancelPressed(false);
     }
   }
 
@@ -175,6 +185,10 @@ export default function FeedsScreen({ navigation }) {
             {
               text: 'Cancel upload',
               onPress: async () => {
+                setCancelPressed(true);
+                setProgressBar(false);
+                setDoneUploadCount(0);
+                setTotalUploadCount(0);
               },
             },
             ],
