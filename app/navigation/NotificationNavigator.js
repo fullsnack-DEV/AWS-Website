@@ -6,6 +6,7 @@ import NotificationsListScreen from '../screens/notificationsScreen/Notification
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
+import HomeScreen from '../screens/home/HomeScreen';
 
 import colors from '../Constants/Colors';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
@@ -38,6 +39,8 @@ import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddr
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
+
+import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
 
 const Stack = createStackNavigator();
 
@@ -262,6 +265,13 @@ function NotificationNavigator() {
           }}
       />
       <Stack.Screen
+        name="AlterRequestAccept"
+        component={ AlterRequestAccept }
+        options={ {
+          headerShown: false,
+        } }
+      />
+      <Stack.Screen
         name="AlterAcceptDeclineScreen"
         component={ AlterAcceptDeclineScreen }
         options={ {
@@ -481,7 +491,23 @@ function NotificationNavigator() {
             }}
         />
 
-      {/* <Stack.Screen name="HomeScreen" component={ HomeScreen } options={ {} } /> */}
+      <Stack.Screen
+        name="HomeScreen"
+        component={ HomeScreen }
+        options={ {
+          title: 'Home',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
     </Stack.Navigator>
   );
 }

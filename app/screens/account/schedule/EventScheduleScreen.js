@@ -15,6 +15,7 @@ export default function EventScheduleScreen({
   eventData,
   onThreeDotPress,
   entity,
+  profileID,
 }) {
   let filterData = [];
   let dataNotFound = true;
@@ -72,6 +73,7 @@ export default function EventScheduleScreen({
                 <TCEventView
                   onPress={() => onItemPress(item)}
                   data={item}
+                  profileID={profileID}
                   onThreeDotPress={() => onThreeDotPress(item)}
                   eventBetweenSection={item.game}
                   eventOfSection={item.game && item.game.referees && item.game.referees.length > 0}

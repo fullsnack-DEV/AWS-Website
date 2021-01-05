@@ -333,19 +333,19 @@ export default function EditChallenge({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
-            status: 'accept',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestAccepted,
+            imageAnimation: false,
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'decline',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestDeclined,
+            imageAnimation: false,
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'cancel',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestCancelled,
+            imageAnimation: false,
           });
         }
       })
@@ -1187,7 +1187,7 @@ export default function EditChallenge({ navigation, route }) {
                     marginBottom={15}
                     fontSize={16}
                     onPress={() => {
-                      navigation.goBack();
+                      navigation.pop(2);
                     }}
                   />
             </View>

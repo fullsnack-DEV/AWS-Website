@@ -67,7 +67,6 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   const [defaultCard, setDefaultCard] = useState();
   useEffect(() => {
     entity = authContext.entity;
-
     const { challengeObj } = route.params ?? {};
     if (challengeObj.length > 0) {
       setIsPendingRequestPayment(true);
@@ -83,7 +82,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
 
           if (
             (challengeObj[0]?.away_team?.group_id
-              ?? challengeObj[0]?.away_team?.user_id) === entity.uid
+                ?? challengeObj[0]?.away_team?.user_id) === entity.uid
           ) {
             setHomeTeam(challengeObj[0].away_team);
             setAwayTeam(challengeObj[0].home_team);
@@ -91,6 +90,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
             setHomeTeam(challengeObj[0].home_team);
             setAwayTeam(challengeObj[0].away_team);
           }
+
           break;
         }
       }
@@ -291,27 +291,50 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
+        // if (status === 'accept') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
+        //     status: 'accept',
+        //   });
+        // } else if (status === 'decline') {
+        //   if (isRestored) {
+        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //       teamObj: awayTeam,
+        //       status: 'restored',
+        //     });
+        //   } else {
+        //     navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //       teamObj: awayTeam,
+        //       status: 'decline',
+        //     });
+        //   }
+        // } else if (status === 'cancel') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: awayTeam,
+        //     status: 'cancel',
+        //   });
+        // }
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
-            status: 'accept',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestAccepted,
+            imageAnimation: false,
           });
         } else if (status === 'decline') {
           if (isRestored) {
-            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-              teamObj: awayTeam,
-              status: 'restored',
+            navigation.navigate('AlterRequestAccept', {
+              operationType: strings.reservationRequestRestored,
+              imageAnimation: false,
             });
           } else {
-            navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-              teamObj: awayTeam,
-              status: 'decline',
+            navigation.navigate('AlterRequestAccept', {
+              operationType: strings.reservationAlterRequestDeclined,
+              imageAnimation: false,
             });
           }
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'cancel',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestCancelled,
+            imageAnimation: false,
           });
         }
       })
@@ -347,20 +370,36 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
+        // if (status === 'accept') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
+        //     status: 'accept',
+        //   });
+        // } else if (status === 'decline') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: awayTeam,
+        //     status: 'decline',
+        //   });
+        // } else if (status === 'cancel') {
+        //   navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+        //     teamObj: awayTeam,
+        //     status: 'cancel',
+        //   });
+        // }
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
-            status: 'accept',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestAccepted,
+            imageAnimation: false,
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'decline',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestDeclined,
+            imageAnimation: false,
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
-            status: 'cancel',
+          navigation.navigate('AlterRequestAccept', {
+            operationType: strings.reservationAlterRequestCancelled,
+            imageAnimation: false,
           });
         }
       })
@@ -601,10 +640,10 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     if (bodyParams.change_requested_by === entity.uid) {
       return `${getTeamName(
         bodyParams,
-      )} has accepted your game reservation alteration request, but `;
+      )} has accepted your match reservation alteration request, but `;
     }
 
-    return `Your team has accepted a game reservation alteration request from ${getTeamName(
+    return `${singlePlayerText()} has accepted a match reservation alteration request from ${getTeamName(
       bodyParams,
     )}, but `;
   };
@@ -776,7 +815,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   DECLINED
                 </Text>
                 <Text style={styles.challengeText}>
-                  {`Your team have declined referee reservation request from ${getTeamName(
+                  {`${singlePlayerText()} declined match reservation request from ${getTeamName(
                     bodyParams,
                   )}.`}
                 </Text>
@@ -795,7 +834,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 <Text style={styles.challengeText}>
                   {`${getTeamName(
                     bodyParams,
-                  )} have declined a referee reservation request sent by you.`}
+                  )} declined a match reservation request sent by you.`}
                 </Text>
               </View>
           )}

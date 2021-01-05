@@ -514,5 +514,6 @@ const strings = {
   chooseCorrectDate: 'Please choose correct date.',
   max5Referee: 'Maximum 5 referees can be added.',
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
+  serchByLocation: 'Search by address',
 };
 export default strings;

@@ -9,6 +9,7 @@ import GroupListScreen from '../screens/home/GroupListScreen';
 import EditPersonalProfileScreen from '../screens/home/user/EditPersonalProfileScreen';
 import EditGroupProfileScreen from '../screens/home/EditGroupProfileScreen';
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
+import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 
 import colors from '../Constants/Colors'
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
@@ -121,6 +122,7 @@ import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
 import RegisterRefereeSuccess from '../screens/account/registerReferee/RegisterRefereeSuccess';
 import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
 import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
+import EditChallenge from '../screens/challenge/alterChallenge/EditChallenge';
 
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import ChangeReservationInfoScreen from '../screens/challenge/alterChallenge/ChangeReservationInfoScreen';
@@ -132,6 +134,9 @@ import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekee
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
+
+import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
+
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 
@@ -1548,6 +1553,13 @@ const HomeNavigator = () => (
         } }
       />
     <Stack.Screen
+        name="AlterRequestAccept"
+        component={ AlterRequestAccept }
+        options={ {
+          headerShown: false,
+        } }
+      />
+    <Stack.Screen
         name="GroupLongTextScreen"
         component={GroupLongTextScreen}
         options={{
@@ -1683,6 +1695,38 @@ const HomeNavigator = () => (
             },
           }}
       />
+    <Stack.Screen
+            name="EditChallenge"
+            component={EditChallenge}
+            options={{
+              title: 'Change Match Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+         name="NotificationsListScreen"
+         component={NotificationsListScreen}
+         options={{
+           title: 'Notification',
+           headerTintColor: colors.blackColor,
+           headerTitleStyle: {
+             fontWeight: '500',
+           },
+           headerStyle: {
+             backgroundColor: colors.whiteColor,
+             borderBottomColor: colors.grayColor,
+             borderBottomWidth: 0.3,
+           },
+         }}
+        />
   </Stack.Navigator>
 );
 
