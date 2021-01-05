@@ -2,7 +2,6 @@ import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import firebase from '@react-native-firebase/app';
 import * as Utility from '.';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
@@ -44,40 +43,30 @@ const makeAPIRequest = async ({
     const currentDate = new Date();
     const expiryDate = new Date(entity.auth.token.expirationTime);
     // const expiryDate = new Date('25 Dec 2020 14:30');
+    console.log('EXP: ', expiryDate.getTime());
     if (expiryDate.getTime() > currentDate.getTime()) {
       return globalApiCall({
         method, url, data, headers, params, responseType, authContext, authToken,
       })
     }
     console.log('Token Expired');
-    return new Promise((resolve, reject) => {
-      const globalAuthStateChanged = firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          auth().currentUser.getIdTokenResult(true)
-            .then(async (idTokenResult) => {
-              authToken = idTokenResult.token;
-              const token = {
-                token: idTokenResult.token,
-                expirationTime: idTokenResult.expirationTime,
-              };
-              entity.auth.token = token;
-              await authContext.setEntity({ ...entity });
-              await Utility.setStorage('authContextEntity', { ...entity })
-              resolve(globalApiCall({
-                method, url, data, headers, params, responseType, authContext, authToken,
-              }))
-            }).catch((error) => {
-              console.log('Token Related: ', error);
-              reject(error);
-            });
-        } else {
-          // eslint-disable-next-line prefer-promise-reject-errors
-          reject({ message: 'No user is signed in.' })
-          console.log('No user is signed in.');
-        }
-      });
-      globalAuthStateChanged();
-    })
+    return new Promise((resolve, reject) => auth().currentUser.getIdTokenResult()
+      .then(async (idTokenResult) => {
+        authToken = idTokenResult.token;
+        const token = {
+          token: idTokenResult.token,
+          expirationTime: idTokenResult.expirationTime,
+        };
+        entity.auth.token = token;
+        await authContext.setEntity({ ...entity });
+        await Utility.setStorage('authContextEntity', { ...entity })
+        resolve(globalApiCall({
+          method, url, data, headers, params, responseType, authContext, authToken,
+        }))
+      }).catch((error) => {
+        console.log('Token Related: ', error);
+        reject(error);
+      }))
   }
 });
 

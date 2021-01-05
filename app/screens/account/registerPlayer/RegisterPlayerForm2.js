@@ -102,8 +102,8 @@ export default function RegisterPlayerForm2({ navigation, route }) {
             style={ styles.feeText }
             onChangeText={ (text) => onMatchFeeChanged(text) }
             value={ (matchFee) }
-            keyboardType={ 'decimal-pad' }></TextInput>
-          <Text style={ styles.curruency }>CAD/match</Text>
+            keyboardType={ 'decimal-pad' }/>
+          <Text style={ styles.curruency }>{route?.params?.bodyParams?.currency_type}</Text>
         </View>
         <View>
           <Text style={ styles.LocationText }>
@@ -272,11 +272,11 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: 'right',
   },
   feeText: {
     fontSize: wp('3.8%'),
-    width: '84%',
+    width: '95%',
   },
   matchFeeView: {
     alignSelf: 'center',
