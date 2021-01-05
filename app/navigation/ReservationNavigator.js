@@ -37,6 +37,7 @@ import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDat
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
+import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
 
 import colors from '../Constants/Colors'
 
@@ -473,6 +474,13 @@ const ReservationNavigator = () => (
            },
          }}
         />
+    <Stack.Screen
+        name="AlterRequestAccept"
+        component={ AlterRequestAccept }
+        options={ {
+          headerShown: false,
+        } }
+      />
   </Stack.Navigator>
 );
 

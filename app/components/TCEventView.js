@@ -22,6 +22,7 @@ export default function TCEventView({
   eventBetweenSection,
   eventOfSection,
   entity,
+  profileID,
 }) {
   let startDate = '';
   if (data && data.start_datetime) {
@@ -48,13 +49,29 @@ export default function TCEventView({
     description = data.descriptions;
   }
   let description2 = '';
-  if (data && data.game && data.game.away_team) {
-    if (data.game.away_team.full_name) {
-      description2 = data.game.away_team.full_name;
+  if (data?.game) {
+    if (profileID === (data?.game?.home_team?.group_id || data?.game?.home_team?.user_id)) {
+      if (data?.game?.home_team?.group_id) {
+        description2 = data?.game?.away_team?.group_name;
+      } else {
+        description2 = `${data?.game?.away_team?.first_name} ${data?.game?.away_team?.last_name}`;
+      }
+    } else if (data?.game?.away_team?.group_id) {
+      description2 = data?.game?.home_team?.group_name;
     } else {
-      description2 = data.game.away_team.group_name;
+      description2 = `${data?.game?.home_team?.first_name} ${data?.game?.home_team?.last_name}`;
     }
+  } else {
+    description2 = ''
   }
+
+  // if (data && data.game && data.game.away_team) {
+  //   if (data.game.away_team.full_name) {
+  //     description2 = data.game.away_team.full_name;
+  //   } else {
+  //     description2 = data.game.away_team.group_name;
+  //   }
+  // }
   let title = 'Game';
   if (data && data.title) {
     title = data.title;
@@ -156,7 +173,7 @@ export default function TCEventView({
             )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
-            <Text style={[styles.eventTime, { width: wp('45%') }]}>
+            <Text numberOfLines={1} style={[styles.eventTime, { width: wp('45%') }]}>
               {location !== '' ? location : venue}
             </Text>
           </View>

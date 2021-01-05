@@ -374,7 +374,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         if (status === 'accept') {
           navigation.navigate('RefereeRequestSent', {
             operationType: strings.reservationAlterRequestAccepted,
-            imageAnimation: true,
+            imageAnimation: false,
           });
         } else if (status === 'decline') {
           navigation.navigate('RefereeRequestSent', {
@@ -592,7 +592,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     if (bodyParams?.change_requested_by === entity.uid) {
       return `${getEntityName(
         bodyParams,
-      )} has accepted your game reservation alteration request, but `;
+      )} has accepted your match reservation alteration request, but `;
     }
 
     return `Your team has accepted a game reservation alteration request from ${getEntityName(

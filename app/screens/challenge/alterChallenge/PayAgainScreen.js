@@ -6,6 +6,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import { payAgainAlter, payAgain } from '../../../api/Challenge';
+import { paymentMethods } from '../../../api/Users';
 import ReservationStatus from '../../../Constants/ReservationStatus';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -24,17 +25,41 @@ export default function PayAgainScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [challengeObj, setChallengeObj] = useState();
   const [sorceScreen, setSourceScreen] = useState()
+  const [defaultCard, setDefaultCard] = useState();
 
   useEffect(() => {
     if (isFocused) {
       const { body, comeFrom } = route.params ?? {};
       setSourceScreen(comeFrom);
       setChallengeObj(body)
+      getPaymentMethods(body?.source)
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }
       console.log('Body Object of pay again screen: ', JSON.stringify(body));
       // getFeeDetail();
     }
   }, [isFocused]);
-
+  const getPaymentMethods = (source) => {
+    setloading(true);
+    paymentMethods(authContext)
+      .then((response) => {
+        console.log('Payment api called', response.payload);
+        const matchCard = response.payload.find((card) => card.id === source);
+        if (matchCard) {
+          console.log('default payment method', matchCard);
+          setDefaultCard(matchCard);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        console.log('error in payment method', e);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.3);
+      });
+  };
   const payAgainForAlterRequest = () => {
     setloading(true)
     const bodyParams = {}
@@ -133,11 +158,14 @@ export default function PayAgainScreen({ navigation, route }) {
         <View>
           <TCTouchableLabel
             title={
-              route.params.paymentMethod
-                ? Utility.capitalize(route.params.paymentMethod.card.brand)
+              defaultCard && defaultCard?.card?.brand
+                ? Utility.capitalize(defaultCard?.card?.brand)
                 : strings.addOptionMessage
             }
-            subTitle={route.params.paymentMethod?.card.last4}
+            subTitle={
+              (defaultCard && defaultCard?.card?.last4)
+              ?? defaultCard?.card?.last4
+            }
             showNextArrow={true}
             onPress={() => {
               navigation.navigate('PaymentMethodsScreen', {

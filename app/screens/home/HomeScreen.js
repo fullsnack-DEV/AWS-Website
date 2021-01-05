@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useEffect, useRef, useState, useContext,
 } from 'react';
@@ -39,6 +40,8 @@ import {
   getGroupDetails, getJoinedGroups, getTeamsOfClub, getGroupMembers,
   followGroup, unfollowGroup, joinTeam, leaveTeam, inviteTeam,
 } from '../../api/Groups';
+import * as RefereeUtils from '../referee/RefereeUtility';
+import * as Utils from '../challenge/ChallengeUtility';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TabView from '../../components/Home/TabView';
@@ -1085,7 +1088,42 @@ export default function HomeScreen({ navigation, route }) {
   const onAddRolePress = () => {
     addRoleActionSheet.current.show()
   };
-
+  const refereeFound = (data) => (data?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id)
+  const findCancelButtonIndex = (data) => {
+    if (data?.game && refereeFound(data)) {
+      return 2
+    }
+    if (data?.game) {
+      return 3
+    }
+    return 2
+  }
+  const goToChallengeDetail = (data) => {
+    if (data?.responsible_to_secure_venue) {
+      setloading(true);
+      Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
+        setloading(false);
+        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
+        console.log('Screen name of challenge:', obj.screenName);
+        navigation.navigate(obj.screenName, {
+          challengeObj: obj.challengeObj || obj.challengeObj[0],
+        });
+        setloading(false);
+      });
+    }
+  }
+  const goToRefereReservationDetail = (data) => {
+    setloading(true);
+    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+      setloading(false);
+      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+      console.log('Screen name of Reservation:', obj.screenName);
+      navigation.navigate(obj.screenName, {
+        reservationObj: obj.reservationObj || obj.reservationObj[0],
+      });
+      setloading(false);
+    });
+  }
   const playInModel = (playInObject) => {
     console.log('playInObject now', playInObject)
     if (playInObject) {
@@ -1403,6 +1441,7 @@ export default function HomeScreen({ navigation, route }) {
                     <EventScheduleScreen
                       eventData={eventData}
                       navigation={navigation}
+                      profileID={route?.params?.uid || authContext.entity.uid}
                       onThreeDotPress={(item) => {
                         setSelectedEventItem(item);
                       }}
@@ -1645,90 +1684,140 @@ export default function HomeScreen({ navigation, route }) {
                         ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
                         renderItem={({ item }) => <RefereeReservationItem
                           data={item}
+                          onPressButton = {() => {
+                            setIsRefereeModal(false);
+                            console.log('choose Referee:', item);
+                            goToRefereReservationDetail(item)
+                          }}
                         />}
                         keyExtractor={(item, index) => index.toString()}
                       />
                     </SafeAreaView>
                   </Modal>
                   <ActionSheet
-                    ref={eventEditDeleteAction}
-                    options={selectedEventItem !== null && selectedEventItem.game
-                      ? ['Edit', 'Delete', 'Referee Reservation Details', 'Cancel']
-                      : ['Edit', 'Delete', 'Cancel']
-                    }
-                    cancelButtonIndex={3}
-                    destructiveButtonIndex={1}
-                    onPress={(index) => {
-                      setSelectedEventItem(null);
-                      if (index === 0) {
-                        navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
-                      }
-                      if (index === 1) {
-                        Alert.alert(
-                          'Do you want to delete this event ?',
-                          '',
-                          [{
-                            text: 'Delete',
-                            style: 'destructive',
-                            onPress: async () => {
-                              const entity = authContext.entity
-                              setloading(true);
-                              deleteEvent(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, selectedEventItem.cal_id, authContext)
-                                .then(() => getEvents(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, authContext))
-                                .then((response) => {
-                                  setloading(false);
-                                  setEventData(response.payload);
-                                  setTimeTable(response.payload);
-                                })
-                                .catch((e) => {
-                                  setloading(false);
-                                  console.log('error coming', e)
-                                  setTimeout(() => {
-                                    Alert.alert(strings.alertmessagetitle, e.message)
-                                  }, 0.3)
-                                });
-                            },
-                          },
-                          {
-                            text: 'Cancel',
-                            style: 'cancel',
-                          },
+        ref={eventEditDeleteAction}
+        options={selectedEventItem !== null && selectedEventItem.game
+          ? refereeFound(selectedEventItem) ? ['Referee Reservation Details', 'Change Events Color', 'Cancel'] : ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
+          : ['Edit', 'Delete', 'Cancel']
+        }
+        cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
+        destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
+        onPress={(index) => {
+          if (index === 0) {
+            if (index === 0 && selectedEventItem.game) {
+              console.log('selected Event Item:', selectedEventItem);
+              if (refereeFound(selectedEventItem)) {
+                goToRefereReservationDetail(selectedEventItem)
+              } else {
+                console.log('Selected Event Item::', selectedEventItem);
+                goToChallengeDetail(selectedEventItem.game)
+              }
+            } else {
+              navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+            }
+          }
+          if (index === 1) {
+            if (index === 1 && selectedEventItem.game) {
+              if (refereeFound(selectedEventItem)) {
+                Alert.alert(
+                  'Towns Cup',
+                  'Change Event color feature is pending',
+                  [{
+                    text: 'OK',
+                    onPress: async () => {},
+                  },
+                  ],
+                  { cancelable: false },
+                );
+              } else {
+                setloading(true);
 
-                          ],
-                          { cancelable: false },
-                        );
-                      }
-                      if (index === 2 && selectedEventItem.game) {
-                        setloading(true);
-                        const params = {
-                          caller_id: selectedEventItem.owner_id,
-                        };
-                        getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-                          setRefereeReserveData(res.payload);
-                          if (authContext.entity.uid === selectedEventItem.game.home_team.group_id && res.payload.length > 0) {
-                            refereeReservModal();
-                            setloading(false);
-                          } else {
-                            setloading(false);
-                            setTimeout(() => {
-                              Alert.alert(
-                                'Towns Cup',
-                                'No referees invited or booked by you for this game',
-                                [{
-                                  text: 'OK',
-                                  onPress: async () => {},
-                                },
-                                ],
-                                { cancelable: false },
-                              );
-                            }, 0);
-                          }
-                        }).catch((error) => {
-                          console.log('Error :-', error);
-                        });
-                      }
-                    }}
-                  />
+                const params = {
+                  caller_id: selectedEventItem.owner_id,
+                };
+                getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                  console.log('Res :-', res);
+
+                  const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                  setRefereeReserveData(myReferee);
+                  if (res.payload.length > 0) {
+                    refereeReservModal();
+                    setloading(false);
+                  } else {
+                    setloading(false);
+                    setTimeout(() => {
+                      Alert.alert(
+                        'Towns Cup',
+                        'No referees invited or booked by you for this game',
+                        [{
+                          text: 'OK',
+                          onPress: async () => {},
+                        },
+                        ],
+                        { cancelable: false },
+                      );
+                    }, 0);
+                  }
+                }).catch((error) => {
+                  console.log('Error :-', error);
+                });
+              }
+            } else {
+              Alert.alert(
+                'Do you want to delete this event ?',
+                '',
+                [{
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    setloading(true);
+                    const entity = authContext.entity
+                    const uid = entity.uid || entity.auth.user_id;
+                    const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                    deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
+                      .then(() => getEvents(entityRole, uid, authContext))
+                      .then((response) => {
+                        setloading(false);
+                        setEventData(response.payload);
+                        setTimeTable(response.payload);
+                      })
+                      .catch((e) => {
+                        setloading(false);
+                        Alert.alert('', e.messages)
+                      });
+                  },
+                },
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+
+                ],
+                { cancelable: false },
+              );
+            }
+          }
+          if (index === 2) {
+            if (index === 2 && selectedEventItem.game) {
+              if (refereeFound(selectedEventItem)) {
+                console.log('Pressed cancel button.');
+              } else {
+                Alert.alert(
+                  'Towns Cup',
+                  'Change Event color feature is pending',
+                  [{
+                    text: 'OK',
+                    onPress: async () => {},
+                  },
+                  ],
+                  { cancelable: false },
+                );
+              }
+            }
+          }
+          setSelectedEventItem(null);
+        }}
+      />
                   <CreateEventBtnModal
                     visible={createEventModal}
                     onCancelPress={() => setCreateEventModal(false)}

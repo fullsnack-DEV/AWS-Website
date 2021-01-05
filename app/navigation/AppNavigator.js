@@ -85,6 +85,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ChallengeAcceptedDeclinedScreen'
     || routeName === 'AlterRequestSent'
     || routeName === 'ReservationAcceptDeclineScreen'
+    || routeName === 'AlterRequestAccept'
   ) {
     return false;
   }

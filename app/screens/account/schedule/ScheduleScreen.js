@@ -26,7 +26,6 @@ import ActionSheet from 'react-native-actionsheet';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
-import TouchableIcon from '../../../components/Home/TouchableIcon';
 import ScheduleTabView from '../../../components/Home/ScheduleTabView';
 import EventScheduleScreen from './EventScheduleScreen';
 import fonts from '../../../Constants/Fonts';
@@ -46,12 +45,12 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
-import SearchView from '../../../components/Schedule/SearchView';
 import strings from '../../../Constants/String';
 import { getRefereeReservationDetails } from '../../../api/Reservations';
 import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import { getGameHomeScreen } from '../../../utils/gameUtils';
+import TCSearchBox from '../../../components/TCSearchBox';
 
 const { width } = Dimensions.get('window');
 
@@ -71,7 +70,7 @@ export default function ScheduleScreen({ navigation }) {
   const [createEventModal, setCreateEventModal] = useState(false);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [refereeReservData, setRefereeReserveData] = useState([]);
-
+  const [searchEvents, setSearchEvents] = useState();
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       setloading(true);
@@ -86,7 +85,9 @@ export default function ScheduleScreen({ navigation }) {
         setloading(false);
         getSlots(entityRole, uid, authContext).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
+          console.log('Event data::', eventTimeTableData);
           setEventData(eventTimeTableData);
+          setSearchEvents(eventTimeTableData)
           setTimeTable(eventTimeTableData);
           eventTimeTableData.filter((event_item) => {
             const startDate = new Date(event_item.start_datetime * 1000);
@@ -187,10 +188,16 @@ export default function ScheduleScreen({ navigation }) {
       setloading(false);
     });
   }
+  const searchFilterFunction = (text) => {
+    const result = searchEvents.filter(
+      (x) => (x.game?.venue?.address.toLowerCase().includes(text.toLowerCase())),
+    );
+    setEventData(result);
+  };
   return (
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={loading} />
-      <SearchView
+      {/* <SearchView
         placeholder={strings.searchText}
         onChangeText={(text) => {
           setSearchText(text);
@@ -201,11 +208,19 @@ export default function ScheduleScreen({ navigation }) {
         onCancelPress={() => {
           setSearchText('');
         }}
-      />
-      <View style={styles.seapratorViewStyle} />
+      /> */}
+      <TCSearchBox
+      onChangeText={(text) => {
+        setSearchText(text);
+        searchFilterFunction(text)
+      }}
+      placeholderText={strings.serchByLocation}
+      value={searchText}
+      style = {{ alignSelf: 'center', marginTop: 15 }}/>
+      {/* <View style={styles.seapratorViewStyle} /> */}
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-          <View style={{ padding: 5, height: 16, width: 16 }} />
+          {/* <View style={{ padding: 5, height: 16, width: 16 }} /> */}
           <ScheduleTabView
             firstTabTitle={'Events'}
             secondTabTitle={'Calender'}
@@ -213,15 +228,16 @@ export default function ScheduleScreen({ navigation }) {
             onFirstTabPress={() => setScheduleIndexCounter(0)}
             onSecondTabPress={() => setScheduleIndexCounter(1)}
           />
-          <TouchableIcon
+          {/* <TouchableIcon
             source={images.searchLocation}
             onItemPress={() => {}}
-          />
+          /> */}
         </View>
         {scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
           <EventScheduleScreen
             eventData={eventData}
             navigation={navigation}
+            profileID={authContext.entity.uid}
             onThreeDotPress={(item) => {
               setSelectedEventItem(item);
             }}
@@ -533,34 +549,48 @@ export default function ScheduleScreen({ navigation }) {
           }
           if (index === 1) {
             if (index === 1 && selectedEventItem.game) {
-              setloading(true);
-              const params = {
-                caller_id: selectedEventItem.owner_id,
-              };
-              getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-                console.log('Res :-', res);
-                setRefereeReserveData(res.payload);
-                if (res.payload.length > 0) {
-                  refereeReservModal();
-                  setloading(false);
-                } else {
-                  setloading(false);
-                  setTimeout(() => {
-                    Alert.alert(
-                      'Towns Cup',
-                      'No referees invited or booked by you for this game',
-                      [{
-                        text: 'OK',
-                        onPress: async () => {},
-                      },
-                      ],
-                      { cancelable: false },
-                    );
-                  }, 0);
-                }
-              }).catch((error) => {
-                console.log('Error :-', error);
-              });
+              if (refereeFound(selectedEventItem)) {
+                Alert.alert(
+                  'Towns Cup',
+                  'Change Event color feature is pending',
+                  [{
+                    text: 'OK',
+                    onPress: async () => {},
+                  },
+                  ],
+                  { cancelable: false },
+                );
+              } else {
+                setloading(true);
+                const params = {
+                  caller_id: selectedEventItem.owner_id,
+                };
+                getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                  console.log('Res :-', res);
+                  const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                  setRefereeReserveData(myReferee);
+                  if (res.payload.length > 0) {
+                    refereeReservModal();
+                    setloading(false);
+                  } else {
+                    setloading(false);
+                    setTimeout(() => {
+                      Alert.alert(
+                        'Towns Cup',
+                        'No referees invited or booked by you for this game',
+                        [{
+                          text: 'OK',
+                          onPress: async () => {},
+                        },
+                        ],
+                        { cancelable: false },
+                      );
+                    }, 0);
+                  }
+                }).catch((error) => {
+                  console.log('Error :-', error);
+                });
+              }
             } else {
               Alert.alert(
                 'Do you want to delete this event ?',
@@ -594,6 +624,24 @@ export default function ScheduleScreen({ navigation }) {
                 ],
                 { cancelable: false },
               );
+            }
+          }
+          if (index === 2) {
+            if (index === 2 && selectedEventItem.game) {
+              if (refereeFound(selectedEventItem)) {
+                console.log('Pressed cancel button.');
+              } else {
+                Alert.alert(
+                  'Towns Cup',
+                  'Change Event color feature is pending',
+                  [{
+                    text: 'OK',
+                    onPress: async () => {},
+                  },
+                  ],
+                  { cancelable: false },
+                );
+              }
             }
           }
           setSelectedEventItem(null);
@@ -664,11 +712,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 10,
   },
-  seapratorViewStyle: {
-    backgroundColor: colors.graySeparater,
-    height: 0.5,
-    width: wp('100%'),
-  },
+
   modalMainViewStyle: {
     shadowOpacity: 0.15,
     shadowOffset: {

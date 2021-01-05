@@ -29,6 +29,9 @@ import CreateChallengeForm5 from '../screens/challenge/createChallenge/CreateCha
 import ChooseDateTimeScreen from '../screens/challenge/createChallenge/ChooseDateTimeScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
+import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
+import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
+import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
 
 const Stack = createStackNavigator();
 
@@ -85,6 +88,13 @@ const NewsFeedNavigator = () => (
         headerShown: false,
       }}
     />
+    <Stack.Screen
+        name="AlterRequestAccept"
+        component={ AlterRequestAccept }
+        options={ {
+          headerShown: false,
+        } }
+      />
     <Stack.Screen
         name="EditPostScreen"
         component={ EditPostScreen }
@@ -405,6 +415,38 @@ const NewsFeedNavigator = () => (
           options={ {
             headerShown: false,
           } }
+      />
+    <Stack.Screen
+            name="RefereeReservationScreen"
+            component={RefereeReservationScreen}
+            options={{
+              title: 'Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+        name="AlterAcceptDeclineScreen"
+        component={ AlterAcceptDeclineScreen }
+        options={ {
+          title: 'Change Match Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
       />
   </Stack.Navigator>
 );

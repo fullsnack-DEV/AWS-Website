@@ -413,7 +413,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} has accepted your game reservation,
+                  {getTeamName(bodyParams)} has accepted your match reservation,
                   but your payment hasnt gone through yet.
                 </Text>
                 <Text style={styles.awatingNotesText}>
@@ -437,7 +437,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   RESERVATION CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
-                  {singlePlayerText()} has the confirmed game reservation against{' '}
+                  {singlePlayerText()} has the confirmed match reservation against{' '}
                   {getTeamName(bodyParams)}.
                 </Text>
               </View>
@@ -453,7 +453,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   RESERVATION CONFIRMED
                 </Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} has the confirmed game reservation
+                  {getTeamName(bodyParams)} has the confirmed match reservation
                   against {singlePlayerText()}.
                 </Text>
               </View>
