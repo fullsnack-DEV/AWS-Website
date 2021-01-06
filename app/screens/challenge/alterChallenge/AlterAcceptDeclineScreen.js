@@ -200,7 +200,6 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       } else {
         setEditScoreKeeper(false);
       }
-
       if (
         bodyParams?.home_team?.group_id !== oldVersion?.home_team?.group_id
         || bodyParams?.home_team?.user_id !== oldVersion?.home_team?.user_id
@@ -745,27 +744,53 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View>
-                <Text style={styles.challengeMessage}>
-                  ALTEARION REQUEST SENT
-                </Text>
-                <Text style={styles.challengeText}>
-                  {singlePlayerText()} sent a match reservation alteration request to{' '}
-                  {getTeamName(bodyParams)}.
-                </Text>
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
+                  <Text style={styles.challengeMessage}>
+                    RESERVATION REQUEST EXPIRED
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeMessage}>
+                    ALTEARION REQUEST SENT
+                  </Text>
+                )}
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
+                  <Text style={styles.challengeText}>
+                    Your match reservation request has been expired.
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeText}>
+                    {singlePlayerText()} sent a match reservation alteration request to{' '}
+                    {getTeamName(bodyParams)}.
+                  </Text>
+                )}
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View>
-                <Text style={styles.challengeMessage}>
-                  ALTERATION REQUEST PENDING
-                </Text>
-                <Text style={styles.challengeText}>
-                  {singlePlayerText()} received a match reservation alteration request from{' '}
-                  {getTeamName(bodyParams)}.
-                </Text>
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
+                  <Text style={styles.challengeMessage}>
+                    RESERVATION REQUEST EXPIRED
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeMessage}>
+                    ALTERATION REQUEST PENDING
+                  </Text>
+                )}
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
+                  <Text style={styles.challengeText}>
+                    The match reservation request from {getTeamName(bodyParams)}{' '}
+                    has been expired.
+                  </Text>
+                ) : (
+                  <Text style={styles.challengeText}>
+                    {singlePlayerText()} received a match reservation alteration request from{' '}
+                    {getTeamName(bodyParams)}.
+                  </Text>
+                )}
               </View>
           )}
+
           {/* status change requested */}
 
           {/* status pending request payment */}
@@ -1103,7 +1128,6 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   }}
                 />
               )}
-
               <TCThickDivider marginTop={20} />
             </View>
           )}
@@ -1279,7 +1303,16 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               bodyParams.invited_by === entity.uid ? 'sender' : 'receiver'
             }
           />
-
+          {editPayment && (<View style={{ marginBottom: 10, marginTop: 10 }}>
+            <CurruentVersionView
+                  onPress={() => {
+                    navigation.navigate('CurruentReservationScreen', {
+                      body: oldVersion,
+                    });
+                  }}
+                />
+          </View>
+          )}
           {/* {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.changeRequest && (
               <View style={{ marginTop: 10 }}>
@@ -1295,7 +1328,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           />
               </View>
           )} */}
-          {bodyParams.invited_by === entity.uid && (
+          {bodyParams.invited_by === entity.uid && bodyParams.status !== ReservationStatus.declined && (
             <View style={{ marginTop: 10 }}>
               <TCTouchableLabel
                 title={
@@ -1356,6 +1389,12 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   height={40}
                   shadow={true}
                   onPress={() => {
+                    // acceptDeclineChallengeOperation(
+                    //   entity.uid,
+                    //   bodyParams.challenge_id,
+                    //   bodyParams.version,
+                    //   'cancel',
+                    // );
                     acceptDeclineAlterChallengeOperation(
                       entity.uid,
                       bodyParams.challenge_id,

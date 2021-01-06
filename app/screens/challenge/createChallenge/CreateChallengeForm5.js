@@ -25,11 +25,14 @@ export default function CreateChallengeForm5({ navigation, route }) {
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [totalZero, setTotalZero] = useState(false);
-
+  const [defaultCard, setDefaultCard] = useState();
   const [estimationFee, setEstimationFee] = useState();
 
   useEffect(() => {
     if (isFocused) {
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      }
       getAuthEntity();
       getFeeDetail();
     }
@@ -41,6 +44,9 @@ export default function CreateChallengeForm5({ navigation, route }) {
 
   const getFeeDetail = () => {
     if (route && route.params && route.params.teamData && route.params.body) {
+      console.log('Team Data::', route.params.teamData);
+      console.log('Body Data::', route.params.body);
+
       if (route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid) {
         const fees = { ...route.params.body };
         const feeBody = {}
@@ -184,8 +190,17 @@ export default function CreateChallengeForm5({ navigation, route }) {
         <TCLabel title={'Payment Method'} />
         <View>
           <TCTouchableLabel
-            title={route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
-            subTitle={route.params.paymentMethod?.card.last4 }
+            // title={route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+            // subTitle={route.params.paymentMethod?.card.last4 }
+            title={
+              defaultCard && defaultCard?.card?.brand
+                ? Utility.capitalize(defaultCard?.card?.brand)
+                : strings.addOptionMessage
+            }
+            subTitle={
+              (defaultCard && defaultCard?.card?.last4)
+              ?? defaultCard?.card?.last4
+            }
             showNextArrow={true}
             onPress={() => {
               navigation.navigate('PaymentMethodsScreen', {

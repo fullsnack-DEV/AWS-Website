@@ -327,7 +327,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.offered && (
               <View>
-                {bodyParams.offer_expiry > new Date().getTime() ? (
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeMessage}>
                     RESERVATION REQUEST EXPIRED
                   </Text>
@@ -336,7 +336,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                     RESERVATION REQUEST SENT
                   </Text>
                 )}
-                {bodyParams.offer_expiry > new Date().getTime() ? (
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeText}>
                     Your match reservation request has been expired.
                   </Text>
@@ -358,7 +358,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.offered && (
               <View>
-                {bodyParams.offer_expiry > new Date().getTime() ? (
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeMessage}>
                     RESERVATION REQUEST EXPIRED
                   </Text>
@@ -367,7 +367,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                     RESERVATION REQUEST PENDING
                   </Text>
                 )}
-                {bodyParams.offer_expiry > new Date().getTime() ? (
+                {bodyParams.offer_expiry * 1000 < new Date().getTime() ? (
                   <Text style={styles.challengeText}>
                     The match reservation request from {getTeamName(bodyParams)}{' '}
                     has been expired.

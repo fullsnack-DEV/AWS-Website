@@ -44,10 +44,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   const getNearDateTime = (date) => {
     const start = moment(date);
     const nearTime = 30 - (start.minute() % 30);
-    const dateTime = moment(start)
-      .add(nearTime, 'minutes')
-      .format('MMM DD, yy      hh:mm A');
-    console.log('date/time::', dateTime);
+    const dateTime = moment(start).add(nearTime, 'm').toDate()
     return dateTime;
   };
   const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -79,7 +76,8 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    return moment(new Date(dateValue)).format('MMM DD, yy      hh:mm A');
+    const dateString = moment(new Date(dateValue)).format('MMM DD, yy    hh:mm A')
+    return dateString;
   };
   const getSlots = () => {
     setloading(true);
@@ -209,6 +207,10 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     setShow(!show);
     if (datePickerFor === 'from') {
       setfromDate(date);
+      console.log(`from:->${new Date(fromDate)}to:->${new Date(toDate)}`);
+      if (new Date(date).getTime() > new Date(toDate).getTime()) {
+        setToDate(moment(date).add(30, 'm').toDate())
+      }
     } else {
       setToDate(date);
     }
@@ -428,11 +430,10 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             onHide={handleCancelPress}
             minutesGap={30}
             minimumDate={
-              datePickerFor === 'from' ? fromDate : toDate || new Date()
+              datePickerFor === 'to' ? moment(new Date(fromDate)).add(30, 'm').toDate() : getNearDateTime(new Date())
             }
             maximumDate={
-              new Date(selectedDate).setHours(23, 59, 59, 999)
-              || new Date().setHours(23, 59, 59, 999)
+              getNearDateTime(new Date()).setHours(23, 59, 59, 999)
             }
             mode={'time'}
           />
@@ -444,14 +445,6 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       <TCGradientButton
         title={strings.applyTitle}
         onPress={() => {
-          console.log(
-            'From date::------>',
-            moment(fromDate).format('MMM DD, yy      hh:mm A'),
-          );
-          console.log(
-            'End date::------>',
-            moment(toDate).format('MMM DD, yy      hh:mm A'),
-          );
           if (fromDate < new Date().getTime() / 1000) {
             Alert.alert(strings.chooseFutureDate);
           } else if (toDate > fromDate) {
