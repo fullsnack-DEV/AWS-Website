@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import {
   StyleSheet, Platform, Image,
 
@@ -9,26 +9,37 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 import images from '../Constants/ImagePath'
 
-export default function TCPicker({
-  dataSource, placeholder, value = '', onValueChange = () => {}, onDonePress = () => {},
+export default function TCYearPicker({
+  placeholder, value = '', onValueChange = () => {}, onDonePress = () => {},
 }) {
+  const [yearList, setYearList] = useState([]);
+  useEffect(() => {
+    const arr = new Array(new Date().getFullYear());
+    for (let i = 0; i < new Date().getFullYear(); ++i) arr[i] = { label: (i + 1)?.toString(), value: (i + 1)?.toString() };
+    setYearList([...arr]);
+  }, [])
+
   return (
-    <RNPickerSelect
+    <Fragment>
+      {yearList?.length > 0 && (
+        <RNPickerSelect
               onDonePress={onDonePress}
               placeholder={{
                 label: placeholder,
                 value: '',
               }}
-              items={dataSource}
+              items={yearList}
               onValueChange={onValueChange}
               useNativeAndroidPickerStyle={false}
-            // eslint-disable-next-line no-sequences
-            style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+              style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
               value={value}
               Icon={() => (
                 <Image source={images.dropDownArrow} style={styles.downArrow} />
               )}
-            />
+          />
+      )}
+
+    </Fragment>
   );
 }
 

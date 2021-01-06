@@ -263,7 +263,7 @@ function NotificationsListScreen({ navigation }) {
   const openHomePage = (item) => {
     if (activeScreen) {
       if (item?.entityType && item?.entityId) {
-        navigation.navigate('HomeScreen', {
+        navigation.push('HomeScreen', {
           uid: item?.entityId,
           backButtonVisible: true,
           menuBtnVisible: false,

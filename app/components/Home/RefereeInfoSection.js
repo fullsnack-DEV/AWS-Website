@@ -361,7 +361,6 @@ function RefereeInfoSection({
     });
     setLanguageList([...languageList]);
   };
-
   return (
     <ScrollView style={styles.containerStyle}>
       <EditEventItem
@@ -393,7 +392,7 @@ function RefereeInfoSection({
         />
         <BasicInfoItem
           title={strings.yearOfBirth}
-          value={moment(info.birthdayText).format('YYYY')}
+          value={info.birthdayText ? moment(info.birthdayText).format('YYYY') : '-'}
         />
         <BasicInfoItem
           title={strings.language}
@@ -401,7 +400,7 @@ function RefereeInfoSection({
         />
         <BasicInfoItem
           title={strings.currrentCityTitle}
-          value={info.currentCity}
+          value={info.currentCity ?? '-'}
           fieldView={{ marginBottom: 10 }}
         />
       </EditEventItem>

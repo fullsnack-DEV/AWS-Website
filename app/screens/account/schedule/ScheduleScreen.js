@@ -72,8 +72,8 @@ export default function ScheduleScreen({ navigation }) {
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [searchEvents, setSearchEvents] = useState();
   useEffect(() => {
+    setloading(true);
     const unsubscribe = navigation.addListener('focus', async () => {
-      setloading(true);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
@@ -82,7 +82,6 @@ export default function ScheduleScreen({ navigation }) {
       const timetabledata = [];
       let eventTimeTableData = [];
       getEvents(entityRole, uid, authContext).then((response) => {
-        setloading(false);
         getSlots(entityRole, uid, authContext).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
           console.log('Event data::', eventTimeTableData);
@@ -113,7 +112,8 @@ export default function ScheduleScreen({ navigation }) {
             return null;
           })
           setFilterTimeTable(timetabledata);
-        })
+          setloading(false);
+        }).catch(() => setloading(false));
       }).catch((e) => {
         setloading(false);
         Alert.alert('', e.messages)

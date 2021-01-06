@@ -36,10 +36,13 @@ const Referees = ({
     getRefereeReservation(gameData?.game_id).then((res) => {
       console.log('REF: ', res?.payload)
       const refData = res?.payload?.filter((item) => !['declined', 'cancelled'].includes(item?.status));
+      console.log('NE:', refData);
       const cloneRefData = [];
       refData.map((item) => {
         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
         if (item?.status === 'offered' && !isExpired) {
+          cloneRefData.push(item);
+        } else if (item?.status !== 'offered') {
           cloneRefData.push(item);
         }
         return false;

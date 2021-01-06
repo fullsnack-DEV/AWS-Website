@@ -26,6 +26,7 @@ import TCPicker from '../TCPicker';
 import SearchLocationTextView from './SearchLocationTextView';
 import BirthSelectItem from './BirthSelectItem';
 import DateTimePickerView from '../Schedule/DateTimePickerModal';
+import ModalLocationSearch from './ModalLocationSearch';
 
 const privacy_Data = [
   {
@@ -116,6 +117,7 @@ function PersonalSportsInfo({
   const [mostusetFootSelect, setMostUsedFootSelect] = useState('');
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [searchLocationModal, setSearchLocationModal] = useState(false);
   const [privacyData, setPrivacyData] = useState(privacy_Data);
   const [dateModalVisible, setDateModalVisible] = useState(false);
 
@@ -174,15 +176,15 @@ function PersonalSportsInfo({
         />
         <BasicInfoItem
           title={strings.yearOfBirth}
-          value={moment(info.birthdayText).format('YYYY')}
+          value={info?.birthdayText ? moment(info.birthdayText).format('YYYY') : '-'}
         />
         <BasicInfoItem
           title={strings.height}
-          value={info.heightText ? `${info.heightText} cm` : ''}
+          value={info.heightText ? `${info.heightText} cm` : '-'}
         />
         <BasicInfoItem
           title={strings.weight}
-          value={info.weightText ? `${info.weightText} kg` : ''}
+          value={info.weightText ? `${info.weightText} kg` : '-'}
         />
         <BasicInfoItem
           title={strings.mostUsedFoot}
@@ -375,6 +377,14 @@ function PersonalSportsInfo({
         backdropOpacity={0}
       >
         <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+          <ModalLocationSearch
+                visible={searchLocationModal}
+                onClose={() => setSearchLocationModal(false)}
+                onSelect={(location) => {
+                  const city = location.terms?.[0]?.value;
+                  setInfo({ ...info, currentCity: city });
+                }}
+            />
           <LinearGradient
             colors={[colors.orangeColor, colors.yellowColor]}
             end={{ x: 0.0, y: 0.25 }}
@@ -414,6 +424,7 @@ function PersonalSportsInfo({
                     homePlace: info.homePlaceText,
                     longitude: info.longiValue !== null ? Number(info.longiValue) : 0.0,
                   }],
+                  city: info.currentCity,
                   gender: info.genderText,
                   birthday: (info.birthdayText / 1000),
                   height: info.heightText ? `${info.heightText}` : '',
@@ -434,7 +445,7 @@ function PersonalSportsInfo({
             }}
           />}
 
-          {editPressTitle === strings.basicinfotitle && <View>
+          {editPressTitle === strings.basicinfotitle && <ScrollView>
             <EventItemRender
               title={strings.gender}
               containerStyle={{ marginTop: 15 }}
@@ -526,11 +537,11 @@ function PersonalSportsInfo({
               <BirthSelectItem
                 title={info.currentCity}
                 onItemPress={() => {
-                  // onItemPress();
+                  setSearchLocationModal(!searchLocationModal);
                 }}
               />
             </EventItemRender>
-          </View>}
+          </ScrollView>}
 
           {editPressTitle === strings.gameFee && <EventTextInput
             value={gameFeeCount.toString()}

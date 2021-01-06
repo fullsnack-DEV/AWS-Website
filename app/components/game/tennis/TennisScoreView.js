@@ -33,6 +33,10 @@ export default function TennisScoreView({ scoreDataSource }) {
         console.log('scoreDataSource', setsData);
       } else {
         setsData = [{}, {}, {}];
+        homeTeamGamePoint = '0';
+        awayTeamGamePoint = '0';
+        homeTeamMatchPoint = 0;
+        awayTeamMatchPoint = 0;
       }
     }
   }, [scoreDataSource]);

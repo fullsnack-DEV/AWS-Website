@@ -20,7 +20,9 @@ import AuthContext from '../../../../auth/context';
 import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtility';
 
 const bgImage = images.tennisBackground;
-const TopBackgroundHeader = ({ gameData, navigation, children }) => {
+const TopBackgroundHeader = ({
+  gameData, navigation, children, isAdmin,
+}) => {
   const threeDotActionSheet = useRef();
   const [headerTitleShown, setHeaderTitleShown] = useState(true);
   const [loading, setloading] = useState(false);
@@ -131,8 +133,8 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                 {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
               </View>
             }
-            rightComponent={
-              <TouchableOpacity onPress={onThreeDorPress}>
+            rightComponent={isAdmin
+              && <TouchableOpacity onPress={onThreeDorPress}>
                 <Image source={images.threeDotIcon} style={{
                   height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
                 }} />
@@ -160,12 +162,12 @@ const TopBackgroundHeader = ({ gameData, navigation, children }) => {
                     {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
                   </View>
                 }
-                rightComponent={
-                  <TouchableOpacity onPress={onThreeDorPress}>
-                    <Image source={images.threeDotIcon} style={{
-                      height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
-                    }} />
-                  </TouchableOpacity>
+                rightComponent={isAdmin
+                && <TouchableOpacity onPress={onThreeDorPress}>
+                  <Image source={images.threeDotIcon} style={{
+                    height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
+                  }} />
+                </TouchableOpacity>
                 }
               />
             )}

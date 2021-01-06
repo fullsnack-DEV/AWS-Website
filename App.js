@@ -8,6 +8,7 @@ import { QBinit } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
 import { firebaseConfig } from './app/utils/constant';
 
+// console.disableYellowBox = true
 export default function App() {
   useEffect(() => {
     Orientation.lockToPortrait();

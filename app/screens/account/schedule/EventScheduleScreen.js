@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import moment from 'moment';
 import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
+import TCInnerLoader from '../../../components/TCInnerLoader';
 
 export default function EventScheduleScreen({
   onItemPress,
@@ -17,56 +18,71 @@ export default function EventScheduleScreen({
   entity,
   profileID,
 }) {
-  let filterData = [];
-  let dataNotFound = true;
-  if (eventData) {
-    const todayData = [];
-    const tomorrowData = [];
-    const futureData = [];
-    eventData.filter((item_filter) => {
-      const startDate = new Date(item_filter.start_datetime * 1000);
-      const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
-      const dateText = moment(dateFormat).calendar(null, {
-        lastDay: '[Yesterday]',
-        sameDay: '[Today]',
-        nextDay: '[Tomorrow]',
-        nextWeek: '[Future]',
-        sameElse: '[Future]',
+  const [filterData, setFilterData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (eventData) {
+      const todayData = [];
+      const tomorrowData = [];
+      const futureData = [];
+      console.log('ED : ', eventData);
+      eventData.filter((item_filter) => {
+        const startDate = new Date(item_filter.start_datetime * 1000);
+        const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
+        const dateText = moment(dateFormat).calendar(null, {
+          lastDay: '[Yesterday]',
+          sameDay: '[Today]',
+          nextDay: '[Tomorrow]',
+          nextWeek: '[Future]',
+          sameElse: '[Future]',
+        })
+        if (dateText === 'Today') {
+          todayData.push(item_filter);
+        }
+        if (dateText === 'Tomorrow') {
+          tomorrowData.push(item_filter);
+        }
+        if (dateText === 'Future') {
+          futureData.push(item_filter);
+        }
+        return null;
       })
-      if (dateText === 'Today') {
-        todayData.push(item_filter);
-        dataNotFound = false;
+      let filData = [];
+      if (todayData?.length > 0 || tomorrowData?.length > 0 || futureData?.length > 0) {
+        filData = [
+          {
+            title: 'Today',
+            data: todayData,
+          },
+          {
+            title: 'Tomorrow',
+            data: tomorrowData,
+          },
+          {
+            title: 'Future',
+            data: futureData,
+          },
+        ];
+        setFilterData([...filData]);
+      } else {
+        setFilterData([]);
       }
-      if (dateText === 'Tomorrow') {
-        tomorrowData.push(item_filter);
-        dataNotFound = false;
-      }
-      if (dateText === 'Future') {
-        futureData.push(item_filter);
-        dataNotFound = false;
-      }
-      return null;
-    })
-    filterData = [
-      {
-        title: 'Today',
-        data: todayData,
-      },
-      {
-        title: 'Tomorrow',
-        data: tomorrowData,
-      },
-      {
-        title: 'Future',
-        data: futureData,
-      },
-    ];
-  }
+    }
+  }, [eventData])
+  useEffect(() => {
+    if (filterData?.length) {
+      setLoading(false);
+    }
+  }, [filterData])
   return (
     <KeyboardAvoidingView style={ styles.mainContainer } behavior={'padding'}>
-      {dataNotFound
-        ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
-        : <SectionList
+      {loading && <TCInnerLoader visible={true}/>}
+      {!loading
+        && <SectionList
+              ListEmptyComponent={<Text style={styles.dataNotFoundText}>
+                Data Not Found
+              </Text>}
           renderItem={ ({ item }) => {
             if (item.cal_type === 'event') {
               return (
