@@ -4,6 +4,7 @@ import React, {
 import {
   StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
 } from 'react-native';
+import { Observable } from 'rxjs';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -20,6 +21,7 @@ import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context'
 
 export default function FeedsScreen({ navigation }) {
+  let subscribeUploadImage = null;
   const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
@@ -31,7 +33,7 @@ export default function FeedsScreen({ navigation }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
-  const [cancelPressed, setCancelPressed] = useState(false);
+  let cancelPressed = false;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -51,6 +53,7 @@ export default function FeedsScreen({ navigation }) {
 
     return () => {
       unsubscribe();
+      if (subscribeUploadImage) subscribeUploadImage.unsubscribe();
     };
   }, [navigation]);
 
@@ -85,40 +88,47 @@ export default function FeedsScreen({ navigation }) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        const dataParams = {
-          text: postDesc && postDesc,
-          attachments,
-        };
-        createPostAfterUpload(dataParams);
-      })
+      const observable$ = Observable.create((observer) => {
+        uploadImages(imageArray, authContext, progressStatus)
+          .then((response) => {
+            observer.next(response);
+            observer.complete();
+          })
+      });
+
+      subscribeUploadImage = observable$.subscribe({
+        next: (response) => {
+          const attachments = response.map((item) => ({
+            type: item.type,
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+            media_height: item.height,
+            media_width: item.width,
+          }))
+          const dataParams = {
+            text: postDesc && postDesc,
+            attachments,
+          };
+          if (!cancelPressed) {
+            createPostAfterUpload(dataParams);
+          }
+        },
+      });
     }
   }
 
   const createPostAfterUpload = (dataParams) => {
-    if (!cancelPressed) {
-      createPost(dataParams, authContext)
-        .then(() => getNewsFeed(authContext))
-        .then((response) => {
-          setPostData(response.payload.results)
-          setProgressBar(false);
-          setDoneUploadCount(0);
-          setTotalUploadCount(0);
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages)
-        });
-    } else {
-      Alert('You Pressed Cancel');
-      setCancelPressed(false);
-    }
+    createPost(dataParams, authContext)
+      .then(() => getNewsFeed(authContext))
+      .then((response) => {
+        setPostData(response.payload.results)
+        setProgressBar(false);
+        setDoneUploadCount(0);
+        setTotalUploadCount(0);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
   }
 
   const editPostDoneCall = (data, postDesc, selectEditItem) => {
@@ -168,6 +178,15 @@ export default function FeedsScreen({ navigation }) {
     }
   }
 
+  const onCancelImageUpload = () => {
+    cancelPressed = true;
+    if (subscribeUploadImage) {
+      subscribeUploadImage.unsubscribe();
+    }
+    setProgressBar(false);
+    setDoneUploadCount(0);
+    setTotalUploadCount(0);
+  }
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -184,12 +203,7 @@ export default function FeedsScreen({ navigation }) {
             },
             {
               text: 'Cancel upload',
-              onPress: async () => {
-                setCancelPressed(true);
-                setProgressBar(false);
-                setDoneUploadCount(0);
-                setTotalUploadCount(0);
-              },
+              onPress: onCancelImageUpload,
             },
             ],
           );

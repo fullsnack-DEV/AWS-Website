@@ -103,6 +103,7 @@
     "react-navigation-stack": "^2.8.2",
     "react-navigation-tabs": "^2.9.0",
     "rn-range-slider": "^2.0.3",
+    "rxjs": "^6.6.3",
     "tipsi-stripe": "^8.0.0-beta.11",
     "toggle-switch-react-native": "^2.3.0",
     "v": "^0.3.0",
