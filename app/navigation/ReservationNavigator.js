@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import ReservationScreen from '../screens/reservation/ReservationScreen';
 import ReservationDetailScreen from '../screens/reservation/ReservationDetailScreen'
+import HomeScreen from '../screens/home/HomeScreen';
 
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
@@ -479,6 +480,23 @@ const ReservationNavigator = () => (
         component={ AlterRequestAccept }
         options={ {
           headerShown: false,
+        } }
+      />
+    <Stack.Screen
+        name="HomeScreen"
+        component={ HomeScreen }
+        options={ {
+          title: 'Home',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
         } }
       />
   </Stack.Navigator>

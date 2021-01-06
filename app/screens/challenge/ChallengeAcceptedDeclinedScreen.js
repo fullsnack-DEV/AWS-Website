@@ -58,12 +58,6 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           shadow={true}
           marginBottom={route?.params?.status === 'accept' ? 15 : 55}
           onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{
-                name: 'NotificationsListScreen',
-              }],
-            });
             navigation.navigate('HomeScreen', {
               uid: route.params.teamObj ? route.params.teamObj.group_id : route.params.teamObj.user_id,
               backButtonVisible: true,

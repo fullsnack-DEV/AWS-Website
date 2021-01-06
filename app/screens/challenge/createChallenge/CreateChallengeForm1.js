@@ -78,7 +78,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
         setVenueData(route.params.body.venue)
         getLatLongData(route.params.body.venue.address)
         setSport(route.params.body.sport)
-        setsecureVenue(route.params.body.responsible_to_secure_venue === entity.obj.group_name ? 0 : 1)
+        setsecureVenue(route.params.body.responsible_to_secure_venue === (entity.obj.group_name || `${entity.obj.first_name} ${entity.obj.last_name}`) ? 0 : 1)
         setVenue((route.params.body.venue.venueType === 'HomeTeam' && 1) || (route.params.body.venue.venueType === 'AwayTeam' && 2) || (route.params.body.venue.venueType === 'other' && 0))
 
         if ((route?.params?.body?.home_team?.user_id || route?.params?.body?.home_team?.group_id) === (entity.obj.user_id || entity.obj.group_id)) {
@@ -160,8 +160,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
 
     bodyParams.home_team = teams[0]
     bodyParams.away_team = teams[1]
-    bodyParams.hourly_game_fee = route.params.groupObj.game_fee
-    bodyParams.currency_type = route.params.groupObj.currency_type || 'CAD'
+    bodyParams.hourly_game_fee = route?.params?.groupObj?.game_fee
+    bodyParams.currency_type = route?.params?.groupObj?.currency_type || 'CAD'
     bodyParams.venue = venueData
     bodyParams.sport = sport
     bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`
@@ -391,8 +391,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
               <TCTouchableLabel
               placeholder={'Address'}
                 title={
-                  (route && route.params && route.params.venueObj
-                    && route.params.venueObj.description) || venueData.address
+                  route?.params?.venueObj?.description || venueData.address
 
                 }
                 style={{ marginTop: 10, marginBottom: 10 }}
@@ -405,16 +404,12 @@ export default function CreateChallengeForm1({ navigation, route }) {
           </View>
           <View style={styles.venueContainer}>
             <Text style={styles.venueTitle}>
-              {(venue === 0 && venueData.title)
+              {(venue === 0 && (venueData.title || venueTitle))
                 || (venue === 1 && `${teamData[0].group_name}'s Home`)
                 || (venue === 2 && `${teamData[1].group_name}'s Home`)}
             </Text>
             <Text style={styles.venueAddress}>
-              {(venue === 0
-                && route
-                && route.params
-                && route.params.venueObj
-                && route.params.venueObj.description)
+              {(venue === 0 && (route?.params?.venueObj?.description || venueData.address))
                 || (venue === 1 && teamData[0].homefield_Address)
                 || (venue === 2 && teamData[1].homefield_Address)}
             </Text>
@@ -435,7 +430,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
           </Text>
           <View style={styles.viewContainer}>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`}’s home</Text>
+              <Text style={styles.radioText}>{teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`}</Text>
               <TouchableOpacity onPress={() => setsecureVenue(0)}>
                 <Image
                   source={
@@ -449,7 +444,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
             </View>
 
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`}’s home</Text>
+              <Text style={styles.radioText}>{teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`}</Text>
               <TouchableOpacity onPress={() => setsecureVenue(1)}>
                 <Image
                   source={

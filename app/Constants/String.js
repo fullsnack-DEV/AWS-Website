@@ -511,7 +511,7 @@ const strings = {
   sportAlreadyRegisterd: 'This sport already registerd.',
   choosePayment: 'Please choose payment method.',
   chooseFutureDate: 'Please choose future date for challenge.',
-  chooseCorrectDate: 'Please choose correct date.',
+  chooseCorrectDate: 'Please choose correct date and time.',
   max5Referee: 'Maximum 5 referees can be added.',
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
