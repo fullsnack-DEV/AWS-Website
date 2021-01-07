@@ -2261,6 +2261,7 @@ export default function HomeScreen({ navigation, route }) {
                 }
               />
               <RefereesProfileSection
+                  bookRefereeButtonVisible={authContext?.entity?.uid !== currentUserData?.user_id}
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
                 feesCount={(selectRefereeData && selectRefereeData.fee) ? selectRefereeData.fee : 0}
@@ -2276,17 +2277,17 @@ export default function HomeScreen({ navigation, route }) {
                     refereeInfoModal();
                   }}
                 >
-                  {selectRefereeData && selectRefereeData.descriptions !== '' && <NewsFeedDescription
+                  {selectRefereeData?.descriptions !== '' && <NewsFeedDescription
                     character={140}
                     containerStyle={{ marginHorizontal: 0 }}
                     descriptionTxt={{
                       padding: 0, marginTop: 3, color: colors.whiteColor, fontFamily: fonts.RRegular,
                     }}
                     descText={{ fontSize: 16, color: colors.whiteGradientColor, fontFamily: fonts.RLight }}
-                    descriptions={selectRefereeData && selectRefereeData.descriptions}
+                    descriptions={selectRefereeData?.descriptions ?? ''}
                   />}
                   <Text style={styles.signUpTextStyle}>{strings.signedUpTime}</Text>
-                  {selectRefereeData && selectRefereeData.certificates && <View style={styles.certificatesViewStyle}>
+                  {selectRefereeData?.certificates?.length > 0 && <View style={styles.certificatesViewStyle}>
                     <Text style={[styles.playInTextStyle, { fontFamily: fonts.RMedium, marginBottom: 5 }]}>{'Certificates'}</Text>
                     <FlatList
                       data={selectRefereeData.certificates}

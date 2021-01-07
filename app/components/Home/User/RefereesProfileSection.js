@@ -14,6 +14,7 @@ export default function RefereesProfileSection({
   userName,
   feesCount,
   onBookRefereePress,
+  bookRefereeButtonVisible = true,
 }) {
   return (
     <View style={styles.topViewContainer}>
@@ -29,12 +30,14 @@ export default function RefereesProfileSection({
         </View>
       </View>
       <View style={styles.editViewStyle}>
-        <Text style={styles.editTextStyle}>{`$${feesCount} CAD`}
+        <Text style={{ ...styles.editTextStyle }}>{`$${feesCount} CAD`}
           <Text style={styles.perHourTextStyle}>{' (per hours)'}</Text>
         </Text>
-        <TouchableOpacity onPress={onBookRefereePress}>
-          <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
-        </TouchableOpacity>
+        {bookRefereeButtonVisible && (
+          <TouchableOpacity onPress={onBookRefereePress}>
+            <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
