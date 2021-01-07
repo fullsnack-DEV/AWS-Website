@@ -26,6 +26,7 @@ import TCBorderButton from '../../components/TCBorderButton';
 import MatchFeesCard from '../../components/challenge/MatchFeesCard';
 import ReservationNumber from '../../components/reservations/ReservationNumber';
 import { getGameHomeScreen } from '../../utils/gameUtils';
+import TCGameDetailRules from '../../components/TCGameDetailRules';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
@@ -427,7 +428,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           {/* status pending payment */}
           {/* Status accepted */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
+            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored || bodyParams.status === ReservationStatus.requestcancelled) && (
               <View>
                 <Text
                   style={[
@@ -443,7 +444,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
+            && (bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored || bodyParams.status === ReservationStatus.requestcancelled) && (
               <View>
                 <Text
                   style={[
@@ -636,6 +637,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCThickDivider marginTop={8} />
             </View>
           )}
+          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
+            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
+            <TCThickDivider marginTop={20} />
+          </View>}
           {bodyParams && (
             <View>
               <TCLabel title={'Rules'} />
@@ -669,7 +674,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <TCThickDivider marginTop={10} />
           <TCLabel
             title={
-              checkSenderOrReceiver(bodyParams) === 'sender'
+              bodyParams.invited_by === entity.uid
                 ? 'Payment'
                 : 'Earning'
             }
@@ -677,7 +682,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <MatchFeesCard
             challengeObj={{ ...bodyParams, start_datetime: bodyParams.start_datetime * 1000, end_datetime: bodyParams.end_datetime * 1000 }}
             senderOrReceiver={
-              checkSenderOrReceiver(bodyParams) === 'sender'
+              bodyParams.invited_by === entity.uid
                 ? 'sender'
                 : 'receiver'
             }
@@ -751,7 +756,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
               </View>
           )}
 
-          {(bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored) && (
+          {(bodyParams.status === ReservationStatus.accepted || bodyParams.status === ReservationStatus.restored || bodyParams.status === ReservationStatus.requestcancelled) && (
             <View>
               <TCBorderButton
                 title={strings.alterReservation}
@@ -761,19 +766,15 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 shadow={true}
                 marginTop={15}
                 onPress={() => {
-                  if (
-                    (bodyParams.game_status === GameStatus.accepted
-                      || bodyParams.game_status === GameStatus.reset)
-                    && bodyParams.start_datetime * 1000 > new Date().getTime()
-                  ) {
+                  if (!bodyParams.game_status || bodyParams.game_status === (GameStatus.accepted || GameStatus.reset)) {
                     navigation.navigate('ChangeReservationInfoScreen', {
                       screen: 'change',
                       body: bodyParams,
                     });
+                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
+                    Alert.alert(strings.cannotCancelReservationText);
                   } else {
-                    Alert.alert(
-                      'Reservation cannot be change after game time passed or offer expired.',
-                    );
+                    Alert.alert(strings.cannotChangeReservationText);
                   }
                 }}
               />
@@ -787,21 +788,17 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (
-                    (bodyParams.game_status === GameStatus.accepted
-                      || bodyParams.game_status === GameStatus.reset)
-                    && bodyParams.start_datetime * 1000 > new Date().getTime()
-                  ) {
+                  if (!bodyParams.game_status || bodyParams.game_status === (GameStatus.accepted || GameStatus.reset)) {
                     acceptDeclineChallengeOperation(
                       entity.uid,
                       bodyParams.challenge_id,
                       bodyParams.version,
                       'cancel',
                     );
+                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
+                    Alert.alert(strings.cannotCancelReservationText);
                   } else {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
-                    );
+                    Alert.alert(strings.cannotChangeReservationText);
                   }
                 }}
               />

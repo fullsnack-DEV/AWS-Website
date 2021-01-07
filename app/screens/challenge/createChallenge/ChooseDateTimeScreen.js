@@ -160,7 +160,6 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   };
 
   const handleDonePress = (date) => {
-    console.log('From date:', date);
     if (new Date(fromDate).getTime() === new Date(toDate).getTime()) {
       const todayDate = new Date(
         `${
@@ -206,13 +205,20 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
     setShow(!show);
     if (datePickerFor === 'from') {
-      setfromDate(date);
+      const setdate = new Date(date).setDate(new Date(selectedDate).getDate())
+      const setmonth = new Date(setdate).setMonth(new Date(selectedDate).getMonth())
+      const setsecond = new Date(new Date(setmonth).setSeconds(new Date(selectedDate).getSeconds()))
+      setfromDate(setsecond);
+      console.log('From date:', setsecond);
       console.log(`from:->${new Date(fromDate)}to:->${new Date(toDate)}`);
-      if (new Date(date).getTime() > new Date(toDate).getTime()) {
-        setToDate(moment(date).add(30, 'm').toDate())
+      if (new Date(setsecond).getTime() > new Date(toDate).getTime()) {
+        setToDate(moment(setsecond).add(30, 'm').toDate())
       }
     } else {
-      setToDate(date);
+      const setdate = new Date(date).setDate(new Date(selectedDate).getDate())
+      const setmonth = new Date(setdate).setMonth(new Date(selectedDate).getMonth())
+      const setsecond = new Date(new Date(setmonth).setSeconds(new Date(selectedDate).getSeconds()))
+      setToDate(setsecond);
     }
     setShow(false);
     filterSlots(fromDate);

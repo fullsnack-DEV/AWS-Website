@@ -29,6 +29,8 @@ import AuthContext from '../../../auth/context';
 import TCGradientButton from '../../../components/TCGradientButton';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
+
 import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
 import TCThinDivider from '../../../components/TCThinDivider';
@@ -93,6 +95,7 @@ export default function EditChallenge({ navigation, route }) {
           break;
         }
       }
+
       if (!paymentCard) {
         setPaymentCard({
           start_datetime: challengeObj[0].start_datetime,
@@ -105,6 +108,8 @@ export default function EditChallenge({ navigation, route }) {
           total_charges: challengeObj[0].total_charges,
           total_stripe_fee: challengeObj[0].total_stripe_fee,
           total_payout: challengeObj[0].total_payout,
+          hourly_game_fee: challengeObj[0].hourly_game_fee,
+          manual_fee: challengeObj[0].manual_fee,
         })
       }
       if (!defaultCard && challengeObj[0].source) {
@@ -134,6 +139,7 @@ export default function EditChallenge({ navigation, route }) {
         setHomeTeam(challengeObj.home_team);
         setAwayTeam(challengeObj.away_team);
       }
+
       if (!paymentCard) {
         setPaymentCard({
           start_datetime: challengeObj.start_datetime,
@@ -146,6 +152,8 @@ export default function EditChallenge({ navigation, route }) {
           total_charges: challengeObj.total_charges,
           total_stripe_fee: challengeObj.total_stripe_fee,
           total_payout: challengeObj.total_payout,
+          hourly_game_fee: challengeObj.hourly_game_fee,
+          manual_fee: challengeObj.manual_fee,
         })
       }
       if (!defaultCard && challengeObj.source) {
@@ -248,6 +256,8 @@ export default function EditChallenge({ navigation, route }) {
           service_fee1_charges: response.payload.total_service_fee1,
           service_fee2_charges: response.payload.total_service_fee2,
           total_stripe_fee: response.payload.total_stripe_fee,
+          hourly_game_fee: bodyParams.hourly_game_fee,
+          manual_fee: bodyParams.manual_fee,
         })
       })
       .catch((e) => {
@@ -856,9 +866,14 @@ export default function EditChallenge({ navigation, route }) {
                   />
               )}
 
-              <TCThickDivider marginTop={20} />
+              <TCThickDivider marginTop={20}/>
             </View>
           )}
+          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
+            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
+            <TCThickDivider marginTop={20} />
+          </View>}
+
           {bodyParams && (
             <View>
               <View style={styles.editableView}>

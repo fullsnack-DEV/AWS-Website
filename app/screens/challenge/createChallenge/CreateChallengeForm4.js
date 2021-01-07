@@ -17,6 +17,7 @@ import TCInfoImageField from '../../../components/TCInfoImageField';
 import TCInfoField from '../../../components/TCInfoField';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import AuthContext from '../../../auth/context'
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
@@ -263,6 +264,10 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <TCThickDivider marginTop={8} />
         </View>
       )}
+      {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
+        <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
+        <TCThickDivider marginTop={20} />
+      </View>}
       {bodyParams && (
         <View>
           <View style={styles.editableView}>

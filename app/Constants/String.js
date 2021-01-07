@@ -515,5 +515,12 @@ const strings = {
   max5Referee: 'Maximum 5 referees can be added.',
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
+  cannotChangeReservationText: 'Reservation can not be change after game has been started.',
+  cannotCancelReservationText: 'Reservation cannot be cancel after game time passed or offer expired.',
+  selectSetText: 'Select sets',
+  selectNumberOfGameText: 'Select number of games',
+  gameScoreText: 'Select game score',
+  selectWiningPoints: 'Select wining points',
+  selectPointsText: 'Select points',
 };
 export default strings;

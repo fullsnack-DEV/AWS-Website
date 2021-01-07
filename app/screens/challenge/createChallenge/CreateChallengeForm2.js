@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
+import { parseInt } from 'lodash';
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
@@ -20,6 +21,8 @@ import TCTextField from '../../../components/TCTextField';
 import TCPicker from '../../../components/TCPicker';
 import images from '../../../Constants/ImagePath';
 import TCKeyboardView from '../../../components/TCKeyboardView';
+import TCThickDivider from '../../../components/TCThickDivider';
+import DataSource from '../../../Constants/DataSource';
 
 export default function CreateChallengeForm2({ navigation, route }) {
   const [rules, setRules] = useState('');
@@ -27,17 +30,19 @@ export default function CreateChallengeForm2({ navigation, route }) {
   const isFocused = useIsFocused();
   const [editableAlter, setEditableAlter] = useState(false);
   const [userChallenge, setUserChallenge] = useState(false);
-  const [sets, setSets] = useState();
-  const [games, setGames] = useState();
-  const [applyDeuce, setApplyDeuce] = useState(true);
-  const [applyTie, setApplyTie] = useState(true);
-  const [applyDeuceTie, setApplyDeuceTie] = useState(true);
-  const [points, setPoints] = useState(2);
-
-  const [playTie, setPlayTie] = useState();
+  const [sets, setSets] = useState(`${route?.params?.body?.gameRules?.total_sets}` || '5');
+  const [games, setGames] = useState(`${route?.params?.body?.gameRules?.game_count_to_win_set}` || '1');
+  const [applyDeuce, setApplyDeuce] = useState(route?.params?.body?.gameRules?.apply_duece_in_set ?? true);
+  const [applyTie, setApplyTie] = useState(route?.params?.body?.gameRules?.apply_tiebreaker_in_game ?? true);
+  const [applyDeuceTie, setApplyDeuceTie] = useState(route?.params?.body?.gameRules?.applyDueceInTieBreaker ?? true);
+  const [applyDeuceWinGame, setApplyDeuceWinGame] = useState(route?.params?.body?.gameRules?.apply_duece_in_game ?? true);
+  const [points, setPoints] = useState(`${route?.params?.body?.gameRules?.winning_point_in_tiebreaker}` || '7');
+  const [pointsToWinGame, setPointsToWinGame] = useState(`${route?.params?.body?.gameRules?.winning_point_in_game}` || '4')
+  const [playTie, setPlayTie] = useState(`${route?.params?.body?.gameRules?.tiebreaker_apply_at}` || '8');
 
   useEffect(() => {
-    if (route && route.params && route.params.editable && route.params.body) {
+    if (route && route.params && route.params.editableAlter && route.params.body) {
+      console.log('gamerules::->', route.params.body.gameRules);
       if (route.params.body.sport.toLowerCase() === 'tennis') {
         setSpecialRules(route.params.body.special_rule);
       } else {
@@ -113,30 +118,18 @@ export default function CreateChallengeForm2({ navigation, route }) {
         <ScrollView>
           <TCLabel title={'Number of sets'} />
           <TCPicker
-            dataSource={[
-              { label: '1', value: '1' },
-              { label: '3', value: '3' },
-              { label: '5', value: '5' },
-              { label: '9', value: '9' },
-            ]}
-            placeholder={'Select sets'}
+            dataSource={DataSource.NumberOfSet}
+            placeholder={strings.selectSetText}
             value={sets}
             onValueChange={(value) => {
               setSets(value);
             }}
           />
+          <TCThickDivider width={'100%'} marginTop={20}/>
           <TCLabel title={'Number of games to win set'} />
           <TCPicker
-            dataSource={[
-              { label: '1', value: '1' },
-              { label: '2', value: '2' },
-              { label: '3', value: '3' },
-              { label: '4', value: '4' },
-              { label: '5', value: '5' },
-              { label: '6', value: '6' },
-              { label: '7', value: '7' },
-            ]}
-            placeholder={'Select number of games'}
+            dataSource={DataSource.NumberOfGame}
+            placeholder={strings.selectNumberOfGameText}
             value={games}
             onValueChange={(value) => {
               setGames(value);
@@ -145,6 +138,9 @@ export default function CreateChallengeForm2({ navigation, route }) {
           <View style={styles.checkBoxContainer}>
             <TouchableOpacity
               onPress={() => {
+                if (!applyDeuce) {
+                  setApplyTie(false)
+                }
                 setApplyDeuce(!applyDeuce);
               }}>
               <Image
@@ -154,7 +150,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
             </TouchableOpacity>
             <Text style={styles.checkBoxTitle}>Apply deuce</Text>
           </View>
-          <View>
+          {applyDeuce && <View>
             <View style={styles.checkBoxContainer}>
               <TouchableOpacity
               onPress={() => {
@@ -167,84 +163,72 @@ export default function CreateChallengeForm2({ navigation, route }) {
               </TouchableOpacity>
               <Text style={styles.checkBoxTitle}>Apply tie-breaker</Text>
             </View>
+            {applyTie && <View>
+              <Text style={[styles.checkBoxTitle, { margin: 15 }]}>
+                Play tie-breaker after the game score are
+              </Text>
 
-            <Text style={[styles.checkBoxTitle, { margin: 15 }]}>
-              Play tie-breaker after the game score are
-            </Text>
-
-            <TCPicker
-              dataSource={[
-                { label: '1', value: '1' },
-                { label: '3', value: '3' },
-                { label: '5', value: '5' },
-                { label: '9', value: '9' },
-              ]}
-              placeholder={'Select score'}
+              <TCPicker
+              dataSource={DataSource.TieBreaker}
+              placeholder={strings.gameScoreText}
               value={playTie}
               onValueChange={(value) => {
                 setPlayTie(value);
               }}
             />
-            <Text style={[styles.checkBoxTitle, { margin: 15 }]}>
-              Winning points in tie-breaker
-            </Text>
+              <Text style={[styles.checkBoxTitle, { margin: 15 }]}>
+                Winning points in tie-breaker
+              </Text>
 
-            <TCPicker
-              dataSource={[
-                { label: '1', value: '1' },
-                { label: '3', value: '3' },
-                { label: '5', value: '5' },
-                { label: '9', value: '9' },
-              ]}
-              placeholder={'Select points'}
+              <TCPicker
+              dataSource={DataSource.NumberOfGame}
+              placeholder={strings.selectWiningPoints}
               value={points}
               onValueChange={(value) => {
                 setPoints(value);
               }}
             />
-            <View style={styles.checkBoxContainer}>
-              <TouchableOpacity
+              <View style={styles.checkBoxContainer}>
+                <TouchableOpacity
               onPress={() => {
                 setApplyDeuceTie(!applyDeuceTie);
               }}>
-                <Image
+                  <Image
                 source={applyDeuceTie ? images.checkGreenBG : images.uncheckWhite}
                 style={styles.checkBoxImage}
               />
-              </TouchableOpacity>
-              <Text style={styles.checkBoxTitle}>Apply deuce in tie-breaker</Text>
-            </View>
-          </View>
+                </TouchableOpacity>
+                <Text style={styles.checkBoxTitle}>Apply deuce in tie-breaker</Text>
+              </View>
+            </View>}
+          </View>}
+          <TCThickDivider width={'100%'} marginTop={10}/>
           <Text style={[styles.checkBoxTitle, { margin: 15 }]}>
             Number of points to win a game
           </Text>
 
           <TCPicker
-              dataSource={[
-                { label: '1', value: '1' },
-                { label: '3', value: '3' },
-                { label: '5', value: '5' },
-                { label: '9', value: '9' },
-              ]}
-              placeholder={'Select points'}
-              value={points}
+              dataSource={DataSource.NumberOfGame}
+              placeholder={strings.selectPointsText}
+              value={pointsToWinGame}
               onValueChange={(value) => {
-                setPoints(value);
+                setPointsToWinGame(value);
               }}
             />
           <View style={styles.checkBoxContainer}>
             <TouchableOpacity
               onPress={() => {
-                setApplyDeuce(!applyDeuce);
+                setApplyDeuceWinGame(!applyDeuceWinGame);
               }}>
               <Image
-                source={applyDeuce ? images.checkGreenBG : images.uncheckWhite}
+                source={applyDeuceWinGame ? images.checkGreenBG : images.uncheckWhite}
                 style={styles.checkBoxImage}
               />
             </TouchableOpacity>
             <Text style={styles.checkBoxTitle}>Apply deuce</Text>
           </View>
-          <View>
+          <TCThickDivider width={'100%'} marginTop={10}/>
+          <View style={{ marginBottom: 15 }}>
             <TCLabel title={'Other rules'} required={true} />
             <Text style={styles.responsibilityText}>
               Please, write down rules to the match that you need to inform the opposite player.
@@ -279,6 +263,17 @@ export default function CreateChallengeForm2({ navigation, route }) {
                   teamData: route.params.teamData,
                   body: {
                     ...route.params.body,
+                    gameRules: {
+                      winning_point_in_game: parseInt(pointsToWinGame),
+                      tiebreaker_apply_at: parseInt(playTie),
+                      apply_duece_in_set: applyDeuce,
+                      apply_tiebreaker_in_game: applyTie,
+                      apply_duece_in_game: applyDeuceWinGame,
+                      total_sets: parseInt(sets),
+                      game_count_to_win_set: parseInt(games),
+                      applyDueceInTieBreaker: applyDeuceTie,
+                      winning_point_in_tiebreaker: parseInt(points),
+                    },
                     special_rule: rules || specialRules,
                   },
                 });
@@ -286,6 +281,17 @@ export default function CreateChallengeForm2({ navigation, route }) {
                 navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...route.params.body,
+                    gameRules: {
+                      winning_point_in_game: parseInt(pointsToWinGame),
+                      tiebreaker_apply_at: parseInt(playTie),
+                      apply_duece_in_set: applyDeuce,
+                      apply_tiebreaker_in_game: applyTie,
+                      apply_duece_in_game: applyDeuceWinGame,
+                      total_sets: parseInt(sets),
+                      game_count_to_win_set: parseInt(games),
+                      applyDueceInTieBreaker: applyDeuceTie,
+                      winning_point_in_tiebreaker: parseInt(points),
+                    },
                     special_rule: specialRules || rules,
                   },
                 });
@@ -298,15 +304,15 @@ export default function CreateChallengeForm2({ navigation, route }) {
                     body: {
                       ...route.params.body,
                       gameRules: {
-                        winning_point_in_game: 4,
-                        tiebreaker_apply_at: 6,
-                        apply_duece_in_set: true,
-                        apply_tiebreaker_in_game: true,
-                        apply_duece_in_game: true,
-                        total_sets: 5,
-                        game_count_to_win_set: 6,
-                        applyDueceInTieBreaker: true,
-                        winning_point_in_tiebreaker: 7,
+                        winning_point_in_game: parseInt(pointsToWinGame),
+                        tiebreaker_apply_at: parseInt(playTie),
+                        apply_duece_in_set: applyDeuce,
+                        apply_tiebreaker_in_game: applyTie,
+                        apply_duece_in_game: applyDeuceWinGame,
+                        total_sets: parseInt(sets),
+                        game_count_to_win_set: parseInt(games),
+                        applyDueceInTieBreaker: applyDeuceTie,
+                        winning_point_in_tiebreaker: parseInt(points),
                       },
                       special_rule: specialRules,
                     },
