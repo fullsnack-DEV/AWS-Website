@@ -164,7 +164,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             <TCLabel title={`Match · ${bodyParams.sport}`} />
             <TouchableOpacity style={styles.editTouchArea} hitSlop={{
               top: 15, bottom: 15, left: 15, right: 15,
-            }} onPress={() => navigation.navigate('CreateChallengeForm1', { editable: true, body: bodyParams })}>
+            }} onPress={() => navigation.push('CreateChallengeForm1', { editable: true, body: bodyParams })}>
               <Image source={images.editSection} style={styles.editButton}/>
             </TouchableOpacity>
           </View>
@@ -243,7 +243,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             hitSlop={{
               top: 15, bottom: 15, left: 15, right: 15,
             }}
-            onPress={() => navigation.navigate('CreateChallengeForm1', { editable: true, body: bodyParams })}>
+            onPress={() => navigation.push('CreateChallengeForm1', { editable: true, body: bodyParams })}>
               <Image source={images.editSection} style={styles.editButton}/>
             </TouchableOpacity>
           </View>
@@ -291,7 +291,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           hitSlop={{
             top: 15, bottom: 15, left: 15, right: 15,
           }}
-          onPress={() => navigation.navigate('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
+          onPress={() => navigation.push('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
             <Image source={images.editSection} style={styles.editButton}/>
           </TouchableOpacity>
         </View>
@@ -310,7 +310,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           hitSlop={{
             top: 15, bottom: 15, left: 15, right: 15,
           }}
-            onPress={() => navigation.navigate('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
+            onPress={() => navigation.push('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
             <Image source={images.editSection} style={styles.editButton}/>
           </TouchableOpacity>
         </View>
@@ -324,7 +324,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
       </View>
       <TCGradientButton
         title={strings.nextTitle}
-        onPress={() => navigation.navigate('CreateChallengeForm5', {
+        onPress={() => navigation.push('CreateChallengeForm5', {
           teamData: route.params.teamData,
           body: {
             ...route.params.body,

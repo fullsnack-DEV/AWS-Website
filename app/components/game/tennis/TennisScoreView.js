@@ -18,6 +18,7 @@ let homeTeamMatchPoint = 0;
 let awayTeamMatchPoint = 0;
 export default function TennisScoreView({ scoreDataSource }) {
   useEffect(() => {
+    setsData = [];
     if (scoreDataSource?.scoreboard) {
       if (Object.keys(scoreDataSource?.scoreboard).length > 0) {
         const reversSets = scoreDataSource?.scoreboard?.sets?.reverse();
@@ -30,7 +31,7 @@ export default function TennisScoreView({ scoreDataSource }) {
         }
         calculateMatchScore();
         calculateGameScore();
-        console.log('scoreDataSource', setsData);
+        console.log('scoreDataSource', scoreDataSource?.scoreboard?.sets);
       } else {
         setsData = [{}, {}, {}];
         homeTeamGamePoint = '0';
@@ -91,15 +92,15 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint > awayTeamMatchPoint)
             || (index === 1
-              && scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count
-                > scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count)
+              && scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.home_team_win_count
+                > scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.away_team_win_count)
             || (index === 2 && homeTeamGamePoint > awayTeamGamePoint)
               ? [styles.player1Score, { color: colors.themeColor }]
               : styles.player1Score
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count ?? '0'))
+              && (scoreDataSource?.scoreboard?.sets[scoreDataSource?.scoreboard?.sets?.length - 1].home_team_win_count ?? '0'))
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
 
@@ -108,15 +109,15 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint < awayTeamMatchPoint)
             || (index === 1
-              && scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count
-                < scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count)
+              && scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.home_team_win_count
+                < scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.away_team_win_count)
             || (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
               ? [styles.player2Score, { color: colors.themeColor }]
               : styles.player2Score
           }>
           {(index === 0 && `${awayTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count ?? '0'))
+              && (scoreDataSource?.scoreboard?.sets[scoreDataSource?.scoreboard?.sets?.length - 1].away_team_win_count.toString() ?? '0'))
             || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
 
@@ -127,40 +128,21 @@ export default function TennisScoreView({ scoreDataSource }) {
   const calculateMatchScore = () => {
     homeTeamMatchPoint = 0
     awayTeamMatchPoint = 0
+    let homePoint = 0;
+    let awayPoint = 0;
     // eslint-disable-next-line no-unused-expressions
     scoreDataSource?.scoreboard?.sets.map((e) => {
-      let homePoint = 0;
-      let awayPoint = 0;
       if (e.winner) {
         if (e.winner === scoreDataSource.home_team.user_id) {
-          homePoint = +1;
+          homePoint += 1;
         } else {
-          awayPoint = +1;
+          awayPoint += 1;
         }
       }
       homeTeamMatchPoint = homePoint
       awayTeamMatchPoint = awayPoint
     });
   };
-  // const calculateMatchScore = () => {
-  //   setHomeMatchPoint(0);
-  //   setAwayMatchPoint(0);
-  //   gameObj?.scoreboard?.sets.map((e) => {
-  //     let homePoint = 0;
-  //     let awayPoint = 0;
-  //     if (e.winner) {
-  //       if (e.winner === gameObj.home_team.user_id) {
-  //         homePoint = +1;
-  //         // setHomeMatchPoint(homeTeamMatchPoint + 1)
-  //       } else {
-  //         awayPoint = +1;
-  //         // setAwayMatchPoint(awayTeamMatchPoint + 1)
-  //       }
-  //     }
-  //     setHomeMatchPoint(homePoint);
-  //     setAwayMatchPoint(awayPoint);
-  //   });
-  // };
   const calculateGameScore = () => {
     // eslint-disable-next-line array-callback-return
     if (

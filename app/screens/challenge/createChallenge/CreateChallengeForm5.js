@@ -112,6 +112,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
       if (!totalZero && !route?.params?.paymentMethod) {
         Alert.alert(strings.alertmessagetitle, strings.choosePayment);
       } else {
+        setloading(true);
         challengeBody.payment_method_type = 'card';
         challengeBody.currency_type = challengeBody.currency_type || 'CAD'
 
@@ -126,7 +127,6 @@ export default function CreateChallengeForm5({ navigation, route }) {
         } else {
           challengeBody.userChallenge = true;
         }
-        setloading(true);
 
         let entityID;
         let type;
@@ -154,7 +154,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
         )
           .then(() => {
             setloading(false);
-            navigation.navigate('ChallengeSentScreen', {
+            navigation.push('ChallengeSentScreen', {
               groupObj: route.params.teamData[0].group_id === entity.uid || route.params.teamData[0].user_id === entity.uid
                 ? route.params.teamData[1]
                 : route.params.teamData[0],

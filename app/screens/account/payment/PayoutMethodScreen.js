@@ -38,7 +38,7 @@ export default function PayoutMethodScreen({ navigation }) {
         urlString = `${urlString}&stripe_user[business_type]=individual&stripe_user[business_name]=TownsCup&`
         urlString = `${urlString}&stripe_user[first_name]=${encodeURI(authContext.entity.obj.group_name || authContext.entity.obj.first_name)}`
         urlString = `${urlString}&stripe_user[last_name]=${encodeURI(authContext.entity.obj.last_name || '')}`
-        urlString = `${urlString}&stripe_user[email]=${encodeURIComponent(authContext.entity.obj.email)}`
+        urlString = `${urlString}&stripe_user[email]=${encodeURIComponent(authContext.entity.role === ('team' || 'club') ? authContext.entity.auth.user.email : authContext.entity.obj.email)}`
         urlString = `${urlString}&stripe_user[country]=CA`
         setMerchantURL(urlString)
         console.log(urlString)
