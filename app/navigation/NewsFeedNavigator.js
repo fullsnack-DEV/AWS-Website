@@ -32,6 +32,7 @@ import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeS
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterAcceptDeclineScreen';
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
+import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -447,6 +448,22 @@ const NewsFeedNavigator = () => (
             borderBottomWidth: 0.3,
           },
         } }
+      />
+    <Stack.Screen
+          name="MembersProfileScreen"
+          component={ MembersProfileScreen }
+          options={ {
+            title: 'Member Profile',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
       />
   </Stack.Navigator>
 );

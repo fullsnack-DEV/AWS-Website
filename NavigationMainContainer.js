@@ -19,11 +19,19 @@ export default function NavigationMainContainer() {
   const resetApp = async () => {
     QBLogout();
     firebase.auth().signOut();
-    authContext.setEntity(null)
-    authContext.setUser(null);
     await Utility.clearStorage();
+    authContext.setUser(null);
+    authContext.setEntity(null)
     setAppInitialize(true);
   }
+
+  const getRefereshToken = () => new Promise((resolve, reject) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      unsubscribe()
+      const refreshedToken = await user.getIdTokenResult(true).catch(() => reject());
+      resolve(refreshedToken)
+    }, reject)
+  });
 
   const checkToken = async () => {
     const contextEntity = await Utility.getStorage('authContextEntity');
@@ -37,21 +45,18 @@ export default function NavigationMainContainer() {
         await authContext.setUser({ ...authContextUser });
         setAppInitialize(true);
       } else {
-        resetApp();
-        // await firebase.auth()?.currentUser?.getIdTokenResult()
-        //   .then(async (idTokenResult) => {
-        //     const token = {
-        //       token: idTokenResult.token,
-        //       expirationTime: idTokenResult.expirationTime,
-        //     };
-        //     contextEntity.auth.token = token;
-        //     await authContext.setEntity({ ...contextEntity });
-        //     await Utility.setStorage('authContextEntity', { ...contextEntity })
-        //     setAppInitialize(true);
-        //   }).catch((error) => {
-        //     console.log('Token Related: ', error);
-        //     resetApp();
-        //   });
+        getRefereshToken().then(async (refereshToken) => {
+          const token = {
+            token: refereshToken.token,
+            expirationTime: refereshToken.expirationTime,
+          };
+          contextEntity.auth.token = token;
+          await authContext.setEntity({ ...contextEntity });
+          await Utility.setStorage('authContextEntity', { ...contextEntity })
+          setAppInitialize(true);
+        }).catch(() => {
+          resetApp();
+        });
       }
     } else {
       setAppInitialize(true);

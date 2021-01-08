@@ -1,7 +1,6 @@
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
-// import auth from '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
 import * as Utility from '.';
 import { QBLogout } from './QuickBlox';
@@ -34,7 +33,17 @@ const resetApp = async (authContext) => {
   authContext.setUser(null);
   authContext.setEntity(null)
 }
-
+const getRefereshToken = () => new Promise((resolve, reject) => {
+  const unsubscribe = firebase
+    .auth()
+    .onAuthStateChanged(async (user) => {
+      unsubscribe()
+      const refreshedToken = await user
+        .getIdTokenResult(true)
+        .catch((err) => console.error(err))
+      resolve(refreshedToken)
+    }, reject)
+})
 const makeAPIRequest = async ({
   method,
   url,
@@ -49,10 +58,10 @@ const makeAPIRequest = async ({
     throw new Error('no-internet');
   } else {
     const entity = authContext?.entity;
-    const authToken = entity.auth.token.token;
+    let authToken = entity.auth.token.token;
     const currentDate = new Date();
     const expiryDate = new Date(entity.auth.token.expirationTime);
-    // const expiryDate = new Date('25 Dec 2020 14:30');
+    // const expiryDate = new Date('08 Jan 2021 09:13');
     console.log('EXP: ', expiryDate.getTime());
     if (expiryDate.getTime() > currentDate.getTime()) {
       return globalApiCall({
@@ -60,26 +69,24 @@ const makeAPIRequest = async ({
       })
     }
     console.log('Token Expired');
-    resetApp(authContext);
-    return true;
-    // return true;
-    // return new Promise((resolve, reject) => auth().currentUser.getIdTokenResult()
-    //   .then(async (idTokenResult) => {
-    //     authToken = idTokenResult.token;
-    //     const token = {
-    //       token: idTokenResult.token,
-    //       expirationTime: idTokenResult.expirationTime,
-    //     };
-    //     entity.auth.token = token;
-    //     await authContext.setEntity({ ...entity });
-    //     await Utility.setStorage('authContextEntity', { ...entity })
-    //     resolve(globalApiCall({
-    //       method, url, data, headers, params, responseType, authContext, authToken,
-    //     }))
-    //   }).catch((error) => {
-    //     console.log('Token Related: ', error);
-    //     reject(error);
-    //   }))
+    return new Promise((resolve, reject) => getRefereshToken()
+      .then(async (refereshToken) => {
+        authToken = refereshToken.token;
+        const token = {
+          token: refereshToken.token,
+          expirationTime: refereshToken.expirationTime,
+        };
+        entity.auth.token = token;
+        await authContext.setEntity({ ...entity });
+        await Utility.setStorage('authContextEntity', { ...entity })
+        resolve(globalApiCall({
+          method, url, data, headers, params, responseType, authContext, authToken,
+        }));
+      }).catch((error) => {
+        console.log('Token Related: ', error);
+        resetApp(authContext);
+        reject(error);
+      }))
   }
 });
 
