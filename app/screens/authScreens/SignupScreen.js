@@ -101,10 +101,11 @@ export default function SignupScreen({ navigation }) {
           headers: { Authorization: `Bearer ${token?.token}` },
         }
         const entity = {
-          auth: { token, user_id: user.uid },
+          auth: { user_id: user.uid },
           uid: user.uid,
           role: 'user',
         };
+        await authContext.setTokenData(token);
         if (profilePic) {
           const apiResponse = await apiCall(uploadImageConfig);
           const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];

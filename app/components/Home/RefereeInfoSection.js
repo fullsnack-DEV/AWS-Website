@@ -218,7 +218,7 @@ function RefereeInfoSection({
   const authContext = useContext(AuthContext)
   const [editPressTitle, setEditPressTitle] = useState(null);
   const [info, setInfo] = useState({
-    genderText: data.gender || 'Male',
+    genderText: data.gender || null,
     birthdayText: data.birthday ? new Date(data.birthday * 1000) : '',
     currentCity: `${data.city || ''}`,
   });
@@ -229,7 +229,7 @@ function RefereeInfoSection({
     }
   }, [data]);
   const [bioText, setBioText] = useState(selectRefereeData.descriptions);
-  const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates ? selectRefereeData.certificates : []);
+  const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates ?? []);
   const [refereeFeeCount, setRefereeFeeCount] = useState(selectRefereeData.fee || 0);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -428,6 +428,7 @@ function RefereeInfoSection({
     onSavePress(finalParams);
     setEditModal(false)
   }
+  console.log('CERTI:', certificatesData);
   return (
     <ScrollView style={styles.containerStyle}>
       <EditEventItem
@@ -457,7 +458,7 @@ function RefereeInfoSection({
       >
         <BasicInfoItem
           title={strings.gender}
-          value={data.gender}
+          value={data.gender ?? '-'}
         />
         <BasicInfoItem
           title={strings.yearOfBirth}
@@ -465,7 +466,7 @@ function RefereeInfoSection({
         />
         <BasicInfoItem
           title={strings.language}
-          value={languagesName}
+          value={languagesName === '' ? '-' : languagesName}
         />
         <BasicInfoItem
           title={strings.currrentCityTitle}
@@ -493,6 +494,7 @@ function RefereeInfoSection({
           ItemSeparatorComponent={() => <View style={{
             marginHorizontal: 5,
           }} />}
+          ListEmptyComponent={<Text style={styles.notAvailableTextStyle}>No certificates found</Text>}
           style={{ marginTop: 5, marginBottom: 15 }}
           renderItem={({ item: certItem }) => <CertificatesItemView
               certificateImage={{ uri: certItem.thumbnail }}
@@ -720,8 +722,9 @@ function RefereeInfoSection({
           </KeyboardAwareScrollView>}
         </SafeAreaView>
       </Modal>
+
       <EditRefereeCertificate
-            certifiData={certificatesData}
+            certifiData={certificatesData?.length ? certificatesData : []}
             onClose={() => setEditCertificateModal(false)}
             visible={editCertificateModal}
             onSavePress={(certiData) => {
@@ -730,6 +733,7 @@ function RefereeInfoSection({
               onTopEditSavePress([...certiData])
             }}
         />
+
       <Modal
         isVisible={editModal}
         backdropColor="black"
@@ -859,7 +863,7 @@ function RefereeInfoSection({
               headerTextStyle={{ fontSize: 16 }}
             >
               <FlatList
-                data={[...certificatesData, '0']}
+                data={certificatesData?.length ? [...certificatesData, '0'] : []}
                 scrollEnabled={true}
                 showsHorizontalScrollIndicator={ false }
                 renderItem={ ({ item, index }) => {
@@ -944,12 +948,7 @@ function RefereeInfoSection({
                 </View>}
                 ListFooterComponentStyle={{ marginTop: 20 }}
                 keyExtractor={(itemValue, index) => index.toString() }
-               />
-              {/* <FlatList */}
-              {/*    scrollEnabled={false} */}
-              {/*    data={certificatesData} */}
-              {/*    renderItem={renderCertificates} */}
-              {/* /> */}
+             />
             </EventItemRender>
           </KeyboardAwareScrollView>}
 
@@ -1288,6 +1287,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     alignSelf: 'center',
+  },
+  notAvailableTextStyle: {
+    marginLeft: wp(5),
+    fontFamily: fonts.RLight,
+    fontSize: 14,
+    color: colors.lightBlackColor,
   },
   checkboxImg: {
     width: wp('7%'),

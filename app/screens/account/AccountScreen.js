@@ -320,6 +320,7 @@ export default function AccountScreen({ navigation }) {
           QBLogout();
           await firebase.auth().signOut();
           await Utility.clearStorage();
+          await authContext.setTokenData(null);
           authContext.setUser(null);
           authContext.setEntity(null)
         },

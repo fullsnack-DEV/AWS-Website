@@ -25,6 +25,7 @@ import { searchVenue } from '../../../api/External';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts'
 import TCNoDataView from '../../../components/TCNoDataView';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function ChooseAddressScreen({ navigation, route }) {
   const authContext = useContext(AuthContext)
@@ -97,11 +98,11 @@ export default function ChooseAddressScreen({ navigation, route }) {
   );
 
   return (
-    <View style={ styles.mainContainer }>
-
-      <View style={ styles.sectionStyle }>
-        <Image source={ images.searchLocation } style={ styles.searchImg } />
-        <TextInput
+    <TCKeyboardView>
+      <View style={ styles.mainContainer }>
+        <View style={ styles.sectionStyle }>
+          <Image source={ images.searchLocation } style={ styles.searchImg } />
+          <TextInput
           autoCapitalize={'none'}
           autoCompleteType={'off'}
           textContentType={'none'}
@@ -112,14 +113,15 @@ export default function ChooseAddressScreen({ navigation, route }) {
           placeholderTextColor={ colors.lightgrayColor }
           onChangeText={ (text) => setSearchText(text) }
         />
-      </View>
+        </View>
 
-      {cityData.length > 0 ? <FlatList
+        {cityData.length > 0 ? <FlatList
         data={ cityData }
         renderItem={ renderItem }
         keyExtractor={(item, index) => index.toString()}
       /> : <TCNoDataView title={'No Venue Found'}/>}
-    </View>
+      </View>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
