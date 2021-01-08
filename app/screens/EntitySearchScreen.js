@@ -61,12 +61,17 @@ export default function EntitySearchScreen({ navigation }) {
     })
   }
 
-  const renderList = ({ item }) => (
-    <TouchableOpacity onPress={() => { onProfilePress(item) }}>
-      <TCProfileView name={item.group_name || `${item.first_name} ${item.last_name}`} location={item.entity_type} margin={20} onPressProfile/>
-      <TCThinDivider/>
-    </TouchableOpacity>
-  )
+  const renderList = ({ item }) => {
+    if (!(authContext?.entity?.uid === (item?.group_id || item?.user_id))) {
+      return (
+        <TouchableOpacity onPress={() => { onProfilePress(item) }}>
+          <TCProfileView name={item.group_name || `${item.first_name} ${item.last_name}`} location={item.entity_type} margin={20} onPressProfile/>
+          <TCThinDivider/>
+        </TouchableOpacity>
+      )
+    }
+    return null;
+  }
 
   return (
     <View>

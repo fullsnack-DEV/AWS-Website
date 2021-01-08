@@ -30,7 +30,8 @@ export default function UserHomeTopSection({
       return renderAddPlayInRole({ item })
     }
 
-    return (<UserInfoPlaysInItem title={item.sport_name}
+    return (<UserInfoPlaysInItem
+        title={item.sport_name}
         totalGames={item.totalGames}
         thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
         onPlayInPress={() => {

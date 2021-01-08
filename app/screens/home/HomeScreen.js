@@ -2051,6 +2051,7 @@ export default function HomeScreen({ navigation, route }) {
                 }
               />
               <PersonalSportsInfo
+                isAdmin={isAdmin}
                 data={currentUserData}
                 navigation={navigation}
                 selectPlayerData={selectPlayerData}

@@ -59,6 +59,7 @@ function PersonalSportsInfo({
   onSavePress,
   sportName,
   selectPlayerData,
+  isAdmin,
 }) {
   let latVal = null;
   let longVal = null;
@@ -142,6 +143,7 @@ function PersonalSportsInfo({
   return (
     <ScrollView style={styles.containerStyle}>
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.bio}
         onEditPress={() => {
           setEditPressTitle(strings.bio);
@@ -162,6 +164,7 @@ function PersonalSportsInfo({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.basicinfotitle}
         onEditPress={() => {
           setEditPressTitle(strings.basicinfotitle);
@@ -198,6 +201,7 @@ function PersonalSportsInfo({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.gameFee}
         subTitle={strings.perHour}
         onEditPress={() => {
@@ -211,6 +215,7 @@ function PersonalSportsInfo({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.ntrpTitle}
         subTitle={strings.ntrpSubTitle}
         onEditPress={() => {
@@ -224,6 +229,7 @@ function PersonalSportsInfo({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.homePlaceTitle}
         onEditPress={() => {
           setEditPressTitle(strings.homePlaceTitle);
@@ -249,6 +255,7 @@ function PersonalSportsInfo({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.teamstitle}
         onEditPress={() => {
           setPrivacyModal(true);
@@ -273,6 +280,7 @@ function PersonalSportsInfo({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.clubstitle}
         onEditPress={() => {
           setPrivacyModal(true);
