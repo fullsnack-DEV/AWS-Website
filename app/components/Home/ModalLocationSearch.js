@@ -15,7 +15,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import Separator from '../Separator';
@@ -47,7 +46,7 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
   };
 
   const renderItem = ({ item, index }) => (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
             style={ styles.listItem }
             onPress={ () => {
               onClose();
@@ -56,7 +55,7 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
       <Text style={ styles.cityList }>{cityData[index].description}</Text>
 
       <Separator />
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
   return (
     <Modal

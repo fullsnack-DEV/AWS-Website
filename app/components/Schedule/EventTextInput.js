@@ -19,14 +19,15 @@ function EventTextInput({
   displayFirstTitle,
   keyboardType,
   containerStyle,
+  textInputStyle,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {displayFirstTitle && <Text style={styles.valueAfterTextStyle}>{valueFirstTitle}</Text>}
         <TextInput
           placeholder={placeholder}
-          style={styles.textInputStyle}
+          style={{ ...styles.textInputStyle, ...textInputStyle }}
           onChangeText={onChangeText}
           value={value}
           multiline={multiline}
@@ -41,6 +42,7 @@ function EventTextInput({
 const styles = StyleSheet.create({
   containerStyle: {
     alignSelf: 'center',
+    alignItems: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     color: colors.lightBlackColor,

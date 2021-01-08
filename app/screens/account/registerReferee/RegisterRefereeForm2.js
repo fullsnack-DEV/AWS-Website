@@ -42,7 +42,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
     setloading(true);
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      console.log('Body params of referee:', bodyParams);
+      bodyParams.referee_data[0].certificates.pop();
       bodyParams.referee_data[0].fee = matchFee;
       bodyParams.referee_data[0].is_published = true;
       if (selected === 0) {
@@ -53,7 +53,6 @@ export default function RegisterRefereeForm2({ navigation, route }) {
         bodyParams.referee_data[0].cancellation_policy = 'flexible';
       }
       const allData = { referee_data: [...bodyParams?.referee_data, ...currentRefereeData] }
-
       patchRegisterRefereeDetails(allData, authContext).then((res) => {
         const entity = authContext.entity
         entity.auth.user = res.payload;

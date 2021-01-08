@@ -41,12 +41,9 @@ const styles = StyleSheet.create({
     elevation: 3,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 40,
-
     paddingHorizontal: 15,
     paddingRight: 30,
-
-    paddingVertical: 12,
+    paddingVertical: 10,
 
     width: '92%',
   },

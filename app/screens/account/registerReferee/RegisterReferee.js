@@ -252,6 +252,14 @@ export default function RegisterReferee({ navigation }) {
       Alert.alert('Towns Cup', 'Sports cannot be blank');
       return false;
     }
+
+    const findCertiTitleIndex = certificate?.findIndex((item) => item?.title && (!item?.thumbnail || !item?.url))
+    if (findCertiTitleIndex !== -1) {
+      setError({ certificate: findCertiTitleIndex })
+      Alert.alert('Towns Cup', 'Add certificate')
+      return false;
+    }
+
     const findIndex = certificate?.findIndex((item) => !item?.title && (item?.thumbnail || item?.url))
     if (findIndex !== -1) {
       setError({ certificate: findIndex })
@@ -409,13 +417,14 @@ export default function RegisterReferee({ navigation }) {
               onPress={() => {
                 const isValid = checkValidation();
                 if (isValid) {
-                  certificate.pop();
                   let bodyParams = {};
                   const referee_data = [];
                   bodyParams.sport_name = sports.charAt(0).toUpperCase() + sports.slice(1);
                   bodyParams.descriptions = description;
-                  bodyParams.language = selectedLanguages;
-                  bodyParams.certificate = certificate;
+                  const languageList = [];
+                  if (selectedLanguages?.length) selectedLanguages.map((item) => languageList.push({ language_name: item }))
+                  bodyParams.language = languageList;
+                  bodyParams.certificates = certificate;
                   referee_data[0] = bodyParams;
                   bodyParams = { referee_data };
                   navigation.navigate('RegisterRefereeForm2', { bodyParams, refereesData });

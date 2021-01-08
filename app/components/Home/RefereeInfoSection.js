@@ -5,7 +5,16 @@ import React, {
   useState,
 } from 'react';
 import {
-  StyleSheet, View, Text, ScrollView, FlatList, SafeAreaView, TouchableOpacity, Image, Alert,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  TouchableWithoutFeedback,
+  FlatList,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+  Alert,
 } from 'react-native';
 import moment from 'moment';
 import Modal from 'react-native-modal';
@@ -17,8 +26,8 @@ import {
 } from 'react-native-responsive-screen';
 import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ImagePicker from 'react-native-image-crop-picker';
+import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -39,6 +48,8 @@ import uploadImages from '../../utils/imageAction';
 import AuthContext from '../../auth/context';
 import TCSearchBox from '../TCSearchBox';
 import TCTags from '../TCTags';
+import ModalLocationSearch from './ModalLocationSearch';
+import EditRefereeCertificate from './EditRefereeCertificate';
 
 const privacy_Data = [
   {
@@ -211,6 +222,12 @@ function RefereeInfoSection({
     birthdayText: data.birthday ? new Date(data.birthday * 1000) : '',
     currentCity: `${data.city || ''}`,
   });
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (data?.user_id === authContext?.entity?.uid) {
+      setIsAdmin(true);
+    }
+  }, [data]);
   const [bioText, setBioText] = useState(selectRefereeData.descriptions);
   const [certificatesData, setCertificatesData] = useState(selectRefereeData.certificates ? selectRefereeData.certificates : []);
   const [refereeFeeCount, setRefereeFeeCount] = useState(selectRefereeData.fee || 0);
@@ -224,6 +241,7 @@ function RefereeInfoSection({
   const [currentCityPrivacy, setCurrentCityPrivacy] = useState(currentCity_privacy);
   const [dateModalVisible, setDateModalVisible] = useState(false);
   const [selectedCerti, setSelectedCerti] = useState([]);
+  const [editCertificateModal, setEditCertificateModal] = useState(false);
   const [selected, setSelected] = useState(() => {
     if (selectRefereeData.cancellation_policy === 'flexible') {
       return 2;
@@ -236,6 +254,8 @@ function RefereeInfoSection({
     }
     return 0;
   });
+
+  const [searchLocationModal, setSearchLocationModal] = useState(false);
   const [addCertiTitle, setAddCertiTitle] = useState('');
   const [searchLanguageText, setSearchLanguageText] = useState('');
   const [languageList, setLanguageList] = useState(language_list);
@@ -247,9 +267,9 @@ function RefereeInfoSection({
           if (default_lang.language_name === listValue.title) {
             listValue.isChecked = true;
           }
-          return null;
+          return [];
         })
-        return null;
+        return [];
       })
       return languageList;
     }
@@ -361,9 +381,57 @@ function RefereeInfoSection({
     });
     setLanguageList([...languageList]);
   };
+
+  const onTopEditSavePress = (certiData = null) => {
+    const langNameItem = {
+      language_name: '',
+    };
+    const langParams = [];
+    selectedLanguage.map((lang) => {
+      langNameItem.language_name = lang.title;
+      langParams.push({ ...langNameItem });
+      return null;
+    })
+
+    let policyValue = 'strict';
+    if (selected === 1) {
+      policyValue = 'moderate';
+    } else if (selected === 2) {
+      policyValue = 'flexible';
+    } else {
+      policyValue = 'strict';
+    }
+
+    const refereeEditParams = {
+      cancellation_policy: policyValue,
+      certificates: certiData ?? certificatesData,
+      descriptions: bioText,
+      fee: refereeFeeCount,
+      is_published: true,
+      language: langParams,
+      sport_name: selectRefereeData.sport_name,
+    }
+    const newDataList = [];
+    data.referee_data.forEach((item) => {
+      if (item.sport_name?.toLowerCase() === selectRefereeData.sport_name?.toLowerCase()) {
+        newDataList.push(refereeEditParams);
+      } else {
+        newDataList.push(item);
+      }
+    });
+    const finalParams = {
+      referee_data: newDataList,
+      gender: info.genderText,
+      birthday: (info.birthdayText / 1000),
+      city: info.currentCity,
+    };
+    onSavePress(finalParams);
+    setEditModal(false)
+  }
   return (
     <ScrollView style={styles.containerStyle}>
       <EditEventItem
+        editButtonVisible={isAdmin}
         title={strings.bio}
         onEditPress={() => {
           setEditPressTitle(strings.bio);
@@ -378,6 +446,7 @@ function RefereeInfoSection({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+          editButtonVisible={isAdmin}
         title={strings.basicinfotitle}
         onEditPress={() => {
           setEditPressTitle(strings.basicinfotitle);
@@ -406,6 +475,7 @@ function RefereeInfoSection({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+          editButtonVisible={isAdmin}
         title={strings.certificateTitle}
         onEditPress={() => {
           setEditPressTitle(strings.certificateTitle);
@@ -435,6 +505,7 @@ function RefereeInfoSection({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+          editButtonVisible={isAdmin}
         title={strings.refereeFee}
         subTitle={strings.perHour}
         onEditPress={() => {
@@ -448,6 +519,7 @@ function RefereeInfoSection({
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
+          editButtonVisible={isAdmin}
         title={strings.cancellationPolicy}
         onEditPress={() => {
           setEditPressTitle(strings.cancellationPolicy);
@@ -532,7 +604,7 @@ function RefereeInfoSection({
               keyExtractor={ (item, index) => index.toString() }
             />
           </EventItemRender>}
-          {editPressTitle === strings.basicinfotitle && <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+          {editPressTitle === strings.basicinfotitle && <KeyboardAwareScrollView enableOnAndroid={false} showsVerticalScrollIndicator={false}>
             <EventItemRender
               title={editPressTitle === strings.basicinfotitle && strings.basicInfoPrivacyTitle}
               containerStyle={{ marginTop: 10 }}
@@ -648,7 +720,16 @@ function RefereeInfoSection({
           </KeyboardAwareScrollView>}
         </SafeAreaView>
       </Modal>
-
+      <EditRefereeCertificate
+            certifiData={certificatesData}
+            onClose={() => setEditCertificateModal(false)}
+            visible={editCertificateModal}
+            onSavePress={(certiData) => {
+              setEditCertificateModal(false);
+              setCertificatesData([...certiData]);
+              onTopEditSavePress([...certiData])
+            }}
+        />
       <Modal
         isVisible={editModal}
         backdropColor="black"
@@ -686,56 +767,13 @@ function RefereeInfoSection({
               </View>
             }
             rightComponent={
-              <TouchableOpacity onPress={() => {
-                const langNameItem = {
-                  language_name: '',
-                };
-                const langParams = [];
-                selectedLanguage.map((lang) => {
-                  langNameItem.language_name = lang.title;
-                  langParams.push({ ...langNameItem });
-                  return null;
-                })
-
-                let policyValue = 'strict';
-                if (selected === 1) {
-                  policyValue = 'moderate';
-                } else if (selected === 2) {
-                  policyValue = 'flexible';
-                } else {
-                  policyValue = 'strict';
-                }
-
-                const refereeEditParams = {
-                  cancellation_policy: policyValue,
-                  certificates: certificatesData,
-                  descriptions: bioText,
-                  fee: refereeFeeCount,
-                  is_published: true,
-                  language: langParams,
-                  sport_name: selectRefereeData.sport_name,
-                }
-                const newDataList = [];
-                data.referee_data.forEach((item) => {
-                  if (item.sport_name?.toLowerCase() === selectRefereeData.sport_name?.toLowerCase()) {
-                    newDataList.push(refereeEditParams);
-                  } else {
-                    newDataList.push(item);
-                  }
-                });
-                const finalParams = {
-                  referee_data: newDataList,
-                  gender: info.genderText,
-                  birthday: (info.birthdayText / 1000),
-                };
-                onSavePress(finalParams);
-                setEditModal(false)
-              }}>
+              <TouchableOpacity onPress={onTopEditSavePress}>
                 <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
               </TouchableOpacity>
             }
           />
           {editPressTitle === strings.bio && <EventTextInput
+              textInputStyle={{ height: 150 }}
             value={bioText}
             multiline={true}
             onChangeText={(text) => {
@@ -755,7 +793,7 @@ function RefereeInfoSection({
                     { label: 'Female', value: 'Female' },
                   ]}
                   placeholder={'Select Gender'}
-                  value={info.genderText}
+                  value={info?.genderText ?? '-'}
                   onValueChange={(value) => {
                     setInfo({ ...info, genderText: value });
                   }}
@@ -767,7 +805,7 @@ function RefereeInfoSection({
               containerStyle={{ marginTop: 15 }}
             >
               <BirthSelectItem
-                title={moment(info.birthdayText).format('YYYY')}
+                title={info?.birthdayText ? moment(info.birthdayText).format('YYYY') : '-'}
                 onItemPress={() => setDateModalVisible(!dateModalVisible)}
               />
               <DateTimePickerView
@@ -784,12 +822,24 @@ function RefereeInfoSection({
               containerStyle={{ marginTop: 15 }}
             >
               <BirthSelectItem
-                title={languagesName}
+                title={selectedLanguage?.length > 0 ? selectedLanguage.map((item, index) => {
+                  let tit = item?.title;
+                  if (index !== selectedLanguage?.length - 1) tit += ', '
+                  return tit;
+                }) : '-'}
                 onItemPress={() => {
                   editLanguage();
                 }}
               />
             </EventItemRender>
+            <ModalLocationSearch
+                visible={searchLocationModal}
+                onClose={() => setSearchLocationModal(false)}
+                onSelect={(location) => {
+                  const city = location.terms?.[0]?.value;
+                  setInfo({ ...info, currentCity: city });
+                }}
+            />
             <EventItemRender
               title={strings.currrentCityTitle}
               containerStyle={{ marginTop: 15 }}
@@ -797,13 +847,13 @@ function RefereeInfoSection({
               <BirthSelectItem
                 title={info.currentCity}
                 onItemPress={() => {
-                  // onItemPress();
+                  setSearchLocationModal(!searchLocationModal);
                 }}
               />
             </EventItemRender>
           </View>}
 
-          {editPressTitle === strings.certificateTitle && <KeyboardAwareScrollView>
+          {editPressTitle === strings.certificateTitle && <KeyboardAwareScrollView enableOnAndroid={false}>
             <EventItemRender
               title={strings.addCertiMainTitle}
               headerTextStyle={{ fontSize: 16 }}
@@ -839,7 +889,11 @@ function RefereeInfoSection({
                     <View style={{ marginTop: 15 }}>
                       <EventTextInput
                         value={item.title}
-                        onChangeText={() => {}}
+                        onChangeText={(text) => {
+                          const certiData = JSON.parse(JSON.stringify(certificatesData));
+                          certiData[index].title = text;
+                          setCertificatesData([...certiData]);
+                        }}
                         containerStyle={{ alignSelf: 'flex-start', width: wp(92), marginLeft: 2 }}
                       />
                       <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -890,7 +944,12 @@ function RefereeInfoSection({
                 </View>}
                 ListFooterComponentStyle={{ marginTop: 20 }}
                 keyExtractor={(itemValue, index) => index.toString() }
-              />
+               />
+              {/* <FlatList */}
+              {/*    scrollEnabled={false} */}
+              {/*    data={certificatesData} */}
+              {/*    renderItem={renderCertificates} */}
+              {/* /> */}
             </EventItemRender>
           </KeyboardAwareScrollView>}
 
@@ -916,9 +975,9 @@ function RefereeInfoSection({
             <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
                 {selected === 0 ? (
-                  <Image source={ images.radioSelect } style={ styles.radioImage } />
+                  <FastImage source={ images.radioSelect } style={ styles.radioImage } />
                 ) : (
-                  <Image
+                  <FastImage
                     source={ images.radioUnselect }
                     style={ styles.unSelectRadioImage }
                   />
@@ -929,9 +988,9 @@ function RefereeInfoSection({
             <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
                 {selected === 1 ? (
-                  <Image source={ images.radioSelect } style={ styles.radioImage } />
+                  <FastImage source={ images.radioSelect } style={ styles.radioImage } />
                 ) : (
-                  <Image
+                  <FastImage
                     source={ images.radioUnselect }
                     style={ styles.unSelectRadioImage }
                   />
@@ -942,9 +1001,9 @@ function RefereeInfoSection({
             <View style={ styles.radioButtonView }>
               <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
                 {selected === 2 ? (
-                  <Image source={ images.radioSelect } style={ styles.radioImage } />
+                  <FastImage source={ images.radioSelect } style={ styles.radioImage } />
                 ) : (
-                  <Image
+                  <FastImage
                     source={ images.radioUnselect }
                     style={ styles.unSelectRadioImage }
                   />
@@ -1052,7 +1111,7 @@ function RefereeInfoSection({
                 <TouchableOpacity onPress={() => {
                   setEditLanguageModal(false)
                 }}>
-                  <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
+                  <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Done'}</Text>
                 </TouchableOpacity>
               }
             />
@@ -1088,6 +1147,7 @@ function RefereeInfoSection({
             </View>
           </SafeAreaView>
         </Modal>
+
       </Modal>
 
       <ActionSheet
@@ -1103,14 +1163,17 @@ function RefereeInfoSection({
         ]}
         cancelButtonIndex={2}
         onPress={(index) => {
-          if (index === 0 && (
-            editPressTitle === strings.bio
-            || editPressTitle === strings.basicinfotitle
-            || editPressTitle === strings.certificateTitle
-            || editPressTitle === strings.refereeFee
-            || editPressTitle === strings.cancellationPolicy
-          )) {
-            editInfoModal();
+          if (index === 0) {
+            if (
+              editPressTitle === strings.bio
+                || editPressTitle === strings.basicinfotitle
+                || editPressTitle === strings.refereeFee
+                || editPressTitle === strings.cancellationPolicy
+            ) {
+              editInfoModal();
+            } else if (editPressTitle === strings.certificateTitle) {
+              setEditCertificateModal(true);
+            }
           } else if (index === 1 && (
             editPressTitle === strings.bio
             || editPressTitle === strings.basicinfotitle

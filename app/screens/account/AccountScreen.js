@@ -297,7 +297,7 @@ export default function AccountScreen({ navigation }) {
         QBconnectAndSubscribe(currentEntity).then((qbRes) => {
           setloading(false)
           if (qbRes?.error) {
-            Alert('Towns Cup', qbRes?.error)
+            console.log('Towns Cup', qbRes?.error)
           }
         }).catch(() => {
           setloading(false)
@@ -319,9 +319,9 @@ export default function AccountScreen({ navigation }) {
         onPress: async () => {
           QBLogout();
           await firebase.auth().signOut();
-          authContext.setEntity(null)
-          authContext.setUser(null);
           await Utility.clearStorage();
+          authContext.setUser(null);
+          authContext.setEntity(null)
         },
       },
       {
