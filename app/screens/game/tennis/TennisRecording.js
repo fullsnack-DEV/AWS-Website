@@ -92,7 +92,7 @@ export default function TennisRecording({ navigation, route }) {
       console.log('GAME DATA:', JSON.stringify(route.params.gameDetail));
       setloading(false);
       setTimelineTimer('00 : 00 : 00');
-      // setGameObj(route.params.gameDetail)
+      // setGameObj(route?.params?.gameDetail)
     }
   }, [isFocused]);
 
@@ -104,7 +104,7 @@ export default function TennisRecording({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation, date, gameObj]);
+  }, [navigation, date, gameObj, homeTeamGamePoint, awayTeamGamePoint]);
 
   useFocusEffect(() => {
     startStopTimerTimeline()
@@ -137,24 +137,26 @@ export default function TennisRecording({ navigation, route }) {
     }
   };
   const defineServingTeamID = () => {
-    if (gameObj.game_inprogress && gameObj.game_inprogress.serving_team_id) {
-      setServingTeamID(gameObj.game_inprogress.serving_team_id);
+    if (gameObj?.game_inprogress && gameObj?.game_inprogress?.serving_team_id) {
+      setServingTeamID(gameObj?.game_inprogress?.serving_team_id);
     } else {
-      setServingTeamID(gameObj.home_team.user_id);
+      setServingTeamID(gameObj?.home_team?.user_id);
     }
   };
   const calculateMatchScore = () => {
     setHomeMatchPoint(0);
     setAwayMatchPoint(0);
-    gameObj?.scoreboard?.sets.map((e) => {
-      let homePoint = 0;
-      let awayPoint = 0;
-      if (e.winner) {
-        if (e.winner === gameObj.home_team.user_id) {
-          homePoint = +1;
+    let homePoint = 0;
+    let awayPoint = 0;
+    console.log('SETS::->', gameObj?.scoreboard?.sets);
+    (gameObj?.scoreboard?.sets || []).map((e) => {
+      if (e?.winner) {
+        if (e.winner === gameObj?.home_team?.user_id) {
+          homePoint += 1;
+          console.log('SETS NO::->', homePoint);
           // setHomeMatchPoint(homeTeamMatchPoint + 1)
         } else {
-          awayPoint = +1;
+          awayPoint += 1;
           // setAwayMatchPoint(awayTeamMatchPoint + 1)
         }
       }
@@ -170,10 +172,6 @@ export default function TennisRecording({ navigation, route }) {
     ) {
       setHomeTeamGamePoint('0');
       setAwayTeamGamePoint('0');
-      console.log(
-        'GAME SCORE:',
-        `HOME:${homeTeamGamePoint}AWAY:${awayTeamGamePoint}`,
-      );
     } else {
       setHomeTeamGamePoint(
         gameObj?.scoreboard?.game_inprogress?.home_team_point,
@@ -316,6 +314,7 @@ export default function TennisRecording({ navigation, route }) {
   const startStopTimerTimeline = () => {
     clearInterval(timer);
     clearInterval(timerForTimeline);
+    console.log('GAME OBJ::->', gameObj);
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
@@ -390,10 +389,10 @@ export default function TennisRecording({ navigation, route }) {
       .then((response) => {
         console.log('GAME RESPONSE::', JSON.stringify(response.payload));
         setGameObj(response.payload);
-        if (entity === gameObj.home_team.group_id) {
-          setActionByTeamID(gameObj.home_team.group_id);
+        if (entity === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)) {
+          setActionByTeamID(gameObj?.home_team?.group_id || gameObj?.home_team?.user_id);
         } else {
-          setActionByTeamID(gameObj.away_team.group_id);
+          setActionByTeamID(gameObj?.away_team?.group_id || gameObj?.away_team?.user_id);
         }
         calculateMatchScore();
         calculateGameScore();
@@ -414,7 +413,7 @@ export default function TennisRecording({ navigation, route }) {
     setloading(true);
     decreaseGameScore(teamId, gameId, authContext)
       .then((response) => {
-        if (selectedTeam === gameObj.home_team.group_id) {
+        if (selectedTeam === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)) {
           setGameObj({
             ...gameObj,
             home_team_goal: gameObj.home_team_goal - 1,
@@ -443,7 +442,7 @@ export default function TennisRecording({ navigation, route }) {
         setloading(false);
         setDate();
         if (lastVerb === GameVerb.Goal) {
-          if (selectedTeam === gameObj.home_team.group_id) {
+          if (selectedTeam === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)) {
             setGameObj({
               ...gameObj,
               home_team_goal: gameObj.home_team_goal + 1,
@@ -671,8 +670,8 @@ export default function TennisRecording({ navigation, route }) {
                         style={styles.playerProfile}
                       />
                       <Text style={styles.selectedPlayerNameText}>
-                        {gameObj.home_team.first_name}{' '}
-                        {gameObj.home_team.last_name}
+                        {gameObj?.home_team?.first_name}{' '}
+                        {gameObj?.home_team?.last_name}
                       </Text>
                     </LinearGradient>
                   ) : (
@@ -686,8 +685,8 @@ export default function TennisRecording({ navigation, route }) {
                         style={styles.playerProfile}
                       />
                       <Text style={styles.playerNameText}>
-                        {gameObj.home_team.first_name}{' '}
-                        {gameObj.home_team.last_name}
+                        {gameObj?.home_team?.first_name}{' '}
+                        {gameObj?.home_team?.last_name}
                       </Text>
                     </View>
                   )}
@@ -745,10 +744,11 @@ export default function TennisRecording({ navigation, route }) {
                   <TouchableWithoutFeedback
                     onPress={() => {
                       if (
-                        gameObj.status === GameStatus.accepted
-                        || gameObj.status === GameStatus.reset
+                        gameObj.status === (GameStatus.accepted || GameStatus.reset)
                       ) {
                         Alert.alert('Game not started yet.');
+                      } else if (gameObj.status === GameStatus.paused) {
+                        Alert.alert('Game is paused.');
                       } else if (gameObj.status === GameStatus.ended) {
                         Alert.alert('Game is ended.');
                       } else if (!selectedTeam) {
@@ -786,12 +786,14 @@ export default function TennisRecording({ navigation, route }) {
                         || gameObj.status === GameStatus.reset
                       ) {
                         Alert.alert('Game not started yet.');
+                      } else if (gameObj.status === GameStatus.paused) {
+                        Alert.alert('Game is paused.');
                       } else if (gameObj.status === GameStatus.ended) {
                         Alert.alert('Game is ended.');
                       } else if (!selectedTeam) {
                         Alert.alert('Select Team');
                       } else if (
-                        selectedTeam === gameObj.home_team.group_id
+                        selectedTeam === (gameObj.home_team.group_id || gameObj.home_team.user_id)
                         && gameObj.home_team_goal <= 0
                       ) {
                         Alert.alert('Goal not added yet.');

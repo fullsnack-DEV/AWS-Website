@@ -483,9 +483,9 @@ export default function CreateChallengeForm1({ navigation, route }) {
             console.log('Before Body params::', bodyParams);
             if (checkValidation()) {
               if (route && route.params && route.params.editable) {
-                navigation.navigate('CreateChallengeForm4', { teamData: teams, body: configureParams() })
+                navigation.push('CreateChallengeForm4', { teamData: teams, body: configureParams() })
               } else if (editableAlter) {
-                navigation.navigate('EditChallenge', {
+                navigation.push('EditChallenge', {
                   challengeObj: {
                     ...bodyParams,
                     home_team: teams[0],
@@ -496,7 +496,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   },
                 })
               } else {
-                navigation.navigate('CreateChallengeForm2', { teamData: teams, body: configureParams() })
+                navigation.push('CreateChallengeForm2', { teamData: teams, body: configureParams() })
               }
             }
           }}

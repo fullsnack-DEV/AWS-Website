@@ -30,15 +30,15 @@ export default function CreateChallengeForm2({ navigation, route }) {
   const isFocused = useIsFocused();
   const [editableAlter, setEditableAlter] = useState(false);
   const [userChallenge, setUserChallenge] = useState(false);
-  const [sets, setSets] = useState(`${route?.params?.body?.gameRules?.total_sets}` || '5');
-  const [games, setGames] = useState(`${route?.params?.body?.gameRules?.game_count_to_win_set}` || '1');
+  const [sets, setSets] = useState(route?.params?.body?.gameRules ? `${route?.params?.body?.gameRules?.total_sets}` : '5');
+  const [games, setGames] = useState(route?.params?.body?.gameRules ? `${route?.params?.body?.gameRules?.game_count_to_win_set}` : '1');
   const [applyDeuce, setApplyDeuce] = useState(route?.params?.body?.gameRules?.apply_duece_in_set ?? true);
   const [applyTie, setApplyTie] = useState(route?.params?.body?.gameRules?.apply_tiebreaker_in_game ?? true);
   const [applyDeuceTie, setApplyDeuceTie] = useState(route?.params?.body?.gameRules?.applyDueceInTieBreaker ?? true);
   const [applyDeuceWinGame, setApplyDeuceWinGame] = useState(route?.params?.body?.gameRules?.apply_duece_in_game ?? true);
-  const [points, setPoints] = useState(`${route?.params?.body?.gameRules?.winning_point_in_tiebreaker}` || '7');
-  const [pointsToWinGame, setPointsToWinGame] = useState(`${route?.params?.body?.gameRules?.winning_point_in_game}` || '4')
-  const [playTie, setPlayTie] = useState(`${route?.params?.body?.gameRules?.tiebreaker_apply_at}` || '8');
+  const [points, setPoints] = useState(route?.params?.body?.gameRules ? `${route?.params?.body?.gameRules?.winning_point_in_tiebreaker}` : '7');
+  const [pointsToWinGame, setPointsToWinGame] = useState(route?.params?.body?.gameRules ? `${route?.params?.body?.gameRules?.winning_point_in_game}` : '4')
+  const [playTie, setPlayTie] = useState(route?.params?.body?.gameRules ? `${route?.params?.body?.gameRules?.tiebreaker_apply_at}` : '8');
 
   useEffect(() => {
     if (route && route.params && route.params.editableAlter && route.params.body) {
@@ -259,7 +259,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                 && route.params.editable
                 && route.params.body
               ) {
-                navigation.navigate('CreateChallengeForm4', {
+                navigation.push('CreateChallengeForm4', {
                   teamData: route.params.teamData,
                   body: {
                     ...route.params.body,
@@ -278,7 +278,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                   },
                 });
               } else if (editableAlter === true) {
-                navigation.navigate('EditChallenge', {
+                navigation.push('EditChallenge', {
                   challengeObj: {
                     ...route.params.body,
                     gameRules: {
@@ -299,7 +299,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                 console.log('Normal  form filling');
                 if (userChallenge) {
                   console.log('User challenge');
-                  navigation.navigate('CreateChallengeForm3', {
+                  navigation.push('CreateChallengeForm3', {
                     teamData: route.params.teamData,
                     body: {
                       ...route.params.body,
@@ -318,7 +318,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                     },
                   });
                 } else {
-                  navigation.navigate('CreateChallengeForm3', {
+                  navigation.push('CreateChallengeForm3', {
                     teamData: route.params.teamData,
                     body: {
                       ...route.params.body,
