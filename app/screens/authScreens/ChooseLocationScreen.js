@@ -25,6 +25,7 @@ import fonts from '../../Constants/Fonts'
 
 import { searchGroups } from '../../api/Groups';
 import { searchLocations } from '../../api/External';
+import TCKeyboardView from '../../components/TCKeyboardView';
 
 export default function ChooseLocationScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -93,33 +94,35 @@ export default function ChooseLocationScreen({ navigation }) {
   );
 
   return (
-    <View style={ styles.mainContainer }>
-      {/* <Loader visible={getTeamListing.loading} /> */}
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
-      <Text style={ styles.LocationText }>{strings.locationText}</Text>
+    <TCKeyboardView>
+      <View style={ styles.mainContainer }>
+        {/* <Loader visible={getTeamListing.loading} /> */}
+        <Image style={ styles.background } source={ images.orangeLayer } />
+        <Image style={ styles.background } source={ images.bgImage } />
+        <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
-      <View style={ styles.sectionStyle }>
-        <Image source={ images.searchLocation } style={ styles.searchImg } />
-        <TextInput
+        <View style={ styles.sectionStyle }>
+          <Image source={ images.searchLocation } style={ styles.searchImg } />
+          <TextInput
           style={ styles.textInput }
           placeholder={ strings.locationPlaceholderText }
           clearButtonMode="always"
           placeholderTextColor={ colors.themeColor }
           onChangeText={ (text) => setSearchText(text) }
         />
-      </View>
-      {noData && (
-        <Text style={ styles.noDataText }>
-          Please enter 3 characters to see cities
-        </Text>
-      )}
-      <FlatList
+        </View>
+        {noData && (
+          <Text style={ styles.noDataText }>
+            Please enter 3 characters to see cities
+          </Text>
+        )}
+        <FlatList
         data={ cityData }
         renderItem={ renderItem }
         keyExtractor={(index) => index.toString()}
       />
-    </View>
+      </View>
+    </TCKeyboardView>
   );
 }
 

@@ -2,7 +2,7 @@ import {
   Alert, FlatList, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import React, { useContext, useEffect, useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -21,7 +21,7 @@ import AuthContext from '../../auth/context';
 const EditRefereeCertificate = ({
   visible,
   onClose,
-  certifiData,
+  certifiData = [],
   onSavePress,
 }) => {
   const authContext = useContext(AuthContext);
@@ -30,7 +30,11 @@ const EditRefereeCertificate = ({
   const [validationError, setError] = useState(null);
 
   useEffect(() => {
-    setCertificatesData([...certifiData, {}]);
+    if (certifiData?.length) {
+      setCertificatesData([...certifiData, {}]);
+    } else {
+      setCertificatesData([{}]);
+    }
   }, [certifiData]);
 
   const checkValidation = () => {
@@ -183,16 +187,16 @@ const EditRefereeCertificate = ({
 
   return (
     <Modal
-            isVisible={visible}
-            backdropColor="black"
-            style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0)',
-            }}
-            hasBackdrop
-            onBackdropPress={onClose}
-            backdropOpacity={0}
-        >
-      <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+      isVisible={visible}
+      backdropColor="black"
+      style={{
+        margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0)',
+      }}
+      hasBackdrop
+      onBackdropPress={onClose}
+      backdropOpacity={0}
+    >
+      <SafeAreaView style={{ ...styles.modalContainerViewStyle, backgroundColor: colors.whiteColor }}>
         <LinearGradient
                     colors={[colors.orangeColor, colors.yellowColor]}
                     end={{ x: 0.0, y: 0.25 }}
@@ -236,14 +240,14 @@ const EditRefereeCertificate = ({
 
         <KeyboardAwareScrollView enableOnAndroid={false}>
           <EventItemRender
-                        title={strings.addCertiMainTitle}
-                        headerTextStyle={{ fontSize: 16 }}
-                    >
+                       title={strings.addCertiMainTitle}
+                       headerTextStyle={{ fontSize: 16 }}
+                   >
             <FlatList
-                scrollEnabled={false}
-                data={certificatesData}
-                renderItem={renderCertificates}
-             />
+               scrollEnabled={false}
+               data={certificatesData}
+               renderItem={renderCertificates}
+            />
           </EventItemRender>
         </KeyboardAwareScrollView>
       </SafeAreaView>
@@ -252,6 +256,13 @@ const EditRefereeCertificate = ({
 }
 
 const styles = StyleSheet.create({
+  addCertificateView: {
+    flexDirection: 'row',
+    marginTop: 12,
+    marginBottom: 12,
+    width: wp('92%'),
+    alignSelf: 'center',
+  },
   addCertificateButton: {
     alignItems: 'center',
     alignSelf: 'center',

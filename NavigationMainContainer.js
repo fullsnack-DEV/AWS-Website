@@ -20,6 +20,7 @@ export default function NavigationMainContainer() {
     QBLogout();
     firebase.auth().signOut();
     await Utility.clearStorage();
+    await authContext.setTokenData(null);
     authContext.setUser(null);
     authContext.setEntity(null)
     setAppInitialize(true);
@@ -28,18 +29,25 @@ export default function NavigationMainContainer() {
   const getRefereshToken = () => new Promise((resolve, reject) => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       unsubscribe()
-      const refreshedToken = await user.getIdTokenResult(true).catch(() => reject());
-      resolve(refreshedToken)
-    }, reject)
+      if (user) {
+        const refreshedToken = await user.getIdTokenResult(true).catch(() => reject());
+        resolve(refreshedToken)
+      } else {
+        reject();
+      }
+    }, reject);
   });
 
   const checkToken = async () => {
     const contextEntity = await Utility.getStorage('authContextEntity');
     const authContextUser = await Utility.getStorage('authContextUser');
+    const tokenData = await Utility.getStorage('tokenData');
     if (contextEntity) {
       const currentDate = new Date();
-      const expiryDate = new Date(contextEntity.auth.token.expirationTime);
+      const expiryDate = new Date(tokenData.expirationTime);
+      // const expiryDate = new Date('08 Jan 2021 09:13');
       if (expiryDate.getTime() > currentDate.getTime()) {
+        await authContext.setTokenData(tokenData);
         await QBconnectAndSubscribe(contextEntity);
         await authContext.setEntity({ ...contextEntity })
         await authContext.setUser({ ...authContextUser });
@@ -50,7 +58,7 @@ export default function NavigationMainContainer() {
             token: refereshToken.token,
             expirationTime: refereshToken.expirationTime,
           };
-          contextEntity.auth.token = token;
+          await authContext.setTokenData(token);
           await authContext.setEntity({ ...contextEntity });
           await Utility.setStorage('authContextEntity', { ...contextEntity })
           setAppInitialize(true);

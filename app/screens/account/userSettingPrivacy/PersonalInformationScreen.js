@@ -34,6 +34,7 @@ import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import TCMessageButton from '../../../components/TCMessageButton';
 import Header from '../../../components/Home/Header';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function PersonalInformationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -49,11 +50,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
     phone_number: '',
     country_code: '',
   }]);
-
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [languages, setLanguages] = useState(authContext.entity.obj.language || []);
-  const selectedLanguage = [];
-
   const language = [
     { language: 'English', id: 1 },
     { language: 'English(Canada)', id: 2 },
@@ -64,6 +60,11 @@ export default function PersonalInformationScreen({ navigation, route }) {
     { language: 'Italiano', id: 7 },
     { language: 'Korean', id: 8 },
   ];
+
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [languages, setLanguages] = useState(authContext.entity.obj.language || language);
+  const selectedLanguage = [];
+
   useLayoutEffect(() => {
     if (editMode) {
       navigation.setOptions({
@@ -283,7 +284,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
     </View>
   )
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
         <TCLabel title={'Name'}/>
@@ -485,7 +486,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>}
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({

@@ -1347,7 +1347,7 @@ export default function HomeScreen({ navigation, route }) {
           <TCScrollableProfileTabs
             tabItem={['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
             onChangeTab={(ChangeTab) => {
-              scrollToTop.current.refs.ScrollView.scrollTo({ y: Platform.OS === 'ios' ? 280 : 320 })
+              // scrollToTop.current.refs.ScrollView.scrollTo({ y: Platform.OS === 'ios' ? 280 : 320 })
               setCurrentTab(ChangeTab.i)
             }}
             currentTab={currentTab}
@@ -1899,12 +1899,16 @@ export default function HomeScreen({ navigation, route }) {
                 userName={fullName}
                 feesCount={(selectPlayerData && selectPlayerData.fee) ? selectPlayerData.fee : 0}
               />
-              {authContext?.entity?.uid !== currentUserData?.user_id && sportName.toLowerCase() === 'tennis' && (
+              {authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
                 <Text style={{
                   margin: 20, color: colors.whiteColor, fontSize: 20, fontFamily: fonts.RBlack,
                 }} onPress={() => {
-                  setPlaysInModalVisible(!playsInModalVisible)
-                  navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
+                  if (authContext?.entity?.obj?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
+                    setPlaysInModalVisible(!playsInModalVisible)
+                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
+                  } else {
+                    Alert.alert('Towns Cup', 'Both Player have a different sports')
+                  }
                 }}>
                   Challenge
                 </Text>

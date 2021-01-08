@@ -72,17 +72,18 @@ export default function WelcomeScreen({ navigation }) {
                 obj: response.payload,
                 auth: {
                   user_id: user.uid,
-                  token,
                   user: response.payload,
                 },
               }
+              await authContext.setTokenData(token);
               QBInitialLogin(entity, response?.payload);
             }).catch(async () => {
               const entity = {
-                auth: { token, user_id: user.uid },
+                auth: { user_id: user.uid },
                 uid: user.uid,
                 role: 'user',
               }
+              await authContext.setTokenData(token);
               await Utility.setStorage('loggedInEntity', entity);
               await authContext.setEntity({ ...entity })
               const flName = user.displayName.split(' ');
@@ -186,17 +187,18 @@ export default function WelcomeScreen({ navigation }) {
                   obj: response.payload,
                   auth: {
                     user_id: user.uid,
-                    token,
                     user: response.payload,
                   },
                 }
+                await authContext.setTokenData(token);
                 QBInitialLogin(entity, response?.payload);
               }).catch(async () => {
                 const entity = {
-                  auth: { token, user_id: user.uid },
+                  auth: { user_id: user.uid },
                   uid: user.uid,
                   role: 'user',
                 }
+                await authContext.setTokenData(token);
                 await Utility.setStorage('loggedInEntity', entity);
                 await authContext.setEntity({ ...entity })
                 const flName = user.displayName.split(' ');
@@ -221,9 +223,9 @@ export default function WelcomeScreen({ navigation }) {
                     navigation.navigate('AddBirthdayScreen')
                   }
                 }).catch(() => {
+                  setloading(false);
                   navigation.navigate('AddBirthdayScreen')
                 });
-                setloading(false);
               });
             }).catch(() => setloading(false));
           }

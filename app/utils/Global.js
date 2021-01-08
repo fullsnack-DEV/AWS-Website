@@ -30,8 +30,9 @@ const resetApp = async (authContext) => {
   QBLogout();
   firebase.auth().signOut();
   await Utility.clearStorage();
+  await authContext.setTokenData(null);
   authContext.setUser(null);
-  authContext.setEntity(null)
+  authContext.setEntity(null);
 }
 const getRefereshToken = () => new Promise((resolve, reject) => {
   const unsubscribe = firebase
@@ -57,11 +58,12 @@ const makeAPIRequest = async ({
     Alert.alert('Error: Internet not available');
     throw new Error('no-internet');
   } else {
-    const entity = authContext?.entity;
-    let authToken = entity.auth.token.token;
+    const tokenData = authContext?.tokenData;
+    let authToken = tokenData.token;
     const currentDate = new Date();
-    const expiryDate = new Date(entity.auth.token.expirationTime);
+    const expiryDate = new Date(tokenData.expirationTime);
     // const expiryDate = new Date('08 Jan 2021 09:13');
+    console.log('TOKEN EXPIRATION TIME :', expiryDate);
     console.log('EXP: ', expiryDate.getTime());
     if (expiryDate.getTime() > currentDate.getTime()) {
       return globalApiCall({
@@ -76,9 +78,7 @@ const makeAPIRequest = async ({
           token: refereshToken.token,
           expirationTime: refereshToken.expirationTime,
         };
-        entity.auth.token = token;
-        await authContext.setEntity({ ...entity });
-        await Utility.setStorage('authContextEntity', { ...entity })
+        await authContext.setTokenData(token);
         resolve(globalApiCall({
           method, url, data, headers, params, responseType, authContext, authToken,
         }));

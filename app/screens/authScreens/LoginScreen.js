@@ -84,10 +84,10 @@ export default function LoginScreen({ navigation }) {
             obj: response.payload,
             auth: {
               user_id: user.uid,
-              token,
               user: response.payload,
             },
           }
+          await authContext.setTokenData(token);
           authContext.setUser({ ...response.payload });
           await Utility.setStorage('authContextEntity', { ...entity })
           await Utility.setStorage('authContextUser', { ...response.payload })
@@ -201,10 +201,10 @@ export default function LoginScreen({ navigation }) {
                   obj: response.payload,
                   auth: {
                     user_id: user.uid,
-                    token,
                     user: response.payload,
                   },
                 }
+                await authContext.setTokenData(token);
                 await Utility.setStorage('loggedInEntity', entity)
                 authContext.setEntity({ ...entity })
                 await authContext.setUser(response.payload);
@@ -271,10 +271,10 @@ export default function LoginScreen({ navigation }) {
                     obj: response.payload,
                     auth: {
                       user_id: user.uid,
-                      token,
                       user: response.payload,
                     },
                   }
+                  await authContext.setTokenData(token);
                   await Utility.setStorage('loggedInEntity', entity)
                   authContext.setEntity({ ...entity })
                   authContext.setUser({ ...response.payload });

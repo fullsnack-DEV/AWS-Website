@@ -7,6 +7,7 @@ import AuthContext from './app/auth/context';
 import { QBinit } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
 import { firebaseConfig } from './app/utils/constant';
+import * as Utility from './app/utils';
 
 console.disableYellowBox = true
 export default function App() {
@@ -23,6 +24,11 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
+  const [tokenData, setToken] = useState(null);
+  const setTokenData = async (token) => {
+    setToken(token);
+    await Utility.setStorage('tokenData', token);
+  }
   const updateAuth = (e) => {
     setEntity({ ...e })
   }
@@ -34,9 +40,11 @@ export default function App() {
       setUser,
       entity,
       setEntity,
+      tokenData,
+      setTokenData,
       updateAuth,
     }),
-    [role, user, entity],
+    [role, user, entity, tokenData],
   );
   QBinit();
   return (

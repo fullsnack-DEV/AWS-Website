@@ -114,22 +114,24 @@ export default function GroupMembersScreen({ navigation, route }) {
   }, [isFocused])
 
   const getMembers = async () => {
-    getGroupMembers(route.params.groupID, authContext)
-      .then((response) => {
-        setMembers(response.payload)
-        setSearchMember(response.payload)
-        setloading(false);
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
-      });
+    if (route.params?.groupID) {
+      getGroupMembers(route.params?.groupID, authContext)
+        .then((response) => {
+          setMembers(response.payload)
+          setSearchMember(response.payload)
+          setloading(false);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.7);
+        });
+    }
   }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        switchUser.uid === route.params.groupID && <TouchableWithoutFeedback
+        switchUser.uid === route?.params?.groupID && <TouchableWithoutFeedback
           onPress={ () => actionSheet.current.show() }>
           <Image source={ images.vertical3Dot } style={ styles.navigationRightItem } />
         </TouchableWithoutFeedback>
@@ -243,7 +245,7 @@ export default function GroupMembersScreen({ navigation, route }) {
         {members.length > 0 ? <FlatList
                   data={members}
                   renderItem={({ item }) => <UserRoleView data = {item}
-                  onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params.groupID })}
+                  onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params?.groupID })}
                   onPressMessage={() => {
                     const accountType = getQBAccountType(item?.entity_type);
                     QBcreateUser(item?.user_id, item, accountType).then(() => {
@@ -277,7 +279,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                   } else if (index === 2) {
                     navigation.navigate('CreateMemberProfileForm1');
                   } else if (index === 3) {
-                    navigation.navigate('ConnectMemberAccountScreen', { groupID: route.params.groupID });
+                    navigation.navigate('ConnectMemberAccountScreen', { groupID: route.params?.groupID });
                   } else if (index === 4) {
                     navigation.navigate('MembersViewPrivacyScreen');
                   } else if (index === 5) {

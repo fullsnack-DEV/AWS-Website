@@ -286,8 +286,8 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
                   }
                 }}
               />
-      <ScrollView>
-        <TCKeyboardView>
+      <TCKeyboardView>
+        <ScrollView>
           <ActivityLoader visible={loading} />
           <TCProfileImageControl
         profileImage={ profile.thumbnail ? { uri: profile.thumbnail } : undefined }
@@ -337,8 +337,8 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
 
             />
           </View>
-        </TCKeyboardView>
-      </ScrollView>
+        </ScrollView>
+      </TCKeyboardView>
     </>
   );
 }

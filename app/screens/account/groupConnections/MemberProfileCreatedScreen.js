@@ -91,7 +91,7 @@ export default function MemberProfileCreatedScreen({ navigation, route }) {
 
       </View>}
 
-      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('GroupMembersScreen')} fontSize={16} marginBottom={50}/>
+      <TCBorderButton title={strings.goToMemberProfile} borderColor={colors.whiteColor} marginTop={20} onPress={() => navigation.navigate('GroupMembersScreen', { groupID: entity.uid })} fontSize={16} marginBottom={50}/>
 
     </View>
 
