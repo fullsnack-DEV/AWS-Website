@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Utility from '../../../utils';
 import {
@@ -20,6 +20,7 @@ import {
   getFeesEstimation,
   updateChallenge,
 } from '../../../api/Challenge';
+
 import { paymentMethods } from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
@@ -43,9 +44,10 @@ import ReservationNumber from '../../../components/reservations/ReservationNumbe
 import GameStatus from '../../../Constants/GameStatus';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import { getGameHomeScreen } from '../../../utils/gameUtils';
+import TCGameDetailRules from '../../../components/TCGameDetailRules';
 
 let entity = {};
-
+let timer;
 export default function AlterAcceptDeclineScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
 
@@ -65,6 +67,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
   const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
   const [defaultCard, setDefaultCard] = useState();
+  const [countDown, setCountDown] = useState();
   useEffect(() => {
     entity = authContext.entity;
     const { challengeObj } = route.params ?? {};
@@ -159,6 +162,30 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
       setDefaultCard(route?.params?.paymentMethod);
     }
   }, [isFocused]);
+  useFocusEffect(() => {
+    const timeStamp = moment(new Date(bodyParams?.timestamp * 1000)).add(24, 'h').toDate().getTime();
+    const startDateTime = bodyParams?.start_datetime * 1000
+    console.log(`${timeStamp}::::${startDateTime}::::${new Date().getTime()}`);
+    let finalDate;
+    if (timeStamp < startDateTime) {
+      finalDate = timeStamp
+    } else {
+      finalDate = startDateTime
+    }
+    if (finalDate > new Date().getTime()) {
+      timer = setInterval(() => {
+        if (bodyParams.status === ReservationStatus.pendingrequestpayment) {
+          getTwoDateDifference(finalDate, new Date().getTime())
+        }
+      }, 1000);
+    } else {
+      setCountDown()
+    }
+
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
 
   useLayoutEffect(() => {
     sectionEdited();
@@ -414,7 +441,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     moment.locale('en');
     return moment(new Date(dateValue)).format('MMM DD, yy hh:mm a');
   };
-  const getDayTimeDifferent = (sDate, eDate) => {
+  const getTwoDateDifference = (sDate, eDate) => {
     let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
 
     const days = Math.floor(delta / 86400);
@@ -426,7 +453,9 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
     const minutes = Math.floor(delta / 60) % 60;
     delta -= minutes * 60;
 
-    return `${days}d ${hours}h ${minutes}m`;
+    const seconds = delta % 60;
+
+    setCountDown(`${hours}h ${minutes}m ${seconds.toFixed(0)}s`);
   };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -802,13 +831,11 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   {`${getPendingRequestPaymentMessage()} your payment hasn't gone through yet.`}
                 </Text>
                 <Text style={styles.awatingNotesText}>
-                  {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
-                    bodyParams.offer_expiry * 1000,
-                    new Date().getTime(),
-                  )}
-                  \nMeanwhile, ${getTeamName(
+                  {'The accepted alteration won\'t be applied to the current reservation unless the payment goes through within'} <Text style={{ color: colors.themeColor }}>{countDown}</Text>
+                  {'\n\nMeanwhile,'} {getTeamName(
                     bodyParams,
-                  )} can cancel acceptance of the alteration request before the payment is completed.`}
+                  )} {'can cancel acceptance of the alteration request before the payment is completed.'}
+
                 </Text>
               </View>
           )}
@@ -820,15 +847,13 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                   {`${getPendingRequestPaymentMessage()} the payment hasn't gone through yet.`}
                 </Text>
                 <Text style={styles.awatingNotesText}>
-                  {`The accepted alteration won't be applied to the current reservation unless the payment goes through within ${getDayTimeDifferent(
-                    bodyParams.offer_expiry * 1000,
-                    new Date().getTime(),
-                  )}
-                  \nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.`}
+                  {'The accepted alteration won\'t be applied to the current reservation unless the payment goes through within'} <Text style={{ color: colors.themeColor }}>{countDown}</Text>
+                  {'\n\nMeanwhile, you can cancel acceptance of the alteration request before the payment will go through.'}
                 </Text>
               </View>
           )}
           {/* status pending request payment */}
+          {/* Status declined */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
             && bodyParams.status === ReservationStatus.declined && (
               <View>
@@ -865,7 +890,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
           )}
           {/* Status declined */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-            && bodyParams.status === ReservationStatus.pendingrequestpayment && (
+            && bodyParams.status === ReservationStatus.pendingrequestpayment && countDown && (
               <TCGradientButton
                 title={'TRY TO PAY AGAIN'}
                 onPress={() => {
@@ -878,7 +903,7 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               />
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-            && bodyParams.status === ReservationStatus.pendingrequestpayment && (
+            && bodyParams.status === ReservationStatus.pendingrequestpayment && countDown && (
               <TCGradientButton
                 title={'RESTORE TO PREVIOUS VERSION'}
                 onPress={() => {
@@ -1131,6 +1156,10 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
               <TCThickDivider marginTop={20} />
             </View>
           )}
+          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
+            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
+            <TCThickDivider marginTop={20} />
+          </View>}
           {bodyParams && (
             <View>
               <View style={styles.editableView}>

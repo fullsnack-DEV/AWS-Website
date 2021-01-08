@@ -58,8 +58,8 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           shadow={true}
           marginBottom={route?.params?.status === 'accept' ? 15 : 55}
           onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: route.params.teamObj ? route.params.teamObj.group_id : route.params.teamObj.user_id,
+            navigation.push('HomeScreen', {
+              uid: route?.params?.teamObj?.group_id || route?.params?.teamObj?.user_id,
               backButtonVisible: true,
               menuBtnVisible: false,
               role: route.params.teamObj.entity_type === 'player' ? 'user' : route.params.teamObj.entity_type,

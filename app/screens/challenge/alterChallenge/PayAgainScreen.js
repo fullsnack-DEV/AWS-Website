@@ -32,10 +32,12 @@ export default function PayAgainScreen({ navigation, route }) {
       const { body, comeFrom } = route.params ?? {};
       setSourceScreen(comeFrom);
       setChallengeObj(body)
-      getPaymentMethods(body?.source)
       if (route?.params?.paymentMethod) {
         setDefaultCard(route?.params?.paymentMethod);
+      } else {
+        getPaymentMethods(body?.source)
       }
+
       console.log('Body Object of pay again screen: ', JSON.stringify(body));
       // getFeeDetail();
     }
@@ -63,9 +65,8 @@ export default function PayAgainScreen({ navigation, route }) {
   const payAgainForAlterRequest = () => {
     setloading(true)
     const bodyParams = {}
-    const { paymentMethod } = route.params ?? {};
-    if (paymentMethod && paymentMethod !== {}) {
-      bodyParams.source = paymentMethod.id;
+    if (defaultCard !== {} || defaultCard !== undefined) {
+      bodyParams.source = defaultCard.id;
       bodyParams.payment_method_type = 'card'
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {
