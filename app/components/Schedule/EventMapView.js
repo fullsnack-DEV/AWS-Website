@@ -11,7 +11,8 @@ import MapView, { Marker } from 'react-native-maps';
 function EventMapView({ region, coordinate, style }) {
   return (
     <MapView
-
+    // mapType={Platform.OS === 'android' ? 'none' : 'standard'}
+    // provider={PROVIDER_GOOGLE}
       region={region}
       scrollEnabled={false}
       zoomEnabled={false}

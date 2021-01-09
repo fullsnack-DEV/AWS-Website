@@ -1298,7 +1298,13 @@ export default function HomeScreen({ navigation, route }) {
             safeAreaStyle={{ position: 'absolute' }}
             leftComponent={
               (route && route.params && route.params.backButtonVisible) && (
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() => {
+                  if (route?.params?.sourceScreen) {
+                    navigation.popToTop()
+                  } else {
+                    navigation.goBack()
+                  }
+                }}>
                   <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
                 </TouchableOpacity>)
             }

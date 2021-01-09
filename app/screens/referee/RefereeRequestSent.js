@@ -22,7 +22,7 @@ const RefereeRequestSent = ({ navigation, route }) => {
     images.emailSent5,
   ];
   useEffect(() => {
-    setTimeout(() => navigation.navigate('RefereeReservationScreen', { isRefresh: true }), 3000);
+    setTimeout(() => navigation.pop(1000), 3000);
   })
   return (
     <View style={styles.mainContainer}>

@@ -16,18 +16,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
       <TouchableOpacity onPress={() => {
-        navigation.reset({
-          index: 0,
-          routes: [{
-            name: 'HomeScreen',
-            params: {
-              uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-              role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
-            },
-          }],
-        });
+        navigation.pop(1000)
       }}>
         <Image style={styles.backButtonImage} source={images.backArrow} />
       </TouchableOpacity>
@@ -47,17 +36,11 @@ export default function ChallengeSentScreen({ navigation, route }) {
       height={40} shadow={true}
       marginBottom={60}
       onPress={() => {
-        navigation.reset({
-          index: 0,
-          routes: [{
-            name: 'HomeScreen',
-            params: {
-              uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
-              backButtonVisible: true,
-              role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
-            },
-          }],
-        });
+        navigation.navigate('HomeScreen', {
+          uid: route.params.groupObj.group_id ? route.params.groupObj.group_id : route.params.groupObj.user_id,
+          backButtonVisible: true,
+          role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
+        })
       }}/>}
 
     </View>

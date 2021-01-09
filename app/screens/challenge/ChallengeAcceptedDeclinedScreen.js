@@ -59,6 +59,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           marginBottom={route?.params?.status === 'accept' ? 15 : 55}
           onPress={() => {
             navigation.push('HomeScreen', {
+              sourceScreen: 'orangeScreen',
               uid: route?.params?.teamObj?.group_id || route?.params?.teamObj?.user_id,
               backButtonVisible: true,
               menuBtnVisible: false,

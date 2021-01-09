@@ -281,9 +281,9 @@ export default function AlterRefereeScreen({ navigation, route }) {
       .then((response) => {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-        navigation.navigate('ReservationAcceptDeclineScreen', {
-          teamObj: awayTeam,
-          status: 'cancel',
+        navigation.push('RefereeRequestSent', {
+          operationType: strings.reservationRequestCancelled,
+          imageAnimation: false,
         });
       })
       .catch((e) => {
@@ -314,24 +314,24 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'accept',
           });
         } else if (status === 'decline') {
           if (isRestored) {
             navigation.navigate('ReservationAcceptDeclineScreen', {
-              teamObj: awayTeam,
+              teamObj: getOpponentEntity(bodyParams),
               status: 'restored',
             });
           } else {
             navigation.navigate('ReservationAcceptDeclineScreen', {
-              teamObj: awayTeam,
+              teamObj: getOpponentEntity(bodyParams),
               status: 'decline',
             });
           }
         } else if (status === 'cancel') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'cancel',
           });
         }
@@ -367,17 +367,17 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'accept',
           });
         } else if (status === 'decline') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'decline',
           });
         } else if (status === 'cancel') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'cancel',
           });
         }
@@ -636,6 +636,16 @@ export default function AlterRefereeScreen({ navigation, route }) {
     }
     return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`
   };
+
+  const getOpponentEntity = (reservationObj) => {
+    if (reservationObj?.referee?.user_id === entity.uid) {
+      if (reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id) {
+        return reservationObj?.game?.away_team
+      }
+      return reservationObj?.game?.home_team
+    }
+    return reservationObj?.referee
+  }
   const acceptDeclineRefereeReservation = (
     reservationID,
     versionNo,
@@ -654,18 +664,18 @@ export default function AlterRefereeScreen({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+          navigation.push('ReservationAcceptDeclineScreen', {
+            teamObj: getOpponentEntity(bodyParams),
             status: 'accept',
           });
         } else if (status === 'decline') {
-          navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+          navigation.push('ReservationAcceptDeclineScreen', {
+            teamObj: getOpponentEntity(bodyParams),
             status: 'decline',
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: awayTeam,
+          navigation.push('ReservationAcceptDeclineScreen', {
+            teamObj: getOpponentEntity(bodyParams),
             status: 'cancel',
           });
         }
@@ -725,7 +735,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   style={styles.teamImage}
                 />
                 <Text style={styles.teamNameText}>
-                  {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester.last_name}`}
+                  {getRequester(bodyParams).group_id ? `${getRequester(bodyParams).group_name}` : `${getRequester(bodyParams).first_name} ${getRequester(bodyParams).last_name}`}
                 </Text>
               </View>
             </View>
