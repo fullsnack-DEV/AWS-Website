@@ -37,6 +37,7 @@ const Summary = ({
   const [starAttributes, starStarAttributes] = useState([]);
   useEffect(() => {
     setLoading(true);
+    console.log('Game Data', gameData);
     getSportsList(authContext).then((sports) => {
       const sportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
       const teamReviewProp = sportData?.team_review_properties ?? []

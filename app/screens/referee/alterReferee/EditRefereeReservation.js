@@ -578,7 +578,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     updateReservation(reservationId, callerId, body, authContext)
       .then(() => {
         setloading(false);
-        navigation.navigate('AlterRequestSent');
+        navigation.push('AlterRequestSent');
       })
       .catch((e) => {
         setloading(false);
@@ -587,7 +587,15 @@ export default function EditRefereeReservation({ navigation, route }) {
         }, 0.7);
       });
   };
-
+  const getOpponentEntity = (reservationObj) => {
+    if (reservationObj?.referee?.user_id === entity.uid) {
+      if (reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id) {
+        return reservationObj?.game?.away_team
+      }
+      return reservationObj?.game?.home_team
+    }
+    return reservationObj?.referee
+  }
   const getPendingRequestPaymentMessage = () => {
     if (bodyParams?.change_requested_by === entity.uid) {
       return `${getEntityName(
@@ -651,17 +659,17 @@ export default function EditRefereeReservation({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
+            teamObj: { ...getOpponentEntity(bodyParams), game_id: bodyParams?.game_id },
             status: 'accept',
           });
         } else if (status === 'decline') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'decline',
           });
         } else if (status === 'cancel') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: awayTeam,
+            teamObj: getOpponentEntity(bodyParams),
             status: 'cancel',
           });
         }

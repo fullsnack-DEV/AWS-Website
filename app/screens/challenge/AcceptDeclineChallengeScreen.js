@@ -71,17 +71,17 @@ export default function CreateChallengeForm4({ navigation, route }) {
         setloading(false);
 
         if (status === 'accept') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.push('ChallengeAcceptedDeclinedScreen', {
             teamObj: { ...awayTeam, game_id: response.payload.game_id, sport: bodyParams.sport },
             status: 'accept',
           });
         } else if (status === 'decline') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.push('ChallengeAcceptedDeclinedScreen', {
             teamObj: awayTeam,
             status: 'decline',
           });
         } else if (status === 'cancel') {
-          navigation.navigate('ChallengeAcceptedDeclinedScreen', {
+          navigation.push('ChallengeAcceptedDeclinedScreen', {
             teamObj: awayTeam,
             status: 'cancel',
           });

@@ -199,7 +199,13 @@ export default function RefereeReservationScreen({ navigation, route }) {
     }
     return 'referee'
   };
+  const checkSenderForPayment = (reservationObj) => {
+    if (reservationObj?.referee?.user_id === entity.uid) {
+      return 'receiver'
+    }
 
+    return 'sender'
+  }
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
@@ -722,7 +728,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
             <TCThickDivider />
             <TCLabel
             title={
-              checkSenderOrReceiver(bodyParams) === 'sender'
+              checkSenderForPayment(bodyParams) === 'sender'
                 ? 'Payment'
                 : 'Earning'
             }
@@ -735,9 +741,7 @@ export default function RefereeReservationScreen({ navigation, route }) {
               end_datetime: bodyParams.end_datetime * 1000,
             }}
             senderOrReceiver={
-              checkSenderOrReceiver(bodyParams) === 'sender'
-                ? 'sender'
-                : 'receiver'
+              checkSenderForPayment(bodyParams)
             }
           />
 

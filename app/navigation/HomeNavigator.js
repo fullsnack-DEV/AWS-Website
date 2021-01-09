@@ -136,6 +136,9 @@ import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
 
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
+import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFeeScreen';
+import EditRefereeReservation from '../screens/referee/alterReferee/EditRefereeReservation';
+import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
 
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
@@ -1726,6 +1729,54 @@ const HomeNavigator = () => (
              borderBottomWidth: 0.3,
            },
          }}
+        />
+    <Stack.Screen
+        name="EditRefereeFeeScreen"
+        component={ EditRefereeFeeScreen }
+        options={ {
+          title: 'Referee Fee',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+            name="EditRefereeReservation"
+            component={EditRefereeReservation}
+            options={{
+              title: 'Change Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="AlterRefereeScreen"
+            component={AlterRefereeScreen}
+            options={{
+              title: 'Change Referee Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
         />
   </Stack.Navigator>
 );

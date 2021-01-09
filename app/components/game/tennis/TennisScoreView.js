@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 import React, { useEffect } from 'react';
 import {
@@ -19,6 +20,7 @@ let awayTeamMatchPoint = 0;
 export default function TennisScoreView({ scoreDataSource }) {
   useEffect(() => {
     setsData = [];
+    console.log('scoreDataSource', scoreDataSource);
     if (scoreDataSource?.scoreboard) {
       if (Object.keys(scoreDataSource?.scoreboard).length > 0) {
         const reversSets = scoreDataSource?.scoreboard?.sets?.reverse();
@@ -31,7 +33,6 @@ export default function TennisScoreView({ scoreDataSource }) {
         }
         calculateMatchScore();
         calculateGameScore();
-        console.log('scoreDataSource', scoreDataSource?.scoreboard?.sets);
       } else {
         setsData = [{}, {}, {}];
         homeTeamGamePoint = '0';
@@ -92,25 +93,25 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint > awayTeamMatchPoint)
             || (index === 1
-              && scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.home_team_win_count
-                > scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.away_team_win_count)
+              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.home_team_win_count : 0)
+                > (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.away_team_win_count : 0))
             || (index === 2 && homeTeamGamePoint > awayTeamGamePoint)
               ? [styles.player1Score, { color: colors.themeColor }]
               : styles.player1Score
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets[scoreDataSource?.scoreboard?.sets?.length - 1].home_team_win_count ?? '0'))
+              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].home_team_win_count ?? '0'))
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
 
         <TCThinDivider />
-        <Text
+        {/* <Text
           style={
             (index === 0 && homeTeamMatchPoint < awayTeamMatchPoint)
             || (index === 1
-              && scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.home_team_win_count
-                < scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.away_team_win_count)
+              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.home_team_win_count : 0)
+                < (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.away_team_win_count : 0))
             || (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
               ? [styles.player2Score, { color: colors.themeColor }]
               : styles.player2Score
@@ -119,8 +120,22 @@ export default function TennisScoreView({ scoreDataSource }) {
             || (index === 1
               && (scoreDataSource?.scoreboard?.sets[scoreDataSource?.scoreboard?.sets?.length - 1].away_team_win_count.toString() ?? '0'))
             || (index === 2 && `${awayTeamGamePoint}`)}
+        </Text> */}
+        <Text
+          style={
+            (index === 0 && homeTeamMatchPoint < awayTeamMatchPoint)
+            || (index === 1
+              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.home_team_win_count : 0)
+                < (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.away_team_win_count : 0))
+            || (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
+              ? [styles.player2Score, { color: colors.themeColor }]
+              : styles.player2Score
+          }>
+          {(index === 0 && `${awayTeamMatchPoint}`)
+            || (index === 1
+              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].away_team_win_count ?? '0'))
+            || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
-
       </View>
     </View>
   );
