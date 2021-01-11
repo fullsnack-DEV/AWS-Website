@@ -545,6 +545,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             bodyParams.status === ReservationStatus.offered
             || bodyParams.status === ReservationStatus.cancelled
             || bodyParams.status === ReservationStatus.declined
+            || bodyParams.status === ReservationStatus.pendingpayment
           ) && (
             <TCBorderButton
               title={'GAME HOME'}

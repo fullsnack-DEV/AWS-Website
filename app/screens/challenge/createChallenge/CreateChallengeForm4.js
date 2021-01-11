@@ -276,7 +276,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
             hitSlop={{
               top: 15, bottom: 15, left: 15, right: 15,
             }}
-            onPress={() => navigation.navigate('CreateChallengeForm2', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
+            onPress={() => navigation.push('CreateChallengeForm2', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
               <Image source={images.editSection} style={styles.editButton}/>
             </TouchableOpacity>
           </View>

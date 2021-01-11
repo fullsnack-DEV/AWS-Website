@@ -1584,20 +1584,20 @@ export default function AlterAcceptDeclineScreen({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (
-                    (bodyParams.game_status === GameStatus.accepted
-                      || bodyParams.game_status === GameStatus.reset)
-                    && bodyParams.start_datetime * 1000 > new Date().getTime()
-                  ) {
+                  if (bodyParams.game_status === (GameStatus.accepted || GameStatus.reset)) {
                     acceptDeclineChallengeOperation(
                       entity.uid,
                       bodyParams.challenge_id,
                       bodyParams.version,
                       'cancel',
                     );
-                  } else {
+                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
                     Alert.alert(
                       'Reservation cannot be cancel after game time passed or offer expired.',
+                    );
+                  } else {
+                    Alert.alert(
+                      'Reservation can not be change after game has been started.',
                     );
                   }
                 }}

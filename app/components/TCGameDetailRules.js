@@ -12,7 +12,7 @@ const TCGameDetailRules = ({ gameRules }) => (
     <TCThinDivider width={'92%'}/>
 
     <View style={{ flexDirection: 'row', margin: 15, justifyContent: 'space-between' }}>
-      <Text style={styles.mainRulesTitle}>NUMBER OF GAME TO WIN SETS</Text><Text style={styles.subRulesTitle}>{gameRules.winning_point_in_game} Games</Text>
+      <Text style={styles.mainRulesTitle}>NUMBER OF GAME TO WIN SETS</Text><Text style={styles.subRulesTitle}>{gameRules.game_count_to_win_set} Games</Text>
     </View>
 
     <Text style={{
@@ -22,30 +22,35 @@ const TCGameDetailRules = ({ gameRules }) => (
       fontFamily: fonts.RMedium,
       color: colors.userPostTimeColor,
     }}>Apply deuce</Text>
-    <Text style={{
-      marginLeft: 15,
-      fontSize: 12,
-      fontFamily: fonts.RMedium,
-      color: colors.userPostTimeColor,
-    }}>Apply tie-breaker</Text>
 
-    <View style={{
-      flexDirection: 'row', margin: 15, marginLeft: 30, justifyContent: 'space-between',
-    }}>
-      <Text style={styles.subRulesTitle}>APPLY TIE-BREAKER AFTER{'\n'}THE GAME SCORE ARE</Text><Text style={styles.subRulesTitle}>{gameRules.tiebreaker_apply_at}:{gameRules.tiebreaker_apply_at}</Text>
-    </View>
-    <View style={{
-      flexDirection: 'row', margin: 15, marginLeft: 30, justifyContent: 'space-between',
-    }}>
-      <Text style={styles.subRulesTitle}>WINNING POINTS IN{'\n'}TIE-BREAKER</Text><Text style={styles.subRulesTitle}>{gameRules.winning_point_in_tiebreaker} Points</Text>
-    </View>
-    <Text style={{
+    {gameRules.apply_tiebreaker_in_game && <>
+      <Text style={{
+        marginLeft: 15,
+        fontSize: 12,
+        fontFamily: fonts.RMedium,
+        color: colors.userPostTimeColor,
+      }}>Apply tie-breaker</Text>
+
+      <View style={{
+        flexDirection: 'row', margin: 15, marginLeft: 30, justifyContent: 'space-between',
+      }}>
+        <Text style={styles.subRulesTitle}>APPLY TIE-BREAKER AFTER{'\n'}THE GAME SCORE ARE</Text><Text style={styles.subRulesTitle}>{gameRules.tiebreaker_apply_at}:{gameRules.tiebreaker_apply_at}</Text>
+      </View>
+      <View style={{
+        flexDirection: 'row', margin: 15, marginLeft: 30, justifyContent: 'space-between',
+      }}>
+        <Text style={styles.subRulesTitle}>WINNING POINTS IN{'\n'}TIE-BREAKER</Text><Text style={styles.subRulesTitle}>{gameRules.winning_point_in_tiebreaker} Points</Text>
+      </View>
+
+    </>}
+
+    {gameRules.applyDueceInTieBreaker && <Text style={{
       marginLeft: 15,
       marginBottom: 10,
       fontSize: 12,
       fontFamily: fonts.RMedium,
       color: colors.userPostTimeColor,
-    }}>Apply deuce in tie-breaker</Text>
+    }}>Apply deuce in tie-breaker</Text>}
 
     <TCThinDivider width={'92%'}/>
     <View style={{
@@ -53,6 +58,13 @@ const TCGameDetailRules = ({ gameRules }) => (
     }}>
       <Text style={styles.mainRulesTitle}>NUMBER OF POINTS TO WIN A GAME</Text><Text style={styles.subRulesTitle}>{gameRules.winning_point_in_game} Points</Text>
     </View>
+    {gameRules.apply_duece_in_game && <Text style={{
+      marginLeft: 15,
+      marginBottom: 10,
+      fontSize: 12,
+      fontFamily: fonts.RMedium,
+      color: colors.userPostTimeColor,
+    }}>Apply deuce</Text>}
   </View>
 )
 

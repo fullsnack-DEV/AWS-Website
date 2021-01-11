@@ -19,7 +19,7 @@ export default function InvitationSentScreen({ navigation }) {
   ];
 
   useEffect(() => {
-    const timer = setInterval(() => navigation.goBack(), 5000);
+    const timer = setInterval(() => navigation.pop(2), 5000);
     return () => clearInterval(timer)
   }, []);
 

@@ -138,7 +138,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
   const time_format = (d) => moment(new Date(d)).format('hh:mm A')
 
   const checkValidation = () => {
-    if ((route?.params?.body?.start_datetime === null && route?.params?.body?.end_datetime === null)) {
+    if ((route?.params?.body?.start_datetime === null && route?.params?.body?.end_datetime === null) || (!bodyParams?.start_datetime && !bodyParams?.end_datetime)) {
       Alert.alert('Towns Cup', 'Please choose start and end time.');
       return false
     }
@@ -162,7 +162,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
     bodyParams.away_team = teams[1]
     bodyParams.hourly_game_fee = route?.params?.groupObj?.game_fee
     bodyParams.currency_type = route?.params?.groupObj?.currency_type || 'CAD'
-    bodyParams.venue = venueData
+    bodyParams.venue = { ...venueData, title: venueTitle || venueData.title }
     bodyParams.sport = sport
     bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`
 
@@ -379,7 +379,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
             {venue === 0 && (
               <TCTextField
                 placeholder={'Venue name'}
-                value={venueTitle}
+                value={venueData.title || venueTitle}
                 onChangeText={(text) => {
                   setVenueTitle(text)
                   setVenueData({ ...venueData, title: text })
@@ -490,7 +490,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     ...bodyParams,
                     home_team: teams[0],
                     away_team: teams[1],
-                    venue: venueData,
+                    venue: { ...venueData, title: venueTitle || venueData.title },
                     sport,
                     responsible_to_secure_venue: secureVenue === 0 ? (teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`) : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`,
                   },

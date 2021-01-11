@@ -15,7 +15,7 @@ import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
 import TCLabel from '../../../../TCLabel';
-import TCMessageButton from '../../../../TCMessageButton';
+// import TCMessageButton from '../../../../TCMessageButton';
 import TCSwitcher from '../../../../TCSwitcher';
 import TCThickDivider from '../../../../TCThickDivider';
 import LineUpPlayerView from './LineUpPlayerView';
@@ -259,7 +259,7 @@ export default function LineUp({ navigation, gameData }) {
           />
         )}
 
-        {((selected === 1
+        {/* {((selected === 1
           && gameData.home_team.group_id === entity.uid
           && gameData.status === GameStatus.accepted)
           || (selected === 2
@@ -271,7 +271,7 @@ export default function LineUp({ navigation, gameData }) {
             alignSelf={'center'}
             marginTop={10}
           />
-        )}
+        )} */}
 
         <TCThickDivider marginTop={25} />
         <View style={styles.editableView}>
@@ -319,7 +319,7 @@ export default function LineUp({ navigation, gameData }) {
             scrollEnabled={false}
           />
         )}
-        {((selected === 1
+        {/* {((selected === 1
           && gameData.home_team.group_id === entity.uid
           && gameData.status === GameStatus.accepted)
           || (selected === 2
@@ -331,7 +331,7 @@ export default function LineUp({ navigation, gameData }) {
             alignSelf={'center'}
             marginTop={10}
           />
-        )}
+        )} */}
       </View>
     </View>
   );

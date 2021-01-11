@@ -464,7 +464,7 @@ const strings = {
   addRefereeing: 'Add refereeing',
   cards: 'Cards',
   addcard: 'Add New Card...',
-  endingin: ' Ending in ',
+  endingin: ' ****',
   addacard: 'Add a Card',
   entergamefee: 'Enter Game Fee',
   matchfee: 'Match fee',
@@ -475,6 +475,7 @@ const strings = {
   locationvalidation: 'Location cannot be blank',
   addOptionMessage: '+ Add a payment method',
   selectPaymentText: 'Please select payment method.',
+  selectPaymentMethod: 'Select a payment method',
   cannotAcceptText: 'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
   selectCardText: 'Please select payment method.',
@@ -522,5 +523,6 @@ const strings = {
   gameScoreText: 'Select game score',
   selectWiningPoints: 'Select wining points',
   selectPointsText: 'Select points',
+  selectAnyCard: 'Please any of the card.',
 };
 export default strings;

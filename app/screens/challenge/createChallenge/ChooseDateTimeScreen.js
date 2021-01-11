@@ -275,18 +275,11 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             }}
             hideExtraDays={true}
             onDayPress={(day) => {
-              const todayDate = new Date(
-                `${
-                  new Date().getMonth() + 1
-                } ${new Date().getDate()} ${new Date().getFullYear()}`,
-              );
-              const selectDate = new Date(
-                `${new Date(day.dateString).getMonth() + 1} ${new Date(
-                  day.dateString,
-                ).getDate()} ${new Date(day.dateString).getFullYear()}`,
-              );
-              // console.log(`date::${new Date().getMonth() + 1}/${new Date().getDate()}/${new Date().getFullYear()}date::${new Date(day.dateString).getMonth() + 1}/${new Date(day.dateString).getDate()}/${new Date(day.dateString).getFullYear()}`);
-              console.log(`Today::${todayDate}Selected::${selectDate}`);
+              const dt = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+              const dt1 = new Date(new Date(day.dateString).setHours(0, 0, 0, 0)).getTime();
+              const todayDate = new Date(dt).getTime() / 1000
+              const selectDate = new Date(dt1).getTime() / 1000
+              console.log(`Today::${new Date(todayDate * 1000)}Selected::${new Date(selectDate * 1000)}`);
               if (todayDate > selectDate) {
                 Alert.alert(strings.chooseFutureDate);
               } else {
@@ -301,9 +294,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                 });
                 setBlockedSlot(temp);
 
-                if (todayDate.getTime() === selectDate.getTime()) {
-                  console.log('date matched::::::');
-
+                if (todayDate === selectDate) {
                   setSelectedDate(
                     new Date(day.dateString).setHours(
                       new Date(getNearDateTime(new Date())).getHours(),
@@ -439,7 +430,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
               datePickerFor === 'to' ? moment(new Date(fromDate)).add(30, 'm').toDate() : getNearDateTime(new Date())
             }
             maximumDate={
-              getNearDateTime(new Date()).setHours(23, 59, 59, 999)
+             getNearDateTime(new Date(selectedDate)).setHours(23, 59, 59, 999)
             }
             mode={'time'}
           />

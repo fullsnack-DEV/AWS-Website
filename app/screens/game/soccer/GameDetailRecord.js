@@ -1119,11 +1119,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if (
-                      gameObj.challenge_status
-                      && gameObj.challenge_status
-                        === ReservationStatus.pendingrequestpayment
-                    ) {
+                    if (gameObj?.challenge_status === (ReservationStatus.pendingrequestpayment || ReservationStatus.pendingpayment)) {
                       Alert.alert(
                         'Game cannot be start unless the payment goes through',
                       );
@@ -1320,7 +1316,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     bottom: 0,
-    position: 'absolute',
+    // position: 'absolute',
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
@@ -1375,7 +1371,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: Platform.OS === 'ios' ? 35 : 5,
   },
   headerRightImg: {
     height: 15,
@@ -1416,6 +1412,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
+
   },
   playerImage: {
     height: 20,

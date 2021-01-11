@@ -277,6 +277,8 @@ const images = {
   // Tennis recorder
   tennisGeneral: require('../assets/images/ic_tennis_general.png'),
   requestSentImage: require('../assets/images/requestSentImage.png'),
+  whiteTick: require('../assets/images/whiteTick.png'),
+
 };
 
 export default images;
