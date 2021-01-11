@@ -62,6 +62,7 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
               uid: route.params.teamObj ? route.params.teamObj.group_id : route.params.teamObj.user_id,
               backButtonVisible: true,
               role: route.params.teamObj.entity_type === 'player' ? 'user' : route.params.teamObj.entity_type,
+              menuBtnVisible: false,
             })
           }}
         />

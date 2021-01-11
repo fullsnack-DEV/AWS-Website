@@ -36,7 +36,6 @@ const Referees = ({
     getRefereeReservation(gameData?.game_id).then((res) => {
       console.log('REF: ', res?.payload)
       const refData = res?.payload?.filter((item) => !['declined', 'cancelled'].includes(item?.status));
-      console.log('NE:', refData);
       const cloneRefData = [];
       refData.map((item) => {
         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
@@ -61,7 +60,7 @@ const Referees = ({
           reservationObj: obj.reservationObj || obj.reservationObj[0],
         });
         setloading(false);
-      });
+      }).catch(() => setloading(false));
     }
   }
   const onFollowPress = (userID, status) => {

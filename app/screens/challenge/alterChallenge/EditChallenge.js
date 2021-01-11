@@ -290,7 +290,7 @@ export default function EditChallenge({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: bodyParams?.game_id },
+            teamObj: { ...awayTeam, game_id: bodyParams?.game_id, sport: bodyParams?.sport },
             status: 'accept',
           });
         } else if (status === 'decline') {

@@ -50,6 +50,7 @@ const MessageInviteeDrawerScreen = ({
         uid,
         backButtonVisible: true,
         role: userData.entity_type === 'player' ? 'user' : userData?.entity_type,
+        menuBtnVisible: false,
       })
     }
   }

@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
-  Alert,
+  Alert, Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import AuthContext from '../../../auth/context'
 import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -97,9 +98,9 @@ export default function RegisterRefereeForm2({ navigation, route }) {
         <View style={ styles.radioButtonView }>
           <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
             {selected === 0 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
+              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
             ) : (
-              <Image
+              <FastImage
                 source={ images.radioUnselect }
                 style={ styles.unSelectRadioImage }
               />
@@ -110,9 +111,9 @@ export default function RegisterRefereeForm2({ navigation, route }) {
         <View style={ styles.radioButtonView }>
           <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
             {selected === 1 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
+              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
             ) : (
-              <Image
+              <FastImage
                 source={ images.radioUnselect }
                 style={ styles.unSelectRadioImage }
               />
@@ -253,19 +254,15 @@ const styles = StyleSheet.create({
   matchFeeView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
     color: 'black',
     elevation: 3,
     flexDirection: 'row',
     fontSize: wp('3.5%'),
-    height: 40,
-
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
-
-    paddingVertical: 12,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,

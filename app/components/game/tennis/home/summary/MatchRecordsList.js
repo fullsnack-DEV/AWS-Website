@@ -7,11 +7,6 @@ import {
   StyleSheet,
   FlatList, TouchableOpacity,
 } from 'react-native';
-
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
 import Dash from 'react-native-dash';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
@@ -357,17 +352,19 @@ export default function MatchRecordList({
   }
   return (
     <View style={ styles.mainContainer }>
-      <Dash
-            style={ {
-              alignSelf: 'center',
-              flex: 1,
-              height: '100%',
-              position: 'absolute',
-              zIndex: 1,
-              flexDirection: 'column',
-            } }
-            dashColor={ colors.lightgrayColor }
-        />
+      {matchRecords?.length > 0 && (
+        <Dash
+              style={ {
+                alignSelf: 'center',
+                flex: 1,
+                height: '100%',
+                position: 'absolute',
+                zIndex: 1,
+                flexDirection: 'column',
+              } }
+              dashColor={ colors.lightgrayColor }
+          />
+      )}
       <TCInnerLoader visible={loading}/>
       {!loading && (
         <Fragment>
@@ -376,7 +373,6 @@ export default function MatchRecordList({
                 scrollEnabled={false}
                 listKey={'matchRecordList'}
                 keyExtractor={({ index }) => index?.toString()}
-                // style={{ height: hp(30) }}
                 data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY)}
                 renderItem={renderMatchRecords}
                 ListEmptyComponent={() => (
@@ -399,7 +395,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   notAvailableTextStyle: {
-    marginTop: hp(5),
+    // marginTop: hp(5),
     textAlign: 'center',
     fontFamily: fonts.RLight,
     fontSize: 14,

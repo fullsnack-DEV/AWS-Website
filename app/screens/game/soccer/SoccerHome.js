@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
-  Platform,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -87,7 +86,7 @@ const SoccerHome = ({ navigation, route }) => {
   const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
-    <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
+    <View style={{ flex: 1 }}>
       {tabKey === 0 && (
         <Summary
             getRefereeReservation={getRefereeReservation}
@@ -134,7 +133,6 @@ const SoccerHome = ({ navigation, route }) => {
         onChangeTab={(ChangeTab) => {
           setCurrentTab(ChangeTab.i)
         }}
-        customStyle={{ flex: 1 }}
         currentTab={currentTab}
         renderTabContain={renderTabContain}
     />

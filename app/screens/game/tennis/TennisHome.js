@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
-  Platform,
 } from 'react-native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
@@ -79,7 +78,7 @@ const TennisHome = ({ navigation, route }) => {
   const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
-    <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
+    <View style={{ flex: 1 }}>
       {tabKey === 0 && (
         <Summary
             getRefereeReservation={getRefereeReservation}
@@ -127,7 +126,6 @@ const TennisHome = ({ navigation, route }) => {
         onChangeTab={(ChangeTab) => {
           setCurrentTab(ChangeTab.i)
         }}
-        customStyle={{ flex: 1 }}
         currentTab={currentTab}
         renderTabContain={renderTabContain}
      />

@@ -85,7 +85,7 @@ function NotificationsListScreen({ navigation }) {
             challengeObj: obj.challengeObj || obj.challengeObj[0],
           });
           setloading(false);
-        });
+        }).catch(() => setloading(false));
       } else if (verb.includes(NotificationType.refereeReservationInitialPaymentFail)
       || verb.includes(NotificationType.refereeReservationAlterPaymentFail)
       || verb.includes(NotificationType.refereeReservationAwaitingPaymentPaid)
@@ -106,7 +106,7 @@ function NotificationsListScreen({ navigation }) {
             reservationObj: obj.reservationObj || obj.reservationObj[0],
           });
           setloading(false);
-        });
+        }).catch(() => setloading(false));
       }
     } else {
       showSwitchProfilePopup()
@@ -531,7 +531,6 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#fff',
-    height: 53,
     fontFamily: fonts.RRegular,
     fontSize: 20,
     padding: 15,

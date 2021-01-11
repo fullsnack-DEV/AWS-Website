@@ -341,7 +341,7 @@ export default function RegisterReferee({ navigation }) {
             <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
-            value={ selectedLanguages?.join(' , ')?.toString() ?? ''}
+            value={ selectedLanguages?.join(', ')?.toString() ?? ''}
             editable={ false }
             pointerEvents="none"></TextInput>
           </TouchableOpacity>
