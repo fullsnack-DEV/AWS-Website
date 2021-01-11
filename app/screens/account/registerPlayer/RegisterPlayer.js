@@ -161,6 +161,7 @@ export default function RegisterPlayer({ navigation, route }) {
           onChangeText={ (text) => setDescription(text) }
           value={ description }
           multiline
+          textAlignVertical={'top'}
           numberOfLines={ 4 }
           placeholder={ strings.descriptionPlaceholder }
         />
@@ -176,7 +177,7 @@ export default function RegisterPlayer({ navigation, route }) {
             placeholder={ strings.languagePlaceholder }
             value={languagesName}
             editable={ false }
-            pointerEvents="none"></TextInput>
+            pointerEvents="none"/>
           </TouchableOpacity>
         </View>
 
@@ -321,21 +322,15 @@ const styles = StyleSheet.create({
   },
   descriptionTxt: {
     height: 120,
-    // alignSelf: 'center',
-
     fontSize: wp('3.8%'),
-
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
-
     paddingVertical: 12,
     paddingHorizontal: 15,
-
     color: 'black',
     paddingRight: 30,
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
@@ -362,8 +357,6 @@ const styles = StyleSheet.create({
     color: 'black',
     elevation: 3,
     fontSize: wp('3.5%'),
-    height: 40,
-
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
@@ -382,8 +375,6 @@ const styles = StyleSheet.create({
     color: 'black',
     elevation: 3,
     fontSize: wp('4%'),
-    height: 40,
-
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
@@ -436,15 +427,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 3,
     flexDirection: 'row',
-    height: 40,
-
     marginTop: 12,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     paddingLeft: 15,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-
     width: wp('92%'),
   },
   searchTextField: {
@@ -452,7 +441,6 @@ const styles = StyleSheet.create({
     color: colors.blackColor,
     flex: 1,
     fontSize: wp('3.8%'),
-    height: 40,
     width: wp('80%'),
   },
   languageApplyButton: {

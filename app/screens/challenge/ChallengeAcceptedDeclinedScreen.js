@@ -80,14 +80,15 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           onPress={() => {
             if (route?.params?.teamObj) {
               const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
-              navigation.navigate(gameHome, {
-                gameId: route?.params?.teamObj?.game_id,
-              })
-            } else {
-              Alert.alert('Game ID not exist');
+              if (route?.params?.teamObj?.game_id) {
+                navigation.navigate(gameHome, {
+                  gameId: route?.params?.teamObj?.game_id,
+                })
+              } else {
+                Alert.alert('Game ID not exist');
+              }
             }
-          }
-          }
+          }}
         />
       )}
     </View>

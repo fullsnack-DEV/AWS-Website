@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
+import jwtDecode from 'jwt-decode';
 import AuthContext from './app/auth/context';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
@@ -42,9 +43,10 @@ export default function NavigationMainContainer() {
     const contextEntity = await Utility.getStorage('authContextEntity');
     const authContextUser = await Utility.getStorage('authContextUser');
     const tokenData = await Utility.getStorage('tokenData');
-    if (contextEntity) {
+    if (contextEntity && tokenData && authContextUser) {
+      const { exp } = await jwtDecode(tokenData.token);
+      const expiryDate = new Date(exp * 1000);
       const currentDate = new Date();
-      const expiryDate = new Date(tokenData.expirationTime);
       // const expiryDate = new Date('08 Jan 2021 09:13');
       if (expiryDate.getTime() > currentDate.getTime()) {
         await authContext.setTokenData(tokenData);
@@ -53,6 +55,7 @@ export default function NavigationMainContainer() {
         await authContext.setUser({ ...authContextUser });
         setAppInitialize(true);
       } else {
+        console.log('Token Expired From App State');
         getRefereshToken().then(async (refereshToken) => {
           const token = {
             token: refereshToken.token,
@@ -67,7 +70,7 @@ export default function NavigationMainContainer() {
         });
       }
     } else {
-      setAppInitialize(true);
+      resetApp();
     }
   }
 

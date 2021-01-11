@@ -13,7 +13,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-
+import _ from 'lodash';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
@@ -534,124 +534,179 @@ export default function AccountScreen({ navigation }) {
           }
           headerKey={'key'}
           memberKey="member"
-          renderRow={(rowItem, rowId, sectionId) => (
-            <>
-              {authContext.entity.role === 'user' && (sectionId === 3 || sectionId === 4) && (
-                <FlatList
-                  data={sectionId === 3 ? teamList : clubList}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableWithoutFeedback
-                    style={styles.listContainer}
-                    onPress={() => {
-                      navigation.navigate('HomeScreen', {
-                        uid: item.group_id,
-                        backButtonVisible: false,
-                        menuBtnVisible: false,
-                        role: item.entity_type,
-                      })
-                    }}
-                    >
-                      <View style={styles.entityTextContainer}>
-                        {item.entity_type === 'team' && (<Image
-                            source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
-                            style={styles.smallProfileImg}
-                          />)}
-                        {item.entity_type === 'club' && (<Image
-                            source={item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder}
-                            style={styles.smallProfileImg}
-                          />)}
-                        <Text style={styles.entityName}>{item.group_name}</Text>
-                        <Text style={styles.teamSportView}> {item.sport}</Text>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  )}
-                  scrollEnabled={false}
-                />
-              )}
-              {authContext.entity.role === 'club' && sectionId === 2 && (
-                <FlatList
-                  data={teamList}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableWithoutFeedback
+          renderRow={(rowItem, rowId, sectionId) => {
+            console.log('---')
+            console.log('rowid', rowId);
+            console.log('rowitem', rowItem);
+            console.log('sectionId', sectionId);
+            console.log('---')
+            return (
+              <>
+                {authContext.entity.role === 'user' && sectionId === 1 && (
+                  <FlatList
+                        data={authContext?.entity?.auth?.user?.registered_sports}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                          <TouchableWithoutFeedback
+                                style={styles.listContainer}
+                                onPress={() => {
+                                  navigation.closeDrawer();
+                                  alert('Game Pressed');
+                                }}
+                            >
+                            <View style={styles.entityTextContainer}>
+                              <Image
+                                  source={images.mySports}
+                                  style={styles.smallProfileImg}
+                              />
+                              <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+                            </View>
+                          </TouchableWithoutFeedback>
+                        )}
+                        scrollEnabled={false}
+                    />
+                )}
+                {authContext.entity.role === 'user' && sectionId === 2 && (
+                  <FlatList
+                        data={authContext?.entity?.auth?.user?.referee_data}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                          <TouchableWithoutFeedback
+                                style={styles.listContainer}
+                                onPress={() => {
+                                  navigation.closeDrawer();
+                                  alert('Referee Pressed');
+                                }}
+                            >
+                            <View style={styles.entityTextContainer}>
+                              <Image
+                                    source={images.myRefereeing}
+                                    style={styles.smallProfileImg}
+                                />
+                              <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+                            </View>
+                          </TouchableWithoutFeedback>
+                        )}
+                        scrollEnabled={false}
+                    />
+                )}
+                {authContext.entity.role === 'user' && (sectionId === 3 || sectionId === 4) && (
+                  <FlatList
+                          data={sectionId === 3 ? teamList : clubList}
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item }) => (
+                            <TouchableWithoutFeedback
+                                  style={styles.listContainer}
+                                  onPress={() => {
+                                    navigation.navigate('HomeScreen', {
+                                      uid: item.group_id,
+                                      backButtonVisible: false,
+                                      menuBtnVisible: false,
+                                      role: item.entity_type,
+                                    })
+                                  }}
+                              >
+                              <View style={styles.entityTextContainer}>
+                                {item.entity_type === 'team' && (<Image
+                                      source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
+                                      style={styles.smallProfileImg}
+                                  />)}
+                                {item.entity_type === 'club' && (<Image
+                                      source={item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder}
+                                      style={styles.smallProfileImg}
+                                  />)}
+                                <Text style={styles.entityName}>{item.group_name}</Text>
+                                <Text style={styles.teamSportView}> {item.sport}</Text>
+                              </View>
+                            </TouchableWithoutFeedback>
+                          )}
+                          scrollEnabled={false}
+                      />
+                )}
+                {authContext.entity.role === 'club' && sectionId === 2 && (
+                  <FlatList
+                          data={teamList}
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item }) => (
+                            <TouchableWithoutFeedback
+                                  style={styles.listContainer}
+                                  onPress={() => {
+                                    console.log('Pressed Team..', rowItem.rowId.sectionId);
+                                  }}>
+                              <View style={styles.entityTextContainer}>
+
+                                <Image
+                                      source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
+                                      style={styles.smallProfileImg}
+                                  />
+
+                                <Text style={styles.entityName}>{item.group_name}</Text>
+                                <Text style={item.entity_type === 'team' ? styles.teamSportView : styles.clubSportView}> {item.sport}</Text>
+
+                              </View>
+                            </TouchableWithoutFeedback>
+                          )}
+                          // ItemSeparatorComponent={() => (
+                          //   <View style={styles.separatorLine}></View>
+                          // )}
+                          scrollEnabled={false}
+                      />
+                )}
+
+                <View style={styles.halfSeparatorLine} />
+
+                <TouchableWithoutFeedback
                       style={styles.listContainer}
                       onPress={() => {
-                        console.log('Pressed Team..', rowItem.rowId.sectionId);
+                        handleOptions(rowItem.opetions);
                       }}>
-                      <View style={styles.entityTextContainer}>
-
-                        <Image
-                            source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
-                            style={styles.smallProfileImg}
-                          />
-
-                        <Text style={styles.entityName}>{item.group_name}</Text>
-                        <Text style={item.entity_type === 'team' ? styles.teamSportView : styles.clubSportView}> {item.sport}</Text>
-
-                      </View>
-                    </TouchableWithoutFeedback>
+                  {rowItem.opetions === 'Add a sport' && (
+                    <Image source={images.addSport} style={styles.subMenuItem} />
                   )}
-                  // ItemSeparatorComponent={() => (
-                  //   <View style={styles.separatorLine}></View>
-                  // )}
-                  scrollEnabled={false}
-                />
-              )}
+                  {rowItem.opetions === 'Register as a referee' && (
+                    <Image
+                            source={images.registerReferee}
+                            style={styles.subMenuItem}
+                        />
+                  )}
+                  {rowItem.opetions === 'Create a Team' && (
+                    <Image source={images.createTeam} style={styles.subMenuItem} />
+                  )}
+                  {rowItem.opetions === 'Create a Club' && (
+                    <Image source={images.createClub} style={styles.subMenuItem} />
+                  )}
+                  {rowItem.opetions === 'Create a League' && (
+                    <Image
+                            source={images.createLeague}
+                            style={styles.subMenuItem}
+                        />
+                  )}
+                  {rowItem.opetions === 'Payment Method' && (
+                    <Image
+                            source={images.Payment_method}
+                            style={styles.subMenuItem}
+                        />
+                  )}
+                  {rowItem.opetions === 'Payout Method' && (
+                    <Image
+                            source={images.Payout_method}
+                            style={styles.subMenuItem}
+                        />
+                  )}
+                  {rowItem.opetions === 'Invoicing' && (
+                    <Image source={images.Invoicing} style={styles.subMenuItem} />
+                  )}
+                  {rowItem.opetions === 'Transactions' && (
+                    <Image source={images.Transations} style={styles.subMenuItem} />
+                  )}
 
-              <View style={styles.halfSeparatorLine} />
-
-              <TouchableWithoutFeedback
-                style={styles.listContainer}
-                onPress={() => {
-                  handleOptions(rowItem.opetions);
-                }}>
-                {rowItem.opetions === 'Add a sport' && (
-                  <Image source={images.addSport} style={styles.subMenuItem} />
-                )}
-                {rowItem.opetions === 'Register as a referee' && (
-                  <Image
-                    source={images.registerReferee}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Create a Team' && (
-                  <Image source={images.createTeam} style={styles.subMenuItem} />
-                )}
-                {rowItem.opetions === 'Create a Club' && (
-                  <Image source={images.createClub} style={styles.subMenuItem} />
-                )}
-                {rowItem.opetions === 'Create a League' && (
-                  <Image
-                    source={images.createLeague}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Payment Method' && (
-                  <Image
-                    source={images.Payment_method}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Payout Method' && (
-                  <Image
-                    source={images.Payout_method}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Invoicing' && (
-                  <Image source={images.Invoicing} style={styles.subMenuItem} />
-                )}
-                {rowItem.opetions === 'Transactions' && (
-                  <Image source={images.Transations} style={styles.subMenuItem} />
-                )}
-
-                <Text style={styles.listItems}>{rowItem.opetions}</Text>
-                <Image source={images.nextArrow} style={styles.nextArrow} />
-              </TouchableWithoutFeedback>
-              <View style={styles.halfSeparatorLine} />
-            </>
-          )}
+                  <Text style={styles.listItems}>{rowItem.opetions}</Text>
+                  <Image source={images.nextArrow} style={styles.nextArrow} />
+                </TouchableWithoutFeedback>
+                <View style={styles.halfSeparatorLine} />
+              </>
+            )
+          }}
           renderSectionHeaderX={(section) => (
             <>
               <TouchableWithoutFeedback

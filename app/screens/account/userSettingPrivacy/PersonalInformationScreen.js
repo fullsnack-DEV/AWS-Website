@@ -12,7 +12,7 @@ import {
   ScrollView,
   Alert,
   FlatList,
-  Dimensions,
+  Dimensions, Platform,
 } from 'react-native';
 
 import {
@@ -60,11 +60,10 @@ export default function PersonalInformationScreen({ navigation, route }) {
     { language: 'Italiano', id: 7 },
     { language: 'Korean', id: 8 },
   ];
-
+  const [languageList, setLanguageList] = useState(language);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [languages, setLanguages] = useState(authContext.entity.obj.language || language);
+  const [languages, setLanguages] = useState(authContext?.entity?.obj?.language);
   const selectedLanguage = [];
-
   useLayoutEffect(() => {
     if (editMode) {
       navigation.setOptions({
@@ -87,18 +86,18 @@ export default function PersonalInformationScreen({ navigation, route }) {
 
   useEffect(() => {
     let languageText = '';
-    if (userInfo.language) {
+    if (userInfo?.language) {
       userInfo.language.map((langItem, index) => {
         languageText = languageText + (index ? ', ' : '') + langItem;
         return null;
       })
       setLanguagesName(languageText);
     }
-  }, [userInfo]);
+  }, [userInfo?.language]);
 
   useEffect(() => {
     const arr = [];
-    for (const temp of language) {
+    for (const temp of languageList) {
       if (userInfo.language) {
         if (userInfo.language.includes(temp.language)) {
           temp.isChecked = true
@@ -109,13 +108,18 @@ export default function PersonalInformationScreen({ navigation, route }) {
       }
     }
     setLanguages(arr);
-
-    if (route.params && route.params.city) {
-      setUserInfo({ ...userInfo, city: route.params.city })
-      setUserInfo({ ...userInfo, state_abbr: route.params.state })
-      setUserInfo({ ...userInfo, country: route.params.country })
-    }
   }, []);
+
+  useEffect(() => {
+    if (route.params && route.params.city) {
+      setUserInfo({
+        ...userInfo,
+        city: route.params.city,
+        state_abbr: route.params.state,
+        country: route.params.country,
+      })
+    }
+  }, [route.params])
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumbers.length === 0 ? 0 : phoneNumbers.length,
@@ -151,11 +155,11 @@ export default function PersonalInformationScreen({ navigation, route }) {
   const isIconCheckedOrNot = ({ item, index }) => {
     console.log('SELECTED:::', index);
 
-    languages[index].isChecked = !item.isChecked;
+    languageList[index].isChecked = !item.isChecked;
 
-    setLanguages([...languages]);
+    setLanguageList([...languageList]);
 
-    for (const temp of languages) {
+    for (const temp of languageList) {
       if (temp.isChecked) {
         selectedLanguage.push(temp.language);
       }
@@ -166,18 +170,18 @@ export default function PersonalInformationScreen({ navigation, route }) {
   };
   const renderLanguage = ({ item, index }) => (
     <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => {
-          isIconCheckedOrNot({ item, index });
-        } }>
+            style={ styles.listItem }
+            onPress={ () => {
+              isIconCheckedOrNot({ item, index });
+            } }>
       <View>
         <Text style={ styles.languageList }>{item.language}</Text>
         <View style={ styles.checkbox }>
           {item.isChecked ? (
             <Image
-                source={ images.checkWhiteLanguage }
-                style={ styles.checkboxImg }
-              />
+                      source={ images.checkWhiteLanguage }
+                      style={ styles.checkboxImg }
+                  />
           ) : (
             <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
           )}
@@ -185,16 +189,14 @@ export default function PersonalInformationScreen({ navigation, route }) {
         <View style={ styles.shortSeparatorLine }></View>
       </View>
     </TouchableWithoutFeedback>
-  );
+  )
   const renderPhoneNumber = ({ item, index }) => (
 
     <View style={ styles.fieldView }>
       <View
           style={ {
             flexDirection: 'row',
-
             marginTop: 12,
-
             align: 'center',
             marginLeft: 15,
             marginRight: 15,
@@ -222,8 +224,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
             useNativeAndroidPickerStyle={ false }
             style={ {
               inputIOS: {
-                height: 40,
-
                 fontSize: wp('3.5%'),
                 paddingVertical: 12,
                 paddingHorizontal: 15,
@@ -231,7 +231,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 color: 'black',
                 paddingRight: 30,
                 backgroundColor: colors.offwhite,
-
                 borderRadius: 5,
                 shadowColor: colors.googleColor,
                 shadowOffset: { width: 0, height: 1 },
@@ -239,8 +238,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 shadowRadius: 1,
               },
               inputAndroid: {
-                height: 40,
-
                 fontSize: wp('4%'),
                 paddingVertical: 12,
                 paddingHorizontal: 15,
@@ -248,7 +245,6 @@ export default function PersonalInformationScreen({ navigation, route }) {
                 color: 'black',
                 paddingRight: 30,
                 backgroundColor: colors.offwhite,
-
                 borderRadius: 5,
                 shadowColor: colors.googleColor,
                 shadowOffset: { width: 0, height: 1 },
@@ -330,38 +326,37 @@ export default function PersonalInformationScreen({ navigation, route }) {
 
           <TCLabel title={strings.locationTitle}/>
           <TouchableOpacity
+              disabled={!editMode}
               onPress={ () => {
                 // eslint-disable-next-line no-unused-expressions
                 editMode && navigation.navigate('SearchLocationScreen', {
                   comeFrom: 'PersonalInformationScreen',
                 })
-              }
-              }>
+              }}>
             <TextInput
                 placeholder={ strings.searchCityPlaceholder }
                 style={ styles.matchFeeTxt }
-                value={userInfo.city && `${userInfo.city}, ${userInfo.state_abbr}, ${userInfo.country}`}
+                value={userInfo?.city && `${userInfo?.city?.trim()}, ${userInfo.state_abbr?.trim()}, ${userInfo.country?.trim()}`}
                 editable={ false }
                 pointerEvents="none"
                 ></TextInput>
           </TouchableOpacity>
         </View>
         <TCLabel title={strings.languageTitle}/>
-        <View style={ styles.searchView }>
-          <TouchableOpacity
-           onPress={ () => {
-             // eslint-disable-next-line no-unused-expressions
-             editMode && toggleModal();
-           } }>
-            <TextInput
+        <TouchableOpacity
+            style={ styles.searchView }
+            disabled={!editMode}
+            onPress={ () => {
+              // eslint-disable-next-line no-unused-expressions
+              editMode && toggleModal();
+            }}>
+          <TextInput
             style={ styles.searchTextField }
             placeholder={ strings.languagePlaceholder }
             value={ userInfo.language ? languagesName : '' }
             editable={ false }
-            pointerEvents="none"></TextInput>
-          </TouchableOpacity>
-        </View>
-
+            pointerEvents="none"/>
+        </TouchableOpacity>
         <Modal
         isVisible={ isModalVisible }
         backdropColor="black"
@@ -403,7 +398,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <View style={styles.sepratorStyle} />
             <View style={ styles.separatorLine }></View>
             <FlatList
-            data={ languages }
+            data={ languageList }
             keyExtractor={(index) => index.toString()}
             renderItem={ renderLanguage }
             style={ { marginBottom: '25%' } }
@@ -475,7 +470,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
               setloading(false);
               setTimeout(() => {
                 Alert.alert('Towns Cup', 'Profile changed sucessfully');
-              }, 0.7);
+              }, 1000);
             })
           }
         } }>
@@ -512,19 +507,14 @@ const styles = StyleSheet.create({
   halfMatchFeeView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
-
     borderRadius: 5,
     color: 'black',
-
     elevation: 3,
     flexDirection: 'row',
     fontSize: wp('3.5%'),
-
-    height: 40,
     paddingHorizontal: 15,
     paddingRight: 30,
-
-    paddingVertical: 12,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
@@ -534,7 +524,6 @@ const styles = StyleSheet.create({
   halffeeText: {
     alignSelf: 'center',
     fontSize: wp('3.8%'),
-    height: 40,
     width: '90%',
   },
   headerRightButton: {
@@ -570,8 +559,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     elevation: 3,
     fontSize: wp('3.8%'),
-    height: 40,
-
     marginTop: 12,
     paddingHorizontal: 15,
     paddingRight: 30,
@@ -617,7 +604,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     flex: 1,
     fontSize: wp('3.8%'),
-    height: 40,
     width: wp('80%'),
   },
   searchView: {
@@ -626,17 +612,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 3,
     flexDirection: 'row',
-    height: 40,
     marginBottom: 10,
-
     marginTop: 12,
     paddingLeft: 15,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-
     width: wp('92%'),
+    paddingVertical: Platform.OS === 'ios' ? 12 : 0,
   },
   separatorLine: {
     alignSelf: 'center',

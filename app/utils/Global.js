@@ -2,6 +2,7 @@ import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
 import firebase from '@react-native-firebase/app';
+import jwtDecode from 'jwt-decode';
 import * as Utility from '.';
 import { QBLogout } from './QuickBlox';
 
@@ -60,11 +61,11 @@ const makeAPIRequest = async ({
   } else {
     const tokenData = authContext?.tokenData;
     let authToken = tokenData.token;
+    const { exp } = await jwtDecode(authToken);
+    const expiryDate = new Date(exp * 1000);
     const currentDate = new Date();
-    const expiryDate = new Date(tokenData.expirationTime);
     // const expiryDate = new Date('08 Jan 2021 09:13');
     console.log('TOKEN EXPIRATION TIME :', expiryDate);
-    console.log('EXP: ', expiryDate.getTime());
     if (expiryDate.getTime() > currentDate.getTime()) {
       return globalApiCall({
         method, url, data, headers, params, responseType, authContext, authToken,

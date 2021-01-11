@@ -72,7 +72,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.push('ChallengeAcceptedDeclinedScreen', {
-            teamObj: { ...awayTeam, game_id: response.payload.game_id, sport: bodyParams.sport },
+            teamObj: { ...awayTeam, game_id: response?.payload?.game_id ?? bodyParams?.game_id, sport: bodyParams.sport },
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -549,10 +549,12 @@ export default function CreateChallengeForm4({ navigation, route }) {
             <TCBorderButton
               title={'GAME HOME'}
               onPress={() => {
-                const gameHome = getGameHomeScreen(bodyParams.sport);
-                navigation.navigate(gameHome, {
-                  gameId: bodyParams.game_id,
-                })
+                const gameHome = getGameHomeScreen(bodyParams?.sport);
+                if (gameHome && bodyParams?.game_id) {
+                  navigation.navigate(gameHome, {
+                    gameId: bodyParams?.game_id,
+                  })
+                }
               }}
               marginBottom={15}
             />
