@@ -862,11 +862,7 @@ export default function TennisRecording({ navigation, route }) {
                   <TCGameButton
                     title="Start"
                     onPress={() => {
-                      if (
-                        gameObj.challenge_status
-                        && gameObj.challenge_status
-                          === ReservationStatus.pendingrequestpayment
-                      ) {
+                      if (gameObj?.challenge_status === (ReservationStatus.pendingrequestpayment || ReservationStatus.pendingpayment)) {
                         Alert.alert(
                           'Game cannot be start unless the payment goes through',
                         );

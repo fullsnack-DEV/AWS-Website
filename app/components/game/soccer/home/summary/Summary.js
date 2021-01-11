@@ -57,7 +57,7 @@ const Summary = ({
       {isAdmin && (
         <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
           <TCGradientButton
-          onPress={() => navigation.navigate('SoccerRecording')}
+          onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData.game_id })}
               startGradientColor={colors.yellowColor}
               endGradientColor={colors.themeColor}
               title={'RECORD MATCH'}

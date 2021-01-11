@@ -1911,7 +1911,7 @@ export default function HomeScreen({ navigation, route }) {
                 }} onPress={() => {
                   if (authContext?.entity?.obj?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
                     setPlaysInModalVisible(!playsInModalVisible)
-                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName } })
+                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName, game_fee: selectPlayerData.fee || 0 } })
                   } else {
                     Alert.alert('Towns Cup', 'Both Player have a different sports')
                   }

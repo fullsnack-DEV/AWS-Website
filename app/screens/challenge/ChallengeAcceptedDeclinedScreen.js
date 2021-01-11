@@ -69,7 +69,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
         />
 
       )}
-      {route?.params?.status === 'accept' && (
+      {route?.params?.status === 'accept' && route?.params?.teamObj?.game_id && (
         <TCBorderButton
           title={strings.goToGameHome}
           textColor={colors.themeColor}

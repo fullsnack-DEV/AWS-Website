@@ -154,7 +154,7 @@ export default function CreateTeamForm1({ navigation, route }) {
 
   return (
     <>
-      <ScrollView style={styles.mainContainer}>
+      <ScrollView style={styles.mainContainer} showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={ loading } />
         <View style={styles.formSteps}>
           <View style={styles.form1}></View>

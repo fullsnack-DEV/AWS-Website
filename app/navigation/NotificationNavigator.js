@@ -7,6 +7,9 @@ import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import AcceptDeclineChallengeScreen from '../screens/challenge/AcceptDeclineChallengeScreen';
 import ChallengeAcceptedDeclinedScreen from '../screens/challenge/ChallengeAcceptedDeclinedScreen';
 import HomeScreen from '../screens/home/HomeScreen';
+import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
+import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
+import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 
 import colors from '../Constants/Colors';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
@@ -508,6 +511,55 @@ function NotificationNavigator() {
           },
         } }
       />
+      <Stack.Screen
+          name="EditLineUpScreen"
+          component={EditLineUpScreen}
+          options={{
+            title: 'Edit Lineup',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          }}
+      />
+      <Stack.Screen
+      name="EditLineUpCoachScreen"
+      component={EditLineUpCoachScreen}
+      options={{
+        title: 'Edit Lineup',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+      <Stack.Screen
+      name="EditRosterScreen"
+      component={EditRosterScreen}
+      options={{
+        title: 'Edit Roster',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
     </Stack.Navigator>
   );
 }

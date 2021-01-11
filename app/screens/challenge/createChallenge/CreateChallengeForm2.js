@@ -41,7 +41,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
   const [playTie, setPlayTie] = useState(route?.params?.body?.gameRules ? `${route?.params?.body?.gameRules?.tiebreaker_apply_at}` : '8');
 
   useEffect(() => {
-    if (route && route.params && route.params.editableAlter && route.params.body) {
+    if ((route?.params?.editableAlter || route?.params?.editable) && route?.params?.body) {
       console.log('gamerules::->', route.params.body.gameRules);
       if (route.params.body.sport.toLowerCase() === 'tennis') {
         setSpecialRules(route.params.body.special_rule);

@@ -32,16 +32,19 @@ export default function InviteMembersBySearchScreen({ navigation }) {
         <Text style={styles.sendButtonStyle} onPress={() => sendInvitation()}>Send</Text>
       ),
     });
-  }, [navigation]);
+  }, [navigation, selectedList]);
 
   const sendInvitation = async () => {
+    setloading(true)
     const entity = authContext.entity
     const obj = {
       entity_type: entity.role,
-      userIds: [...selectedList],
+      userIds: selectedList,
       uid: entity.uid,
     }
+    console.log('Obj::', obj);
     sendInvitationInGroup(obj, authContext).then((response) => {
+      setloading(false);
       console.log('Response of Invitation sent:', response);
       navigation.navigate('InvitationSentScreen');
     })

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-raw-text */
 import React, {
   useEffect, useState, useContext, useLayoutEffect,
 } from 'react';
@@ -1177,20 +1178,20 @@ export default function EditChallenge({ navigation, route }) {
                     shadow={true}
                     marginTop={15}
                     onPress={() => {
-                      if (
-                        editInfo
-                        || editVenue
-                        || editRules
-                        || editReferee
-                        || editScorekeeper
-                        || editPayment
-                      ) {
-                        updateChallengeDetail();
-                      } else {
-                        Alert.alert(
-                          'Please modify atleast one field for alter request.',
-                        );
-                      }
+                      // if (
+                      //   editInfo
+                      //   || editVenue
+                      //   || editRules
+                      //   || editReferee
+                      //   || editScorekeeper
+                      //   || editPayment
+                      // ) {
+                      updateChallengeDetail();
+                      // } else {
+                      //   Alert.alert(
+                      //     'Please modify atleast one field for alter request.',
+                      //   );
+                      // }
                     }}
                   />
               <TCBorderButton
@@ -1202,7 +1203,7 @@ export default function EditChallenge({ navigation, route }) {
                     marginBottom={15}
                     fontSize={16}
                     onPress={() => {
-                      navigation.pop(2);
+                      navigation.popToTop();
                     }}
                   />
             </View>
@@ -1220,20 +1221,20 @@ export default function EditChallenge({ navigation, route }) {
                   marginBottom={15}
                   marginTop={15}
                   onPress={() => {
-                    if (
-                      (bodyParams.game_status === GameStatus.accepted
-                        || bodyParams.game_status === GameStatus.reset)
-                      && bodyParams.start_datetime * 1000 > new Date().getTime()
-                    ) {
+                    if (bodyParams.game_status === (GameStatus.accepted || GameStatus.reset)) {
                       acceptDeclineChallengeOperation(
                         entity.uid,
                         bodyParams.challenge_id,
                         bodyParams.version,
                         'cancel',
                       );
-                    } else {
+                    } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
                       Alert.alert(
                         'Reservation cannot be cancel after game time passed or offer expired.',
+                      );
+                    } else {
+                      Alert.alert(
+                        'Reservation can not be change after game has been started.',
                       );
                     }
                   }}
