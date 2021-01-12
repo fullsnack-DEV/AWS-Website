@@ -296,6 +296,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
   const acceptDeclineReservationOperation = (
     reservationId,
+    callerID,
     versionNo,
     status,
     isRestored = false,
@@ -303,6 +304,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
     setloading(true);
     acceptDeclineReservation(
       reservationId,
+      callerID,
       versionNo,
       status,
       {},
@@ -310,11 +312,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
     )
       .then((response) => {
         setloading(false);
-        console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
+        console.log('ACCEPT RESPONSE::', response.payload);
 
         if (status === 'accept') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: getOpponentEntity(bodyParams),
+            teamObj: { ...getOpponentEntity(bodyParams), game_id: bodyParams?.game_id, sport: bodyParams?.sport },
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -367,7 +369,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
 
         if (status === 'accept') {
           navigation.navigate('ReservationAcceptDeclineScreen', {
-            teamObj: getOpponentEntity(bodyParams),
+            teamObj: { ...getOpponentEntity(bodyParams), game_id: bodyParams?.game_id, sport: bodyParams?.sport },
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -662,10 +664,11 @@ export default function AlterRefereeScreen({ navigation, route }) {
       .then((response) => {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
-
+        const Obj = { ...getOpponentEntity(bodyParams), game_id: bodyParams?.game_id, sport: bodyParams?.sport }
+        console.log('OBJ RESPONSE::', Obj);
         if (status === 'accept') {
           navigation.push('ReservationAcceptDeclineScreen', {
-            teamObj: getOpponentEntity(bodyParams),
+            teamObj: Obj,
             status: 'accept',
           });
         } else if (status === 'decline') {
@@ -907,7 +910,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 title={strings.restorePreviousText}
                 onPress={() => {
                   acceptDeclineReservationOperation(
-                    bodyParams.challenge_id,
+                    bodyParams.reservation_id,
                     bodyParams.version,
                     'decline',
                     true,
@@ -1177,8 +1180,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   height={40}
                   shadow={true}
                   onPress={() => {
+                    let callerId = '';
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineReservationOperation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'decline',
                     );
@@ -1219,7 +1227,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   marginBottom={15}
                   fontSize={16}
                   onPress={() => {
-                    navigation.goBack();
+                    navigation.popToTop();
                   }}
                 />
             </View>

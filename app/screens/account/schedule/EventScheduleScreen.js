@@ -17,6 +17,7 @@ export default function EventScheduleScreen({
   onThreeDotPress,
   entity,
   profileID,
+  screenUserId,
 }) {
   const [filterData, setFilterData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -90,6 +91,7 @@ export default function EventScheduleScreen({
                   onPress={() => onItemPress(item)}
                   data={item}
                   profileID={profileID}
+                  screenUserId={screenUserId}
                   onThreeDotPress={() => onThreeDotPress(item)}
                   eventBetweenSection={item.game}
                   eventOfSection={item.game && item.game.referees && item.game.referees.length > 0}

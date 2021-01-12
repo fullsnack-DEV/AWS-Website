@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
@@ -45,6 +46,9 @@ export default function LoginScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
 
+  useEffect(() => {
+    crashlytics().crash()
+  }, [])
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId:

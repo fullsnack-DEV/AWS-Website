@@ -277,7 +277,9 @@ export default function WelcomeScreen({ navigation }) {
 
       <TouchableOpacity
             style={ [styles.imgWithText, styles.allButton] }
-            onPress={ () => navigation.navigate('SignupScreen')
+            onPress={ () => {
+              navigation.navigate('SignupScreen')
+            }
             }>
         <Image source={ images.email } style={ styles.signUpImg } />
         <Text style={ styles.signUpText }>{strings.signUpText}</Text>

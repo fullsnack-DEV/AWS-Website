@@ -56,7 +56,7 @@ export default function ChallengeAcceptedDeclinedScreen({ navigation, route }) {
           backgroundColor={'transparent'}
           height={40}
           shadow={true}
-          marginBottom={route?.params?.status === 'accept' ? 15 : 55}
+          marginBottom={route?.params?.status === 'accept' ? 34 : 55}
           onPress={() => {
             navigation.push('HomeScreen', {
               sourceScreen: 'orangeScreen',

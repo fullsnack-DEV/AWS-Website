@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   View, StyleSheet, Image, Text,
+  Alert,
 } from 'react-native';
 
 import images from '../../Constants/ImagePath';
@@ -12,6 +13,7 @@ import strings from '../../Constants/String';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ReservationAcceptDeclineScreen({ navigation, route }) {
+  console.log('route.params.teamObj', route?.params?.teamObj);
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
@@ -56,7 +58,7 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
           backgroundColor={'transparent'}
           height={40}
           shadow={true}
-          marginBottom={55}
+          marginBottom={route?.params?.status === 'accept' ? 34 : 55}
           onPress={() => {
             navigation.navigate('HomeScreen', {
               uid: route.params.teamObj ? route.params.teamObj.group_id : route.params.teamObj.user_id,
@@ -68,7 +70,7 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
         />
 
       )}
-      {route?.params?.status === 'accept' && (
+      {route?.params?.status === 'accept' && route?.params?.teamObj?.game_id && (
         <TCBorderButton
           title={strings.goToGameHome}
           textColor={colors.themeColor}
@@ -77,10 +79,16 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
           shadow={true}
           marginBottom={55}
           onPress={() => {
-            const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
-            navigation.navigate(gameHome, {
-              gameId: route?.params?.teamObj?.game_id,
-            })
+            if (route?.params?.teamObj) {
+              const gameHome = getGameHomeScreen(route?.params?.teamObj?.sport);
+              if (route?.params?.teamObj?.game_id) {
+                navigation.navigate(gameHome, {
+                  gameId: route?.params?.teamObj?.game_id,
+                })
+              } else {
+                Alert.alert('Game ID not exist');
+              }
+            }
           }}
         />
       )}

@@ -18,6 +18,7 @@ export default function NavigationMainContainer() {
   const [appInitialize, setAppInitialize] = useState(false);
 
   const resetApp = async () => {
+    console.log('2');
     QBLogout();
     firebase.auth().signOut();
     await Utility.clearStorage();
@@ -28,6 +29,7 @@ export default function NavigationMainContainer() {
   }
 
   const getRefereshToken = () => new Promise((resolve, reject) => {
+    console.log('3');
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       unsubscribe()
       if (user) {

@@ -1114,6 +1114,7 @@ export default function HomeScreen({ navigation, route }) {
   }
   const goToRefereReservationDetail = (data) => {
     setloading(true);
+    console.log('data?.reservation_id:', data);
     RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
@@ -1443,6 +1444,7 @@ export default function HomeScreen({ navigation, route }) {
                       eventData={eventData}
                       navigation={navigation}
                       profileID={route?.params?.uid || authContext.entity.uid}
+                      screenUserId={route?.params?.uid}
                       onThreeDotPress={(item) => {
                         setSelectedEventItem(item);
                       }}

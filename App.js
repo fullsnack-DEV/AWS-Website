@@ -18,6 +18,7 @@ export default function App() {
         await firebase.initializeApp(firebaseConfig);
       }
     }
+    console.log('1');
     firebaseAppInitialize();
   }, []);
 
