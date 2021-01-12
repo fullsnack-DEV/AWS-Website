@@ -623,7 +623,7 @@ export default function SoccerRecording({ navigation, route }) {
                   title="Start"
                   onPress={() => {
                     if (
-                       gameObj?.challenge_status
+                      gameObj?.challenge_status
                         === (ReservationStatus.pendingrequestpayment || ReservationStatus.pendingpayment)
                     ) {
                       Alert.alert(

@@ -85,11 +85,13 @@ const RefereeSelectMatch = ({ navigation, route }) => {
 
           {/*  Match List Container */}
           <FlatList
+              style={{ marginTop: 20 }}
             keyExtractor={(item) => item?.user_id}
             bounces={false}
               data={searchText === '' ? matchData : searchData}
               renderItem={({ item }) => (
-                <GameCard
+                <View style={{ marginVertical: 5 }}>
+                  <GameCard
                     data={item}
                     onPress={() => {
                       const game = item;
@@ -120,6 +122,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                       }
                     }}
                 />
+                </View>
               )}
             ListEmptyComponent={<Text style={styles.emptySectionListItem}>
               {searchText === '' ? 'No match found' : `No match found for '${searchText}'`}

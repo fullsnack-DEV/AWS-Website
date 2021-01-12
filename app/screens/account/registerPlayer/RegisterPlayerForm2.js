@@ -65,7 +65,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
         }
         patchPlayer(body, authContext).then(async (response) => {
           if (response.status === true) {
-            await Utility.setStorage('user', response.payload);
+            await Utility.setStorage('authContextUser', response.payload);
             authContext.setUser(response.payload)
             if (route.params && route.params.comeFrom === 'HomeScreen') {
               navigation.navigate('HomeScreen');

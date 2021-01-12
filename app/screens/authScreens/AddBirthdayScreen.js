@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, Image, Platform, StyleSheet,
+  View, Text, Image, StyleSheet,
 } from 'react-native';
 
 import {
@@ -8,8 +8,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { Tooltip } from 'react-native-elements';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
-
 import TCButton from '../../components/TCButton';
 import * as Utility from '../../utils/index';
 
@@ -17,29 +15,22 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
 export default function AddBirthdayScreen({ navigation }) {
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
   const [dateValue, setDateValue] = useState(new Date());
-  const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDateValue(currentDate);
-    if (Platform.OS === 'android') {
-      setShow(false);
-    }
-  };
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
+  const onChange = (selectedDate) => {
+    setDateValue(selectedDate);
+    setShow(false);
   };
 
   const showDatepicker = () => {
-    showMode('date');
+    setShow(true);
   };
 
   return (
@@ -51,11 +42,11 @@ export default function AddBirthdayScreen({ navigation }) {
       <Text style={ styles.resetText }>{strings.notDisplayText}</Text>
 
       <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
-            backgroundColor={ colors.parrotColor }
-            height={ hp('30%') }
-            width={ wp('75%') }
-            overlayColor={ 'transparent' }
-            skipAndroidStatusBar= {true}>
+                 backgroundColor={ colors.parrotColor }
+                 height={ hp('30%') }
+                 width={ wp('75%') }
+                 overlayColor={ 'transparent' }
+                 skipAndroidStatusBar= {true}>
         <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
       </Tooltip>
 
@@ -66,33 +57,27 @@ export default function AddBirthdayScreen({ navigation }) {
       </View>
 
       <TCButton
-        title={ strings.continueCapTitle }
-        onPress={ async () => {
-          const user = await Utility.getStorage('userInfo');
-          const userBirthday = {
-            ...user,
-            birthday: new Date(dateValue).getTime() / 1000,
-          }
+            title={ strings.continueCapTitle }
+            onPress={ async () => {
+              const user = await Utility.getStorage('userInfo');
+              const userBirthday = {
+                ...user,
+                birthday: new Date(dateValue).getTime() / 1000,
+              }
 
-          await Utility.setStorage('userInfo', userBirthday);
-          navigation.navigate('ChooseGenderScreen');
-        } }
-        extraStyle={ { marginTop: 50 } }
-      />
-      {show && <RNDateTimePicker
-          testID="dateTimePicker"
-          is24Hour={ true }
-          display="default"
-          onChange={ onChange }
-          textColor="white"
-          value={dateValue}
-          mode={mode}
-          maximumDate={new Date()}
-          // style={ {
-          //   position: 'absolute', left: 0, right: 0, bottom: 10,
-          // } }
-        />}
-
+              await Utility.setStorage('userInfo', userBirthday);
+              navigation.navigate('ChooseGenderScreen');
+            } }
+            extraStyle={ { marginTop: 50 } }
+        />
+      <DateTimePickerView
+            visible={show}
+            onDone={onChange}
+            onCancel={() => setShow(false)}
+            onHide={() => setShow(false)}
+            mode={'date'}
+            date={dateValue}
+        />
     </View>
   );
 }

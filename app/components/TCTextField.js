@@ -30,6 +30,7 @@ function TCTextField({
       secureTextEntry={ secureText }
       keyboardType={ keyboardType }
       multiline={multiline}
+      textAlignVertical={multiline ? 'top' : 'center'}
       { ...otherProps }
   />
       {leftView}

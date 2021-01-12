@@ -321,6 +321,7 @@ export default function RegisterReferee({ navigation }) {
         onChangeText={(text) => onChangeText(text)}
         value={description}
         multiline
+        textAlignVertical={'top'}
         numberOfLines={4}
         placeholder={strings.descriptionRefereePlaceholder}
       />

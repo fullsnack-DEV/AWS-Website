@@ -20,6 +20,7 @@ function EventTextInputItem({
         onChangeText={onChangeText}
         value={value}
         multiline={multiline}
+        textAlignVertical={multiline ? 'top' : 'center'}
         placeholderTextColor={colors.lightgrayColor}
       />
     </View>

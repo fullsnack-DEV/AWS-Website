@@ -25,7 +25,7 @@ const RenderReferee = ({
       flex: 0.15, paddingHorizontal: 5, justifyContent: 'center', alignItems: 'center',
     }}>
       <FastImage
-                resizeMode={'contain'}
+                resizeMode={'cover'}
                 source={profilePic ? { uri: profilePic } : images.profilePlaceHolder}
                 style={styles.profilePic}
             />

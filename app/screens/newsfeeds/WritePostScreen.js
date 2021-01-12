@@ -156,6 +156,7 @@ export default function WritePostScreen({ navigation, route }) {
           }}
           style={ styles.textInputField }
           multiline={ true }
+          textAlignVertical={'top'}
         />
         {searchText.length > 0 && <RNUrlPreview
           text={searchText}

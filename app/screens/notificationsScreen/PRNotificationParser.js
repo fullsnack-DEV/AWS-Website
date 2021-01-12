@@ -207,9 +207,8 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
 
   let team = challengeObject.away_team
 
-  finalString.entityType = 'team'
-
   if (team.group_id) {
+    finalString.entityType = 'team'
     if (team.group_id === selectedEntity.group_id) {
       team = challengeObject.home_team;
     }
@@ -236,7 +235,6 @@ const parseChallengeAwaitingPaymentRequestNotification = async (data, selectedEn
     finalString.text = parts[1]
   }
 
-  finalString.entityType = 'team'
   finalString.imgName = team.thumbnail
 
   if (data && data.created_at) {

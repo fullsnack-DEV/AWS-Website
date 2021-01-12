@@ -87,7 +87,7 @@ function BackgroundProfile({
             <View style={{
               flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
             }}>
-              {(currentUserData.entity_type === 'team' && currentUserData.entity_type === 'club') && <View style={{
+              {(currentUserData.entity_type === 'team' || currentUserData.entity_type === 'club') && <View style={{
                 flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
               }}>
                 <Text style={styles.cityTextStyle}>{currentUserData.sport ? Utility.capitalize(currentUserData.sport) : ''}</Text>

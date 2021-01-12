@@ -9,7 +9,6 @@ import moment from 'moment';
 import TCEventView from '../../../components/TCEventView';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
-import TCInnerLoader from '../../../components/TCInnerLoader';
 
 export default function EventScheduleScreen({
   onItemPress,
@@ -19,15 +18,12 @@ export default function EventScheduleScreen({
   profileID,
 }) {
   const [filterData, setFilterData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (eventData) {
       const todayData = [];
       const tomorrowData = [];
       const futureData = [];
-      console.log('ED : ', eventData);
-      eventData.filter((item_filter) => {
+      eventData.map((item_filter) => {
         const startDate = new Date(item_filter.start_datetime * 1000);
         const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
         const dateText = moment(dateFormat).calendar(null, {
@@ -48,38 +44,37 @@ export default function EventScheduleScreen({
         }
         return null;
       })
+      console.log('ED: ', eventData)
       let filData = [];
-      if (todayData?.length > 0 || tomorrowData?.length > 0 || futureData?.length > 0) {
-        filData = [
-          {
-            title: 'Today',
-            data: todayData,
-          },
-          {
-            title: 'Tomorrow',
-            data: tomorrowData,
-          },
-          {
-            title: 'Future',
-            data: futureData,
-          },
-        ];
-        setFilterData([...filData]);
-      } else {
-        setFilterData([]);
+      if (todayData && tomorrowData && futureData) {
+        if (todayData?.length > 0 || tomorrowData?.length > 0 || futureData?.length > 0) {
+          filData = [
+            {
+              title: 'Today',
+              data: todayData,
+            },
+            {
+              title: 'Tomorrow',
+              data: tomorrowData,
+            },
+            {
+              title: 'Future',
+              data: futureData,
+            },
+          ];
+          setFilterData([...filData]);
+        } else {
+          setFilterData([]);
+        }
       }
+    } else {
+      setFilterData([]);
     }
-  }, [eventData])
-  useEffect(() => {
-    if (filterData?.length) {
-      setLoading(false);
-    }
-  }, [filterData])
+  }, [eventData]);
+
   return (
     <KeyboardAvoidingView style={ styles.mainContainer } behavior={'padding'}>
-      {loading && <TCInnerLoader visible={true}/>}
-      {!loading
-        && <SectionList
+      <SectionList
               ListEmptyComponent={<Text style={styles.dataNotFoundText}>
                 Data Not Found
               </Text>}
@@ -106,7 +101,6 @@ export default function EventScheduleScreen({
           keyExtractor={(item, index) => index.toString()}
           bounces={false}
         />
-      }
     </KeyboardAvoidingView>
   );
 }

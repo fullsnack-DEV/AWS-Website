@@ -328,7 +328,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
           <View>
             <TCLabel title= {strings.slogan}/>
             <TCTextField
-            placeholder={strings.enterBioPlaceholder}
+            placeholder={'Enter your slogan'}
             onChangeText={(text) => setProfile({ ...profile, description: text })}
             multiline
             maxLength={150}

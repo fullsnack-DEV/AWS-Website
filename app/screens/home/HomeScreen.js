@@ -101,6 +101,7 @@ import RefereeReservationItem from '../../components/Schedule/RefereeReservation
 import { getRefereeReservationDetails } from '../../api/Reservations';
 import TCSearchBox from '../../components/TCSearchBox';
 import { getGameHomeScreen } from '../../utils/gameUtils';
+import TCInnerLoader from '../../components/TCInnerLoader';
 
 const reviews_data = [
   {
@@ -204,7 +205,7 @@ export default function HomeScreen({ navigation, route }) {
     draw: 0,
   });
 
-  const [eventData, setEventData] = useState([]);
+  const [eventData, setEventData] = useState(null);
   const [timeTable, setTimeTable] = useState([]);
   const [scoreboardGameData, setScoreboardGameData] = useState([]);
   const [filterScoreboardGameData, setFilterScoreboardGameData] = useState([]);
@@ -319,14 +320,14 @@ export default function HomeScreen({ navigation, route }) {
 
       if (count < 5) {
         const userRoles = [...userDetails.games, ...userDetails.referee_data]
-        if (admin) {
-          const addrole = { sport_name: strings.addrole, item_type: 'add_new' }
-          userRoles.push(addrole)
-        }
+        // if (admin) {
+        //   const addrole = { sport_name: strings.addrole, item_type: 'add_new' }
+        //   userRoles.push(addrole)
+        // }
         userDetails.roles = userRoles
       } else if (admin) {
-        userDetails.games.push({ sport_name: strings.addPlaying, item_type: 'add_new' })
-        userDetails.referee_data.push({ sport_name: strings.addRefereeing, item_type: 'add_new' })
+        // userDetails.games.push({ sport_name: strings.addPlaying, item_type: 'add_new' })
+        // userDetails.referee_data.push({ sport_name: strings.addRefereeing, item_type: 'add_new' })
       }
 
       if (res2) {
@@ -1298,19 +1299,27 @@ export default function HomeScreen({ navigation, route }) {
             safeAreaStyle={{ position: 'absolute' }}
             leftComponent={
               (route && route.params && route.params.backButtonVisible) && (
-                <TouchableOpacity onPress={() => {
-                  if (route?.params?.sourceScreen) {
-                    navigation.popToTop()
-                  } else {
-                    navigation.goBack()
-                  }
-                }}>
-                  <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
+                <TouchableOpacity
+                    style={{
+                      backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
+                    }}
+                    onPress={() => {
+                      if (route?.params?.sourceScreen) {
+                        navigation.popToTop()
+                      } else {
+                        navigation.goBack()
+                      }
+                    }}>
+                  <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
                 </TouchableOpacity>)
             }
             rightComponent={
-              (route && !route.params) && (<TouchableOpacity onPress={() => navigation.openDrawer()}>
-                <Image source={images.menu} style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
+              (route && !route.params) && (<TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
+              }}
+                  onPress={() => navigation.openDrawer()}>
+                <Image source={images.menu} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
               </TouchableOpacity>)
             }
           />
@@ -1438,7 +1447,8 @@ export default function HomeScreen({ navigation, route }) {
                       onItemPress={() => {}}
                     />
                   </View>
-                  {scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+                  {!eventData && <TCInnerLoader visible={true}/>}
+                  {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
                     <EventScheduleScreen
                       eventData={eventData}
                       navigation={navigation}
@@ -1467,7 +1477,7 @@ export default function HomeScreen({ navigation, route }) {
                     />
                   </View>}
 
-                  {scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
+                  {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
                     <View style={styles.shceduleCalenderView}>
                       <BackForwardView
                         textValue={moment(selectionDate).format('MMMM YYYY')}
@@ -1909,7 +1919,7 @@ export default function HomeScreen({ navigation, route }) {
                 <Text style={{
                   margin: 20, color: colors.whiteColor, fontSize: 20, fontFamily: fonts.RBlack,
                 }} onPress={() => {
-                  if (authContext?.entity?.obj?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
+                  if (authContext?.user?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
                     setPlaysInModalVisible(!playsInModalVisible)
                     navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName, game_fee: selectPlayerData.fee || 0 } })
                   } else {
