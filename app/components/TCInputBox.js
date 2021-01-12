@@ -25,6 +25,7 @@ const TCInputBox = ({
   <View style={{ ...styles.sectionStyle, ...style }} >
     <TextInput
         multiline={multiline}
+        textAlignVertical={multiline ? 'top' : 'center'}
         value={value}
         style={{ ...styles.textInput, ...textInputStyle }}
         placeholder={placeHolderText}

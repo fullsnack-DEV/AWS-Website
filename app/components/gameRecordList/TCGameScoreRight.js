@@ -100,7 +100,8 @@ export default function TCGameScoreRight({
           </Text>
           <View style={{ width: '22%' }}>
             <FastImage
-              source={ images.profilePlaceHolder }
+                resizeMode={'cover'}
+              source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.profilePlaceHolder }
               style={ styles.rightProfileImg }
             />
           </View>
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   rightProfileImg: {
-    borderRadius: 3,
+    borderRadius: 15,
     height: 20,
     marginLeft: 10,
     marginRight: 15,

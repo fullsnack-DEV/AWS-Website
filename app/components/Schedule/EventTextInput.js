@@ -31,6 +31,7 @@ function EventTextInput({
           onChangeText={onChangeText}
           value={value}
           multiline={multiline}
+          textAlignVertical={multiline ? 'top' : 'center'}
           keyboardType={keyboardType}
         />
       </View>

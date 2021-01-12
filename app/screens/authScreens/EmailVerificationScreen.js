@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, View, Text, Image, TouchableOpacity, Alert,
 } from 'react-native';
@@ -14,6 +14,13 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function EmailVerificationScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(60);
+
+  useEffect(() => {
+    const timerController = timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
+    return () => clearInterval(timerController);
+  }, [timer]);
+
   const verifyUserEmail = () => {
     setLoading(true);
     firebase
@@ -37,19 +44,26 @@ export default function EmailVerificationScreen({ navigation, route }) {
       });
   };
 
-  const resend = () => {
+  const resend = async () => {
     setLoading(true);
-    const user = firebase.auth().currentUser;
+    const user = await firebase.auth().currentUser;
     user
       .sendEmailVerification()
       .then(() => {
         setLoading(false);
+        setTimer(60);
         setTimeout(() => Alert.alert('Verification Link send sucessfully'), 100)
       })
       .catch((e) => {
+        let message = '';
         setLoading(false);
+        if (e.code === 'auth/too-many-requests') {
+          message = 'Email Verification Link is already Sent, Try after some moment';
+        } else {
+          message = e.message;
+        }
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          Alert.alert(strings.alertmessagetitle, message);
         }, 100);
       });
   };
@@ -88,7 +102,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
         </View>
       </TouchableOpacity>
       <View>
-        <TouchableOpacity onPress={() => resend()}>
+        <TouchableOpacity onPress={() => resend()} disabled={timer !== 0} style={{ opacity: timer > 0 ? 0.6 : 1 }}>
           <View
             style={{
               borderRadius: 40,
@@ -100,8 +114,14 @@ export default function EmailVerificationScreen({ navigation, route }) {
               marginTop: '4%',
               height: 50,
             }}>
-            <Text style={{ color: 'orange', fontSize: 15, fontWeight: '700' }}>
-              Resend Verification Link{' '}
+            <Text style={{
+              width: '100%',
+              textAlign: 'center',
+              color: 'orange',
+              fontSize: 15,
+              fontWeight: '700',
+            }}>
+              {timer !== 0 ? `Resend Link After ${timer}s` : 'Resend Verification Link'}
             </Text>
           </View>
         </TouchableOpacity>

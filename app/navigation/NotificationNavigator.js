@@ -44,6 +44,17 @@ import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScree
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
+import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
+import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
+import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
+import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
+import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/BookScorekeeper';
+import ScorekeeperBookingDateAndTime
+  from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
+import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
+import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
+import SoccerApproveDisapproveConfirmation
+  from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
 
 const Stack = createStackNavigator();
 
@@ -560,6 +571,90 @@ function NotificationNavigator() {
         },
       }}
     />
+      {/*  Book A Referee */}
+      <Stack.Screen
+            name="BookReferee"
+            component={BookReferee}
+            options={{
+              headerShown: false,
+            }}
+        />
+      <Stack.Screen
+            name="RefereeBookingDateAndTime"
+            component={RefereeBookingDateAndTime}
+            options={{
+              headerShown: false,
+            }}
+        />
+      <Stack.Screen
+            name="RefereeSelectMatch"
+            component={RefereeSelectMatch}
+            options={{
+              headerShown: false,
+            }}
+        />
+      <Stack.Screen
+            name="BookRefereeSuccess"
+            component={ BookRefereeSuccess }
+            options={ {
+              headerShown: false,
+            } }
+        />
+      {/*  Book A Scorekeeper */}
+      <Stack.Screen
+            name="BookScorekeeper"
+            component={BookScorekeeper}
+            options={{
+              headerShown: false,
+            }}
+        />
+      <Stack.Screen
+            name="ScorekeeperBookingDateAndTime"
+            component={ScorekeeperBookingDateAndTime}
+            options={{
+              headerShown: false,
+            }}
+        />
+
+      <Stack.Screen
+            name="BookScorekeeperSuccess"
+            component={ BookScorekeeperSuccess }
+            options={ {
+              headerShown: false,
+            } }
+        />
+      <Stack.Screen
+            name="SoccerRecordList"
+            component={ SoccerRecordList }
+            options={ {
+              title: 'Match Record',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            } }
+        />
+      <Stack.Screen
+            name="SoccerApproveDisapproveConfirmation"
+            component={ SoccerApproveDisapproveConfirmation }
+            options={ {
+              title: 'Match Record',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            } }
+        />
     </Stack.Navigator>
   );
 }

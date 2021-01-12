@@ -258,6 +258,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 <TextInput
                   placeholder={'Choose Date & Time'}
                   multiline={true}
+                  textAlignVertical={'top'}
                   style={styles.textInput}
                   value={
                     (bodyParams && bodyParams.start_datetime && bodyParams.end_datetime

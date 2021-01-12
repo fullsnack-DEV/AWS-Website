@@ -184,6 +184,7 @@ export default function CreateClubForm3({ navigation, route }) {
             onChangeText={ (text) => setMembershipFeeDetail(text) }
             value={ membershipFeeDetail }
             multiline
+            textAlignVertical={'top'}
             numberOfLines={ 4 }
             placeholder={ strings.membershipPlaceholder }
           />

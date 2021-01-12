@@ -66,6 +66,7 @@ export default function CreateTeamForm3({ navigation, route }) {
             value={ basicFeeDetail }
             multiline
             numberOfLines={ 4 }
+            textAlignVertical={'top'}
             placeholder={ strings.feeDetailsPlaceholder }
           />
         </View>
@@ -162,6 +163,7 @@ export default function CreateTeamForm3({ navigation, route }) {
             onChangeText={ (text) => setMembershipFeeDetail(text) }
             value={ membershipFeeDetail }
             multiline
+            textAlignVertical={'top'}
             numberOfLines={ 4 }
             placeholder={ strings.membershipPlaceholder }
           />

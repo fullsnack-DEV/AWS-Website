@@ -41,7 +41,6 @@ import * as Utils from '../../challenge/ChallengeUtility';
 import {
   deleteEvent, getEventById, getEvents, getSlots,
 } from '../../../api/Schedule';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
@@ -51,6 +50,7 @@ import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import { getGameHomeScreen } from '../../../utils/gameUtils';
 import TCSearchBox from '../../../components/TCSearchBox';
+import TCInnerLoader from '../../../components/TCInnerLoader';
 
 const { width } = Dimensions.get('window');
 
@@ -196,7 +196,7 @@ export default function ScheduleScreen({ navigation }) {
   };
   return (
     <View style={ styles.mainContainer }>
-      <ActivityLoader visible={loading} />
+
       {/* <SearchView
         placeholder={strings.searchText}
         onChangeText={(text) => {
@@ -233,7 +233,8 @@ export default function ScheduleScreen({ navigation }) {
             onItemPress={() => {}}
           /> */}
         </View>
-        {scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+        <TCInnerLoader visible={loading} />
+        {!loading && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
           <EventScheduleScreen
             eventData={eventData}
             navigation={navigation}
@@ -265,7 +266,7 @@ export default function ScheduleScreen({ navigation }) {
             onPress={() => setCreateEventModal(true) }
           />}
         </View>}
-        {scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
+        {!loading && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
           <View style={styles.shceduleCalenderView}>
             <BackForwardView
               textValue={moment(selectionDate).format('MMMM YYYY')}

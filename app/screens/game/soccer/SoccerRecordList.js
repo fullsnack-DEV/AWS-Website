@@ -120,7 +120,7 @@ export default function SoccerRecordList({ route, navigation }) {
           <View style={ styles.profileShadow }>
             <FastImage
                   resizeMode={'cover'}
-                  source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.teamPlaceholder }
+                  source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.teamPlaceholder }
                   style={styles.profileImg}
               />
           </View>
@@ -165,7 +165,7 @@ export default function SoccerRecordList({ route, navigation }) {
           <View style={ styles.profileShadow }>
             <FastImage
                   resizeMode={'cover'}
-                  source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.teamPlaceholder }
+                  source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.teamPlaceholder }
                   style={styles.profileImg}
               />
           </View>
@@ -174,7 +174,6 @@ export default function SoccerRecordList({ route, navigation }) {
       {/* {!loading && ( */}
       <Fragment>
         <FlatList
-
               keyExtractor={({ index }) => index}
               style={{ height: hp(30) }}
               data={matchRecords}
@@ -186,7 +185,6 @@ export default function SoccerRecordList({ route, navigation }) {
                     {!isGameState && isHomeTeam && (
                       <TCGameScoreLeft
                               gameData={gameData}
-                              memberData={'d'}
                               recordData={item}
                               editor={editorChecked}
                           />

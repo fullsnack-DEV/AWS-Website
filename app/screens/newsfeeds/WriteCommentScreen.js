@@ -117,6 +117,7 @@ export default function WriteCommentScreen({
                         placeholder={ 'Write a comment' }
                         placeholderTextColor={ colors.userPostTimeColor }
                         multiline={ true }
+                        textAlignVertical={'top'}
                         value={ commentTxt }
                         onChangeText={ (text) => setCommentText(text) }
                         style={ {

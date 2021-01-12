@@ -68,7 +68,8 @@ export default function TCGameScoreLeft(
           <View style={ styles.leftView }>
             <View style={{ width: '22%' }}>
               <FastImage
-                    source={ images.profilePlaceHolder }
+                    resizeMode={'cover'}
+                    source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.profilePlaceHolder }
                     style={ styles.leftProfileImg }
                 />
             </View>
@@ -81,7 +82,7 @@ export default function TCGameScoreLeft(
             <View style={{ width: '25%', alignItems: 'flex-end', right: 10 }}>
               <View style={styles.gameRecordButton}>
                 <FastImage
-                    resizeMode={'contain'}
+                      resizeMode={'contain'}
                       source={ soccerGamePlayStatsImage[recordData?.verb] }
                       style={ styles.gameRecordImg }
                   />
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
 
   leftProfileImg: {
-    borderRadius: 3,
+    borderRadius: 15,
     height: 20,
     marginLeft: 15,
     marginRight: 10,

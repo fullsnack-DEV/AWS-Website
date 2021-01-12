@@ -46,6 +46,7 @@ const BookReferee = ({ navigation, route }) => {
     );
     return (
       <RenderReferee
+        profilePic={item?.thumbnail}
         isSelected={item?.user_id === selectedReferee?.user_id}
         fees={referee?.[0]?.fee ?? 0}
         name={item?.full_name}

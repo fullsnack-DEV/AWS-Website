@@ -57,8 +57,10 @@ export default function UserHomeTopSection({
       />)
   }
 
-  const renderAddRole = () => (
-    <UserInfoAddRole
+  const renderAddRole = () => {
+    if (isAdmin) {
+      return (
+        <UserInfoAddRole
       title={strings.addrole}
       thumbURL={images.addRole}
       onPress={() => {
@@ -67,31 +69,44 @@ export default function UserHomeTopSection({
         }
       }}
     />
-  );
+      )
+    }
+    return null;
+  };
 
-  const renderAddRefereeRole = ({ item }) => (
-    <UserInfoAddRole
-      title={item.sport_name}
-      thumbURL={images.addRole}
-      onPress={() => {
-        if (onRefereesInPress) {
-          onRefereesInPress()
-        }
-      }}
-    />
-  );
+  const renderAddRefereeRole = ({ item }) => {
+    if (isAdmin) {
+      return (
+        <UserInfoAddRole
+              title={item.sport_name}
+              thumbURL={images.addRole}
+              onPress={() => {
+                if (onRefereesInPress) {
+                  onRefereesInPress()
+                }
+              }}
+          />
+      );
+    }
+    return null;
+  }
 
-  const renderAddPlayInRole = ({ item }) => (
-    <UserInfoAddRole
-      title={item.sport_name}
-      thumbURL={images.addRole}
-      onPress={() => {
-        if (onPlayInPress) {
-          onPlayInPress()
-        }
-      }}
-    />
-  );
+  const renderAddPlayInRole = ({ item }) => {
+    if (isAdmin) {
+      return (
+        <UserInfoAddRole
+              title={item.sport_name}
+              thumbURL={images.addRole}
+              onPress={() => {
+                if (onPlayInPress) {
+                  onPlayInPress()
+                }
+              }}
+          />
+      );
+    }
+    return null;
+  }
 
   const renderUserRole = ({ item }) => {
     if (item.item_type) {
@@ -177,7 +192,7 @@ export default function UserHomeTopSection({
           <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
           <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={userDetails.games}
+            data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: 'add_new' }]}
             horizontal
             renderItem={renderPlayIn}
             keyExtractor={(item, index) => index.toString()}
@@ -190,7 +205,7 @@ export default function UserHomeTopSection({
           <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin}/>
           <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={userDetails.referee_data}
+            data={[...userDetails.referee_data, { sport_name: strings.addRefereeing, item_type: 'add_new' }]}
             horizontal
             renderItem={renderRefereesIn}
             keyExtractor={(item, index) => index.toString()}
@@ -202,7 +217,7 @@ export default function UserHomeTopSection({
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={userDetails.roles}
+            data={[...userDetails.roles, { sport_name: strings.addrole, item_type: 'add_new' }]}
             horizontal
             renderItem={renderUserRole}
             keyExtractor={(item, index) => index.toString()}

@@ -161,6 +161,7 @@ export default function EditPostScreen({
           }}
           style={styles.textInputField}
           multiline={true}
+          textAlignVertical={'top'}
         />
         {selectImage.length > 0 && (
           <FlatList

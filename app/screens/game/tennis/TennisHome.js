@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -40,10 +41,11 @@ const TennisHome = ({ navigation, route }) => {
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getGameDetails();
-  }, []);
+  }, [navigation, isFocused]);
 
   const getGameDetails = () => {
     setLoading(true)
@@ -120,7 +122,7 @@ const TennisHome = ({ navigation, route }) => {
   )
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />
-    <TopBackgroundHeader navigation={navigation} gameData={gameData}>
+    <TopBackgroundHeader isAdmin={isAdmin} navigation={navigation} gameData={gameData}>
       <TCScrollableProfileTabs
         tabItem={TAB_ITEMS}
         onChangeTab={(ChangeTab) => {
