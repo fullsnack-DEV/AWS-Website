@@ -23,7 +23,9 @@ export default function TCEventView({
   eventOfSection,
   entity,
   profileID,
+  screenUserId,
 }) {
+  console.log('data.game.referees', data.game.referees);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -100,12 +102,6 @@ export default function TCEventView({
       awayTeamImage = data.game.away_team.thumbnail;
     }
   }
-  let refereeImage = null;
-  if (data && data.game && data.game.referees) {
-    if (data.game.referees.length > 0) {
-      refereeImage = data.game.referees[0].thumbnail;
-    }
-  }
   const refereeFound = (dataObj) => (dataObj?.game?.referees || []).some((e) => entity.uid === e.referee_id)
   let moreBtnVisible = true;
   if (data && data.game) {
@@ -126,7 +122,11 @@ export default function TCEventView({
       || (data?.game?.away_team?.user_id || data?.game?.away_team?.group_id)
         === userID || refereeFound(data)
     ) {
-      moreBtnVisible = true;
+      if (!screenUserId) {
+        moreBtnVisible = true;
+      } else {
+        moreBtnVisible = false;
+      }
     } else {
       moreBtnVisible = false;
     }
@@ -194,9 +194,10 @@ export default function TCEventView({
           {eventOfSection && (
             <EventOfItem
               eventOfText={'Referee'}
-              countryIcon={
-                refereeImage ? { uri: refereeImage } : images.commentReport
-              }
+              refereeList = {data.game.referees}
+              // countryIcon={
+              //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
+              // }
             />
           )}
         </View>
