@@ -14,7 +14,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import crashlytics from '@react-native-firebase/crashlytics';
+// import crashlytics from '@react-native-firebase/crashlytics';
 
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
@@ -47,7 +47,7 @@ export default function LoginScreen({ navigation }) {
   const [loading, setloading] = useState(false);
 
   useEffect(() => {
-    crashlytics().crash()
+    // crashlytics().crash()
   }, [])
   // Google sign-in configuration initialization
   GoogleSignin.configure({
