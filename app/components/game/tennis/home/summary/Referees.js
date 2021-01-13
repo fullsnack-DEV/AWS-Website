@@ -14,6 +14,7 @@ import TCGradientButton from '../../../../TCGradientButton';
 import AuthContext from '../../../../../auth/context'
 import * as RefereeUtils from '../../../../../screens/referee/RefereeUtility';
 import ActivityLoader from '../../../../loader/ActivityLoader';
+import GameStatus from '../../../../../Constants/GameStatus';
 
 const Referees = ({
   gameData,
@@ -138,7 +139,7 @@ const Referees = ({
                   </Text>
                 </View>
               )}/>
-      {isAdmin && gameData?.status !== 'ended' && (
+      {isAdmin && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
         <TCGradientButton
                   onPress={handleBookReferee}
                   startGradientColor={colors.whiteColor}

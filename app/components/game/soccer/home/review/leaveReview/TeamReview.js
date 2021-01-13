@@ -6,6 +6,7 @@ import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
 import RatePerformance from './RatePerformance';
 import TCInputBox from '../../../../../TCInputBox';
+import TCKeyboardView from '../../../../../TCKeyboardView';
 
 const TeamReview = ({
   teamNo,
@@ -15,36 +16,37 @@ const TeamReview = ({
   teamData,
   starColor,
 }) => (
-  <View style={styles.mainContainer}>
+  <TCKeyboardView>
+    <View style={styles.mainContainer}>
 
-    {/* Title */}
-    <Text style={styles.titleText}>Please, rate the performance of New York City FC and leave a review for the team.</Text>
+      {/* Title */}
+      <Text style={styles.titleText}>Please, rate the performance of New York City FC and leave a review for the team.</Text>
 
-    {/*  Logo Container */}
-    <View style={styles.logoContainer}>
+      {/*  Logo Container */}
+      <View style={styles.logoContainer}>
 
-      {/* Image */}
-      <View style={styles.imageContainer}>
-        <FastImage
+        {/* Image */}
+        <View style={styles.imageContainer}>
+          <FastImage
                source={teamData?.full_image ? { uri: teamData?.full_image } : images.teamPlaceholder}
                resizeMode={'contain'}
                style={{ height: 50, width: 50 }}
           />
+        </View>
+
+        {/*    Team name */}
+        <Text style={styles.teamName}>{teamData?.group_name}</Text>
+
+        {/*    Country Name */}
+        <Text style={styles.countryName}>{teamData?.country}</Text>
+
       </View>
 
-      {/*    Team name */}
-      <Text style={styles.teamName}>{teamData?.group_name}</Text>
+      {/* Seperator */}
+      <View style={styles.seperator}/>
 
-      {/*    Country Name */}
-      <Text style={styles.countryName}>{teamData?.country}</Text>
-
-    </View>
-
-    {/* Seperator */}
-    <View style={styles.seperator}/>
-
-    {/*  Rate Performance */}
-    <RatePerformance
+      {/*  Rate Performance */}
+      <RatePerformance
         teamNo={teamNo}
         reviewsData={reviewsData}
         setTeamReview={(key, value) => setTeamReview(teamNo, key, value)}
@@ -52,10 +54,10 @@ const TeamReview = ({
         starColor={starColor}
     />
 
-    {/*  Leave a Review */}
-    <View style={styles.leaveReviewContainer}>
-      <Text style={styles.titleText}>Leave a review</Text>
-      <TCInputBox
+      {/*  Leave a Review */}
+      <View style={styles.leaveReviewContainer}>
+        <Text style={styles.titleText}>Leave a review</Text>
+        <TCInputBox
           onChangeText={(value) => setTeamReview(teamNo, 'comment', value)}
           value={reviewsData?.team_reviews[teamNo]?.comment ?? ''}
           multiline={true}
@@ -68,14 +70,15 @@ const TeamReview = ({
             padding: 15,
           }}
       />
+      </View>
+
+      {/*  Footer */}
+      <Text style={styles.footerText}>
+        (<Text style={{ color: colors.redDelColor }}>*</Text> required)
+      </Text>
+
     </View>
-
-    {/*  Footer */}
-    <Text style={styles.footerText}>
-      (<Text style={{ color: colors.redDelColor }}>*</Text> required)
-    </Text>
-
-  </View>
+  </TCKeyboardView>
 )
 const styles = StyleSheet.create({
   mainContainer: {

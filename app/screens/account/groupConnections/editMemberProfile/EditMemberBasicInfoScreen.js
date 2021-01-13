@@ -177,7 +177,6 @@ export default function EditMemberBasicInfoScreen({ navigation, route }) {
       }} />
   );
   return (
-
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
       <View>

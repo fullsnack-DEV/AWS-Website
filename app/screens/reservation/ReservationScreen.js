@@ -16,6 +16,7 @@ import TCScrollableTabs from '../../components/TCScrollableTabs';
 import AuthContext from '../../auth/context'
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as Utils from '../challenge/ChallengeUtility';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ReservationScreen({ navigation }) {
   const isFocused = useIsFocused();
@@ -94,6 +95,14 @@ export default function ReservationScreen({ navigation }) {
                     renderItem={({ item }) => (
                       <MatchReservation
                             data={item}
+                            onPressGameCard={() => {
+                              const gameHome = getGameHomeScreen(item.sport);
+                              if (item?.game?.game_id || item?.game_id) {
+                                navigation.navigate(gameHome, {
+                                  gameId: item?.game?.game_id || item?.game_id,
+                                });
+                              }
+                            }}
                             onPressButon={() => {
                               console.log('Selected Item::', item);
                               goToReservationDetail(item)

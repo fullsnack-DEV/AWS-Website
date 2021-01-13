@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect, useContext } from 'react';
 
 import {
-  View, Text, ScrollView, Alert, StyleSheet,
+  View, Text, Alert,
 } from 'react-native';
 
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
@@ -18,6 +18,7 @@ import TCDateTimePicker from '../../../components/TCDateTimePicker';
 import TCPicker from '../../../components/TCPicker';
 import AuthContext from '../../../auth/context';
 import DataSource from '../../../Constants/DataSource';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function UserBasicInfoScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -97,21 +98,20 @@ export default function UserBasicInfoScreen({ navigation, route }) {
   ).getDate()}, ${new Date(birthDate * 1000).getFullYear()}`;
 
   return (
-    <>
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <View>
-          <TCLabel title={strings.emailPlaceHolder} style={{ marginTop: 37 }} />
-          <TCTextField
+    <TCKeyboardView>
+      <ActivityLoader visible={loading} />
+      <View>
+        <TCLabel title={strings.emailPlaceHolder} style={{ marginTop: 37 }} />
+        <TCTextField
             placeholder={strings.enterEmailPlaceholder}
             onChangeText={(text) => setUserData({ ...userData, email: text })}
             value={userData.email}
           />
-        </View>
+      </View>
 
-        <View>
-          <TCLabel title={strings.phone} />
-          <TCPhoneNumber
+      <View>
+        <TCLabel title={strings.phone} />
+        <TCPhoneNumber
             marginBottom={2}
             placeholder={strings.selectCode}
             value={userData.phone_country}
@@ -123,29 +123,29 @@ export default function UserBasicInfoScreen({ navigation, route }) {
               setUserData({ ...userData, phone: text });
             }}
           />
-        </View>
+      </View>
 
-        <View>
-          <TCLabel title={strings.addressPlaceholder} />
-          <TCTextField placeholder={strings.addressPlaceholder}
+      <View>
+        <TCLabel title={strings.addressPlaceholder} />
+        <TCTextField placeholder={strings.addressPlaceholder}
           onChangeText={(text) => setUserData({ ...userData, address: text })}
             value={userData.address}
             />
-        </View>
+      </View>
 
-        <View>
-          <TCLabel title={strings.birth} />
-          <TCTouchableLabel
+      <View>
+        <TCLabel title={strings.birth} />
+        <TCTouchableLabel
             onPress={() => onBirthDayClicked()}
             placeholder={strings.addBirthdayText}
             title={birthdayInString(userData.birthday)}
             showDownArrow={true}
           />
-        </View>
+      </View>
 
-        <View>
-          <TCLabel title={strings.gender} />
-          <TCPicker
+      <View>
+        <TCLabel title={strings.gender} />
+        <TCPicker
             dataSource={DataSource.Gender}
             placeholder={strings.selectGenderPlaceholder}
             value={userData.gender}
@@ -153,41 +153,33 @@ export default function UserBasicInfoScreen({ navigation, route }) {
               setUserData({ ...userData, gender: value });
             }}
           />
-        </View>
+      </View>
 
-        <View>
-          <TCLabel title={strings.height} style={{ marginTop: 37 }} />
-          <TCTextField
+      <View>
+        <TCLabel title={strings.height} style={{ marginTop: 37 }} />
+        <TCTextField
             placeholder={strings.heightplaceholder}
             onChangeText={(text) => setUserData({ ...userData, height: text })}
             value={userData.height}
           />
-        </View>
+      </View>
 
-        <View>
-          <TCLabel title={strings.weight} style={{ marginTop: 37 }} />
-          <TCTextField
+      <View>
+        <TCLabel title={strings.weight} style={{ marginTop: 37 }} />
+        <TCTextField
             placeholder={strings.weightplaceholder}
             onChangeText={(text) => setUserData({ ...userData, weight: text })}
             value={userData.weight}
           />
-        </View>
+      </View>
 
-        <View style={{ height: 50 }} />
-      </ScrollView>
+      <View style={{ height: 50 }} />
       <TCDateTimePicker
         title={'Choose Birthday'}
         visible={show}
         onDone={handleDonePress}
         onCancel={handleCancelPress}
       />
-    </>
+    </TCKeyboardView>
   );
 }
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-});

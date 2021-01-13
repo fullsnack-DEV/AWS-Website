@@ -50,6 +50,7 @@ import TCSearchBox from '../TCSearchBox';
 import TCTags from '../TCTags';
 import ModalLocationSearch from './ModalLocationSearch';
 import EditRefereeCertificate from './EditRefereeCertificate';
+import TCKeyboardView from '../TCKeyboardView';
 
 const privacy_Data = [
   {
@@ -738,20 +739,25 @@ function RefereeInfoSection({
         isVisible={editModal}
         backdropColor="black"
         style={{
-          margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0)',
+          height: hp(100),
+          margin: 0,
+          flex: 1,
+          justifyContent: 'flex-end',
+          backgroundColor: 'rgba(0,0,0,0)',
         }}
-        hasBackdrop
         onBackdropPress={() => setEditModal(false)}
-        backdropOpacity={0}
       >
-        <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
-          <LinearGradient
+        <TCKeyboardView>
+          <View style={{
+            ...styles.modalContainerViewStyle, height: hp(100), top: hp(5), backgroundColor: colors.whiteColor,
+          }}>
+            <LinearGradient
             colors={[colors.orangeColor, colors.yellowColor]}
             end={{ x: 0.0, y: 0.25 }}
             start={{ x: 1, y: 0.5 }}
             style={styles.gradiantHeaderViewStyle}>
-          </LinearGradient>
-          <Header
+            </LinearGradient>
+            <Header
             mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
               <TouchableOpacity onPress={() => setEditModal(false)}>
@@ -776,22 +782,26 @@ function RefereeInfoSection({
               </TouchableOpacity>
             }
           />
-          {editPressTitle === strings.bio && <EventTextInput
-              textInputStyle={{ height: 150 }}
-            value={bioText}
-            multiline={true}
-            onChangeText={(text) => {
-              setBioText(text);
-            }}
-          />}
+            <ScrollView style={{ flex: 1 }}>
+              {editPressTitle === strings.bio && (
+                <View>
+                  <EventTextInput
+                      textInputStyle={{ height: 150 }}
+                      value={bioText}
+                      multiline={true}
+                      onChangeText={(text) => {
+                        setBioText(text);
+                      }}
+                  />
+                </View>)}
 
-          {editPressTitle === strings.basicinfotitle && <View>
-            <EventItemRender
+              {editPressTitle === strings.basicinfotitle && <View>
+                <EventItemRender
               title={strings.gender}
               containerStyle={{ marginTop: 15 }}
             >
-              <View style={{ marginTop: 8 }}>
-                <TCPicker
+                  <View style={{ marginTop: 8 }}>
+                    <TCPicker
                   dataSource={[
                     { label: 'Male', value: 'Male' },
                     { label: 'Female', value: 'Female' },
@@ -802,17 +812,17 @@ function RefereeInfoSection({
                     setInfo({ ...info, genderText: value });
                   }}
                 />
-              </View>
-            </EventItemRender>
-            <EventItemRender
+                  </View>
+                </EventItemRender>
+                <EventItemRender
               title={strings.yearOfBirth}
               containerStyle={{ marginTop: 15 }}
             >
-              <BirthSelectItem
+                  <BirthSelectItem
                 title={info?.birthdayText ? moment(info.birthdayText).format('YYYY') : '-'}
                 onItemPress={() => setDateModalVisible(!dateModalVisible)}
               />
-              <DateTimePickerView
+                  <DateTimePickerView
                 visible={dateModalVisible}
                 onDone={handleDatePress}
                 onCancel={handleCancelPress}
@@ -820,12 +830,12 @@ function RefereeInfoSection({
                 mode={'date'}
                 maximumDate={new Date()}
               />
-            </EventItemRender>
-            <EventItemRender
+                </EventItemRender>
+                <EventItemRender
               title={strings.language}
               containerStyle={{ marginTop: 15 }}
             >
-              <BirthSelectItem
+                  <BirthSelectItem
                 title={selectedLanguage?.length > 0 ? selectedLanguage.map((item, index) => {
                   let tit = item?.title;
                   if (index !== selectedLanguage?.length - 1) tit += ', '
@@ -835,8 +845,8 @@ function RefereeInfoSection({
                   editLanguage();
                 }}
               />
-            </EventItemRender>
-            <ModalLocationSearch
+                </EventItemRender>
+                <ModalLocationSearch
                 visible={searchLocationModal}
                 onClose={() => setSearchLocationModal(false)}
                 onSelect={(location) => {
@@ -844,25 +854,25 @@ function RefereeInfoSection({
                   setInfo({ ...info, currentCity: city });
                 }}
             />
-            <EventItemRender
+                <EventItemRender
               title={strings.currrentCityTitle}
               containerStyle={{ marginTop: 15 }}
             >
-              <BirthSelectItem
+                  <BirthSelectItem
                 title={info.currentCity}
                 onItemPress={() => {
                   setSearchLocationModal(!searchLocationModal);
                 }}
               />
-            </EventItemRender>
-          </View>}
+                </EventItemRender>
+              </View>}
 
-          {editPressTitle === strings.certificateTitle && <KeyboardAwareScrollView enableOnAndroid={false}>
-            <EventItemRender
+              {editPressTitle === strings.certificateTitle && <KeyboardAwareScrollView enableOnAndroid={false}>
+                <EventItemRender
               title={strings.addCertiMainTitle}
               headerTextStyle={{ fontSize: 16 }}
             >
-              <FlatList
+                  <FlatList
                 data={certificatesData?.length ? [...certificatesData, '0'] : []}
                 scrollEnabled={true}
                 showsHorizontalScrollIndicator={ false }
@@ -949,10 +959,10 @@ function RefereeInfoSection({
                 ListFooterComponentStyle={{ marginTop: 20 }}
                 keyExtractor={(itemValue, index) => index.toString() }
              />
-            </EventItemRender>
-          </KeyboardAwareScrollView>}
+                </EventItemRender>
+              </KeyboardAwareScrollView>}
 
-          {editPressTitle === strings.refereeFee && <EventTextInput
+              {editPressTitle === strings.refereeFee && <EventTextInput
             value={refereeFeeCount.toString()}
             onChangeText={(text) => {
               setRefereeFeeCount(text);
@@ -965,118 +975,119 @@ function RefereeInfoSection({
             containerStyle={{ justifyContent: 'space-between' }}
           />}
 
-          {editPressTitle === strings.cancellationPolicy && <View>
-            <View>
-              <Text style={ styles.LocationText }>
-                {strings.cancellationPolicyTitle}
-              </Text>
-            </View>
-            <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
-                {selected === 0 ? (
-                  <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-                ) : (
-                  <FastImage
+              {editPressTitle === strings.cancellationPolicy && <View>
+                <View>
+                  <Text style={ styles.LocationText }>
+                    {strings.cancellationPolicyTitle}
+                  </Text>
+                </View>
+                <View style={ styles.radioButtonView }>
+                  <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
+                    {selected === 0 ? (
+                      <FastImage source={ images.radioSelect } style={ styles.radioImage } />
+                    ) : (
+                      <FastImage
                     source={ images.radioUnselect }
                     style={ styles.unSelectRadioImage }
                   />
-                )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.strictText}</Text>
-            </View>
-            <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
-                {selected === 1 ? (
-                  <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-                ) : (
-                  <FastImage
+                    )}
+                  </TouchableWithoutFeedback>
+                  <Text style={ styles.radioText }>{strings.strictText}</Text>
+                </View>
+                <View style={ styles.radioButtonView }>
+                  <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
+                    {selected === 1 ? (
+                      <FastImage source={ images.radioSelect } style={ styles.radioImage } />
+                    ) : (
+                      <FastImage
                     source={ images.radioUnselect }
                     style={ styles.unSelectRadioImage }
                   />
-                )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.moderateText}</Text>
-            </View>
-            <View style={ styles.radioButtonView }>
-              <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
-                {selected === 2 ? (
-                  <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-                ) : (
-                  <FastImage
+                    )}
+                  </TouchableWithoutFeedback>
+                  <Text style={ styles.radioText }>{strings.moderateText}</Text>
+                </View>
+                <View style={ styles.radioButtonView }>
+                  <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
+                    {selected === 2 ? (
+                      <FastImage source={ images.radioSelect } style={ styles.radioImage } />
+                    ) : (
+                      <FastImage
                     source={ images.radioUnselect }
                     style={ styles.unSelectRadioImage }
                   />
+                    )}
+                  </TouchableWithoutFeedback>
+                  <Text style={ styles.radioText }>{strings.flexibleText}</Text>
+                </View>
+                {selected === 0 && (
+                  <View>
+                    <Text style={ styles.membershipText }>{strings.strictText} </Text>
+                    <Text style={ styles.whoJoinText }>
+                      <Text style={ styles.membershipSubText }>
+                        {strings.strictPoint1Title}
+                      </Text>
+                      {'\n'}
+                      {strings.strictPoint1Desc}
+                      {'\n'}
+                      {'\n'}
+                      <Text style={ styles.membershipSubText }>
+                        {strings.strictPoint2Title}
+                      </Text>
+                      {'\n'}
+                      {strings.strictPoint2Desc}
+                    </Text>
+                  </View>
                 )}
-              </TouchableWithoutFeedback>
-              <Text style={ styles.radioText }>{strings.flexibleText}</Text>
-            </View>
-            {selected === 0 && (
-              <View>
-                <Text style={ styles.membershipText }>{strings.strictText} </Text>
-                <Text style={ styles.whoJoinText }>
-                  <Text style={ styles.membershipSubText }>
-                    {strings.strictPoint1Title}
-                  </Text>
-                  {'\n'}
-                  {strings.strictPoint1Desc}
-                  {'\n'}
-                  {'\n'}
-                  <Text style={ styles.membershipSubText }>
-                    {strings.strictPoint2Title}
-                  </Text>
-                  {'\n'}
-                  {strings.strictPoint2Desc}
-                </Text>
-              </View>
-            )}
-            {selected === 1 && (
-              <View>
-                <Text style={ styles.membershipText }>{strings.moderateText} </Text>
-                <Text style={ styles.whoJoinText }>
-                  <Text style={ styles.membershipSubText }>
-                    {strings.moderatePoint1Title}
-                  </Text>
-                  {'\n'}
-                  {strings.moderatePoint1Desc}
-                  {'\n'}
-                  {'\n'}
-                  <Text style={ styles.membershipSubText }>
-                    {strings.moderatePoint2Title}
-                  </Text>
-                  {'\n'}
-                  {strings.moderatePoint2Desc}
-                  {'\n'}
-                  {'\n'}
-                  <Text style={ styles.membershipSubText }>
-                    {strings.moderatePoint3Title}
-                  </Text>
-                  {strings.moderatePoint3Desc}
-                </Text>
-              </View>
-            )}
-            {selected === 2 && (
-              <View>
-                <Text style={ styles.membershipText }>{strings.flexibleText} </Text>
-                <Text style={ styles.whoJoinText }>
-                  <Text style={ styles.membershipSubText }>
-                    {strings.flexiblePoint1Title}
-                  </Text>
-                  {'\n'}
-                  {strings.flexiblePoint1Desc}
-                  {'\n'}
-                  {'\n'}
-                  <Text style={ styles.membershipSubText }>
-                    {strings.flexiblePoint2Title}
-                  </Text>
-                  {'\n'}
-                  {strings.flexiblePoint2Desc}
-                </Text>
-              </View>
-            )}
-          </View>}
-        </SafeAreaView>
+                {selected === 1 && (
+                  <View>
+                    <Text style={ styles.membershipText }>{strings.moderateText} </Text>
+                    <Text style={ styles.whoJoinText }>
+                      <Text style={ styles.membershipSubText }>
+                        {strings.moderatePoint1Title}
+                      </Text>
+                      {'\n'}
+                      {strings.moderatePoint1Desc}
+                      {'\n'}
+                      {'\n'}
+                      <Text style={ styles.membershipSubText }>
+                        {strings.moderatePoint2Title}
+                      </Text>
+                      {'\n'}
+                      {strings.moderatePoint2Desc}
+                      {'\n'}
+                      {'\n'}
+                      <Text style={ styles.membershipSubText }>
+                        {strings.moderatePoint3Title}
+                      </Text>
+                      {strings.moderatePoint3Desc}
+                    </Text>
+                  </View>
+                )}
+                {selected === 2 && (
+                  <View>
+                    <Text style={ styles.membershipText }>{strings.flexibleText} </Text>
+                    <Text style={ styles.whoJoinText }>
+                      <Text style={ styles.membershipSubText }>
+                        {strings.flexiblePoint1Title}
+                      </Text>
+                      {'\n'}
+                      {strings.flexiblePoint1Desc}
+                      {'\n'}
+                      {'\n'}
+                      <Text style={ styles.membershipSubText }>
+                        {strings.flexiblePoint2Title}
+                      </Text>
+                      {'\n'}
+                      {strings.flexiblePoint2Desc}
+                    </Text>
+                  </View>
+                )}
+              </View>}
+            </ScrollView>
+          </View>
 
-        <Modal
+          <Modal
           isVisible={editLanguageModal}
           backdropColor="black"
           style={{
@@ -1084,16 +1095,16 @@ function RefereeInfoSection({
           }}
           hasBackdrop
           onBackdropPress={() => setEditLanguageModal(false)}
-          backdropOpacity={0}
         >
-          <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
-            <LinearGradient
+            <TCKeyboardView>
+              <SafeAreaView style={[styles.modalContainerViewStyle, { top: hp(5), height: hp(100), backgroundColor: colors.whiteColor }]}>
+                <LinearGradient
               colors={[colors.orangeColor, colors.yellowColor]}
               end={{ x: 0.0, y: 0.25 }}
               start={{ x: 1, y: 0.5 }}
               style={styles.gradiantHeaderViewStyle}>
-            </LinearGradient>
-            <Header
+                </LinearGradient>
+                <Header
               mainContainerStyle={styles.headerMainContainerStyle}
               leftComponent={
                 <TouchableOpacity onPress={() => setEditLanguageModal(false)}>
@@ -1114,7 +1125,7 @@ function RefereeInfoSection({
                 </TouchableOpacity>
               }
             />
-            <TCSearchBox
+                <TCSearchBox
               style={{ margin: 15 }}
               value={searchLanguageText}
               onChangeText={(text) => {
@@ -1124,15 +1135,15 @@ function RefereeInfoSection({
                 setSearchLanguageText(text)
               }}
             />
-            {selectedLanguage.length > 0 && (
-              <TCTags
+                {selectedLanguage.length > 0 && (
+                  <TCTags
                 dataSource={selectedLanguage}
                 titleKey={'title'}
                 onTagCancelPress={handleTagPress}
               />
-            )}
-            <View style={{ margin: wp(3) }}>
-              <FlatList
+                )}
+                <View style={{ margin: wp(3) }}>
+                  <FlatList
                 ListEmptyComponent={
                   <Text style={{
                     textAlign: 'center',
@@ -1143,10 +1154,11 @@ function RefereeInfoSection({
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
               />
-            </View>
-          </SafeAreaView>
-        </Modal>
-
+                </View>
+              </SafeAreaView>
+            </TCKeyboardView>
+          </Modal>
+        </TCKeyboardView>
       </Modal>
 
       <ActionSheet

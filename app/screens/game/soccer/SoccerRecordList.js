@@ -150,9 +150,7 @@ export default function SoccerRecordList({ route, navigation }) {
             } }
             dashColor={ colors.lightgrayColor }
           />
-          <Text style={ styles.centerText }>
-            {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal, 2)}
-          </Text>
+          {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal, 2)}
         </View>
         <View style={ styles.rightView }>
           <Text style={{
