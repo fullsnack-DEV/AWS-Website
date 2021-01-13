@@ -353,7 +353,7 @@ const MessageChat = ({
         }
       />
       <View style={ styles.sperateLine } />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : null}>
         <FlatList
             // onContentSizeChange={() => scrollRef && scrollRef.current && scrollRef.current.scrollToEnd()}
             ref={scrollRef}

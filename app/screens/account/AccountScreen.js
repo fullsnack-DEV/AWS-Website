@@ -547,11 +547,11 @@ export default function AccountScreen({ navigation }) {
                         data={authContext?.entity?.auth?.user?.registered_sports}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
-                          <TouchableWithoutFeedback
+                          <View
                                 style={styles.listContainer}
                                 onPress={() => {
-                                  navigation.closeDrawer();
-                                  alert('Game Pressed');
+                                  // navigation.closeDrawer();
+                                  // alert('Game Pressed');
                                 }}
                             >
                             <View style={styles.entityTextContainer}>
@@ -561,7 +561,7 @@ export default function AccountScreen({ navigation }) {
                               />
                               <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
                             </View>
-                          </TouchableWithoutFeedback>
+                          </View>
                         )}
                         scrollEnabled={false}
                     />
@@ -571,11 +571,11 @@ export default function AccountScreen({ navigation }) {
                         data={authContext?.entity?.auth?.user?.referee_data}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
-                          <TouchableWithoutFeedback
+                          <View
                                 style={styles.listContainer}
                                 onPress={() => {
-                                  navigation.closeDrawer();
-                                  alert('Referee Pressed');
+                                  // navigation.closeDrawer();
+                                  // alert('Referee Pressed');
                                 }}
                             >
                             <View style={styles.entityTextContainer}>
@@ -585,7 +585,7 @@ export default function AccountScreen({ navigation }) {
                                 />
                               <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
                             </View>
-                          </TouchableWithoutFeedback>
+                          </View>
                         )}
                         scrollEnabled={false}
                     />

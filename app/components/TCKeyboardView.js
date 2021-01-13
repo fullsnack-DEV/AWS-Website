@@ -6,7 +6,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { heightPercentageToDP as hp } from '../utils';
 
 const scrollDefault = React.createRef();
-function TCKeyboardView({ children, scrollReference = scrollDefault }) {
+function TCKeyboardView({
+  children,
+  scrollReference = scrollDefault,
+  enableOnAndroid = false,
+}) {
   return (
     <TouchableWithoutFeedback
           style={styles.container}
@@ -17,13 +21,13 @@ function TCKeyboardView({ children, scrollReference = scrollDefault }) {
             ref={scrollReference}
               nestedScrollEnabled={true}
               bounces={false}
-              enableOnAndroid={false}
+              enableOnAndroid={enableOnAndroid}
               keyboardShouldPersistTaps="always"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ flex: 1 }}
               extraScrollHeight={hp(5)}>
         <View style={{ flex: 1 }}>
-          <ScrollView style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }} bounces={false}>
             {children}
           </ScrollView>
         </View>

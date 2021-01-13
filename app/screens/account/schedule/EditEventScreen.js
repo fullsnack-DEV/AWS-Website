@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import moment from 'moment';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -34,6 +34,7 @@ import EventTextInputItem from '../../../components/Schedule/EventTextInputItem'
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import * as Utility from '../../../utils/index';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function EditEventScreen({ navigation, route }) {
   const authContext = useContext(AuthContext)
@@ -248,7 +249,7 @@ export default function EditEventScreen({ navigation, route }) {
         }
       />
       <View style={ styles.sperateLine } />
-      <ScrollView>
+      <TCKeyboardView>
         <EventTextInputItem
           title={strings.title}
           placeholder={strings.titlePlaceholder}
@@ -491,7 +492,7 @@ export default function EditEventScreen({ navigation, route }) {
           minimumDate={eventEndDateTime || new Date()}
           mode={toggle ? 'date' : 'datetime'}
         />
-      </ScrollView>
+      </TCKeyboardView>
     </SafeAreaView>
   );
 }

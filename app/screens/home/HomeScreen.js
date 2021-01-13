@@ -2,6 +2,7 @@
 import React, {
   useEffect, useRef, useState, useContext,
 } from 'react';
+import FastImage from 'react-native-fast-image';
 import {
   Image,
   StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, Platform, ScrollView, SafeAreaView, Dimensions,
@@ -1327,7 +1328,7 @@ export default function HomeScreen({ navigation, route }) {
         )}
         renderStickyHeader={() => (
           <View>
-            {bgImage ? <Image source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
+            {bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
             <Header
               safeAreaStyle={{ position: 'absolute' }}
               centerComponent={
@@ -1337,7 +1338,7 @@ export default function HomeScreen({ navigation, route }) {
           </View>
         )}
         renderBackground={() => (
-          bgImage ? <Image source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
+          bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
         )}>
         <BackgroundProfile
             currentUserData={currentUserData}

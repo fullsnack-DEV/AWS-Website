@@ -16,7 +16,7 @@ import ReservationStatus from '../../Constants/ReservationStatus';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-export default function MatchReservation({ data, onPressButon }) {
+export default function MatchReservation({ data, onPressButon, onPressGameCard }) {
   const authContext = useContext(AuthContext)
   useEffect(() => {
 
@@ -113,7 +113,7 @@ export default function MatchReservation({ data, onPressButon }) {
       <ReservationNumber reservationNumber={data.reservation_id || data.challenge_id}/>
       <ReservationStatusView data={data}/>
       <ChallengerInOutView data={data}/>
-      <TCGameCard data={data.game || data} />
+      <TCGameCard data={data.game || data} onPress={onPressGameCard}/>
       {isPendingButtonOrDetailButton() ? <ReservationPendingButton onPressButon={onPressButon}/> : <ReservationDetailButton onPressButon={onPressButon}/>}
       {isOfferExpired() && <Text style={styles.expiryText}>The reponse time will be expired within <Text style={styles.timeText}>{`${getDayTimeDifferent(
         (data.offer_expiry || data.expiry_datetime) * 1000,

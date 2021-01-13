@@ -9,6 +9,7 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -78,7 +79,7 @@ function BackgroundProfile({
       {/* </View> */}
       <View style={{ backgroundColor: colors.whiteColor }} >
         <View style={{ width: '100%', marginBottom: 20 }}>
-          <Image style={[styles.profileImageStyle, profileImageStyle]}
+          <FastImage style={[styles.profileImageStyle, profileImageStyle]}
             source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
           />
           <View style={styles.userViewStyle}>

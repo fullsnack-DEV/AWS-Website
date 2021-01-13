@@ -7,11 +7,10 @@ import {
   Alert,
   StyleSheet,
   Image,
-  TouchableWithoutFeedback,
   FlatList,
-  Dimensions,
+  Dimensions, TouchableOpacity,
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import RNPickerSelect from 'react-native-picker-select';
 import TCTextField from '../../components/TCTextField';
@@ -26,6 +25,7 @@ import images from '../../Constants/ImagePath'
 import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCGradientButton from '../../components/TCGradientButton'
 import ImageButton from '../../components/WritePost/ImageButton';
+import TCKeyboardView from '../../components/TCKeyboardView';
 
 export default function EditGroupBasicInfoScreen({ navigation, route }) {
   // For activity indicator
@@ -186,7 +186,7 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
   };
 
   const renderLanguage = ({ item, index }) => (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       style={styles.listItem}
       onPress={() => {
         isIconCheckedOrNot({ item, index });
@@ -194,17 +194,17 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
       <View style={{ height: 60, justifyContent: 'center' }}>
         <Text style={styles.languageList}>{item.language}</Text>
         <View style={styles.checkbox}>
-          <Image
+          <FastImage
               source={languages[index].isChecked ? images.checkWhiteLanguage : images.uncheckWhite}
               style={styles.checkboxImg}
             />
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         {/* Sport */}
@@ -407,7 +407,7 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
             onPress = {() => { languageApplyBtnPress(); }}/>
         </View>
       </Modal>
-    </>
+    </TCKeyboardView>
   );
 }
 
@@ -473,6 +473,7 @@ const styles = StyleSheet.create({
     right: 40,
   },
   checkboxImg: {
+    height: 22,
     width: 22,
     resizeMode: 'contain',
     alignSelf: 'center',

@@ -27,6 +27,7 @@ import SearchLocationTextView from './SearchLocationTextView';
 import BirthSelectItem from './BirthSelectItem';
 import DateTimePickerView from '../Schedule/DateTimePickerModal';
 import ModalLocationSearch from './ModalLocationSearch';
+import TCKeyboardView from '../TCKeyboardView';
 
 const privacy_Data = [
   {
@@ -382,10 +383,10 @@ function PersonalSportsInfo({
         }}
         hasBackdrop
         onBackdropPress={() => setEditModal(false)}
-        backdropOpacity={0}
       >
-        <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
-          <ModalLocationSearch
+        <TCKeyboardView>
+          <SafeAreaView style={[styles.modalContainerViewStyle, { height: hp(100), top: hp(5), backgroundColor: colors.whiteColor }]}>
+            <ModalLocationSearch
                 visible={searchLocationModal}
                 onClose={() => setSearchLocationModal(false)}
                 onSelect={(location) => {
@@ -393,13 +394,13 @@ function PersonalSportsInfo({
                   setInfo({ ...info, currentCity: city });
                 }}
             />
-          <LinearGradient
+            <LinearGradient
             colors={[colors.orangeColor, colors.yellowColor]}
             end={{ x: 0.0, y: 0.25 }}
             start={{ x: 1, y: 0.5 }}
             style={styles.gradiantHeaderViewStyle}>
-          </LinearGradient>
-          <Header
+            </LinearGradient>
+            <Header
             mainContainerStyle={styles.headerMainContainerStyle}
             leftComponent={
               <TouchableOpacity onPress={() => setEditModal(false)}>
@@ -445,7 +446,7 @@ function PersonalSportsInfo({
               </TouchableOpacity>
             }
           />
-          {editPressTitle === strings.bio && <EventTextInput
+            {editPressTitle === strings.bio && <EventTextInput
             value={bioText}
             multiline={true}
             onChangeText={(text) => {
@@ -453,13 +454,13 @@ function PersonalSportsInfo({
             }}
           />}
 
-          {editPressTitle === strings.basicinfotitle && <ScrollView>
-            <EventItemRender
+            {editPressTitle === strings.basicinfotitle && <ScrollView>
+              <EventItemRender
               title={strings.gender}
               containerStyle={{ marginTop: 15 }}
             >
-              <View style={{ marginTop: 8 }}>
-                <TCPicker
+                <View style={{ marginTop: 8 }}>
+                  <TCPicker
                   dataSource={[
                     { label: 'Male', value: 'Male' },
                     { label: 'Female', value: 'Female' },
@@ -470,17 +471,17 @@ function PersonalSportsInfo({
                     setInfo({ ...info, genderText: value });
                   }}
                 />
-              </View>
-            </EventItemRender>
-            <EventItemRender
+                </View>
+              </EventItemRender>
+              <EventItemRender
               title={strings.yearOfBirth}
               containerStyle={{ marginTop: 15 }}
             >
-              <BirthSelectItem
+                <BirthSelectItem
                 title={moment(info.birthdayText).format('YYYY')}
                 onItemPress={() => setDateModalVisible(!dateModalVisible)}
               />
-              <DateTimePickerView
+                <DateTimePickerView
                 visible={dateModalVisible}
                 onDone={handleDatePress}
                 onCancel={handleCancelPress}
@@ -488,12 +489,12 @@ function PersonalSportsInfo({
                 mode={'date'}
                 maximumDate={new Date()}
               />
-            </EventItemRender>
-            <EventItemRender
+              </EventItemRender>
+              <EventItemRender
               title={strings.height}
               containerStyle={{ marginTop: 15 }}
             >
-              <EventTextInput
+                <EventTextInput
                 value={info.heightText}
                 placeholder={'Enter Height'}
                 onChangeText={(text) => {
@@ -503,12 +504,12 @@ function PersonalSportsInfo({
                 keyboardType={'numeric'}
                 valueEndTitle={info.heightText.trim().length > 0 ? ' cm' : ''}
               />
-            </EventItemRender>
-            <EventItemRender
+              </EventItemRender>
+              <EventItemRender
               title={strings.weight}
               containerStyle={{ marginTop: 15 }}
             >
-              <EventTextInput
+                <EventTextInput
                 value={info.weightText}
                 placeholder={'Enter Weight'}
                 onChangeText={(text) => {
@@ -518,13 +519,13 @@ function PersonalSportsInfo({
                 keyboardType={'numeric'}
                 valueEndTitle={info.weightText.trim().length > 0 ? ' kg' : ''}
               />
-            </EventItemRender>
-            <EventItemRender
+              </EventItemRender>
+              <EventItemRender
               title={strings.mostUsedFoot}
               containerStyle={{ marginTop: 15 }}
             >
-              <View style={{ marginTop: 8 }}>
-                <TCPicker
+                <View style={{ marginTop: 8 }}>
+                  <TCPicker
                   dataSource={[
                     { label: 'Right', value: 'Right' },
                     { label: 'Left', value: 'Left' },
@@ -536,22 +537,22 @@ function PersonalSportsInfo({
                     setMostUsedFootSelect(value);
                   }}
                 />
-              </View>
-            </EventItemRender>
-            <EventItemRender
+                </View>
+              </EventItemRender>
+              <EventItemRender
               title={strings.currrentCityTitle}
               containerStyle={{ marginTop: 15 }}
             >
-              <BirthSelectItem
+                <BirthSelectItem
                 title={info.currentCity}
                 onItemPress={() => {
                   setSearchLocationModal(!searchLocationModal);
                 }}
               />
-            </EventItemRender>
-          </ScrollView>}
+              </EventItemRender>
+            </ScrollView>}
 
-          {editPressTitle === strings.gameFee && <EventTextInput
+            {editPressTitle === strings.gameFee && <EventTextInput
             value={gameFeeCount.toString()}
             onChangeText={(text) => {
               setGameFeeCount(text);
@@ -564,8 +565,8 @@ function PersonalSportsInfo({
             containerStyle={{ justifyContent: 'space-between' }}
           />}
 
-          {editPressTitle === strings.ntrpTitle && <View style={{ marginTop: 20 }}>
-            <TCPicker
+            {editPressTitle === strings.ntrpTitle && <View style={{ marginTop: 20 }}>
+              <TCPicker
               dataSource={[
                 { label: '1.0', value: '1.0' },
                 { label: '1.5', value: '1.5' },
@@ -587,16 +588,17 @@ function PersonalSportsInfo({
                 setNtrpSelect(value);
               }}
             />
-          </View>}
+            </View>}
 
-          {editPressTitle === strings.homePlaceTitle && <SearchLocationTextView
+            {editPressTitle === strings.homePlaceTitle && <SearchLocationTextView
             value={info.homePlaceText}
             onItemPress={() => {
               setEditModal(false);
               onItemPress();
             }}
           />}
-        </SafeAreaView>
+          </SafeAreaView>
+        </TCKeyboardView>
       </Modal>
 
       <ActionSheet

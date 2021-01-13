@@ -17,6 +17,7 @@ import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import { Google_API_Key } from '../../utils/constant';
 import * as Utility from '../../utils';
+import TCKeyboardView from '../../components/TCKeyboardView';
 
 export default function EditGroupContactScreen({ navigation, route }) {
   // For activity indicator
@@ -134,7 +135,7 @@ export default function EditGroupContactScreen({ navigation, route }) {
   // const region = Utility.getRegionFromMarkers(coordinates)
 
   return (
-    <>
+    <TCKeyboardView>
       <ScrollView style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
         <View>
@@ -210,7 +211,7 @@ export default function EditGroupContactScreen({ navigation, route }) {
 
         <View style={{ height: 50 }} />
       </ScrollView>
-    </>
+    </TCKeyboardView>
   );
 }
 

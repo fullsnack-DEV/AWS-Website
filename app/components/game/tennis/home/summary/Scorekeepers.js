@@ -15,6 +15,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../../TCGradientButton';
 import AuthContext from '../../../../../auth/context';
+import GameStatus from '../../../../../Constants/GameStatus';
 
 const Scorekeepers = ({
   navigation,
@@ -85,7 +86,7 @@ const Scorekeepers = ({
                   </Text>
                 </View>
               )}/>
-      {isAdmin && gameData?.status !== 'ended' && (
+      {isAdmin && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
         <TCGradientButton
                   onPress={handleBookScorekeeper}
                   startGradientColor={colors.whiteColor}

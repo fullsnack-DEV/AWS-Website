@@ -7,8 +7,6 @@ import {
   Text,
   SafeAreaView,
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Alert,
 } from 'react-native';
@@ -39,6 +37,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import { getLocationNameWithLatLong } from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import * as Utility from '../../../utils/index';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -144,7 +143,7 @@ export default function CreateEventScreen({ navigation, route }) {
   }, [route.params.comeName]);
 
   return (
-    <KeyboardAvoidingView style={styles.mainContainerStyle} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+    <TCKeyboardView>
       <ActivityLoader visible={loading} />
       <Header
         leftComponent={
@@ -449,14 +448,11 @@ export default function CreateEventScreen({ navigation, route }) {
           />
         </SafeAreaView>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </TCKeyboardView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainerStyle: {
-    flex: 1,
-  },
   sperateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
