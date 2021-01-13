@@ -650,12 +650,14 @@ export default function AlterRefereeScreen({ navigation, route }) {
   }
   const acceptDeclineRefereeReservation = (
     reservationID,
+    callerID,
     versionNo,
     status,
   ) => {
     setloading(true);
     acceptDeclineReservation(
       reservationID,
+      callerID,
       versionNo,
       status,
       {},
@@ -1245,24 +1247,24 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (
-                    (bodyParams?.game?.status === GameStatus.accepted
-                      || bodyParams?.game?.status === GameStatus.reset)
-                    && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                  ) {
+                  if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
                     let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
-                    acceptDeclineAlterReservationOperation(
+                    acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
                       callerId,
                       bodyParams.version,
                       'cancel',
                     );
-                  } else {
+                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
                     Alert.alert(
                       'Reservation cannot be cancel after game time passed or offer expired.',
+                    );
+                  } else {
+                    Alert.alert(
+                      'Reservation can not be change after game has been started.',
                     );
                   }
                 }}
@@ -1305,8 +1307,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 marginTop={15}
                 onPress={() => {
                   if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
+                    let callerId = '';
+                    if (bodyParams?.referee?.user_id !== entity.uid) {
+                      callerId = entity.uid
+                    }
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
+                      callerId,
                       bodyParams.version,
                       'cancel',
                     );

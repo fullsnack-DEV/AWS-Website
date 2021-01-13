@@ -164,7 +164,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
             setloading(false);
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
-            }, 0.3);
+            }, 0.7);
           });
       }
     }

@@ -234,7 +234,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   }
 
   const renderFooter = () => (
-    <View>
+    <View style={{ marginBottom: 5 }}>
       <TCTouchableLabel
             title={
                 strings.addOptionMessage

@@ -319,10 +319,16 @@ export default function GameDetailRecord({ navigation, route }) {
         }
       })
     }
-    if (jerseyNumber !== '') {
-      jerseyNumber = `(${jerseyNumber})`
+
+    // if (jerseyNumber !== '' || jerseyNumber !== undefined) {
+    //   jerseyNumber = `(${jerseyNumber})`
+    // }
+    console.log('Toast string::', `${firstName} ${lastName} ${jerseyNumber}`);
+    if (jerseyNumber && jerseyNumber !== '') {
+      return `${firstName} ${lastName} (${jerseyNumber})`
     }
-    return `${firstName} ${lastName} ${jerseyNumber}`
+
+    return `${firstName} ${lastName}`
   }
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);

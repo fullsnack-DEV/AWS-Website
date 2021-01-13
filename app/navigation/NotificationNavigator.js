@@ -10,6 +10,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
 import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
+import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
 
 import colors from '../Constants/Colors';
 import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSent';
@@ -127,7 +128,24 @@ function NotificationNavigator() {
            headerShown: false,
          }}
         />
-
+      <Stack.Screen
+        name="ChallengeSentScreen"
+        component={ ChallengeSentScreen }
+        // options={({ navigation }) => ({
+        //   headerTintColor: colors.whiteColor,
+        //   headerTransparent: true,
+        //   headerTitle: false,
+        //   headerLeft: (props) => (
+        //     <HeaderBackButton
+        //       {...props}
+        //       onPress={() => navigation.popToTop()}
+        //     />
+        //   ),
+        // })}
+        options={ {
+          headerShown: false,
+        } }
+      />
       <Stack.Screen
             name="RefereeReservationScreen"
             component={RefereeReservationScreen}

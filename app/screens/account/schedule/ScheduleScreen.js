@@ -85,7 +85,8 @@ export default function ScheduleScreen({ navigation }) {
         getSlots(entityRole, uid, authContext).then((res) => {
           eventTimeTableData = [...response.payload, ...res.payload];
           console.log('Event data::', eventTimeTableData);
-          setEventData(eventTimeTableData);
+
+          setEventData((eventTimeTableData || []).sort((a, b) => new Date(a.start_datetime * 1000) - new Date(b.start_datetime * 1000)));
           setSearchEvents(eventTimeTableData)
           setTimeTable(eventTimeTableData);
           eventTimeTableData.filter((event_item) => {

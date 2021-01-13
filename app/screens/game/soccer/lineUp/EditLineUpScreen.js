@@ -11,6 +11,8 @@ import {
   Image,
   FlatList,
   Alert,
+  TouchableWithoutFeedback,
+  SafeAreaView,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -98,8 +100,8 @@ export default function EditLineUpScreen({ navigation, route }) {
         rosterData.filter((el) => el.role === 'player' && el.lineup === 'subs'),
       );
       setSearchNonRoster(nonRosterData);
-      setSearchStarting([...starting]);
-      setSearchSubs([...subs]);
+      setSearchStarting(starting);
+      setSearchSubs(subs);
       console.log('roseter api data:: ', JSON.stringify(response.payload));
     });
   };
@@ -115,8 +117,9 @@ export default function EditLineUpScreen({ navigation, route }) {
         </TouchableOpacity>
       ),
     });
-  }, [starting, subs, nonRoster, roster, enabledSection, selected, selectedSection, selectedMember]);
+  }, [starting, subs, nonRoster, roster, enabledSection, selected, selectedSection, selectedMember, searchStarting, searchSubs, searchNonRoster]);
   const toggleModal = () => {
+    console.log('Pressed Toggel::');
     setModalVisible(!isModalVisible);
   };
 
@@ -183,6 +186,20 @@ export default function EditLineUpScreen({ navigation, route }) {
         console.log('ITEM BTYPE::', bType);
         console.log('ITEM PRESSED::', item);
       }}
+      OnRowPress={(userInfo) => {
+        console.log('User Info::', userInfo);
+        if (userInfo.profile.connected) {
+          console.log('User ID::', userInfo.profile.user_id);
+          console.log('User ROLE::', userInfo.profile.role);
+          navigation.push('HomeScreen', {
+            uid: userInfo.profile.user_id,
+            backButtonVisible: true,
+            role: 'user',
+            menuBtnVisible: false,
+          })
+        }
+        console.log('ITEM Info::', userInfo);
+      }}
     />
   );
   const renderStartingMultiple = ({ item }) => (
@@ -221,6 +238,19 @@ export default function EditLineUpScreen({ navigation, route }) {
         }
         console.log('ITEM BTYPE::', bType);
         console.log('ITEM PRESSED::', item);
+      }}
+      OnRowPress={(userInfo) => {
+        if (userInfo.profile.connected) {
+          console.log('User ID::', userInfo.profile.user_id);
+          console.log('User ROLE::', userInfo.profile.role);
+          navigation.push('HomeScreen', {
+            uid: userInfo.profile.user_id,
+            backButtonVisible: true,
+            role: 'user',
+            menuBtnVisible: false,
+          })
+        }
+        console.log('ITEM Info::', userInfo);
       }}
     />
   );
@@ -366,21 +396,18 @@ export default function EditLineUpScreen({ navigation, route }) {
   }
 
   const searchFilterFunction = (text) => {
-    const resultStarting = searchStarting.filter(
-      (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
-    );
-    const resultSubs = searchSubs.filter(
-      (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
-    );
-    const resultNonRoster = searchNonRoster.filter(
-      (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
-    );
-    setStarting(resultStarting);
-    setSubs(resultSubs);
-    setNonRoster(resultNonRoster);
+    setStarting(searchStarting.filter(
+      (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+    ));
+    setSubs(searchSubs.filter(
+      (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+    ));
+    setNonRoster(searchNonRoster.filter(
+      (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+    ));
   };
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ActivityLoader visible={loading} />
       <View style={styles.mainContainer}>
         <TCSearchBox
@@ -515,7 +542,7 @@ export default function EditLineUpScreen({ navigation, route }) {
               />
               )}
             </ScrollView>
-            <TouchableOpacity onPress={toggleModal} disabled={enabledSection === 0}>
+            <TouchableWithoutFeedback onPress={toggleModal} disabled={enabledSection === 0}>
               <Image
             source={images.moveFlottyButton}
             style={{
@@ -524,11 +551,11 @@ export default function EditLineUpScreen({ navigation, route }) {
               resizeMode: 'cover',
               position: 'absolute',
               right: 0,
-              bottom: 0,
+              bottom: 50,
 
             }}
           />
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
             <TCGradientButton
             title={strings.saveTitle}
             onPress={() => {
@@ -550,6 +577,7 @@ export default function EditLineUpScreen({ navigation, route }) {
               justifyContent: 'space-between',
               marginLeft: 10,
               marginRight: 10,
+
             }}>
             <Text onPress={toggleModal} style={styles.cancelTitle}>
               Cancel
@@ -700,6 +728,7 @@ export default function EditLineUpScreen({ navigation, route }) {
             keyExtractor={(item, index) => index.toString()}
             scrollEnabled={false}
           />
+
         </View>
       </Modal>
       <ActionSheet
@@ -732,7 +761,7 @@ export default function EditLineUpScreen({ navigation, route }) {
           }
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -770,7 +799,8 @@ const styles = StyleSheet.create({
   },
   modelViewContainer: {
     width: '100%',
-    height: Dimensions.get('window').height / 3.5,
+    height: Dimensions.get('window').height / 3.4,
+
     backgroundColor: 'white',
     position: 'absolute',
     bottom: 0,
@@ -781,7 +811,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 15,
+    elevation: 8,
+    // backgroundColor: 'red',
   },
   topViewContainer: {
     flexDirection: 'row',
@@ -792,7 +823,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
     paddingLeft: 20,
-
+    marginBottom: 5,
     marginTop: 10,
 
     borderRadius: 5,
