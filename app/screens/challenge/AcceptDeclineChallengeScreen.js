@@ -4,7 +4,7 @@ import {
   StyleSheet, View, Text, Image, FlatList, Alert,
 } from 'react-native';
 import moment from 'moment';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { acceptDeclineChallenge } from '../../api/Challenge';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -29,6 +29,7 @@ import { getGameHomeScreen } from '../../utils/gameUtils';
 import TCGameDetailRules from '../../components/TCGameDetailRules';
 
 let entity = {};
+let timer;
 export default function CreateChallengeForm4({ navigation, route }) {
   const authContext = useContext(AuthContext);
 
@@ -37,6 +38,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
   const [homeTeam, setHomeTeam] = useState();
   const [awayTeam, setAwayTeam] = useState();
   const [bodyParams, setbodyParams] = useState();
+  const [countDown, setCountDown] = useState();
 
   useEffect(() => {
     entity = authContext.entity;
@@ -51,7 +53,46 @@ export default function CreateChallengeForm4({ navigation, route }) {
       setAwayTeam(challengeObj.away_team);
     }
   }, [isFocused]);
+  useFocusEffect(() => {
+    const timeStamp = moment(new Date(bodyParams?.timestamp * 1000)).add(24, 'h').toDate().getTime();
+    const startDateTime = bodyParams?.start_datetime * 1000
+    console.log(`${timeStamp}::::${startDateTime}::::${new Date().getTime()}`);
+    let finalDate;
+    if (timeStamp < startDateTime) {
+      finalDate = timeStamp
+    } else {
+      finalDate = startDateTime
+    }
+    if (finalDate > new Date().getTime()) {
+      timer = setInterval(() => {
+        if (bodyParams.status === ReservationStatus.pendingpayment) {
+          getTwoDateDifference(finalDate, new Date().getTime())
+        }
+      }, 1000);
+    } else {
+      setCountDown()
+    }
 
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
+  const getTwoDateDifference = (sDate, eDate) => {
+    let delta = Math.abs(new Date(sDate).getTime() - new Date(eDate).getTime()) / 1000;
+
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
+
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
+
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
+
+    const seconds = delta % 60;
+
+    setCountDown(`${hours}h ${minutes}m ${seconds.toFixed(0)}s`);
+  };
   const acceptDeclineChallengeOperation = (
     teamID,
     ChallengeId,
@@ -260,7 +301,6 @@ export default function CreateChallengeForm4({ navigation, route }) {
       }
       return challengeObject.home_team.group_name;
     }
-    console.log('user challenge');
     if (challengeObject.home_team.user_id === entity.uid) {
       return `${challengeObject.away_team.first_name} ${challengeObject.away_team.last_name}`;
     }
@@ -394,18 +434,12 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                 <Text style={styles.challengeText}>
-                  {singlePlayerText()} has accepted a game reservation from{' '}
-                  {getTeamName(bodyParams)}, but the payment hasnt gone through
-                  yet.
+                  {getTeamName(bodyParams)} has accepted your match reservation,
+                  but your payment hasnt gone through yet.
                 </Text>
                 <Text style={styles.pendingRequestText}>
-                  This reservation will be canceled unless the payment goes
-                  through within{' '}
-                  {getDayTimeDifferent(
-                    bodyParams.offer_expiry * 1000,
-                    new Date().getTime(),
-                  )}
-                  .
+                  {'This reservation will be canceled unless the payment goes through within '}
+                  <Text style={{ color: colors.themeColor }}>{countDown}</Text>{'.'}
                 </Text>
               </View>
           )}
@@ -414,14 +448,12 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <View>
                 <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                 <Text style={styles.challengeText}>
-                  {getTeamName(bodyParams)} has accepted your match reservation,
-                  but your payment hasnt gone through yet.
+                  {singlePlayerText()} has accepted a game reservation from{' '}
+                  {getTeamName(bodyParams)}, but the payment hasnt gone through
+                  yet.
                 </Text>
                 <Text style={styles.awatingNotesText}>
-                  {`This reservation will be canceled unless the payment goes through within${getDayTimeDifferent(
-                    bodyParams.offer_expiry * 1000,
-                    new Date().getTime(),
-                  )}.\nYou can cancel the game reservation without a penalty before the payment will go through.`}
+                  {'This reservation will be canceled unless the payment goes through within '}<Text style={{ color: colors.themeColor }}>{countDown}</Text>{'.\nYou can cancel the game reservation without a penalty before the payment will go through.'}
                 </Text>
               </View>
           )}

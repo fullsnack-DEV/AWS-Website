@@ -305,7 +305,7 @@ export default function SoccerRecording({ navigation, route }) {
           <ActivityLoader visible={loading} />
           <View>
             <View style={styles.headerView}>
-              {gameObj && gameObj?.home_team && (
+              {gameObj && (
                 <View style={styles.leftView}>
                   <View style={styles.profileShadow}>
                     <Image
@@ -317,8 +317,7 @@ export default function SoccerRecording({ navigation, route }) {
                       style={styles.profileImg}
                     />
                   </View>
-                  {gameObj?.home_team?.group_name
-                  && gameObj.home_team_goal > gameObj.away_team_goal ? (
+                  {gameObj?.home_team_goal > gameObj?.away_team_goal ? (
                     <Text
                       style={[styles.leftText, { color: colors.themeColor }]}
                       numberOfLines={2}>
@@ -343,7 +342,10 @@ export default function SoccerRecording({ navigation, route }) {
                       {gameObj.home_team_goal}
                     </Text>
                   ) : (
-                    <Text>{gameObj.home_team_goal}</Text>
+                    <Text style={{
+                      fontFamily: fonts.RLight,
+                      color: colors.lightBlackColor,
+                    }}>{gameObj.home_team_goal}</Text>
                   )}{' '}
                   :{' '}
                   {gameObj.away_team_goal > gameObj.home_team_goal ? (
@@ -355,7 +357,10 @@ export default function SoccerRecording({ navigation, route }) {
                       {gameObj.away_team_goal}
                     </Text>
                   ) : (
-                    <Text>{gameObj.away_team_goal}</Text>
+                    <Text style={{
+                      fontFamily: fonts.RLight,
+                      color: colors.lightBlackColor,
+                    }}>{gameObj.away_team_goal}</Text>
                   )}
                 </Text>
               </View>
@@ -917,6 +922,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     fontFamily: fonts.RMedium,
     fontSize: 16,
+    color: colors.lightBlackColor,
   },
   leftView: {
     flexDirection: 'row',
@@ -997,6 +1003,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     fontFamily: fonts.RMedium,
     fontSize: 16,
+    color: colors.lightBlackColor,
   },
   rightView: {
     // backgroundColor: 'red',
