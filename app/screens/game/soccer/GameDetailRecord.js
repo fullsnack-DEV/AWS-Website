@@ -161,6 +161,10 @@ export default function GameDetailRecord({ navigation, route }) {
       Alert.alert('Please, start the game first.');
       return false;
     }
+    if (gameObj.status === GameStatus.paused) {
+      Alert.alert('Game is paused.');
+      return false;
+    }
     if (gameObj.status === GameStatus.ended) {
       Alert.alert('Game is ended.');
       return false;

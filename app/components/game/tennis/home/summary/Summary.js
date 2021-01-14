@@ -18,6 +18,7 @@ import fonts from '../../../../../Constants/Fonts';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import AuthContext from '../../../../../context/auth';
 import TennisScoreView from '../../TennisScoreView';
+// import GameStatus from '../../../../../Constants/GameStatus';
 
 const Summary = ({
   gameData,
@@ -71,6 +72,7 @@ const Summary = ({
                   }}
                   outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
               />
+
           {/*  Leave Review Section */}
           {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && (
             <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>

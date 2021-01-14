@@ -6,6 +6,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import AuthContext from '../../auth/context';
 import { payAgainAlterReferee, payAgainReferee } from '../../api/Challenge';
+import { paymentMethods } from '../../api/Users';
 import ReservationStatus from '../../Constants/ReservationStatus';
 import strings from '../../Constants/String';
 import fonts from '../../Constants/Fonts';
@@ -24,6 +25,7 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [reservationObj, setReservationObj] = useState();
   const [sorceScreen, setSourceScreen] = useState()
+  const [defaultCard, setDefaultCard] = useState();
 
   useEffect(() => {
     if (isFocused) {
@@ -32,9 +34,33 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
       setReservationObj(body)
       console.log('Body Object of pay again referee screen: ', JSON.stringify(body));
       // getFeeDetail();
+      if (route?.params?.paymentMethod) {
+        setDefaultCard(route?.params?.paymentMethod);
+      } else {
+        getPaymentMethods(body?.source)
+      }
     }
   }, [isFocused]);
-
+  const getPaymentMethods = (source) => {
+    setloading(true);
+    paymentMethods(authContext)
+      .then((response) => {
+        console.log('Payment api called', response.payload);
+        const matchCard = response.payload.find((card) => card.id === source);
+        if (matchCard) {
+          console.log('default payment method', matchCard);
+          setDefaultCard(matchCard);
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        console.log('error in payment method', e);
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.3);
+      });
+  };
   const payAgainForRefereeRequest = () => {
     setloading(true)
     const bodyParams = {}
@@ -132,12 +158,15 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
         <TCLabel title={'Payment Method'} />
         <View>
           <TCTouchableLabel
-            title={
-              route.params.paymentMethod
-                ? Utility.capitalize(route.params.paymentMethod.card.brand)
-                : strings.addOptionMessage
-            }
-            subTitle={route.params.paymentMethod?.card.last4}
+           title={
+            defaultCard && defaultCard?.card?.brand
+              ? Utility.capitalize(defaultCard?.card?.brand)
+              : strings.addOptionMessage
+          }
+          subTitle={
+            (defaultCard && defaultCard?.card?.last4)
+            ?? defaultCard?.card?.last4
+          }
             showNextArrow={true}
             onPress={() => {
               navigation.navigate('PaymentMethodsScreen', {
