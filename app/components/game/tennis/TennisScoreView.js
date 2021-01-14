@@ -13,8 +13,8 @@ import colors from '../../../Constants/Colors';
 
 let setsData = [];
 const scoreData = [{}, {}, {}];
-let homeTeamGamePoint = '0';
-let awayTeamGamePoint = '0';
+let homeTeamGamePoint = 0;
+let awayTeamGamePoint = 0;
 let homeTeamMatchPoint = 0;
 let awayTeamMatchPoint = 0;
 export default function TennisScoreView({ scoreDataSource }) {
@@ -35,8 +35,8 @@ export default function TennisScoreView({ scoreDataSource }) {
         calculateGameScore();
       } else {
         setsData = [{}, {}, {}];
-        homeTeamGamePoint = '0';
-        awayTeamGamePoint = '0';
+        homeTeamGamePoint = 0;
+        awayTeamGamePoint = 0;
         homeTeamMatchPoint = 0;
         awayTeamMatchPoint = 0;
       }
@@ -101,7 +101,7 @@ export default function TennisScoreView({ scoreDataSource }) {
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].home_team_win_count ?? '0'))
+              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].home_team_win_count || '0'))
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
 
@@ -133,7 +133,7 @@ export default function TennisScoreView({ scoreDataSource }) {
           }>
           {(index === 0 && `${awayTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].away_team_win_count ?? '0'))
+              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].away_team_win_count || '0'))
             || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
       </View>
@@ -164,8 +164,8 @@ export default function TennisScoreView({ scoreDataSource }) {
       scoreDataSource?.scoreboard?.game_inprogress?.winner
       || scoreDataSource?.scoreboard?.game_inprogress?.end_datetime
     ) {
-      homeTeamGamePoint = '0';
-      awayTeamGamePoint = '0';
+      homeTeamGamePoint = 0;
+      awayTeamGamePoint = 0;
 
       console.log(
         'GAME SCORE:',
