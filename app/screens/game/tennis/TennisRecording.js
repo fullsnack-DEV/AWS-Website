@@ -28,7 +28,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
 import * as Utils from '../../challenge/ChallengeUtility';
-import { toggleView } from '../../../utils/index'
+import { toggleView, heightPercentageToDP as hp } from '../../../utils/index'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
@@ -48,7 +48,7 @@ import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TennisScoreView from '../../../components/game/tennis/TennisScoreView';
 import strings from '../../../Constants/String';
-import { heightPercentageToDP as hp, toggleView } from '../../../utils';
+
 import TennisMatchRecordsList from './TennisMatchRecordsList';
 
 const { width } = Dimensions.get('window');
@@ -90,9 +90,9 @@ export default function TennisRecording({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [footerUp, setFooterUp] = useState(true);
 
-const [gameData] = useState(route?.params?.gameDetail);
+  const [gameData] = useState(route?.params?.gameDetail);
 
-const [showToast, setShowToast] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [undoTeamID, setUndoTeamID] = useState();
   useEffect(() => {
     // const { gameDetail } = route.params ?? {};
