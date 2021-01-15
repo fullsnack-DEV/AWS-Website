@@ -1097,7 +1097,7 @@ export default function GameDetailRecord({ navigation, route }) {
               <View>
                 <RNDateTimePicker
                 locale={'en'}
-                default = 'spinner'
+                display="spinner"
                 value={date || new Date()}
                 onChange={onChange}
                 mode={'datetime'}
