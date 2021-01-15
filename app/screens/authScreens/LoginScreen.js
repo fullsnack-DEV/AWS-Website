@@ -138,7 +138,10 @@ export default function LoginScreen({ navigation }) {
         if (error.code === 'auth/too-many-requests') {
           message = 'Too many request for login ,try after sometime';
         }
-        setTimeout(() => Alert.alert('Towns Cup', message), 100)
+        if (error.code === 'auth/network-request-failed') {
+          message = strings.networkConnectivityErrorMessage;
+        }
+        if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100)
       });
   };
 
@@ -242,6 +245,9 @@ export default function LoginScreen({ navigation }) {
         if (error.code === 'auth/account-exists-with-different-credential') {
           message = 'You are already registrated with different login method ';
         }
+        if (error.code === 'auth/network-request-failed') {
+          message = strings.networkConnectivityErrorMessage;
+        }
         if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
       });
   };
@@ -312,6 +318,9 @@ export default function LoginScreen({ navigation }) {
           }
           if (error.code === 'auth/account-exists-with-different-credential') {
             message = 'You are already registrated with different login method ';
+          }
+          if (error.code === 'auth/network-request-failed') {
+            message = strings.networkConnectivityErrorMessage;
           }
           if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
         });

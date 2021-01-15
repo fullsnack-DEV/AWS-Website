@@ -525,5 +525,6 @@ const strings = {
   selectWiningPoints: 'Select wining points',
   selectPointsText: 'Select points',
   selectAnyCard: 'Please any of the card.',
+  networkConnectivityErrorMessage: 'Please check your connection',
 };
 export default strings;

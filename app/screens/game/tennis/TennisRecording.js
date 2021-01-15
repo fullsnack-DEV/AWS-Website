@@ -23,7 +23,6 @@ import {
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
-// import { useIsFocused } from '@react-navigation/native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
@@ -32,7 +31,6 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
 import ReservationStatus from '../../../Constants/ReservationStatus';
-
 import TCGameButton from '../../../components/TCGameButton';
 
 import {
@@ -48,6 +46,8 @@ import fonts from '../../../Constants/Fonts';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TennisScoreView from '../../../components/game/tennis/TennisScoreView';
 import strings from '../../../Constants/String';
+import { heightPercentageToDP as hp, toggleView } from '../../../utils';
+import TennisMatchRecordsList from './TennisMatchRecordsList';
 
 const { width } = Dimensions.get('window');
 
@@ -87,7 +87,7 @@ export default function TennisRecording({ navigation, route }) {
   const [actionByTeamID, setActionByTeamID] = useState();
   const [loading, setloading] = useState(false);
   const [footerUp, setFooterUp] = useState(true);
-
+  const [gameData] = useState(route?.params?.gameDetail)
   useEffect(() => {
     // const { gameDetail } = route.params ?? {};
     entity = authContext.entity;
@@ -315,7 +315,6 @@ export default function TennisRecording({ navigation, route }) {
   const startStopTimerTimeline = () => {
     clearInterval(timer);
     clearInterval(timerForTimeline);
-    console.log('GAME OBJ::->', gameObj);
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
@@ -523,11 +522,24 @@ export default function TennisRecording({ navigation, route }) {
       addGameRecordDetail(gameObj.game_id, body);
     }
   };
+
+  const handleHorizontalScroll = (event) => {
+    const WIDTH = wp(100);
+    const offset = event.nativeEvent.contentOffset;
+    if (offset) {
+      const page = Math.round(offset.x / WIDTH) + 1;
+      if (page === 1) {
+        toggleView(() => setFooterUp(true), 200);
+      } else {
+        toggleView(() => setFooterUp(false), 200);
+      }
+    }
+  }
   return (
     <>
       {gameObj && gameObj?.home_team && gameObj?.away_team && (
         <View style={{ flex: 1 }}>
-          <View>
+          <View style={{ flex: 1 }}>
             <ActivityLoader visible={loading} />
             <View style={styles.headerView}>
               <View style={styles.leftView}>
@@ -633,28 +645,28 @@ export default function TennisRecording({ navigation, route }) {
 
             </ScrollView> */}
             <ScrollView
-        ref={scrollView}
-        style={styles.container}
-        // pagingEnabled={true}
-        horizontal= {true}
-        showsHorizontalScrollIndicator={false}
-        decelerationRate={0}
-        snapToInterval={width}
-        snapToAlignment={'center'}
-        contentInset={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-        }}>
+                onMomentumScrollEnd={handleHorizontalScroll}
+              ref={scrollView}
+              style={styles.container}
+              pagingEnabled={true}
+              horizontal= {true}
+              showsHorizontalScrollIndicator={false}
+              decelerationRate={0}
+              snapToInterval={width}
+              snapToAlignment={'center'}
+              contentInset={{
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+              }}>
 
               <View style={styles.view}>
                 <TennisScoreView scoreDataSource={gameObj}/>
               </View>
               <View style={styles.view2}>
-                <Text>Please display match records</Text>
+                <TennisMatchRecordsList matchData={gameData}/>
               </View>
-
             </ScrollView>
           </View>
 
@@ -694,7 +706,7 @@ export default function TennisRecording({ navigation, route }) {
                 </Text>
                 <TouchableOpacity onPress={() => {
                   console.log('Arrow Pressed.');
-                  setFooterUp(!footerUp)
+                  toggleView(() => setFooterUp(!footerUp), 200)
                 }}>
                   <Image source={images.dropDownArrow} style={styles.downArrow} />
                 </TouchableOpacity>
@@ -1062,7 +1074,7 @@ export default function TennisRecording({ navigation, route }) {
                   <TCGameButton
                     title="Records"
                     onPress={() => {
-                      setFooterUp(false)
+                      toggleView(() => setFooterUp(false), 200);
                       scrollView.current?.scrollToEnd({ animated: true });
                     }}
                     gradientColor={[
@@ -1434,7 +1446,7 @@ const styles = StyleSheet.create({
     tintColor: colors.blackColor,
     width: 15,
   },
-  container: { },
+  container: { flex: 1 },
   view: {
     marginTop: 0,
     // backgroundColor: 'blue',
@@ -1445,9 +1457,8 @@ const styles = StyleSheet.create({
     // paddingHorizontal : 30
   },
   view2: {
-    // backgroundColor: 'red',
     width,
-    height: 200,
+    paddingBottom: hp(15),
     borderRadius: 10,
     // paddingHorizontal : 30
   },

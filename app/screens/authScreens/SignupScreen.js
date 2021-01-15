@@ -179,6 +179,9 @@ export default function SignupScreen({ navigation }) {
         if (e.code === 'auth/too-many-requests') {
           message = 'Too many request for signup ,try after sometime';
         }
+        if (e.code === 'auth/network-request-failed') {
+          message = strings.networkConnectivityErrorMessage;
+        }
         if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };

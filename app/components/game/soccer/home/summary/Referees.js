@@ -115,7 +115,9 @@ const Referees = ({
               </Text>
             </View>
           )}/>
-      {isAdmin && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
+      {isAdmin
+      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status)
+      && gameData?.referees?.length < gameData?.challenge_referee?.length && (
         <TCGradientButton
             onPress={handleBookReferee}
               startGradientColor={colors.whiteColor}

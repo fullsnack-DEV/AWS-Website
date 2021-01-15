@@ -323,11 +323,11 @@ export default function SoccerRecording({ navigation, route }) {
                       numberOfLines={2}>
                       {gameObj?.home_team?.group_name}
                     </Text>
-                    ) : (
-                      <Text style={styles.leftText} numberOfLines={2}>
-                        {gameObj?.home_team?.group_name}
-                      </Text>
-                    )}
+                  ) : (
+                    <Text style={styles.leftText} numberOfLines={2}>
+                      {gameObj?.home_team?.group_name}
+                    </Text>
+                  )}
                 </View>
               )}
 

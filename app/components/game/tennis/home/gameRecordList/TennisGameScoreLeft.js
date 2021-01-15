@@ -41,7 +41,7 @@ export default function TennisGameScoreLeft(
           <View style={ styles.leftView }>
             <View style={{ width: '22%' }}>
               <FastImage
-                  source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.profilePlaceHolder }
+                  source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.profilePlaceHolder }
                     style={ styles.leftProfileImg }
                 />
             </View>

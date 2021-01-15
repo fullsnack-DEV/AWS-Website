@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Platform } from 'react-native';
+import { View } from 'react-native';
 
 import ScrollableTabView, {
   ScrollableTabBar,
@@ -25,15 +25,9 @@ export default function TCScrollableProfileTabs({
         tabBarUnderlineStyle={{ backgroundColor: colors.themeColor }}
         initialPage={0}
         renderTabBar={() => <ScrollableTabBar />}>
-        {
-          tabItem.map((item, key) => (
-            <View key={key} tabLabel={item}>
-              {Platform.OS === 'ios' ? renderTabContain(key) : (<View />)}
-            </View>
-          ))
-        }
+        {tabItem.map((item, key) => (<View key={key} tabLabel={item}/>))}
       </ScrollableTabView>
-      {Platform.OS !== 'ios' ? renderTabContain(currentTab) : (<View />)}
+      {renderTabContain(currentTab)}
     </View>
   );
 }

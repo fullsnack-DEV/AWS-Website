@@ -135,7 +135,7 @@ function AppNavigator({ navigation }) {
     <Tab.Navigator
         backBehavior={'history'}
         screenOptions={{
-          unmountOnBlur: true,
+          // unmountOnBlur: true,
         }}
       tabBarOptions={ {
         activeTintColor: colors.themeColor,

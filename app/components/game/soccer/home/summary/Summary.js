@@ -11,7 +11,7 @@ import Scorekeepers from './Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
-import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
+// import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
@@ -155,7 +155,7 @@ const Summary = ({
           userRole={userRole}
       />
       <View style={{ backgroundColor: colors.whiteColor }}>
-        <FeedsScreen navigation={navigation}/>
+        {/* <FeedsScreen navigation={navigation}/> */}
       </View>
     </View>
   )

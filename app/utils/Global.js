@@ -35,6 +35,7 @@ const resetApp = async (authContext) => {
   authContext.setUser(null);
   authContext.setEntity(null);
 }
+
 const getRefereshToken = () => new Promise((resolve, reject) => {
   const unsubscribe = firebase
     .auth()
@@ -59,6 +60,7 @@ const makeAPIRequest = async ({
     Alert.alert('Error: Internet not available');
     throw new Error('no-internet');
   } else {
+    let withRenewToken = false;
     const tokenData = authContext?.tokenData;
     let authToken = tokenData.token;
     const { exp } = await jwtDecode(authToken);
@@ -68,9 +70,10 @@ const makeAPIRequest = async ({
     console.log('TOKEN EXPIRATION TIME :', expiryDate);
     if (expiryDate.getTime() > currentDate.getTime()) {
       return globalApiCall({
-        method, url, data, headers, params, responseType, authContext, authToken,
+        method, url, data, headers, params, responseType, authContext, withRenewToken, authToken,
       })
     }
+    withRenewToken = true;
     console.log('Token Expired');
     return new Promise((resolve, reject) => getRefereshToken()
       .then(async (refereshToken) => {
@@ -81,7 +84,7 @@ const makeAPIRequest = async ({
         };
         await authContext.setTokenData(token);
         resolve(globalApiCall({
-          method, url, data, headers, params, responseType, authContext, authToken,
+          method, url, data, headers, params, responseType, authContext, withRenewToken, authToken,
         }));
       }).catch((error) => {
         console.log('Token Related: ', error);
@@ -100,6 +103,7 @@ const globalApiCall = async ({
   responseType,
   authContext,
   authToken,
+  withRenewToken,
 }) => {
   const entity = authContext?.entity;
   console.log('entity::', entity, url);
@@ -115,10 +119,9 @@ const globalApiCall = async ({
   const options = {
     method, url, data, headers: headersParams, params, responseType,
   };
-  console.log('API Opetions::--->', JSON.stringify(options));
+  console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
-    console.log('Opetions ::', JSON.stringify(options));
     if (!response.data.status) {
       console.log('ERROR RESPONSE ::', response.data);
       throw (response.data.messages || response);
@@ -126,6 +129,11 @@ const globalApiCall = async ({
     console.log('RESPONSE ::', response.data);
     return response.data;
   } catch (e) {
+    const error = {
+      withRenewToken,
+      options,
+    }
+    console.log('ERROR API Opetions::--->', error);
     throw new Error(e);
   }
 };

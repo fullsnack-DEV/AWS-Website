@@ -46,7 +46,6 @@ export default function TennisScoreView({ scoreDataSource }) {
   const renderScores = ({ item, index }) => {
     if (item?.s_id) {
       if (item?.s_id === scoreDataSource?.scoreboard?.game_inprogress?.s_id) {
-        console.log('SID : ', item?.s_id)
         return (
           <View style={{ alignItems: 'center' }}>
             <Text style={styles.scoreTitle}>{index + 1}</Text>

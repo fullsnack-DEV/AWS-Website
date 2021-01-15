@@ -8,7 +8,6 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/tennis/home/summary/Summary';
-import Stats from '../../../components/game/common/stats/Stats';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
   approveDisapproveGameRecords,
@@ -16,7 +15,7 @@ import {
   getGameGallery,
   getGameMatchRecords, getGameRefereeReservation,
   getGameScorekeeperReservation,
-  getGameStats,
+  // getGameStats,
   getSportsList,
 } from '../../../api/Games';
 import { followUser, unfollowUser } from '../../../api/Users';
@@ -73,14 +72,14 @@ const TennisHome = ({ navigation, route }) => {
   const unFollowTennisUser = (params, userID) => unfollowUser(params, userID, authContext);
   const getTennisGameMatchRecords = (gameId) => getGameMatchRecords(gameId, authContext);
   const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext)
-  const getTennisGameStats = (gameId) => getGameStats(gameId, authContext)
+  // const getTennisGameStats = (gameId) => getGameStats(gameId, authContext)
   const getTennisGalleryData = (gameId) => getGameGallery(gameId, authContext)
   const getGameSportsList = () => getSportsList(authContext)
   const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
   const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
 
   const renderTabContain = (tabKey) => (
-    <View style={{ flex: 1 }}>
+    <View>
       {tabKey === 0 && (
         <Summary
             getRefereeReservation={getRefereeReservation}
@@ -98,18 +97,7 @@ const TennisHome = ({ navigation, route }) => {
             userId={userId}
         />
       )}
-      {tabKey === 1 && (
-        <Stats
-            homeTeamName={gameData?.singlePlayerGame
-              ? gameData?.home_team?.full_name
-              : gameData?.home_team?.group_name}
-            awayTeamName={gameData?.singlePlayerGame
-              ? gameData?.away_team?.full_name
-              : gameData?.away_team?.group_name}
-              getGameStatsData={getTennisGameStats}
-              gameData={gameData}
-          />
-      )}
+      {tabKey === 1 && <></>}
       {tabKey === 2 && <></>}
       {tabKey === 3 && (
         <Gallery

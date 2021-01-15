@@ -25,7 +25,7 @@ export default function FeedsScreen({ navigation }) {
   const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [footerLoading, setFooterLoading] = useState(false);
@@ -37,6 +37,7 @@ export default function FeedsScreen({ navigation }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
+      setloading(true);
       const entity = authContext.entity;
       console.log('Entity :-', entity);
       setCurrentUserDetail(entity.obj || entity.auth.user);

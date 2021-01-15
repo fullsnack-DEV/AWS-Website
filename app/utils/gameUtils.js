@@ -85,11 +85,11 @@ const tennisGamePlayStatsImage = {
 // Tennis
 const tennisGameStats = {
   start: 'Match started',
-  end: 'ended',
-  resume: 'resumed',
-  pause: 'paused',
-  setStart: 'Set Started',
-  setEnd: 'Set Ended',
+  end: 'Match ended',
+  resume: 'Match resumed',
+  pause: 'Match paused',
+  setStart: 'Set started',
+  setEnd: 'Set ended',
   gameStart: 'Game started',
   gameEnd: 'Game ended',
   gameResume: 'Game resumed',

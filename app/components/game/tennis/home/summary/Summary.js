@@ -11,7 +11,7 @@ import Referees from './Referees';
 import Scorekeepers from './Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
-import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
+// import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
 
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
@@ -38,7 +38,6 @@ const Summary = ({
   const [starAttributes, starStarAttributes] = useState([]);
   useEffect(() => {
     setLoading(true);
-    console.log('Game Data', gameData);
     getSportsList(authContext).then((sports) => {
       const sportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
       const teamReviewProp = sportData?.team_review_properties ?? []
@@ -170,7 +169,7 @@ const Summary = ({
 
       {/* Feed Screen */}
       <View style={{ backgroundColor: colors.whiteColor }}>
-        <FeedsScreen navigation={navigation}/>
+        {/* <FeedsScreen navigation={navigation}/> */}
       </View>
     </View>
   )
