@@ -421,7 +421,7 @@ export default function SoccerRecording({ navigation, route }) {
             {pickerShow && (
               <View>
                 <RNDateTimePicker
-                default = 'spinner'
+                display="spinner"
                 value={date || new Date()}
                 onChange={onChange}
                 mode={'datetime'}

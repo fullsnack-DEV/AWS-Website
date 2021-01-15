@@ -278,6 +278,7 @@ const images = {
   tennisGeneral: require('../assets/images/ic_tennis_general.png'),
   requestSentImage: require('../assets/images/requestSentImage.png'),
   whiteTick: require('../assets/images/whiteTick.png'),
+  undoImage: require('../assets/images/undo.png'),
 
 };
 

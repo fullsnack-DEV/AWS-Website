@@ -801,7 +801,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 shadow={true}
                 marginTop={15}
                 onPress={() => {
-                  if (!bodyParams.game_status || bodyParams.game_status === (GameStatus.accepted || GameStatus.reset)) {
+                  if (!bodyParams.game_status || bodyParams.game_status === GameStatus.accepted || bodyParams.game_status === GameStatus.reset) {
                     navigation.navigate('ChangeReservationInfoScreen', {
                       screen: 'change',
                       body: bodyParams,
@@ -823,7 +823,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (!bodyParams.game_status || bodyParams.game_status === (GameStatus.accepted || GameStatus.reset)) {
+                  if (!bodyParams.game_status || bodyParams.game_status === GameStatus.accepted || bodyParams.game_status === GameStatus.reset) {
                     acceptDeclineChallengeOperation(
                       entity.uid,
                       bodyParams.challenge_id,
@@ -849,21 +849,17 @@ export default function CreateChallengeForm4({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (
-                    (bodyParams.game_status === GameStatus.accepted
-                      || bodyParams.game_status === GameStatus.reset)
-                    && bodyParams.start_datetime * 1000 > new Date().getTime()
-                  ) {
+                  if (!bodyParams.game_status || bodyParams.game_status === GameStatus.accepted || bodyParams.game_status === GameStatus.reset) {
                     acceptDeclineChallengeOperation(
                       entity.uid,
                       bodyParams.challenge_id,
                       bodyParams.version,
                       'cancel',
                     );
+                  } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
+                    Alert.alert(strings.cannotCancelReservationText);
                   } else {
-                    Alert.alert(
-                      'Reservation cannot be cancel after game time passed or offer expired.',
-                    );
+                    Alert.alert(strings.cannotChangeReservationText);
                   }
                 }}
               />}
