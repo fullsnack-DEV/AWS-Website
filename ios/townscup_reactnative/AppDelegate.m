@@ -34,6 +34,11 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   [FIRApp configure];
+  
+  if (@available(iOS 13.4, *)) {
+      [UIDatePicker appearance].preferredDatePickerStyle = UIDatePickerStyleWheels;
+    }
+  
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"townscup_reactnative"
