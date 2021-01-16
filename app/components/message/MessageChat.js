@@ -27,7 +27,6 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../uti
 import TCMessage from '../TCMessage';
 import AuthContext from '../../auth/context'
 import {
-  QB_ACCOUNT_TYPE,
   QB_DIALOG_TYPE, QBcreateDialog, QBgetMessages, QBgetUserDetail, QBsendMessage,
 } from '../../utils/QuickBlox';
 
@@ -52,7 +51,6 @@ const MessageChat = ({
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [dialogData, setDialogData] = useState(null);
-
   const [chatType, setChatType] = useState('');
   const [headingTitle, setHeadingTitle] = useState('');
   const [myUserId, setMyUserId] = useState();
@@ -64,7 +62,7 @@ const MessageChat = ({
   const refSavedMessagesData = useRef(savedMessagesData);
   useEffect(() => () => {
     if (occupantsData?.length) {
-      navigation.setParams({ participants: occupantsData });
+      navigation.setParams({ participants: [...occupantsData] });
     }
   }, [occupantsData]);
 
@@ -83,7 +81,7 @@ const MessageChat = ({
       } else {
         setHeadingTitle(dialogDatas?.name);
       }
-      setDialogData(dialogDatas);
+      setDialogData({ ...dialogDatas });
     }
     if (route?.params?.dialog) {
       setData(route?.params?.dialog);
@@ -91,7 +89,6 @@ const MessageChat = ({
   }, [route?.params?.dialog])
 
   useEffect(() => {
-    setLoading(true);
     const uid = route?.params?.userId;
     const setData = (data) => {
       const dialogDatas = {
@@ -103,16 +100,15 @@ const MessageChat = ({
       }
       setChatType(dialogDatas?.occupantsIds.length > 2 ? QB_DIALOG_TYPE.GROUP : QB_DIALOG_TYPE.SINGLE);
       if (dialogDatas?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-        if (dialogDatas?.name.slice(0, 2) === QB_ACCOUNT_TYPE.USER) {
-          setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
-        } else {
-          setHeadingTitle(dialogDatas?.name);
-        }
+        setHeadingTitle(dialogDatas?.name?.slice(2, dialogDatas?.name?.length));
+      } else {
+        setHeadingTitle(dialogDatas?.name);
       }
-      setDialogData(dialogDatas);
+      setDialogData({ ...dialogDatas });
     }
 
     if (uid) {
+      setLoading(true);
       QBgetUserDetail(
         QB.users.USERS_FILTER.FIELD.LOGIN,
         QB.users.USERS_FILTER.TYPE.STRING,
@@ -125,9 +121,50 @@ const MessageChat = ({
           setLoading(false);
           console.log(error);
         })
-      }).catch(() => setLoading(false))
+      }).catch((error) => {
+        console.log('QB Error : ', error);
+        setLoading(false)
+      })
     }
   }, [route?.params?.userId])
+
+  useEffect(() => {
+    if (dialogData) {
+      const getUser = async () => {
+        setMyUserId(authContext.entity.QB.id);
+        setLoading(true);
+        await getMessages();
+        setTimeout(() => onInputBoxFocus(), 200)
+        setLoading(false);
+      }
+      getUser().then(() => {
+        QBgetUserDetail(
+          QB.users.USERS_FILTER.FIELD.ID,
+          QB.users.USERS_FILTER.TYPE.STRING,
+          [dialogData?.occupantsIds].join(),
+        ).then((res) => {
+          console.log('USER: ', res.users)
+          setLoading(false);
+          setOccupantsData([...res.users]);
+        }).catch((e) => {
+          setLoading(false);
+          console.log(e);
+        })
+      }).catch(() => setLoading(false))
+
+      if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
+        QB.chat.joinDialog({ dialogId: dialogData?.dialogId });
+      }
+      QbMessageEmitter.addListener(
+        QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+        newMessageHandler,
+      )
+    }
+    return () => {
+      QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE)
+    }
+  }, [dialogData])
+
   const newMessageHandler = (event) => {
     const {
       type,
@@ -146,39 +183,6 @@ const MessageChat = ({
     }
   }
 
-  useEffect(() => {
-    if (dialogData) {
-      const getUser = async () => {
-        setMyUserId(authContext.entity.QB.id);
-        setLoading(true);
-        await getMessages();
-        setTimeout(() => onInputBoxFocus(), 200)
-        setLoading(false);
-      }
-      getUser();
-      QBgetUserDetail(
-        QB.users.USERS_FILTER.FIELD.ID,
-        QB.users.USERS_FILTER.TYPE.STRING,
-        dialogData?.occupantsIds.join(),
-      ).then((res) => {
-        console.log('USER: ', res.users)
-        setOccupantsData([...res.users]);
-      }).catch((e) => {
-        console.log(e);
-      })
-      if (chatType === QB_DIALOG_TYPE.GROUP && !dialogData?.isJoined) {
-        QB.chat.joinDialog({ dialogId: dialogData?.dialogId });
-      }
-      QbMessageEmitter.addListener(
-        QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-        newMessageHandler,
-      )
-    }
-    return () => {
-      QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE)
-    }
-  }, [dialogData])
-
   const getMessages = async (onRefreshCalled = false) => {
     try {
       const response = await QBgetMessages(dialogData?.dialogId, savedMessagesData.length);
@@ -186,10 +190,9 @@ const MessageChat = ({
         refSavedMessagesData.current = [...response.message, ...savedMessagesData]
         setSavedMessagesData((data) => [...response.message, ...data]);
       } else {
-        refSavedMessagesData.current = response.message
-        setSavedMessagesData(response.message);
+        refSavedMessagesData.current = [...response.message]
+        setSavedMessagesData([...response.message]);
       }
-      // setHasMore(response.messages.length === response.limit);
     } catch (err) {
       console.log(err);
     } finally {

@@ -10,13 +10,13 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../
 import MatchRecordsList from './MatchRecordsList';
 
 const MatchRecords = ({
-  gameData, gameId, navigation, getGameMatchRecords,
+  gameData, gameId, navigation, getGameMatchRecords, isAdmin,
 }) => (
   <View style={styles.mainContainer}>
     {/*      Match Records Sections */}
     <View style={styles.contentContainer}>
       <TouchableOpacity style={{ flexDirection: 'row', padding: 10 }} onPress={() => {
-        navigation.navigate('TennisRecordList', { gameId, gameData })
+        navigation.navigate('TennisRecordList', { gameId, gameData, isAdmin })
       }}>
         <Text style={styles.title}>
           Match records

@@ -100,17 +100,8 @@ export default function WelcomeScreen({ navigation }) {
               userDetail.email = user.email;
 
               await Utility.setStorage('userInfo', userDetail);
-              apiCall(userConfig).then((response) => {
-                setloading(false);
-                if (response.status === true) {
-                  Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
-                } else {
-                  navigation.navigate('AddBirthdayScreen')
-                }
-              }).catch(() => {
-                navigation.navigate('AddBirthdayScreen')
-              });
               setloading(false);
+              navigation.navigate('AddBirthdayScreen')
             });
           }).catch(() => setloading(false));
         }
@@ -218,17 +209,8 @@ export default function WelcomeScreen({ navigation }) {
                 userDetail.email = user.email;
 
                 await Utility.setStorage('userInfo', userDetail);
-                apiCall(userConfig).then((response) => {
-                  setloading(false);
-                  if (response.status === true) {
-                    Alert.alert('TownsCup', 'User already registerd with TownsCup, please try to login.')
-                  } else {
-                    navigation.navigate('AddBirthdayScreen')
-                  }
-                }).catch(() => {
-                  setloading(false);
-                  navigation.navigate('AddBirthdayScreen')
-                });
+                setloading(false);
+                navigation.navigate('AddBirthdayScreen')
               });
             }).catch(() => setloading(false));
           }
@@ -278,8 +260,8 @@ export default function WelcomeScreen({ navigation }) {
       <Text style={ styles.welcome }>{strings.welCome}</Text>
       <Text style={ styles.welcomeText }>{strings.welcomeText}</Text>
 
-      <FacebookButton onPress={ () => onFacebookButtonPress() }/>
-      <GoogleButton onPress={ () => onGoogleButtonPress() }/>
+      <FacebookButton onPress={onFacebookButtonPress}/>
+      <GoogleButton onPress={onGoogleButtonPress}/>
 
       <TouchableOpacity
             style={ [styles.imgWithText, styles.allButton] }

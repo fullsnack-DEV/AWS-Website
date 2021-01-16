@@ -27,7 +27,7 @@ import TennisGameState from '../../../components/game/tennis/home/gameRecordList
 import TennisGameScoreLeft from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreLeft';
 import AuthContext from '../../../auth/context';
 
-export default function TennisMatchRecordsList({ matchData }) {
+export default function TennisMatchRecordsList({ matchData, visibleSetScore = true }) {
   const authContext = useContext(AuthContext)
   const [editorChecked, setEditorChecked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -35,10 +35,27 @@ export default function TennisMatchRecordsList({ matchData }) {
   const [gameData, setGameData] = useState(null);
   const [teamIds, setTeamIds] = useState(null);
   const [currentScore, setCurrentScore] = useState(null)
+  const [servingTeamID, setServingTeamID] = useState();
+  const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0);
+  const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0);
 
   useEffect(() => {
     loadAtOnce()
   }, [matchData])
+
+  useEffect(() => {
+    if (gameData) {
+      calculateMatchScore();
+      defineServingTeamID(gameData);
+    }
+  }, [gameData])
+  const defineServingTeamID = (data) => {
+    if (data?.game_inprogress && data?.game_inprogress?.serving_team_id) {
+      setServingTeamID(data?.game_inprogress?.serving_team_id);
+    } else {
+      setServingTeamID(data?.home_team?.user_id);
+    }
+  };
 
   const loadAtOnce = async () => {
     const gameId = matchData?.game_id;
@@ -71,13 +88,32 @@ export default function TennisMatchRecordsList({ matchData }) {
       })
     }
   }
-
+  const calculateMatchScore = () => {
+    setHomeMatchPoint(0);
+    setAwayMatchPoint(0);
+    let homePoint = 0;
+    let awayPoint = 0;
+    console.log('SETS::->', gameData?.scoreboard?.sets);
+    (gameData?.scoreboard?.sets || []).map((e) => {
+      if (e?.winner) {
+        if (e.winner === gameData?.home_team?.user_id) {
+          homePoint += 1;
+          console.log('SETS NO::->', homePoint);
+        } else {
+          awayPoint += 1;
+        }
+      }
+      setHomeMatchPoint(homePoint);
+      setAwayMatchPoint(awayPoint);
+      return e;
+    });
+  };
   const processModifiedMatchRecords = (records) => {
     const wholeRecords = [];
     let set_number = 0;
     let game_number = 0;
     records.map((recordData) => {
-      const isGameState = ['start', 'resume', 'pause', 'end'].includes(recordData?.verb);
+      const isGameState = ['start', 'end'].includes(recordData?.verb);
       if (isGameState) {
         wholeRecords.push({ type: 'game_stats', data: recordData })
       } else {
@@ -105,7 +141,7 @@ export default function TennisMatchRecordsList({ matchData }) {
           }
         } else {
           const set_index = wholeRecords.findIndex((item) => item.setId === recordData?.s_id)
-          const isSetGameState = ['gameStart', 'gameEnd'].includes(recordData?.verb);
+          const isSetGameState = ['resume', 'pause', 'gameStart', 'gameEnd'].includes(recordData?.verb);
 
           if (isSetGameState) {
             if (recordData?.verb === 'gameStart') {
@@ -419,54 +455,67 @@ export default function TennisMatchRecordsList({ matchData }) {
             </TouchableWithoutFeedback>
           </View>
         </View>
+        {visibleSetScore && (
+          <View style={styles.headerView}>
+            <RenderDash/>
+            <View style={styles.leftView}>
+              <View style={styles.profileShadow}>
+                <FastImage
+                    resizeMode={'cover'}
+                      source={
+                        gameData?.home_team?.thumbnail
+                          ? { uri: gameData?.home_team?.thumbnail }
+                          : images.profilePlaceHolder
+                      }
+                      style={
+                        servingTeamID === gameData?.home_team?.user_id
+                          ? styles.profileImg
+                          : [styles.profileImg, { borderColor: colors.themeColor }]
+                      }
+                  />
+              </View>
+              <Text style={styles.leftText} numberOfLines={2}>
+                {gameData?.home_team?.first_name} {gameData?.home_team?.last_name}
+              </Text>
+            </View>
 
-        <View style={ styles.headerView }>
-          <RenderDash/>
-          <View style={ styles.leftView }>
-            <View style={ styles.profileShadow }>
-              <FastImage
-                            resizeMode={'cover'}
-                            source={gameData?.home_team?.background_thumbnail ? { uri: gameData?.home_team?.background_thumbnail } : images.profilePlaceHolder }
-                            style={styles.profileImg}
-                        />
-            </View>
-            <Text style={{
-              ...styles.leftText,
-              color: gameData?.away_team_goal !== gameData?.home_team_goal
-                        && gameData?.home_team_goal > gameData?.away_team_goal
-                ? colors.themeColor
-                : colors?.lightBlackColor
-                            || colors.lightBlackColor,
-            }}>
-              {gameData?.singlePlayerGame
-                ? gameData?.home_team?.full_name
-                : gameData?.home_team?.group_name}
-            </Text>
-          </View>
-          <View style={ styles.centerView }>
-            {getScoreText(currentScore?.home_team_score, currentScore?.home_team_score?.away_team_score, 1)}
-            <Text style={ styles.centerText }> : </Text>
-            {getScoreText(currentScore?.home_team_score, currentScore?.home_team_score?.away_team_score, 2)}
-          </View>
-          <View style={ styles.rightView }>
-            <Text style={{
-              ...styles.rightText,
-              color: gameData?.away_team_goal !== gameData?.home_team_goal && gameData?.away_team_goal > gameData?.home_team_goal ? colors.themeColor : colors?.lightBlackColor || colors.lightBlackColor,
-            }}
-                          numberOfLines={ 2 }>
-              {gameData?.singlePlayerGame
-                ? gameData?.away_team?.full_name
-                : gameData?.away_team?.group_name}
-            </Text>
-            <View style={ styles.profileShadow }>
-              <FastImage
-                            resizeMode={'cover'}
-                            source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.profilePlaceHolder }
-                            style={styles.profileImg}
-                        />
+            <TouchableWithoutFeedback>
+              <View>
+                <Text style={styles.centerSetText}>SET SCORES</Text>
+                <View style={styles.centerView}>
+                  <Text style={styles.centerText}>
+                    {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 1)}
+                  </Text>
+                  <View style={{ width: 10 }}/>
+                  <Text style={styles.centerText}>
+                    {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 2)}
+                  </Text>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+
+            <View style={styles.rightView}>
+              <Text style={styles.rightText} numberOfLines={2}>
+                {gameData?.away_team?.first_name} {gameData?.away_team?.last_name}
+              </Text>
+              <View style={styles.profileShadow}>
+                <FastImage
+                      resizeMode={'cover'}
+                      source={
+                        gameData?.away_team?.thumbnail
+                          ? { uri: gameData?.away_team?.thumbnail }
+                          : images.profilePlaceHolder
+                      }
+                      style={
+                        servingTeamID === gameData?.away_team?.user_id
+                          ? styles.profileImg
+                          : [styles.profileImg, { borderColor: colors.themeColor }]
+                      }
+                  />
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
       <Fragment>
         <FlatList
@@ -490,6 +539,12 @@ export default function TennisMatchRecordsList({ matchData }) {
 }
 
 const styles = StyleSheet.create({
+  centerSetText: {
+    color: colors.userPostTimeColor,
+    alignSelf: 'center',
+    fontFamily: fonts.RRegular,
+    fontSize: 12,
+  },
   centerText: {
     fontFamily: fonts.RRegular,
     fontSize: 30,
@@ -546,7 +601,13 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-
+  profileShadow: {
+    elevation: 10,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+  },
   profileImg: {
     borderRadius: 15,
     height: 25,

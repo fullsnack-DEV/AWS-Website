@@ -136,6 +136,7 @@ const Summary = ({
 
       {/* Match Records */}
       <MatchRecords
+            isAdmin={isAdmin}
             navigation={navigation}
             gameId={gameData?.game_id}
             gameData={gameData}
