@@ -17,9 +17,9 @@ export default function AlterRequestSent({ navigation }) {
   ];
   useEffect(() => {
     const timer = setInterval(() => {
-      navigation.pop(1000)
+      navigation.popToTop()
     },
-    5000);
+    4000);
     return () => clearInterval(timer)
   }, []);
   return (

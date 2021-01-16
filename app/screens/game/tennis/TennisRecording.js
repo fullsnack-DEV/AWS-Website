@@ -89,12 +89,15 @@ export default function TennisRecording({ navigation, route }) {
   const [actionByTeamID, setActionByTeamID] = useState();
   const [loading, setloading] = useState(false);
   const [footerUp, setFooterUp] = useState(true);
+  const [isServingPressed, setIsServingPressed] = useState(false);
 
   const [gameData] = useState(route?.params?.gameDetail);
 
   const [showToast, setShowToast] = useState(false);
   const [undoTeamID, setUndoTeamID] = useState();
   useEffect(() => {
+    clearInterval(timer);
+    clearInterval(timerForTimeline);
     // const { gameDetail } = route.params ?? {};
     entity = authContext.entity;
     console.log(entity);
@@ -118,19 +121,31 @@ export default function TennisRecording({ navigation, route }) {
     });
   }, [navigation, date, gameObj]);
 
+  // useFocusEffect(() => {
+  //   getGameDetailFrequently()
+  //   startStopTimerTimeline();
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, []);
+
   useFocusEffect(() => {
-    startStopTimerTimeline();
     timer = setInterval(() => {
       if (gameObj && gameObj.status !== GameStatus.ended) {
-        getGameDetail(gameObj.game_id, false);
+        getGameDetail(route?.params?.gameDetail?.game_id, false);
       }
     }, 3000);
 
+    timerForTimeline = setInterval(() => {
+      startStopTimerTimeline()
+    }, 1000);
+
     return () => {
-      clearInterval(timer);
-      clearInterval(timerForTimeline);
-    };
-  }, []);
+      clearInterval(timer)
+      clearInterval(timerForTimeline)
+    }
+  }, [])
+
   const configurePeriodOpetions = (data) => {
     if (data?.scoreboard?.game_inprogress) {
       if (
@@ -148,10 +163,22 @@ export default function TennisRecording({ navigation, route }) {
     }
   };
   const defineServingTeamID = (data) => {
-    if (data?.game_inprogress && data?.game_inprogress?.serving_team_id) {
-      setServingTeamID(data?.game_inprogress?.serving_team_id);
-    } else {
-      setServingTeamID(data?.home_team?.user_id);
+    console.log('serving:', isServingPressed);
+    if (!isServingPressed) {
+      if (data?.scoreboard?.game_inprogress && data?.scoreboard?.game_inprogress?.serving_team_id) {
+        const tempServingID = data?.scoreboard?.game_inprogress?.serving_team_id
+        if (data?.scoreboard?.game_inprogress?.winner || data?.scoreboard?.game_inprogress?.end_datetime) {
+          if (tempServingID === data?.home_team?.user_id) {
+            setServingTeamID(data?.away_team?.user_id);
+          } else {
+            setServingTeamID(data?.home_team?.user_id);
+          }
+        } else {
+          setServingTeamID(tempServingID);
+        }
+      } else {
+        setServingTeamID(data?.home_team?.user_id);
+      }
     }
   };
   const calculateMatchScore = () => {
@@ -225,25 +252,25 @@ export default function TennisRecording({ navigation, route }) {
         if (validate()) {
           openToast()
           if (item === 'General') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Score;
           } else if (item === 'Ace') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Ace;
           } else if (item === 'Winner') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Winner;
           } else if (item === 'Unforced') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Unforced;
           } else if (item === 'Fault') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Fault;
           } else if (item === 'Foot Fault') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.FeetFault;
           } else if (item === 'Let') {
-            lastTimeStamp = date ? parseFloat(date.getTime() / 1000).toFixed(0) : parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.LetScore;
           }
           let body = [{}];
@@ -277,8 +304,8 @@ export default function TennisRecording({ navigation, route }) {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setPickerShow(Platform.OS === 'ios');
-    startStopTimerTimeline();
     setDate(currentDate);
+    startStopTimerTimeline();
   };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -350,15 +377,15 @@ export default function TennisRecording({ navigation, route }) {
     return `${name} ${verbString}`
   }
   const startStopTimerTimeline = () => {
-    clearInterval(timer);
-    clearInterval(timerForTimeline);
+    // clearInterval(timer);
+    // clearInterval(timerForTimeline);
     if (gameObj && gameObj.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime,
+          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime * 1000,
           gameObj
             && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime,
+            && gameObj.actual_startdatetime * 1000,
         ),
       );
     } else if (
@@ -371,10 +398,10 @@ export default function TennisRecording({ navigation, route }) {
     } else if (gameObj && gameObj.status === GameStatus.paused) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.pause_datetime && gameObj.pause_datetime,
+          gameObj && gameObj.pause_datetime && gameObj.pause_datetime * 1000,
           gameObj
             && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime,
+            && gameObj.actual_startdatetime * 1000,
         ),
       );
     } else if (date) {
@@ -382,23 +409,20 @@ export default function TennisRecording({ navigation, route }) {
         getTimeDifferent(
           gameObj
             && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime,
+            && gameObj.actual_startdatetime * 1000,
           new Date(date).getTime(),
         ),
       );
     } else {
-      timerForTimeline = setInterval(() => {
-        if (gameObj) {
-          setTimelineTimer(
-            getTimeDifferent(
-              new Date().getTime(),
-              gameObj
+      // console.log(`Date:${new Date().getTime()}:gameObj.actual_startdatetime:${gameObj.actual_startdatetime * 1000}`);
+      setTimelineTimer(
+        getTimeDifferent(
+          new Date().getTime(),
+          gameObj
                 && gameObj.actual_startdatetime
-                && gameObj.actual_startdatetime,
-            ),
-          );
-        }
-      }, 1000);
+                && gameObj.actual_startdatetime * 1000,
+        ),
+      );
     }
   };
   const resetGameDetail = (gameId) => {
@@ -426,6 +450,7 @@ export default function TennisRecording({ navigation, route }) {
       .then((response) => {
         console.log('GAME RESPONSE::', JSON.stringify(response.payload));
         setGameObj(response.payload);
+
         if (
           entity
           === (gameObj?.home_team?.group_id || gameObj?.home_team?.user_id)
@@ -440,9 +465,9 @@ export default function TennisRecording({ navigation, route }) {
         }
         calculateMatchScore();
         calculateGameScore(response.payload);
-        if (!servingTeamID) {
-          defineServingTeamID(response.payload);
-        }
+
+        defineServingTeamID(response.payload);
+
         configurePeriodOpetions(response.payload);
         setloading(false);
       })
@@ -485,6 +510,7 @@ export default function TennisRecording({ navigation, route }) {
     setloading(true);
     addGameRecord(gameId, params, authContext)
       .then((response) => {
+        setIsServingPressed(false)
         console.log('response of game record::', response);
         setloading(false);
         setDate();
@@ -601,35 +627,48 @@ export default function TennisRecording({ navigation, route }) {
 
               <TouchableWithoutFeedback
                 onPress={() => {
-                  Alert.alert(
-                    'Do you want to change the serving player?',
-                    '',
-                    [
-                      {
-                        text: 'Cancel',
-                        style: 'cancel',
-                      },
-                      {
-                        text: 'Ok',
-                        style: 'default',
-                        onPress: () => {
-                          if (gameObj?.game_inprogress?.winner) {
-                            Alert.alert(
-                              'You can not change serving player during game.',
-                            );
-                          } else if (
-                            gameObj?.home_team?.user_id === servingTeamID
-                          ) {
-                            setServingTeamID(gameObj?.away_team?.user_id);
-                          } else {
-                            setServingTeamID(gameObj?.home_team?.user_id);
-                          }
-                          console.log('OK Pressed');
+                  let canChange = false;
+                  if (!gameObj?.scoreboard?.game_inprogress) {
+                    canChange = true;
+                  } else if (!gameObj?.scoreboard?.game_inprogress?.winner) {
+                    canChange = false;
+                  } else {
+                    canChange = true;
+                  }
+                  if (!canChange) {
+                    Alert.alert(strings.canNotChangeServing)
+                  } else {
+                    Alert.alert(
+                      'Do you want to change the serving player?',
+                      '',
+                      [
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
                         },
-                      },
-                    ],
-                    { cancelable: false },
-                  );
+                        {
+                          text: 'Ok',
+                          style: 'default',
+                          onPress: () => {
+                            if (gameObj?.game_inprogress?.winner) {
+                              Alert.alert(
+                                'You can not change serving player during game.',
+                              );
+                            } else if (
+                              gameObj?.home_team?.user_id === servingTeamID
+                            ) {
+                              setServingTeamID(gameObj?.away_team?.user_id);
+                            } else {
+                              setServingTeamID(gameObj?.home_team?.user_id);
+                            }
+                            setIsServingPressed(true)
+                            console.log('OK Pressed');
+                          },
+                        },
+                      ],
+                      { cancelable: false },
+                    );
+                  }
                 }}>
                 <View>
                   <Text style={styles.centerSetText}>SET SCORES</Text>
@@ -819,11 +858,10 @@ export default function TennisRecording({ navigation, route }) {
                     value={date || new Date()}
                     onChange={onChange}
                     mode={'datetime'}
-                    minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date() : new Date(gameObj.actual_startdatetime)}
+                    minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date() : new Date(gameObj.actual_startdatetime * 1000)}
                     maximumDate={new Date()}
                     // gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()
                   />
-
                   </View>
                 )}
                 <View style={styles.middleViewContainer}>
@@ -931,8 +969,8 @@ export default function TennisRecording({ navigation, route }) {
                         Alert.alert('Select Team');
                       } else {
                         lastTimeStamp = date
-                          ? date.getTime()
-                          : new Date().getTime();
+                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                          : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
                         lastVerb = GameVerb.Score;
                         const body = [
                           {
@@ -1052,7 +1090,7 @@ export default function TennisRecording({ navigation, route }) {
                         );
                       } else {
                         lastTimeStamp = date
-                          ? parseFloat(date.getTime() / 1000).toFixed(0)
+                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Start;
                         const body = [
@@ -1212,7 +1250,7 @@ export default function TennisRecording({ navigation, route }) {
         // destructiveButtonIndex={1}
         onPress={(index) => {
           if (opetions[index] === 'End Game') {
-            lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.GameEnd;
             const body = [
               {
@@ -1223,7 +1261,7 @@ export default function TennisRecording({ navigation, route }) {
             ];
             addGameRecordDetail(gameObj.game_id, body);
           } else if (opetions[index] === 'End Set') {
-            lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
+            lastTimeStamp = parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.SetEnd;
             const body = [
               {

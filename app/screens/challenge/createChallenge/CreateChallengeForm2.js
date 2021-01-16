@@ -278,7 +278,7 @@ export default function CreateChallengeForm2({ navigation, route }) {
                   },
                 });
               } else if (editableAlter === true) {
-                navigation.push('EditChallenge', {
+                navigation.navigate('EditChallenge', {
                   challengeObj: {
                     ...route.params.body,
                     gameRules: {

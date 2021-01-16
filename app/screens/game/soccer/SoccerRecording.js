@@ -702,16 +702,34 @@ export default function SoccerRecording({ navigation, route }) {
                   <TCGameButton
                   title="Match End"
                   onPress={() => {
-                    lastTimeStamp = new Date().getTime();
-                    lastVerb = GameVerb.End;
-                    const body = [
-                      {
-                        verb: lastVerb,
-                        timestamp: lastTimeStamp,
-                        team_id: actionByTeamID,
-                      },
-                    ];
-                    addGameRecordDetail(gameObj.game_id, body);
+                    Alert.alert(
+                      'Do you want to end match?',
+                      '',
+                      [
+                        {
+                          text: 'Cancel',
+                          // style: 'cancel',
+                        },
+                        {
+                          text: 'Ok',
+
+                          // style: 'destructive',
+                          onPress: () => {
+                            lastTimeStamp = new Date().getTime();
+                            lastVerb = GameVerb.End;
+                            const body = [
+                              {
+                                verb: lastVerb,
+                                timestamp: lastTimeStamp,
+                                team_id: actionByTeamID,
+                              },
+                            ];
+                            addGameRecordDetail(gameObj.game_id, body);
+                          },
+                        },
+                      ],
+                      { cancelable: false },
+                    );
                   }}
                   gradientColor={[colors.yellowColor, colors.themeColor]}
                   buttonTitle={'END'}

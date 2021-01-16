@@ -156,7 +156,7 @@ const strings = {
   membershipRequestText:
     'A person whose membership request has been accepted by a team admin',
   inviteText: 'Invite only',
-
+  canNotChangeServing: 'You can not change serving player during game.',
   // Create Team screen 3
 
   registerTitle: 'Registration Fee',
