@@ -488,7 +488,7 @@ function RefereeInfoSection({
         }}
       >
         <FlatList
-          data={certificatesData}
+          data={certificatesData?.length > 0 ? certificatesData : []}
           bounces={false}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -504,7 +504,7 @@ function RefereeInfoSection({
               profileImage={{ borderWidth: 0.5, borderColor: colors.linesepratorColor, borderRadius: 8 }}
           />}
           keyExtractor={(item, index) => index.toString()}
-        />
+         />
       </EditEventItem>
       <View style={styles.dividerStyle} />
       <EditEventItem
@@ -583,7 +583,7 @@ function RefereeInfoSection({
             containerStyle={{ marginTop: 10 }}
           >
             <FlatList
-              data={privacyData}
+              data={privacyData ?? []}
               style={{ marginTop: 10 }}
               ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
               renderItem={ ({ item }) => <RadioBtnItem
@@ -613,7 +613,7 @@ function RefereeInfoSection({
               containerStyle={{ marginTop: 10 }}
             >
               <FlatList
-                data={genderPrivacy}
+                data={genderPrivacy ?? []}
                 bounces={false}
                 style={{ marginTop: 10 }}
                 ListHeaderComponent={() => <Text style={styles.privacySubTitleStyle}>{strings.gender}</Text>}
@@ -640,7 +640,7 @@ function RefereeInfoSection({
               />
               <View style={styles.privacySepratorStyle} />
               <FlatList
-                data={yearOfBirthPrivacy}
+                data={yearOfBirthPrivacy ?? []}
                 bounces={false}
                 style={{ marginTop: 10 }}
                 ListHeaderComponent={() => <Text style={styles.privacySubTitleStyle}>{strings.yearOfBirth}</Text>}
@@ -667,7 +667,7 @@ function RefereeInfoSection({
               />
               <View style={styles.privacySepratorStyle} />
               <FlatList
-                data={languagePrivacy}
+                data={languagePrivacy ?? []}
                 bounces={false}
                 style={{ marginTop: 10 }}
                 ListHeaderComponent={() => <Text style={styles.privacySubTitleStyle}>{strings.language}</Text>}
@@ -694,7 +694,7 @@ function RefereeInfoSection({
               />
               <View style={styles.privacySepratorStyle} />
               <FlatList
-                data={currentCityPrivacy}
+                data={currentCityPrivacy ?? []}
                 bounces={false}
                 style={{ marginTop: 10 }}
                 ListHeaderComponent={() => <Text style={styles.privacySubTitleStyle}>{strings.currrentCityTitle}</Text>}
@@ -1150,7 +1150,7 @@ function RefereeInfoSection({
                     marginTop: hp(2),
                     color: colors.userPostTimeColor,
                   }}>No Records Found</Text>}
-                data={languageList}
+                data={languageList ?? []}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
               />

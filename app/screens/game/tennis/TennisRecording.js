@@ -763,7 +763,7 @@ export default function TennisRecording({ navigation, route }) {
                 <TennisScoreView scoreDataSource={gameObj}/>
               </View>
               <View style={styles.view2}>
-                <TennisMatchRecordsList matchData={gameData}/>
+                <TennisMatchRecordsList matchData={gameData} visibleSetScore={false}/>
               </View>
             </ScrollView>
           </View>

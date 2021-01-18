@@ -66,7 +66,7 @@ export default function TennisGameScoreRight({
           </Text>
           <View style={{ width: '22%' }}>
             <FastImage
-                source={gameData?.away_team?.background_thumbnail ? { uri: gameData?.away_team?.background_thumbnail } : images.profilePlaceHolder }
+                source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.profilePlaceHolder }
               style={ styles.rightProfileImg }
             />
           </View>

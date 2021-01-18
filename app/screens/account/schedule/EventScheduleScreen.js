@@ -75,7 +75,8 @@ export default function EventScheduleScreen({
 
   return (
     <KeyboardAvoidingView style={ styles.mainContainer } behavior={'padding'}>
-      <SectionList
+      {filterData && (
+        <SectionList
               ListEmptyComponent={<Text style={styles.dataNotFoundText}>
                 Data Not Found
               </Text>}
@@ -103,6 +104,7 @@ export default function EventScheduleScreen({
           keyExtractor={(item, index) => index.toString()}
           bounces={false}
         />
+      )}
     </KeyboardAvoidingView>
   );
 }

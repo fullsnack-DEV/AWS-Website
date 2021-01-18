@@ -70,7 +70,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
             if (route.params && route.params.comeFrom === 'HomeScreen') {
               navigation.navigate('HomeScreen');
             } else {
-              navigation.navigate('AccountScreen');
+              navigation.navigate('HomeScreen');
             }
           } else {
             Alert.alert('Towns Cup', response.messages);
