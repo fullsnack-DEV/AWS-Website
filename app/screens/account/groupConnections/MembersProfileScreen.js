@@ -48,7 +48,9 @@ export default function MembersProfileScreen({ navigation, route }) {
   const [switchUser, setSwitchUser] = useState({})
 
   useEffect(() => {
-    getMemberInformation()
+    if (isFocused) {
+      getMemberInformation()
+    }
   }, [isFocused])
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -23,13 +23,15 @@ const MatchRecordsList = ({
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (gameId) {
-      setLoading(true);
-      getGameMatchRecords(gameId).then((res) => {
-        setMatchRecords(res.payload);
-      }).finally(() => setLoading(false));
+    if (isFocused) {
+      if (gameId) {
+        setLoading(true);
+        getGameMatchRecords(gameId).then((res) => {
+          setMatchRecords(res.payload);
+        }).finally(() => setLoading(false));
+      }
     }
-  }, [gameId, isFocused])
+  }, [isFocused])
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading}/>

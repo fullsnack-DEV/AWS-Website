@@ -1,5 +1,9 @@
 import React, {
-  useLayoutEffect, useState, useRef, useEffect, useContext,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
 } from 'react';
 import {
   View,
@@ -13,7 +17,6 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-
 } from 'react-native';
 
 import {
@@ -76,52 +79,94 @@ export default function GameDetailRecord({ navigation, route }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation, date, gameObj, selectedMemberID, selectedAssistMemberID, isAssist, messageText, messageToast]);
+  }, [
+    navigation,
+    date,
+    gameObj,
+    selectedMemberID,
+    selectedAssistMemberID,
+    isAssist,
+    messageText,
+    messageToast,
+  ]);
 
   useFocusEffect(() => {
-    startStopTimerTimeline()
+    startStopTimerTimeline();
     timer = setInterval(() => {
       if (gameObj && gameObj.status !== GameStatus.ended) {
         getGameRosterDetail(gameObj.game_id, false);
       }
     }, 3000);
     return () => {
-      clearInterval(timer)
-      clearInterval(timerForTimeline)
-    }
-  }, [])
+      clearInterval(timer);
+      clearInterval(timerForTimeline);
+    };
+  }, []);
 
   const startStopTimerTimeline = () => {
-    clearInterval(timer)
-    clearInterval(timerForTimeline)
+    clearInterval(timer);
+    clearInterval(timerForTimeline);
     if (gameObj && gameObj.status === GameStatus.ended) {
-      setTimelineTimer(getTimeDifferent(gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime, gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
-    } else if ((gameObj && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status === GameStatus.reset)) {
-      setTimelineTimer(getTimeDifferent(new Date().getTime(), new Date().getTime()))
+      setTimelineTimer(
+        getTimeDifferent(
+          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime * 1000,
+          gameObj
+            && gameObj.actual_startdatetime
+            && gameObj.actual_startdatetime * 1000,
+        ),
+      );
+    } else if (
+      (gameObj && gameObj.status === GameStatus.accepted)
+      || (gameObj && gameObj.status === GameStatus.reset)
+    ) {
+      setTimelineTimer(
+        getTimeDifferent(new Date().getTime(), new Date().getTime()),
+      );
     } else if (gameObj && gameObj.status === GameStatus.paused) {
-      setTimelineTimer(getTimeDifferent(gameObj && gameObj.pause_datetime && gameObj.pause_datetime, gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
+      setTimelineTimer(
+        getTimeDifferent(
+          gameObj && gameObj.pause_datetime && gameObj.pause_datetime * 1000,
+          gameObj
+            && gameObj.actual_startdatetime
+            && gameObj.actual_startdatetime * 1000,
+        ),
+      );
     } else if (date) {
-      setTimelineTimer(getTimeDifferent(gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime, new Date(date).getTime()))
+      setTimelineTimer(
+        getTimeDifferent(
+          gameObj
+            && gameObj.actual_startdatetime
+            && gameObj.actual_startdatetime * 1000,
+          new Date(date).getTime(),
+        ),
+      );
     } else {
       timerForTimeline = setInterval(() => {
         if (gameObj) {
-          setTimelineTimer(getTimeDifferent(new Date().getTime(), gameObj && gameObj.actual_startdatetime && gameObj.actual_startdatetime))
+          setTimelineTimer(
+            getTimeDifferent(
+              new Date().getTime(),
+              gameObj
+                && gameObj.actual_startdatetime
+                && gameObj.actual_startdatetime * 1000,
+            ),
+          );
         }
       }, 1000);
     }
-  }
+  };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
     let breakTime = 0;
     if (gameObj && gameObj.breakTime) {
-      breakTime = gameObj.breakTime / 1000
+      breakTime = gameObj.breakTime / 1000;
     }
     if (date) {
       // eslint-disable-next-line no-param-reassign
-      eDate = date
+      eDate = date;
     }
-    const tempDate = new Date(eDate)
-    tempDate.setMinutes(tempDate.getMinutes() + breakTime)
+    const tempDate = new Date(eDate);
+    tempDate.setMinutes(tempDate.getMinutes() + breakTime);
     let delta = Math.abs(new Date(sDate).getTime() - new Date(tempDate).getTime()) / 1000;
 
     const hours = Math.floor(delta / 3600) % 24;
@@ -133,23 +178,23 @@ export default function GameDetailRecord({ navigation, route }) {
     const seconds = Math.floor(delta % 60);
 
     if (hours >= 99) {
-      return '99 : 00 : 00'
+      return '99 : 00 : 00';
     }
     let hr, min, sec;
     if (hours <= 9) {
-      hr = `0${hours}`
+      hr = `0${hours}`;
     } else {
-      hr = hours
+      hr = hours;
     }
     if (minutes <= 9) {
-      min = `0${minutes}`
+      min = `0${minutes}`;
     } else {
-      min = minutes
+      min = minutes;
     }
     if (seconds <= 9) {
-      sec = `0${seconds}`
+      sec = `0${seconds}`;
     } else {
-      sec = seconds
+      sec = seconds;
     }
     return `${hr} : ${min} : ${sec}`;
   };
@@ -177,8 +222,8 @@ export default function GameDetailRecord({ navigation, route }) {
   };
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    return moment(new Date(dateValue)).format('hh : mm a, MMM DD')
-  }
+    return moment(new Date(dateValue)).format('hh : mm a, MMM DD');
+  };
   const getGameRosterDetail = (gameId, isLoading) => {
     if (isLoading) {
       setloading(true);
@@ -213,7 +258,10 @@ export default function GameDetailRecord({ navigation, route }) {
 
         setGameObj({
           ...gameObject,
-          status: (res2.payload.game_summary.status === GameStatus.reset && GameStatus.accepted) || res2.payload.game_summary.status,
+          status:
+            (res2.payload.game_summary.status === GameStatus.reset
+              && GameStatus.accepted)
+            || res2.payload.game_summary.status,
           away_team_goal: res2.payload.game_summary.away_team_goal,
           home_team_goal: res2.payload.game_summary.home_team_goal,
         });
@@ -239,7 +287,7 @@ export default function GameDetailRecord({ navigation, route }) {
           home_team_goal: 0,
           status: GameStatus.accepted,
         });
-        startStopTimerTimeline()
+        startStopTimerTimeline();
         setloading(false);
         setDate();
         console.log('RESET GAME RESPONSE::', response.payload);
@@ -254,7 +302,7 @@ export default function GameDetailRecord({ navigation, route }) {
   const getMemberName = (memberID) => {
     console.log('Member Id', memberID);
     if (memberID === '0' || memberID === '1') {
-      return 'No Specific Player'
+      return 'No Specific Player';
     }
     let jerseyNumber = '';
     let firstName = '';
@@ -273,7 +321,7 @@ export default function GameDetailRecord({ navigation, route }) {
             jerseyNumber = e.profile.jersey_number;
           }
         }
-      })
+      });
     } else if (homeBench.some((e) => e.member_id === memberID)) {
       // eslint-disable-next-line consistent-return
       // eslint-disable-next-line array-callback-return
@@ -289,7 +337,7 @@ export default function GameDetailRecord({ navigation, route }) {
             jerseyNumber = e.profile.jersey_number;
           }
         }
-      })
+      });
     } else if (awayField.some((e) => e.member_id === memberID)) {
       // eslint-disable-next-line consistent-return
       // eslint-disable-next-line array-callback-return
@@ -305,7 +353,7 @@ export default function GameDetailRecord({ navigation, route }) {
             jerseyNumber = e.profile.jersey_number;
           }
         }
-      })
+      });
     } else if (awayBench.some((e) => e.member_id === memberID)) {
       // eslint-disable-next-line consistent-return
       // eslint-disable-next-line array-callback-return
@@ -321,7 +369,7 @@ export default function GameDetailRecord({ navigation, route }) {
             jerseyNumber = e.profile.jersey_number;
           }
         }
-      })
+      });
     }
 
     // if (jerseyNumber !== '' || jerseyNumber !== undefined) {
@@ -329,11 +377,11 @@ export default function GameDetailRecord({ navigation, route }) {
     // }
     console.log('Toast string::', `${firstName} ${lastName} ${jerseyNumber}`);
     if (jerseyNumber && jerseyNumber !== '') {
-      return `${firstName} ${lastName} (${jerseyNumber})`
+      return `${firstName} ${lastName} (${jerseyNumber})`;
     }
 
-    return `${firstName} ${lastName}`
-  }
+    return `${firstName} ${lastName}`;
+  };
   const addGameRecordDetail = (gameId, params) => {
     setloading(true);
     addGameRecord(gameId, params, authContext)
@@ -383,13 +431,24 @@ export default function GameDetailRecord({ navigation, route }) {
         } else {
           setloading(false);
           setMessageText(
-            (lastVerb === GameVerb.Goal && !isAssist && `Goal, ${getMemberName(selectedMemberID)}`)
-            || (lastVerb === GameVerb.Goal && isAssist && `Goal, ${getMemberName(selectedMemberID)} /Assist, ${getMemberName(selectedAssistMemberID)}`)
-              || (lastVerb === GameVerb.OwnGoal && `Goal, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.YC && `YC, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.RC && `RC, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.In && `In, ${getMemberName(selectedMemberID)}`)
-              || (lastVerb === GameVerb.Out && `Out, ${getMemberName(selectedMemberID)}`),
+            (lastVerb === GameVerb.Goal
+              && !isAssist
+              && `Goal, ${getMemberName(selectedMemberID)}`)
+              || (lastVerb === GameVerb.Goal
+                && isAssist
+                && `Goal, ${getMemberName(
+                  selectedMemberID,
+                )} /Assist, ${getMemberName(selectedAssistMemberID)}`)
+              || (lastVerb === GameVerb.OwnGoal
+                && `Goal, ${getMemberName(selectedMemberID)}`)
+              || (lastVerb === GameVerb.YC
+                && `YC, ${getMemberName(selectedMemberID)}`)
+              || (lastVerb === GameVerb.RC
+                && `RC, ${getMemberName(selectedMemberID)}`)
+              || (lastVerb === GameVerb.In
+                && `In, ${getMemberName(selectedMemberID)}`)
+              || (lastVerb === GameVerb.Out
+                && `Out, ${getMemberName(selectedMemberID)}`),
           );
           setMessageToast(true);
 
@@ -426,7 +485,9 @@ export default function GameDetailRecord({ navigation, route }) {
                     {
                       text: 'No',
                       onPress: () => {
-                        lastTimeStamp = date ? date.getTime() : new Date().getTime()
+                        lastTimeStamp = date
+                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                          : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Goal;
                         let body = [{}];
                         if (
@@ -472,7 +533,9 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'Assist') {
             if (selectedAssistMemberID) {
-              lastTimeStamp = date ? date.getTime() : new Date().getTime()
+              lastTimeStamp = date
+                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Goal;
               let body = [{}];
               if (selectedMemberID === '0' || selectedMemberID === '1') {
@@ -526,7 +589,9 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'Own Goal') {
             if (!checkMemberOnBench(selectedMemberID)) {
-              lastTimeStamp = date ? date.getTime() : new Date().getTime()
+              lastTimeStamp = date
+                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Goal;
               let body = [{}];
               const tempActionTeamID = (actionByTeamID === gameObj.home_team.group_id
@@ -558,7 +623,9 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'YC') {
             if (!checkMemberOnBench(selectedMemberID)) {
-              lastTimeStamp = date ? date.getTime() : new Date().getTime()
+              lastTimeStamp = date
+                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.YC;
               const body = [
                 {
@@ -574,7 +641,9 @@ export default function GameDetailRecord({ navigation, route }) {
             }
           } else if (item === 'RC') {
             if (!checkMemberOnBench(selectedMemberID)) {
-              lastTimeStamp = date ? date.getTime() : new Date().getTime()
+              lastTimeStamp = date
+                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.RC;
               const body = [
                 {
@@ -594,7 +663,9 @@ export default function GameDetailRecord({ navigation, route }) {
             } else if (checkMemberOnField(selectedMemberID)) {
               Alert.alert('This player is already on field');
             } else {
-              lastTimeStamp = date ? date.getTime() : new Date().getTime()
+              lastTimeStamp = date
+                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.In;
               const body = [
                 {
@@ -612,7 +683,9 @@ export default function GameDetailRecord({ navigation, route }) {
             } else if (checkMemberOnBench(selectedMemberID)) {
               Alert.alert('This player is already on bench');
             } else {
-              lastTimeStamp = date ? date.getTime() : new Date().getTime()
+              lastTimeStamp = date
+                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Out;
               const body = [
                 {
@@ -812,7 +885,7 @@ export default function GameDetailRecord({ navigation, route }) {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setPickerShow(Platform.OS === 'ios');
-    startStopTimerTimeline()
+    startStopTimerTimeline();
     setDate(currentDate);
   };
 
@@ -906,67 +979,83 @@ export default function GameDetailRecord({ navigation, route }) {
           </View>
           {messageToast && (
             <Animatable.View
-            useNativeDriver={true}
-            animation={'fadeInDown'}
-             easing="ease-in-out">
+              useNativeDriver={true}
+              animation={'fadeInDown'}
+              easing="ease-in-out">
               <LinearGradient
-                    colors={[colors.yellowColor, colors.themeColor]}
-                    style={styles.messageToast}>
-                <View style={{
-
-                  flexDirection: 'row',
-                  width: '100%',
-                  marginLeft: 15,
-                  marginRight: 15,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flex: 1,
-                }}>
-                  <View style={{
-                    flex: 1, flexDirection: 'row', alignItems: 'center', width: '100%',
+                colors={[colors.yellowColor, colors.themeColor]}
+                style={styles.messageToast}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    width: '100%',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flex: 1,
                   }}>
-
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}>
                     <View style={styles.gameRecordButton}>
                       <View
-                          colors={colors.whiteColor}
-                          style={styles.gameRecordButton}>
+                        colors={colors.whiteColor}
+                        style={styles.gameRecordButton}>
                         <Image
-                            source={(lastVerb === GameVerb.Goal && images.gameGoal)
-                          || (lastVerb === GameVerb.YC && images.gameYC)
-                        || (lastVerb === GameVerb.RC && images.gameRC)
-                      || (lastVerb === GameVerb.In && images.gameIn)
-                    || (lastVerb === GameVerb.Out && images.gameOut)}
-                            style={styles.gameRecordImg}
-                          />
+                          source={
+                            (lastVerb === GameVerb.Goal && images.gameGoal)
+                            || (lastVerb === GameVerb.YC && images.gameYC)
+                            || (lastVerb === GameVerb.RC && images.gameRC)
+                            || (lastVerb === GameVerb.In && images.gameIn)
+                            || (lastVerb === GameVerb.Out && images.gameOut)
+                          }
+                          style={styles.gameRecordImg}
+                        />
                       </View>
                     </View>
-                    <Text numberOfLines={1} style={styles.messageText}>{(messageText.split('/')[1] && `${messageText.split('/')[0]}`) || messageText}</Text>
-                    {messageText.split('/')[1] && <>
-                      <Text style={{ color: colors.whiteColor }}>/ </Text>
-                      <View
+                    <Text numberOfLines={1} style={styles.messageText}>
+                      {(messageText.split('/')[1]
+                        && `${messageText.split('/')[0]}`)
+                        || messageText}
+                    </Text>
+                    {messageText.split('/')[1] && (
+                      <>
+                        <Text style={{ color: colors.whiteColor }}>/ </Text>
+                        <View
                           colors={colors.whiteColor}
                           style={styles.gameRecordButton}>
-
-                        <Image
+                          <Image
                             source={images.assistsImage}
                             style={styles.gameRecordImg}
                           />
-                      </View>
-                      <Text numberOfLines={1} style={[styles.messageText, { width: 130 }]}>  {(messageText.split('/') && messageText.split('/')[1])}</Text>
-                    </>}
+                        </View>
+                        <Text
+                          numberOfLines={1}
+                          style={[styles.messageText, { width: 130 }]}>
+                          {' '}
+                          {messageText.split('/') && messageText.split('/')[1]}
+                        </Text>
+                      </>
+                    )}
                   </View>
-                  <TouchableOpacity onPress={() => {
-                    setMessageToast(false)
-                  }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setMessageToast(false);
+                    }}>
                     <Image
-                  source={images.cancelImage}
-                  style={{
-                    width: 13,
-                    height: 13,
-                    tintColor: colors.whiteColor,
-                    marginRight: 1,
-                  }}
-                />
+                      source={images.cancelImage}
+                      style={{
+                        width: 13,
+                        height: 13,
+                        tintColor: colors.whiteColor,
+                        marginRight: 1,
+                      }}
+                    />
                   </TouchableOpacity>
                 </View>
               </LinearGradient>
@@ -1068,18 +1157,18 @@ export default function GameDetailRecord({ navigation, route }) {
 
           <View style={styles.bottomView}>
             <View style={styles.timeView}>
-
               <Text style={styles.timer}>{timelineTimer}</Text>
 
               {pickerShow && date && (
                 <View style={styles.curruentTimeView}>
-                  <TouchableOpacity onPress={() => {
-                    setDate()
-                  }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setDate();
+                    }}>
                     <Image
-                    source={images.curruentTime}
-                    style={styles.curruentTimeImg}
-                  />
+                      source={images.curruentTime}
+                      style={styles.curruentTimeImg}
+                    />
                   </TouchableOpacity>
                 </View>
               )}
@@ -1088,7 +1177,14 @@ export default function GameDetailRecord({ navigation, route }) {
                 onPress={() => {
                   setPickerShow(!pickerShow);
                 }}>
-                {((gameObj && gameObj.status && gameObj.status === GameStatus.accepted) || (gameObj && gameObj.status && gameObj.status === GameStatus.reset)) ? 'Game start at now' : getDateFormat(date ? new Date(date.getTime()) : new Date())}
+                {(gameObj
+                  && gameObj.status
+                  && gameObj.status === GameStatus.accepted)
+                || (gameObj
+                  && gameObj.status
+                  && gameObj.status === GameStatus.reset)
+                  ? 'Game start at now'
+                  : getDateFormat(date ? new Date(date.getTime()) : new Date())}
               </Text>
               <Image source={images.dropDownArrow} style={styles.downArrow} />
               <View style={styles.separatorLine}></View>
@@ -1096,13 +1192,18 @@ export default function GameDetailRecord({ navigation, route }) {
             {pickerShow && (
               <View>
                 <RNDateTimePicker
-                locale={'en'}
-                display="spinner"
-                value={date || new Date()}
-                onChange={onChange}
-                mode={'datetime'}
-                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime)}
-                maximumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()}
+                  locale={'en'}
+                  display="spinner"
+                  value={date || new Date()}
+                  onChange={onChange}
+                  mode={'datetime'}
+                  minimumDate={
+                    gameObj.status === GameStatus.accepted
+                    || gameObj.status === GameStatus.reset
+                      ? new Date()
+                      : new Date(gameObj.actual_startdatetime * 1000)
+                  }
+                  maximumDate={new Date()}
                 />
                 <View style={styles.separatorLine} />
               </View>
@@ -1129,12 +1230,18 @@ export default function GameDetailRecord({ navigation, route }) {
                 <TCGameButton
                   title="Start"
                   onPress={() => {
-                    if (gameObj?.challenge_status === (ReservationStatus.pendingrequestpayment || ReservationStatus.pendingpayment)) {
+                    if (
+                      gameObj?.challenge_status
+                      === (ReservationStatus.pendingrequestpayment
+                        || ReservationStatus.pendingpayment)
+                    ) {
                       Alert.alert(
                         'Game cannot be start unless the payment goes through',
                       );
                     } else {
-                      lastTimeStamp = date ? date.getTime() : new Date().getTime()
+                      lastTimeStamp = date
+                        ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                        : parseFloat(new Date().getTime() / 1000).toFixed(0);
                       lastVerb = GameVerb.Start;
                       const body = [
                         {
@@ -1156,7 +1263,9 @@ export default function GameDetailRecord({ navigation, route }) {
                 <TCGameButton
                   title="Resume"
                   onPress={() => {
-                    lastTimeStamp = new Date().getTime();
+                    lastTimeStamp = parseFloat(
+                      new Date().getTime() / 1000,
+                    ).toFixed(0);
                     lastVerb = GameVerb.Resume;
                     const body = [
                       {
@@ -1178,7 +1287,9 @@ export default function GameDetailRecord({ navigation, route }) {
                   <TCGameButton
                   title="Pause"
                   onPress={() => {
-                    lastTimeStamp = new Date().getTime();
+                    lastTimeStamp = parseFloat(
+                      new Date().getTime() / 1000,
+                    ).toFixed(0);
                     lastVerb = GameVerb.Pause;
                     const body = [
                       {
@@ -1201,7 +1312,9 @@ export default function GameDetailRecord({ navigation, route }) {
                   <TCGameButton
                   title="Match End"
                   onPress={() => {
-                    lastTimeStamp = new Date().getTime();
+                    lastTimeStamp = parseFloat(
+                      new Date().getTime() / 1000,
+                    ).toFixed(0);
                     lastVerb = GameVerb.End;
                     const body = [
                       {
@@ -1227,7 +1340,7 @@ export default function GameDetailRecord({ navigation, route }) {
                   <TCGameButton
                   title="Records"
                   onPress={() => {
-                    clearInterval(timer)
+                    clearInterval(timer);
                     navigation.navigate('SoccerRecordList', {
                       gameId: gameObj.game_id,
                       gameData: gameObj,
@@ -1286,7 +1399,10 @@ export default function GameDetailRecord({ navigation, route }) {
                       text: 'Reset',
                       style: 'destructive',
                       onPress: () => {
-                        if (gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset) {
+                        if (
+                          gameObj.status === GameStatus.accepted
+                          || gameObj.status === GameStatus.reset
+                        ) {
                           Alert.alert('Game not started yet.');
                         } else if (gameObj.status === GameStatus.ended) {
                           Alert.alert('Game is ended.');
@@ -1346,7 +1462,6 @@ const styles = StyleSheet.create({
   centerView: {
     alignItems: 'center',
     width: wp('22%'),
-
   },
   curruentTimeImg: {
     height: 15,
@@ -1422,7 +1537,6 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-
   },
   playerImage: {
     height: 20,

@@ -56,6 +56,9 @@ export default function EditLineUpScreen({ navigation, route }) {
   const [searchNonRoster, setSearchNonRoster] = useState([]);
   const [searchStarting, setSearchStarting] = useState([]);
   const [searchSubs, setSearchSubs] = useState([]);
+  const [tempararyNonRoster, setTempararyNonRoster] = useState([]);
+  const [tempararyStarting, setTempararyStarting] = useState([]);
+  const [tempararySubs, setTempararySubs] = useState([]);
   useEffect(() => {
     if (
       route
@@ -102,6 +105,9 @@ export default function EditLineUpScreen({ navigation, route }) {
       setSearchNonRoster(nonRosterData);
       setSearchStarting(starting);
       setSearchSubs(subs);
+      setTempararyNonRoster(nonRosterData)
+      setTempararyStarting(starting)
+      setTempararySubs(subs)
       console.log('roseter api data:: ', JSON.stringify(response.payload));
     });
   };
@@ -117,7 +123,7 @@ export default function EditLineUpScreen({ navigation, route }) {
         </TouchableOpacity>
       ),
     });
-  }, [starting, subs, nonRoster, roster, enabledSection, selected, selectedSection, selectedMember, searchStarting, searchSubs, searchNonRoster]);
+  }, [starting, subs, nonRoster, roster, enabledSection, selected, selectedSection, selectedMember, searchStarting, searchSubs, searchNonRoster, tempararyNonRoster, tempararyStarting, tempararySubs]);
   const toggleModal = () => {
     console.log('Pressed Toggel::');
     setModalVisible(!isModalVisible);
@@ -396,15 +402,22 @@ export default function EditLineUpScreen({ navigation, route }) {
   }
 
   const searchFilterFunction = (text) => {
-    setStarting(searchStarting.filter(
-      (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
-    ));
-    setSubs(searchSubs.filter(
-      (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
-    ));
-    setNonRoster(searchNonRoster.filter(
-      (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
-    ));
+    if (text.length > 0) {
+      setStarting(searchStarting.filter(
+        (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+      ));
+      setSubs(searchSubs.filter(
+        (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+      ));
+      setNonRoster(searchNonRoster.filter(
+        (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+      ));
+    } else {
+      setStarting([...tempararyStarting])
+      setSubs([...tempararySubs])
+      setNonRoster([...tempararyNonRoster])
+      setRoster()
+    }
   };
   return (
     <SafeAreaView style={{ flex: 1 }}>

@@ -1,25 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, StyleSheet, Image, Text,
-  TouchableOpacity,
 } from 'react-native';
 
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
-import TCBorderButton from '../../../components/TCBorderButton';
+// import TCBorderButton from '../../../components/TCBorderButton';
 
 export default function ChallengeSentScreen({ navigation, route }) {
+  useEffect(() => {
+    setTimeout(() => {
+      navigation.popToTop()
+    }, 3000);
+  })
   return (
     <View style={styles.mainContainer}>
 
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
-      <TouchableOpacity onPress={() => {
+      {/* <TouchableOpacity onPress={() => {
         navigation.pop(1000)
       }}>
         <Image style={styles.backButtonImage} source={images.backArrow} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={styles.mailContainer}>
         <Text style={styles.invitationText}>Challenge sent</Text>
         <View style={styles.imageContainer}>
@@ -28,7 +32,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
         <Text style={styles.infoText}>When {route && route.params && route.params.groupObj && (route.params.groupObj.group_name || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`)} accepts your
           match reservation request, you will be notified.</Text>
       </View>
-      {route && route.params && route.params.groupObj && <TCBorderButton
+      {/* {route && route.params && route.params.groupObj && <TCBorderButton
       title={`GO TO ${(route.params.groupObj.group_name)?.toUpperCase() || `${route.params.groupObj.first_name?.toUpperCase()} ${route.params.groupObj.last_name?.toUpperCase()}`}`}
       textColor={colors.whiteColor}
       borderColor={colors.whiteColor}
@@ -42,7 +46,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
           role: route.params.groupObj.entity_type === 'player' ? 'user' : route.params.groupObj.entity_type,
           menuBtnVisible: false,
         })
-      }}/>}
+      }}/>} */}
 
     </View>
   );
@@ -59,14 +63,14 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'stretch',
   },
-  backButtonImage: {
-    marginTop: 55,
-    marginLeft: 15,
-    height: 15,
-    width: 15,
-    tintColor: colors.whiteColor,
-    resizeMode: 'cover',
-  },
+  // backButtonImage: {
+  //   marginTop: 55,
+  //   marginLeft: 15,
+  //   height: 15,
+  //   width: 15,
+  //   tintColor: colors.whiteColor,
+  //   resizeMode: 'cover',
+  // },
   mailContainer: {
     alignSelf: 'center',
     justifyContent: 'center',
