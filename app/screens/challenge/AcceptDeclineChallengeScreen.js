@@ -759,10 +759,12 @@ export default function CreateChallengeForm4({ navigation, route }) {
 
           {checkSenderOrReceiver(bodyParams) === 'receiver'
             && bodyParams.status === ReservationStatus.offered
-            && bodyParams.offer_expiry < new Date().getTime() && (
+            && bodyParams.offer_expiry * 1000 > new Date().getTime() && (
+
               <View style={{ marginTop: 15 }}>
                 <TCGradientButton
                   title={strings.accept}
+
                   onPress={() => {
                     acceptDeclineChallengeOperation(
                       entity.uid,

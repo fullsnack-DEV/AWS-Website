@@ -1,19 +1,22 @@
 /* eslint-disable no-unused-expressions */
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, StyleSheet, Image, Text,
-  Alert,
 } from 'react-native';
 
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCBorderButton from '../../components/TCBorderButton';
-import strings from '../../Constants/String';
-import { getGameHomeScreen } from '../../utils/gameUtils';
+// import TCBorderButton from '../../components/TCBorderButton';
+// import strings from '../../Constants/String';
+// import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ReservationAcceptDeclineScreen({ navigation, route }) {
-  console.log('route.params.teamObj', route?.params?.teamObj);
+  useEffect(() => {
+    setTimeout(() => {
+      navigation.popToTop()
+    }, 3000);
+  })
   return (
     <View style={styles.mainContainer}>
       <Image style={styles.background} source={images.orangeLayer} />
@@ -50,7 +53,7 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
         </View>
       )}
 
-      {route && route.params && route.params.teamObj && (
+      {/* {route && route.params && route.params.teamObj && (
         <TCBorderButton
           title={`GO TO ${(route.params.teamObj.group_name)?.toUpperCase() || `${route.params?.teamObj?.first_name?.toUpperCase()} ${route?.params?.teamObj?.last_name?.toUpperCase()}`}`}
           textColor={colors.whiteColor}
@@ -91,7 +94,7 @@ export default function ReservationAcceptDeclineScreen({ navigation, route }) {
             }
           }}
         />
-      )}
+      )} */}
     </View>
   );
 }

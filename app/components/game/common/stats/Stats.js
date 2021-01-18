@@ -34,13 +34,15 @@ const Stats = ({
   const [gameStatsData, setGameStatsData] = useState(null);
 
   useEffect(() => {
-    if (gameData?.game_id) {
-      setLoading(true);
-      getGameStatsData(gameData?.game_id).then((res) => {
-        setGameStatsData(res?.payload);
-      })
-        .catch((error) => console.log(error))
-        .finally(() => setLoading(false));
+    if (isFocused) {
+      if (gameData?.game_id) {
+        setLoading(true);
+        getGameStatsData(gameData?.game_id).then((res) => {
+          setGameStatsData(res?.payload);
+        })
+          .catch((error) => console.log(error))
+          .finally(() => setLoading(false));
+      }
     }
   }, [isFocused])
 

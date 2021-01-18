@@ -15,7 +15,7 @@ import images from '../../../Constants/ImagePath';
 const RegisterRefereeSuccess = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => navigation.navigate('HomeScreen'), 2000);
-  })
+  }, [])
   return (
     <View style={styles.mainContainer}>
       <FastImage

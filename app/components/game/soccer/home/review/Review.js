@@ -30,28 +30,30 @@ const Review = ({
   const [starAttributes, starStarAttributes] = useState([]);
 
   useEffect(() => {
-    setLoading(true);
-    getSoccerGameReview(gameData?.game_id).then((res) => {
-      setReviewsData({ ...res.payload })
-    }).catch((error) => {
-      console.log(error);
-    });
-    getSportsList(authContext).then((sports) => {
-      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
-      const teamReviewProp = soccerSportData?.team_review_properties ?? []
-      const sliderReviewProp = [];
-      const starReviewProp = [];
-      if (teamReviewProp?.length) {
-        teamReviewProp.filter((item) => {
-          if (item.type === 'slider') sliderReviewProp.push(item?.name.toLowerCase())
-          else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
-          return true;
-        })
-        setSliderAttributes(sliderReviewProp);
-        starStarAttributes(starReviewProp);
-      }
-    }).finally(() => setLoading(false));
-  }, [navigation, isFocused])
+    if (isFocused) {
+      setLoading(true);
+      getSoccerGameReview(gameData?.game_id).then((res) => {
+        setReviewsData({ ...res.payload })
+      }).catch((error) => {
+        console.log(error);
+      });
+      getSportsList(authContext).then((sports) => {
+        const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
+        const teamReviewProp = soccerSportData?.team_review_properties ?? []
+        const sliderReviewProp = [];
+        const starReviewProp = [];
+        if (teamReviewProp?.length) {
+          teamReviewProp.filter((item) => {
+            if (item.type === 'slider') sliderReviewProp.push(item?.name.toLowerCase())
+            else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
+            return true;
+          })
+          setSliderAttributes(sliderReviewProp);
+          starStarAttributes(starReviewProp);
+        }
+      }).finally(() => setLoading(false));
+    }
+  }, [isFocused])
   const Seperator = () => (
     <View style={styles.separator}/>
   )
