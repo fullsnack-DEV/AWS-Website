@@ -28,6 +28,19 @@ const getGameScoreboardEvents = async (userID, params, authContext) => makeAPIRe
   authContext,
 })
 
+const deleteGameRecord = (gameId, recordId, authContext) => makeAPIRequest({
+  method: 'delete',
+  url: `${Config.BASE_URL}games/${gameId}/records/${recordId}`,
+  authContext,
+});
+
+const patchGameRecord = (gameId, recordId, data, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}games/${gameId}/records/${recordId}`,
+  data,
+  authContext,
+});
+
 const getGameStatsChartData = async (userID, params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/teams/${userID}/games/stats/chart`,
@@ -190,4 +203,6 @@ export {
   getGameRefereeReservation,
   getGameScorekeeperReservation,
   getScroreboardGameDetails,
+  deleteGameRecord,
+  patchGameRecord,
 }

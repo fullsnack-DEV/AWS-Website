@@ -6,7 +6,7 @@ import {
   Text,
   StyleSheet,
   TouchableWithoutFeedback,
-  FlatList, TouchableOpacity,
+  FlatList, TouchableOpacity, Alert,
 } from 'react-native';
 
 import {
@@ -20,14 +20,21 @@ import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
-import { getGameData, getGameMatchRecords } from '../../../api/Games';
+import {
+  deleteGameRecord, getGameData, getGameMatchRecords, resetGame,
+} from '../../../api/Games';
 import { getGameDateTimeInHMSformat, getNumberSuffix, tennisGameStats } from '../../../utils/gameUtils';
 import TennisGameScoreRight from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreRight';
 import TennisGameState from '../../../components/game/tennis/home/gameRecordList/TennisGameState';
 import TennisGameScoreLeft from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreLeft';
 import AuthContext from '../../../auth/context';
+import SwipeableRow from '../../../components/gameRecordList/SwipeableRow';
+import GameStatus from '../../../Constants/GameStatus';
+import GameVerb from '../../../Constants/GameVerb';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import strings from '../../../Constants/String';
 
-export default function TennisMatchRecordsList({ matchData, visibleSetScore = true }) {
+export default function TennisMatchRecordsList({ matchData, visibleSetScore = true, isAdmin }) {
   const authContext = useContext(AuthContext)
   const [editorChecked, setEditorChecked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -38,6 +45,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
   const [servingTeamID, setServingTeamID] = useState();
   const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0);
   const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0);
+  const [fullScreenLoading, setFullScreenLoading] = useState(false);
 
   useEffect(() => {
     loadAtOnce()
@@ -87,6 +95,22 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
         })
       })
     }
+  }
+
+  const refreshGameAndRecords = () => {
+    getGameData(gameData?.game_id, true, authContext).then(async (res) => {
+      if (res.status) {
+        setGameData({ ...res.payload });
+        const home_team_score = res?.payload?.scoreboard?.game_inprogress?.home_team_point;
+        const away_team_score = res?.payload?.scoreboard?.game_inprogress?.home_team_point;
+        setCurrentScore({ ...currentScore, home_team_score, away_team_score })
+      }
+      getGameMatchRecords(gameData?.game_id, authContext).then((matchRes) => {
+        setMatchRecords(matchRes.payload);
+        const records = matchRes.payload;
+        processModifiedMatchRecords(records.reverse());
+      }).finally(() => setFullScreenLoading(false));
+    }).catch(() => setFullScreenLoading(false))
   }
   const calculateMatchScore = () => {
     setHomeMatchPoint(0);
@@ -266,10 +290,42 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
       </View>
     </View>
   )
+
+  const getVisibleSwipableRowValue = (verb, isDeleted = false) => {
+    const showSwipeRow = [
+      // GameVerb.End,
+      // GameVerb.Start,
+      // GameVerb.SetStart,
+      // GameVerb.SetEnd,
+      // GameVerb.SetEndMannually,
+      // GameVerb.GameStart,
+      // GameVerb.GameEnd,
+      // GameVerb.GameEndMannually,
+      GameVerb.Pause,
+      GameVerb.Resume,
+      GameVerb.Ace,
+      GameVerb.Fault,
+      GameVerb.FeetFault,
+      GameVerb.Doublefault,
+      GameVerb.Unforced,
+      GameVerb.LetScore,
+      GameVerb.Score,
+    ]
+    if (isAdmin && !isDeleted && showSwipeRow.includes(verb)) {
+      return true
+    }
+    return false
+  }
+
   const renderMatchRecords = ({ item, index }) => {
     if (item.type === 'game_stats') {
       return (
-        <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+        <SwipeableRow
+              enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
+              onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
+          >
+          <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+        </SwipeableRow>
       )
     }
     return (
@@ -308,7 +364,12 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
   const renderGames = (item, index, parentIndex) => {
     if (item.type === 'set_stats') {
       return (
-        <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+        <SwipeableRow
+              enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
+              onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
+          >
+          <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+        </SwipeableRow>
       )
     }
     return (
@@ -384,40 +445,97 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
     )
   }
 
+  const resetGameDetail = () => {
+    setFullScreenLoading(true);
+    resetGame(gameData?.game_id, authContext).then(() => {
+      refreshGameAndRecords(gameData?.game_id);
+    }).catch((e) => {
+      setFullScreenLoading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
+  };
+
+  const onSwipeRowItemPress = (verb, record_id) => {
+    if (verb === 'start') {
+      Alert.alert(
+        'Do you want to reset all the match records?',
+        '',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Reset',
+            style: 'destructive',
+            onPress: () => {
+              if (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset) {
+                Alert.alert('Game not started yet.');
+              } else if (gameData.status === GameStatus.ended) {
+                Alert.alert('Game is ended.');
+              } else {
+                resetGameDetail(gameData.game_id);
+              }
+            },
+          },
+        ],
+        { cancelable: false },
+      );
+    } else {
+      setFullScreenLoading(true);
+      deleteGameRecord(gameData?.game_id, record_id, authContext).then(() => {
+        refreshGameAndRecords(gameData?.game_id);
+      }).finally(() => setFullScreenLoading(false));
+    }
+  }
   const renderGameRecords = ({ item }) => {
+    console.log('TEST: ', item.verb);
     if (item.type === 'set_game_stats') {
       return (
-        <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+        <View style={{ opacity: item?.deleted ? 0.5 : 1 }}>
+          <SwipeableRow
+              enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
+              onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
+          >
+            <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+          </SwipeableRow>
+        </View>
       )
     }
     const isHomeTeam = teamIds?.home_team?.group_id === item.team_id;
     const isGameState = item.verb in tennisGameStats;
 
     return (
-      <View>
-
-        {!isGameState && isHomeTeam && (
-          <View>
-            <RenderDash zIndex={1}/>
-            <TennisGameScoreLeft
+      <SwipeableRow
+            enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
+            onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
+        >
+        <View style={{ opacity: item?.deleted ? 0.5 : 1 }}>
+          {!isGameState && isHomeTeam && (
+            <View>
+              <RenderDash zIndex={1}/>
+              <TennisGameScoreLeft
                             gameData={gameData}
                             recordData={item}
                             editor={editorChecked}
                         />
-          </View>
-        )}
-        {!isGameState && !isHomeTeam && (
-          <View>
-            <RenderDash zIndex={1}/>
-            <TennisGameScoreRight
+            </View>
+          )}
+          {!isGameState && !isHomeTeam && (
+            <View>
+              <RenderDash zIndex={1}/>
+              <TennisGameScoreRight
                             gameData={gameData}
                             recordData={item}
                             editor={editorChecked}
                         />
-          </View>
-        )}
-        {isGameState && <TennisGameState gameStats={tennisGameStats} recordData={item}/>}
-      </View>
+            </View>
+          )}
+          {isGameState && <TennisGameState gameStats={tennisGameStats} recordData={item}/>}
+        </View>
+      </SwipeableRow>
     )
   }
   const RenderDash = ({ zIndex = 0 }) => (
@@ -438,6 +556,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
   )
   return (
     <View style={ styles.mainContainer }>
+      <ActivityLoader visible={fullScreenLoading}/>
       <View>
         <View style={ { flexDirection: 'row' } }>
           <RenderDash/>

@@ -41,6 +41,7 @@ import NotificationsListScreen from '../screens/notificationsScreen/Notification
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
 
 import colors from '../Constants/Colors'
+import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 
 const Stack = createStackNavigator();
 
@@ -250,6 +251,22 @@ const ReservationNavigator = () => (
             tabBarVisible: false,
             headerShown: false,
           }}
+      />
+    <Stack.Screen
+          name="SoccerRecordList"
+          component={ SoccerRecordList }
+          options={ {
+            title: 'Match Record',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
       />
     <Stack.Screen
           name="TennisHome"

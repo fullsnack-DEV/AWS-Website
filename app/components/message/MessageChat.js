@@ -83,7 +83,7 @@ const MessageChat = ({
       }
       setDialogData({ ...dialogDatas });
     }
-    if (route?.params?.dialog) {
+    if (!route?.params?.userId && route?.params?.dialog) {
       setData(route?.params?.dialog);
     }
   }, [route?.params?.dialog])
@@ -130,6 +130,9 @@ const MessageChat = ({
 
   useEffect(() => {
     if (dialogData) {
+      if (!route?.params?.dialog) {
+        navigation.setParams({ dialog: dialogData });
+      }
       const getUser = async () => {
         setMyUserId(authContext.entity.QB.id);
         setLoading(true);

@@ -96,7 +96,10 @@ const Stats = ({
   }
 
   const renderPreviousGame = ({ item }) => (
-    <TCGameCard data={item} />
+    <View style={{ marginVertical: 5 }}>
+      <TCGameCard data={item} />
+    </View>
+
   )
   const renderSingleSection = ({ item }) => (
     <TCGameUserStats

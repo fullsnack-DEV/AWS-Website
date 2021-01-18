@@ -6,7 +6,7 @@ import moment from 'moment';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
-import Referees from './Referees';
+import Referees from '../../../common/summary/Referees';
 import Scorekeepers from './Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
@@ -130,6 +130,7 @@ const Summary = ({
       )}
       <MatchRecords
       navigation={navigation}
+      isAdmin={isAdmin}
       gameId={gameData?.game_id}
       gameData={gameData}
       getGameMatchRecords={getGameMatchRecords}
@@ -142,8 +143,8 @@ const Summary = ({
           navigation={navigation}
           isAdmin={isAdmin}
           userRole={userRole}
-          followSoccerUser={followSoccerUser}
-          unFollowSoccerUser={unFollowSoccerUser}
+          followUser={followSoccerUser}
+          unFollowUser={unFollowSoccerUser}
       />
       <Scorekeepers
           getScorekeeperReservation={getScorekeeperReservation}

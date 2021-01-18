@@ -7,7 +7,7 @@ import moment from 'moment';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
-import Referees from './Referees';
+import Referees from '../../../common/summary/Referees';
 import Scorekeepers from './Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
@@ -61,7 +61,7 @@ const Summary = ({
         <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
           <TCGradientButton
                   onPress={() => {
-                    navigation.navigate('TennisRecording', { gameDetail: gameData })
+                    navigation.navigate('TennisRecording', { gameDetail: gameData, isAdmin })
                   }}
                   startGradientColor={colors.yellowColor}
                   endGradientColor={colors.themeColor}
@@ -146,15 +146,15 @@ const Summary = ({
       {/* Special Rules */}
       <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
 
-      {/* Regerees */}
+      {/* Referees */}
       <Referees
           getRefereeReservation={getRefereeReservation}
           navigation={navigation}
-            gameData={gameData}
-            isAdmin={isAdmin}
-            userRole={userRole}
-            followTennisUser={followTennisUser}
-            unFollowTennisUser={unFollowTennisUser}
+          gameData={gameData}
+          isAdmin={isAdmin}
+          userRole={userRole}
+          followUser={followTennisUser}
+          unFollowUser={unFollowTennisUser}
         />
 
       {/* Scorekeepers */}
