@@ -1143,12 +1143,14 @@ export default function HomeScreen({ navigation, route }) {
         draw: 0,
       })
       if (currentUserData) {
-        currentUserData.registered_sports.map((playsInItem) => {
-          if (playsInItem.sport_name === playInObject.sport_name) {
-            setSelectPlayerData(playsInItem);
-          }
-          return null;
-        })
+        if (currentUserData?.registered_sports?.length) {
+          currentUserData.registered_sports.map((playsInItem) => {
+            if (playsInItem.sport_name === playInObject.sport_name) {
+              setSelectPlayerData(playsInItem);
+            }
+            return null;
+          })
+        }
       }
       const params = {
         sport: playInObject.sport_name,

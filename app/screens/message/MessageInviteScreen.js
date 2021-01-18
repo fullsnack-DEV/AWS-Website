@@ -19,10 +19,10 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import TCSearchBox from '../../components/TCSearchBox';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import { QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
 import AuthContext from '../../auth/context'
+import TCScrollableTabs from '../../components/TCScrollableTabs';
 
 const MessageInviteScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
@@ -105,10 +105,10 @@ const MessageInviteScreen = ({ navigation, route }) => {
       }
       return null;
     });
-    setClubsData(clubData);
-    setPeopleData(personData);
-    setTeamsData(teamData);
-    setLeaguesData(leagueData);
+    setPeopleData([...personData]);
+    setClubsData([...clubData]);
+    setTeamsData([...teamData]);
+    setLeaguesData([...leagueData]);
     setLoading(false);
   }
   const Item = ({
@@ -231,11 +231,11 @@ const MessageInviteScreen = ({ navigation, route }) => {
         />
     </View>
   )
-  const renderTabContain = (tabKey) => {
+  const renderTabContain = (tabKey, tabIndex) => {
     const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
     return (
-      <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
-        {renderSingleTab(searchText === '' ? dataTabList[tabKey] : searchData)}
+      <View tabLabel={tabKey} style={{ flex: 1 }}>
+        {renderSingleTab(searchText === '' ? dataTabList[tabIndex] : searchData)}
       </View>
     )
   }
@@ -312,18 +312,16 @@ const MessageInviteScreen = ({ navigation, route }) => {
         value={searchText}
         onChangeText={(text) => setSearchText(text)}/>
       <View style={styles.sperateLine}/>
-      <TCScrollableProfileTabs
-        tabItem={TAB_ITEMS}
-        onChangeTab={(ChangeTab) => {
-          // setSelectedInvitees([]);
-          setCurrentTab(ChangeTab.i)
-          setSearchText('')
-        }}
-        customStyle={{ flex: 1 }}
-        currentTab={currentTab}
-        renderTabContain={renderTabContain}
-
-            />
+      <TCScrollableTabs
+            onChangeTab={(ChangeTab) => {
+              setCurrentTab(ChangeTab.i)
+              setSearchText('')
+            }}
+      >
+        {TAB_ITEMS?.map((item, index) => (
+          renderTabContain(item, index)
+        ))}
+      </TCScrollableTabs>
     </SafeAreaView>
   )
 };

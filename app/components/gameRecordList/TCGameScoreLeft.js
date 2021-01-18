@@ -29,6 +29,7 @@ export default function TCGameScoreLeft(
     editor = false,
     backgroundColor = colors.offwhite,
     recordData,
+    style,
   },
 ) {
   const getScoreText = (firstTeamScore = recordData?.scoreboard?.home_team, secondTeamScore = recordData?.scoreboard?.away_team) => {
@@ -40,7 +41,8 @@ export default function TCGameScoreLeft(
       if (isGreterTeam === 2) secondTeamColor = colors.themeColor
     }
     return (
-      <Text
+      <View style={{ width: wp(100), backgroundColor: colors.whiteColor }}>
+        <Text
         style={ {
           textAlign: 'center',
           fontFamily: fonts.RLight,
@@ -51,14 +53,14 @@ export default function TCGameScoreLeft(
           position: 'absolute',
           bottom: 0,
         } }>
-        <Text style={{ color: secondTeamColor }}>{recordData?.scoreboard?.away_team ?? 0}</Text>{' : '}
-        <Text style={{ color: firstTeamColor }}>{recordData?.scoreboard?.home_team ?? 0}</Text>
-      </Text>
+          <Text style={{ color: secondTeamColor }}>{recordData?.scoreboard?.away_team ?? 0}</Text>{' : '}
+          <Text style={{ color: firstTeamColor }}>{recordData?.scoreboard?.home_team ?? 0}</Text>
+        </Text>
+      </View>
     )
   }
-
   return (
-    <View>
+    <View style={style}>
       <View
             style={{
               backgroundColor,
@@ -165,6 +167,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
+    backgroundColor: colors.whiteColor,
   },
   gameRecordButton: {
     alignItems: 'center',

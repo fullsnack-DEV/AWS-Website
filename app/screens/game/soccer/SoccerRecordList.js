@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useEffect, Fragment, useContext,
+  useState, useEffect, Fragment, useContext,
 } from 'react';
 import {
   View,
@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
-  FlatList, StatusBar,
+  FlatList, StatusBar, Alert,
 } from 'react-native';
 
 import {
@@ -25,30 +25,34 @@ import TCGameState from '../../../components/gameRecordList/TCGameState';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
-import { getGameData, getGameMatchRecords } from '../../../api/Games';
+import {
+  deleteGameRecord, getGameData, getGameMatchRecords, patchGameRecord, resetGame,
+} from '../../../api/Games';
 import { soccerGameStats } from '../../../utils/gameUtils';
+import SwipeableRow from '../../../components/gameRecordList/SwipeableRow';
+import GameStatus from '../../../Constants/GameStatus';
+import strings from '../../../Constants/String';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 
-export default function SoccerRecordList({ route, navigation }) {
+export default function SoccerRecordList({ route }) {
   const authContext = useContext(AuthContext)
   const [editorChecked, setEditorChecked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [matchRecords, setMatchRecords] = useState([]);
   const [gameData, setGameData] = useState(null);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitleStyle: { alignSelf: 'center' },
-      headerRight: () => (
-        <TouchableWithoutFeedback
-          onPress={ () => alert('This is a 3 dot button!') }>
-          <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [navigation]);
-
+  const [fullScreenLoading, setFullScreenLoading] = useState(false);
+  const [showEditDateTimeModal, setShowEditDateTimeModal] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [teamData, setTeamData] = useState({});
   useEffect(() => {
     loadAtOnce()
-  }, [])
+  }, []);
+
+  const getTeamName = (group_id) => {
+    const singleTeamData = teamData?.home_team?.group_id?.toString() === group_id?.toString() ? teamData?.home_team : teamData?.away_team;
+    return singleTeamData?.group_name ?? '';
+  }
 
   const loadAtOnce = async () => {
     const gameId = route?.params?.gameId ?? null
@@ -58,6 +62,10 @@ export default function SoccerRecordList({ route, navigation }) {
       getGameData(gameId, true, authContext).then(async (res) => {
         if (res.status) {
           setGameData(res.payload ?? 0);
+          setTeamData({
+            home_team: res?.payload?.home_team,
+            away_team: res?.payload?.away_team,
+          })
         }
       })
       getGameMatchRecords(gameId, authContext).then((res) => {
@@ -79,9 +87,102 @@ export default function SoccerRecordList({ route, navigation }) {
     )
   }
 
+  const refreshGameAndRecords = (gameId) => {
+    setFullScreenLoading(true);
+    setGameData(route?.params?.gameData ?? null);
+    getGameData(gameId, true, authContext).then(async (res) => {
+      if (res.status) {
+        setGameData(res.payload ?? 0);
+      }
+    });
+    getGameMatchRecords(gameId, authContext).then((res) => {
+      setMatchRecords(res.payload);
+    }).finally(() => setFullScreenLoading(false));
+  }
+  const resetGameDetail = (gameId) => {
+    setFullScreenLoading(true);
+    resetGame(gameId, authContext).then(() => {
+      if (gameId) {
+        refreshGameAndRecords(gameId);
+      }
+    }).catch((e) => {
+      setFullScreenLoading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
+  };
+
+  const onSwipeRowItemPress = (key, item) => {
+    if (key === 'edit') {
+      setSelectedRecord(item);
+      setShowEditDateTimeModal(true);
+    } else if (key === 'delete') {
+      if (item?.verb === 'start') {
+        Alert.alert(
+          'Do you want to reset all the match records?',
+          '',
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+            {
+              text: 'Reset',
+              style: 'destructive',
+              onPress: () => {
+                if (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset) {
+                  Alert.alert('Game not started yet.');
+                } else if (gameData.status === GameStatus.ended) {
+                  Alert.alert('Game is ended.');
+                } else {
+                  resetGameDetail(gameData.game_id);
+                }
+              },
+            },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        setFullScreenLoading(true);
+        deleteGameRecord(gameData?.game_id, item?.record_id, authContext).then(() => {
+          refreshGameAndRecords(gameData?.game_id);
+        }).finally(() => setFullScreenLoading(false));
+      }
+    }
+  }
+  const onSelectEditDate = (date) => {
+    setShowEditDateTimeModal(false);
+    setTimeout(() => {
+      const timestamp = (date.getTime()) / 1000;
+      setFullScreenLoading(true);
+      patchGameRecord(gameData?.game_id, selectedRecord?.record_id, { timestamp, verb: selectedRecord?.verb }, authContext).then(() => {
+        refreshGameAndRecords(gameData?.game_id);
+      }).catch((error) => {
+        setFullScreenLoading(false);
+        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+      }).finally(() => setSelectedRecord(null))
+    }, 500);
+  }
+
   return (
     <View style={ styles.mainContainer }>
       <StatusBar barStyle={'dark-content'}/>
+      <ActivityLoader visible={fullScreenLoading}/>
+      <DateTimePickerView
+          visible={showEditDateTimeModal}
+          onDone={onSelectEditDate}
+          onCancel={() => {
+            setSelectedRecord(null);
+            setShowEditDateTimeModal(false)
+          }}
+          onHide={() => {
+            setSelectedRecord(null);
+            setShowEditDateTimeModal(false)
+          }}
+          mode={'datetime'}
+          date={new Date(selectedRecord?.timestamp * 1000) ?? new Date()}
+      />
       <View style={ { flexDirection: 'row' } }>
         <View
           style={ {
@@ -137,9 +238,6 @@ export default function SoccerRecordList({ route, navigation }) {
         </View>
         <View style={ styles.centerView }>
           {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal, 1)}
-          {/* <Text style={{ ...styles.centerText, color: colors.themeColor }}> */}
-          {/*  {gameData?.home_team_goal ?? 0} */}
-          {/* </Text> */}
           <Dash
             style={ {
               width: 1,
@@ -176,25 +274,37 @@ export default function SoccerRecordList({ route, navigation }) {
               style={{ height: hp(30) }}
               data={matchRecords}
               renderItem={({ item }) => {
+                const { isAdmin } = route?.params
                 const isHomeTeam = item?.game?.home_team === item.team_id;
                 const isGameState = item.verb in soccerGameStats;
                 return (
                   <View>
-                    {!isGameState && isHomeTeam && (
-                      <TCGameScoreLeft
+                    <SwipeableRow
+                        enabled={isAdmin && !item?.deleted}
+                        buttons={[
+                          { key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon },
+                          { key: 'edit', fillColor: '#4D4D4D', image: images.editButton },
+                        ]}
+                        onPress={(key) => onSwipeRowItemPress(key, item)}
+                    >
+                      {!isGameState && isHomeTeam && (
+                        <TCGameScoreLeft
+                            style={{ opacity: item?.deleted ? 0.5 : 1 }}
                               gameData={gameData}
                               recordData={item}
                               editor={editorChecked}
                           />
-                    )}
-                    {!isGameState && !isHomeTeam && (
-                      <TCGameScoreRight
+                      )}
+                      {!isGameState && !isHomeTeam && (
+                        <TCGameScoreRight
+                            style={{ opacity: item?.deleted ? 0.5 : 1 }}
                               gameData={gameData}
                               recordData={item}
                               editor={editorChecked}
                           />
-                    )}
-                    {isGameState && <TCGameState recordData={item}/>}
+                      )}
+                      {isGameState && <TCGameState recordData={item}/>}
+                    </SwipeableRow>
                   </View>
                 )
               }}
@@ -215,12 +325,11 @@ export default function SoccerRecordList({ route, navigation }) {
                         fontSize: 14,
                         marginLeft: 10,
                       } }>
-            Last updated by{'\n'}({matchRecords[matchRecords.length - 1]?.recorded_by_team_name})
+            Last updated by{'\n'}({getTeamName(matchRecords[matchRecords.length - 1]?.updated_by?.group_id)})
           </Text>}
           <Text
                       style={ {
                         color: colors.themeColor,
-                        // fontFamily: fonts.RLight,
                         fontSize: 14,
                         marginLeft: 10,
                       } }>
@@ -264,13 +373,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 20,
     // backgroundColor: 'red',
-  },
-  headerRightImg: {
-    height: 15,
-    marginRight: 20,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 15,
   },
   headerView: {
     alignContent: 'center',

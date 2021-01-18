@@ -90,9 +90,10 @@ const MessageInviteeDrawerScreen = ({
     );
   }
   let fullName = dialog?.name;
-  if (dialog?.type === QB.chat.DIALOG_TYPE.CHAT) {
+  if (dialog?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
     fullName = dialog?.name.slice(2, dialog?.name?.length)
   }
+  console.log(dialog);
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.viewContainer}>

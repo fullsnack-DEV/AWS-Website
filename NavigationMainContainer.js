@@ -18,7 +18,6 @@ export default function NavigationMainContainer() {
   const [appInitialize, setAppInitialize] = useState(false);
 
   const resetApp = async () => {
-    console.log('2');
     QBLogout();
     firebase.auth().signOut();
     await Utility.clearStorage();
@@ -29,7 +28,6 @@ export default function NavigationMainContainer() {
   }
 
   const getRefereshToken = () => new Promise((resolve, reject) => {
-    console.log('3');
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       unsubscribe()
       if (user) {
@@ -51,6 +49,7 @@ export default function NavigationMainContainer() {
       const currentDate = new Date();
       // const expiryDate = new Date('08 Jan 2021 09:13');
       if (expiryDate.getTime() > currentDate.getTime()) {
+        await QBconnectAndSubscribe({ ...contextEntity });
         await authContext.setTokenData(tokenData);
         await QBconnectAndSubscribe(contextEntity);
         await authContext.setEntity({ ...contextEntity })
@@ -63,6 +62,7 @@ export default function NavigationMainContainer() {
             token: refereshToken.token,
             expirationTime: refereshToken.expirationTime,
           };
+          await QBconnectAndSubscribe({ ...contextEntity });
           await authContext.setTokenData(token);
           await authContext.setEntity({ ...contextEntity });
           await Utility.setStorage('authContextEntity', { ...contextEntity })

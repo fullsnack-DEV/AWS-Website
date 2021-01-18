@@ -36,7 +36,7 @@ export default function TennisRecordList({ route, navigation }) {
           }
       />
       <View style={ styles.sperateLine } />
-      <TennisMatchRecordsList matchData={route?.params?.gameData}/>
+      <TennisMatchRecordsList isAdmin={route?.params?.isAdmin} matchData={route?.params?.gameData}/>
     </View>
   );
 }
