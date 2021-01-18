@@ -224,7 +224,7 @@ export default function CreateChallengeForm3({ navigation, route }) {
 
       <TCGradientButton title={editableAlter ? strings.doneTitle : strings.nextTitle} onPress={() => {
         if (editableAlter) {
-          navigation.push('EditChallenge', {
+          navigation.navigate('EditChallenge', {
             challengeObj: {
               ...route.params.body,
               referee: referees.map(({ is_chief, responsible_team_id }) => ({ is_chief, responsible_team_id })),

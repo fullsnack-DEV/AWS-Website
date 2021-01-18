@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import {
   Image,
   StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, Platform, ScrollView, SafeAreaView, Dimensions,
+
 } from 'react-native';
 import {
   widthPercentageToDP as wp,

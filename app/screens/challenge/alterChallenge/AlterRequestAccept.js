@@ -23,12 +23,7 @@ export default function AlterRequestAccept({ navigation, route }) {
   ];
   useEffect(() => {
     setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{
-          name: 'NotificationsListScreen',
-        }],
-      });
+      navigation.popToTop()
     }, 4000);
   })
   return (

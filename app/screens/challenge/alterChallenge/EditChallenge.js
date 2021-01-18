@@ -1178,20 +1178,20 @@ export default function EditChallenge({ navigation, route }) {
                     shadow={true}
                     marginTop={15}
                     onPress={() => {
-                      // if (
-                      //   editInfo
-                      //   || editVenue
-                      //   || editRules
-                      //   || editReferee
-                      //   || editScorekeeper
-                      //   || editPayment
-                      // ) {
-                      updateChallengeDetail();
-                      // } else {
-                      //   Alert.alert(
-                      //     'Please modify atleast one field for alter request.',
-                      //   );
-                      // }
+                      if (
+                        editInfo
+                        || editVenue
+                        || editRules
+                        || editReferee
+                        || editScorekeeper
+                        || editPayment
+                      ) {
+                        updateChallengeDetail();
+                      } else {
+                        Alert.alert(
+                          'Please modify atleast one field for alter request.',
+                        );
+                      }
                     }}
                   />
               <TCBorderButton
