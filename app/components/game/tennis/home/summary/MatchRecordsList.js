@@ -46,7 +46,7 @@ const MatchRecordsList = ({
 
   useEffect(() => {
     loadAtOnce();
-  }, [gameId, isFocused]);
+  }, [gameData, isFocused]);
 
   const RenderDash = ({ zIndex = 0 }) => (
     <Dash
@@ -89,7 +89,7 @@ const MatchRecordsList = ({
                 />
           </View>
         )}
-        {isGameState && <TennisGameState gameStats={tennisGameStats} recordData={item}/>}
+        {isGameState && <TennisGameState recordData={item}/>}
       </View>
     )
   }

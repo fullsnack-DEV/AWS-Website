@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
-  StyleSheet,
+  StyleSheet, Alert,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -16,11 +16,12 @@ import {
   getGameMatchRecords, getGameRefereeReservation,
   getGameScorekeeperReservation,
   // getGameStats,
-  getSportsList,
+  getSportsList, resetGame,
 } from '../../../api/Games';
 import { followUser, unfollowUser } from '../../../api/Users';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import AuthContext from '../../../auth/context'
+import strings from '../../../Constants/String';
 
 const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery']
 const gameIds = [
@@ -108,9 +109,21 @@ const TennisHome = ({ navigation, route }) => {
       )}
     </View>
   )
+  const resetGameDetail = () => {
+    setLoading(true);
+    resetGame(gameData?.game_id, authContext).then(() => {
+      getGameDetails();
+    }).catch((e) => {
+      setLoading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
+  };
+
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />
-    <TopBackgroundHeader isAdmin={isAdmin} navigation={navigation} gameData={gameData}>
+    <TopBackgroundHeader isAdmin={isAdmin} resetGameDetail={resetGameDetail} navigation={navigation} gameData={gameData}>
       <TCScrollableProfileTabs
         tabItem={TAB_ITEMS}
         onChangeTab={(ChangeTab) => {

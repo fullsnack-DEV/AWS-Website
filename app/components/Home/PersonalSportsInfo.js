@@ -560,7 +560,7 @@ function PersonalSportsInfo({
             keyboardType={'numeric'}
             displayLastTitle={true}
             displayFirstTitle={true}
-            valueFirstTitle={gameFeeCount.toString().length > 0 ? '$' : ''}
+            valueFirstTitle={'$'}
             valueEndTitle={' CAD/match'}
             containerStyle={{ justifyContent: 'space-between' }}
           />}

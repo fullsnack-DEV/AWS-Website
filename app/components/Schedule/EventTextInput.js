@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, TextInput, Text,
+  StyleSheet, View, TextInput, Text, Platform,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -27,7 +27,7 @@ function EventTextInput({
         {displayFirstTitle && <Text style={styles.valueAfterTextStyle}>{valueFirstTitle}</Text>}
         <TextInput
           placeholder={placeholder}
-          style={{ ...styles.textInputStyle, ...textInputStyle }}
+          style={{ ...styles.textInputStyle, flex: 1, ...textInputStyle }}
           onChangeText={onChangeText}
           value={value}
           multiline={multiline}
@@ -35,7 +35,16 @@ function EventTextInput({
           keyboardType={keyboardType}
         />
       </View>
-      {displayLastTitle && <Text style={styles.valueAfterTextStyle}>{valueEndTitle}</Text>}
+      <View style={{
+        position: 'absolute',
+        right: 10,
+        height: '100%',
+        paddingHorizontal: 10,
+        justifyContent: 'center',
+        backgroundColor: colors.offwhite,
+      }}>
+        {displayLastTitle && <Text style={styles.valueAfterTextStyle}>{valueEndTitle}</Text>}
+      </View>
     </View>
   );
 }
@@ -50,7 +59,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     paddingHorizontal: 15,
     paddingRight: 30,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,

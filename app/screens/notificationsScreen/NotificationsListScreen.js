@@ -42,7 +42,14 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utils from '../challenge/ChallengeUtility';
 import * as RefereeUtils from '../referee/RefereeUtility';
-import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
+import {
+  getQBAccountType,
+  QB_ACCOUNT_TYPE,
+  QBconnectAndSubscribe,
+  QBcreateUser,
+  QBlogin,
+  QBLogout,
+} from '../../utils/QuickBlox';
 import { getUserDetails } from '../../api/Users';
 import { getGroupDetails } from '../../api/Groups';
 
@@ -166,15 +173,53 @@ function NotificationsListScreen({ navigation }) {
       }
     }
     authContext.setEntity({ ...currentEntity })
-    Utility.setStorage('authContextEntity', { ...currentEntity })
+    await Utility.setStorage('authContextEntity', { ...currentEntity })
     return currentEntity
   };
+  const switchQBAccount = async (accountData, entity) => {
+    let currentEntity = entity
+    const entityType = accountData?.entity_type
+    const uid = entityType === 'player' ? 'user_id' : 'group_id'
+    QBLogout().then(() => {
+      const {
+        USER, CLUB, LEAGUE, TEAM,
+      } = QB_ACCOUNT_TYPE;
+      let accountType = USER;
+      if (entityType === 'club') accountType = CLUB;
+      else if (entityType === 'team') accountType = TEAM;
+      else if (entityType === 'league') accountType = LEAGUE;
+      QBlogin(
+        accountData[uid],
+        {
+          ...accountData,
+          full_name: accountData.group_name,
+        },
+        accountType,
+      ).then(async (res) => {
+        currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+        authContext.setEntity({ ...currentEntity })
+        await Utility.setStorage('authContextEntity', { ...currentEntity })
+        QBconnectAndSubscribe(currentEntity).then((qbRes) => {
+          setloading(false)
+          if (qbRes?.error) {
+            console.log('Towns Cup', qbRes?.error)
+          }
+        }).catch(() => {
+          setloading(false)
+        })
+      }).catch(() => {
+        setloading(false)
+      })
+    }).catch(() => {
+      setloading(false)
+    })
+  }
 
   const onSwitchProfile = async (item) => {
     setloading(true)
-    switchProfile(item).then(() => {
-      setloading(false);
+    switchProfile(item).then((currentEntity) => {
       setActiveScreen(true)
+      switchQBAccount(item, currentEntity);
     }).catch((e) => {
       setloading(false)
       setTimeout(() => {
@@ -484,7 +529,7 @@ function NotificationsListScreen({ navigation }) {
         <TCThinDivider marginTop={0} width={'100%'} />
       </View>
       <ActivityLoader visible={loading} />
-      {mainNotificationsList && mainNotificationsList.length > 0 ? (
+      {mainNotificationsList?.length > 0 ? (
         <SectionList
           ItemSeparatorComponent={itemSeparator}
           sections={mainNotificationsList}
