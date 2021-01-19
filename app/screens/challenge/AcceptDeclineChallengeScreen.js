@@ -672,10 +672,6 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCThickDivider marginTop={8} />
             </View>
           )}
-          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
-            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
-            <TCThickDivider marginTop={20} />
-          </View>}
           {bodyParams && (
             <View>
               <TCLabel title={'Rules'} />
@@ -683,6 +679,11 @@ export default function CreateChallengeForm4({ navigation, route }) {
             </View>
           )}
           <TCThickDivider marginTop={20} />
+          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
+            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
+            <TCThickDivider marginTop={20} />
+          </View>}
+
           <View>
             <TCLabel title={'Responsibility to Secure Referees'} />
             {bodyParams && (
