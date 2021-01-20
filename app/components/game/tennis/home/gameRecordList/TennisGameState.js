@@ -10,6 +10,7 @@ import { tennisGameStats, getGameConvertMinsToTime, getGameDateTimeInHMSformat }
 
 export default function TennisGameState({
   recordData,
+  titleColor = colors?.blackColor,
 }) {
   return (
     <View
@@ -49,7 +50,7 @@ export default function TennisGameState({
           style={ {
             fontFamily: fonts.RMedium,
             fontSize: 16,
-            color: colors.blackColor,
+            color: titleColor,
           } }>
           {recordData?.verb in tennisGameStats && tennisGameStats?.[recordData?.verb]}
         </Text>

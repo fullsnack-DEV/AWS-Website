@@ -15,6 +15,7 @@ import AuthContext from '../../../../auth/context';
 import * as RefereeUtils from '../../../../screens/referee/RefereeUtility';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
+import RefereeReservationStatus from '../../../../Constants/RefereeReservationStatus';
 
 const Referees = ({
   gameData,
@@ -36,13 +37,13 @@ const Referees = ({
   useEffect(() => {
     getRefereeReservation(gameData?.game_id).then((res) => {
       console.log('REF: ', res?.payload)
-      const refData = res?.payload?.filter((item) => !['declined', 'cancelled'].includes(item?.status));
+      const refData = res?.payload?.filter((item) => ![RefereeReservationStatus.declined, RefereeReservationStatus.cancelled].includes(item?.status));
       const cloneRefData = [];
       refData.map((item) => {
         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
-        if (item?.status === 'offered' && !isExpired) {
+        if (item?.status === RefereeReservationStatus.offered && !isExpired) {
           cloneRefData.push(item);
-        } else if (item?.status !== 'offered') {
+        } else if (item?.status !== RefereeReservationStatus.offered) {
           cloneRefData.push(item);
         }
         return false;
@@ -80,8 +81,8 @@ const Referees = ({
     let statusData = '';
     const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
     switch (status) {
-      case 'pendingpayment': statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
-      case 'offered':
+      case RefereeReservationStatus.pendingpayment: statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
+      case RefereeReservationStatus.offered:
         if (isExpired) statusData = { status: 'REFEREE RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
         else statusData = { status: 'REFEREE RESERVATION REUEST SENT', color: colors.yellowColor };
         break;
@@ -92,9 +93,9 @@ const Referees = ({
   const renderReferees = ({ item }) => {
     const entity = authContext?.entity;
     const referee = item?.referee;
-    if (!['declined', 'cancelled'].includes(item?.status)) {
-      return (
-        <TCUserFollowUnfollowList
+
+    return (
+      <TCUserFollowUnfollowList
               statusColor={getRefereeStatusMessage(item, 'color')}
               statusTitle={getRefereeStatusMessage(item, 'status')}
               myUserId={myUserId}
@@ -113,9 +114,7 @@ const Referees = ({
               }}
               userRole={userRole}
           />
-      )
-    }
-    return null;
+    )
   }
 
   const handleBookReferee = () => {

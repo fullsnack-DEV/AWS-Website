@@ -364,7 +364,7 @@ export default function LoginScreen({ navigation }) {
               placeholderTextColor={colors.themeColor}
               secureTextEntry={hidePassword}
               keyboardType={'default'}
-          />
+           />
           <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
             {hidePassword ? (
               <Image source={images.showPassword} style={styles.passwordEyes} />
@@ -468,31 +468,26 @@ const styles = StyleSheet.create({
   passwordView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
+    paddingVertical: 5,
     borderRadius: 5,
-
     color: 'black',
     elevation: 3,
     flexDirection: 'row',
-    fontSize: wp('4%'),
-    height: 40,
-
     marginTop: 4,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('84%'),
+    width: wp('85%'),
   },
   textInput: {
-
-    backgroundColor: colors.whiteColor,
+    paddingVertical: 0,
+    paddingHorizontal: 10,
     borderRadius: 5,
     color: colors.blackColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-    height: 40,
+    fontSize: 16,
     paddingLeft: 17,
-
     width: wp('75%'),
   },
   textFieldContainerStyle: {
