@@ -17,7 +17,7 @@ let homeTeamGamePoint = 0;
 let awayTeamGamePoint = 0;
 let homeTeamMatchPoint = 0;
 let awayTeamMatchPoint = 0;
-export default function TennisScoreView({ scoreDataSource }) {
+export default function TennisScoreView({ scoreDataSource, marginTop = '10%' }) {
   useEffect(() => {
     setsData = [];
     console.log('scoreDataSource', scoreDataSource);
@@ -196,7 +196,7 @@ export default function TennisScoreView({ scoreDataSource }) {
   };
 
   return (
-    <View style={styles.scoreContainer}>
+    <View style={[styles.scoreContainer, { marginTop }]}>
       <View style={styles.leftScoreView}>
         <FlatList
           data={setsData}
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 112,
     width: '100%',
-    marginTop: '10%',
+
     paddingLeft: 15,
     paddingRight: 15,
   },

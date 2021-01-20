@@ -28,7 +28,7 @@ const TCWinningRangeChart = ({
         {heading} games
         <Text style={{ fontFamily: fonts.RBold }}>{` ${totalCount}`}</Text>
       </Text>
-      <View style={styles.mainContainer}>
+      {totalCount > 0 && teamOneCount && drawCount && teamTwoCount ? <View style={styles.mainContainer}>
         {/* Team One */}
         <View style={{ ...styles.singleColumnContainer, width: `${teamOnePercent}%` }}>
           <GradiantContainer
@@ -76,7 +76,18 @@ const TCWinningRangeChart = ({
             {`${teamTwoCount} (${teamTwoPercent}%)`}
           </Text>
         </View>
-      </View>
+      </View> : <View style={{ ...styles.singleColumnContainer, width: '100%', marginTop: 30 }}>
+        <GradiantContainer
+            gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
+            style={{
+              borderTopRightRadius: teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
+              borderBottomRightRadius: teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
+              borderTopLeftRadius: 15,
+              borderBottomLeftRadius: 15,
+            }}
+        />
+      </View>}
+
     </View>
   )
 }
@@ -85,7 +96,7 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 20,
     borderBottomWidth: 0.3,
-    borderBottomColor: colors.darkGrayTrashColor,
+    borderBottomColor: colors.thinDividerColor,
     alignItems: 'center',
   },
   mainContainer: {

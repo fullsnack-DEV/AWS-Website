@@ -74,7 +74,14 @@ export default function GameDetailRecord({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
+        <TouchableWithoutFeedback
+        onPress={() => actionSheet.current.show()}
+        hitSlop={{
+          top: 15,
+          bottom: 15,
+          left: 15,
+          right: 15,
+        }}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -486,7 +493,7 @@ export default function GameDetailRecord({ navigation, route }) {
                       text: 'No',
                       onPress: () => {
                         lastTimeStamp = date
-                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Goal;
                         let body = [{}];
@@ -534,7 +541,7 @@ export default function GameDetailRecord({ navigation, route }) {
           } else if (item === 'Assist') {
             if (selectedAssistMemberID) {
               lastTimeStamp = date
-                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Goal;
               let body = [{}];
@@ -590,7 +597,7 @@ export default function GameDetailRecord({ navigation, route }) {
           } else if (item === 'Own Goal') {
             if (!checkMemberOnBench(selectedMemberID)) {
               lastTimeStamp = date
-                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Goal;
               let body = [{}];
@@ -624,7 +631,7 @@ export default function GameDetailRecord({ navigation, route }) {
           } else if (item === 'YC') {
             if (!checkMemberOnBench(selectedMemberID)) {
               lastTimeStamp = date
-                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.YC;
               const body = [
@@ -642,7 +649,7 @@ export default function GameDetailRecord({ navigation, route }) {
           } else if (item === 'RC') {
             if (!checkMemberOnBench(selectedMemberID)) {
               lastTimeStamp = date
-                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.RC;
               const body = [
@@ -664,7 +671,7 @@ export default function GameDetailRecord({ navigation, route }) {
               Alert.alert('This player is already on field');
             } else {
               lastTimeStamp = date
-                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.In;
               const body = [
@@ -684,7 +691,7 @@ export default function GameDetailRecord({ navigation, route }) {
               Alert.alert('This player is already on bench');
             } else {
               lastTimeStamp = date
-                ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                 : parseFloat(new Date().getTime() / 1000).toFixed(0);
               lastVerb = GameVerb.Out;
               const body = [
@@ -1240,7 +1247,7 @@ export default function GameDetailRecord({ navigation, route }) {
                       );
                     } else {
                       lastTimeStamp = date
-                        ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                         : parseFloat(new Date().getTime() / 1000).toFixed(0);
                       lastVerb = GameVerb.Start;
                       const body = [
