@@ -133,7 +133,7 @@ const globalApiCall = async ({
       withRenewToken,
       options,
     }
-    console.log('ERROR API Opetions::--->', error);
+    console.log('SERVER ERROR ::--->', error);
     throw new Error(e);
   }
 };

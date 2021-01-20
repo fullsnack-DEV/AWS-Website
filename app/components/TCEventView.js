@@ -173,7 +173,7 @@ export default function TCEventView({
             )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
-            <Text numberOfLines={1} style={[styles.eventTime, { width: wp('45%') }]}>
+            <Text numberOfLines={1} style={{ ...styles.eventTime, flex: 1 }}>
               {location !== '' ? location : venue}
             </Text>
           </View>

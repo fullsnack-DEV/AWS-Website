@@ -50,63 +50,8 @@ export default function WelcomeScreen({ navigation }) {
     }
     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
     auth().signInWithCredential(facebookCredential).then(async (authResult) => {
-      console.log('FACEBOOK DETAIL:', JSON.stringify(authResult));
-      const facebookSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
-        console.log('User :-', user);
-        if (user) {
-          user.getIdTokenResult().then(async (idTokenResult) => {
-            console.log('User JWT: ', idTokenResult.token);
-            const token = {
-              token: idTokenResult.token,
-              expirationTime: idTokenResult.expirationTime,
-            };
-            const userConfig = {
-              method: 'get',
-              url: `${Config.BASE_URL}/users/${user?.uid}`,
-              headers: { Authorization: `Bearer ${token?.token}` },
-            }
-            apiCall(userConfig).then(async (response) => {
-              const entity = {
-                uid: user.uid,
-                role: 'user',
-                obj: response.payload,
-                auth: {
-                  user_id: user.uid,
-                  user: response.payload,
-                },
-              }
-              await authContext.setTokenData(token);
-              QBInitialLogin(entity, response?.payload);
-            }).catch(async () => {
-              const entity = {
-                auth: { user_id: user.uid },
-                uid: user.uid,
-                role: 'user',
-              }
-              await authContext.setTokenData(token);
-              await Utility.setStorage('loggedInEntity', entity);
-              await authContext.setEntity({ ...entity })
-              const flName = user.displayName.split(' ');
-
-              const userDetail = {};
-              if (flName.length >= 2) {
-                [userDetail.first_name, userDetail.last_name] = flName
-              } else if (flName.length === 1) {
-                [userDetail.first_name, userDetail.last_name] = [flName[0], '']
-              } else if (flName.length === 0) {
-                userDetail.first_name = 'Towns';
-                userDetail.last_name = 'Cup';
-              }
-              userDetail.email = user.email;
-
-              await Utility.setStorage('userInfo', userDetail);
-              setloading(false);
-              navigation.navigate('AddBirthdayScreen')
-            });
-          }).catch(() => setloading(false));
-        }
-      });
-      facebookSignUpOnAuthChanged();
+      console.log('FACEBOOK DETAIL:', authResult);
+      googleFaceBookSignInSignUp(authResult, 'FACEBOOK | ')
     }).catch((error) => {
       setloading(false);
       let message = '';
@@ -133,24 +78,95 @@ export default function WelcomeScreen({ navigation }) {
     let qbEntity = entity
     QBlogin(qbEntity.uid, response).then(async (res) => {
       qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
-      QBconnectAndSubscribe(qbEntity)
-      authContext.setUser(response);
-      authContext.setEntity({ ...qbEntity })
+      QBconnectAndSubscribe(qbEntity);
       await Utility.setStorage('authContextUser', { ...response })
       await Utility.setStorage('authContextEntity', { ...qbEntity })
       await Utility.setStorage('loggedInEntity', qbEntity)
+      authContext.setUser(response);
+      authContext.setEntity({ ...qbEntity })
       setloading(false);
     }).catch(async (error) => {
       qbEntity = { ...qbEntity, isLoggedIn: true, QB: { connected: false } }
-      authContext.setUser(response);
-      authContext.setEntity({ ...qbEntity })
       await Utility.setStorage('authContextUser', { ...response })
       await Utility.setStorage('authContextEntity', { ...qbEntity })
       await Utility.setStorage('loggedInEntity', qbEntity)
+      authContext.setUser(response);
+      authContext.setEntity({ ...qbEntity });
       console.log('QB Login Error : ', error.message);
       setloading(false);
     });
   }
+
+  const googleFaceBookSignInSignUp = (authResult, message) => {
+    console.log(message, authResult);
+    const googleFaceBookSignInSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
+      console.log('User :-', user);
+      if (user) {
+        user.getIdTokenResult().then(async (idTokenResult) => {
+          console.log('User JWT: ', idTokenResult.token);
+          const token = {
+            token: idTokenResult.token,
+            expirationTime: idTokenResult.expirationTime,
+          };
+          const userConfig = {
+            method: 'get',
+            url: `${Config.BASE_URL}/users/${user?.uid}`,
+            headers: { Authorization: `Bearer ${token?.token}` },
+          }
+          apiCall(userConfig).then(async (response) => {
+            const entity = {
+              uid: user.uid,
+              role: 'user',
+              obj: response.payload,
+              auth: {
+                user_id: user.uid,
+                user: response.payload,
+              },
+            }
+            await authContext.setTokenData(token);
+            QBInitialLogin(entity, response?.payload);
+          }).catch(async () => {
+            const entity = {
+              auth: { user_id: user.uid },
+              uid: user.uid,
+              role: 'user',
+            }
+            await authContext.setTokenData(token);
+            await Utility.setStorage('loggedInEntity', entity);
+            await authContext.setEntity({ ...entity })
+            const flName = user.displayName.split(' ');
+
+            const userDetail = {};
+            if (flName.length >= 2) {
+              [userDetail.first_name, userDetail.last_name] = flName
+            } else if (flName.length === 1) {
+              [userDetail.first_name, userDetail.last_name] = [flName[0], '']
+            } else if (flName.length === 0) {
+              userDetail.first_name = 'Towns';
+              userDetail.last_name = 'Cup';
+            }
+            userDetail.email = user.email;
+
+            await Utility.setStorage('userInfo', userDetail);
+            setloading(false);
+            navigation.navigate('AddBirthdayScreen')
+          });
+        }).catch(() => setloading(false));
+      }
+    });
+    googleFaceBookSignInSignUpOnAuthChanged();
+  }
+  // const checkFirebaseUserRegistratedOrNot = (emailAddress) => new Promise((resolve) => {
+  //   auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
+  //     if (isAccountThereInFirebase?.length > 0) {
+  //       resolve(true);
+  //     }
+  //     resolve(false);
+  //   }).catch(() => {
+  //     setloading(false);
+  //     resolve(true);
+  //   })
+  // })
 
   // Login With Google manage function
   const onGoogleButtonPress = async () => {
@@ -158,64 +174,9 @@ export default function WelcomeScreen({ navigation }) {
       setloading(true);
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
       auth().signInWithCredential(googleCredential).then(async (authResult) => {
-        console.log('GOOGLE DETAIL:', JSON.stringify(authResult));
-        const googleSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
-          console.log('User :-', user);
-          if (user) {
-            user.getIdTokenResult().then(async (idTokenResult) => {
-              console.log('User JWT: ', idTokenResult.token);
-              const token = {
-                token: idTokenResult.token,
-                expirationTime: idTokenResult.expirationTime,
-              };
-              const userConfig = {
-                method: 'get',
-                url: `${Config.BASE_URL}/users/${user?.uid}`,
-                headers: { Authorization: `Bearer ${token?.token}` },
-              }
-              apiCall(userConfig).then(async (response) => {
-                const entity = {
-                  uid: user.uid,
-                  role: 'user',
-                  obj: response.payload,
-                  auth: {
-                    user_id: user.uid,
-                    user: response.payload,
-                  },
-                }
-                await authContext.setTokenData(token);
-                QBInitialLogin(entity, response?.payload);
-              }).catch(async () => {
-                const entity = {
-                  auth: { user_id: user.uid },
-                  uid: user.uid,
-                  role: 'user',
-                }
-                await authContext.setTokenData(token);
-                await Utility.setStorage('loggedInEntity', entity);
-                await authContext.setEntity({ ...entity })
-                const flName = user.displayName.split(' ');
-
-                const userDetail = {};
-                if (flName.length >= 2) {
-                  [userDetail.first_name, userDetail.last_name] = flName
-                } else if (flName.length === 1) {
-                  [userDetail.first_name, userDetail.last_name] = [flName[0], '']
-                } else if (flName.length === 0) {
-                  userDetail.first_name = 'Towns';
-                  userDetail.last_name = 'Cup';
-                }
-                userDetail.email = user.email;
-
-                await Utility.setStorage('userInfo', userDetail);
-                setloading(false);
-                navigation.navigate('AddBirthdayScreen')
-              });
-            }).catch(() => setloading(false));
-          }
-        });
-        googleSignUpOnAuthChanged();
+        googleFaceBookSignInSignUp(authResult, 'GOOGLE | ');
       }).catch((error) => {
         setloading(false);
         let message = ''

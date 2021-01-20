@@ -1,4 +1,5 @@
 import React, {
+  useRef,
 } from 'react';
 import {
   StyleSheet,
@@ -14,8 +15,9 @@ import fonts from '../../../Constants/Fonts';
 import { widthPercentageToDP as wp } from '../../../utils';
 
 export default function TennisRecordList({ route, navigation }) {
+  const matchRecords3DotRef = useRef();
   const onThreeDotPress = () => {
-
+    matchRecords3DotRef.current.show();
   }
   return (
     <View style={{ flex: 1 }}>
@@ -36,7 +38,7 @@ export default function TennisRecordList({ route, navigation }) {
           }
       />
       <View style={ styles.sperateLine } />
-      <TennisMatchRecordsList isAdmin={route?.params?.isAdmin} matchData={route?.params?.gameData}/>
+      <TennisMatchRecordsList navigation={navigation} matchRecords3DotRef={matchRecords3DotRef} isAdmin={route?.params?.isAdmin} matchData={route?.params?.gameData}/>
     </View>
   );
 }

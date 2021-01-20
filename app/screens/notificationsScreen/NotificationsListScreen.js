@@ -404,24 +404,29 @@ function NotificationsListScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    if (notifAPI !== 1) {
-      getUnreadCount(authContext).then((response) => {
-        if (response.status === true) {
-          const { teams } = response.payload;
-          const { clubs } = response.payload;
-          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-          setGroupList(groups);
-          setNotifAPI(1);
-          setCurrentTab(0);
-          checkActiveScreen(groups[0]);
-        } else {
-          // setloading(false)
-        }
-      });
-    }
-    if (notifAPI === 1) {
-      checkActiveScreen(groupList[currentTab]);
-      callNotificationList();
+    if (isFocused) {
+      console.log('F:', isFocused);
+      console.log('F:', notifAPI);
+      if (notifAPI !== 1) {
+        getUnreadCount(authContext).then((response) => {
+          if (response.status === true) {
+            const { teams } = response.payload;
+            const { clubs } = response.payload;
+            const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+            const entityId = authContext?.entity?.role === 'user' ? authContext?.entity?.obj?.user_id : authContext?.entity?.obj?.group_id;
+            const tabIndex = groups.findIndex((item) => item?.group_id === entityId)
+            console.log('GROUPS:', groups);
+            setGroupList(groups);
+            setNotifAPI(1);
+            setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
+            checkActiveScreen(groups[0]);
+          }
+        });
+      }
+      if (notifAPI === 1) {
+        checkActiveScreen(groupList[currentTab]);
+        callNotificationList();
+      }
     }
   }, [currentTab, isFocused]);
 

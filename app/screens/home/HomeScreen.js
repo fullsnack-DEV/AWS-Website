@@ -2282,7 +2282,7 @@ export default function HomeScreen({ navigation, route }) {
                   </View>
                 }
                 rightComponent={
-                  <TouchableOpacity onPress={() => setRefereesInModalVisible(false)}>
+                  <TouchableOpacity onPress={() => setRefereesInModalVisible(false)} style={{ padding: 10 }}>
                     <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
                   </TouchableOpacity>
                 }

@@ -1,6 +1,7 @@
 import React, {
   useState, useEffect, Fragment, useContext,
 } from 'react';
+import moment from 'moment';
 import {
   View,
   Text,
@@ -8,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   FlatList, TouchableOpacity, Alert,
 } from 'react-native';
-
+import LinearGradient from 'react-native-linear-gradient';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -17,13 +18,14 @@ import {
 import Dash from 'react-native-dash';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
+import ActionSheet from 'react-native-actionsheet';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import {
   deleteGameRecord, getGameData, getGameMatchRecords, resetGame,
 } from '../../../api/Games';
-import { getGameDateTimeInHMSformat, getNumberSuffix, tennisGameStats } from '../../../utils/gameUtils';
+import { getNumberSuffix, tennisGameStats } from '../../../utils/gameUtils';
 import TennisGameScoreRight from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreRight';
 import TennisGameState from '../../../components/game/tennis/home/gameRecordList/TennisGameState';
 import TennisGameScoreLeft from '../../../components/game/tennis/home/gameRecordList/TennisGameScoreLeft';
@@ -33,19 +35,32 @@ import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
+import * as Utils from '../../challenge/ChallengeUtility';
 
-export default function TennisMatchRecordsList({ matchData, visibleSetScore = true, isAdmin }) {
+export default function TennisMatchRecordsList({
+  navigation,
+  matchData,
+  visibleSetScore = true,
+  isAdmin,
+  visibleAddSetGameButton = false,
+  matchRecords3DotRef,
+}) {
   const authContext = useContext(AuthContext)
+  const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
   const [editorChecked, setEditorChecked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [matchRecords, setMatchRecords] = useState([]);
   const [gameData, setGameData] = useState(null);
   const [teamIds, setTeamIds] = useState(null);
-  const [currentScore, setCurrentScore] = useState(null)
+  const [currentScore, setCurrentScore] = useState(null);
   const [servingTeamID, setServingTeamID] = useState();
   const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0);
   const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
+
+  useEffect(() => {
+    setVisibleAddSetAndGameButton(visibleAddSetGameButton)
+  }, [visibleAddSetGameButton]);
 
   useEffect(() => {
     loadAtOnce()
@@ -91,7 +106,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
         getGameMatchRecords(gameId, authContext).then((matchRes) => {
           // setMatchRecords(matchRes.payload);
           const records = matchRes.payload;
-          processModifiedMatchRecords(records.reverse());
+          processModifiedMatchRecords(records.reverse(), res.payload);
         })
       })
     }
@@ -108,7 +123,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
       getGameMatchRecords(gameData?.game_id, authContext).then((matchRes) => {
         setMatchRecords(matchRes.payload);
         const records = matchRes.payload;
-        processModifiedMatchRecords(records.reverse());
+        processModifiedMatchRecords(records.reverse(), res.payload);
       }).finally(() => setFullScreenLoading(false));
     }).catch(() => setFullScreenLoading(false))
   }
@@ -132,7 +147,17 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
       return e;
     });
   };
-  const processModifiedMatchRecords = (records) => {
+
+  const getDMYHM = (date) => {
+    const currentDate = moment(new Date()).format('yyyy-MM-DD');
+    const receiveDate = moment(date * 1000).format('yyyy-MM-DD');
+    if (currentDate === receiveDate) {
+      return moment(date * 1000).format('hh:mm A');
+    }
+    return moment(date * 1000).format('DD-MM-YYYY hh:mm A');
+  }
+
+  const processModifiedMatchRecords = (records, game) => {
     const wholeRecords = [];
     let set_number = 0;
     let game_number = 0;
@@ -146,13 +171,13 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
           if (recordData?.verb === 'setStart') {
             set_number += 1
             game_number = 1;
-            const win_count = gameData?.scoreboard?.sets.filter((item) => item?.s_id === recordData?.s_id)[0];
+            const win_count = game?.scoreboard?.sets.filter((item) => item?.s_id === recordData?.s_id)[0];
             wholeRecords.push({
               type: 'set',
               set_number,
               setId: recordData?.s_id,
               isOpen: false,
-              start_date: getGameDateTimeInHMSformat(recordData?.timestamp),
+              start_date: getDMYHM(recordData?.timestamp),
               end_date: '-',
               setGames: [],
               home_team_win_count: win_count?.home_team_win_count ?? '-',
@@ -160,7 +185,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
             })
             wholeRecords[wholeRecords?.length - 1].setGames.push({ type: 'set_stats', data: recordData })
           } else {
-            wholeRecords[wholeRecords?.length - 1].end_date = getGameDateTimeInHMSformat(recordData?.timestamp)
+            wholeRecords[wholeRecords?.length - 1].end_date = getDMYHM(recordData?.timestamp)
             wholeRecords[wholeRecords?.length - 1].setGames.push({ type: 'set_stats', data: recordData })
           }
         } else {
@@ -173,7 +198,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
                 wholeRecords[set_index].setGames.push({
                   type: 'set_games',
                   game_number,
-                  start_date: getGameDateTimeInHMSformat(recordData?.timestamp),
+                  start_date: moment(recordData?.timestamp * 1000).format('hh:mm A'),
                   end_date: '-',
                   isOpen: false,
                   setGameId: recordData?.g_id,
@@ -193,7 +218,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               } else {
                 wholeRecords[set_index].setGames[setGamesnew_index].home_team_score = recordData?.game_score?.home_team_point ?? '-';
                 wholeRecords[set_index].setGames[setGamesnew_index].away_team_score = recordData?.game_score?.away_team_point ?? '-';
-                wholeRecords[set_index].setGames[setGamesnew_index].end_date = getGameDateTimeInHMSformat(recordData?.timestamp) ?? '-';
+                wholeRecords[set_index].setGames[setGamesnew_index].end_date = moment(recordData?.timestamp * 1000).format('hh:mm A') ?? '-';
                 wholeRecords[set_index].setGames[setGamesnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
               }
             }
@@ -252,11 +277,12 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
     away_team_score,
     timeString,
   }) => (
-    <View style={styles.setContainer}>
-
-      {/* Down Arrow */}
-      <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleMatchSets(index)}>
-        <FastImage
+    <Fragment>
+      {renderAddSetButton()}
+      <View style={styles.setContainer}>
+        {/* Down Arrow */}
+        <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleMatchSets(index)}>
+          <FastImage
                     resizeMode={'contain'}
                     source={images.yellowDownArrow}
                     style={{
@@ -264,36 +290,37 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
                       tintColor: 'red',
                       transform: [{ rotateZ: item?.isOpen ? '180deg' : '0deg' }],
                     }} />
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      {/* Left Score */}
-      <View style={{
-        flex: 0.3,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Text style={styles.setScoreText}>{home_team_score}</Text>
-      </View>
+        {/* Left Score */}
+        <View style={{
+          flex: 0.3,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Text style={styles.setScoreText}>{home_team_score}</Text>
+        </View>
 
-      {/* Set Number */}
-      <View style={{
-        flex: 0.4,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Text style={styles.setNumberText}>{getNumberSuffix(set_number)} set</Text>
-        <Text style={styles.setTimeDurationText}>{timeString}</Text>
-      </View>
+        {/* Set Number */}
+        <View style={{
+          flex: 0.5,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Text style={styles.setNumberText}>{getNumberSuffix(set_number)} set</Text>
+          <Text style={styles.setTimeDurationText}>{timeString}</Text>
+        </View>
 
-      {/* Right Score */}
-      <View style={{
-        flex: 0.3,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Text style={styles.setScoreText}>{away_team_score}</Text>
+        {/* Right Score */}
+        <View style={{
+          flex: 0.3,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Text style={styles.setScoreText}>{away_team_score}</Text>
+        </View>
       </View>
-    </View>
+    </Fragment>
   )
 
   const getVisibleSwipableRowValue = (verb, isDeleted = false) => {
@@ -322,6 +349,26 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
     return false
   }
 
+  const onAddGamePress = () => {}
+  const renderAddGameButton = () => isAdmin && visibleAddSetAndGameButton && (
+    <TouchableOpacity onPress={() => onAddGamePress()}>
+      <View style={{ backgroundColor: colors.googleColor, alignItems: 'center', padding: 5 }}>
+        <Text style={{ fontFamily: fonts.RBold, fontSize: 12, color: colors.whiteColor }}>+ Add game</Text>
+      </View>
+    </TouchableOpacity>
+  )
+
+  const onAddSetPress = () => {}
+  const renderAddSetButton = () => isAdmin && visibleAddSetAndGameButton && (
+    <TouchableOpacity onPress={() => onAddSetPress}>
+      <LinearGradient
+              colors={[colors.themeColor, colors.yellowColor]}
+              style={{ alignItems: 'center', padding: 5 }}
+          >
+        <Text style={{ fontFamily: fonts.RBold, fontSize: 12, color: colors.whiteColor }}>+ Add Set</Text>
+      </LinearGradient>
+    </TouchableOpacity>
+  )
   const renderMatchRecords = ({ item, index }) => {
     if (item.type === 'game_stats') {
       return (
@@ -329,7 +376,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
               onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
           >
-          <TennisGameState recordData={item.data}/>
+          <TennisGameState recordData={item.data} />
         </SwipeableRow>
       )
     }
@@ -349,7 +396,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
         {item?.isOpen && (
           <View style={styles.innerSetContainer}>
             <FlatList
-                            keyExtractor={({ index: keyIndex }) => keyIndex?.toString()}
+                            keyExtractor={(keyItem, keyIndex) => keyIndex?.toString() + Math.random().toString()}
                             listKey={`renderGames${index * 2}`}
                             data={item?.setGames ?? []}
                             renderItem={({ item: gameItem, index: gameIndex }) => renderGames(gameItem, gameIndex, index)}
@@ -373,12 +420,13 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
               onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
           >
-          <TennisGameState recordData={item.data}/>
+          <TennisGameState recordData={item.data} titleColor={colors.themeColor}/>
         </SwipeableRow>
       )
     }
     return (
       <View>
+        {renderAddGameButton()}
         <View style={{
           ...styles.setContainer,
           backgroundColor: colors.whiteColor,
@@ -437,7 +485,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
 
         {item?.isOpen && (
           <FlatList
-                        keyExtractor={({ index: keyIndex }) => keyIndex?.toString()}
+                        keyExtractor={(keyItem, keyIndex) => keyIndex?.toString() + Math.random().toString()}
                         listKey={`setGameRecords${index * 2}`}
                         data={item?.setGamesRecords ?? []}
                         renderItem={renderGameRecords}
@@ -559,8 +607,71 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
         />
   )
   return (
-    <View style={ styles.mainContainer }>
+    <View style={{ ...styles.mainContainer, backgroundColor: visibleAddSetAndGameButton ? 'rgba(0,0,0,0.26)' : colors.whiteColor }}>
       <ActivityLoader visible={fullScreenLoading}/>
+      <ActionSheet
+          ref={matchRecords3DotRef}
+          // title={'News Feed Post'}
+          options={(gameData?.status === GameStatus.playing || gameData?.status === GameStatus.paused || gameData?.status === GameStatus.resume) ? [
+            'Game Reservation Detail',
+            'Add Set or Game',
+            'Deleted Records',
+            'Reset Match',
+            'Cancel',
+          ] : [
+            'Game Reservation Detail',
+            'Add Set or Game',
+            'Deleted Records',
+            'Cancel',
+          ]}
+          cancelButtonIndex={(gameData?.status === GameStatus.playing || gameData?.status === GameStatus.paused || gameData?.status === GameStatus.resume) ? 4 : 3}
+          destructiveButtonIndex={(gameData?.status === GameStatus.playing || gameData?.status === GameStatus?.paused || gameData?.status === GameStatus.resume) && 3}
+          onPress={(index) => {
+            if (index === 0) {
+              setFullScreenLoading(true);
+              Utils.getChallengeDetail(gameData.challenge_id, authContext).then((obj) => {
+                navigation.navigate(obj.screenName, {
+                  challengeObj: obj.challengeObj || obj.challengeObj[0],
+                });
+                setFullScreenLoading(false);
+              }).catch(() => setFullScreenLoading(false));
+            } else if (index === 1) {
+              setVisibleAddSetAndGameButton(true);
+            } else if (index === 2) {
+              Alert.alert('Deleted Records')
+            } else if (index === 3) {
+              if (gameData?.status === GameStatus.playing || gameData?.status === GameStatus.paused || gameData?.status === GameStatus.resume) {
+                Alert.alert(
+                  'Do you want to reset all the match records?',
+                  '',
+                  [
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                    {
+                      text: 'Reset',
+                      style: 'destructive',
+                      onPress: () => {
+                        if (
+                          gameData.status === GameStatus.accepted
+                              || gameData.status === GameStatus.reset
+                        ) {
+                          Alert.alert('Game not started yet.');
+                        } else if (gameData.status === GameStatus.ended) {
+                          Alert.alert('Game is ended.');
+                        } else {
+                          resetGameDetail();
+                        }
+                      },
+                    },
+                  ],
+                  { cancelable: false },
+                );
+              }
+            }
+          }}
+      />
       <View>
         <View style={ { flexDirection: 'row', paddingBottom: 10 } }>
           <RenderDash/>
@@ -643,7 +754,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
       <Fragment>
         <FlatList
                     listKey={'matchRecordList'}
-                    keyExtractor={({ index }) => index?.toString()}
+                    keyExtractor={(item, index) => index?.toString() + Math.random().toString()}
                     style={{ height: hp(30) }}
                     data={matchRecords}
                     renderItem={renderMatchRecords}
@@ -784,6 +895,7 @@ const styles = StyleSheet.create({
   setTimeDurationText: {
     color: colors.lightBlackColor,
     fontSize: 10,
+    textAlign: 'center',
     fontFamily: fonts.RRegular,
   },
   downArrowContainer: {
