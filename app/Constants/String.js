@@ -526,5 +526,11 @@ const strings = {
   selectPointsText: 'Select points',
   selectAnyCard: 'Please any of the card.',
   networkConnectivityErrorMessage: 'Please check your connection',
+  recentPointDelete: 'The recentest won point will be canceled.',
+  noWonPoint: 'Score not added yet.',
+  gameNotStarted: 'Game not started yet.',
+  gamePaused: 'Game is paused.',
+  gameEnded: 'Game is ended.',
+  selectTeam: 'Please Select Team',
 };
 export default strings;

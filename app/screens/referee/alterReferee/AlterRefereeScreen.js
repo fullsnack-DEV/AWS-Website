@@ -1247,11 +1247,12 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
+                  if (bodyParams?.game?.status === GameStatus.accepted || bodyParams?.game?.status === GameStatus.reset) {
                     let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
+
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
                       callerId,
@@ -1306,11 +1307,12 @@ export default function AlterRefereeScreen({ navigation, route }) {
                 marginBottom={15}
                 marginTop={15}
                 onPress={() => {
-                  if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
+                  if (bodyParams?.game?.status === GameStatus.accepted || bodyParams?.game?.status === GameStatus.reset) {
                     let callerId = '';
                     if (bodyParams?.referee?.user_id !== entity.uid) {
                       callerId = entity.uid
                     }
+
                     acceptDeclineRefereeReservation(
                       bodyParams.reservation_id,
                       callerId,

@@ -89,7 +89,6 @@ export default function EditRefereeReservation({ navigation, route }) {
   }, [navigation, bodyParams, refereeUpdate]);
   useEffect(() => {
     entity = authContext.entity;
-
     const { reservationObj } = route.params ?? {};
     if (reservationObj.length > 0) {
       setIsPendingRequestPayment(true);
@@ -132,6 +131,9 @@ export default function EditRefereeReservation({ navigation, route }) {
           manual_fee: reservationObj[0]?.manual_fee,
         })
       }
+      if (!defaultCard && reservationObj[0]?.source) {
+        getPaymentMethods(reservationObj[0]?.source)
+      }
     } else {
       if (isOld === false) {
         setbodyParams(reservationObj);
@@ -168,14 +170,14 @@ export default function EditRefereeReservation({ navigation, route }) {
           manual_fee: reservationObj?.manual_fee,
         })
       }
+      if (!defaultCard && reservationObj?.source) {
+        getPaymentMethods(reservationObj?.source)
+      }
+    }
+    if (route?.params?.paymentMethod) {
+      setDefaultCard(route?.params?.paymentMethod)
     }
   }, [isFocused]);
-
-  useEffect(() => {
-    if (bodyParams?.referee?.user_id !== entity.uid) {
-      getPaymentMethods()
-    }
-  }, [defaultCard])
   useLayoutEffect(() => {
     sectionEdited();
   }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard]);
@@ -424,17 +426,37 @@ export default function EditRefereeReservation({ navigation, route }) {
     return param?.game?.away_team
   };
 
-  const getPaymentMethods = () => {
+  // const getPaymentMethods = () => {
+  //   setloading(true)
+  //   paymentMethods(authContext)
+  //     .then((response) => {
+  //       // setDefaultCard(response.payload[0].card)
+  //       for (const tempCard of response.payload) {
+  //         if (tempCard?.id === bodyParams?.source) {
+  //           console.log('temp::', tempCard?.card)
+  //           setDefaultCard(tempCard?.card)
+  //           break
+  //         }
+  //       }
+  //       setloading(false)
+  //     })
+  //     .catch((e) => {
+  //       console.log('error in payment method', e)
+  //       setloading(false)
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 0.3)
+  //     })
+  // }
+  const getPaymentMethods = (source) => {
     setloading(true)
     paymentMethods(authContext)
       .then((response) => {
-        // setDefaultCard(response.payload[0].card)
-        for (const tempCard of response.payload) {
-          if (tempCard?.id === bodyParams?.source) {
-            console.log('temp::', tempCard?.card)
-            setDefaultCard(tempCard?.card)
-            break
-          }
+        console.log('Payment api called', response.payload)
+        const matchCard = response.payload.find((card) => card.id === source)
+        if (matchCard) {
+          console.log('default payment method', matchCard)
+          setDefaultCard(matchCard)
         }
         setloading(false)
       })
@@ -557,16 +579,9 @@ export default function EditRefereeReservation({ navigation, route }) {
     body.currency_type = bodyParams?.currency_type
 
     if (checkSenderForPayment(bodyParams) === 'sender' && paymentCard.total_game_charges > 0) {
-      let paymentSource;
       if (defaultCard) {
-        paymentSource = defaultCard?.id
-      } else if (route.params.paymentMethod) {
-        paymentSource = route?.params?.paymentMethod?.id
-      } else {
-        Alert.alert(strings.selectCardText)
-        return
+        body.source = defaultCard.id;
       }
-      body.source = paymentSource;
     }
 
     const reservationId = bodyParams?.reservation_id;
@@ -1100,8 +1115,8 @@ export default function EditRefereeReservation({ navigation, route }) {
           { checkSenderForPayment(bodyParams) === 'sender' && paymentCard.total_game_charges > 0 && (
             <View style={{ marginTop: 10 }}>
               <TCTouchableLabel
-              title={ (defaultCard && defaultCard?.brand) ?? route?.params?.paymentMethod ? Utility.capitalize(route?.params?.paymentMethod?.card?.brand) : strings.addOptionMessage}
-              subTitle={(defaultCard && defaultCard?.last4) ?? route?.params?.paymentMethod?.card.last4 }
+              title={ (defaultCard && defaultCard?.card?.brand) ? Utility.capitalize(defaultCard?.card?.brand) : strings.addOptionMessage}
+              subTitle={(defaultCard && defaultCard?.card?.last4) ?? defaultCard?.card?.last4 }
               showNextArrow={true}
               onPress={() => {
                 navigation.navigate('PaymentMethodsScreen', {

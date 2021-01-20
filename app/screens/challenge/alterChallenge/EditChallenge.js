@@ -174,7 +174,16 @@ export default function EditChallenge({ navigation, route }) {
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
-      if (bodyParams.special_rule !== oldVersion.special_rule) {
+      if (bodyParams.special_rule !== oldVersion.special_rule
+        || bodyParams?.gameRules?.applyDueceInTieBreaker !== oldVersion?.gameRules?.applyDueceInTieBreaker
+        || bodyParams?.gameRules?.apply_duece_in_game !== oldVersion?.gameRules?.apply_duece_in_game
+        || bodyParams?.gameRules?.apply_duece_in_set !== oldVersion?.gameRules?.apply_duece_in_set
+        || bodyParams?.gameRules?.apply_tiebreaker_in_game !== oldVersion?.gameRules?.apply_tiebreaker_in_game
+        || bodyParams?.gameRules?.game_count_to_win_set !== oldVersion?.gameRules?.game_count_to_win_set
+        || bodyParams?.gameRules?.tiebreaker_apply_at !== oldVersion?.gameRules?.tiebreaker_apply_at
+        || bodyParams?.gameRules?.total_sets !== oldVersion?.gameRules?.total_sets
+        || bodyParams?.gameRules?.winning_point_in_game !== oldVersion?.gameRules?.winning_point_in_game
+        || bodyParams?.gameRules?.winning_point_in_tiebreaker !== oldVersion?.gameRules?.winning_point_in_tiebreaker) {
         setEditRules(true);
       } else {
         setEditRules(false);
@@ -870,11 +879,6 @@ export default function EditChallenge({ navigation, route }) {
               <TCThickDivider marginTop={20}/>
             </View>
           )}
-          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
-            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
-            <TCThickDivider marginTop={20} />
-          </View>}
-
           {bodyParams && (
             <View>
               <View style={styles.editableView}>
@@ -921,6 +925,11 @@ export default function EditChallenge({ navigation, route }) {
             </View>
           )}
           <TCThickDivider marginTop={20} />
+          {bodyParams?.sport.toLowerCase() === 'tennis' && <View>
+            <TCGameDetailRules gameRules={bodyParams?.gameRules}/>
+            <TCThickDivider marginTop={20} />
+          </View>}
+
           <View>
             <View style={styles.editableView}>
               <TCLabel

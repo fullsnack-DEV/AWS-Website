@@ -80,6 +80,22 @@ export default function TennisScoreView({ scoreDataSource }) {
     )
   }
 
+  const getHomeGameScore = () => {
+    console.log('end_datetime::', scoreDataSource?.scoreboard?.sets);
+    if (scoreDataSource?.scoreboard?.sets?.[0].end_datetime) {
+      return '0'
+    }
+    return scoreDataSource?.scoreboard?.sets?.[0].home_team_win_count || '0'
+  }
+
+  const getAwayGameScore = () => {
+    console.log('end_datetime::', scoreDataSource?.scoreboard?.sets?.[0].end_datetime);
+    if (scoreDataSource?.scoreboard?.sets?.[0].end_datetime) {
+      return '0'
+    }
+    return scoreDataSource?.scoreboard?.sets?.[0].away_team_win_count || '0'
+  }
+
   const renderCurruentScores = ({ index }) => (
     <View style={{ alignItems: 'center' }}>
       <Text style={styles.scoreTitle}>
@@ -92,18 +108,17 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint > awayTeamMatchPoint)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.home_team_win_count : 0)
-                > (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1]?.away_team_win_count : 0))
+              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count : 0)
+                > (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count : 0))
             || (index === 2 && homeTeamGamePoint > awayTeamGamePoint)
               ? [styles.player1Score, { color: colors.themeColor }]
               : styles.player1Score
           }>
           {(index === 0 && `${homeTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].home_team_win_count || '0'))
+              && getHomeGameScore())
             || (index === 2 && `${homeTeamGamePoint}`)}
         </Text>
-
         <TCThinDivider />
         {/* <Text
           style={
@@ -124,15 +139,15 @@ export default function TennisScoreView({ scoreDataSource }) {
           style={
             (index === 0 && homeTeamMatchPoint < awayTeamMatchPoint)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.home_team_win_count : 0)
-                < (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[scoreDataSource?.scoreboard?.sets?.length - 1 || 0]?.away_team_win_count : 0))
+              && (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.home_team_win_count : 0)
+                < (scoreDataSource?.scoreboard?.sets?.length ? scoreDataSource?.scoreboard?.sets?.[0]?.away_team_win_count : 0))
             || (index === 2 && homeTeamGamePoint < awayTeamGamePoint)
               ? [styles.player2Score, { color: colors.themeColor }]
               : styles.player2Score
           }>
           {(index === 0 && `${awayTeamMatchPoint}`)
             || (index === 1
-              && (scoreDataSource?.scoreboard?.sets?.reverse()?.[0].away_team_win_count || '0'))
+              && getAwayGameScore())
             || (index === 2 && `${awayTeamGamePoint}`)}
         </Text>
       </View>

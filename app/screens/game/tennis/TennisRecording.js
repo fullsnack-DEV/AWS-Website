@@ -497,6 +497,8 @@ export default function TennisRecording({ navigation, route }) {
           });
         }
         setloading(false);
+        setUndoTeamID(selectedTeam)
+        getGameDetail(route?.params?.gameDetail?.game_id, true);
         console.log('DECREASE GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -597,6 +599,29 @@ export default function TennisRecording({ navigation, route }) {
         toggleView(() => setFooterUp(false), 200);
       }
     }
+  }
+  const canDecreaseRecentGoal = () => {
+    if (selectedTeam === gameObj.home_team.user_id) {
+      if (homeTeamGamePoint <= 0) {
+        if (gameObj?.scoreboard?.sets?.reverse()?.[0].home_team_win_count <= 0) {
+          return false
+        }
+
+        return true
+      }
+
+      return true
+    }
+
+    if (awayTeamGamePoint <= 0) {
+      if (gameObj?.scoreboard?.sets?.reverse()?.[0].away_team_win_count <= 0) {
+        return false
+      }
+
+      return true
+    }
+
+    return true
   }
   return (
     <>
@@ -746,9 +771,9 @@ export default function TennisRecording({ navigation, route }) {
                   <TouchableOpacity onPress={() => {
                     decreaseGameScoreRecord(
                       undoTeamID,
-                      gameObj.game_id,
+                      route?.params?.gameDetail?.game_id,
                     );
-                    getGameDetail(gameObj.game_id, true);
+                    getGameDetail(route?.params?.gameDetail?.game_id, true);
                   }}>
                     <Image
                   source={images.undoImage}
@@ -808,51 +833,57 @@ export default function TennisRecording({ navigation, route }) {
           </View>
 
           {gameObj && (
-            <View style={styles.bottomView}>
-              <View style={styles.timeView}>
-                <Text style={styles.timer}>{timelineTimer}</Text>
+            <TouchableOpacity onPress={() => {
+              console.log('Arrow Pressed.');
+              toggleView(() => setFooterUp(!footerUp), 200)
+            }}>
+              <View style={styles.bottomView}>
+                <View style={styles.timeView}>
+                  <Text style={styles.timer}>{timelineTimer}</Text>
 
-                {pickerShow && (
-                  <View style={styles.curruentTimeView}>
-                    <TouchableOpacity
+                  {pickerShow && (
+                    <View style={styles.curruentTimeView}>
+                      <TouchableOpacity
+                      disabled={!pickerShow}
                       onPress={() => {
                         setDate();
+                        setPickerShow(false)
                       }}>
-                      <Image
+                        <Image
                         source={images.curruentTime}
                         style={styles.curruentTimeImg}
                       />
-                    </TouchableOpacity>
-                  </View>
-                )}
-                <Text
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  <Text
                   style={styles.startTime}
                   onPress={() => {
                     setPickerShow(!pickerShow);
                   }}>
-                  {(gameObj
+                    {(gameObj
                     && gameObj.status
                     && gameObj.status === GameStatus.accepted)
                   || (gameObj
                     && gameObj.status
                     && gameObj.status === GameStatus.reset)
-                    ? 'Game start at now'
-                    : getDateFormat(
-                      date ? new Date(date.getTime()) : new Date(),
-                    )}
-                </Text>
-                <TouchableOpacity onPress={() => {
-                  console.log('Arrow Pressed.');
-                  toggleView(() => setFooterUp(!footerUp), 200)
-                }}>
-                  <Image source={images.dropDownArrow} style={styles.downArrow} />
-                </TouchableOpacity>
-                {footerUp && <View style={styles.separatorLine}></View>}
-              </View>
-              {footerUp && <View>
-                {pickerShow && (
-                  <View>
-                    <RNDateTimePicker
+                      ? 'Game start at now'
+                      : getDateFormat(
+                        date ? new Date(date.getTime()) : new Date(),
+                      )}
+                  </Text>
+                  <TouchableOpacity onPress={() => {
+                    console.log('Arrow Pressed.');
+                    toggleView(() => setFooterUp(!footerUp), 200)
+                  }}>
+                    <Image source={images.dropDownArrow} style={styles.downArrow} />
+                  </TouchableOpacity>
+                  {footerUp && <View style={styles.separatorLine}></View>}
+                </View>
+                {footerUp && <View>
+                  {pickerShow && (
+                    <View>
+                      <RNDateTimePicker
                     locale={'en'}
                     display="spinner"
                     value={date || new Date()}
@@ -862,10 +893,10 @@ export default function TennisRecording({ navigation, route }) {
                     maximumDate={new Date()}
                     // gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()
                   />
-                  </View>
-                )}
-                <View style={styles.middleViewContainer}>
-                  <TouchableWithoutFeedback
+                    </View>
+                  )}
+                  <View style={styles.middleViewContainer}>
+                    <TouchableWithoutFeedback
                   style={styles.playerView}
                   onPress={() => {
                     setPlayer2Selected(false);
@@ -873,11 +904,11 @@ export default function TennisRecording({ navigation, route }) {
                     setSelectedTeam(gameObj.home_team.user_id);
                     setActionByTeamID(gameObj.home_team.user_id);
                   }}>
-                    {player1Selected ? (
-                      <LinearGradient
+                      {player1Selected ? (
+                        <LinearGradient
                       colors={[colors.yellowColor, colors.themeColor]}
                       style={styles.playerView}>
-                        <Image
+                          <Image
                         source={
                           gameObj?.home_team?.thumbnail
                             ? { uri: gameObj?.home_team?.thumbnail }
@@ -885,14 +916,14 @@ export default function TennisRecording({ navigation, route }) {
                         }
                         style={styles.playerProfile}
                       />
-                        <Text style={styles.selectedPlayerNameText}>
-                          {gameObj?.home_team?.first_name}{' '}
-                          {gameObj?.home_team?.last_name}
-                        </Text>
-                      </LinearGradient>
-                    ) : (
-                      <View style={styles.playerView}>
-                        <Image
+                          <Text style={styles.selectedPlayerNameText}>
+                            {gameObj?.home_team?.first_name}{' '}
+                            {gameObj?.home_team?.last_name}
+                          </Text>
+                        </LinearGradient>
+                      ) : (
+                        <View style={styles.playerView}>
+                          <Image
                         source={
                           gameObj?.home_team?.thumbnail
                             ? { uri: gameObj?.home_team?.thumbnail }
@@ -900,15 +931,15 @@ export default function TennisRecording({ navigation, route }) {
                         }
                         style={styles.playerProfile}
                       />
-                        <Text style={styles.playerNameText}>
-                          {gameObj?.home_team?.first_name}{' '}
-                          {gameObj?.home_team?.last_name}
-                        </Text>
-                      </View>
-                    )}
-                  </TouchableWithoutFeedback>
-                  <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
-                  <TouchableWithoutFeedback
+                          <Text style={styles.playerNameText}>
+                            {gameObj?.home_team?.first_name}{' '}
+                            {gameObj?.home_team?.last_name}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableWithoutFeedback>
+                    <Text style={{ marginLeft: 10, marginRight: 10 }}>:</Text>
+                    <TouchableWithoutFeedback
                   style={styles.playerView}
                   onPress={() => {
                     setPlayer1Selected(false);
@@ -916,11 +947,11 @@ export default function TennisRecording({ navigation, route }) {
                     setSelectedTeam(gameObj.away_team.user_id);
                     setActionByTeamID(gameObj.away_team.user_id);
                   }}>
-                    {player2Selected ? (
-                      <LinearGradient
+                      {player2Selected ? (
+                        <LinearGradient
                       colors={[colors.yellowColor, colors.themeColor]}
                       style={styles.playerView}>
-                        <Image
+                          <Image
                         source={
                           gameObj?.away_team?.thumbnail
                             ? { uri: gameObj?.away_team?.thumbnail }
@@ -928,14 +959,14 @@ export default function TennisRecording({ navigation, route }) {
                         }
                         style={styles.playerProfile}
                       />
-                        <Text style={styles.selectedPlayerNameText}>
-                          {gameObj.away_team.first_name}{' '}
-                          {gameObj.away_team.last_name}
-                        </Text>
-                      </LinearGradient>
-                    ) : (
-                      <View style={styles.playerView}>
-                        <Image
+                          <Text style={styles.selectedPlayerNameText}>
+                            {gameObj.away_team.first_name}{' '}
+                            {gameObj.away_team.last_name}
+                          </Text>
+                        </LinearGradient>
+                      ) : (
+                        <View style={styles.playerView}>
+                          <Image
                         source={
                           gameObj?.away_team?.thumbnail
                             ? { uri: gameObj?.away_team?.thumbnail }
@@ -943,21 +974,21 @@ export default function TennisRecording({ navigation, route }) {
                         }
                         style={styles.playerProfile}
                       />
-                        <Text numberOfLines={2} style={styles.playerNameText}>
-                          {gameObj.away_team.first_name}{' '}
-                          {gameObj.away_team.last_name}
-                        </Text>
-                      </View>
-                    )}
-                  </TouchableWithoutFeedback>
-                </View>
-                <View style={styles.scoreView}>
-                  <Text style={styles.playerScore}>{homeTeamGamePoint}</Text>
-                  <Text style={styles.playerScore}>{awayTeamGamePoint}</Text>
-                </View>
-                {!detailRecording && (
-                  <View style={styles.plusMinusContainer}>
-                    <TouchableWithoutFeedback
+                          <Text numberOfLines={2} style={styles.playerNameText}>
+                            {gameObj.away_team.first_name}{' '}
+                            {gameObj.away_team.last_name}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableWithoutFeedback>
+                  </View>
+                  <View style={styles.scoreView}>
+                    <Text style={styles.playerScore}>{homeTeamGamePoint}</Text>
+                    <Text style={styles.playerScore}>{awayTeamGamePoint}</Text>
+                  </View>
+                  {!detailRecording && (
+                    <View style={styles.plusMinusContainer}>
+                      <TouchableWithoutFeedback
                     onPress={() => {
                       if (gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset) {
                         Alert.alert('Game not started yet.');
@@ -985,7 +1016,7 @@ export default function TennisRecording({ navigation, route }) {
                         addGameRecordDetail(gameObj.game_id, body);
                       }
                     }}>
-                      <Image
+                        <Image
                       source={images.gameOrangePlus}
                       style={{
                         height: 76,
@@ -994,32 +1025,28 @@ export default function TennisRecording({ navigation, route }) {
                         marginLeft: 50,
                       }}
                     />
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
+                      </TouchableWithoutFeedback>
+                      <TouchableWithoutFeedback
                     onPress={() => {
                       if (
                         gameObj.status === GameStatus.accepted
                         || gameObj.status === GameStatus.reset
                       ) {
-                        Alert.alert('Game not started yet.');
+                        Alert.alert(strings.gameNotStarted);
                       } else if (gameObj.status === GameStatus.paused) {
-                        Alert.alert('Game is paused.');
+                        Alert.alert(strings.gamePaused);
                       } else if (gameObj.status === GameStatus.ended) {
-                        Alert.alert('Game is ended.');
+                        Alert.alert(strings.gameEnded);
                       } else if (!selectedTeam) {
-                        Alert.alert('Select Team');
-                      } else if (
-                        selectedTeam === gameObj.home_team.user_id && gameObj.home_team_goal <= 0
-                      ) {
-                        Alert.alert('Goal not added yet.');
-                      } else if (
-                        selectedTeam === gameObj.away_team.user_id
-                        && gameObj.away_team_goal <= 0
-                      ) {
-                        Alert.alert('Goal not added yet.');
+                        Alert.alert(strings.selectTeam);
+                      } else if
+                      (!canDecreaseRecentGoal()) {
+                        Alert.alert(strings.noWonPoint);
+                      } else if (!canDecreaseRecentGoal()) {
+                        Alert.alert(strings.noWonPoint);
                       } else {
                         Alert.alert(
-                          'The recent goal will be cancelled.',
+                          strings.recentPointDelete,
                           '',
                           [
                             {
@@ -1034,8 +1061,6 @@ export default function TennisRecording({ navigation, route }) {
                                   selectedTeam,
                                   gameObj.game_id,
                                 );
-                                setUndoTeamID(selectedTeam)
-                                getGameDetail(gameObj.game_id, true);
                               },
                             },
                           ],
@@ -1043,7 +1068,7 @@ export default function TennisRecording({ navigation, route }) {
                         );
                       }
                     }}>
-                      <Image
+                        <Image
                       source={images.deleteRecentGoal}
                       style={{
                         height: 34,
@@ -1052,12 +1077,12 @@ export default function TennisRecording({ navigation, route }) {
                         marginLeft: 15,
                       }}
                     />
-                    </TouchableWithoutFeedback>
-                  </View>
-                )}
-                <TCThinDivider width={'100%'} />
-                {detailRecording && (
-                  <FlatList
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+                  <TCThinDivider width={'100%'} />
+                  {detailRecording && (
+                    <FlatList
                   data={recordButtonList}
                   renderItem={renderGameButton}
                   keyExtractor={(item, index) => index.toString()}
@@ -1071,11 +1096,11 @@ export default function TennisRecording({ navigation, route }) {
                       : styles.buttonListView
                   }
                 />
-                )}
-                <View />
-                <TCThinDivider width={'100%'} />
-                <View style={styles.gameRecordButtonView}>
-                  {(gameObj.status === GameStatus.accepted
+                  )}
+                  <View />
+                  <TCThinDivider width={'100%'} />
+                  <View style={styles.gameRecordButtonView}>
+                    {(gameObj.status === GameStatus.accepted
                   || gameObj.status === GameStatus.reset) && (
                     <TCGameButton
                     title="Start"
@@ -1108,9 +1133,9 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.themeColor}
                     imageSize={16}
                   />
-                  )}
-                  {gameObj.status === GameStatus.paused && (
-                    <TCGameButton
+                    )}
+                    {gameObj.status === GameStatus.paused && (
+                      <TCGameButton
                     title="Resume"
                     onPress={() => {
                       lastTimeStamp = parseFloat(new Date().getTime() / 1000).toFixed(0);
@@ -1129,8 +1154,8 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.themeColor}
                     imageSize={16}
                   />
-                  )}
-                  {(gameObj.status === GameStatus.playing
+                    )}
+                    {(gameObj.status === GameStatus.playing
                   || gameObj.status === GameStatus.resume) && (
                     <TCGameButton
                     title="Pause"
@@ -1151,8 +1176,8 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.themeColor}
                     imageSize={15}
                   />
-                  )}
-                  {(gameObj.status === GameStatus.playing
+                    )}
+                    {(gameObj.status === GameStatus.playing
                   || gameObj.status === GameStatus.paused
                   || gameObj.status === GameStatus.resume) && (
                     <TCGameButton
@@ -1184,8 +1209,8 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.themeColor}
                     imageSize={15}
                   />
-                  )}
-                  {(gameObj.status === GameStatus.playing
+                    )}
+                    {(gameObj.status === GameStatus.playing
                   || gameObj.status === GameStatus.resume
                   || gameObj.status === GameStatus.paused) && (
                     <TCGameButton
@@ -1199,8 +1224,8 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.themeColor}
                     imageSize={15}
                   />
-                  )}
-                  <TCGameButton
+                    )}
+                    <TCGameButton
                     title="Records"
                     onPress={() => {
                       toggleView(() => setFooterUp(false), 200);
@@ -1214,7 +1239,7 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.darkGrayColor}
                     imageSize={25}
                   />
-                  {(gameObj.status === GameStatus.accepted
+                    {(gameObj.status === GameStatus.accepted
                   || gameObj.status === GameStatus.reset
                   || gameObj.status === GameStatus.playing
                   || gameObj.status === GameStatus.paused
@@ -1235,10 +1260,11 @@ export default function TennisRecording({ navigation, route }) {
                     textColor={colors.gameDetailColor}
                     imageSize={30}
                   />
-                  )}
-                </View>
-              </View>}
-            </View>
+                    )}
+                  </View>
+                </View>}
+              </View>
+            </TouchableOpacity>
           )}
         </View>
       )}
