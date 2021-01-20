@@ -114,7 +114,13 @@ export default function TennisRecording({ navigation, route }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-          onPress={() => headerActionSheet.current.show()}>
+          onPress={() => headerActionSheet.current.show()}
+          hitSlop={{
+            top: 15,
+            bottom: 15,
+            left: 15,
+            right: 15,
+          }}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -252,25 +258,25 @@ export default function TennisRecording({ navigation, route }) {
         if (validate()) {
           openToast()
           if (item === 'General') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Score;
           } else if (item === 'Ace') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Ace;
           } else if (item === 'Winner') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Winner;
           } else if (item === 'Unforced') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Unforced;
           } else if (item === 'Fault') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.Fault;
           } else if (item === 'Foot Fault') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.FeetFault;
           } else if (item === 'Let') {
-            lastTimeStamp = date ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = date ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0) : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.LetScore;
           }
           let body = [{}];
@@ -1000,8 +1006,8 @@ export default function TennisRecording({ navigation, route }) {
                         Alert.alert('Select Team');
                       } else {
                         lastTimeStamp = date
-                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
-                          : parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
+                          : parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
                         lastVerb = GameVerb.Score;
                         const body = [
                           {
@@ -1115,7 +1121,7 @@ export default function TennisRecording({ navigation, route }) {
                         );
                       } else {
                         lastTimeStamp = date
-                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Start;
                         const body = [
@@ -1276,7 +1282,7 @@ export default function TennisRecording({ navigation, route }) {
         // destructiveButtonIndex={1}
         onPress={(index) => {
           if (opetions[index] === 'End Game') {
-            lastTimeStamp = parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.GameEnd;
             const body = [
               {
@@ -1287,7 +1293,7 @@ export default function TennisRecording({ navigation, route }) {
             ];
             addGameRecordDetail(gameObj.game_id, body);
           } else if (opetions[index] === 'End Set') {
-            lastTimeStamp = parseFloat(new Date().setSeconds(0, 0) / 1000).toFixed(0);
+            lastTimeStamp = parseFloat(new Date().setMilliseconds(0, 0) / 1000).toFixed(0);
             lastVerb = GameVerb.SetEnd;
             const body = [
               {

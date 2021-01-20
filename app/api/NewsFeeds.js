@@ -3,14 +3,13 @@ import makeAPIRequest from '../utils/Global';
 
 export const getNewsFeed = async (authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/newsfeeds/`,
+  url: `${Config.BASE_URL}/newsfeeds`,
   authContext,
 })
 
-export const getNewsFeedNextList = async (params, authContext) => makeAPIRequest({
+export const getNewsFeedNextList = async (idLt, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/newsfeeds/`,
-  params,
+  url: `${Config.BASE_URL}/newsfeeds?id_lt=${idLt}`,
   authContext,
 })
 

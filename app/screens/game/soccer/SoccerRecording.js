@@ -177,7 +177,12 @@ export default function SoccerRecording({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()}>
+        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()} hitSlop={{
+          top: 15,
+          bottom: 15,
+          left: 15,
+          right: 15,
+        }}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -601,7 +606,7 @@ export default function SoccerRecording({ navigation, route }) {
                           )}`,
                         );
                         lastTimeStamp = date
-                          ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                          ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                           : parseFloat(new Date().getTime() / 1000).toFixed(0);
                         lastVerb = GameVerb.Goal;
                         const body = [
@@ -692,7 +697,7 @@ export default function SoccerRecording({ navigation, route }) {
                       );
                     } else {
                       lastTimeStamp = date
-                        ? parseFloat(date.setSeconds(0, 0) / 1000).toFixed(0)
+                        ? parseFloat(date.setMilliseconds(0, 0) / 1000).toFixed(0)
                         : parseFloat(new Date().getTime() / 1000).toFixed(0);
                       lastVerb = GameVerb.Start;
                       const body = [
@@ -862,7 +867,7 @@ export default function SoccerRecording({ navigation, route }) {
                 });
               } else if (index === 1) {
                 Alert.alert(
-                  'Do you want to reset all the match records?',
+                  strings.resetMatchRecord,
                   '',
                   [
                     {
@@ -877,9 +882,9 @@ export default function SoccerRecording({ navigation, route }) {
                           gameObj.status === GameStatus.accepted
                           || gameObj.status === GameStatus.reset
                         ) {
-                          Alert.alert('Game not started yet.');
+                          Alert.alert(strings.gameNotStarted);
                         } else if (gameObj.status === GameStatus.ended) {
-                          Alert.alert('Game is ended.');
+                          Alert.alert(strings.gameEnded);
                         } else {
                           resetGameDetail(gameObj.game_id);
                         }

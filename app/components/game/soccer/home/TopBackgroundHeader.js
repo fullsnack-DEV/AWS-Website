@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import {
-  Image, Platform, StyleSheet, Text, TouchableOpacity, View,
+  Image, Platform, StyleSheet, Text, TouchableOpacity, View, Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,6 +18,10 @@ import GameStatus from '../../../../Constants/GameStatus';
 import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtility';
 import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../loader/ActivityLoader';
+import {
+  resetGame,
+} from '../../../../api/Games';
+import strings from '../../../../Constants/String';
 
 const bgImage = images.soccerBackground;
 const TopBackgroundHeader = ({
@@ -98,7 +102,20 @@ const TopBackgroundHeader = ({
   const onThreeDorPress = () => {
     threeDotActionSheet.current.show();
   }
-
+  const resetGameDetail = (gameId) => {
+    setloading(true);
+    resetGame(gameId, authContext)
+      .then((response) => {
+        setloading(false);
+        console.log('RESET GAME RESPONSE::', response.payload);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 0.7);
+      });
+  };
   const goToChallengeDetail = (data) => {
     if (data?.responsible_to_secure_venue) {
       setloading(true);
@@ -199,7 +216,13 @@ const TopBackgroundHeader = ({
                           </View>
                         }
                         rightComponent={isAdmin
-                          && <TouchableOpacity onPress={onThreeDorPress}>
+                          && <TouchableOpacity onPress={onThreeDorPress}
+                          hitSlop={{
+                            top: 15,
+                            bottom: 15,
+                            left: 15,
+                            right: 15,
+                          }}>
                             <Image source={images.threeDotIcon} style={{
                               height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
                             }} />
@@ -236,7 +259,33 @@ const TopBackgroundHeader = ({
             } else if (item === 'Winner & Stats') {
               alert('Winner & Stats')
             } else if (item === 'Reset Match') {
-              alert('Reset Match')
+              Alert.alert(
+                strings.resetMatchRecord,
+                '',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Reset',
+                    style: 'destructive',
+                    onPress: () => {
+                      if (
+                        gameData?.status === GameStatus.accepted
+                        || gameData?.status === GameStatus.reset
+                      ) {
+                        Alert.alert(strings.gameNotStarted);
+                      } else if (gameData?.status === GameStatus.ended) {
+                        Alert.alert(strings.gameEnded);
+                      } else {
+                        resetGameDetail(gameData?.game_id);
+                      }
+                    },
+                  },
+                ],
+                { cancelable: false },
+              );
             }
           }
           return (

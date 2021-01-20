@@ -9,13 +9,14 @@ import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgro
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/tennis/home/summary/Summary';
 import Gallery from '../../../components/game/common/gallary/Gallery';
+import Stats from '../../../components/game/tennis/home/stats/Stats';
 import {
   approveDisapproveGameRecords,
   getGameData,
   getGameGallery,
   getGameMatchRecords, getGameRefereeReservation,
   getGameScorekeeperReservation,
-  // getGameStats,
+  getGameStats,
   getSportsList, resetGame,
 } from '../../../api/Games';
 import { followUser, unfollowUser } from '../../../api/Users';
@@ -68,6 +69,7 @@ const TennisHome = ({ navigation, route }) => {
     }).finally(() => setLoading(false));
   }
 
+  const getSoccerGameStats = (gameId) => getGameStats(gameId, authContext)
   const getTennisGameData = (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext);
   const followTennisUser = (params, userID) => followUser(params, userID, authContext);
   const unFollowTennisUser = (params, userID) => unfollowUser(params, userID, authContext);
@@ -98,7 +100,12 @@ const TennisHome = ({ navigation, route }) => {
             userId={userId}
         />
       )}
-      {tabKey === 1 && <></>}
+      {tabKey === 1 && <Stats
+              // homeTeamName={`${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`}
+              // awayTeamName={`${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`}
+              getGameStatsData={getSoccerGameStats}
+              gameData={gameData}
+          />}
       {tabKey === 2 && <></>}
       {tabKey === 3 && (
         <Gallery
