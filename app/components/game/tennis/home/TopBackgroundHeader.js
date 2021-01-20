@@ -1,8 +1,9 @@
 import React, {
-  useContext, useMemo, useRef, useState,
+  useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import {
+  Alert,
   Image, Platform, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -21,12 +22,42 @@ import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtili
 
 const bgImage = images.tennisBackground;
 const TopBackgroundHeader = ({
-  gameData, navigation, children, isAdmin,
+  gameData, navigation, children, resetGameDetail, isAdmin,
 }) => {
+  const authContext = useContext(AuthContext);
   const threeDotActionSheet = useRef();
   const [headerTitleShown, setHeaderTitleShown] = useState(true);
   const [loading, setloading] = useState(false);
-  const authContext = useContext(AuthContext);
+  const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0);
+  const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0);
+
+  useEffect(() => {
+    if (gameData) {
+      calculateMatchScore();
+    }
+  }, [gameData])
+
+  const calculateMatchScore = () => {
+    setHomeMatchPoint(0);
+    setAwayMatchPoint(0);
+    let homePoint = 0;
+    let awayPoint = 0;
+    console.log('SETS::->', gameData?.scoreboard?.sets);
+    (gameData?.scoreboard?.sets || []).map((e) => {
+      if (e?.winner) {
+        if (e.winner === gameData?.home_team?.user_id) {
+          homePoint += 1;
+          console.log('SETS NO::->', homePoint);
+        } else {
+          awayPoint += 1;
+        }
+      }
+      setHomeMatchPoint(homePoint);
+      setAwayMatchPoint(awayPoint);
+      return e;
+    });
+  };
+
   const renderForeground = () => (
     <LinearGradient
       colors={ ['transparent', 'rgba(0,0,0,0.4)'] }
@@ -117,6 +148,32 @@ const TopBackgroundHeader = ({
     }
   }
 
+  const resetMatch = () => {
+    Alert.alert(
+      'Do you want to reset all the match records?',
+      '',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: () => {
+            if (gameData.status === GameStatus.accepted || gameData.status === GameStatus.reset) {
+              Alert.alert('Game not started yet.');
+            } else if (gameData.status === GameStatus.ended) {
+              Alert.alert('Game is ended.');
+            } else {
+              resetGameDetail();
+            }
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  }
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading}/>
@@ -194,9 +251,9 @@ const TopBackgroundHeader = ({
                               />
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                              {getScoreText(gameData?.scoreboard?.game_inprogress?.home_team_point, gameData?.scoreboard?.game_inprogress?.away_team_point, 1)}
+                              {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 1)}
                               <Text style={styles.topCloseHeaderText}>:</Text>
-                              {getScoreText(gameData?.scoreboard?.game_inprogress?.home_team_point, gameData?.scoreboard?.game_inprogress?.away_team_point, 2)}
+                              {getScoreText(homeTeamMatchPoint, awayTeamMatchPoint, 2)}
                             </View>
                             <View style={{
                               ...styles.teamLogoContainer, height: 25, width: 25, marginRight: wp(2),
@@ -239,7 +296,7 @@ const TopBackgroundHeader = ({
             } else if (item === 'Winner & Stats') {
               alert('Winner & Stats')
             } else if (item === 'Reset Match') {
-              alert('Reset Match')
+              resetMatch();
             }
           }
           return (

@@ -11,7 +11,7 @@ import {
   Text,
   ScrollView,
   Alert,
-  StyleSheet,
+  StyleSheet, Keyboard,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -98,6 +98,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   }
 
   const onSaveButtonClicked = () => {
+    Keyboard.dismiss();
     if (checkValidation()) {
       setloading(true);
       const userProfile = { ...groupProfile };
@@ -148,23 +149,23 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   }
 
   const callUpdateUserAPI = (userProfile, paramGroupID) => {
-    updateGroupProfile(userProfile, paramGroupID, authContext).then((response) => {
-      setloading(true);
-      setTimeout(() => {
-        Alert.alert('Towns Cup', 'Profile changed sucessfully');
-      }, 0.1)
+    setloading(true);
+    updateGroupProfile(userProfile, paramGroupID, authContext).then(async (response) => {
       const entity = authContext.entity
       entity.obj = response.payload;
       entity.auth.user = response.payload;
       authContext.setEntity({ ...entity })
-      Utility.setStorage('authContextEntity', { ...entity })
-    }).catch(() => {
-      setTimeout(() => {
-        Alert.alert('Towns Cup', 'Something went wrong');
-      }, 0.1)
-    }).finally(() => {
+      await Utility.setStorage('authContextEntity', { ...entity })
       setloading(false);
-    })
+      setTimeout(() => {
+        Alert.alert('Towns Cup', 'Profile changed sucessfully');
+      }, 100);
+    }).catch((error) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert('Towns Cup', error.message);
+      }, 0.1)
+    });
   }
 
   const onLocationClicked = async () => {
@@ -320,7 +321,7 @@ export default function EditGroupProfileScreen({ navigation, route }) {
           <View>
             <TCLabel title= {strings.slogan}/>
             <TCTextField
-              placeholder={strings.enterBioPlaceholder}
+              placeholder={'Enter your slogan'}
               onChangeText={(text) => setGroupProfile({ ...groupProfile, description: text })}
               multiline
               maxLength={150}

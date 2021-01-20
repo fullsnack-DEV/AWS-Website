@@ -414,11 +414,11 @@ export default function SoccerRecording({ navigation, route }) {
                       numberOfLines={2}>
                       {gameObj?.away_team?.group_name}
                     </Text>
-                  ) : (
-                    <Text style={styles.rightText} numberOfLines={2}>
-                      {gameObj?.away_team?.group_name}
-                    </Text>
-                  )}
+                    ) : (
+                      <Text style={styles.rightText} numberOfLines={2}>
+                        {gameObj?.away_team?.group_name}
+                      </Text>
+                    )}
                   <View style={styles.profileShadow}>
                     <Image
                       source={

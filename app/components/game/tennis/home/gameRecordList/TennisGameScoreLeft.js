@@ -31,7 +31,7 @@ export default function TennisGameScoreLeft(
   },
 ) {
   return (
-    <View>
+    <View style={{ backgroundColor: colors.whiteColor }}>
       <View
             style={{
               backgroundColor,

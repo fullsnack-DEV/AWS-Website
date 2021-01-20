@@ -45,7 +45,8 @@ const BookReferee = ({ navigation, route }) => {
       (refereeItem) => refereeItem?.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase(),
     );
     return (
-      <RenderReferee
+      <TouchableOpacity onPress={() => setSelectedReferee(item)}>
+        <RenderReferee
         profilePic={item?.thumbnail}
         isSelected={item?.user_id === selectedReferee?.user_id}
         fees={referee?.[0]?.fee ?? 0}
@@ -54,11 +55,9 @@ const BookReferee = ({ navigation, route }) => {
           item?.country ?? ''
         }`}
         rating={referee?.[0]?.avg_review?.total_avg ?? 0}
-        onRadioClick={() => {
-          console.log('selected referee data:', JSON.stringify(item));
-          setSelectedReferee(item);
-        }}
+        onRadioClick={() => setSelectedReferee(item)}
       />
+      </TouchableOpacity>
     );
   };
   const onSearchRefreeTextChange = (text) => {

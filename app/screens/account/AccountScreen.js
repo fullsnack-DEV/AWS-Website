@@ -600,7 +600,7 @@ export default function AccountScreen({ navigation }) {
                                   onPress={() => {
                                     navigation.navigate('HomeScreen', {
                                       uid: item.group_id,
-                                      backButtonVisible: false,
+                                      backButtonVisible: true,
                                       menuBtnVisible: false,
                                       role: item.entity_type,
                                     })

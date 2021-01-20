@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, Image, StyleSheet,
 } from 'react-native';
@@ -22,6 +22,7 @@ export default function AddBirthdayScreen({ navigation }) {
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
   const [dateValue, setDateValue] = useState(new Date());
+  const [minDateValue, setMinDateValue] = useState(new Date());
   const [show, setShow] = useState(false);
 
   const onChange = (selectedDate) => {
@@ -33,6 +34,12 @@ export default function AddBirthdayScreen({ navigation }) {
     setShow(true);
   };
 
+  useEffect(() => {
+    const date = new Date(new Date());
+    date.setFullYear(date.getFullYear() - 13);
+    setDateValue(date);
+    setMinDateValue(date);
+  }, [])
   return (
     <View style={ styles.mainContainer }>
       <Image style={ styles.background } source={ images.orangeLayer } />
@@ -71,6 +78,7 @@ export default function AddBirthdayScreen({ navigation }) {
             extraStyle={ { marginTop: 50 } }
         />
       <DateTimePickerView
+          maximumDate={minDateValue}
             visible={show}
             onDone={onChange}
             onCancel={() => setShow(false)}

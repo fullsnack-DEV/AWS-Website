@@ -31,7 +31,7 @@ const MatchRecordsList = ({
         }).finally(() => setLoading(false));
       }
     }
-  }, [isFocused])
+  }, [gameData, isFocused]);
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading}/>

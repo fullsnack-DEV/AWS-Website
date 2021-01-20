@@ -89,7 +89,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
           setCurrentScore({ ...currentScore, home_team_score, away_team_score })
         }
         getGameMatchRecords(gameId, authContext).then((matchRes) => {
-          setMatchRecords(matchRes.payload);
+          // setMatchRecords(matchRes.payload);
           const records = matchRes.payload;
           processModifiedMatchRecords(records.reverse());
         })
@@ -166,7 +166,6 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
         } else {
           const set_index = wholeRecords.findIndex((item) => item.setId === recordData?.s_id)
           const isSetGameState = ['resume', 'pause', 'gameStart', 'gameEnd'].includes(recordData?.verb);
-
           if (isSetGameState) {
             if (recordData?.verb === 'gameStart') {
               const set_game_index = wholeRecords[set_index].setGames.findIndex((item) => item.setGameId === recordData?.g_id)
@@ -188,10 +187,15 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               }
             } else {
               const setGamesnew_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id);
-              wholeRecords[set_index].setGames[setGamesnew_index].home_team_score = recordData?.game_score?.home_team_point ?? '-';
-              wholeRecords[set_index].setGames[setGamesnew_index].away_team_score = recordData?.game_score?.away_team_point ?? '-';
-              wholeRecords[set_index].setGames[setGamesnew_index].end_date = getGameDateTimeInHMSformat(recordData?.timestamp) ?? '-';
-              wholeRecords[set_index].setGames[setGamesnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
+              if (!setGamesnew_index || setGamesnew_index === -1) {
+                const setGamesSecondnew_index = wholeRecords[set_index].setGames?.length - 1;
+                wholeRecords[set_index].setGames[setGamesSecondnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
+              } else {
+                wholeRecords[set_index].setGames[setGamesnew_index].home_team_score = recordData?.game_score?.home_team_point ?? '-';
+                wholeRecords[set_index].setGames[setGamesnew_index].away_team_score = recordData?.game_score?.away_team_point ?? '-';
+                wholeRecords[set_index].setGames[setGamesnew_index].end_date = getGameDateTimeInHMSformat(recordData?.timestamp) ?? '-';
+                wholeRecords[set_index].setGames[setGamesnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
+              }
             }
           } else {
             const set_game_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id)
@@ -216,6 +220,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
       }
       return true;
     })
+
     setMatchRecords(wholeRecords);
     setLoading(false)
   }
@@ -324,7 +329,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
               onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
           >
-          <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+          <TennisGameState recordData={item.data}/>
         </SwipeableRow>
       )
     }
@@ -368,7 +373,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
               onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
           >
-          <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+          <TennisGameState recordData={item.data}/>
         </SwipeableRow>
       )
     }
@@ -491,7 +496,6 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
     }
   }
   const renderGameRecords = ({ item }) => {
-    console.log('TEST: ', item.verb);
     if (item.type === 'set_game_stats') {
       return (
         <View style={{ opacity: item?.deleted ? 0.5 : 1 }}>
@@ -499,7 +503,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
               enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
               onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
           >
-            <TennisGameState gameStats={tennisGameStats} recordData={item.data}/>
+            <TennisGameState recordData={item.data}/>
           </SwipeableRow>
         </View>
       )
@@ -533,7 +537,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
                         />
             </View>
           )}
-          {isGameState && <TennisGameState gameStats={tennisGameStats} recordData={item}/>}
+          {isGameState && <TennisGameState recordData={item}/>}
         </View>
       </SwipeableRow>
     )
@@ -558,7 +562,7 @@ export default function TennisMatchRecordsList({ matchData, visibleSetScore = tr
     <View style={ styles.mainContainer }>
       <ActivityLoader visible={fullScreenLoading}/>
       <View>
-        <View style={ { flexDirection: 'row' } }>
+        <View style={ { flexDirection: 'row', paddingBottom: 10 } }>
           <RenderDash/>
           <View style={ styles.editorView }>
             <Text style={{ fontSize: 12, fontFamily: fonts.RRegular }}>Show editors</Text>
