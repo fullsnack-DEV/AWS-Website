@@ -26,16 +26,12 @@ export default function TennisGameScoreLeft(
   {
     gameData,
     editor = false,
-    backgroundColor = colors.offwhite,
     recordData,
   },
 ) {
   return (
-    <View style={{ backgroundColor: colors.whiteColor }}>
-      <View
-            style={{
-              backgroundColor,
-            } }>
+    <View>
+      <View>
         <View
               style={ styles.headerView }>
           <View style={ styles.leftView }>

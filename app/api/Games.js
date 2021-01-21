@@ -55,9 +55,9 @@ const getGameStatsData = async (userID, params, authContext) => makeAPIRequest({
   authContext,
 })
 
-const getGameMatchRecords = async (gameId, authContext) => makeAPIRequest({
+const getGameMatchRecords = async (gameId, authContext, extraQuery) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/games/${gameId}/records?fetchTeamObject=true`,
+  url: `${Config.BASE_URL}/games/${gameId}/records?fetchTeamObject=true&${extraQuery}`,
   authContext,
 })
 

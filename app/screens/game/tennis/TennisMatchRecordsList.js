@@ -23,6 +23,7 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
 import {
+  addGameRecord,
   deleteGameRecord, getGameData, getGameMatchRecords, resetGame,
 } from '../../../api/Games';
 import { getNumberSuffix, tennisGameStats } from '../../../utils/gameUtils';
@@ -36,6 +37,7 @@ import GameVerb from '../../../Constants/GameVerb';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import strings from '../../../Constants/String';
 import * as Utils from '../../challenge/ChallengeUtility';
+import AddSetGameModal from './AddSetGameModal';
 
 export default function TennisMatchRecordsList({
   navigation,
@@ -57,6 +59,8 @@ export default function TennisMatchRecordsList({
   const [homeTeamMatchPoint, setHomeMatchPoint] = useState(0);
   const [awayTeamMatchPoint, setAwayMatchPoint] = useState(0);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
+  const [visibleAddSetModal, setVisibleAddSetModal] = useState(false);
+  const [visibleAddGameModal, setVisibleAddGameModal] = useState(false);
 
   useEffect(() => {
     setVisibleAddSetAndGameButton(visibleAddSetGameButton)
@@ -103,10 +107,9 @@ export default function TennisMatchRecordsList({
           const away_team_score = res?.payload?.scoreboard?.game_inprogress?.home_team_point;
           setCurrentScore({ ...currentScore, home_team_score, away_team_score })
         }
-        getGameMatchRecords(gameId, authContext).then((matchRes) => {
-          // setMatchRecords(matchRes.payload);
-          const records = matchRes.payload;
-          processModifiedMatchRecords(records.reverse(), res.payload);
+        getGameMatchRecords(gameId, authContext, 'grouped=true').then((matchRes) => {
+          setMatchRecords([...matchRes.payload]);
+          setLoading(false);
         })
       })
     }
@@ -120,10 +123,9 @@ export default function TennisMatchRecordsList({
         const away_team_score = res?.payload?.scoreboard?.game_inprogress?.home_team_point;
         setCurrentScore({ ...currentScore, home_team_score, away_team_score })
       }
-      getGameMatchRecords(gameData?.game_id, authContext).then((matchRes) => {
-        setMatchRecords(matchRes.payload);
-        const records = matchRes.payload;
-        processModifiedMatchRecords(records.reverse(), res.payload);
+      getGameMatchRecords(gameData?.game_id, authContext, 'grouped=true').then((matchRes) => {
+        setMatchRecords([...matchRes.payload]);
+        setLoading(false);
       }).finally(() => setFullScreenLoading(false));
     }).catch(() => setFullScreenLoading(false))
   }
@@ -157,99 +159,6 @@ export default function TennisMatchRecordsList({
     return moment(date * 1000).format('DD-MM-YYYY hh:mm A');
   }
 
-  const processModifiedMatchRecords = (records, game) => {
-    const wholeRecords = [];
-    let set_number = 0;
-    let game_number = 0;
-    records.map((recordData) => {
-      const isGameState = ['start', 'end'].includes(recordData?.verb);
-      if (isGameState) {
-        wholeRecords.push({ type: 'game_stats', data: recordData })
-      } else {
-        const isSetState = ['setStart', 'setEnd'].includes(recordData?.verb);
-        if (isSetState) {
-          if (recordData?.verb === 'setStart') {
-            set_number += 1
-            game_number = 1;
-            const win_count = game?.scoreboard?.sets.filter((item) => item?.s_id === recordData?.s_id)[0];
-            wholeRecords.push({
-              type: 'set',
-              set_number,
-              setId: recordData?.s_id,
-              isOpen: false,
-              start_date: getDMYHM(recordData?.timestamp),
-              end_date: '-',
-              setGames: [],
-              home_team_win_count: win_count?.home_team_win_count ?? '-',
-              away_team_win_count: win_count?.away_team_win_count ?? '-',
-            })
-            wholeRecords[wholeRecords?.length - 1].setGames.push({ type: 'set_stats', data: recordData })
-          } else {
-            wholeRecords[wholeRecords?.length - 1].end_date = getDMYHM(recordData?.timestamp)
-            wholeRecords[wholeRecords?.length - 1].setGames.push({ type: 'set_stats', data: recordData })
-          }
-        } else {
-          const set_index = wholeRecords.findIndex((item) => item.setId === recordData?.s_id)
-          const isSetGameState = ['resume', 'pause', 'gameStart', 'gameEnd'].includes(recordData?.verb);
-          if (isSetGameState) {
-            if (recordData?.verb === 'gameStart') {
-              const set_game_index = wholeRecords[set_index].setGames.findIndex((item) => item.setGameId === recordData?.g_id)
-              if (set_game_index === -1) {
-                wholeRecords[set_index].setGames.push({
-                  type: 'set_games',
-                  game_number,
-                  start_date: moment(recordData?.timestamp * 1000).format('hh:mm A'),
-                  end_date: '-',
-                  isOpen: false,
-                  setGameId: recordData?.g_id,
-                  home_team_score: '-',
-                  away_team_score: '-',
-                  setGamesRecords: [],
-                })
-                game_number += 1
-                const setGamesnew_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id);
-                if (setGamesnew_index !== -1) wholeRecords[set_index].setGames[setGamesnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData });
-              }
-            } else {
-              const setGamesnew_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id);
-              if (!setGamesnew_index || setGamesnew_index === -1) {
-                const setGamesSecondnew_index = wholeRecords[set_index].setGames?.length - 1;
-                wholeRecords[set_index].setGames[setGamesSecondnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
-              } else {
-                wholeRecords[set_index].setGames[setGamesnew_index].home_team_score = recordData?.game_score?.home_team_point ?? '-';
-                wholeRecords[set_index].setGames[setGamesnew_index].away_team_score = recordData?.game_score?.away_team_point ?? '-';
-                wholeRecords[set_index].setGames[setGamesnew_index].end_date = moment(recordData?.timestamp * 1000).format('hh:mm A') ?? '-';
-                wholeRecords[set_index].setGames[setGamesnew_index].setGamesRecords.push({ type: 'set_game_stats', data: recordData })
-              }
-            }
-          } else {
-            const set_game_index = wholeRecords[set_index].setGames.findIndex((item) => item?.setGameId === recordData?.g_id)
-            wholeRecords[set_index].setGames[set_game_index].setGamesRecords.push(recordData)
-          }
-        }
-      }
-      return true;
-    })
-
-    // Reverse Whole Data
-    wholeRecords.reverse();
-    wholeRecords.map((item, index) => {
-      if (item.type === 'set') {
-        wholeRecords[index].setGames.reverse()
-        wholeRecords[index].setGames.map((gameItem, gameIndex) => {
-          if (wholeRecords[index].setGames[gameIndex].type === 'set_games') {
-            wholeRecords[index].setGames[gameIndex].setGamesRecords.reverse()
-          }
-          return true;
-        })
-      }
-      return true;
-    })
-
-    setMatchRecords(wholeRecords);
-    setLoading(false)
-  }
-
   const getScoreText = (firstTeamScore = 0, secondTeamScore = 0, teamNumber = 1) => {
     const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
     let color = colors.lightBlackColor
@@ -269,6 +178,7 @@ export default function TennisMatchRecordsList({
     records[index].isOpen = !records[index]?.isOpen ?? false
     setMatchRecords(records);
   }
+
   const RenderSets = ({
     item,
     index,
@@ -279,7 +189,8 @@ export default function TennisMatchRecordsList({
   }) => (
     <Fragment>
       {renderAddSetButton()}
-      <View style={styles.setContainer}>
+      <View style={{ ...styles.setContainer, backgroundColor: 'rgba(255,138,1,0.1)' }}>
+        <RenderDash/>
         {/* Down Arrow */}
         <TouchableOpacity style={styles.downArrowContainer} onPress={() => toggleMatchSets(index)}>
           <FastImage
@@ -320,6 +231,9 @@ export default function TennisMatchRecordsList({
           <Text style={styles.setScoreText}>{away_team_score}</Text>
         </View>
       </View>
+      <View style={{ height: 26 }}>
+        <RenderDash/>
+      </View>
     </Fragment>
   )
 
@@ -349,7 +263,9 @@ export default function TennisMatchRecordsList({
     return false
   }
 
-  const onAddGamePress = () => {}
+  const onAddGamePress = () => {
+    setVisibleAddGameModal(true);
+  }
   const renderAddGameButton = () => isAdmin && visibleAddSetAndGameButton && (
     <TouchableOpacity onPress={() => onAddGamePress()}>
       <View style={{ backgroundColor: colors.googleColor, alignItems: 'center', padding: 5 }}>
@@ -358,9 +274,11 @@ export default function TennisMatchRecordsList({
     </TouchableOpacity>
   )
 
-  const onAddSetPress = () => {}
+  const onAddSetPress = () => {
+    setVisibleAddSetModal(true)
+  }
   const renderAddSetButton = () => isAdmin && visibleAddSetAndGameButton && (
-    <TouchableOpacity onPress={() => onAddSetPress}>
+    <TouchableOpacity onPress={onAddSetPress}>
       <LinearGradient
               colors={[colors.themeColor, colors.yellowColor]}
               style={{ alignItems: 'center', padding: 5 }}
@@ -370,66 +288,77 @@ export default function TennisMatchRecordsList({
     </TouchableOpacity>
   )
   const renderMatchRecords = ({ item, index }) => {
-    if (item.type === 'game_stats') {
+    if (['start', 'end'].includes(item?.verb)) {
       return (
-        <SwipeableRow
-              enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
-              onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
+        <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
+          <SwipeableRow
+              enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
+              onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
           >
-          <TennisGameState recordData={item.data} />
-        </SwipeableRow>
+            <TennisGameState recordData={item} />
+          </SwipeableRow>
+        </View>
       )
     }
+    let timeString = '';
+    if (item?.start_datetime) timeString += getDMYHM(item?.start_datetime);
+    if (item?.end_datetime) timeString += ` - ${getDMYHM(item?.end_datetime)}`
+    else timeString += ' - Not Ended';
+
     return (
       <View>
-        <RenderDash/>
         <RenderSets
-                    item={item}
-                    index={index}
-                    set_number={item?.set_number}
-                    home_team_score={item?.home_team_win_count}
-                    away_team_score={item?.away_team_win_count}
-                    timeString={`${item.start_date} - ${item.end_date === '-' ? 'Not Ended' : item.end_date}`}
-                />
-        {/* Inner Set Records */}
+            item={item}
+            index={index}
+            set_number={item?.number}
+            home_team_score={0}
+            away_team_score={0}
+            timeString={timeString}
+        />
 
         {item?.isOpen && (
           <View style={styles.innerSetContainer}>
             <FlatList
-                            keyExtractor={(keyItem, keyIndex) => keyIndex?.toString() + Math.random().toString()}
-                            listKey={`renderGames${index * 2}`}
-                            data={item?.setGames ?? []}
-                            renderItem={({ item: gameItem, index: gameIndex }) => renderGames(gameItem, gameIndex, index)}
-                        />
+                    keyExtractor={(keyItem, keyIndex) => keyIndex?.toString() + Math.random().toString()}
+                    listKey={`renderGames${index * 2}`}
+                    data={item?.items ?? []}
+                    renderItem={({ item: gameItem, index: gameIndex }) => renderGames(gameItem, gameIndex, index)}
+                />
           </View>
         )}
-
       </View>
     )
   }
 
   const toggleGameRecords = (parentIndex, index) => {
     const records = _.cloneDeep(matchRecords);
-    records[parentIndex].setGames[index].isOpen = !records[parentIndex]?.setGames[index]?.isOpen
+    records[parentIndex].items[index].isOpen = !records[parentIndex]?.items?.[index]?.isOpen
     setMatchRecords(records);
   }
   const renderGames = (item, index, parentIndex) => {
-    if (item.type === 'set_stats') {
+    if (['setStart', 'setEnd'].includes(item.verb)) {
       return (
-        <SwipeableRow
-              enabled={getVisibleSwipableRowValue(item?.data?.verb, item?.data?.deleted)}
-              onPress={() => onSwipeRowItemPress(item?.data?.verb, item?.data?.record_id)}
+        <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
+          <SwipeableRow
+              enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
+              onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
           >
-          <TennisGameState recordData={item.data} titleColor={colors.themeColor}/>
-        </SwipeableRow>
+            <TennisGameState recordData={item} titleColor={colors.themeColor}/>
+          </SwipeableRow>
+        </View>
       )
     }
+
+    let timeString = '';
+    if (item?.start_datetime) timeString += getDMYHM(item?.start_datetime);
+    if (item?.end_datetime) timeString += ` - ${getDMYHM(item?.end_datetime)}`
+    else timeString += ' - Not Ended';
+
     return (
       <View>
         {renderAddGameButton()}
         <View style={{
           ...styles.setContainer,
-          backgroundColor: colors.whiteColor,
           borderTopWidth: 0,
           marginBottom: 0,
         }}>
@@ -453,22 +382,16 @@ export default function TennisMatchRecordsList({
             justifyContent: 'center',
           }}>
             <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>
-              {item?.home_team_score}
+              {item?.home_team_point}
             </Text>
           </View>
 
           {/* Set Number */}
-          <View style={{
-            flex: 0.4,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          <View style={{ flex: 0.4, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ ...styles.setNumberText, color: colors.googleColor, fontSize: 17 }}>
-              {getNumberSuffix(item?.game_number)} game
+              {getNumberSuffix(item?.number)} game
             </Text>
-            <Text style={styles.setTimeDurationText}>
-              {`${item.start_date} - ${item.end_date === '-' ? 'Not Ended' : item.end_date}`}
-            </Text>
+            <Text style={styles.setTimeDurationText}>{timeString}</Text>
           </View>
 
           {/* Right Score */}
@@ -478,7 +401,7 @@ export default function TennisMatchRecordsList({
             justifyContent: 'center',
           }}>
             <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>
-              {item?.away_team_score}
+              {item?.away_team_point}
             </Text>
           </View>
         </View>
@@ -487,7 +410,7 @@ export default function TennisMatchRecordsList({
           <FlatList
                         keyExtractor={(keyItem, keyIndex) => keyIndex?.toString() + Math.random().toString()}
                         listKey={`setGameRecords${index * 2}`}
-                        data={item?.setGamesRecords ?? []}
+                        data={item?.items ?? []}
                         renderItem={renderGameRecords}
                     />
         )}
@@ -544,14 +467,17 @@ export default function TennisMatchRecordsList({
     }
   }
   const renderGameRecords = ({ item }) => {
-    if (item.type === 'set_game_stats') {
+    if (['resume', 'pause', 'gameStart', 'gameEnd']?.includes(item.verb)) {
       return (
-        <View style={{ opacity: item?.deleted ? 0.5 : 1 }}>
+        <View style={{
+          opacity: item?.deleted ? 0.5 : 1,
+          ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }),
+        }}>
           <SwipeableRow
               enabled={getVisibleSwipableRowValue(item?.verb, item?.deleted)}
               onPress={() => onSwipeRowItemPress(item?.verb, item?.record_id)}
           >
-            <TennisGameState recordData={item.data}/>
+            <TennisGameState recordData={item}/>
           </SwipeableRow>
         </View>
       )
@@ -566,7 +492,7 @@ export default function TennisMatchRecordsList({
         >
         <View style={{ opacity: item?.deleted ? 0.5 : 1 }}>
           {!isGameState && isHomeTeam && (
-            <View>
+            <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
               <RenderDash zIndex={1}/>
               <TennisGameScoreLeft
                             gameData={gameData}
@@ -576,7 +502,7 @@ export default function TennisMatchRecordsList({
             </View>
           )}
           {!isGameState && !isHomeTeam && (
-            <View>
+            <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
               <RenderDash zIndex={1}/>
               <TennisGameScoreRight
                             gameData={gameData}
@@ -606,8 +532,34 @@ export default function TennisMatchRecordsList({
             dashColor={ colors.lightgrayColor }
         />
   )
+
+  const onAddSetOrGameDonePress = (type = '', startDateTime, endDateTime) => {
+    console.log(type)
+    console.log(startDateTime)
+    console.log(endDateTime);
+    if (startDateTime.getTime() > endDateTime.getTime()) {
+      Alert.alert('Start time should be greter than end time');
+    } else {
+      setFullScreenLoading(true);
+      const obj = [
+        { timestamp: startDateTime.getTime() / 1000, verb: `${type}Start` },
+        { timestamp: endDateTime.getTime() / 1000, verb: `${type}End` },
+      ]
+      addGameRecord(gameData?.game_id, obj, authContext).then(() => {
+        setVisibleAddSetAndGameButton(false);
+        refreshGameAndRecords();
+        if (type === 'set') setVisibleAddSetModal(false)
+        else setVisibleAddGameModal(false)
+      }).catch((error) => {
+        setFullScreenLoading(false);
+        setTimeout(() => Alert.alert('TownsCup', error.message), 100)
+      })
+    }
+  }
+
+  const getVisibleBackgroundColor = () => (visibleAddSetAndGameButton && ({ backgroundColor: 'rgba(0,0,0,0.26)' }));
   return (
-    <View style={{ ...styles.mainContainer, backgroundColor: visibleAddSetAndGameButton ? 'rgba(0,0,0,0.26)' : colors.whiteColor }}>
+    <View style={{ ...styles.mainContainer, ...getVisibleBackgroundColor() }}>
       <ActivityLoader visible={fullScreenLoading}/>
       <ActionSheet
           ref={matchRecords3DotRef}
@@ -675,7 +627,7 @@ export default function TennisMatchRecordsList({
       <View>
         <View style={ { flexDirection: 'row', paddingBottom: 10 } }>
           <RenderDash/>
-          <View style={ styles.editorView }>
+          <View style={{ ...styles.editorView } }>
             <Text style={{ fontSize: 12, fontFamily: fonts.RRegular }}>Show editors</Text>
             <TouchableWithoutFeedback
                         onPress={ () => {
@@ -690,7 +642,7 @@ export default function TennisMatchRecordsList({
           </View>
         </View>
         {visibleSetScore && (
-          <View style={styles.headerView}>
+          <View style={{ ...styles.headerView }}>
             <RenderDash/>
             <View style={styles.leftView}>
               <View style={styles.profileShadow}>
@@ -751,6 +703,33 @@ export default function TennisMatchRecordsList({
           </View>
         )}
       </View>
+
+      {/* Add Set Modal */}
+      <AddSetGameModal
+          loading={fullScreenLoading}
+          headingTitle={'Add a set'}
+          title={'Choose the starting and ending time of the new set.'}
+          subTitle={'When adding a new set causes an excess set, the set and its records will be invalid.'}
+          visible={visibleAddSetModal}
+          onDatePickerClose={() => {
+            setVisibleAddSetModal(false);
+            setVisibleAddSetAndGameButton(false);
+          }}
+          onDonePress={(startDate, endDate) => onAddSetOrGameDonePress('set', startDate, endDate)}
+        />
+      {/* Add Game Modal */}
+      <AddSetGameModal
+          loading={fullScreenLoading}
+          headingTitle={'Add a game'}
+          title={'Choose the starting and ending time of the new Game.'}
+          subTitle={'When adding a new game causes an excess game or set, the game or set and their records will be invalid.'}
+          visible={visibleAddGameModal}
+          onDatePickerClose={() => {
+            setVisibleAddGameModal(false);
+            setVisibleAddSetAndGameButton(false);
+          }}
+          onDonePress={(startDate, endDate) => onAddSetOrGameDonePress('game', startDate, endDate)}
+      />
       <Fragment>
         <FlatList
                     listKey={'matchRecordList'}
@@ -785,7 +764,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   centerView: {
-    // backgroundColor: 'blue',
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
@@ -825,7 +803,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   leftView: {
-    // backgroundColor: 'green',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -877,10 +854,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,138,1,0.1)',
     borderTopWidth: 1.5,
     borderTopColor: colors.themeColor,
-    marginBottom: 27,
   },
   setScoreText: {
     color: colors.themeColor,
