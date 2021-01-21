@@ -64,9 +64,8 @@ export default function PayAgainRefereeScreen({ navigation, route }) {
   const payAgainForRefereeRequest = () => {
     setloading(true)
     const bodyParams = {}
-    const { paymentMethod } = route.params ?? {};
-    if (paymentMethod && paymentMethod !== {}) {
-      bodyParams.source = paymentMethod.id;
+    if (defaultCard) {
+      bodyParams.source = defaultCard.id;
       bodyParams.payment_method_type = 'card'
       console.log('body params::', bodyParams);
       if (sorceScreen === ReservationStatus.pendingrequestpayment) {

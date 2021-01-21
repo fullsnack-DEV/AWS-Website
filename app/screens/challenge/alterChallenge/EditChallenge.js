@@ -1212,7 +1212,7 @@ export default function EditChallenge({ navigation, route }) {
                     marginBottom={15}
                     fontSize={16}
                     onPress={() => {
-                      navigation.popToTop();
+                      navigation.pop(2);
                     }}
                   />
             </View>

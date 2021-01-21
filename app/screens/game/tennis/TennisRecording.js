@@ -839,7 +839,7 @@ export default function TennisRecording({ navigation, route }) {
           </View>
 
           {gameObj && (
-            <TouchableOpacity onPress={() => {
+            <TouchableWithoutFeedback onPress={() => {
               console.log('Arrow Pressed.');
               toggleView(() => setFooterUp(!footerUp), 200)
             }}>
@@ -1270,7 +1270,7 @@ export default function TennisRecording({ navigation, route }) {
                   </View>
                 </View>}
               </View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           )}
         </View>
       )}
