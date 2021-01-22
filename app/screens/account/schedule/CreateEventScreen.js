@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-plusplus */
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
@@ -39,16 +41,22 @@ import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTa
 import * as Utility from '../../../utils/index';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
+const getNearDateTime = (date) => {
+  const start = moment(date);
+  const nearTime = 5 - (start.minute() % 5);
+  const dateTime = moment(start).add(nearTime, 'm').toDate()
+  return dateTime;
+};
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext)
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [singleSelectEventColor, setSingleSelectEventColor] = useState(colors.orangeColor);
-  const [toggle, setToggle] = useState(false);
-  const [eventStartDateTime, setEventStartdateTime] = useState('');
-  const [eventEndDateTime, setEventEnddateTime] = useState('');
-  const [eventUntilDateTime, setEventUntildateTime] = useState('');
+  const [toggle, setToggle] = useState(true);
+  const [eventStartDateTime, setEventStartdateTime] = useState(getNearDateTime(new Date()));
+  const [eventEndDateTime, setEventEnddateTime] = useState(moment(eventStartDateTime).add(5, 'm').toDate());
+  const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState(strings.searchHereText);
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
@@ -62,9 +70,10 @@ export default function CreateEventScreen({ navigation, route }) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [selectWeekMonth, setSelectWeekMonth] = useState('Does not repeat');
 
   useEffect(() => {
+    console.log('WEEK::', countNumberOfWeekFromDay());
     const unsubscribe = navigation.addListener('focus', async () => {
       const eventColorData = await Utility.getStorage('eventColor');
       setEventColors(eventColorData);
@@ -73,9 +82,28 @@ export default function CreateEventScreen({ navigation, route }) {
       unsubscribe();
     };
   }, []);
-
+  const countNumberOfWeekFromDay = () => {
+    const date = new Date()
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
+    const endDate = date
+    const givenDay = new Date().getDay()
+    let numberOfDates = 0
+    while (startDate < endDate) {
+      if (startDate.getDay() === givenDay) {
+        numberOfDates++
+      }
+      startDate.setDate(startDate.getDate() + 1)
+    }
+    return (numberOfDates === 1 && 'First') || (numberOfDates === 2 && 'Second') || (numberOfDates === 3 && 'Third') || (numberOfDates === 4 && 'Fourth') || (numberOfDates === 5 && 'Fifth')
+  }
+  const getTodayDay = () => {
+    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss')
+    return dt.format('dddd')
+  }
   const handleStateDatePress = (date) => {
     setEventStartdateTime(date);
+    setEventEnddateTime(moment(date).add(5, 'm').toDate());
+    setEventUntildateTime(moment(date).add(5, 'm').toDate());
     setStartDateVisible(!startDateVisible)
   }
   const handleCancelPress = () => {
@@ -90,8 +118,10 @@ export default function CreateEventScreen({ navigation, route }) {
       dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`
       console.log('Date Value :-', dateValue);
       setEventEnddateTime(dateValue);
+      setEventUntildateTime(dateValue);
     } else {
       setEventEnddateTime(date);
+      setEventUntildateTime(date);
     }
     setEndDateVisible(!endDateVisible)
   }
@@ -181,11 +211,28 @@ export default function CreateEventScreen({ navigation, route }) {
                 allDay: toggle,
                 start_datetime: new Date(eventStartDateTime).getTime() / 1000,
                 end_datetime: new Date(eventEndDateTime).getTime() / 1000,
+
+                is_recurring: selectWeekMonth !== 'Does not repeat',
                 location: searchLocation,
                 latitude: locationDetail.lat,
                 longitude: locationDetail.lng,
                 isBlocked: is_Blocked,
+                owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
               }]
+
+              let rule = '';
+              if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly' || selectWeekMonth === 'Monthly') {
+                rule = selectWeekMonth.toUpperCase();
+              } else if (selectWeekMonth === `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
+                rule = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
+              } else if (selectWeekMonth === `Monthly on day ${new Date().getDate()}`) {
+                rule = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
+              }
+              if (selectWeekMonth !== 'Does not repeat') {
+                data[0].untilDate = new Date(eventUntilDateTime).getTime() / 1000;
+                data[0].rrule = `FREQ=${rule}`;
+              }
+              console.log('Response :-', data);
               createEvent(entityRole, uid, data, authContext)
                 .then(() => getEvents(entityRole, uid, authContext))
                 .then((response) => {
@@ -306,16 +353,21 @@ export default function CreateEventScreen({ navigation, route }) {
             <EventMonthlySelection
               title={strings.repeat}
               dataSource={[
+                { label: 'Does not repeat', value: 'Does not repeat' },
+                { label: 'Daily', value: 'Daily' },
                 { label: 'Weekly', value: 'Weekly' },
                 { label: 'Monthly', value: 'Monthly' },
+                { label: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`, value: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}` },
+                { label: `Monthly on day ${new Date().getDate()}`, value: `Monthly on day ${new Date().getDate()}` },
+                { label: 'Yearly', value: 'Yearly' },
               ]}
-              placeholder={strings.selectTimePlaceholder}
+              // placeholder={strings.selectTimePlaceholder}
               value={selectWeekMonth}
               onValueChange={(value) => {
                 setSelectWeekMonth(value);
               }}
             />
-            {!selectWeekMonth && <EventTimeSelectItem
+            {selectWeekMonth !== 'Does not repeat' && <EventTimeSelectItem
               title={strings.until}
               toggle={!toggle}
               date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : moment(new Date()).format('ll')}
@@ -370,14 +422,18 @@ export default function CreateEventScreen({ navigation, route }) {
             onDone={handleStateDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
+            minimumDate={new Date()}
+            minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
+
           />
           <DateTimePickerView
             visible={endDateVisible}
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventStartDateTime || new Date()}
+            minimumDate={eventEndDateTime || new Date()}
+            minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
@@ -386,6 +442,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             minimumDate={eventEndDateTime || new Date()}
+            minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DefaultColorModal

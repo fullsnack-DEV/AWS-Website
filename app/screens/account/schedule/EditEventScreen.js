@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
@@ -44,9 +45,11 @@ export default function EditEventScreen({ navigation, route }) {
   let eventColor = colors.themeColor;
   let fromDate = '';
   let toDate = '';
+  let untildate = '';
   let createdAtDate = '';
   let location = '';
   let venue = '';
+  let rule = 'Does not repeat';
   let latValue = null;
   let longValue = null;
   let latLongLocation = {};
@@ -57,6 +60,17 @@ export default function EditEventScreen({ navigation, route }) {
   if (route && route.params && route.params.data) {
     if (route.params.data.title) {
       event_Title = route.params.data.title;
+    }
+    console.log('DATA:::=>', route.params.data);
+    if (route.params.data.rrule) {
+      const a = route.params.data.rrule
+      console.log('RULESa:=>', a);
+      const arr = a.split(';')
+      console.log('RULESarr:=>', arr);
+      const str = arr[0].substring(5).toLowerCase()
+      console.log('RULESstr:=>', str);
+      rule = str.charAt(0).toUpperCase() + str.slice(1)
+      console.log('RULES:=>', rule);
     }
     if (route.params.data.descriptions) {
       aboutDescription = route.params.data.descriptions;
@@ -69,6 +83,9 @@ export default function EditEventScreen({ navigation, route }) {
     }
     if (route.params.data.end_datetime) {
       toDate = new Date(route.params.data.end_datetime * 1000);
+    }
+    if (route.params.data.untilDate) {
+      untildate = new Date(route.params.data.untilDate * 1000);
     }
     if (route.params.data.created_at) {
       createdAtDate = route.params.data.created_at;
@@ -113,15 +130,20 @@ export default function EditEventScreen({ navigation, route }) {
       };
     }
   }
-
+  const getNearDateTime = (date) => {
+    const start = moment(date);
+    const nearTime = 5 - (start.minute() % 5);
+    const dateTime = moment(start).add(nearTime, 'm').toDate()
+    return dateTime;
+  };
   const isFocused = useIsFocused();
   const [eventTitle, setEventTitle] = useState(event_Title);
   const [aboutDesc, setAboutDesc] = useState(`${aboutDescription} ${aboutDescription2}`);
   const [singleSelectEventColor, setSingleSelectEventColor] = useState(eventColor[0] !== '#' ? `#${eventColor}` : eventColor);
-  const [toggle, setToggle] = useState(false);
-  const [eventStartDateTime, setEventStartdateTime] = useState(fromDate);
-  const [eventEndDateTime, setEventEnddateTime] = useState(toDate);
-  const [eventUntilDateTime, setEventUntildateTime] = useState('');
+  const [toggle, setToggle] = useState(route.params.data.allDay);
+  const [eventStartDateTime, setEventStartdateTime] = useState(fromDate || getNearDateTime(new Date()));
+  const [eventEndDateTime, setEventEnddateTime] = useState(toDate || moment(eventStartDateTime).add(5, 'm').toDate());
+  const [eventUntilDateTime, setEventUntildateTime] = useState(untildate || eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState(location || venue);
   const [locationDetail, setLocationDetail] = useState(latLongLocation);
   const [is_Blocked, setIsBlocked] = useState(blockValue);
@@ -136,7 +158,7 @@ export default function EditEventScreen({ navigation, route }) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [selectWeekMonth, setSelectWeekMonth] = useState(rule);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -162,9 +184,28 @@ export default function EditEventScreen({ navigation, route }) {
   const colorToggleModal = () => {
     setIsColorPickerModal(!isColorPickerModal);
   };
-
+  const countNumberOfWeekFromDay = () => {
+    const date = new Date()
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
+    const endDate = date
+    const givenDay = new Date().getDay()
+    let numberOfDates = 0
+    while (startDate < endDate) {
+      if (startDate.getDay() === givenDay) {
+        numberOfDates++
+      }
+      startDate.setDate(startDate.getDate() + 1)
+    }
+    return (numberOfDates === 1 && 'First') || (numberOfDates === 2 && 'Second') || (numberOfDates === 3 && 'Third') || (numberOfDates === 4 && 'Fourth') || (numberOfDates === 5 && 'Fifth')
+  }
+  const getTodayDay = () => {
+    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss')
+    return dt.format('dddd')
+  }
   const handleStateDatePress = (date) => {
     setEventStartdateTime(date);
+    setEventEnddateTime(moment(date).add(5, 'm').toDate());
+    setEventUntildateTime(moment(date).add(5, 'm').toDate());
     setStartDateVisible(!startDateVisible)
   }
   const handleCancelPress = () => {
@@ -172,18 +213,19 @@ export default function EditEventScreen({ navigation, route }) {
     setEndDateVisible(false)
     setUntilDateVisible(false)
   }
-
   const handleEndDatePress = (date) => {
     let dateValue = new Date();
     if (toggle) {
       dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`
+
       setEventEnddateTime(dateValue);
+      setEventUntildateTime(dateValue);
     } else {
       setEventEnddateTime(date);
+      setEventUntildateTime(date);
     }
     setEndDateVisible(!endDateVisible)
   }
-
   const handleUntilDatePress = (date) => {
     setEventUntildateTime(date);
     setUntilDateVisible(!untilDateVisible)
@@ -222,15 +264,27 @@ export default function EditEventScreen({ navigation, route }) {
               cal_id: calID,
               owner_id: ownerID,
               cal_type: calType,
+              is_recurring: selectWeekMonth !== 'Does not repeat',
               createdBy: [{
                 last_name: entity.obj.last_name,
                 first_name: entity.obj.first_name,
                 uid: u_id,
               }],
-              allDay: false,
-              is_recurring: false,
+              allDay: toggle,
               createdAt: createdAtDate,
             };
+            let rules = '';
+            if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly' || selectWeekMonth === 'Monthly') {
+              rules = selectWeekMonth.toUpperCase();
+            } else if (selectWeekMonth === `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
+              rules = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
+            } else if (selectWeekMonth === `Monthly on day ${new Date().getDate()}`) {
+              rules = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
+            }
+            if (selectWeekMonth !== 'Does not repeat') {
+              params.untilDate = new Date(eventUntilDateTime).getTime() / 1000;
+              params.rrule = `FREQ=${rules}`;
+            }
             editEvent(entityRole, u_id, params, authContext)
               .then(() => getEvents(entityRole, u_id, authContext))
               .then((response) => {
@@ -351,16 +405,21 @@ export default function EditEventScreen({ navigation, route }) {
           <EventMonthlySelection
             title={strings.repeat}
             dataSource={[
+              { label: 'Does not repeat', value: 'Does not repeat' },
+              { label: 'Daily', value: 'Daily' },
               { label: 'Weekly', value: 'Weekly' },
               { label: 'Monthly', value: 'Monthly' },
+              { label: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`, value: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}` },
+              { label: `Monthly on day ${new Date().getDate()}`, value: `Monthly on day ${new Date().getDate()}` },
+              { label: 'Yearly', value: 'Yearly' },
             ]}
-            placeholder={strings.selectTimePlaceholder}
+            // placeholder={strings.selectTimePlaceholder}
             value={selectWeekMonth}
             onValueChange={(value) => {
               setSelectWeekMonth(value);
             }}
           />
-          {!selectWeekMonth && <EventTimeSelectItem
+          {selectWeekMonth !== 'Does not repeat' && <EventTimeSelectItem
             title={strings.until}
             toggle={!toggle}
             date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : moment(new Date()).format('ll')}
@@ -473,6 +532,8 @@ export default function EditEventScreen({ navigation, route }) {
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
           date={eventStartDateTime}
+          minimumDate={new Date()}
+          minutesGap={5}
           mode={toggle ? 'date' : 'datetime'}
         />
         <DateTimePickerView
@@ -481,7 +542,8 @@ export default function EditEventScreen({ navigation, route }) {
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
           date={eventEndDateTime}
-          minimumDate={eventStartDateTime || new Date()}
+          minimumDate={eventEndDateTime || new Date()}
+          minutesGap={5}
           mode={toggle ? 'date' : 'datetime'}
         />
         <DateTimePickerView
@@ -490,6 +552,7 @@ export default function EditEventScreen({ navigation, route }) {
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
           minimumDate={eventEndDateTime || new Date()}
+          minutesGap={5}
           mode={toggle ? 'date' : 'datetime'}
         />
       </TCKeyboardView>

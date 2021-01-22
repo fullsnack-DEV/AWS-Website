@@ -25,7 +25,7 @@ export default function TCEventView({
   profileID,
   screenUserId,
 }) {
-  console.log('data.game.referees', data.game.referees);
+  console.log('data.game.referees', data?.game?.referees);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -194,7 +194,7 @@ export default function TCEventView({
           {eventOfSection && (
             <EventOfItem
               eventOfText={'Referee'}
-              refereeList = {data.game.referees}
+              refereeList = {data?.game?.referees}
               // countryIcon={
               //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
               // }

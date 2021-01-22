@@ -79,6 +79,7 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
+    { key: 'Currency' },
     { key: 'Setting & Privacy' },
   ];
   const teamMenu = [
@@ -344,6 +345,8 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('RegisterPlayer');
     } else if (section === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
+    } else if (section === 'Currency') {
+      navigation.navigate('CurrencySettingScreen');
     } else if (section === 'Setting & Privacy') {
       const entity = authContext.entity
       if (entity.role === 'user') {
@@ -687,6 +690,7 @@ export default function AccountScreen({ navigation }) {
                             style={styles.subMenuItem}
                         />
                   )}
+
                   {rowItem.opetions === 'Payout Method' && (
                     <Image
                             source={images.Payout_method}
@@ -733,6 +737,9 @@ export default function AccountScreen({ navigation }) {
                   <Image source={images.myLeagues} style={styles.menuItem} />
                 )}
                 {section === 'Payment & Payout' && (
+                  <Image source={images.paymentPayout} style={styles.menuItem} />
+                )}
+                {section === 'Currency' && (
                   <Image source={images.paymentPayout} style={styles.menuItem} />
                 )}
                 {section === 'Setting & Privacy' && (

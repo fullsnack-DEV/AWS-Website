@@ -142,6 +142,7 @@ import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScre
 
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
+import CurrencySettingScreen from '../screens/account/CurrencySettingScreen';
 
 const Stack = createStackNavigator();
 
@@ -1769,6 +1770,23 @@ const HomeNavigator = () => (
               },
             }}
         />
+    <Stack.Screen
+            name="CurrencySettingScreen"
+            component={CurrencySettingScreen}
+            options={{
+              title: 'Currency Setting',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+
   </Stack.Navigator>
 );
 

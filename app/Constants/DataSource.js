@@ -34,6 +34,13 @@ const DataSource = {
     { label: '7:7', value: '7' },
     { label: '8:8', value: '8' },
   ],
+  EventCycle: [
+    { label: 'Does not repeat', value: 'Does not repeat' },
+    { label: 'Daily', value: 'Daily' },
+    { label: 'Weekly', value: 'Weekly' },
+    { label: 'Monthly', value: 'Monthly' },
+    { label: 'Yearly', value: 'Yearly' },
+  ],
 };
 
 export default DataSource
