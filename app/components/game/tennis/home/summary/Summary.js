@@ -8,7 +8,7 @@ import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
 import Referees from '../../../common/summary/Referees';
-import Scorekeepers from './Scorekeepers';
+import Scorekeepers from '../../../common/summary/Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 // import FeedsScreen from '../../../../../screens/newsfeeds/FeedsScreen';
@@ -160,8 +160,8 @@ const Summary = ({
       {/* Scorekeepers */}
       <Scorekeepers
           getScorekeeperReservation={getScorekeeperReservation}
-          followTennisUser={followTennisUser}
-          unFollowTennisUser={unFollowTennisUser}
+          followUser={followTennisUser}
+          unFollowUser={unFollowTennisUser}
           isAdmin={isAdmin}
           userRole={userRole}
           navigation={navigation}

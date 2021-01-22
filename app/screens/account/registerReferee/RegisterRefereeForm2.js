@@ -88,7 +88,7 @@ export default function RegisterRefereeForm2({ navigation, route }) {
             onChangeText={ (text) => onMatchFeeChanged(text) }
             value={matchFee}
             keyboardType={ 'decimal-pad' }/>
-          <Text style={ styles.curruency }>CAD/hour</Text>
+          <Text style={ styles.curruency } numberOfLines={1}>CAD/hour</Text>
         </View>
         <View>
           <Text style={ styles.LocationText }>
@@ -245,13 +245,15 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: 15,
+    flex: 0.3,
     textAlign: 'center',
   },
   feeText: {
     fontSize: wp('3.8%'),
-    width: '84%',
+    flex: 0.7,
   },
   matchFeeView: {
+    flex: 1,
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 5,

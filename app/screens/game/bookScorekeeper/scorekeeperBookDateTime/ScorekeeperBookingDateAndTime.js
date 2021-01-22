@@ -79,11 +79,13 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
       game_id: gameData?.game_id,
     }
     createUserReservation('scorekeepers', bodyParams, authContext).then(() => {
+      setLoading(false);
       const navigationName = getGameHomeScreen(gameData?.sport);
       navigation.navigate('BookScorekeeperSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
-      Alert.alert('Towns Cup', error?.message)
-    }).finally(() => setLoading(false));
+      setLoading(false);
+      setTimeout(() => Alert.alert('Towns Cup', error?.message), 200);
+    });
     return true;
   }
   return (

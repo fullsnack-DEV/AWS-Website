@@ -31,6 +31,7 @@ const getTabBarVisibility = (route) => {
     routeName === 'SoccerRecording'
     || routeName === 'GameDetailRecord'
     || routeName === 'TennisRecordList'
+    || routeName === 'TennisDeletedRecordScreen'
     || routeName === 'NewsFeedVideoPlayer'
     || routeName === 'RegisterPlayer'
     || routeName === 'RegisterPlayerForm2'
