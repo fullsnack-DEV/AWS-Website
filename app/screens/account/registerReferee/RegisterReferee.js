@@ -32,6 +32,7 @@ import TCInnerLoader from '../../../components/TCInnerLoader';
 import { getUserDetails } from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
+const MAX_CERTIFICATE_UPLOAD = 2;
 export default function RegisterReferee({ navigation }) {
   const authContext = useContext(AuthContext);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -142,11 +143,13 @@ export default function RegisterReferee({ navigation }) {
                 setCertificate([...certiUrl]);
               }).finally(() => {
                 setTimeout(() => setImageUploadingLoader(null), 1500);
-                addMore();
+                if (certificate?.length < MAX_CERTIFICATE_UPLOAD) {
+                  addMore();
+                }
               })
             });
           }} style={styles.addCertificateButton}>
-            <Text style={styles.addCertificateText}>
+            <Text style={styles.addCertificateText} numberOfLines={1}>
               {strings.addCertificateTitle}
             </Text>
           </TouchableOpacity>
@@ -162,31 +165,34 @@ export default function RegisterReferee({ navigation }) {
                   source={{ uri: certificate?.[index]?.url }}
                   style={{ width: 195, height: 150, borderRadius: 10 }}
               />
-            <TouchableOpacity style={{
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              position: 'absolute',
-              height: 22,
-              width: 22,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 50,
-              right: -10,
-              top: -5,
-            }}
-            onPress={() => {
-              const certi = certificate;
-              delete certi[index].url;
-              delete certi[index].thumbnail;
-              setCertificate([...certi]);
-            }}
-            >
-              <Image
-                     source={images.menuClose}
-                     style={{
-                       zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
-                     }}
-                />
-            </TouchableOpacity>
+            {imageUploadingLoader !== index && (
+              <TouchableOpacity style={{
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                position: 'absolute',
+                height: 22,
+                width: 22,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 50,
+                right: -10,
+                top: -5,
+              }}
+                                  onPress={() => {
+                                    const certi = certificate;
+                                    delete certi[index].url;
+                                    delete certi[index].thumbnail;
+                                    setCertificate([...certi]);
+                                  }}
+                >
+                <Image
+                      source={images.menuClose}
+                      style={{
+                        zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
+                      }}
+                  />
+              </TouchableOpacity>
+            )}
+
             {index === imageUploadingLoader && (
               <View style={{
                 alignSelf: 'center',
@@ -536,7 +542,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: '5%',
     paddingHorizontal: 5,
-    width: '35%',
   },
   addCertificateText: {
     color: colors.userPostTimeColor,

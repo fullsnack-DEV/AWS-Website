@@ -28,7 +28,7 @@ const SwipeableRow = ({
     return (
       <>
         {buttons?.map((item, index) => (
-          <TouchableOpacity key={index} onPress={() => onItemPress(item?.key)} style={{ backgroundColor: item?.fillColor, justifyContent: 'center' }}>
+          <TouchableOpacity activeOpacity={1} key={index} onPress={() => onItemPress(item?.key)} style={{ backgroundColor: item?.fillColor, justifyContent: 'center' }}>
             <Animated.View
                   style={{
                     paddingHorizontal: 10,

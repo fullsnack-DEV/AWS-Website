@@ -206,7 +206,9 @@ export default function HomeScreen({ navigation, route }) {
     looser: 0,
     draw: 0,
   });
-
+  useEffect(() => {
+    console.log('CUR: ', currentUserData);
+  }, [currentUserData])
   const [eventData, setEventData] = useState(null);
   const [timeTable, setTimeTable] = useState([]);
   const [scoreboardGameData, setScoreboardGameData] = useState([]);
@@ -404,7 +406,12 @@ export default function HomeScreen({ navigation, route }) {
       }).finally(() => setloading(false));
     }
   };
-
+  useEffect(() => {
+    if (route?.params?.fromAccountScreen) {
+      console.log(route?.params?.homeNavigateParams);
+      navigation.push('HomeScreen', route?.params?.homeNavigateParams);
+    }
+  }, [route?.params?.fromAccountScreen])
   useEffect(() => {
     const loginEntity = authContext.entity
     let uid = loginEntity.uid
@@ -1318,14 +1325,13 @@ export default function HomeScreen({ navigation, route }) {
                   <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
                 </TouchableOpacity>)
             }
-            rightComponent={
-              (route && !route.params) && (<TouchableOpacity
+            rightComponent={(currentUserData?.user_id || currentUserData?.group_id) === authContext?.entity?.uid && (<TouchableOpacity
               style={{
                 backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
               }}
                   onPress={() => navigation.openDrawer()}>
-                <Image source={images.menu} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
-              </TouchableOpacity>)
+              <Image source={images.menu} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
+            </TouchableOpacity>)
             }
           />
         )}

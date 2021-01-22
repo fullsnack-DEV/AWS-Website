@@ -143,6 +143,7 @@ import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScre
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 import CurrencySettingScreen from '../screens/account/CurrencySettingScreen';
+import TennisDeletedRecordScreen from '../screens/game/tennis/TennisDeletedRecordScreen';
 
 const Stack = createStackNavigator();
 
@@ -524,7 +525,13 @@ const HomeNavigator = () => (
             headerShown: false,
           }}
       />
-
+    <Stack.Screen
+          name="TennisDeletedRecordScreen"
+          component={ TennisDeletedRecordScreen }
+          options={{
+            headerShown: false,
+          }}
+      />
     {/*  Book A Referee */}
     <Stack.Screen
           name="BookReferee"

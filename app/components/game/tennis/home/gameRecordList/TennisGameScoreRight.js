@@ -24,13 +24,12 @@ import {
 
 export default function TennisGameScoreRight({
   gameData,
-  backgroundColor = colors.offwhite,
   editor = false,
   recordData,
 }) {
   return (
     <View>
-      <View style={{ ...styles.headerView, backgroundColor }}>
+      <View style={{ ...styles.headerView }}>
         <View style={ styles.leftBlankView }>
           <Text
             style={ { fontFamily: fonts.RBold, fontSize: 12, textAlign: 'right' } }>

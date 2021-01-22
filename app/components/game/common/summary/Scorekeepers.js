@@ -9,21 +9,21 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import ActionSheet from 'react-native-actionsheet';
-import fonts from '../../../../../Constants/Fonts';
-import colors from '../../../../../Constants/Colors';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../../utils';
-import TCUserFollowUnfollowList from '../../../../TCUserFollowUnfollowList';
-import TCGradientButton from '../../../../TCGradientButton';
-import AuthContext from '../../../../../auth/context';
-import GameStatus from '../../../../../Constants/GameStatus';
+import fonts from '../../../../Constants/Fonts';
+import colors from '../../../../Constants/Colors';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../utils';
+import TCUserFollowUnfollowList from '../../../TCUserFollowUnfollowList';
+import TCGradientButton from '../../../TCGradientButton';
+import AuthContext from '../../../../auth/context';
+import GameStatus from '../../../../Constants/GameStatus';
 
 const Scorekeepers = ({
   navigation,
   isAdmin,
   userRole,
   gameData,
-  followSoccerUser,
-  unFollowSoccerUser,
+  followUser,
+  unFollowUser,
   getScorekeeperReservation,
 }) => {
   const [scorekeeper, setScorekeeper] = useState([]);
@@ -53,8 +53,8 @@ const Scorekeepers = ({
               title={sKeeper?.full_name}
               is_following={sKeeper?.is_following}
               onFollowUnfollowPress={onFollowPress}
-              followUser={followSoccerUser}
-              unFollowUser={unFollowSoccerUser}
+              followUser={followUser}
+              unFollowUser={unFollowUser}
               profileImage={sKeeper?.thumbnail}
               isAdmin={isAdmin}
               isShowThreeDots={item?.initiated_by === entity?.uid}
