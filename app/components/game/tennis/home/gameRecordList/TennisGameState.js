@@ -19,7 +19,6 @@ export default function TennisGameState({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 5,
-        backgroundColor: colors.whiteColor,
       } }>
       <Dash
         style={ {

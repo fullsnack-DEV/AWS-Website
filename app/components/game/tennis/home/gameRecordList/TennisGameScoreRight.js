@@ -29,7 +29,7 @@ export default function TennisGameScoreRight({
   recordData,
 }) {
   return (
-    <View style={{ backgroundColor: colors.whiteColor }}>
+    <View>
       <View style={{ ...styles.headerView, backgroundColor }}>
         <View style={ styles.leftBlankView }>
           <Text
