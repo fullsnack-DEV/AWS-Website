@@ -173,6 +173,20 @@ export default function TennisMatchRecordsList({
     )
   }
 
+  const getGameScoreText = (firstTeamScore = 0, secondTeamScore = 0, teamNumber = 1) => {
+    const isGreterTeam = firstTeamScore > secondTeamScore ? 1 : 2;
+    let color = colors.lightBlackColor
+    if (firstTeamScore !== secondTeamScore) {
+      if (teamNumber === isGreterTeam) color = colors.yellowColor
+      else color = colors.lightBlackColor
+    }
+    return (
+      <Text style={{ ...styles.setScoreText, color, fontFamily: fonts.RRegular }}>
+        {teamNumber === 1 ? firstTeamScore : secondTeamScore ?? 0}
+      </Text>
+    )
+  }
+
   const toggleMatchSets = (index) => {
     const records = _.cloneDeep(matchRecords);
     records[index].isOpen = !records[index]?.isOpen ?? false
@@ -288,7 +302,7 @@ export default function TennisMatchRecordsList({
     </TouchableOpacity>
   )
   const renderMatchRecords = ({ item, index }) => {
-    if (['start', 'end'].includes(item?.verb)) {
+    if ([GameVerb.Start, GameVerb.End, GameVerb.Pause, GameVerb.Resume].includes(item?.verb)) {
       return (
         <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
           <SwipeableRow
@@ -336,7 +350,7 @@ export default function TennisMatchRecordsList({
     setMatchRecords(records);
   }
   const renderGames = (item, index, parentIndex) => {
-    if (['setStart', 'setEnd'].includes(item.verb)) {
+    if ([GameVerb.SetStart, GameVerb.SetEnd].includes(item.verb)) {
       return (
         <View style={{ ...(!visibleAddSetAndGameButton && { backgroundColor: colors.whiteColor }) }}>
           <SwipeableRow
@@ -381,9 +395,7 @@ export default function TennisMatchRecordsList({
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>
-              {item?.home_team_point}
-            </Text>
+            {getGameScoreText(item?.home_team_point, item?.away_team_point, 1)}
           </View>
 
           {/* Set Number */}
@@ -400,9 +412,7 @@ export default function TennisMatchRecordsList({
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <Text style={{ ...styles.setScoreText, fontFamily: fonts.RRegular }}>
-              {item?.away_team_point}
-            </Text>
+            {getGameScoreText(item?.home_team_point, item?.away_team_point, 2)}
           </View>
         </View>
 
@@ -434,7 +444,7 @@ export default function TennisMatchRecordsList({
   };
 
   const onSwipeRowItemPress = (verb, record_id) => {
-    if (verb === 'start') {
+    if (verb === GameVerb.Start) {
       Alert.alert(
         'Do you want to reset all the match records?',
         '',
@@ -467,7 +477,7 @@ export default function TennisMatchRecordsList({
     }
   }
   const renderGameRecords = ({ item }) => {
-    if (['resume', 'pause', 'gameStart', 'gameEnd']?.includes(item.verb)) {
+    if ([GameVerb.Resume, GameVerb.Pause, GameVerb.GameStart, GameVerb.GameEnd]?.includes(item.verb)) {
       return (
         <View style={{
           opacity: item?.deleted ? 0.5 : 1,
@@ -590,7 +600,7 @@ export default function TennisMatchRecordsList({
             } else if (index === 1) {
               setVisibleAddSetAndGameButton(true);
             } else if (index === 2) {
-              Alert.alert('Deleted Records')
+              navigation.navigate('TennisDeletedRecordScreen', { gameData, isAdmin })
             } else if (index === 3) {
               if (gameData?.status === GameStatus.playing || gameData?.status === GameStatus.paused || gameData?.status === GameStatus.resume) {
                 Alert.alert(

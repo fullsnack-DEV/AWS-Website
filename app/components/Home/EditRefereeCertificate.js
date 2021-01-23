@@ -18,6 +18,7 @@ import Header from './Header';
 import TCInnerLoader from '../TCInnerLoader';
 import AuthContext from '../../auth/context';
 
+const MAX_CERTIFICATE_UPLOAD = 2;
 const EditRefereeCertificate = ({
   visible,
   onClose,
@@ -115,7 +116,9 @@ const EditRefereeCertificate = ({
                 setCertificatesData([...certiUrl]);
               }).finally(() => {
                 setTimeout(() => setImageUploadingLoader(null), 1500);
-                addMore();
+                if (certificatesData?.length < MAX_CERTIFICATE_UPLOAD) {
+                  addMore();
+                }
               })
             });
           }} style={styles.addCertificateButton}>
@@ -135,17 +138,18 @@ const EditRefereeCertificate = ({
                       source={{ uri: certificatesData?.[index]?.url }}
                       style={{ width: 195, height: 150, borderRadius: 10 }}
                   />
-            <TouchableOpacity style={{
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              position: 'absolute',
-              height: 22,
-              width: 22,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 50,
-              right: -10,
-              top: -5,
-            }}
+            {imageUploadingLoader !== index && (
+              <TouchableOpacity style={{
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                position: 'absolute',
+                height: 22,
+                width: 22,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 50,
+                right: -10,
+                top: -5,
+              }}
                                     onPress={() => {
                                       const certi = certificatesData;
                                       delete certi[index].url;
@@ -153,13 +157,14 @@ const EditRefereeCertificate = ({
                                       setCertificatesData([...certi]);
                                     }}
                   >
-              <Image
+                <Image
                         source={images.menuClose}
                         style={{
                           zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
                         }}
                     />
-            </TouchableOpacity>
+              </TouchableOpacity>
+            )}
             {index === imageUploadingLoader && (
               <View style={{
                 alignSelf: 'center',
@@ -224,9 +229,7 @@ const EditRefereeCertificate = ({
                               const finalCerti = JSON.parse(JSON.stringify(certificatesData));
                               if (certiData?.length > 0) {
                                 certiData.map((item, index) => {
-                                  if (!item?.title) {
-                                    finalCerti.splice(index, 1);
-                                  }
+                                  if (!item?.title) finalCerti.splice(index, 1);
                                   return true;
                                 })
                               }

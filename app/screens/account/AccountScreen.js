@@ -601,11 +601,23 @@ export default function AccountScreen({ navigation }) {
                             <TouchableWithoutFeedback
                                   style={styles.listContainer}
                                   onPress={() => {
-                                    navigation.navigate('HomeScreen', {
-                                      uid: item.group_id,
-                                      backButtonVisible: true,
-                                      menuBtnVisible: false,
-                                      role: item.entity_type,
+                                    // navigation.setParams({
+                                    //   uid: item.group_id,
+                                    //   backButtonVisible: true,
+                                    //   menuBtnVisible: false,
+                                    //   role: item.entity_type,
+                                    // })
+                                    navigation.navigate('Home', {
+                                      screen: 'HomeScreen',
+                                      params: {
+                                        fromAccountScreen: true,
+                                        homeNavigateParams: {
+                                          uid: item.group_id,
+                                          backButtonVisible: true,
+                                          menuBtnVisible: false,
+                                          role: item.entity_type,
+                                        },
+                                      },
                                     })
                                   }}
                               >

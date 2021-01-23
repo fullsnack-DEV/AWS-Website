@@ -77,6 +77,7 @@ export default function TennisRecording({ navigation, route }) {
   const scrollView = useRef();
   const headerActionSheet = useRef();
   const authContext = useContext(AuthContext);
+  const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
   const [pickerShow, setPickerShow] = useState(false);
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
   const [detailRecording, setDetailRecording] = useState(false);
@@ -848,7 +849,7 @@ export default function TennisRecording({ navigation, route }) {
                 <TennisScoreView scoreDataSource={gameObj}/>
               </View>
               <View style={styles.view2}>
-                <TennisMatchRecordsList isAdmin={route?.params?.isAdmin} matchData={gameData} visibleSetScore={false}/>
+                <TennisMatchRecordsList isAdmin={route?.params?.isAdmin} matchData={gameData} visibleSetScore={false} visibleAddSetGameButton={visibleAddSetAndGameButton}/>
               </View>
             </ScrollView>
           </View>
@@ -1353,9 +1354,11 @@ export default function TennisRecording({ navigation, route }) {
               setloading(false);
             }).catch(() => setloading(false));
           } else if (index === 1) {
-            console.log('ok');
+            setVisibleAddSetAndGameButton(false);
+            scrollView.current?.scrollToEnd({ animated: true });
+            setVisibleAddSetAndGameButton(true);
           } else if (index === 2) {
-            console.log('ok');
+            navigation.navigate('TennisDeletedRecordScreen', { gameData, isAdmin: route?.params?.isAdmin });
           } else if (index === 3) {
             if (gameObj?.status === GameStatus.playing || gameObj?.status === GameStatus.paused || gameObj?.status === GameStatus.resume) {
               Alert.alert(

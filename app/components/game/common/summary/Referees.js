@@ -36,8 +36,7 @@ const Referees = ({
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => {
     getRefereeReservation(gameData?.game_id).then((res) => {
-      console.log('REF: ', res?.payload)
-      const refData = res?.payload?.filter((item) => ![RefereeReservationStatus.declined, RefereeReservationStatus.cancelled].includes(item?.status));
+      const refData = res?.payload?.filter((item) => ![RefereeReservationStatus.cancelled].includes(item?.status));
       const cloneRefData = [];
       refData.map((item) => {
         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
@@ -83,7 +82,7 @@ const Referees = ({
       case RefereeReservationStatus.pendingpayment: statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
       case RefereeReservationStatus.offered:
         if (isExpired) statusData = { status: 'REFEREE RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
-        else statusData = { status: 'REFEREE RESERVATION REUEST SENT', color: colors.yellowColor };
+        else statusData = { status: 'REFEREE RESERVATION REQUEST SENT', color: colors.yellowColor };
         break;
       default: statusData = { status: '' };
     }
