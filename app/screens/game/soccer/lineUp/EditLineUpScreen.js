@@ -74,8 +74,8 @@ export default function EditLineUpScreen({ navigation, route }) {
       );
     }
   }, []);
-  const getLineUpOfTeams = (teamID, gameID) => {
-    setLoading(true);
+  const getLineUpOfTeams = (teamID, gameID, loader = true) => {
+    setLoading(loader);
     getGameLineUp(teamID, gameID, authContext).then((response) => {
       const nonRosterData = response.payload.non_roster.map((el) => {
         const o = { ...el };
@@ -105,6 +105,7 @@ export default function EditLineUpScreen({ navigation, route }) {
       setSearchNonRoster(nonRosterData);
       setSearchStarting(starting);
       setSearchSubs(subs);
+
       setTempararyNonRoster(nonRosterData)
       setTempararyStarting(starting)
       setTempararySubs(subs)
@@ -189,14 +190,9 @@ export default function EditLineUpScreen({ navigation, route }) {
           setSelectedMember(item);
           toggleModal();
         }
-        console.log('ITEM BTYPE::', bType);
-        console.log('ITEM PRESSED::', item);
       }}
       OnRowPress={(userInfo) => {
-        console.log('User Info::', userInfo);
         if (userInfo.profile.connected) {
-          console.log('User ID::', userInfo.profile.user_id);
-          console.log('User ROLE::', userInfo.profile.role);
           navigation.push('HomeScreen', {
             uid: userInfo.profile.user_id,
             backButtonVisible: true,
@@ -204,7 +200,6 @@ export default function EditLineUpScreen({ navigation, route }) {
             menuBtnVisible: false,
           })
         }
-        console.log('ITEM Info::', userInfo);
       }}
     />
   );
@@ -215,7 +210,6 @@ export default function EditLineUpScreen({ navigation, route }) {
       onButtonPress={(checked) => {
         setEnabledSection(sectionNumber());
 
-        console.log('ENABLED::', enabledSection);
         const tempRoster = [...roster];
         const tempStarting = [...starting];
         const index = roster.findIndex((obj) => obj === item);
@@ -223,7 +217,7 @@ export default function EditLineUpScreen({ navigation, route }) {
 
         const i = starting.findIndex((obj) => obj === item);
         tempStarting[i].selected = !checked;
-        console.log('ITEM BTYPE::', tempRoster[index].selected);
+
         setRoster([...tempRoster]);
         setStarting([...tempStarting]);
         setSelectedPosition();
@@ -242,13 +236,9 @@ export default function EditLineUpScreen({ navigation, route }) {
           setSelectedMember(item);
           toggleModal();
         }
-        console.log('ITEM BTYPE::', bType);
-        console.log('ITEM PRESSED::', item);
       }}
       OnRowPress={(userInfo) => {
         if (userInfo.profile.connected) {
-          console.log('User ID::', userInfo.profile.user_id);
-          console.log('User ROLE::', userInfo.profile.role);
           navigation.push('HomeScreen', {
             uid: userInfo.profile.user_id,
             backButtonVisible: true,
@@ -256,7 +246,6 @@ export default function EditLineUpScreen({ navigation, route }) {
             menuBtnVisible: false,
           })
         }
-        console.log('ITEM Info::', userInfo);
       }}
     />
   );
@@ -267,7 +256,6 @@ export default function EditLineUpScreen({ navigation, route }) {
       onButtonPress={(checked) => {
         setEnabledSection(sectionNumber());
 
-        console.log('ENABLED::', enabledSection);
         const tempRoster = [...roster];
         const tempSubs = [...subs];
         const index = roster.findIndex((obj) => obj === item);
@@ -275,7 +263,7 @@ export default function EditLineUpScreen({ navigation, route }) {
 
         const i = subs.findIndex((obj) => obj === item);
         tempSubs[i].selected = !checked;
-        console.log('ITEM BTYPE::', tempRoster[index].selected);
+
         setRoster([...tempRoster]);
         setSubs([...tempSubs]);
         setSelectedPosition();
@@ -334,7 +322,6 @@ export default function EditLineUpScreen({ navigation, route }) {
       body.role = 'player';
       tempArray.push(body);
     });
-    console.log('Object', tempArray);
 
     const modifiedNonRosterData = nonRoster.filter(
       (e) => e.modified === true,
@@ -346,7 +333,6 @@ export default function EditLineUpScreen({ navigation, route }) {
       body.member_id = e.profile.user_id;
       tempNonRosterArray.push(body);
     });
-    console.log('Object', tempNonRosterArray);
 
     if (tempArray.length > 0) {
       if (
@@ -362,9 +348,7 @@ export default function EditLineUpScreen({ navigation, route }) {
           route.params.gameObj.game_id,
           tempArray,
           authContext,
-        ).then((response) => {
-          console.log('Response:::', response.payload);
-
+        ).then(() => {
           if (tempNonRosterArray.length > 0) {
             deleteGameLineUp(
               route.params.selectedTeam === 'home'
@@ -413,10 +397,17 @@ export default function EditLineUpScreen({ navigation, route }) {
         (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
       ));
     } else {
-      setStarting([...tempararyStarting])
-      setSubs([...tempararySubs])
-      setNonRoster([...tempararyNonRoster])
-      setRoster()
+      // setStarting([...tempararyStarting])
+      // setSubs([...tempararySubs])
+      // setNonRoster([...tempararyNonRoster])
+
+      getLineUpOfTeams(
+          route?.params?.selectedTeam === 'home'
+            ? route?.params?.gameObj?.home_team?.group_id
+            : route?.params?.gameObj?.away_team?.group_id,
+          route?.params?.gameObj?.game_id,
+          false,
+      );
     }
   };
   return (

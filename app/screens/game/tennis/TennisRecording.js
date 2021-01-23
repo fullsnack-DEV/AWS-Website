@@ -136,13 +136,16 @@ export default function TennisRecording({ navigation, route }) {
     if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status || gameData?.status)) {
       startStopTimerTimeline()
     }
-
+    timer = setInterval(() => {
+      if (gameObj && gameObj.status !== GameStatus.ended) {
+        getGameDetail(route?.params?.gameDetail?.game_id, false);
+      }
+    }, 3000);
     // timer = setInterval(() => {
     //   if (gameObj && gameObj.status !== GameStatus.ended) {
     //     getGameDetail(route?.params?.gameDetail?.game_id, false);
     //   }
     // }, 3000);
-
     // timerForTimeline = setInterval(() => {
     //   startStopTimerTimeline()
     // }, 1000);
