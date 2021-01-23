@@ -159,7 +159,12 @@ export default function TCEventView({
               {title}
             </Text>
             {moreBtnVisible && (
-              <TouchableOpacity onPress={onThreeDotPress}>
+              <TouchableOpacity onPress={onThreeDotPress} hitSlop={{
+                top: 15,
+                bottom: 15,
+                left: 15,
+                right: 15,
+              }}>
                 <Image source={images.vertical3Dot} style={styles.threedot} />
               </TouchableOpacity>
             )}

@@ -72,7 +72,12 @@ const TCUserFollowUnfollowList = ({
         </View>
         <View style={{ flex: 0.25, alignItems: 'center' }}>
           {isShowThreeDots ? (
-            <TouchableOpacity onPress={onThreeDotPress} style={{ alignSelf: 'flex-end', right: 10 }}>
+            <TouchableOpacity onPress={onThreeDotPress} style={{ alignSelf: 'flex-end', right: 10 }} hitSlop={{
+              top: 15,
+              bottom: 15,
+              left: 15,
+              right: 15,
+            }}>
               <Image source={ images.vertical3Dot } style={ styles.threedot } />
             </TouchableOpacity>
           ) : (

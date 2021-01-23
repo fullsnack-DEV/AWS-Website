@@ -911,8 +911,13 @@ export default function AlterRefereeScreen({ navigation, route }) {
               <TCGradientButton
                 title={strings.restorePreviousText}
                 onPress={() => {
+                  let callerId = '';
+                  if (bodyParams?.referee?.user_id !== entity.uid) {
+                    callerId = entity.uid
+                  }
                   acceptDeclineReservationOperation(
                     bodyParams.reservation_id,
+                    callerId,
                     bodyParams.version,
                     'decline',
                     true,

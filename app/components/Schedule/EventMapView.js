@@ -13,7 +13,7 @@ function EventMapView({ region, coordinate, style }) {
     <MapView
     // mapType={Platform.OS === 'android' ? 'none' : 'standard'}
     // provider={PROVIDER_GOOGLE}
-      region={region}
+    region={region}
       scrollEnabled={false}
       zoomEnabled={false}
       style={[styles.mapViewStyle, style]}>

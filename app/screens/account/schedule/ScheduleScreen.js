@@ -130,6 +130,12 @@ export default function ScheduleScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
+        hitSlop={{
+          top: 15,
+          bottom: 15,
+          left: 15,
+          right: 15,
+        }}
           onPress={ () => { actionSheet.current.show(); } }>
           <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
         </TouchableWithoutFeedback>

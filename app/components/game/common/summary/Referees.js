@@ -17,6 +17,7 @@ import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import RefereeReservationStatus from '../../../../Constants/RefereeReservationStatus';
 
+let selectedRefereeData;
 const Referees = ({
   gameData,
   isAdmin,
@@ -31,7 +32,6 @@ const Referees = ({
   const [loading, setloading] = useState(false);
   const [refree, setRefree] = useState([])
   const [myUserId, setMyUserId] = useState(null);
-  const [selectedRefereeData, setSelectedRefereeData] = useState(null);
 
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => {
@@ -51,18 +51,17 @@ const Referees = ({
     });
   }, [gameData])
   const goToRefereReservationDetail = (data) => {
-    if (data?.referee) {
-      setloading(true);
-      RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
-        setloading(false);
-        console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-        console.log('Screen name of Reservation:', obj.screenName);
-        navigation.navigate(obj.screenName, {
-          reservationObj: obj.reservationObj || obj.reservationObj[0],
-        });
-        setloading(false);
-      }).catch(() => setloading(false));
-    }
+    console.log('Reservation data:', JSON.stringify(data));
+    setloading(true);
+    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+      setloading(false);
+      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+      console.log('Screen name of Reservation:', obj.screenName);
+      navigation.navigate(obj.screenName, {
+        reservationObj: obj.reservationObj || obj.reservationObj[0],
+      });
+      setloading(false);
+    }).catch(() => setloading(false));
   }
   const onFollowPress = (userID, status) => {
     const refre = _.cloneDeep(refree);
@@ -108,7 +107,7 @@ const Referees = ({
               profileImage={referee?.thumbnail}
               isShowThreeDots={item?.initiated_by === entity?.uid}
               onThreeDotPress={() => {
-                setSelectedRefereeData(item)
+                selectedRefereeData = item
                 actionSheet.current.show()
               }}
               userRole={userRole}
@@ -163,7 +162,7 @@ const Referees = ({
               cancelButtonIndex={1}
               onPress={(index) => {
                 if (index === 0) {
-                  console.log(gameData);
+                  console.log('gameData::: button pressed::=>', gameData);
                   goToRefereReservationDetail(selectedRefereeData)
                 }
               }}

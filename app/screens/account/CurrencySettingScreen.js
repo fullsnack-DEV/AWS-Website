@@ -27,7 +27,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCLabel from '../../components/TCLabel';
 
-export default function CurrencySettingScreen() {
+export default function CurrencySettingScreen({ navigation }) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
@@ -53,14 +53,15 @@ export default function CurrencySettingScreen() {
       Utility.setStorage('authContextEntity', { ...currentEntity })
 
       setloading(false);
+      navigation.goBack()
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, 'Currency updated sucessfully');
-      }, 1000);
+      }, 0.7);
     }).catch((e) => {
       setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e);
-      }, 1000);
+      }, 0.7);
     })
   }
   return (
