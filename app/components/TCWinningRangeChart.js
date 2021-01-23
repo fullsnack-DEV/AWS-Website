@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
@@ -12,25 +12,22 @@ const TCWinningRangeChart = ({
   drawCount = 0,
   teamTwoCount = 0,
 }) => {
-  const [teamOnePercent] = useState(Math.floor((teamOneCount * 100) / totalCount));
-  const [drawPercent] = useState(Math.floor((drawCount * 100) / totalCount));
-  const [teamTwoPercent] = useState(Math.floor((teamTwoCount * 100) / totalCount));
-
   const GradiantContainer = ({ gradiantColor, style }) => (<LinearGradient
           colors={gradiantColor}
           style={{ ...styles.gradiantIndicator, ...style }}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
   />)
+
   return (
     <View style={styles.container}>
       <Text style={styles.headingTitle}>
         {heading} games
         <Text style={{ fontFamily: fonts.RBold }}>{` ${totalCount}`}</Text>
       </Text>
-      {totalCount > 0 && teamOneCount && drawCount && teamTwoCount ? <View style={styles.mainContainer}>
+      {totalCount > 0 ? <View style={styles.mainContainer}>
         {/* Team One */}
-        <View style={{ ...styles.singleColumnContainer, width: `${teamOnePercent}%` }}>
+        <View style={{ ...styles.singleColumnContainer, width: `${(100 * teamOneCount) / totalCount}%` }}>
           <GradiantContainer
             gradiantColor={[colors.themeColor, colors.yellowColor]}
             style={{
@@ -42,27 +39,27 @@ const TCWinningRangeChart = ({
         />
           <TCTextGradiant
             textStyle={{ ...styles.bottomText, textAlign: 'left' }}
-            text={`${teamOneCount} (${teamOnePercent}%)`}
+            text={`${teamOneCount} (${Math.floor((100 * teamOneCount) / totalCount)}%)`}
             colors={[colors.themeColor, colors.yellowColor]}
             />
         </View>
         {/*  Draw */}
-        <View style={{ ...styles.singleColumnContainer, width: `${drawPercent}%` }}>
+        <View style={{ ...styles.singleColumnContainer, width: `${(100 * drawCount) / totalCount}%` }}>
           <GradiantContainer
                 gradiantColor={[colors.greenGradientEnd, colors.greenGradientStart]}
                 style={{
                   borderTopRightRadius: teamTwoCount === 0 ? 15 : 0,
                   borderBottomRightRadius: teamTwoCount === 0 ? 15 : 0,
-                  borderTopLeftRadius: teamOneCount === 0 ? 15 : 0,
-                  borderBottomLeftRadius: teamOneCount === 0 ? 15 : 0,
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
                 }}
           />
           <Text style={{ ...styles.bottomText, textAlign: 'right' }}>
-            {`${drawCount} (${drawPercent}%)`}
+            {`${drawCount} (${Math.floor((100 * drawCount) / totalCount)}%)`}
           </Text>
         </View>
         {/*  Team Two */}
-        <View style={{ ...styles.singleColumnContainer, width: `${teamTwoPercent}%` }}>
+        <View style={{ ...styles.singleColumnContainer, width: `${(100 * teamTwoCount) / totalCount}%` }}>
           <GradiantContainer
                 gradiantColor={[colors.blueGradiantEnd, colors.blueGradiantStart]}
                 style={{
@@ -73,15 +70,15 @@ const TCWinningRangeChart = ({
                 }}
             />
           <Text style={{ ...styles.bottomText, textAlign: 'right' }}>
-            {`${teamTwoCount} (${teamTwoPercent}%)`}
+            {`${teamTwoCount} (${Math.floor((100 * teamTwoCount) / totalCount)}%)`}
           </Text>
         </View>
       </View> : <View style={{ ...styles.singleColumnContainer, width: '100%', marginTop: 30 }}>
         <GradiantContainer
             gradiantColor={[colors.veryLightGray, colors.veryLightGray]}
             style={{
-              borderTopRightRadius: teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
-              borderBottomRightRadius: teamTwoCount === 0 && drawCount === 0 ? 15 : 0,
+              borderTopRightRadius: 15,
+              borderBottomRightRadius: 15,
               borderTopLeftRadius: 15,
               borderBottomLeftRadius: 15,
             }}
