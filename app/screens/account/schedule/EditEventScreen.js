@@ -184,6 +184,20 @@ export default function EditEventScreen({ navigation, route }) {
   const colorToggleModal = () => {
     setIsColorPickerModal(!isColorPickerModal);
   };
+  const ordinal_suffix_of = (i) => {
+    const j = i % 10,
+      k = i % 100;
+    if (j === 1 && k !== 11) {
+      return `${i}st`;
+    }
+    if (j === 2 && k !== 12) {
+      return `${i}nd`;
+    }
+    if (j === 3 && k !== 13) {
+      return `${i}rd`;
+    }
+    return `${i}th`;
+  }
   const countNumberOfWeekFromDay = () => {
     const date = new Date()
     const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
@@ -196,7 +210,21 @@ export default function EditEventScreen({ navigation, route }) {
       }
       startDate.setDate(startDate.getDate() + 1)
     }
-    return (numberOfDates === 1 && 'First') || (numberOfDates === 2 && 'Second') || (numberOfDates === 3 && 'Third') || (numberOfDates === 4 && 'Fourth') || (numberOfDates === 5 && 'Fifth')
+    return ordinal_suffix_of(numberOfDates)
+  }
+  const countNumberOfWeeks = () => {
+    const date = new Date()
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
+    const endDate = date
+    const givenDay = new Date().getDay()
+    let numberOfDates = 0
+    while (startDate < endDate) {
+      if (startDate.getDay() === givenDay) {
+        numberOfDates++
+      }
+      startDate.setDate(startDate.getDate() + 1)
+    }
+    return numberOfDates
   }
   const getTodayDay = () => {
     const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss')
@@ -255,8 +283,8 @@ export default function EditEventScreen({ navigation, route }) {
               title: eventTitle,
               descriptions: aboutDesc,
               color: singleSelectEventColor,
-              start_datetime: new Date(eventStartDateTime).getTime() / 1000,
-              end_datetime: new Date(eventEndDateTime).getTime() / 1000,
+              start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
+              end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
               location: searchLocation,
               latitude: locationDetail.lat,
               longitude: locationDetail.lng,
@@ -274,15 +302,15 @@ export default function EditEventScreen({ navigation, route }) {
               createdAt: createdAtDate,
             };
             let rules = '';
-            if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly' || selectWeekMonth === 'Monthly') {
+            if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly') {
               rules = selectWeekMonth.toUpperCase();
-            } else if (selectWeekMonth === `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
-              rules = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
-            } else if (selectWeekMonth === `Monthly on day ${new Date().getDate()}`) {
-              rules = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
+            } else if (selectWeekMonth === `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
+              rules = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`
+            } else if (selectWeekMonth === `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`) {
+              rules = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`
             }
             if (selectWeekMonth !== 'Does not repeat') {
-              params.untilDate = new Date(eventUntilDateTime).getTime() / 1000;
+              params.untilDate = parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0);
               params.rrule = `FREQ=${rules}`;
             }
             editEvent(entityRole, u_id, params, authContext)
