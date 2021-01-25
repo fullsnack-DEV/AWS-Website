@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable radix */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable array-callback-return */
@@ -21,12 +22,12 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-
+import DatePicker from 'react-native-date-picker'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import moment from 'moment';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
+// import RNDateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
 import * as Utils from '../../challenge/ChallengeUtility';
 import { toggleView, heightPercentageToDP as hp } from '../../../utils/index'
@@ -140,7 +141,7 @@ export default function TennisRecording({ navigation, route }) {
       if (gameObj && gameObj.status !== GameStatus.ended) {
         getGameDetail(route?.params?.gameDetail?.game_id, false);
       }
-    }, 3000);
+    }, 10000);
     // timer = setInterval(() => {
     //   if (gameObj && gameObj.status !== GameStatus.ended) {
     //     getGameDetail(route?.params?.gameDetail?.game_id, false);
@@ -314,11 +315,11 @@ export default function TennisRecording({ navigation, route }) {
       imageSize={32}
     />
   );
-  const onChange = (event, selectedDate) => {
+  const onChange = (selectedDate) => {
     console.log('selected Date::', selectedDate);
     date = selectedDate;
     startStopTimerTimeline();
-    setPickerShow(Platform.OS === 'ios');
+    setPickerShow(Platform.OS === 'ios' || Platform.OS === 'android');
   };
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -873,6 +874,9 @@ export default function TennisRecording({ navigation, route }) {
                       onPress={() => {
                         // setDate();
                         date = null;
+                        if ([GameStatus.accepted, GameStatus.reset].includes(gameObj.status)) {
+                          setTimelineTimer('00 : 00 : 00')
+                        }
                         setPickerShow(false)
                       }}>
                         <Image
@@ -888,7 +892,9 @@ export default function TennisRecording({ navigation, route }) {
                     setPickerShow(!pickerShow);
                   }}>
                     {[GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)
-                      ? 'Game start at now'
+                      ? date ? getDateFormat(
+                        date ? new Date(date.getTime()) : new Date(),
+                      ) : 'Game start at now'
                       : getDateFormat(
                         date ? new Date(date.getTime()) : new Date(),
                       )}
@@ -904,7 +910,7 @@ export default function TennisRecording({ navigation, route }) {
                 {footerUp && <View>
                   {pickerShow && (
                     <View>
-                      <RNDateTimePicker
+                      {/* <RNDateTimePicker
                     locale={'en'}
                     display="spinner"
                     value={date || new Date()}
@@ -913,7 +919,17 @@ export default function TennisRecording({ navigation, route }) {
                     minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime * 1000)}
                     maximumDate={new Date()}
                     // gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date()
-                  />
+                  /> */}
+                      <DatePicker
+                testID={'startsDateDateTimePicker'}
+                style={styles.dateTimePickerStyle}
+                date={date || new Date()}
+                onDateChange={(dt) => {
+                  onChange(dt)
+                }}
+                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime * 1000)}
+                    maximumDate={new Date()}
+              />
                     </View>
                   )}
                   <View style={styles.middleViewContainer}>
@@ -1676,5 +1692,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+  },
+  dateTimePickerStyle: {
+    alignSelf: 'center',
+    width: wp(100),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

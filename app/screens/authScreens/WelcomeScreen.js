@@ -1,6 +1,9 @@
+/* eslint-disable react-native/split-platform-components */
 import React, { useState, useContext } from 'react';
 import {
   View, Text, Image, TouchableOpacity, Alert, StyleSheet,
+  StatusBar,
+
 } from 'react-native';
 
 import {
@@ -206,8 +209,11 @@ export default function WelcomeScreen({ navigation }) {
       if (message !== '') setTimeout(() => Alert.alert('Towns cup', message), 100)
     }
   }
+
   return (
+
     <View style={ styles.mainContainer }>
+      <StatusBar backgroundColor="white" barStyle="dark-content"/>
       <ActivityLoader visible={ loading } />
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.signUpBg1 } />
@@ -239,6 +245,7 @@ export default function WelcomeScreen({ navigation }) {
             style={ styles.alreadyView }>
         <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
       </TouchableOpacity>
+
     </View>
   );
 }

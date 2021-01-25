@@ -1,6 +1,9 @@
 import React, {
   useState, useEffect, useMemo,
 } from 'react';
+import {
+  StatusBar,
+} from 'react-native';
 import firebase from '@react-native-firebase/app';
 import Orientation from 'react-native-orientation';
 import AuthContext from './app/auth/context';
@@ -17,6 +20,8 @@ if (!__DEV__) {
 }
 export default function App() {
   useEffect(() => {
+    StatusBar.setBarStyle('dark-content')
+    StatusBar.setBackgroundColor('white')
     Orientation.lockToPortrait();
     const firebaseAppInitialize = async () => {
       if (firebase.apps.length === 0) {

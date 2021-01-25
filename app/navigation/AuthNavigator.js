@@ -23,6 +23,7 @@ import colors from '../Constants/Colors'
 const Stack = createStackNavigator();
 
 const AuthNavigator = () => (
+
   <Stack.Navigator
       screenOptions={ {
         gestureEnabled: false,
@@ -31,6 +32,7 @@ const AuthNavigator = () => (
         headerTitle: false,
         headerBackTitleVisible: false,
       } }>
+
     <Stack.Screen
         name="WelcomeScreen"
         component={ WelcomeScreen }
