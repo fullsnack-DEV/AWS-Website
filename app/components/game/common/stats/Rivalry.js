@@ -19,17 +19,17 @@ const Rivalry = ({ gameData, rivalryData }) => {
         secondTeamProfilePic={gameData?.away_team?.background_thumbnail}
       />
       <View style={styles.teamIndicatorContainer}>
-        <View style={styles.teamIndicatorContentContainer}>
+        <View style={{ ...styles.teamIndicatorContentContainer, flex: 0.4 }}>
           <GradiantIndicator gradiantColor={[colors.themeColor, colors.yellowColor]}/>
-          <Text>{gameData?.home_team?.group_name} Win</Text>
+          <Text style={{ flex: 1 }}>{gameData?.home_team?.group_name} Win</Text>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ ...styles.teamIndicatorContentContainer, flex: 0.2 }}>
           <GradiantIndicator gradiantColor={[colors.greenGradientStart, colors.greenGradientEnd]}/>
-          <Text>{'Draw'}</Text>
+          <Text style={{ flex: 1 }}>{'Draw'}</Text>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ ...styles.teamIndicatorContentContainer, flex: 0.4 }}>
           <GradiantIndicator gradiantColor={[colors.blueGradiantStart, colors.blueGradiantEnd]}/>
-          <Text>{gameData?.away_team?.group_name} Win</Text>
+          <Text style={{ flex: 1 }}>{gameData?.away_team?.group_name} Win</Text>
         </View>
       </View>
       {/* Total */}
@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     marginTop: hp(1),
   },
   teamIndicatorContainer: {
+    flex: 1,
     marginTop: hp(4),
     flexDirection: 'row',
     justifyContent: 'space-between',

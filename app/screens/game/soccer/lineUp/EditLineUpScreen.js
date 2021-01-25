@@ -402,11 +402,11 @@ export default function EditLineUpScreen({ navigation, route }) {
       // setNonRoster([...tempararyNonRoster])
 
       getLineUpOfTeams(
-          route?.params?.selectedTeam === 'home'
-            ? route?.params?.gameObj?.home_team?.group_id
-            : route?.params?.gameObj?.away_team?.group_id,
-          route?.params?.gameObj?.game_id,
-          false,
+        route?.params?.selectedTeam === 'home'
+          ? route?.params?.gameObj?.home_team?.group_id
+          : route?.params?.gameObj?.away_team?.group_id,
+        route?.params?.gameObj?.game_id,
+        false,
       );
     }
   };

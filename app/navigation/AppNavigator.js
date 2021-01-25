@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  Image, Platform, StyleSheet, NativeEventEmitter, View,
+  Image, Platform, StyleSheet, NativeEventEmitter,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -13,12 +13,11 @@ import MessageNavigator from './MessageNavigator';
 import NotificationNavigator from './NotificationNavigator';
 import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
-import TCBadge from '../components/TCBadge';
-import { widthPercentageToDP as wp } from '../utils/index';
 import AuthContext from '../auth/context';
+import { getUnreadCount } from '../api/Notificaitons';
 
+const MAX_COUNT_FOR_BOTTOM_TAB = 8;
 const Tab = createBottomTabNavigator();
-
 const getTabBarVisibility = (route) => {
   let routeName = '';
   if (route.name === 'Account') {
@@ -99,6 +98,7 @@ function AppNavigator({ navigation }) {
   const authContext = useContext(AuthContext)
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
     changeRole();
     QBeventListeners();
@@ -127,11 +127,31 @@ function AppNavigator({ navigation }) {
         });
     }
   }
-
+  const getUnReadNotificationHandler = () => {
+    getUnreadCount(authContext).then((response) => {
+      if (response.status === true) {
+        const { teams } = response.payload;
+        const { clubs } = response.payload;
+        const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+        const entity_type = authContext?.entity?.role === 'user' ? 'user_id' : 'group_id';
+        const entityId = authContext?.entity?.role === 'user' ? authContext?.entity?.obj?.user_id : authContext?.entity?.obj?.group_id;
+        const data = groups.filter((item) => item?.[entity_type] === entityId)
+        setUnreadNotificationCount(data?.[0]?.unread ?? 0);
+      }
+    });
+  }
   const changeRole = async () => {
     setRole(authContext.entity.role);
   };
-
+  let count = 0;
+  const onTabPress = () => {
+    count += 1;
+    if (count === MAX_COUNT_FOR_BOTTOM_TAB) {
+      count = 0;
+      getUnReadMessageHandler();
+      getUnReadNotificationHandler()
+    }
+  }
   return (
     <Tab.Navigator
         backBehavior={'history'}
@@ -160,12 +180,15 @@ function AppNavigator({ navigation }) {
         component={ NewsFeedNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => (
-            <Image
-              source={ focused ? images.tab_home_selected : images.tab_home }
-              style={ styles.tabImg }
-            />
-          ),
+          tabBarIcon: ({ focused }) => {
+            onTabPress();
+            return (
+              <Image
+                      source={ focused ? images.tab_home_selected : images.tab_home }
+                      style={ styles.tabImg }
+                  />
+            )
+          },
         }) }
       />
       <Tab.Screen
@@ -173,50 +196,51 @@ function AppNavigator({ navigation }) {
         component={ ReservationNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => (
-            <Image
-              source={
-                focused ? images.tab_reservation_selected : images.tab_reservation
-              }
-              style={ styles.tabImg }
-            />
-          ),
+          tabBarIcon: ({ focused }) => {
+            onTabPress();
+            return (
+              <Image
+                      source={
+                          focused ? images.tab_reservation_selected : images.tab_reservation
+                      }
+                      style={ styles.tabImg }
+                  />
+            )
+          },
         }) }
       />
       <Tab.Screen
         name="Notification"
         component={ NotificationNavigator }
-
         options={ ({ route }) => ({
+          ...(unreadNotificationCount > 0 && { tabBarBadge: unreadNotificationCount }),
           tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => (
-            <Image
-              source={
-                focused ? images.tab_notification_selected : images.tab_notification
-              }
-              style={ focused ? styles.selectedTabImg : styles.tabImg }
-            />
-          ),
+          tabBarIcon: ({ focused }) => {
+            onTabPress();
+            return (
+              <Image
+                      source={
+                          focused ? images.tab_notification_selected : images.tab_notification
+                      }
+                      style={ focused ? styles.selectedTabImg : styles.tabImg }
+                  />
+            )
+          },
         }) }
       />
       <Tab.Screen
         name="Message"
         component={ MessageNavigator }
         options={ ({ route }) => ({
+          ...(unreadCount > 0 && { tabBarBadge: unreadCount }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
-            getUnReadMessageHandler();
-            return (<View>
-              {unreadCount > 0 && <TCBadge style={{
-                position: 'absolute',
-                zIndex: 10,
-                right: wp(-1),
-              }} value={unreadCount} />}
+            onTabPress();
+            return (
               <Image
               source={ focused ? images.tab_message_selected : images.tab_message }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
-            </View>
             )
           },
         }) }
@@ -228,16 +252,19 @@ function AppNavigator({ navigation }) {
           component={ AccountDrawerNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
-            tabBarIcon: ({ focused }) => (
-              <Image
-                source={
-                  focused
-                    ? images.tab_account_group_selected
-                    : images.tab_account_group
-                }
-                style={ focused ? styles.selectedEntity : styles.tabEntity }
-              />
-            ),
+            tabBarIcon: ({ focused }) => {
+              onTabPress();
+              return (
+                <Image
+                        source={
+                            focused
+                              ? images.tab_account_group_selected
+                              : images.tab_account_group
+                        }
+                        style={ focused ? styles.selectedEntity : styles.tabEntity }
+                    />
+              )
+            },
           }) }
         />
       )}

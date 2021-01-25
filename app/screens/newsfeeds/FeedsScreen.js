@@ -234,11 +234,9 @@ export default function FeedsScreen({ navigation }) {
         onEndReached={() => {
           setIsMoreLoading(true);
           setFooterLoading(true);
-          const params = {
-            id_lt: postData[postData.length - 1].id,
-          };
-          if (isMoreLoading && isNextDataLoading) {
-            getNewsFeedNextList(params, authContext).then((response) => {
+          const id_lt = postData[postData.length - 1].id;
+          if (id_lt && isMoreLoading && isNextDataLoading) {
+            getNewsFeedNextList(id_lt, authContext).then((response) => {
               if (response) {
                 if (response.payload.next === '') {
                   setIsNextDataLoading(false);

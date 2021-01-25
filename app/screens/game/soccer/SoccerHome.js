@@ -8,7 +8,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/soccer/home/summary/Summary';
-import Stats from '../../../components/game/common/stats/Stats';
+import Stats from '../../../components/game/soccer/home/stats/Stats';
 import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
@@ -66,6 +66,7 @@ const SoccerHome = ({ navigation, route }) => {
         const teamIds = [homeTeamId, awayTeamId]
         const checkIsAdmin = teamIds.includes(entity?.uid);
         setIsAdmin(checkIsAdmin)
+        console.log('DD', res.payload)
         setGameData(res.payload);
       }
     }).catch((error) => {

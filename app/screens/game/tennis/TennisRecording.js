@@ -417,7 +417,7 @@ export default function TennisRecording({ navigation, route }) {
       setTimelineTimer(
         getTimeDifferent(
           gameObj?.pause_datetime * 1000,
-         gameObj?.actual_startdatetime * 1000,
+          gameObj?.actual_startdatetime * 1000,
         ),
       );
     } else if (date) {

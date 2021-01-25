@@ -215,19 +215,6 @@ const TopBackgroundHeader = ({
                             </View>
                           </View>
                         }
-                        rightComponent={isAdmin
-                          && <TouchableOpacity onPress={onThreeDorPress}
-                          hitSlop={{
-                            top: 15,
-                            bottom: 15,
-                            left: 15,
-                            right: 15,
-                          }}>
-                            <Image source={images.threeDotIcon} style={{
-                              height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
-                            }} />
-                          </TouchableOpacity>
-                        }
                     />
               </View>
             )}
