@@ -1268,6 +1268,7 @@ export default function HomeScreen({ navigation, route }) {
 
   return (
     <View style={ styles.mainContainer }>
+
       <ActionSheet
         ref={addRoleActionSheet}
         options={[strings.addPlaying, strings.addRefereeing, strings.cancel]}

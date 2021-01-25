@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  Image, Platform, StyleSheet, NativeEventEmitter, View,
+  Image, Platform, StyleSheet, NativeEventEmitter, View, StatusBar,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -103,6 +103,11 @@ function AppNavigator({ navigation }) {
     changeRole();
     QBeventListeners();
   }, [navigation]);
+
+  useEffect(() => {
+    StatusBar.setBarStyle('dark-content')
+    StatusBar.setBackgroundColor('white')
+  }, []);
 
   const getQBToken = async () => authContext.entity?.QB?.token ?? null
 
