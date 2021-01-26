@@ -1,6 +1,5 @@
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
-import { Alert } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
 import * as Utility from '.';
@@ -55,10 +54,11 @@ const makeAPIRequest = async ({
   params,
   responseType,
   authContext,
+  cancelToken,
 }) => NetInfo.fetch().then(async (netStat) => {
   if (!netStat || !netStat.isConnected) {
-    Alert.alert('Error: Internet not available');
-    throw new Error('no-internet');
+    // Alert.alert('Error: Internet not available');
+    throw new Error('Internet not available');
   } else {
     let withRenewToken = false;
     const tokenData = authContext?.tokenData;
@@ -70,7 +70,7 @@ const makeAPIRequest = async ({
     console.log('TOKEN EXPIRATION TIME :', expiryDate);
     if (expiryDate.getTime() > currentDate.getTime()) {
       return globalApiCall({
-        method, url, data, headers, params, responseType, authContext, withRenewToken, authToken,
+        method, url, data, headers, params, responseType, authContext, withRenewToken, authToken, cancelToken,
       })
     }
     withRenewToken = true;
@@ -84,7 +84,7 @@ const makeAPIRequest = async ({
         };
         await authContext.setTokenData(token);
         resolve(globalApiCall({
-          method, url, data, headers, params, responseType, authContext, withRenewToken, authToken,
+          method, url, data, headers, params, responseType, authContext, withRenewToken, authToken, cancelToken,
         }));
       }).catch((error) => {
         console.log('Token Related: ', error);
@@ -104,6 +104,7 @@ const globalApiCall = async ({
   authContext,
   authToken,
   withRenewToken,
+  cancelToken,
 }) => {
   const entity = authContext?.entity;
   console.log('entity::', entity, url);
@@ -117,7 +118,7 @@ const globalApiCall = async ({
   const headersParams = prepareHeader(headers, authToken, caller_id, caller);
 
   const options = {
-    method, url, data, headers: headersParams, params, responseType,
+    method, url, data, headers: headersParams, params, responseType, cancelToken,
   };
   console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {

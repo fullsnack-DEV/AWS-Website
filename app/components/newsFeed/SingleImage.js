@@ -64,11 +64,11 @@ function SingleImage({
         style={{ margin: 0 }}
         supportedOrientations={['portrait', 'landscape']}
         backdropOpacity={0}>
-        {/* <SingleImageModal
-          uploadImageURL={uploadImageURL && uploadImageURL}
-          backBtnPress={() => setModalVisible(false)}
-          data={data}
-        /> */}
+        {/* <SingleImageModal */}
+        {/*  uploadImageURL={uploadImageURL && uploadImageURL} */}
+        {/*  backBtnPress={() => setModalVisible(false)} */}
+        {/*  data={data} */}
+        {/* /> */}
         <SinglePostPortraitView
             openPostModal ={() => setModalVisible(true)}
           data={data}

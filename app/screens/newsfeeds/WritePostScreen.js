@@ -84,10 +84,10 @@ export default function WritePostScreen({ navigation, route }) {
           <TouchableOpacity
             style={styles.doneViewStyle}
             onPress={() => {
-              setloading(true);
               if (searchText.trim().length === 0 && selectImage.length === 0) {
                 Alert.alert('Please write some text or select any image.');
               } else if (searchText.trim().length > 0 && selectImage.length === 0) {
+                setloading(true);
                 const data = {
                   text: searchText,
                 };
@@ -102,6 +102,7 @@ export default function WritePostScreen({ navigation, route }) {
                     setloading(false);
                   });
               } else {
+                setloading(false);
                 navigation.goBack();
                 onPressDone(selectImage, searchText);
               }

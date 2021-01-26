@@ -413,29 +413,31 @@ export default function HomeScreen({ navigation, route }) {
     }
   }, [route?.params?.fromAccountScreen])
   useEffect(() => {
-    const loginEntity = authContext.entity
-    let uid = loginEntity.uid
-    let role = loginEntity.role
-    let admin = false
-    if (route.params && route.params.uid && route.params.role) {
-      uid = route.params.uid;
-      role = route.params.role;
-      if (loginEntity.uid === uid) {
+    if (isFocused) {
+      const loginEntity = authContext.entity
+      let uid = loginEntity.uid
+      let role = loginEntity.role
+      let admin = false
+      if (route.params && route.params.uid && route.params.role) {
+        uid = route.params.uid;
+        role = route.params.role;
+        if (loginEntity.uid === uid) {
+          admin = true
+          setIsAdmin(true)
+        }
+      } else {
         admin = true
         setIsAdmin(true)
       }
-    } else {
-      admin = true
-      setIsAdmin(true)
-    }
 
-    getData(uid, role, admin).catch((error) => {
-      console.log('error', error)
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
-      setloading(false);
-    });
+      getData(uid, role, admin).catch((error) => {
+        console.log('error', error)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 0.3)
+        setloading(false);
+      });
+    }
   }, [authContext.entity, navigation, isFocused]);
 
   const progressStatus = (completed, total) => {
@@ -1255,7 +1257,7 @@ export default function HomeScreen({ navigation, route }) {
   }, [route.params]);
 
   const onConnectionButtonPress = (tab) => {
-    let entity_type = authContext?.entity?.entity_type;
+    let entity_type = authContext?.entity?.role;
     let user_id = authContext?.entity?.uid;
     if (route?.params?.role) entity_type = route?.params?.role;
     if (route?.params?.uid) user_id = route?.params?.uid;

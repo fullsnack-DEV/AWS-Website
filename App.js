@@ -1,7 +1,9 @@
 import React, {
   useState, useEffect, useMemo,
 } from 'react';
+import NetInfo from '@react-native-community/netinfo';
 import {
+  Alert,
   StatusBar,
 } from 'react-native';
 import firebase from '@react-native-firebase/app';
@@ -19,7 +21,22 @@ if (!__DEV__) {
   console.error = () => {};
 }
 export default function App() {
+  const [networkConnected, setNetworkConntected] = useState(false);
   useEffect(() => {
+    if (!networkConnected) {
+      showNetworkAlert();
+    }
+  }, [networkConnected]);
+
+  const showNetworkAlert = () => {
+    Alert.alert('Internet not avaiable')
+  }
+  useEffect(() => {
+    NetInfo.addEventListener((state) => {
+      console.log('Connection : ', state.isConnected)
+      setNetworkConntected(state.isConnected);
+    });
+
     StatusBar.setBarStyle('dark-content')
     StatusBar.setBackgroundColor('white')
     Orientation.lockToPortrait();
@@ -54,8 +71,10 @@ export default function App() {
       tokenData,
       setTokenData,
       updateAuth,
+      networkConnected,
+      showNetworkAlert,
     }),
-    [role, user, entity, tokenData],
+    [role, user, entity, tokenData, networkConnected],
   );
   QBinit();
   return (

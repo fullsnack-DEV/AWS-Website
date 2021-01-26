@@ -342,8 +342,20 @@ export default function LoginScreen({ navigation }) {
       <Image style={styles.background} source={images.bgImage} />
       <TCKeyboardView>
         <Text style={styles.loginText}>{strings.loginText}</Text>
-        <FacebookButton onPress={() => onFacebookButtonPress()} />
-        <GoogleButton onPress={() => onGoogleButtonPress()} />
+        <FacebookButton onPress={() => {
+          if (authContext.networkConnected) {
+            onFacebookButtonPress()
+          } else {
+            authContext.showNetworkAlert();
+          }
+        }} />
+        <GoogleButton onPress={() => {
+          if (authContext.networkConnected) {
+            onGoogleButtonPress();
+          } else {
+            authContext.showNetworkAlert();
+          }
+        }} />
         <Text style={styles.orText}>{strings.orText}</Text>
         <View style={styles.textFieldContainerStyle}>
           <TCTextField
@@ -377,9 +389,13 @@ export default function LoginScreen({ navigation }) {
         <TCButton
             title={strings.loginCapTitle}
             extraStyle={{ marginTop: hp('3%') }}
-            onPress={() => {
+            onPress={async () => {
               if (validate()) {
-                login(email, password);
+                if (authContext.networkConnected) {
+                  login(email, password);
+                } else {
+                  authContext.showNetworkAlert();
+                }
               }
             }}
         />

@@ -32,7 +32,7 @@ export default function UserConnections({ navigation, route }) {
   }, [navigation]);
   useEffect(() => {
     setLoading(true);
-    if (eType === 'player') {
+    if (eType === 'player' || eType === 'user') {
       getUserFollowerFollowing(user_id, 'players', tab, authContext).then((res) => {
         setData([...res?.payload]);
       }).catch(() => {
