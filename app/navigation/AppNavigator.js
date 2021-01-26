@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-Image, Platform, StyleSheet, NativeEventEmitter, View, StatusBar,
+  Image, Platform, StyleSheet, NativeEventEmitter, StatusBar,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -18,6 +18,7 @@ import { getUnreadCount } from '../api/Notificaitons';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
 const Tab = createBottomTabNavigator();
+
 const getTabBarVisibility = (route) => {
   let routeName = '';
   if (route.name === 'Account') {
