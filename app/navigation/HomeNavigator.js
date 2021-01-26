@@ -144,6 +144,8 @@ import MessageDrawerNavigator from './MessageDrawerNavigator';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 import CurrencySettingScreen from '../screens/account/CurrencySettingScreen';
 import TennisDeletedRecordScreen from '../screens/game/tennis/TennisDeletedRecordScreen';
+import ReviewPlayerList from '../components/game/soccer/home/review/reviewForPlayer/ReviewPlayerList';
+import PlayerReviewScreen from '../components/game/soccer/home/review/reviewForPlayer/PlayerReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -1782,6 +1784,38 @@ const HomeNavigator = () => (
             component={CurrencySettingScreen}
             options={{
               title: 'Currency Setting',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ReviewPlayerList"
+            component={ReviewPlayerList}
+            options={{
+              title: 'Player',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="PlayerReviewScreen"
+            component={PlayerReviewScreen}
+            options={{
+              title: 'Leave a player review',
               headerTintColor: colors.blackColor,
               headerTitleStyle: {
                 fontWeight: '500',

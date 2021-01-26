@@ -26,6 +26,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import {
   getGameScoreboardEvents,
+  getRefereedMatch,
   getGameStatsChartData,
   getGameStatsData,
   getRefereeReviewData,
@@ -104,17 +105,18 @@ import { getRefereeReservationDetails } from '../../api/Reservations';
 import TCSearchBox from '../../components/TCSearchBox';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 import TCInnerLoader from '../../components/TCInnerLoader';
+import ReviewRatingView from '../../components/Home/ReviewRatingView';
 
 const reviews_data = [
   {
     id: 0,
     title: 'Fairness',
-    rating: '4.0',
+    rating: '5.0',
   },
   {
     id: 1,
     title: 'Accuracy',
-    rating: '4.0',
+    rating: '5.0',
   },
   {
     id: 2,
@@ -194,7 +196,7 @@ export default function HomeScreen({ navigation, route }) {
   const [progressBar, setProgressBar] = useState(false);
   const [recentMatchData, setRecentMatchData] = useState([]);
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
-  // const [refereeRecentMatchDisplay, setRefereeRecentMatchDisplay] = useState(false);
+  const [refereeRecentMatchDisplay, setRefereeRecentMatchDisplay] = useState(false);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
@@ -1034,7 +1036,7 @@ export default function HomeScreen({ navigation, route }) {
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
     // navigation.navigate('RegisterReferee');
-    // setRefereeRecentMatchDisplay(false);
+    setRefereeRecentMatchDisplay(false);
     if (refereeInObject) {
       const entity = authContext.entity;
       let languagesListName = [];
@@ -1057,14 +1059,11 @@ export default function HomeScreen({ navigation, route }) {
       setRefereesInModalVisible(!refereesInModalVisible);
       setSportName(refereeInObject.sport_name);
 
-      const params = {
-        sport: refereeInObject.sport_name,
-        role: 'referee',
-      };
-      getGameScoreboardEvents(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
+      getRefereedMatch(entity.uid || entity.auth.user_id, refereeInObject.sport_name, authContext).then((res) => {
         const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         const recentMatch = [];
         const upcomingMatch = [];
+        console.log('Recentest Match API Response::->', res);
         if (res.payload.length > 0) {
           res.payload.filter((event_item) => {
             const eventStartDate = new Date(event_item.start_datetime * 1000)
@@ -1073,20 +1072,20 @@ export default function HomeScreen({ navigation, route }) {
               setRefereeUpcomingMatch([...upcomingMatch]);
             } else {
               recentMatch.push(event_item);
-              // setRefereeRecentMatchDisplay(true);
+              setRefereeRecentMatchDisplay(true);
               setRefereeRecentMatch([...recentMatch]);
             }
             return null;
           });
         } else {
-          // setRefereeRecentMatchDisplay(true);
+          setRefereeRecentMatchDisplay(true);
           setRefereeUpcomingMatch([]);
           setRefereeRecentMatch([]);
         }
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
-      getRefereeReviewData(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
+      getRefereeReviewData(entity.uid || entity.auth.user_id, refereeInObject.sport_name, authContext).then((res) => {
         console.log('Get Referee Review Data Res ::--', res);
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
@@ -1225,17 +1224,17 @@ export default function HomeScreen({ navigation, route }) {
     setScoreboardModalVisible(!scoreboardModalVisible);
   };
 
-  // const refereeMatchModal = () => {
-  //   setRefereeMatchModalVisible(!refereeMatchModalVisible);
-  // };
+  const refereeMatchModal = () => {
+    setRefereeMatchModalVisible(!refereeMatchModalVisible);
+  };
 
   const statsModal = () => {
     setStatsModalVisible(!statsModalVisible);
   };
 
-  // const reviewsModal = () => {
-  //   setReviewsModalVisible(!reviewsModalVisible);
-  // };
+  const reviewsModal = () => {
+    setReviewsModalVisible(!reviewsModalVisible);
+  };
 
   const reviewerDetailModal = () => {
     setReviewerDetailModalVisible(!reviewerDetailModalVisible);
@@ -2343,8 +2342,8 @@ export default function HomeScreen({ navigation, route }) {
                     languageName={languagesName}
                   />
                 </RefereesInItem>
-
-                {/* <RefereesInItem
+                {/* Referee recentest match */}
+                <RefereesInItem
                   title={strings.refereeRecentMatchTitle}
                   onItemPress={() => {
                     refereeMatchModal();
@@ -2370,10 +2369,10 @@ export default function HomeScreen({ navigation, route }) {
                         marginVertical: 4,
                       }} />}
                       style={{ marginVertical: 15 }}
-                      renderItem={({ item: reviewItem }) => <ReviewRatingView
-                        title={reviewItem.title}
-                        rating={Number(reviewItem.rating)}
-                        ratingCount={reviewItem.rating}
+                      renderItem={({ item }) => <ReviewRatingView
+                        title={item.title}
+                        rating={Number(item.rating)}
+                        ratingCount={item.rating}
                         rateStarSize={20}
                       />}
                       ListFooterComponent={() => <View style={{ marginTop: 4 }}>
@@ -2388,7 +2387,8 @@ export default function HomeScreen({ navigation, route }) {
                       keyExtractor={(item, index) => index.toString()}
                     />
                   </View>
-                </RefereesInItem> */}
+                </RefereesInItem>
+                {/* Referee recentest match */}
               </ScrollView>
             </SafeAreaView>
           </View>
@@ -2842,22 +2842,22 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
   },
-  // backgroundView: {
-  //   backgroundColor: colors.matchViewColor,
-  //   borderRadius: 5,
-  //   elevation: 5,
-  //   shadowColor: colors.googleColor,
-  //   shadowOffset: { width: 0, height: 2 },
-  //   shadowOpacity: 0.5,
-  //   shadowRadius: 5,
-  //   marginVertical: 10,
-  // },
-  // lastReviewItemSeprator: {
-  //   height: 1,
-  //   marginHorizontal: 15,
-  //   marginVertical: 5,
-  //   backgroundColor: colors.themeColor,
-  // },
+  backgroundView: {
+    backgroundColor: colors.matchViewColor,
+    borderRadius: 5,
+    elevation: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    marginVertical: 10,
+  },
+  lastReviewItemSeprator: {
+    height: 1,
+    marginHorizontal: 15,
+    marginVertical: 5,
+    backgroundColor: colors.themeColor,
+  },
   sepratorView: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,

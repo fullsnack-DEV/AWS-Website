@@ -50,8 +50,8 @@ const TCWinningRangeChart = ({
                 style={{
                   borderTopRightRadius: teamTwoCount === 0 ? 15 : 0,
                   borderBottomRightRadius: teamTwoCount === 0 ? 15 : 0,
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
+                  borderTopLeftRadius: teamOneCount === 0 ? 15 : 0,
+                  borderBottomLeftRadius: teamOneCount === 0 ? 15 : 0,
                 }}
           />
           <Text style={{ ...styles.bottomText, textAlign: 'right' }}>

@@ -39,6 +39,7 @@ const TennisHome = ({ navigation, route }) => {
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isRefereeAdmin, setIsRefereeAdmin] = useState(false);
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
@@ -58,9 +59,15 @@ const TennisHome = ({ navigation, route }) => {
         setUserId(entity?.uid);
         const homeTeamId = res?.payload?.singlePlayerGame ? res?.payload?.home_team?.user_id : res?.payload?.home_team?.group_id;
         const awayTeamId = res?.payload?.singlePlayerGame ? res?.payload?.away_team?.user_id : res?.payload?.away_team?.group_id;
+        let refereeIds = []
+        refereeIds = res?.payload?.referees.map((e) => e.user_id)
         const teamIds = [homeTeamId, awayTeamId]
         const checkIsAdmin = teamIds.includes(entity?.uid);
+        const checkIsRefereeAdmin = refereeIds.includes(entity?.uid);
         setIsAdmin(checkIsAdmin)
+        setIsRefereeAdmin(checkIsRefereeAdmin)
+        console.log('Check Admin::', checkIsAdmin);
+        console.log('Check Referee Admin::', checkIsRefereeAdmin);
         setGameData(res.payload);
         console.log('GET GAME DETAIL::', res.payload);
       }
@@ -96,6 +103,7 @@ const TennisHome = ({ navigation, route }) => {
             navigation={navigation}
             gameData={gameData}
             isAdmin={isAdmin}
+            isRefereeAdmin = {isRefereeAdmin}
             userRole={userRole}
             userId={userId}
         />
