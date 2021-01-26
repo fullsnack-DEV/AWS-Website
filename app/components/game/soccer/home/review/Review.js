@@ -27,7 +27,7 @@ const Review = ({
   const [loading, setLoading] = useState(true);
   const [reviewsData, setReviewsData] = useState([]);
   const [sliderAttributes, setSliderAttributes] = useState([]);
-  const [starAttributes, starStarAttributes] = useState([]);
+  const [starAttributes, setStarAttributes] = useState([]);
 
   useEffect(() => {
     if (isFocused) {
@@ -48,12 +48,13 @@ const Review = ({
             else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
             return true;
           })
-          setSliderAttributes(sliderReviewProp);
-          starStarAttributes(starReviewProp);
+          setSliderAttributes([...sliderReviewProp]);
+          setStarAttributes([...starReviewProp]);
         }
       }).finally(() => setLoading(false));
     }
   }, [isFocused])
+
   const Seperator = () => (
     <View style={styles.separator}/>
   )

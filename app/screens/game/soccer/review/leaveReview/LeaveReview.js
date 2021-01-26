@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useLayoutEffect,
+  useState, useEffect, useLayoutEffect, useContext,
 } from 'react';
 import {
   Alert,
@@ -15,8 +15,10 @@ import TCInnerLoader from '../../../../../components/TCInnerLoader';
 import images from '../../../../../Constants/ImagePath';
 import colors from '../../../../../Constants/Colors';
 import Header from '../../../../../components/Home/Header';
+import AuthContext from '../../../../../auth/context';
 
 const LeaveReview = ({ navigation, route }) => {
+  const authContext = useContext(AuthContext);
   const [currentForm, setCurrentForm] = useState(1);
   const [loading, setLoading] = useState(false);
   const [sliderAttributes, setSliderAttributes] = useState([]);
@@ -62,7 +64,7 @@ const LeaveReview = ({ navigation, route }) => {
 
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
-    setSliderAttributes(attributes);
+    setSliderAttributes([...attributes]);
     const attr = {}
     attributes.map((item) => { attr[item] = 0; return true; })
     const reviews = _.cloneDeep(reviewsData);
@@ -105,11 +107,14 @@ const LeaveReview = ({ navigation, route }) => {
       }
     } else if (isValidReview(currentForm)) {
       setLoading(true);
-      addGameReview(route?.params?.gameData?.game_id, reviewsData)
-        .catch((error) => {
-          Alert.alert(error?.message);
-        }).finally(() => {
+      addGameReview(route?.params?.gameData?.game_id, reviewsData, authContext)
+        .then(() => {
           setLoading(false);
+          navigation.goBack()
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert('TownsCup', error?.message), 100)
           navigation.goBack()
         })
     } else {

@@ -8,7 +8,7 @@ import images from '../Constants/ImagePath';
 
 const TCGameUserStats = ({
   profilePic = images.profilePlaceHolder,
-  name,
+  name = '',
   rightIconImage = null,
   count = '',
   countTextColor = colors.themeColor,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     width: 30,
   },
   countText: {
-    flex: 0.05,
+    flex: 0.1,
     textAlign: 'center',
     fontSize: 16,
     fontFamily: fonts.RBold,

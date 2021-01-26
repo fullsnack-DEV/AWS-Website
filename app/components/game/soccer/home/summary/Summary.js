@@ -3,6 +3,7 @@ import {
   View, StyleSheet, Text,
 } from 'react-native';
 import moment from 'moment';
+import { useIsFocused } from '@react-navigation/native';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
@@ -30,27 +31,30 @@ const Summary = ({
   getRefereeReservation,
   getScorekeeperReservation,
 }) => {
+  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [sliderAttributes, setSliderAttributes] = useState([]);
-  const [starAttributes, starStarAttributes] = useState([]);
+  const [starAttributes, setStarAttributes] = useState([]);
   useEffect(() => {
-    setLoading(true);
-    getSportsList().then((sports) => {
-      const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
-      const teamReviewProp = soccerSportData?.team_review_properties ?? []
-      const sliderReviewProp = [];
-      const starReviewProp = [];
-      if (teamReviewProp?.length) {
-        teamReviewProp.filter((item) => {
-          if (item.type === 'slider') sliderReviewProp.push(item?.name.toLowerCase())
-          else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
-          return true;
-        })
-        setSliderAttributes(sliderReviewProp);
-        starStarAttributes(starReviewProp);
-      }
-    }).finally(() => setLoading(false));
-  }, [])
+    if (isFocused && gameData) {
+      setLoading(true);
+      getSportsList().then((sports) => {
+        const soccerSportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
+        const teamReviewProp = soccerSportData?.team_review_properties ?? []
+        const sliderReviewProp = [];
+        const starReviewProp = [];
+        if (teamReviewProp?.length) {
+          teamReviewProp.filter((item) => {
+            if (item.type === 'slider') sliderReviewProp.push(item?.name.toLowerCase())
+            else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
+            return true;
+          })
+          setSliderAttributes([...sliderReviewProp]);
+          setStarAttributes([...starReviewProp]);
+        }
+      }).finally(() => setLoading(false));
+    }
+  }, [gameData, isFocused])
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading}/>

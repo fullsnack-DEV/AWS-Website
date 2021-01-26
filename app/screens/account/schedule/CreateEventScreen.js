@@ -94,7 +94,21 @@ export default function CreateEventScreen({ navigation, route }) {
       }
       startDate.setDate(startDate.getDate() + 1)
     }
-    return (numberOfDates === 1 && 'First') || (numberOfDates === 2 && 'Second') || (numberOfDates === 3 && 'Third') || (numberOfDates === 4 && 'Fourth') || (numberOfDates === 5 && 'Fifth')
+    return ordinal_suffix_of(numberOfDates)
+  }
+  const countNumberOfWeeks = () => {
+    const date = new Date()
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
+    const endDate = date
+    const givenDay = new Date().getDay()
+    let numberOfDates = 0
+    while (startDate < endDate) {
+      if (startDate.getDay() === givenDay) {
+        numberOfDates++
+      }
+      startDate.setDate(startDate.getDate() + 1)
+    }
+    return numberOfDates
   }
   const getTodayDay = () => {
     const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss')
@@ -171,6 +185,20 @@ export default function CreateEventScreen({ navigation, route }) {
       unsubscribe();
     };
   }, [route.params.comeName]);
+  const ordinal_suffix_of = (i) => {
+    const j = i % 10,
+      k = i % 100;
+    if (j === 1 && k !== 11) {
+      return `${i}st`;
+    }
+    if (j === 2 && k !== 12) {
+      return `${i}nd`;
+    }
+    if (j === 3 && k !== 13) {
+      return `${i}rd`;
+    }
+    return `${i}th`;
+  }
 
   return (
     <TCKeyboardView>
@@ -209,8 +237,8 @@ export default function CreateEventScreen({ navigation, route }) {
                 descriptions: eventDescription,
                 color: singleSelectEventColor,
                 allDay: toggle,
-                start_datetime: new Date(eventStartDateTime).getTime() / 1000,
-                end_datetime: new Date(eventEndDateTime).getTime() / 1000,
+                start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
+                end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
 
                 is_recurring: selectWeekMonth !== 'Does not repeat',
                 location: searchLocation,
@@ -221,15 +249,15 @@ export default function CreateEventScreen({ navigation, route }) {
               }]
 
               let rule = '';
-              if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly' || selectWeekMonth === 'Monthly') {
+              if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly') {
                 rule = selectWeekMonth.toUpperCase();
-              } else if (selectWeekMonth === `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
-                rule = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
-              } else if (selectWeekMonth === `Monthly on day ${new Date().getDate()}`) {
-                rule = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${(countNumberOfWeekFromDay() === 'First' && 1) || (countNumberOfWeekFromDay() === 'Second' && 2) || (countNumberOfWeekFromDay() === 'Third' && 3) || (countNumberOfWeekFromDay() === 'Fourth' && 4) || (countNumberOfWeekFromDay() === 'Fifth' && 5)}`
+              } else if (selectWeekMonth === `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
+                rule = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`
+              } else if (selectWeekMonth === `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`) {
+                rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`
               }
               if (selectWeekMonth !== 'Does not repeat') {
-                data[0].untilDate = new Date(eventUntilDateTime).getTime() / 1000;
+                data[0].untilDate = parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0);
                 data[0].rrule = `FREQ=${rule}`;
               }
               console.log('Response :-', data);
@@ -356,9 +384,8 @@ export default function CreateEventScreen({ navigation, route }) {
                 { label: 'Does not repeat', value: 'Does not repeat' },
                 { label: 'Daily', value: 'Daily' },
                 { label: 'Weekly', value: 'Weekly' },
-                { label: 'Monthly', value: 'Monthly' },
-                { label: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}`, value: `Monthly on the ${countNumberOfWeekFromDay()} ${getTodayDay()}` },
-                { label: `Monthly on day ${new Date().getDate()}`, value: `Monthly on day ${new Date().getDate()}` },
+                { label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`, value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}` },
+                { label: `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`, value: `Monthly on ${ordinal_suffix_of(new Date().getDate())} day` },
                 { label: 'Yearly', value: 'Yearly' },
               ]}
               // placeholder={strings.selectTimePlaceholder}

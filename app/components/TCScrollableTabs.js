@@ -9,6 +9,7 @@ export default function TCScrollableTabs({ children, initialPage, onChangeTab })
   return (
 
     <ScrollableTabView
+        locked={true}
                     style={{ marginTop: 5 }}
                     tabBarTextStyle = {{
                       fontSize: 16,
