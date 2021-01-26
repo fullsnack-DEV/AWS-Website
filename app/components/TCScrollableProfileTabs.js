@@ -12,8 +12,9 @@ export default function TCScrollableProfileTabs({
   onChangeTab, currentTab, renderTabContain, tabItem, customStyle,
 }) {
   return (
-    <ScrollView style={customStyle}>
+    <ScrollView style={customStyle} nestedScrollEnabled={true}>
       <ScrollableTabView
+          locked={true}
         onChangeTab={onChangeTab}
         style={{ marginTop: 5 }}
         tabBarTextStyle={{

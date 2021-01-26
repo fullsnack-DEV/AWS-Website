@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import {
   Animated, StyleSheet, TouchableOpacity,
-  Image,
 } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import FastImage from 'react-native-fast-image';
 import { widthPercentageToDP as wp } from '../../utils';
 import images from '../../Constants/ImagePath';
 
@@ -37,7 +37,7 @@ const SwipeableRow = ({
                   }}>
               <RectButton
                     style={styles.rightAction}>
-                <Image source={item?.image} style={{ ...styles.deleteImgContainer, height: buttonSize, width: buttonSize }} />
+                <FastImage resizeMode={'contain'} source={item?.image} style={{ ...styles.deleteImgContainer, height: buttonSize, width: buttonSize }} />
               </RectButton>
             </Animated.View>
           </TouchableOpacity>
@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   deleteImgContainer: {
-    resizeMode: 'contain',
     justifyContent: 'center',
     alignItems: 'center',
   },

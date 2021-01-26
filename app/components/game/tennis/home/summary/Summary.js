@@ -35,7 +35,7 @@ const Summary = ({
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [sliderAttributes, setSliderAttributes] = useState([]);
-  const [starAttributes, starStarAttributes] = useState([]);
+  const [starAttributes, setStarAttributes] = useState([]);
   useEffect(() => {
     setLoading(true);
     getSportsList(authContext).then((sports) => {
@@ -49,8 +49,8 @@ const Summary = ({
           else if (item.type === 'star') starReviewProp.push(item?.name.toLowerCase())
           return true;
         })
-        setSliderAttributes(sliderReviewProp);
-        starStarAttributes(starReviewProp);
+        setSliderAttributes([...sliderReviewProp]);
+        setStarAttributes([...starReviewProp]);
       }
     }).finally(() => setLoading(false));
   }, [])

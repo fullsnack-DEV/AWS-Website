@@ -70,6 +70,7 @@ function NotificationsListScreen({ navigation }) {
   const onDetailPress = (item) => {
     if (activeScreen) {
       const verb = item.activities[0].verb;
+      console.log(verb);
       if (
         verb.includes(NotificationType.initialChallengePaymentFail)
         || verb.includes(NotificationType.alterChallengePaymentFail)
@@ -101,8 +102,7 @@ function NotificationsListScreen({ navigation }) {
       || verb.includes(NotificationType.refereeReservationCanceledDuringAwaitingPayment)
       || verb.includes(NotificationType.refereeReservationRestoredDuringAwaitingPayment)
       || verb.includes(NotificationType.refereeRequest)
-      || verb.includes(NotificationType.changeRefereeRequest)
-      || verb.includes(NotificationType.scorekeeperRequest)) {
+      || verb.includes(NotificationType.changeRefereeRequest)) {
         const a = JSON.parse(item.activities[0].object)?.reservationObject
           ?.reservation_id;
         setloading(true);
@@ -114,6 +114,8 @@ function NotificationsListScreen({ navigation }) {
           });
           setloading(false);
         }).catch(() => setloading(false));
+      } else if (verb.includes(NotificationType.scorekeeperRequest)) {
+        Alert.alert('Remain Functionality')
       }
     } else {
       showSwitchProfilePopup()
