@@ -19,6 +19,7 @@ export default function NewsFeedList({
   scrollEnabled,
   ListHeaderComponent,
   onPressDone,
+  onRefreshPress,
 }) {
   // console.log('Post Data ::--', postData);
   const [pullRefresh, setPullRefresh] = useState(false);
@@ -115,6 +116,7 @@ export default function NewsFeedList({
         onEndReachedThreshold={0.5}
         refreshing={pullRefresh}
         onRefresh={() => {
+          onRefreshPress();
           const entity = authContext.entity
           if (entity) {
             setUserID(entity.uid || entity.auth.user_id);

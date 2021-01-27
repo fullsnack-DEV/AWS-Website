@@ -98,6 +98,15 @@ export default function MultiImagePostView({
 
   const shareActionSheet = useRef();
 
+  const handlePageZoom = ({ type, scale }) => {
+    if (type === 'onPanResponderRelease') {
+      if (scale !== 1) {
+        setScroll(false);
+      } else if (scale === 1) {
+        setScroll(true);
+      }
+    }
+  }
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.blackColor }}
@@ -136,21 +145,17 @@ export default function MultiImagePostView({
               }
               if (multiAttachItem.type === 'image') {
                 return (
-                  <ImageZoom
+                  <View>
+                    <ImageZoom
                       doubleClickInterval={250}
-                    cropWidth={Dimensions.get('window').width}
-                    cropHeight={Dimensions.get('window').height}
-                    imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth}
-                    imageHeight={isLandScape ? landscapeImgHeight : portraitImgHeight}
-                    onMove={({ scale }) => {
-                      if (scale === 1) {
-                        setScroll(true);
-                      } else {
-                        setScroll(false);
-                      }
-                    }}
-                  >
-                    <FastImage
+                      cropWidth={Dimensions.get('window').width}
+                      cropHeight={Dimensions.get('window').height}
+                      imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth}
+                      imageHeight={isLandScape ? landscapeImgHeight : portraitImgHeight}
+                      minScale={1}
+                      onMove={handlePageZoom}
+                     >
+                      <FastImage
                         style={[styles.uploadedImage, {
                           width: isLandScape ? landscapeImgWidth : portraitImgWidth,
                           height: isLandScape ? landscapeImgHeight : portraitImgHeight,
@@ -158,7 +163,7 @@ export default function MultiImagePostView({
                         source={{ uri: multiAttachItem.thumbnail }}
                         resizeMode={ FastImage.resizeMode.cover }
                     />
-                    <Image
+                      <Image
                         style={{
                           position: 'absolute',
                           height: hp('10%'),
@@ -167,7 +172,7 @@ export default function MultiImagePostView({
                         source={isLandScape ? images.landscapeTopImage : images.portraitTopImage}
                         resizeMode={'stretch'}
                     />
-                    <Image
+                      <Image
                         style={{
                           position: 'absolute',
                           height: hp('10%'),
@@ -177,7 +182,8 @@ export default function MultiImagePostView({
                         source={isLandScape ? images.landscapeBottomImage : images.portraitBottomImage}
                         resizeMode={'stretch'}
                     />
-                  </ImageZoom>
+                    </ImageZoom>
+                  </View>
                 );
               }
               if (multiAttachItem.type === 'video') {

@@ -156,17 +156,17 @@ function NewsFeedPostItems({
                 if (multiAttachItem.type === 'image') {
                   return (
                     <PostImageSet
-                      activeIndex={index}
-                      data={multiAttachItem}
-                      itemNumber={index + 1}
-                      attachedImages={attachedImages}
-                      totalItemNumber={attachedImages.length}
-                      item={item}
-                      caller_id={caller_id}
-                      navigation={navigation}
-                      onImageProfilePress={onImageProfilePress}
-                      onLikePress={onLikePress}
-                    />
+                    activeIndex={index}
+                    data={multiAttachItem}
+                    itemNumber={index + 1}
+                    attachedImages={attachedImages}
+                    totalItemNumber={attachedImages.length}
+                    item={item}
+                    caller_id={caller_id}
+                    navigation={navigation}
+                    onImageProfilePress={onImageProfilePress}
+                    onLikePress={onLikePress}
+                  />
                   );
                 }
                 if (multiAttachItem.type === 'video') {

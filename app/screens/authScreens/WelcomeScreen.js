@@ -227,8 +227,20 @@ export default function WelcomeScreen({ navigation }) {
       <Text style={ styles.welcome }>{strings.welCome}</Text>
       <Text style={ styles.welcomeText }>{strings.welcomeText}</Text>
 
-      <FacebookButton onPress={onFacebookButtonPress}/>
-      <GoogleButton onPress={onGoogleButtonPress}/>
+      <FacebookButton onPress={() => {
+        if (authContext.networkConnected) {
+          onFacebookButtonPress();
+        } else {
+          authContext.showNetworkAlert();
+        }
+      }}/>
+      <GoogleButton onPress={() => {
+        if (authContext.networkConnected) {
+          onGoogleButtonPress();
+        } else {
+          authContext.showNetworkAlert();
+        }
+      }}/>
 
       <TouchableOpacity
             style={ [styles.imgWithText, styles.allButton] }

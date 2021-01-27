@@ -103,7 +103,7 @@ const Stats = ({
   )
   const renderSingleSection = ({ item }) => (
     <TCGameUserStats
-            name={item?.by?.full_name ?? `${item?.by?.first_name ?? ''} ${item?.by?.last_name ?? ''}`}
+            name={item?.by ? item?.by?.full_name ?? `${item?.by?.first_name ?? ''} ${item?.by?.last_name ?? ''}` : 'No Specific Player'}
             profilePic={item?.full_image ? { uri: item?.full_image } : images.profilePlaceHolder}
             count={item?.count}
             rightIconImage={item?.rightIconImage}

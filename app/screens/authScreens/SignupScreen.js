@@ -284,7 +284,11 @@ export default function SignupScreen({ navigation }) {
                 extraStyle={{ marginTop: hp('10%') }}
                 onPress={() => {
                   if (validate()) {
-                    signupUser(fName, lName, email, password);
+                    if (authContext.networkConnected) {
+                      signupUser(fName, lName, email, password);
+                    } else {
+                      authContext.showNetworkAlert();
+                    }
                   }
                 }}
             />

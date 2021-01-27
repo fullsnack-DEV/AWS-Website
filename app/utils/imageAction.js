@@ -15,7 +15,9 @@ const base64ToArrayBuffer = (base64) => {
   // return Buffer.from(binaryString)
 };
 
-export const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
+export const uploadImageOnPreSignedUrls = async ({
+  url, uri, type, cancelToken,
+}) => {
   const base64 = await fs.readFile(uri, 'base64');
   const imgBuffer = base64ToArrayBuffer(base64);
   const options = {
@@ -28,6 +30,7 @@ export const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
       'Content-Length': imgBuffer.length,
     },
     data: imgBuffer,
+    cancelToken,
   };
   const response = await axios(options);
   if (response.status === 200) {
@@ -36,7 +39,7 @@ export const uploadImageOnPreSignedUrls = async ({ url, uri, type }) => {
   throw new Error('upoad-failed')
 };
 
-const uploadImage = (data, authContext) => {
+const uploadImage = (data, authContext, cancelToken) => {
   const image = {
     ...data,
     thumbURL: '',
@@ -44,7 +47,7 @@ const uploadImage = (data, authContext) => {
   };
   return getImagePreSignedURL({
     count: 2,
-  }, authContext).then((response) => {
+  }, authContext, cancelToken).then((response) => {
     const preSignedUrls = response.payload.preSignedUrls || [];
     if (preSignedUrls.length !== 2) {
       throw new Error('failed-presigned-url')
@@ -54,6 +57,7 @@ const uploadImage = (data, authContext) => {
         url: preSignedUrls[0],
         uri: image.path,
         type: image.mime,
+        cancelToken,
         // type: image.path.split('.')[1] || 'jpeg',
       }),
       // FIXME: resize image here.
@@ -61,6 +65,7 @@ const uploadImage = (data, authContext) => {
         url: preSignedUrls[1],
         uri: image.path,
         type: image.mime,
+        cancelToken,
         // type: image.path.split('.')[1] || 'jpeg',
       }),
     ]).then(([fullImage, thumbnail]) => ({
@@ -73,10 +78,12 @@ const uploadImage = (data, authContext) => {
   });
 };
 
-const uploadImages = async (images, authContext, cb = () => {}) => {
+const uploadImages = async (images, authContext, cb = () => {}, cancelRequest) => {
   let completed = 0;
   const promises = [];
-  images.forEach((item) => promises.push(uploadImage(item, authContext)));
+  const source = axios.CancelToken.source();
+  cancelRequest(source);
+  images.forEach((item) => promises.push(uploadImage(item, authContext, source.token)));
   cb(0, images.length);
   for (const promise of promises) {
     // eslint-disable-next-line no-loop-func

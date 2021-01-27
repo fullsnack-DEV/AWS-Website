@@ -4,7 +4,6 @@ import React, {
 import {
   StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
 } from 'react-native';
-import { Observable } from 'rxjs';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -21,7 +20,6 @@ import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context'
 
 export default function FeedsScreen({ navigation }) {
-  let subscribeUploadImage = null;
   const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
@@ -33,30 +31,25 @@ export default function FeedsScreen({ navigation }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
-  let cancelPressed = false;
+  const [cancelApiRequest, setCancelApiRequest] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      setloading(true);
-      const entity = authContext.entity;
-      console.log('Entity :-', entity);
-      setCurrentUserDetail(entity.obj || entity.auth.user);
-      getNewsFeed(authContext)
-        .then((response) => {
-          setloading(false);
-          setPostData(response.payload.results)
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => Alert.alert('', e.message), 100)
-        });
-    });
-
-    return () => {
-      unsubscribe();
-      if (subscribeUploadImage) subscribeUploadImage.unsubscribe();
-    };
-  }, [navigation]);
+    // if (isFocused) {
+    setloading(true);
+    const entity = authContext.entity;
+    console.log('Entity :-', entity);
+    setCurrentUserDetail(entity.obj || entity.auth.user);
+    getNewsFeed(authContext)
+      .then((response) => {
+        setloading(false);
+        setPostData(response.payload.results)
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => Alert.alert('', e.message), 100)
+      });
+    // }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -78,10 +71,14 @@ export default function FeedsScreen({ navigation }) {
         </TouchableWithoutFeedback>
       ),
     });
-  }, [navigation]);
+  }, []);
 
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
+  }
+
+  const cancelRequest = (axiosTokenSource) => {
+    setCancelApiRequest({ ...axiosTokenSource });
   }
 
   const callthis = (data, postDesc) => {
@@ -89,32 +86,20 @@ export default function FeedsScreen({ navigation }) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      const observable$ = Observable.create((observer) => {
-        uploadImages(imageArray, authContext, progressStatus)
-          .then((response) => {
-            observer.next(response);
-            observer.complete();
-          })
-      });
-
-      subscribeUploadImage = observable$.subscribe({
-        next: (response) => {
-          const attachments = response.map((item) => ({
-            type: item.type,
-            url: item.fullImage,
-            thumbnail: item.thumbnail,
-            media_height: item.height,
-            media_width: item.width,
-          }))
-          const dataParams = {
-            text: postDesc && postDesc,
-            attachments,
-          };
-          if (!cancelPressed) {
-            createPostAfterUpload(dataParams);
-          }
-        },
-      });
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }))
+        const dataParams = {
+          text: postDesc && postDesc,
+          attachments,
+        };
+        createPostAfterUpload(dataParams)
+      })
     }
   }
 
@@ -180,9 +165,8 @@ export default function FeedsScreen({ navigation }) {
   }
 
   const onCancelImageUpload = () => {
-    cancelPressed = true;
-    if (subscribeUploadImage) {
-      subscribeUploadImage.unsubscribe();
+    if (cancelApiRequest) {
+      cancelApiRequest.cancel('Cancel Image Uploading');
     }
     setProgressBar(false);
     setDoneUploadCount(0);
@@ -191,31 +175,16 @@ export default function FeedsScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {progressBar && <ImageProgress
-        numberOfUploaded={doneUploadCount}
-        totalUpload={totalUploadCount}
-        onCancelPress={() => {
-          console.log('Cancel Pressed!');
-          Alert.alert(
-            'Cancel Upload?',
-            'If you cancel your upload now, your post will not be saved.',
-            [{
-              text: 'Go back',
-            },
-            {
-              text: 'Cancel upload',
-              onPress: onCancelImageUpload,
-            },
-            ],
-          );
-        }}
-        postDataItem={currentUserDetail}
-      />}
       <NewsFeedList
         navigation={navigation}
         newsFeedData={newsFeedData}
         postData={postData}
         onPressDone={editPostDoneCall}
+        onRefreshPress={() => {
+          setIsMoreLoading(false);
+          setIsNextDataLoading(true);
+          setFooterLoading(false)
+        }}
         footerLoading={footerLoading && isNextDataLoading}
         ListHeaderComponent={() => <View>
           <WritePost
@@ -254,6 +223,25 @@ export default function FeedsScreen({ navigation }) {
           }
         }}
       />
+      {progressBar && <ImageProgress
+          numberOfUploaded={doneUploadCount}
+          totalUpload={totalUploadCount}
+          onCancelPress={() => {
+            Alert.alert(
+              'Cancel Upload?',
+              'If you cancel your upload now, your post will not be saved.',
+              [{
+                text: 'Go back',
+              },
+              {
+                text: 'Cancel upload',
+                onPress: onCancelImageUpload,
+              },
+              ],
+            );
+          }}
+          postDataItem={currentUserDetail}
+      />}
     </View>
   );
 }
