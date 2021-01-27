@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   statusInnerViewStyle: {
+    padding: 8,
     width: '29%',
     flexDirection: 'row',
     justifyContent: 'space-between',

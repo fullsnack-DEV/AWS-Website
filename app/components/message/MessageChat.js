@@ -305,7 +305,6 @@ const MessageChat = ({
     ImagePicker.openPicker({
       width: 400,
       height: 400,
-      cropping: true,
     }).then((image) => {
       setUploadImageInProgress(true);
       setSelectedImage(image?.path ?? null);

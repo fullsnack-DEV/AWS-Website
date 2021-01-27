@@ -13,7 +13,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Video from 'react-native-video';
 import Orientation from 'react-native-orientation';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-community/clipboard';
@@ -27,6 +26,7 @@ import fonts from '../../Constants/Fonts';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import PostDescSection from './PostDescSection';
 import TagView from './TagView';
+import CustomVideoPlayer from '../CustomVideoPlayer';
 
 export default function SinglePostVideoView({
   backBtnPress,
@@ -39,8 +39,6 @@ export default function SinglePostVideoView({
   openPostModal,
 }) {
   const [topDesc, setTopDesc] = useState(false);
-  const [mute] = useState(true);
-  const [play] = useState(false);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
   const [portraitImgDimention, setPortraitImgDimention] = useState(() => {
     let height = hp('50%');
@@ -149,17 +147,19 @@ export default function SinglePostVideoView({
             />
             <Text style={styles.loadingTextStyle}>Loading...</Text>
           </View>
-          <Video
-            paused={!play}
-            muted={!mute}
-            source={{ uri: data.url }}
-            style={[styles.singleImageDisplayStyle, {
-              height: isLandScape ? landscapeImgDimention.height : portraitImgDimention.height,
-              width: isLandScape ? landscapeImgDimention.width : portraitImgDimention.width,
-              position: 'absolute',
-            }]}
-            resizeMode={'cover'}
-            controls={true}
+          <CustomVideoPlayer
+              isLandscape={isLandScape}
+              sourceURL={data.url}
+              containerStyle={{
+                ...styles.singleImageDisplayStyle,
+                position: 'absolute',
+                height: isLandScape ? landscapeImgDimention.height : portraitImgDimention.height,
+                width: isLandScape ? landscapeImgDimention.width : portraitImgDimention.width,
+              }}
+              videoStyle={{
+                height: isLandScape ? landscapeImgDimention.height : portraitImgDimention.height,
+                width: isLandScape ? landscapeImgDimention.width : portraitImgDimention.width,
+              }}
           />
         </View>
         <View style={{ position: 'absolute' }}>
