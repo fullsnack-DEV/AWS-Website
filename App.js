@@ -21,7 +21,7 @@ if (!__DEV__) {
   console.error = () => {};
 }
 export default function App() {
-  const [networkConnected, setNetworkConntected] = useState(false);
+  const [networkConnected, setNetworkConntected] = useState(true);
   useEffect(() => {
     if (!networkConnected) {
       showNetworkAlert();
@@ -45,7 +45,6 @@ export default function App() {
         await firebase.initializeApp(firebaseConfig);
       }
     }
-    console.log('1');
     firebaseAppInitialize();
   }, []);
 
