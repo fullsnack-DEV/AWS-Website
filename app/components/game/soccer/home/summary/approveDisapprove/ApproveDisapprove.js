@@ -215,19 +215,16 @@ const ApproveDisapprove = ({
         </View>
 
       </View>
-      {isApprovingPeriodExpired ? (
-        <Text style={styles.reviewPeriod}>
-          The match-result-approving period is<Text style={{ fontFamily: fonts.RBold }}>
-            {' '}expired
-          </Text>
+      {isApprovingPeriodExpired && approvalGameData?.approval?.status !== 'approvedByAll' && <Text style={styles.reviewPeriod}>
+        The match-result-approving period is<Text style={{ fontFamily: fonts.RBold }}>
+          {' '}expired
         </Text>
-      ) : (
-        <Text style={styles.reviewPeriod}>
-          The match-result-approving period will be expired with <Text style={{ fontFamily: fonts.RBold }}>
-            {approvalGameData?.approval?.expiry && getGameDateTimeInDHMformat(approvalGameData?.approval?.expiry)}
-          </Text>
+      </Text> }
+      {!isApprovingPeriodExpired && <Text style={styles.reviewPeriod}>
+        The match-result-approving period will be expired with <Text style={{ fontFamily: fonts.RBold }}>
+          {approvalGameData?.approval?.expiry && getGameDateTimeInDHMformat(approvalGameData?.approval?.expiry)}
         </Text>
-      )}
+      </Text>}
 
     </View>
   )

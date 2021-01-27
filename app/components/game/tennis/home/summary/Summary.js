@@ -23,6 +23,7 @@ import TennisScoreView from '../../TennisScoreView';
 const Summary = ({
   gameData,
   isAdmin,
+  isRefereeAdmin,
   userRole,
   navigation,
   followTennisUser,
@@ -57,7 +58,7 @@ const Summary = ({
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading}/>
-      {isAdmin && (
+      {(isAdmin || isRefereeAdmin) && (
         <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
           <TCGradientButton
                   onPress={() => {
@@ -73,7 +74,7 @@ const Summary = ({
               />
 
           {/*  Leave Review Section */}
-          {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && (
+          {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isRefereeAdmin && (
             <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
               <View>
                 <TCGradientButton
@@ -97,7 +98,7 @@ const Summary = ({
               </View>
             </View>
           )}
-          {gameData?.status === 'ended' && (
+          {gameData?.status === 'ended' && !isRefereeAdmin && (
             <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
               {!checkReviewExpired(gameData?.actual_enddatetime) ? (
                 <Text style={styles.reviewPeriod}>

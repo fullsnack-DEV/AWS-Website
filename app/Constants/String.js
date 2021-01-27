@@ -533,5 +533,9 @@ const strings = {
   gameEnded: 'Game is ended.',
   selectTeam: 'Please Select Team',
   resetMatchRecord: 'Do you want to reset all the match records?',
+  reviewForTeams: 'Review for Teams',
+  reviewForPlayers: 'Review for Players',
+  reviewForReferees: 'Review for Referees',
+  editReviewForTeams: 'Edit Review for Teams',
 };
 export default strings;
