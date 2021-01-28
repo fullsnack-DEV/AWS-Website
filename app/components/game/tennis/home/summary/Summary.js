@@ -18,6 +18,7 @@ import fonts from '../../../../../Constants/Fonts';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import AuthContext from '../../../../../context/auth';
 import TennisScoreView from '../../TennisScoreView';
+import GameFeed from '../../../common/summary/GameFeed';
 // import GameStatus from '../../../../../Constants/GameStatus';
 
 const Summary = ({
@@ -32,6 +33,9 @@ const Summary = ({
   getSportsList,
   getRefereeReservation,
   getScorekeeperReservation,
+  setUploadImageProgressData,
+  createGamePostData,
+  getGameFeedData,
 }) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -169,10 +173,16 @@ const Summary = ({
           gameData={gameData}
       />
 
-      {/* Feed Screen */}
-      <View style={{ backgroundColor: colors.whiteColor }}>
-        {/* <FeedsScreen navigation={navigation}/> */}
-      </View>
+      {/* Game Feed */}
+      <GameFeed
+          setUploadImageProgressData={setUploadImageProgressData}
+          createGamePostData={createGamePostData}
+          gameData={gameData}
+          getGameFeedData={getGameFeedData}
+          navigation={navigation}
+          currentUserData={authContext?.entity?.obj}
+          userID={authContext?.entity?.uid}
+      />
     </View>
   )
 }

@@ -30,7 +30,7 @@ function NewsFeedDescription({
 
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      {descriptions.length > 0 && (
+      {descriptions?.length > 0 && (
         <Hyperlink
         // linkStyle={{ color: colors.skyBlue }}
         >
@@ -49,8 +49,8 @@ function NewsFeedDescription({
             >
               {readMore ? descriptions : descriptions.substring(0, character)}
             </ParsedText>
-            {descriptions.length > character && !readMore ? '... ' : ' '}
-            {descriptions.length > character && (
+            {descriptions?.length > character && !readMore ? '... ' : ' '}
+            {descriptions?.length > character && (
               <Text onPress={ () => toggleNumberOfLines() } style={[styles.descText, descText]}>
                 {readMore ? 'less' : 'more'}
               </Text>

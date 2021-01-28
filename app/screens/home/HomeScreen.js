@@ -446,12 +446,38 @@ export default function HomeScreen({ navigation, route }) {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
   }
 
+  const createPostAfterUpload = (dataParams) => {
+    createPost(dataParams, authContext)
+      .then(() => getNewsFeed(authContext))
+      .then((response) => {
+        setPostData(response.payload.results)
+        setProgressBar(false);
+        setDoneUploadCount(0);
+        setTotalUploadCount(0);
+        getGallery(userID, authContext).then((res) => {
+          setGalleryData(res.payload);
+        });
+      })
+      .catch((error) => {
+        setloading(false)
+        console.log('error coming', error)
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message)
+        }, 0.3)
+      })
+  }
+
   const callthis = (data, postDesc) => {
-    if (data) {
+    if (postDesc.trim().length > 0 && data?.length === 0) {
+      const dataParams = {
+        text: postDesc,
+      };
+      createPostAfterUpload(dataParams);
+    } else if (data) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
         const attachments = responses.map((item) => ({
           type: item.type,
           url: item.fullImage,
@@ -463,24 +489,7 @@ export default function HomeScreen({ navigation, route }) {
           text: postDesc && postDesc,
           attachments,
         };
-        createPost(dataParams, authContext)
-          .then(() => getNewsFeed(authContext))
-          .then((response) => {
-            setPostData(response.payload.results)
-            setProgressBar(false);
-            setDoneUploadCount(0);
-            setTotalUploadCount(0);
-            getGallery(userID, authContext).then((res) => {
-              setGalleryData(res.payload);
-            });
-          })
-          .catch((error) => {
-            setloading(false)
-            console.log('error coming', error)
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, error.message)
-            }, 0.3)
-          })
+        createPostAfterUpload(dataParams);
       })
     }
   }
@@ -1266,6 +1275,20 @@ export default function HomeScreen({ navigation, route }) {
       navigation.navigate('GroupMembersScreen', { groupID: user_id });
     }
   }
+  const [cancelApiRequest, setCancelApiRequest] = useState(null);
+
+  const onCancelImageUpload = () => {
+    if (cancelApiRequest) {
+      cancelApiRequest.cancel('Cancel Image Uploading');
+    }
+    setProgressBar(false);
+    setDoneUploadCount(0);
+    setTotalUploadCount(0);
+  }
+
+  const cancelRequest = (axiosTokenSource) => {
+    setCancelApiRequest({ ...axiosTokenSource });
+  }
 
   return (
     <View style={ styles.mainContainer }>
@@ -1394,7 +1417,7 @@ export default function HomeScreen({ navigation, route }) {
                     navigation={navigation}
                     postData={postData}
                     userID={userID}
-                    scrollEnabled={false}
+                    // scrollEnabled={false}
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >
@@ -2657,7 +2680,18 @@ export default function HomeScreen({ navigation, route }) {
         numberOfUploaded={doneUploadCount}
         totalUpload={totalUploadCount}
         onCancelPress={() => {
-          console.log('Cancel Pressed!');
+          Alert.alert(
+            'Cancel Upload?',
+            'If you cancel your upload now, your post will not be saved.',
+            [{
+              text: 'Go back',
+            },
+            {
+              text: 'Cancel upload',
+              onPress: onCancelImageUpload,
+            },
+            ],
+          );
         }}
         postDataItem={currentUserData}
       />}

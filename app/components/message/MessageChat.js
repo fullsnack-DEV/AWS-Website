@@ -17,6 +17,7 @@ import QB from 'quickblox-react-native-sdk';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
+import Video from 'react-native-video';
 import ActivityLoader from '../loader/ActivityLoader';
 import Header from '../Home/Header';
 import images from '../../Constants/ImagePath';
@@ -46,6 +47,7 @@ const MessageChat = ({
   route,
   navigation,
 }) => {
+  const videoPlayerRef = useRef();
   const authContext = useContext(AuthContext)
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadImageInProgress, setUploadImageInProgress] = useState(false);
@@ -307,7 +309,8 @@ const MessageChat = ({
       height: 400,
     }).then((image) => {
       setUploadImageInProgress(true);
-      setSelectedImage(image?.path ?? null);
+      console.log(image);
+      setSelectedImage(image ?? null);
       const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
       const validImageSize = image?.size <= MAX_FILE_SIZE;
 
@@ -381,15 +384,57 @@ const MessageChat = ({
         }}>
           {selectedImage && (
             <View style={styles.selectedImageContainer}>
-              <FastImage
-                  source={{ uri: selectedImage }}
-                  style={{
-                    height: 50,
-                    width: 50,
-                    marginVertical: hp(2),
-                  }}
-                  resizeMode={'contain'}
-              />
+              {selectedImage?.mime?.includes('image') ? (
+                <FastImage
+                    resizeMode={'cover'}
+                      source={{ uri: selectedImage?.path }}
+                      style={{
+                        borderRadius: 5,
+                        height: 50,
+                        width: 50,
+                        marginVertical: hp(2),
+                      }}
+                  />
+              ) : (
+                <View>
+                  <View style={{
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                  }}>
+                    <FastImage
+                        source={images.videoPlayBtn}
+                        tintColor={'white'}
+                        resizeMode={'contain'}
+                        style={{
+                          height: 20,
+                          width: 20,
+                        }}/>
+                  </View>
+                  <Video
+                      ref={videoPlayerRef}
+                      paused={true}
+                      muted={true}
+                      source={{ uri: selectedImage?.path }}
+                      style={{
+                        borderRadius: 5,
+                        height: 50,
+                        width: 50,
+                        marginVertical: hp(2),
+                      }}
+                      resizeMode={'cover'}
+                      onLoad={() => {
+                        videoPlayerRef.current.seek(0);
+                      }}
+                   />
+                </View>
+              )}
+
               <TouchableOpacity onPress={() => {
                 setSelectedImage(null);
                 setUploadImageInProgress(false);
@@ -488,7 +533,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   bottomTextUpperContainer: {
-
     backgroundColor: colors.whiteColor,
     width: wp(100),
     justifyContent: 'center',
@@ -516,10 +560,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     width: wp(100),
     height: hp(70),
-    marginBottom: hp(2),
+    paddingBottom: hp(2),
   },
   messageContentView: {
-    marginBottom: hp(2),
+    paddingBottom: hp(2),
   },
   avatarContainer: {
     width: wp(10),

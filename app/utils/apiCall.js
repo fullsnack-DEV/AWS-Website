@@ -1,6 +1,7 @@
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert } from 'react-native';
+import strings from '../Constants/String';
 
 const apiCall = async ({
   method,
@@ -11,7 +12,7 @@ const apiCall = async ({
   responseType,
 }) => NetInfo.fetch().then(async (netStat) => {
   if (!netStat || !netStat.isConnected) {
-    Alert.alert('Error: Internet not available');
+    Alert.alert(strings.alertmessagetitle, strings.networkConnectivityErrorMessage)
     throw new Error('no-internet');
   }
   const options = {

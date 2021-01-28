@@ -1,7 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Video from 'react-native-video';
 import {
-  Text,
   View, StyleSheet,
 } from 'react-native';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
@@ -13,14 +12,19 @@ const CustomVideoPlayer = ({
   resizeMode = 'contain',
   containerStyle,
   isLandscape = false,
+  onPlayPausedStatusChanged = () => {},
 }) => {
   const videoPlayerRef = useRef();
   const [duration, setDuration] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [paused, setPaused] = useState(false);
-  const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
+  const [paused, setPaused] = useState(true);
+  const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
   const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    onPlayPausedStatusChanged(paused)
+  }, [paused])
 
   const onSeek = (seek) => videoPlayerRef.current.seek(seek);
   const onPaused = (pState) => {
@@ -53,12 +57,6 @@ const CustomVideoPlayer = ({
     videoPlayerRef.current.presentFullscreenPlayer();
   };
 
-  const renderToolbar = () => (
-    <View>
-      <Text style={styles.toolbar}> toolbar </Text>
-    </View>
-  );
-
   const onSeeking = (currTime) => setCurrentTime(currTime);
 
   return (
@@ -90,7 +88,6 @@ const CustomVideoPlayer = ({
           onSeeking={onSeeking}
           playerState={playerState}
           progress={currentTime}
-          toolbar={renderToolbar()}
       />
     </View>
   )

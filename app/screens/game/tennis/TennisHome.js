@@ -11,8 +11,8 @@ import Summary from '../../../components/game/tennis/home/summary/Summary';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import Stats from '../../../components/game/tennis/home/stats/Stats';
 import {
-  approveDisapproveGameRecords,
-  getGameData,
+  approveDisapproveGameRecords, createGamePost,
+  getGameData, getGameFeed,
   getGameGallery,
   getGameMatchRecords, getGameRefereeReservation,
   getGameScorekeeperReservation,
@@ -87,11 +87,16 @@ const TennisHome = ({ navigation, route }) => {
   const getGameSportsList = () => getSportsList(authContext)
   const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
   const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
+  const getGameFeedData = (params) => getGameFeed(params, authContext)
+  const createGamePostData = (params) => createGamePost(params, authContext)
 
   const renderTabContain = (tabKey) => (
     <View>
       {tabKey === 0 && (
         <Summary
+            createGamePostData={createGamePostData}
+            getGameFeedData={getGameFeedData}
+            setUploadImageProgressData={setUploadImageProgressData}
             getRefereeReservation={getRefereeReservation}
             getScorekeeperReservation={getScorekeeperReservation}
             getSportsList={getGameSportsList}
