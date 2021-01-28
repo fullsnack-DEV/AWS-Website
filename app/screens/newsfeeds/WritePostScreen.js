@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -22,16 +22,13 @@ import ImagePicker from 'react-native-image-crop-picker';
 import RNUrlPreview from 'react-native-url-preview';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
-import { createPost, getNewsFeed } from '../../api/NewsFeeds';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TagUserScreen from './TagUserScreen';
 import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
 import images from '../../Constants/ImagePath';
-import AuthContext from '../../auth/context'
 
 export default function WritePostScreen({ navigation, route }) {
-  const authContext = useContext(AuthContext)
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState(route.params.selectedImageList);
@@ -86,21 +83,6 @@ export default function WritePostScreen({ navigation, route }) {
             onPress={() => {
               if (searchText.trim().length === 0 && selectImage.length === 0) {
                 Alert.alert('Please write some text or select any image.');
-              } else if (searchText.trim().length > 0 && selectImage.length === 0) {
-                setloading(true);
-                const data = {
-                  text: searchText,
-                };
-                createPost(data, authContext)
-                  .then(() => getNewsFeed(authContext))
-                  .then(() => {
-                    navigation.goBack()
-                    setloading(false);
-                  })
-                  .catch((e) => {
-                    Alert.alert('', e.messages)
-                    setloading(false);
-                  });
               } else {
                 setloading(false);
                 navigation.goBack();

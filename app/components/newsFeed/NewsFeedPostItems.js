@@ -45,12 +45,12 @@ function NewsFeedPostItems({
 
   useEffect(() => {
     let filterLike = [];
-    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
-      setLikeCount(item.reaction_counts.clap);
+    if (item?.reaction_counts?.clap !== undefined) {
+      setLikeCount(item?.reaction_counts?.clap);
     }
-    if (item.own_reactions && item.own_reactions.clap !== undefined) {
-      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
-      if (filterLike.length > 0) {
+    if (item?.own_reactions?.clap !== undefined) {
+      filterLike = item?.own_reactions?.clap?.filter((clapItem) => clapItem?.user_id === caller_id);
+      if (filterLike?.length > 0) {
         setLike(true);
       } else {
         setLike(false);
@@ -63,20 +63,20 @@ function NewsFeedPostItems({
   const shareActionSheet = useRef();
 
   let userImage = '';
-  if (item.actor && item.actor.data) {
-    userImage = item.actor.data.full_image;
+  if (item?.actor && item?.actor?.data) {
+    userImage = item?.actor?.data?.full_image;
   }
 
   let attachedImages = [];
   let descriptions = '';
-  if (item.object) {
-    if (JSON.parse(item.object).attachments !== undefined && JSON.parse(item.object).attachments.length > 0) {
-      attachedImages = JSON.parse(item.object).attachments;
+  if (item?.object) {
+    if (JSON.parse(item?.object)?.attachments !== undefined && JSON.parse(item?.object)?.attachments?.length > 0) {
+      attachedImages = JSON.parse(item?.object)?.attachments;
     }
-    descriptions = JSON.parse(item.object).text;
+    descriptions = JSON.parse(item?.object).text;
   }
   let threeDotBtnDisplay = false;
-  if (item.foreign_id === caller_id) {
+  if (item?.foreign_id === caller_id) {
     threeDotBtnDisplay = true;
   } else {
     threeDotBtnDisplay = false;
@@ -93,10 +93,10 @@ function NewsFeedPostItems({
           />
         </TouchableWithoutFeedback>
         <View style={styles.userNameView}>
-          <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
+          <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
           <Text style={styles.activeTimeAgoTxt}>
             {/* {moment(item.time).startOf('hour').fromNow()} */}
-            {commentPostTimeCalculate(item.time)}
+            {commentPostTimeCalculate(item?.time)}
           </Text>
         </View>
         {threeDotBtnDisplay && <TouchableOpacity
@@ -113,7 +113,7 @@ function NewsFeedPostItems({
       </View>
       <View>
         {
-          attachedImages && attachedImages.length === 1 ? (
+          attachedImages && attachedImages?.length === 1 ? (
             <FlatList
               data={attachedImages}
               horizontal={true}
@@ -123,7 +123,7 @@ function NewsFeedPostItems({
               ListFooterComponent={() => <View style={{ width: wp('2%') }} />}
               ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
               renderItem={({ item: attachItem }) => {
-                if (attachItem.type === 'image') {
+                if (attachItem?.type === 'image') {
                   return <SingleImage
                     item={item}
                     data={attachItem}
@@ -133,7 +133,7 @@ function NewsFeedPostItems({
                     onLikePress={onLikePress}
                   />;
                 }
-                if (attachItem.type === 'video') {
+                if (attachItem?.type === 'video') {
                   return (
                     <VideoPost
                       item={item}
@@ -153,14 +153,14 @@ function NewsFeedPostItems({
             <Carousel
               data={attachedImages}
               renderItem={({ item: multiAttachItem, index }) => {
-                if (multiAttachItem.type === 'image') {
+                if (multiAttachItem?.type === 'image') {
                   return (
                     <PostImageSet
                     activeIndex={index}
                     data={multiAttachItem}
                     itemNumber={index + 1}
                     attachedImages={attachedImages}
-                    totalItemNumber={attachedImages.length}
+                    totalItemNumber={attachedImages?.length}
                     item={item}
                     caller_id={caller_id}
                     navigation={navigation}
@@ -169,7 +169,7 @@ function NewsFeedPostItems({
                   />
                   );
                 }
-                if (multiAttachItem.type === 'video') {
+                if (multiAttachItem?.type === 'video') {
                   return (
                     <MultiPostVideo
                       activeIndex={index}
@@ -194,15 +194,15 @@ function NewsFeedPostItems({
             />
           )
         }
-        {(descriptions.toLowerCase().indexOf('http://') === 0
-          || descriptions.toLowerCase().indexOf('https://') === 0) && <RNUrlPreview
+        {(descriptions?.toLowerCase()?.indexOf('http://') === 0
+          || descriptions?.toLowerCase()?.indexOf('https://') === 0) && <RNUrlPreview
           text={descriptions}
           containerStyle={styles.urlPreviewContainerStyle}
           imageProps={{ resizeMode: 'cover' }}
           imageStyle={styles.previewImageStyle}
         />}
 
-        {attachedImages.length > 0 ? (
+        {attachedImages?.length > 0 ? (
           <NewsFeedDescription descriptions={descriptions} character={140} />
         ) : (
           <NewsFeedDescription descriptions={descriptions} character={480} />
@@ -233,13 +233,12 @@ function NewsFeedPostItems({
                   resizeMode={'cover'}
                 />
               </TouchableOpacity>
-              {item.reaction_counts
-                && item.reaction_counts.comment !== undefined && (
-                  <Text style={styles.commentlengthStyle}>
-                    {item.reaction_counts.comment > 0
-                      ? item.reaction_counts.comment
-                      : ''}
-                  </Text>
+              {item?.reaction_counts?.comment !== undefined && (
+                <Text style={styles.commentlengthStyle}>
+                  {item?.reaction_counts?.comment > 0
+                    ? item?.reaction_counts?.comment
+                    : ''}
+                </Text>
               )}
             </View>
 
@@ -272,7 +271,7 @@ function NewsFeedPostItems({
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-            {item.reaction_counts && item.reaction_counts.clap !== undefined && (
+            {item?.reaction_counts?.clap !== undefined && (
               <Text
                 style={[
                   styles.commentlengthStyle,

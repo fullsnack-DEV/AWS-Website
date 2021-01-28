@@ -525,7 +525,7 @@ const strings = {
   selectWiningPoints: 'Select wining points',
   selectPointsText: 'Select points',
   selectAnyCard: 'Please any of the card.',
-  networkConnectivityErrorMessage: 'Please check your connection',
+  networkConnectivityErrorMessage: 'Could not connect to the internet. Please check your network',
   recentPointDelete: 'The recentest won point will be canceled.',
   noWonPoint: 'Score not added yet.',
   gameNotStarted: 'Game not started yet.',

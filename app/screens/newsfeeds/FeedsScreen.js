@@ -4,6 +4,7 @@ import React, {
 import {
   StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -21,6 +22,7 @@ import AuthContext from '../../auth/context'
 
 export default function FeedsScreen({ navigation }) {
   const authContext = useContext(AuthContext)
+  const isFocused = useIsFocused();
   const [postData, setPostData] = useState([]);
   const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(false);
@@ -34,22 +36,22 @@ export default function FeedsScreen({ navigation }) {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
 
   useEffect(() => {
-    // if (isFocused) {
-    setloading(true);
-    const entity = authContext.entity;
-    console.log('Entity :-', entity);
-    setCurrentUserDetail(entity.obj || entity.auth.user);
-    getNewsFeed(authContext)
-      .then((response) => {
-        setloading(false);
-        setPostData(response.payload.results)
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => Alert.alert('', e.message), 100)
-      });
-    // }
-  }, []);
+    if (isFocused) {
+      setloading(true);
+      const entity = authContext.entity;
+      console.log('Entity :-', entity);
+      setCurrentUserDetail(entity.obj || entity.auth.user);
+      getNewsFeed(authContext)
+        .then((response) => {
+          setloading(false);
+          setPostData(response.payload.results)
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => Alert.alert('', e.message), 100)
+        });
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -82,7 +84,12 @@ export default function FeedsScreen({ navigation }) {
   }
 
   const callthis = (data, postDesc) => {
-    if (data) {
+    if (postDesc.trim().length > 0 && data?.length === 0) {
+      const dataParams = {
+        text: postDesc,
+      };
+      createPostAfterUpload(dataParams);
+    } else if (data) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
@@ -107,7 +114,7 @@ export default function FeedsScreen({ navigation }) {
     createPost(dataParams, authContext)
       .then(() => getNewsFeed(authContext))
       .then((response) => {
-        setPostData(response.payload.results)
+        setPostData([...response.payload.results])
         setProgressBar(false);
         setDoneUploadCount(0);
         setTotalUploadCount(0);
@@ -152,8 +159,8 @@ export default function FeedsScreen({ navigation }) {
         updatePost(params, authContext)
           .then(() => getNewsFeed(authContext))
           .then((response) => {
-            setPostData(response.payload.results)
             setProgressBar(false);
+            setPostData([...response.payload.results])
             setDoneUploadCount(0);
             setTotalUploadCount(0);
           })

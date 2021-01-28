@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
-  StyleSheet,
+  StyleSheet, Alert,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -12,8 +12,8 @@ import Stats from '../../../components/game/soccer/home/stats/Stats';
 import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
-  approveDisapproveGameRecords,
-  getGameData,
+  approveDisapproveGameRecords, createGamePost,
+  getGameData, getGameFeed,
   getGameGallery,
   getGameMatchRecords, getGameRefereeReservation,
   getGameReviews, getGameScorekeeperReservation,
@@ -92,11 +92,18 @@ const SoccerHome = ({ navigation, route }) => {
   const getGameSportsList = () => getSportsList(authContext)
   const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
   const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
+  const getGameFeedData = (params) => getGameFeed(params, authContext)
+  const createGamePostData = (params) => createGamePost(params, authContext)
 
   const renderTabContain = (tabKey) => (
     <View style={{ flex: 1 }}>
+
+      {/* Summary */}
       {tabKey === 0 && (
         <Summary
+            setUploadImageProgressData={setUploadImageProgressData}
+            createGamePostData={createGamePostData}
+            getGameFeedData={getGameFeedData}
             getRefereeReservation={getRefereeReservation}
             getScorekeeperReservation={getScorekeeperReservation}
             getSportsList={getGameSportsList}
@@ -115,7 +122,11 @@ const SoccerHome = ({ navigation, route }) => {
             userId={userId}
         />
       )}
+
+      {/* Line Up */}
       {tabKey === 1 && <LineUp navigation={navigation} gameData={gameData}/>}
+
+      {/* Stats */}
       {tabKey === 2 && (
         <Stats
               homeTeamName={gameData?.home_team?.group_name}
@@ -124,7 +135,18 @@ const SoccerHome = ({ navigation, route }) => {
               gameData={gameData}
           />
       )}
-      {tabKey === 3 && <Review navigation={navigation} getSoccerGameReview={getSoccerGameReview} isAdmin={isAdmin} gameData={gameData}/>}
+
+      {/* Review */}
+      {tabKey === 3 && (
+        <Review
+          navigation={navigation}
+          getSoccerGameReview={getSoccerGameReview}
+          isAdmin={isAdmin}
+          gameData={gameData}
+        />
+      )}
+
+      {/* Gallery */}
       {tabKey === 4 && (
         <Gallery
               setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
@@ -134,14 +156,19 @@ const SoccerHome = ({ navigation, route }) => {
       )}
     </View>
   )
+  const onCancelImageUpload = () => {
+    if (uploadImageProgressData?.cancelRequest) {
+      uploadImageProgressData.cancelRequest.cancel('Cancel Image Uploading');
+    }
+    setUploadImageProgressData(null);
+  }
+
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />
     <TopBackgroundHeader isAdmin={isAdmin} navigation={navigation} gameData={gameData}>
       <TCScrollableProfileTabs
         tabItem={TAB_ITEMS}
-        onChangeTab={(ChangeTab) => {
-          setCurrentTab(ChangeTab.i)
-        }}
+        onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
         currentTab={currentTab}
         renderTabContain={renderTabContain}
     />
@@ -151,7 +178,18 @@ const SoccerHome = ({ navigation, route }) => {
             numberOfUploaded={uploadImageProgressData?.doneUploadCount}
             totalUpload={uploadImageProgressData?.totalUploadCount}
             onCancelPress={() => {
-              console.log('Cancel Pressed!');
+              Alert.alert(
+                'Cancel Upload?',
+                'If you cancel your upload now, your post will not be saved.',
+                [{
+                  text: 'Go back',
+                },
+                {
+                  text: 'Cancel upload',
+                  onPress: onCancelImageUpload,
+                },
+                ],
+              );
             }}
             postDataItem={uploadImageProgressData?.postData ? uploadImageProgressData?.postData[0] : {}}
         />

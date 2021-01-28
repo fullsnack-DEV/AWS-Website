@@ -47,6 +47,20 @@ const patchGameRecord = (gameId, recordId, data, authContext) => makeAPIRequest(
   authContext,
 });
 
+const getGameFeed = async (params, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/posts/`,
+  params,
+  authContext,
+});
+
+const createGamePost = async (bodyParams, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}/posts`,
+  data: bodyParams,
+  authContext,
+});
+
 const getGameStatsChartData = async (userID, params, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/teams/${userID}/games/stats/chart`,
@@ -211,4 +225,6 @@ export {
   deleteGameRecord,
   patchGameRecord,
   getRefereedMatch,
+  getGameFeed,
+  createGamePost,
 }

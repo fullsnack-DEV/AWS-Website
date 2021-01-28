@@ -78,7 +78,7 @@ const uploadImage = (data, authContext, cancelToken) => {
   });
 };
 
-const uploadImages = async (images, authContext, cb = () => {}, cancelRequest) => {
+const uploadImages = async (images, authContext, cb = () => {}, cancelRequest = () => {}) => {
   let completed = 0;
   const promises = [];
   const source = axios.CancelToken.source();

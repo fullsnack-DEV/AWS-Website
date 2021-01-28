@@ -14,7 +14,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Video from 'react-native-video';
 import ImageZoom from 'react-native-image-pan-zoom';
 import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
@@ -30,6 +29,7 @@ import fonts from '../../Constants/Fonts';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import PostDescSection from './PostDescSection';
 import TagView from './TagView';
+import CustomVideoPlayer from '../CustomVideoPlayer';
 
 export default function MultiImagePostView({
   backBtnPress,
@@ -41,23 +41,20 @@ export default function MultiImagePostView({
   onLikePress,
   openPostModal,
 }) {
-  const videoPlayerRef = useRef();
   const [topDesc, setTopDesc] = useState(false);
   const [scroll, setScroll] = useState(true);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
   const [isLandScape, setIsLandScape] = useState(false);
-  const [mute] = useState(true);
-  const [play] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     let filterLike = [];
-    if (item.reaction_counts && item.reaction_counts.clap !== undefined) {
-      setLikeCount(item.reaction_counts.clap);
+    if (item?.reaction_counts?.clap !== undefined) {
+      setLikeCount(item?.reaction_counts?.clap);
     }
-    if (item.own_reactions && item.own_reactions.clap !== undefined) {
-      filterLike = item.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
+    if (item?.own_reactions?.clap !== undefined) {
+      filterLike = item?.own_reactions.clap.filter((clapItem) => clapItem.user_id === caller_id);
       if (filterLike.length > 0) {
         setLike(true);
       } else {
@@ -69,13 +66,13 @@ export default function MultiImagePostView({
   }, [item]);
 
   let userImage = '';
-  if (item.actor && item.actor.data) {
-    userImage = item.actor.data.full_image;
+  if (item?.actor && item?.actor?.data) {
+    userImage = item?.actor?.data?.full_image;
   }
 
   let descriptions = '';
-  if (item.object) {
-    descriptions = JSON.parse(item.object).text;
+  if (item?.object) {
+    descriptions = JSON.parse(item?.object)?.text;
   }
 
   useEffect(() => {
@@ -213,21 +210,26 @@ export default function MultiImagePostView({
                       />
                       <Text style={styles.loadingTextStyle}>Loading...</Text>
                     </View>
-                    <Video
-                        fullscreen={true}
-                        ref={videoPlayerRef}
-                        onLoad={() => videoPlayerRef.current.seek(0)}
-                      paused={!play}
-                      muted={!mute}
-                      source={{ uri: multiAttachItem.url }}
-                      style={[styles.singleImageDisplayStyle, {
-                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                        position: 'absolute',
-                      }]}
-                      resizeMode={'cover'}
-                      controls={true}
-                     />
+                    <CustomVideoPlayer
+                        onPlayPausedStatusChanged={(isPlayerPaused) => {
+                          if (isPlayerPaused) setScroll(true);
+                          else setScroll(false);
+                        }}
+                          isLandscape={isLandScape}
+                          sourceURL={multiAttachItem.url}
+                          containerStyle={{
+                            ...styles.singleImageDisplayStyle,
+                            height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                            width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                            position: 'absolute',
+                          }}
+                          videoStyle={{
+                            ...styles.singleImageDisplayStyle,
+                            height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                            width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                            position: 'absolute',
+                          }}
+                      />
                   </View>
                 );
               }
@@ -273,9 +275,9 @@ export default function MultiImagePostView({
               />
             </TouchableWithoutFeedback>
             <View style={styles.userNameView}>
-              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
+              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
               <Text style={styles.activeTimeAgoTxt}>
-                {commentPostTimeCalculate(item.time)}
+                {commentPostTimeCalculate(item?.time)}
               </Text>
             </View>
           </View>
@@ -338,13 +340,12 @@ export default function MultiImagePostView({
                     resizeMode={'cover'}
                     />
                 </TouchableOpacity>
-                {item.reaction_counts
-                    && item.reaction_counts.comment !== undefined && (
-                      <Text style={styles.commentlengthStyle}>
-                        {item.reaction_counts.comment > 0
-                          ? item.reaction_counts.comment
-                          : ''}
-                      </Text>
+                {item?.reaction_counts?.comment !== undefined && (
+                  <Text style={styles.commentlengthStyle}>
+                    {item?.reaction_counts?.comment > 0
+                      ? item?.reaction_counts?.comment
+                      : ''}
+                  </Text>
                 )}
               </View>
 
@@ -377,7 +378,7 @@ export default function MultiImagePostView({
                   justifyContent: 'flex-end',
                   alignItems: 'center',
                 }}>
-              {item.reaction_counts && item.reaction_counts.clap !== undefined && (
+              {item?.reaction_counts?.clap !== undefined && (
                 <Text
                     style={[
                       styles.commentlengthStyle,

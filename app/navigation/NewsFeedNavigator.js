@@ -39,9 +39,6 @@ const Stack = createStackNavigator();
 const NewsFeedNavigator = () => (
   <Stack.Navigator
       screenOptions={ {
-        // headerTintColor: colors.blackColor,
-        // headerTransparent: true,
-        // headerTitle: true,
         headerBackTitleVisible: false,
       } }>
     <Stack.Screen

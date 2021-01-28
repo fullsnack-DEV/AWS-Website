@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect, useState, useRef, useContext,
+} from 'react';
 import {
   View, StyleSheet, Text,
 } from 'react-native';
@@ -18,6 +20,8 @@ import TCInnerLoader from '../../../../TCInnerLoader';
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import strings from '../../../../../Constants/String';
+import AuthContext from '../../../../../auth/context';
+import GameFeed from '../../../common/summary/GameFeed';
 
 const Summary = ({
   gameData,
@@ -33,7 +37,11 @@ const Summary = ({
   getSportsList,
   getRefereeReservation,
   getScorekeeperReservation,
+  getGameFeedData,
+  createGamePostData,
+  setUploadImageProgressData,
 }) => {
+  const authContext = useContext(AuthContext);
   const reviewOpetions = useRef();
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
@@ -76,6 +84,7 @@ const Summary = ({
       }).finally(() => setLoading(false));
     }
   }, [gameData, isFocused])
+
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading}/>
@@ -175,9 +184,18 @@ const Summary = ({
           isAdmin={isAdmin}
           userRole={userRole}
       />
-      <View style={{ backgroundColor: colors.whiteColor }}>
-        {/* <FeedsScreen navigation={navigation}/> */}
-      </View>
+
+      {/* Game Feed */}
+      <GameFeed
+          setUploadImageProgressData={setUploadImageProgressData}
+          createGamePostData={createGamePostData}
+          gameData={gameData}
+          getGameFeedData={getGameFeedData}
+          navigation={navigation}
+          currentUserData={authContext?.entity?.obj}
+          userID={authContext?.entity?.uid}
+      />
+
       <ActionSheet
         ref={reviewOpetions}
         options={[strings.reviewForTeams, strings.reviewForPlayers, strings.reviewForReferees, strings.cancel]}

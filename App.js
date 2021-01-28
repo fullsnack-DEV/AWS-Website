@@ -13,6 +13,7 @@ import { QBinit } from './app/utils/QuickBlox';
 import NavigationMainContainer from './NavigationMainContainer';
 import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
+import strings from './app/Constants/String';
 
 console.disableYellowBox = true
 if (!__DEV__) {
@@ -29,7 +30,7 @@ export default function App() {
   }, [networkConnected]);
 
   const showNetworkAlert = () => {
-    Alert.alert('Internet not avaiable')
+    Alert.alert(strings.alertmessagetitle, strings.networkConnectivityErrorMessage)
   }
   useEffect(() => {
     NetInfo.addEventListener((state) => {
