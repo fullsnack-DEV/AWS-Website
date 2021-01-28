@@ -153,6 +153,7 @@ export default function MultiImagePostView({
                       imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth}
                       imageHeight={isLandScape ? landscapeImgHeight : portraitImgHeight}
                       minScale={1}
+                      useNativeDriver={true}
                       onMove={handlePageZoom}
                      >
                       <FastImage
@@ -213,8 +214,8 @@ export default function MultiImagePostView({
                       <Text style={styles.loadingTextStyle}>Loading...</Text>
                     </View>
                     <Video
-                        ref={videoPlayerRef}
                         fullscreen={true}
+                        ref={videoPlayerRef}
                         onLoad={() => videoPlayerRef.current.seek(0)}
                       paused={!play}
                       muted={!mute}

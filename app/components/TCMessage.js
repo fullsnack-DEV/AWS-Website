@@ -1,15 +1,19 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, {
+  Fragment, useEffect, useRef, useState,
+} from 'react';
 import {
   Text,
   View,
-  StyleSheet,
+  StyleSheet, Image, TouchableHighlight,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../utils';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import { QBgetFileURL } from '../utils/QuickBlox';
+import images from '../Constants/ImagePath';
 
 const TCMessage = ({
   body,
@@ -18,7 +22,9 @@ const TCMessage = ({
   attachments = [],
 }) => {
   const [fileUrls, setFileUrls] = useState([]);
-
+  const [mute, setMute] = useState(true);
+  const [play, setPlay] = useState(false);
+  const videoPlayerRef = useRef();
   const GradiantContainer = ({
     style,
     startGradiantColor,
@@ -72,29 +78,106 @@ const TCMessage = ({
         <View style={{
           paddingLeft: type === 'receiver' ? wp(5) : wp(2),
         }}>
-          {fileUrls.map((item) => (
-            <FastImage
-                source={{ uri: item }}
-                key={item}
-                resizeMode={'cover'}
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.7)',
-                  marginTop: hp(1),
-                  overflow: 'hidden',
-                  borderBottomRightRadius: type === 'receiver' ? wp(3) : wp(0),
-                  borderBottomLeftRadius: wp(3),
-                  borderTopRightRadius: wp(3),
-                  borderTopLeftRadius: type === 'receiver' ? wp(0) : wp(3),
-                  height: wp(50),
-                  width: wp(50),
-                }}/>
-          ))}
+          {fileUrls.map((item, index) => {
+            if (attachments[index]?.type === 'file') {
+              console.log(item);
+              return (
+                <View>
+                  <Video
+                      ref={videoPlayerRef}
+                      paused={!play}
+                      muted={!mute}
+                      source={{ uri: item }}
+                      style={{
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        marginTop: hp(1),
+                        overflow: 'hidden',
+                        borderBottomRightRadius: type === 'receiver' ? wp(3) : wp(0),
+                        borderBottomLeftRadius: wp(3),
+                        borderTopRightRadius: wp(3),
+                        borderTopLeftRadius: type === 'receiver' ? wp(0) : wp(3),
+                        height: wp(50),
+                        width: wp(50),
+                      }}
+                      resizeMode={'cover'}
+                      onLoad={() => {
+                        videoPlayerRef.current.seek(0);
+                      }}
+                  />
+                  <View style={styles.pauseMuteStyle}>
+                    <TouchableHighlight
+                          activeOpacity={0.5}
+                              onPress={() => {
+                                setMute(!mute);
+                              }}>
+                      <Image
+                                  style={styles.imageStyle}
+                                  source={mute ? images.unmute : images.mute}
+                              />
+                    </TouchableHighlight>
+                  </View>
+                  <View style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}>
+                    <TouchableHighlight
+                            activeOpacity={0.5}
+                              onPress={() => {
+                                setPlay(!play);
+                              }}>
+                      <Image
+                                  style={styles.playPauseImageStyle}
+                                  source={images.playPause}
+                              />
+                    </TouchableHighlight>
+                  </View>
+                </View>
+              )
+            }
+            return (
+              <FastImage
+                          source={{ uri: item }}
+                          key={item}
+                          resizeMode={'cover'}
+                          style={{
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            marginTop: hp(1),
+                            overflow: 'hidden',
+                            borderBottomRightRadius: type === 'receiver' ? wp(3) : wp(0),
+                            borderBottomLeftRadius: wp(3),
+                            borderTopRightRadius: wp(3),
+                            borderTopLeftRadius: type === 'receiver' ? wp(0) : wp(3),
+                            height: wp(50),
+                            width: wp(50),
+                          }}/>
+            )
+          })}
         </View>
       )}
     </Fragment>
   )
 }
 const styles = StyleSheet.create({
+  pauseMuteStyle: {
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: wp('5%'),
+    bottom: wp('2%'),
+    height: wp('10%'),
+    justifyContent: 'center',
+    padding: wp('2%'),
+    position: 'absolute',
+    right: wp('2%'),
+    width: wp('10%'),
+  },
+  playPauseImageStyle: {
+    height: wp('4%'),
+    tintColor: '#fff',
+    width: wp('4%'),
+  },
+  imageStyle: {
+    height: wp('5%'),
+    tintColor: '#fff',
+    width: wp('5%'),
+  },
   messageContaienr: {
     // marginVertical: wp(2),
     flex: 1,

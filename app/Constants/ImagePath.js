@@ -279,7 +279,6 @@ const images = {
   requestSentImage: require('../assets/images/requestSentImage.png'),
   whiteTick: require('../assets/images/whiteTick.png'),
   undoImage: require('../assets/images/undo.png'),
-
 };
 
 export default images;
