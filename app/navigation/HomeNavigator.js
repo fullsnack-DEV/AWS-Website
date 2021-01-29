@@ -146,6 +146,9 @@ import CurrencySettingScreen from '../screens/account/CurrencySettingScreen';
 import TennisDeletedRecordScreen from '../screens/game/tennis/TennisDeletedRecordScreen';
 import ReviewPlayerList from '../components/game/soccer/home/review/reviewForPlayer/ReviewPlayerList';
 import PlayerReviewScreen from '../components/game/soccer/home/review/reviewForPlayer/PlayerReviewScreen';
+import ReviewRefereeList from '../components/game/soccer/home/review/reviewForReferee/ReviewRefereeList';
+import RefereeReviewScreen from '../components/game/soccer/home/review/reviewForReferee/RefereeReviewScreen';
+import WriteReviewScreen from '../components/game/soccer/home/review/WriteReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -1815,7 +1818,14 @@ const HomeNavigator = () => (
             name="PlayerReviewScreen"
             component={PlayerReviewScreen}
             options={{
-              title: 'Leave a player review',
+              headerShown: false,
+            }}
+        />
+    <Stack.Screen
+            name="ReviewRefereeList"
+            component={ReviewRefereeList}
+            options={{
+              title: 'Referee',
               headerTintColor: colors.blackColor,
               headerTitleStyle: {
                 fontWeight: '500',
@@ -1825,6 +1835,20 @@ const HomeNavigator = () => (
                 borderBottomColor: colors.grayColor,
                 borderBottomWidth: 0.3,
               },
+            }}
+        />
+    <Stack.Screen
+            name="RefereeReviewScreen"
+            component={RefereeReviewScreen}
+            options={{
+              headerShown: false,
+            }}
+        />
+    <Stack.Screen
+            name="WriteReviewScreen"
+            component={WriteReviewScreen}
+            options={{
+              headerShown: false,
             }}
         />
 

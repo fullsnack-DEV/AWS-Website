@@ -13,32 +13,34 @@ import colors from '../../Constants/Colors'
 import images from '../../Constants/ImagePath'
 
 function SelectedImageList({
-  data, onItemPress, itemNumber, totalItemNumber,
+  data, onItemPress, itemNumber, totalItemNumber, isClose = true, isCounter = true,
 }) {
   return (
     <View style={styles.uploadedImage}>
-      {data.mime.split('/')[0] === 'image' && <FastImage
+      {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'image' && <FastImage
         style={styles.uploadedImage}
-        source={{ uri: data.path }}
+        source={{ uri: data.path || data.thumbnail }}
         resizeMode={FastImage.resizeMode.cover}
       />}
-      {data.mime.split('/')[0] === 'video' && <Video
-        source={{ uri: data.path }}
+      {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'video'
+        && <Video
+        source={{ uri: data.path || data.thumbnail }}
         style={styles.uploadedImage}
         resizeMode={'cover'}
-        paused={true}
+        muted={true}
+        paused={false}
         controls={true}
       />}
-      <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
+      {isClose && <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
         <Image source={images.cancelImage} style={styles.cancelImageStyle} />
-      </TouchableOpacity>
-      <View style={styles.lengthViewStyle}>
+      </TouchableOpacity>}
+      {isCounter && <View style={styles.lengthViewStyle}>
         <Text style={styles.lengthTextStyle}>
           {itemNumber}
           {'/'}
           {totalItemNumber}
         </Text>
-      </View>
+      </View>}
     </View>
   );
 }
@@ -84,6 +86,7 @@ const styles = StyleSheet.create({
     height: wp('30%'),
     marginVertical: '1%',
     width: wp('30%'),
+
   },
 });
 

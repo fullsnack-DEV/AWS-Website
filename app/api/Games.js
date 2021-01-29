@@ -17,7 +17,7 @@ const getSportsList = async (authContext) => makeAPIRequest({
 
 const getGameData = async (gameId, fetchTeamData = false, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/games/${gameId}?fetchTeamObject=${fetchTeamData}`,
+  url: `${Config.BASE_URL}/games/${gameId}?fetchTeamObject=${fetchTeamData}&fetchCallerReview=true`,
   authContext,
 })
 
@@ -152,6 +152,31 @@ const addGameReview = (gameId, params, authContext) => makeAPIRequest({
   data: params,
   authContext,
 })
+const patchGameReview = (gameId, reviewId, params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}/games/${gameId}/reviews/${reviewId}`,
+  data: params,
+  authContext,
+})
+
+const getGameReview = (gameId, reviewId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/games/${gameId}/reviews/${reviewId}`,
+  authContext,
+})
+
+const addPlayerReview = (playerId, gameId, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}players/${playerId}/games/${gameId}/reviews`,
+  data: params,
+  authContext,
+})
+const addRefereeReview = (refereeId, gameId, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}referees/${refereeId}/games/${gameId}/reviews`,
+  data: params,
+  authContext,
+})
 const getGameRoster = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}games/${gameId}/roster`,
@@ -227,4 +252,8 @@ export {
   getRefereedMatch,
   getGameFeed,
   createGamePost,
+  addPlayerReview,
+  getGameReview,
+  patchGameReview,
+  addRefereeReview,
 }

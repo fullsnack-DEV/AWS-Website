@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-useless-escape */
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
 import Hyperlink from 'react-native-hyperlink'
@@ -11,19 +12,32 @@ function NewsFeedDescription({
   descriptionTxt,
   descText,
   containerStyle,
+  tags = [],
 }) {
   const [readMore, setReadMore] = useState();
+  const [regX, setRegX] = useState();
 
+  useEffect(() => {
+    console.table('Tags::', tags);
+    createRegXString()
+  }, [tags])
   function toggleNumberOfLines() {
     setReadMore(!readMore);
   }
+  const createRegXString = () => {
+    const list = tags.map((e) => e.first_name || e.group_name)
+    const str = list.join('|')
 
+    const re = `/@\b(${str})(\b\s*([A-Z]\w+)){0,2}/`;
+
+    setRegX(re)
+    console.log(regX);
+  }
   function renderText(matchingString) {
     const pattern = /@(\w+)/;
     const match = matchingString.match(pattern);
     return `${match[0]}`;
   }
-
   function handleNamePress(name) {
     console.log(`Hello ${name}`);
   }
@@ -43,6 +57,7 @@ function NewsFeedDescription({
                   style: styles.username,
                   onPress: handleNamePress,
                   renderText,
+
                 }]
               }
               childrenProps={{ allowFontScaling: false }}

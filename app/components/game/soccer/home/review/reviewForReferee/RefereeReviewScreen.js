@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-unused-vars */
 import React, {
   useState, useEffect, useLayoutEffect, useContext,
 } from 'react';
@@ -5,34 +7,45 @@ import {
   Alert,
   ScrollView, StyleSheet, View, Text,
   TouchableOpacity, Image,
+  Pressable,
+  FlatList,
 } from 'react-native';
 import _ from 'lodash';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 
 import { STAR_COLOR } from '../../../../../../utils';
-import { addPlayerReview } from '../../../../../../api/Games';
+import { addRefereeReview } from '../../../../../../api/Games';
 import TCInnerLoader from '../../../../../TCInnerLoader';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
+import uploadImages from '../../../../../../utils/imageAction';
 
 import AuthContext from '../../../../../../auth/context';
 import TCInputBox from '../../../../../TCInputBox';
 import TCKeyboardView from '../../../../../TCKeyboardView';
-import TCAttributeRatingWithSlider from '../../../../../TCAttributeRatingWithSlider';
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 import Header from '../../../../../Home/Header';
+import SelectedImageList from '../../../../../WritePost/SelectedImageList';
+import strings from '../../../../../../Constants/String';
+import ActivityLoader from '../../../../../loader/ActivityLoader';
 
 const QUSTIONS = [
   // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
-  { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-  // { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
+  // { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
+  { attrName: 'punctuality', desc: strings.punchualityDesc },
 ]
-export default function PlayerReviewScreen({ navigation, route }) {
+export default function RefereeReviewScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [sliderAttributesForPlayer, setSliderAttributesForPlayer] = useState([]);
   const [gameData] = useState(route?.params?.gameData);
+  const [progressBar, setProgressBar] = useState(false);
+  const [totalUploadCount, setTotalUploadCount] = useState(0);
+  const [doneUploadCount, setDoneUploadCount] = useState(0);
+  const [cancelApiRequest, setCancelApiRequest] = useState(null);
+  const [currentUserDetail, setCurrentUserDetail] = useState(null);
+  const [selectImage, setSelectImage] = useState(route?.params?.selectedImageList || []);
   const [reviewsData, setReviewsData] = useState({
     comment: '',
     attachments: [],
@@ -40,11 +53,29 @@ export default function PlayerReviewScreen({ navigation, route }) {
   });
 
   useEffect(() => {
-    console.log('Review Attribute::=>', route?.params?.sliderAttributesForPlayer);
-    console.log('Review Attribute::=>', route?.params?.starAttributesForPlayer);
-    loadSliderAttributes(route?.params?.sliderAttributesForPlayer)
-    loadStarAttributes(route?.params?.starAttributesForPlayer);
-  }, []);
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const entity = authContext.entity;
+      setCurrentUserDetail(entity.obj || entity.auth.user);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [authContext.entity]);
+
+  useEffect(() => {
+    console.log('Progress Data::=>', progressBar + totalUploadCount + doneUploadCount);
+    console.log('Review data::=>', route?.params?.searchText);
+
+    if (route?.params?.searchText) {
+      setTeamReview('comment', route?.params?.searchText)
+    }
+    if (route?.params?.selectedImageList) {
+      setSelectImage(route?.params?.selectedImageList)
+    }
+    loadSliderAttributes(route?.params?.sliderAttributesForReferee)
+    loadStarAttributes(route?.params?.starAttributesForReferee);
+  }, [route?.params?.selectedImageList, route?.params?.searchText]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -99,17 +130,7 @@ export default function PlayerReviewScreen({ navigation, route }) {
       Alert.alert('Please, complete all ratings before moving to the next.')
     } else {
       console.log('route?.params?.gameData?.game_id::=>', gameData);
-      setLoading(true);
-      addPlayerReview(route?.params?.userData?.profile?.user_id, gameData?.game_id, reviewsData, authContext)
-        .then(() => {
-          setLoading(false);
-          navigation.goBack()
-        })
-        .catch((error) => {
-          setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100)
-          navigation.goBack()
-        })
+      uploadMedia()
     }
   }
 
@@ -122,6 +143,65 @@ export default function PlayerReviewScreen({ navigation, route }) {
       console.log(`reviews::${JSON.stringify(reviews)}`);
     }
   }
+  const onCancelImageUpload = () => {
+    if (cancelApiRequest) {
+      cancelApiRequest.cancel('Cancel Image Uploading');
+    }
+    setProgressBar(false);
+    setDoneUploadCount(0);
+    setTotalUploadCount(0);
+  }
+
+  const progressStatus = (completed, total) => {
+    setDoneUploadCount(completed < total ? (completed + 1) : total)
+  }
+
+  const cancelRequest = (axiosTokenSource) => {
+    setCancelApiRequest({ ...axiosTokenSource });
+  }
+
+  const uploadMedia = () => {
+    if (selectImage.length) {
+      const UrlArray = []
+      const pathArray = []
+      const o = selectImage.map((e) => {
+        if (e.path) {
+          pathArray.push(e)
+        } else {
+          UrlArray.push(e)
+        }
+      })
+      setLoading(true)
+      setTotalUploadCount(pathArray?.length || 1);
+      setProgressBar(true);
+      const imageArray = pathArray
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }))
+        console.log('Attachments::=>', attachments);
+        const dataParams = {
+          ...reviewsData, attachments: [...attachments, ...UrlArray], comment: route?.params?.searchText,
+          // text: postDesc && postDesc,
+          // attachments,
+        };
+        console.log('dataParams::=>', dataParams);
+        addRefereeReview(route?.params?.userData?.profile?.user_id, gameData?.game_id, dataParams, authContext)
+          .then(() => {
+            setLoading(false)
+            navigation.goBack()
+          })
+          .catch((error) => {
+            setLoading(false)
+            setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100)
+          })
+      })
+    }
+  }
   return (
     <View style={{ flex: 1 }}>
       <Header
@@ -131,7 +211,7 @@ export default function PlayerReviewScreen({ navigation, route }) {
             </TouchableOpacity>
           }
           centerComponent={
-            <Text style={styles.eventTextStyle}>Leave a player review</Text>
+            <Text style={styles.eventTextStyle}>Leave a Referee review</Text>
           }
           rightComponent={
             <Text onPress={createReview} style={styles.nextButtonStyle}>
@@ -142,13 +222,13 @@ export default function PlayerReviewScreen({ navigation, route }) {
       />
       {/* Seperator */}
       <View style={styles.headerSeperator}/>
-      <TCInnerLoader visible={loading} size={35}/>
+      <ActivityLoader visible={loading} />
       {!loading && (
         <ScrollView>
           <TCKeyboardView>
             <View style={styles.mainContainer}>
               {/* Title */}
-              <Text style={styles.titleText}>Please, rate the performance of {route?.params?.userData?.profile?.first_name} {route?.params?.userData?.profile?.last_name} and leave a review for the player.</Text>
+              <Text style={styles.titleText}>Please, rate the performance of {route?.params?.userData?.profile?.first_name} {route?.params?.userData?.profile?.last_name} and leave a review for the referee.</Text>
 
               {/*  Logo Container */}
               <View style={styles.logoContainer}>
@@ -182,28 +262,24 @@ export default function PlayerReviewScreen({ navigation, route }) {
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
+                  {sliderAttributesForPlayer.map((item, index) => (
+                    <View style={{
+                      marginVertical: 10,
+                      flexDirection: 'row',
 
-                  {/* Poor Excellent Section */}
-                  <View style={{ ...styles.poorExcellentSection }}>
-                    <View style={{ flex: 0.3 }}/>
-                    <View style={styles.poorExcellentChildSection}>
-                      <Text style={styles.poorExcellenceText}>Poor</Text>
-                      <Text>Excellent</Text>
+                    }} key={index}>
+                      <Text style={styles.starText}>{item.charAt(0).toUpperCase() + item.slice(1)}</Text>
+                      <View style={{ flex: 1 }}>
+                        <TCRatingStarSlider
+                        currentRating={reviewsData[item.name]}
+                        onPress={(star) => {
+                          setTeamReview(item, star)
+                        }}
+                        style={{ alignSelf: 'flex-end' }}
+                        starColor={STAR_COLOR.GREEN}/>
+                      </View>
                     </View>
-                    <View style={{ flex: 0.1 }}/>
-                  </View>
-
-                  {/*    Rating Slider */}
-                  {sliderAttributesForPlayer.map((item, index) => (<View key={index}>
-                    <TCAttributeRatingWithSlider
-            selectedTrackColors={
-              [colors.yellowColor, colors.themeColor]
-            }
-                setTeamReview={setTeamReview}
-                title={item}
-                rating={reviewsData[item]}
-            />
-                  </View>))}
+                  ))}
                 </View>
 
                 {/* Questions */}
@@ -216,7 +292,7 @@ export default function PlayerReviewScreen({ navigation, route }) {
               setTeamReview(item.attrName, star)
             }}
               style={{ alignSelf: 'flex-end' }}
-              starColor={STAR_COLOR.YELLOW}/>
+              starColor={STAR_COLOR.GREEN}/>
                   </View>
                 ))}
               </View>
@@ -224,21 +300,59 @@ export default function PlayerReviewScreen({ navigation, route }) {
               {/*  Leave a Review */}
               <View style={styles.leaveReviewContainer}>
                 <Text style={styles.titleText}>Leave a review</Text>
-                <TCInputBox
-          onChangeText={(value) => setTeamReview('comment', value)}
-          value={reviewsData?.comment ?? ''}
-          multiline={true}
-          placeHolderText={`Describe what you thought and felt about ${route?.params?.userData?.profile?.first_name} ${route?.params?.userData?.profile?.last_name} while watching or playing the game.`}
-          textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
-          style={{
-            height: 120,
-            marginVertical: 10,
-            alignItems: 'flex-start',
-            padding: 15,
-          }}
-      />
-              </View>
+                <Pressable onPress={() => {
+                  navigation.navigate('WriteReviewScreen', {
+                    comeFrom: 'RefereeReviewScreen',
+                    postData: currentUserDetail,
+                    searchText: route?.params?.searchText ?? '',
+                    // onPressDone: callthis,
+                    selectedImageList: selectImage || [],
+                  })
+                }}>
+                  <View pointerEvents="none">
+                    <TCInputBox
+                        value={route?.params?.searchText ?? ''}
+                        multiline={true}
+                        placeHolderText={`Describe what you thought and felt about ${route?.params?.userData?.profile?.first_name} ${route?.params?.userData?.profile?.last_name} while watching or playing the game.`}
+                        textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
+                        style={{
+                          height: 120,
+                          marginVertical: 10,
+                          alignItems: 'flex-start',
+                          padding: 15,
+                        }} />
+                  </View>
+                </Pressable>
 
+              </View>
+              <FlatList
+          data={ selectImage || [] }
+          horizontal={ true }
+          // scrollEnabled={true}
+          showsHorizontalScrollIndicator={ false }
+          renderItem={ ({ item, index }) => (
+            <SelectedImageList
+                data={ item }
+                isClose= {false}
+                isCounter={false}
+                itemNumber={ index + 1 }
+                totalItemNumber={selectImage?.length }
+                onItemPress={ () => {
+                  const imgs = [...selectImage];
+                  const idx = imgs.indexOf(item);
+                  if (idx > -1) {
+                    imgs.splice(idx, 1);
+                  }
+                  setSelectImage(imgs);
+                }}
+              />
+          ) }
+          ItemSeparatorComponent={ () => (
+            <View style={ { width: 5 } } />
+          ) }
+          style={ { paddingTop: 10, marginHorizontal: 10 } }
+          keyExtractor={ (item, index) => index.toString() }
+        />
               {/*  Footer */}
               <Text style={styles.footerText}>
                 (<Text style={{ color: colors.redDelColor }}>*</Text> required)
@@ -248,6 +362,7 @@ export default function PlayerReviewScreen({ navigation, route }) {
           </TCKeyboardView>
         </ScrollView>)
       }
+
     </View>
   )
 }
@@ -316,29 +431,19 @@ const styles = StyleSheet.create({
 
   rateSection: {
     marginVertical: 10,
-  },
-  poorExcellentSection: {
-    flex: 1,
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    marginVertical: 5,
-  },
-  poorExcellentChildSection: {
-    flex: 0.6,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  poorExcellenceText: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
+
   },
   questionText: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: 16,
   },
-
+  starText: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    // flex: 0.4,
+  },
   backImageStyle: {
     height: 20,
     width: 16,
