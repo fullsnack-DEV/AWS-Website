@@ -213,7 +213,6 @@ export default function EditPostScreen({
                   multiple: true,
                   maxFiles: 10,
                 }).then((image) => {
-                  // setSelectImage(image);
                   let allSelectData = [];
                   const secondData = [];
                   if (selectImage.length > 0) {

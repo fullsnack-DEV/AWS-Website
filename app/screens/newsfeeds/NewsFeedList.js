@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  View, FlatList, Alert, ActivityIndicator,
+  View, FlatList, ActivityIndicator,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { createReaction, deletePost, getNewsFeed } from '../../api/NewsFeeds';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
@@ -18,13 +16,12 @@ export default function NewsFeedList({
   footerLoading = false,
   scrollEnabled,
   ListHeaderComponent,
-  onPressDone,
+  onEditPressDone,
   onRefreshPress,
+  onDeletePost,
+  pullRefresh = false,
+  onLikePress,
 }) {
-  // console.log('Post Data ::--', postData);
-  const [pullRefresh, setPullRefresh] = useState(false);
-  const [data, setData] = useState(postData);
-  const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
   const authContext = useContext(AuthContext)
   useEffect(() => {
@@ -49,10 +46,9 @@ export default function NewsFeedList({
 
   return (
     <View>
-      <ActivityLoader visible={loading} />
       <FlatList
         bounces={true}
-        data={data.length > 0 ? data : postData}
+        data={postData ?? []}
         ItemSeparatorComponent={() => (
           <View
             style={{
@@ -74,63 +70,26 @@ export default function NewsFeedList({
         showsVerticalScrollIndicator={false}
         renderItem={({ item, key }) => (
           <NewsFeedPostItems
+              pullRefresh={pullRefresh}
             key={key}
             item={item}
             navigation={navigation}
             caller_id={userID}
-            onPressDone={onPressDone}
+              onEditPressDone={onEditPressDone}
             onImageProfilePress={() => onProfilePress(item) }
-            onLikePress={() => {
-              const bodyParams = {
-                reaction_type: 'clap',
-                activity_id: item.id,
-              };
-              createReaction(bodyParams, authContext)
-                .then(() => getNewsFeed(authContext))
-                .then((response) => {
-                  setData(response.payload.results);
-                })
-                .catch((e) => {
-                  Alert.alert('', e.messages)
-                });
-            }}
-            onDeletePost={() => {
-              setloading(true);
-              const params = {
-                activity_id: item.id,
-              };
-              deletePost(params, authContext)
-                .then(() => getNewsFeed(authContext))
-                .then((response) => {
-                  setloading(false);
-                  setData(response.payload.results);
-                })
-                .catch((e) => {
-                  setloading(false);
-                  Alert.alert('', e.messages)
-                });
-            }}
+            onLikePress={() => onLikePress(item)}
+            onDeletePost={() => onDeletePost(item)}
           />
         )}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         refreshing={pullRefresh}
         onRefresh={() => {
-          onRefreshPress();
           const entity = authContext.entity
           if (entity) {
             setUserID(entity.uid || entity.auth.user_id);
           }
-          setPullRefresh(true);
-          getNewsFeed(authContext)
-            .then((response) => {
-              setData(response.payload.results);
-              setPullRefresh(false);
-            })
-            .catch((e) => {
-              Alert.alert('', e.messages)
-              setPullRefresh(false);
-            });
+          onRefreshPress();
         }}
         keyExtractor={(item, index) => index.toString()}
       />

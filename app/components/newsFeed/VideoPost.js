@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity, Image, TouchableWithoutFeedback,
+  StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
 import Video from 'react-native-video';
 import Modal from 'react-native-modal';
@@ -118,28 +118,30 @@ function VideoPost({
       </TouchableWithoutFeedback>
       {videoLoad && (
         <>
-          <View style={styles.pauseMuteStyle}>
-            <TouchableOpacity
+          <TouchableHighlight
+                style={styles.pauseMuteStyle}
               onPress={() => {
                 setMute(!mute);
               }}>
-              <Image
+            <FastImage
+                resizeMode={'contain'}
+                tintColor={'white'}
                 style={styles.imageStyle}
                 source={mute ? images.unmute : images.mute}
               />
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}>
-            <TouchableOpacity
-              onPress={() => {
-                setPlay(!play);
-              }}>
-              <Image
+          </TouchableHighlight>
+          <TouchableHighlight
+                style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}
+                onPress={() => {
+                  setPlay(!play);
+                }}>
+            <FastImage
+                resizeMode={'contain'}
+                tintColor={'white'}
                 style={styles.playPauseImageStyle}
-                source={images.playPause}
+                source={play ? images.videoPauseButton : images.videoPlayButton}
               />
-            </TouchableOpacity>
-          </View>
+          </TouchableHighlight>
         </>
       )}
     </View>

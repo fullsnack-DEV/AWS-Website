@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity, Image,
+  StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
 import Video from 'react-native-video';
 import {
@@ -46,7 +46,9 @@ function MultipleVideoWithLoader({ data }) {
               onPress={() => {
                 setMute(!mute);
               }}>
-              <Image
+              <FastImage
+                  resizeMode={'contain'}
+                  tintColor={'white'}
                 style={styles.imageStyle}
                 source={mute ? images.unmute : images.mute}
               />
@@ -57,9 +59,11 @@ function MultipleVideoWithLoader({ data }) {
               onPress={() => {
                 setPlay(!play);
               }}>
-              <Image
+              <FastImage
+                  tintColor={'white'}
+                resizeMode={'contain'}
                 style={styles.playPauseImageStyle}
-                source={images.playPause}
+                source={play ? images.videoPauseButton : images.videoPlayButton}
               />
             </TouchableOpacity>
           </View>

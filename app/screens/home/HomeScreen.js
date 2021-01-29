@@ -544,7 +544,6 @@ export default function HomeScreen({ navigation, route }) {
             ImagePicker.openPicker({
               width: 300,
               height: 400,
-              cropping: true,
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
@@ -1416,8 +1415,6 @@ export default function HomeScreen({ navigation, route }) {
                   <NewsFeedList
                     navigation={navigation}
                     postData={postData}
-                    userID={userID}
-                    // scrollEnabled={false}
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >

@@ -38,7 +38,7 @@ function NewsFeedPostItems({
   caller_id,
   onDeletePost,
   onImageProfilePress,
-  onPressDone,
+  onEditPressDone,
 }) {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -311,7 +311,7 @@ function NewsFeedPostItems({
             if (index === 0) {
               navigation.navigate('EditPostScreen', {
                 data: item,
-                onPressDone,
+                onPressDone: onEditPressDone,
               });
             } else if (index === 1) {
               onDeletePost();

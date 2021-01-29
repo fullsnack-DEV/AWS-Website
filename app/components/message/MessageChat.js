@@ -307,6 +307,7 @@ const MessageChat = ({
     ImagePicker.openPicker({
       width: 400,
       height: 400,
+      mediaType: 'video image',
     }).then((image) => {
       setUploadImageInProgress(true);
       console.log(image);

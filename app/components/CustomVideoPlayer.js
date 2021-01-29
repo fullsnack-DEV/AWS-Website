@@ -4,7 +4,6 @@ import {
   View, StyleSheet,
 } from 'react-native';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
-import colors from '../Constants/Colors';
 
 const CustomVideoPlayer = ({
   sourceURL,
@@ -12,7 +11,7 @@ const CustomVideoPlayer = ({
   resizeMode = 'contain',
   containerStyle,
   isLandscape = false,
-  onPlayPausedStatusChanged = () => {},
+  onPlayerStatusChanged = () => {},
 }) => {
   const videoPlayerRef = useRef();
   const [duration, setDuration] = useState(0);
@@ -21,12 +20,19 @@ const CustomVideoPlayer = ({
   const [paused, setPaused] = useState(true);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
   const [currentTime, setCurrentTime] = useState(0);
+  const [shouldVideoScroll, setShouldVideoScroll] = useState(true);
 
   useEffect(() => {
-    onPlayPausedStatusChanged(paused)
-  }, [paused])
+    if ([PLAYER_STATES.PAUSED, PLAYER_STATES.ENDED]?.includes(playerState)) setShouldVideoScroll(true);
+    else setShouldVideoScroll(false);
+  }, [playerState]);
 
-  const onSeek = (seek) => videoPlayerRef.current.seek(seek);
+  useEffect(() => onPlayerStatusChanged(shouldVideoScroll), [shouldVideoScroll])
+  const onSeek = (seek) => {
+    if (!shouldVideoScroll) setShouldVideoScroll(true);
+    videoPlayerRef.current.seek(seek);
+  }
+
   const onPaused = (pState) => {
     setPaused(!paused);
     setPlayerState(pState);
@@ -57,11 +63,15 @@ const CustomVideoPlayer = ({
     videoPlayerRef.current.presentFullscreenPlayer();
   };
 
-  const onSeeking = (currTime) => setCurrentTime(currTime);
+  const onSeeking = (currTime) => {
+    if (shouldVideoScroll) setShouldVideoScroll(false);
+    setCurrentTime(currTime);
+  }
 
   return (
     <View style={{ ...containerStyle }}>
       <Video
+          focusable={true}
           source={{ uri: sourceURL }}
           ref={videoPlayerRef}
           style={{ ...styles.mediaPlayer, ...videoStyle }}
@@ -69,6 +79,8 @@ const CustomVideoPlayer = ({
           onLoad={onLoad}
           onLoadStart={onLoadStart}
           onProgress={onProgress}
+          onTouchStart={() => console.log('1')}
+          onTouchEnd={() => console.log(2)}
           paused={paused}
           resizeMode={resizeMode}
           onFullScreen={isFullScreen}
@@ -76,11 +88,12 @@ const CustomVideoPlayer = ({
           fullscreenAutorotate={true}
       />
       <MediaControls
+          containerStyle={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
           sliderStyle={{ containerStyle: { paddingBottom: isLandscape ? 100 : 0 } }}
           isFullScreen={isFullScreen}
           duration={duration}
           isLoading={isLoading}
-          mainColor={colors.primary}
+          mainColor={'rgba(0,0,0,0.5)'}
           onFullScreen={onFullScreen}
           onPaused={onPaused}
           onReplay={onReplay}

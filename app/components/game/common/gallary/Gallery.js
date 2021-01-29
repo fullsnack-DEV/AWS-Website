@@ -56,7 +56,7 @@ const Gallery = ({
       const imageArray = data.map((dataItem) => (dataItem))
       uploadImages(imageArray, authContext, progressStatus).then((responses) => {
         const attachments = responses.map((item) => ({
-          type: 'image',
+          type: item.type,
           url: item.fullImage,
           thumbnail: item.thumbnail,
         }))
@@ -91,7 +91,6 @@ const Gallery = ({
               ImagePicker.openPicker({
                 width: 300,
                 height: 400,
-                cropping: true,
                 multiple: true,
                 maxFiles: 10,
               }).then((pickImages) => {
@@ -101,6 +100,7 @@ const Gallery = ({
         />
       );
     }
+    console.log(item);
     if (item.attachments.length > 0) {
       if (item.attachments[0].type === 'image') {
         return item.attachments.length === 1
