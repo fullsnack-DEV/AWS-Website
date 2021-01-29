@@ -20,7 +20,12 @@ function EditEventItem({
         <Text style={styles.headerTextStyle}>{title}
           {subTitle && <Text style={styles.subHeaderText}>{subTitle}</Text>}</Text>
         {editButtonVisible && (
-          <TouchableOpacity onPress={onEditPress}>
+          <TouchableOpacity onPress={onEditPress} hitSlop={{
+            top: 15,
+            bottom: 15,
+            left: 15,
+            right: 15,
+          }}>
             <Image
             source={images.editSection}
             style={styles.editImageStyle}
@@ -56,8 +61,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   editImageStyle: {
-    height: 25,
-    width: 25,
+    height: 15,
+    width: 15,
   },
 });
 

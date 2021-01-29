@@ -119,6 +119,19 @@ const Summary = ({
     }
   }, [gameData, isFocused]);
 
+  const getRefereeReviewsData = (item) => {
+    setLoading(true)
+    getGameReview(gameData?.game_id, gameData?.review_id, authContext).then((response) => {
+      navigation.navigate('RefereeReviewScreen', {
+        gameReviewData: response.payload, gameData, userData: item, sliderAttributesForReferee, starAttributesForReferee,
+      })
+      setLoading(false)
+    }).catch((error) => {
+      setLoading(false);
+      setTimeout(() => Alert.alert('TownsCup', error?.message), 100)
+    })
+  }
+
   const getGameReviewsData = () => {
     setLoading(true)
     getGameReview(gameData?.game_id, gameData?.review_id, authContext).then((response) => {
@@ -250,6 +263,23 @@ const Summary = ({
         userRole={userRole}
         followUser={followSoccerUser}
         unFollowUser={unFollowSoccerUser}
+        onReviewPress={(referee) => {
+          // navigation.navigate('ReviewRefereeList', {
+          //   gameData,
+          //   sliderAttributesForReferee,
+          //   starAttributesForReferee,
+          // });
+          if (referee?.review_id) {
+            getRefereeReviewsData(referee)
+          }
+          navigation.navigate('RefereeReviewScreen', {
+            gameData,
+            userData: referee,
+            sliderAttributesForReferee,
+            starAttributesForReferee,
+          })
+          console.log('Referee data::=>', referee);
+        }}
       />
       <Scorekeepers
         getScorekeeperReservation={getScorekeeperReservation}

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
@@ -15,24 +16,24 @@ function NewsFeedDescription({
   tags = [],
 }) {
   const [readMore, setReadMore] = useState();
-  const [regX, setRegX] = useState();
+  // const [regX, setRegX] = useState();
 
-  useEffect(() => {
-    console.table('Tags::', tags);
-    createRegXString()
-  }, [tags])
+  // useEffect(() => {
+  //   console.table('Tags::', tags);
+  //   createRegXString()
+  // }, [tags])
   function toggleNumberOfLines() {
     setReadMore(!readMore);
   }
-  const createRegXString = () => {
-    const list = tags.map((e) => e.first_name || e.group_name)
-    const str = list.join('|')
+  // const createRegXString = () => {
+  //   const list = tags.map((e) => e.first_name || e.group_name)
+  //   const str = list.join('|')
 
-    const re = `/@\b(${str})(\b\s*([A-Z]\w+)){0,2}/`;
+  //   const re = `/@\b(${str})(\b\s*([A-Z]\w+)){0,2}/`;
 
-    setRegX(re)
-    console.log(regX);
-  }
+  //   setRegX(re)
+  //   console.log(regX);
+  // }
   function renderText(matchingString) {
     const pattern = /@(\w+)/;
     const match = matchingString.match(pattern);

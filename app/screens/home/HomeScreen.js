@@ -91,10 +91,7 @@ import EventCalendar from '../../components/Schedule/EventCalendar/EventCalendar
 import CalendarTimeTableView from '../../components/Schedule/CalendarTimeTableView';
 import EventBlockTimeTableView from '../../components/Schedule/EventBlockTimeTableView';
 import RefereesProfileSection from '../../components/Home/User/RefereesProfileSection';
-import CertificatesItemView from '../../components/Home/CertificatesItemView';
-import LanguageViewInInfo from '../../components/Home/LanguageViewInInfo';
 import RefereeInfoSection from '../../components/Home/RefereeInfoSection';
-// import ReviewRatingView from '../../components/Home/ReviewRatingView';
 import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
@@ -105,8 +102,9 @@ import { getRefereeReservationDetails } from '../../api/Reservations';
 import TCSearchBox from '../../components/TCSearchBox';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 import TCInnerLoader from '../../components/TCInnerLoader';
-import ReviewRatingView from '../../components/Home/ReviewRatingView';
+import TCThinDivider from '../../components/TCThinDivider';
 
+const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const reviews_data = [
   {
     id: 0,
@@ -190,13 +188,14 @@ export default function HomeScreen({ navigation, route }) {
   const [indexCounter, setIndexCounter] = useState(0);
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
+  const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
+
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
   const [recentMatchData, setRecentMatchData] = useState([]);
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
-  const [refereeRecentMatchDisplay, setRefereeRecentMatchDisplay] = useState(false);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
@@ -515,6 +514,10 @@ export default function HomeScreen({ navigation, route }) {
   let fullName = '';
   if (currentUserData && currentUserData.full_name) {
     fullName = currentUserData.full_name;
+  }
+  let location = '';
+  if (currentUserData && currentUserData.city) {
+    location = currentUserData.city;
   }
   let bioDescription = '';
   if (currentUserData && currentUserData.registered_sports && currentUserData.registered_sports.length > 0) {
@@ -1047,7 +1050,7 @@ export default function HomeScreen({ navigation, route }) {
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
     // navigation.navigate('RegisterReferee');
-    setRefereeRecentMatchDisplay(false);
+
     if (refereeInObject) {
       const entity = authContext.entity;
       let languagesListName = [];
@@ -1083,13 +1086,12 @@ export default function HomeScreen({ navigation, route }) {
               setRefereeUpcomingMatch([...upcomingMatch]);
             } else {
               recentMatch.push(event_item);
-              setRefereeRecentMatchDisplay(true);
+
               setRefereeRecentMatch([...recentMatch]);
             }
             return null;
           });
         } else {
-          setRefereeRecentMatchDisplay(true);
           setRefereeUpcomingMatch([]);
           setRefereeRecentMatch([]);
         }
@@ -1227,24 +1229,12 @@ export default function HomeScreen({ navigation, route }) {
     setInfoModalVisible(!infoModalVisible);
   };
 
-  const refereeInfoModal = () => {
-    setRefereeInfoModalVisible(!refereeInfoModalVisible);
-  };
-
   const scoreboardModal = () => {
     setScoreboardModalVisible(!scoreboardModalVisible);
   };
 
-  const refereeMatchModal = () => {
-    setRefereeMatchModalVisible(!refereeMatchModalVisible);
-  };
-
   const statsModal = () => {
     setStatsModalVisible(!statsModalVisible);
-  };
-
-  const reviewsModal = () => {
-    setReviewsModalVisible(!reviewsModalVisible);
   };
 
   const reviewerDetailModal = () => {
@@ -1289,10 +1279,118 @@ export default function HomeScreen({ navigation, route }) {
   const cancelRequest = (axiosTokenSource) => {
     setCancelApiRequest({ ...axiosTokenSource });
   }
+  const renderRefereesTabContainer = (tabKey) => (
+    <View style={{ flex: 1 }}>
 
+      {/* Referee Info */}
+      {tabKey === 0 && (
+        <RefereeInfoSection
+        data={currentUserData}
+        selectRefereeData={selectRefereeData}
+        searchLocation={searchLocation}
+        languagesName={languagesName}
+        onSavePress={(params) => {
+          let languagesListName = [];
+          patchRegisterRefereeDetails(params, authContext).then((res) => {
+            const changedata = currentUserData;
+            changedata.referee_data = res.payload.referee_data;
+            changedata.gender = res.payload.gender;
+            changedata.birthday = res.payload.birthday;
+            setCurrentUserData(changedata);
+
+            if (res.payload.referee_data) {
+              res.payload.referee_data.map((refereeItem) => {
+                if (refereeItem.sport_name === sportName) {
+                  setSelectRefereeData(refereeItem);
+                  languagesListName = refereeItem.language;
+                }
+                return null;
+              })
+            }
+            if (languagesListName.length > 0) {
+              languagesListName.map((langItem, index) => {
+                language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+                return null;
+              })
+              setLanguagesName(language_string);
+            }
+          }).catch((error) => {
+            console.log('error coming', error)
+            Alert.alert(strings.alertmessagetitle, error.message)
+          })
+        }}
+      />
+      )}
+
+      {/* Recent Match */}
+      {tabKey === 1 && <View>
+        <ScheduleTabView
+                firstTabTitle={`Completed (${refereeRecentMatch.length})`}
+                secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
+                indexCounter={scoreboardTabNumber}
+                eventPrivacyContianer={{ width: wp('70%') }}
+                onFirstTabPress={() => setScroboardTabNumber(0)}
+                onSecondTabPress={() => setScroboardTabNumber(1)}
+              />
+        {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
+                sportsData={refereeRecentMatch}
+                showEventNumbers={false}
+                showAssistReferee={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setRefereeMatchModalVisible(false);
+                  setRefereesInModalVisible(false);
+                }}
+              />}
+        {scoreboardTabNumber === 1 && <UpcomingMatchScreen
+                sportsData={refereeUpcomingMatch}
+                showEventNumbers={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScoreboardModalVisible(false);
+                  setPlaysInModalVisible(false);
+                }}
+              />}
+      </View>
+      }
+
+      {/* Reviews */}
+      {tabKey === 2 && (
+        <View>
+
+          <ReviewSection
+                reviewsData={reviewsData}
+                onReadMorePress={() => {
+                  reviewerDetailModal();
+                }}
+              />
+          <ReviewRecentMatch
+                    eventColor={colors.yellowColor}
+                    startDate1={'Sep'}
+                    startDate2={'25'}
+                    title={'Soccer'}
+                    startTime={'7:00pm -'}
+                    endTime={'9:10pm'}
+                    location={'BC Stadium'}
+                    firstUserImage={images.team_ph}
+                    firstTeamText={'Vancouver Whitecaps'}
+                    secondUserImage={images.team_ph}
+                    secondTeamText={'Newyork City FC'}
+                    firstTeamPoint={3}
+                    secondTeamPoint={1}
+                  />
+          <RefereeReviewerList
+                    navigation={navigation}
+                    postData={postData}
+                    userID={userID}
+                  />
+        </View>
+      )}
+
+    </View>
+  )
   return (
     <View style={ styles.mainContainer }>
-
       <ActionSheet
         ref={addRoleActionSheet}
         options={[strings.addPlaying, strings.addRefereeing, strings.cancel]}
@@ -2301,10 +2399,10 @@ export default function HomeScreen({ navigation, route }) {
           backdropOpacity={0}
         >
           <View style={styles.modalContainerViewStyle}>
-            <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} />
+            {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
             <SafeAreaView style={{ flex: 1 }}>
+
               <Header
-                safeAreaStyle={{ marginTop: 10 }}
                 mainContainerStyle={styles.headerMainContainerStyle}
                 centerComponent={
                   <View style={styles.headerCenterViewStyle}>
@@ -2313,108 +2411,35 @@ export default function HomeScreen({ navigation, route }) {
                   </View>
                 }
                 rightComponent={
-                  <TouchableOpacity onPress={() => setRefereesInModalVisible(false)} style={{ padding: 10 }}>
+                  <TouchableOpacity onPress={() => {
+                    setRefereesInModalVisible(false)
+                    setRefereeCurrentTab(0)
+                  }} style={{ padding: 10 }}>
                     <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
                   </TouchableOpacity>
                 }
               />
+              <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
               <RefereesProfileSection
                   bookRefereeButtonVisible={authContext?.entity?.uid !== currentUserData?.user_id}
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
+                location={location}
                 feesCount={(selectRefereeData && selectRefereeData.fee) ? selectRefereeData.fee : 0}
                 onBookRefereePress={() => {
                   setRefereesInModalVisible(false);
                   navigation.navigate('RefereeBookingDateAndTime', { userData: currentUserData, showMatches: true, navigationName: 'HomeScreen' });
                 }}
               />
-              <ScrollView style={{ marginHorizontal: 15 }} showsVerticalScrollIndicator={false}>
-                <RefereesInItem
-                  title={strings.infoTitle}
-                  onItemPress={() => {
-                    refereeInfoModal();
-                  }}
-                >
-                  {selectRefereeData?.descriptions !== '' && <NewsFeedDescription
-                    character={140}
-                    containerStyle={{ marginHorizontal: 0 }}
-                    descriptionTxt={{
-                      padding: 0, marginTop: 3, color: colors.whiteColor, fontFamily: fonts.RRegular,
-                    }}
-                    descText={{ fontSize: 16, color: colors.whiteGradientColor, fontFamily: fonts.RLight }}
-                    descriptions={selectRefereeData?.descriptions ?? ''}
-                  />}
-                  <Text style={styles.signUpTextStyle}>{strings.signedUpTime}</Text>
-                  {selectRefereeData?.certificates?.length > 0 && <View style={styles.certificatesViewStyle}>
-                    <Text style={[styles.playInTextStyle, { fontFamily: fonts.RMedium, marginBottom: 5 }]}>{'Certificates'}</Text>
-                    <FlatList
-                      data={selectRefereeData.certificates}
-                      bounces={false}
-                      horizontal={true}
-                      showsHorizontalScrollIndicator={false}
-                      ItemSeparatorComponent={() => <View style={{
-                        marginHorizontal: 5,
-                      }} />}
-                      renderItem={({ item: certItem }) => <CertificatesItemView
-                        certificateImage={{ uri: certItem.thumbnail }}
-                        certificateName={certItem.title}
-                      />}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-                  </View>}
-                  <LanguageViewInInfo
-                    title={'Languages'}
-                    languageName={languagesName}
-                  />
-                </RefereesInItem>
-                {/* Referee recentest match */}
-                <RefereesInItem
-                  title={strings.refereeRecentMatchTitle}
-                  onItemPress={() => {
-                    refereeMatchModal();
-                  }}
-                >
-                  {refereeRecentMatchDisplay && <RecentMatchView
-                    data={refereeRecentMatch.length > 0 ? refereeRecentMatch[0] : null}
-                  />}
-                </RefereesInItem>
 
-                <RefereesInItem
-                  title={strings.reviewsTitle}
-                  onItemPress={() => {
-                    reviewsModal();
-                  }}
-                >
-                  <View style={styles.backgroundView}>
-                    <FlatList
-                      data={reviewsData}
-                      bounces={false}
-                      showsHorizontalScrollIndicator={false}
-                      ItemSeparatorComponent={() => <View style={{
-                        marginVertical: 4,
-                      }} />}
-                      style={{ marginVertical: 15 }}
-                      renderItem={({ item }) => <ReviewRatingView
-                        title={item.title}
-                        rating={Number(item.rating)}
-                        ratingCount={item.rating}
-                        rateStarSize={20}
-                      />}
-                      ListFooterComponent={() => <View style={{ marginTop: 4 }}>
-                        <View style={styles.lastReviewItemSeprator} />
-                        <ReviewRatingView
-                          title={'Punctuality'}
-                          rating={Number(4.0)}
-                          ratingCount={'4.0'}
-                          rateStarSize={20}
-                        />
-                      </View>}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-                  </View>
-                </RefereesInItem>
-                {/* Referee recentest match */}
-              </ScrollView>
+              <TCScrollableProfileTabs
+                    tabItem={TAB_ITEMS}
+                    onChangeTab={(ChangeTab) => setRefereeCurrentTab(ChangeTab.i)}
+                    currentTab={currentRefereeTab}
+                    renderTabContain={(tabKey) => renderRefereesTabContainer(tabKey)}
+                    tabVerticalScroll={false}
+                />
+
             </SafeAreaView>
           </View>
 
@@ -2772,7 +2797,7 @@ const styles = StyleSheet.create({
   },
   modalContainerViewStyle: {
     height: hp('94%'),
-    backgroundColor: colors.themeColor,
+    backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
@@ -2784,7 +2809,7 @@ const styles = StyleSheet.create({
   cancelImageStyle: {
     height: 17,
     width: 17,
-    tintColor: colors.whiteColor,
+    tintColor: colors.lightBlackColor,
   },
   soccerImageStyle: {
     height: 20,
@@ -2804,7 +2829,7 @@ const styles = StyleSheet.create({
   playInTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
   },
   signUpTextStyle: {
     fontSize: 12,
@@ -2873,26 +2898,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-  },
-  certificatesViewStyle: {
-    marginLeft: 10,
-    marginTop: 10,
-  },
-  backgroundView: {
-    backgroundColor: colors.matchViewColor,
-    borderRadius: 5,
-    elevation: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    marginVertical: 10,
-  },
-  lastReviewItemSeprator: {
-    height: 1,
-    marginHorizontal: 15,
-    marginVertical: 5,
-    backgroundColor: colors.themeColor,
   },
   sepratorView: {
     height: 1,

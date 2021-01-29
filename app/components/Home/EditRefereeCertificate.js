@@ -17,6 +17,7 @@ import EventItemRender from '../Schedule/EventItemRender';
 import Header from './Header';
 import TCInnerLoader from '../TCInnerLoader';
 import AuthContext from '../../auth/context';
+import TCThinDivider from '../TCThinDivider';
 
 const MAX_CERTIFICATE_UPLOAD = 2;
 const EditRefereeCertificate = ({
@@ -203,7 +204,7 @@ const EditRefereeCertificate = ({
     >
       <SafeAreaView style={{ ...styles.modalContainerViewStyle, backgroundColor: colors.whiteColor }}>
         <LinearGradient
-                    colors={[colors.orangeColor, colors.yellowColor]}
+                    colors={[colors.whiteColor, colors.whiteColor]}
                     end={{ x: 0.0, y: 0.25 }}
                     start={{ x: 1, y: 0.5 }}
                     style={styles.gradiantHeaderViewStyle}>
@@ -236,11 +237,11 @@ const EditRefereeCertificate = ({
                               onSavePress(finalCerti);
                             }
                           }}>
-                        <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
+                        <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
                       </TouchableOpacity>
                     }
                 />
-
+        <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={1}/>
         <KeyboardAwareScrollView enableOnAndroid={false}>
           <EventItemRender
                        title={strings.addCertiMainTitle}
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
   cancelImageStyle: {
     height: 17,
     width: 17,
-    tintColor: colors.whiteColor,
+    tintColor: colors.lightBlackColor,
   },
   soccerImageStyle: {
     height: 30,
@@ -334,7 +335,7 @@ const styles = StyleSheet.create({
   playInTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
   },
   gradiantHeaderViewStyle: {
     position: 'absolute',
