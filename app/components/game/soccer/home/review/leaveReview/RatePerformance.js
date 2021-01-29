@@ -16,28 +16,30 @@ const RatePerformance = ({
   setTeamReview,
   reviewAttributes,
   starColor,
-}) => (
-  <View style={styles.mainContainer}>
+}) => {
+  console.log('RA : ', reviewAttributes);
+  return (
+    <View style={styles.mainContainer}>
 
-    {/*    Title */}
-    <Text style={styles.titleText}>Rate performance <Text style={{ color: colors.redDelColor }}>*</Text></Text>
+      {/*    Title */}
+      <Text style={styles.titleText}>Rate performance <Text style={{ color: colors.redDelColor }}>*</Text></Text>
 
-    {/* Ratings */}
-    <View style={styles.rateSection}>
+      {/* Ratings */}
+      <View style={styles.rateSection}>
 
-      {/* Poor Excellent Section */}
-      <View style={{ ...styles.poorExcellentSection }}>
-        <View style={{ flex: 0.3 }}/>
-        <View style={styles.poorExcellentChildSection}>
-          <Text style={styles.poorExcellenceText}>Poor</Text>
-          <Text>Excellent</Text>
+        {/* Poor Excellent Section */}
+        <View style={{ ...styles.poorExcellentSection }}>
+          <View style={{ flex: 0.3 }}/>
+          <View style={styles.poorExcellentChildSection}>
+            <Text style={styles.poorExcellenceText}>Poor</Text>
+            <Text>Excellent</Text>
+          </View>
+          <View style={{ flex: 0.1 }}/>
         </View>
-        <View style={{ flex: 0.1 }}/>
-      </View>
 
-      {/*    Rating Slider */}
-      {reviewAttributes.map((item, index) => (<View key={index}>
-        <TCAttributeRatingWithSlider
+        {/*    Rating Slider */}
+        {reviewAttributes.length ? reviewAttributes.map((item, index) => (<View key={index}>
+          <TCAttributeRatingWithSlider
             selectedTrackColors={teamNo === 0
               ? [colors.yellowColor, colors.themeColor]
               : [colors.blueGradiantEnd, colors.blueGradiantStart]}
@@ -45,25 +47,25 @@ const RatePerformance = ({
                 title={item}
                 rating={reviewsData?.team_reviews[teamNo][item]}
             />
-      </View>))}
-    </View>
+        </View>)) : null}
+      </View>
 
-    {/* Questions */}
-    {QUSTIONS.map((item, index) => (
-      <View style={{ marginVertical: 5 }} key={index}>
-        <Text style={styles.questionText}>{item.desc}</Text>
-        <TCRatingStarSlider
-            currentRating={reviewsData?.team_reviews[teamNo][item.attrName]}
+      {/* Questions */}
+      {QUSTIONS.map((item, index) => (
+        <View style={{ marginVertical: 5 }} key={index}>
+          <Text style={styles.questionText}>{item.desc}</Text>
+          <TCRatingStarSlider
+            currentRating={reviewsData?.team_reviews?.[teamNo][item.attrName]}
             onPress={(star) => {
               setTeamReview(item.attrName, star)
             }}
               style={{ alignSelf: 'flex-end' }}
               starColor={starColor}/>
-      </View>
-    ))}
-  </View>
-)
-
+        </View>
+      ))}
+    </View>
+  )
+}
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,

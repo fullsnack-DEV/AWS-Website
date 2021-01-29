@@ -16,7 +16,7 @@ import colors from '../../../../../../Constants/Colors';
 import images from '../../../../../../Constants/ImagePath';
 import fonts from '../../../../../../Constants/Fonts';
 
-function ReviewPlayerList({ navigation, route }) {
+export default function ReviewRefereeList({ navigation, route }) {
   const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState();
@@ -93,8 +93,8 @@ function ReviewPlayerList({ navigation, route }) {
             if (userData?.review_id) {
               getGameReviewsData(userData)
             } else {
-              navigation.navigate('PlayerReviewScreen', {
-                gameData, userData, sliderAttributesForPlayer: route?.params?.sliderAttributesForPlayer, starAttributesForPlayer: route?.params?.starAttributesForPlayer,
+              navigation.navigate('RefereeReviewScreen', {
+                gameData, userData, sliderAttributesForReferee: route?.params?.sliderAttributesForReferee, starAttributesForReferee: route?.params?.starAttributesForReferee,
               })
             }
           }}>
@@ -217,4 +217,3 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
   },
 })
-export default ReviewPlayerList;

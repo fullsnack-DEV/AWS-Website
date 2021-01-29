@@ -537,5 +537,7 @@ const strings = {
   reviewForPlayers: 'Review for Players',
   reviewForReferees: 'Review for Referees',
   editReviewForTeams: 'Edit Review for Teams',
+  completeReviewFirst: 'Please, complete all ratings before moving to the next.',
+  punchualityDesc: 'Did the the referee arrive at the match place on time?',
 };
 export default strings;

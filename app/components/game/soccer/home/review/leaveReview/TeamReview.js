@@ -1,13 +1,22 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import {
+  Text, View, StyleSheet, Pressable,
+  FlatList,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
 import RatePerformance from './RatePerformance';
-import TCInputBox from '../../../../../TCInputBox';
 import TCKeyboardView from '../../../../../TCKeyboardView';
+import SelectedImageList from '../../../../../WritePost/SelectedImageList';
+import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 
+// const makeTagedUser=()=>{
+//   if(reviewsData?.team_reviews[teamNo]?.comment)
+//   const strColor = str.replace(/\d+/, match => <span style={{color: 'red'}}> {match} </span> );
+//   <Text style={{ color: 'red' }}>{reviewsData?.team_reviews[teamNo]?.comment}</Text>
+// }
 const TeamReview = ({
   teamNo,
   reviewsData,
@@ -15,12 +24,14 @@ const TeamReview = ({
   reviewAttributes,
   teamData,
   starColor,
+  navigation,
+  tags = [],
 }) => (
   <TCKeyboardView>
     <View style={styles.mainContainer}>
 
       {/* Title */}
-      <Text style={styles.titleText}>Please, rate the performance of New York City FC and leave a review for the team.</Text>
+      <Text style={styles.titleText}>Please, rate the performance of {teamData?.group_name} and leave a review for the team.</Text>
 
       {/*  Logo Container */}
       <View style={styles.logoContainer}>
@@ -57,9 +68,9 @@ const TeamReview = ({
       {/*  Leave a Review */}
       <View style={styles.leaveReviewContainer}>
         <Text style={styles.titleText}>Leave a review</Text>
-        <TCInputBox
+        {/* <TCInputBox
           onChangeText={(value) => setTeamReview(teamNo, 'comment', value)}
-          value={reviewsData?.team_reviews[teamNo]?.comment ?? ''}
+          value={reviewsData?.team_reviews?.[teamNo]?.comment ?? ''}
           multiline={true}
           placeHolderText={'Describe what you thought and felt about New York City FC while watching or playing the game.'}
           textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
@@ -69,9 +80,75 @@ const TeamReview = ({
             alignItems: 'flex-start',
             padding: 15,
           }}
-      />
+      /> */}
+        <Pressable
+        style={{
+          height: 120,
+          marginVertical: 10,
+          alignItems: 'flex-start',
+          padding: 15,
+          backgroundColor: colors.offwhite,
+          shadowColor: colors.googleColor,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 5,
+          elevation: 5,
+          borderRadius: 5,
+        }}
+        onPress={() => {
+          navigation.navigate('WriteReviewScreen', {
+            comeFrom: 'LeaveReview',
+            postData: null,
+            searchText: reviewsData?.team_reviews[teamNo]?.comment ?? '',
+            // onPressDone: callthis,
+            selectedImageList: reviewsData?.team_reviews[teamNo]?.attachments || [],
+            taggedData: reviewsData?.team_reviews[teamNo]?.tagged || [],
+          })
+        }}>
+          <View pointerEvents="none" >
+            {/* <TCInputBox
+                        value={reviewsData?.team_reviews[teamNo]?.comment ?? ''}
+                        multiline={true}
+                        placeHolderText={`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
+                        textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
+                        style={{
+                          height: 120,
+                          marginVertical: 10,
+                          alignItems: 'flex-start',
+                          padding: 15,
+                        }} /> */}
+            <Text style={{ fontFamily: fonts.RRegular, fontSize: 16, color: colors.lightBlackColor }}>{reviewsData?.team_reviews[teamNo]?.comment !== '' ? <NewsFeedDescription descriptions={reviewsData?.team_reviews[teamNo]?.comment} tags={tags}/> : `Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}</Text>
+          </View>
+        </Pressable>
       </View>
-
+      <FlatList
+          data={ reviewsData?.team_reviews[teamNo]?.attachments || [] }
+          horizontal={ true }
+          // scrollEnabled={true}
+          showsHorizontalScrollIndicator={ false }
+          renderItem={ ({ item, index }) => (
+            <SelectedImageList
+                data={ item }
+                isClose= {false}
+                isCounter={false}
+                itemNumber={ index + 1 }
+                totalItemNumber={reviewsData?.team_reviews[teamNo]?.attachments?.length }
+                onItemPress={ () => {
+                  const imgs = reviewsData?.team_reviews[teamNo]?.attachments;
+                  const idx = imgs.indexOf(item);
+                  if (idx > -1) {
+                    imgs.splice(idx, 1);
+                  }
+                  // setSelectImage(imgs);
+                } }
+              />
+          ) }
+          ItemSeparatorComponent={ () => (
+            <View style={ { width: 5 } } />
+          ) }
+          style={ { paddingTop: 10, marginHorizontal: 10 } }
+          keyExtractor={ (item, index) => index.toString() }
+        />
       {/*  Footer */}
       <Text style={styles.footerText}>
         (<Text style={{ color: colors.redDelColor }}>*</Text> required)
