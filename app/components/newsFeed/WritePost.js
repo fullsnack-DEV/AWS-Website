@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, Image, Text, TouchableOpacity,
+  StyleSheet, View, Image, Text, TouchableHighlight,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -19,12 +19,12 @@ function WritePost({ postDataItem, onWritePostPress }) {
   return (
     <View style={ styles.mainContainer }>
       <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
-      <TouchableOpacity activeOpacity={1} style={styles.writePostView} onPress={onWritePostPress}>
+      <TouchableHighlight activeOpacity={1} style={styles.writePostView} onPress={onWritePostPress}>
         <Text
           style={styles.writePostText}>
           Write a post...
         </Text>
-      </TouchableOpacity>
+      </TouchableHighlight>
     </View>
   );
 }

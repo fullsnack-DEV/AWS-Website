@@ -4,7 +4,7 @@ import React, {
 import {
   Text,
   View,
-  StyleSheet, Image, TouchableHighlight,
+  StyleSheet, TouchableHighlight,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
@@ -110,7 +110,9 @@ const TCMessage = ({
                               onPress={() => {
                                 setMute(!mute);
                               }}>
-                      <Image
+                      <FastImage
+                          resizeMode={'contain'}
+                          tintColor={'white'}
                                   style={styles.imageStyle}
                                   source={mute ? images.unmute : images.mute}
                               />
@@ -122,9 +124,11 @@ const TCMessage = ({
                               onPress={() => {
                                 setPlay(!play);
                               }}>
-                      <Image
+                      <FastImage
+                          tintColor={'white'}
+                          resizeMode={'contain'}
                                   style={styles.playPauseImageStyle}
-                                  source={images.playPause}
+                                  source={play ? images.videoPauseButton : images.videoPlayButton}
                               />
                     </TouchableHighlight>
                   </View>

@@ -47,7 +47,12 @@ export default function MultiImagePostView({
   const [isLandScape, setIsLandScape] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [imageZoomScale, setZoomScale] = useState(1);
 
+  useEffect(() => {
+    if (imageZoomScale > 1) setScroll(false);
+    else setScroll(true);
+  }, [imageZoomScale])
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -95,15 +100,7 @@ export default function MultiImagePostView({
 
   const shareActionSheet = useRef();
 
-  const handlePageZoom = ({ type, scale }) => {
-    if (type === 'onPanResponderRelease') {
-      if (scale !== 1) {
-        setScroll(false);
-      } else if (scale === 1) {
-        setScroll(true);
-      }
-    }
-  }
+  const handlePageZoom = ({ scale }) => setZoomScale(scale);
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.blackColor }}
@@ -186,7 +183,9 @@ export default function MultiImagePostView({
               }
               if (multiAttachItem.type === 'video') {
                 return (
-                  <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                  <View style={{
+                    alignItems: 'center', justifyContent: 'center', flex: 1, zIndex: 100,
+                  }}>
                     <Image
                       source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
                       resizeMode={'cover'}
@@ -194,7 +193,7 @@ export default function MultiImagePostView({
                         width: isLandScape ? landscapeImgWidth : portraitImgWidth,
                         height: isLandScape ? landscapeImgHeight : portraitImgHeight,
                       }}
-                    />
+                     />
                     <View
                       style={[
                         styles.singleImageDisplayStyle,
@@ -211,9 +210,8 @@ export default function MultiImagePostView({
                       <Text style={styles.loadingTextStyle}>Loading...</Text>
                     </View>
                     <CustomVideoPlayer
-                        onPlayPausedStatusChanged={(isPlayerPaused) => {
-                          if (isPlayerPaused) setScroll(true);
-                          else setScroll(false);
+                        onPlayerStatusChanged={(shouldVideoScroll) => {
+                          setScroll(shouldVideoScroll);
                         }}
                           isLandscape={isLandScape}
                           sourceURL={multiAttachItem.url}

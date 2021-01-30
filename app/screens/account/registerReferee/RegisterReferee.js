@@ -32,7 +32,7 @@ import TCInnerLoader from '../../../components/TCInnerLoader';
 import { getUserDetails } from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
-const MAX_CERTIFICATE_UPLOAD = 2;
+const MAX_CERTIFICATE_UPLOAD = 5;
 export default function RegisterReferee({ navigation }) {
   const authContext = useContext(AuthContext);
   const [isModalVisible, setModalVisible] = useState(false);

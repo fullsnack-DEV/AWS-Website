@@ -13,7 +13,6 @@ const GameFeed = ({
   navigation,
   currentUserData,
   getGameFeedData,
-  userID,
   createGamePostData,
   setUploadImageProgressData,
 }) => {
@@ -54,7 +53,7 @@ const GameFeed = ({
   }
 
   const createPostAfterUpload = (dataParams) => {
-    const params = { uid: gameData?.game_id }
+    const params = { game_id: gameData?.game_id }
     createGamePostData(dataParams)
       .then(() => getGameFeedData(params))
       .then((response) => {
@@ -76,6 +75,7 @@ const GameFeed = ({
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
+        game_id: gameData?.game_id,
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
@@ -113,7 +113,6 @@ const GameFeed = ({
       <NewsFeedList
                 navigation={navigation}
                 postData={gameFeedData}
-                userID={userID}
                 scrollEnabled={false}
             />
 

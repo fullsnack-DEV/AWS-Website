@@ -70,11 +70,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: hp(4),
     flexDirection: 'row',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
   teamIndicatorContentContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   gradiantIndicator: {
     height: 14,

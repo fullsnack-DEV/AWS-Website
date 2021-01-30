@@ -10,7 +10,7 @@ import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import {
-  createPost,
+  createPost, createReaction, deletePost,
   getNewsFeed,
   getNewsFeedNextList,
   updatePost,
@@ -34,7 +34,11 @@ export default function FeedsScreen({ navigation }) {
   const [progressBar, setProgressBar] = useState(false);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
+  const [pullRefresh, setPullRefresh] = useState(false);
 
+  useEffect(() => {
+    console.log('postData: ', postData);
+  }, [postData])
   useEffect(() => {
     if (isFocused) {
       setloading(true);
@@ -44,7 +48,7 @@ export default function FeedsScreen({ navigation }) {
       getNewsFeed(authContext)
         .then((response) => {
           setloading(false);
-          setPostData(response.payload.results)
+          setPostData([...response.payload.results])
         })
         .catch((e) => {
           setloading(false);
@@ -183,14 +187,47 @@ export default function FeedsScreen({ navigation }) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <NewsFeedList
+        pullRefresh={pullRefresh}
+        onDeletePost={(item) => {
+          setloading(true);
+          const params = {
+            activity_id: item.id,
+
+          };
+          if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
+            params.entity_type = authContext?.entity?.obj?.entity_type;
+            params.entity_id = authContext?.entity?.uid;
+          }
+          deletePost(params, authContext)
+            .then(() => getNewsFeed(authContext))
+            .then((response) => {
+              setloading(false);
+              setPostData([...response.payload.results]);
+            })
+            .catch((e) => {
+              setloading(false);
+              Alert.alert('', e.messages)
+            });
+        }}
         navigation={navigation}
         newsFeedData={newsFeedData}
         postData={postData}
-        onPressDone={editPostDoneCall}
+        onEditPressDone={editPostDoneCall}
         onRefreshPress={() => {
           setIsMoreLoading(false);
           setIsNextDataLoading(true);
           setFooterLoading(false)
+          setPostData([]);
+          setPullRefresh(true);
+          getNewsFeed(authContext)
+            .then((response) => {
+              setPostData([...response.payload.results]);
+              setPullRefresh(false);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages)
+              setPullRefresh(false);
+            });
         }}
         footerLoading={footerLoading && isNextDataLoading}
         ListHeaderComponent={() => <View>
@@ -207,10 +244,24 @@ export default function FeedsScreen({ navigation }) {
           />
           <View style={styles.sepratorView} />
         </View>}
+        onLikePress={(item) => {
+          const bodyParams = {
+            reaction_type: 'clap',
+            activity_id: item.id,
+          };
+          createReaction(bodyParams, authContext)
+            .then(() => getNewsFeed(authContext))
+            .then((response) => {
+              setPostData([...response.payload.results]);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages)
+            });
+        }}
         onEndReached={() => {
           setIsMoreLoading(true);
           setFooterLoading(true);
-          const id_lt = postData[postData.length - 1].id;
+          const id_lt = postData?.[postData.length - 1]?.id;
           if (id_lt && isMoreLoading && isNextDataLoading) {
             getNewsFeedNextList(id_lt, authContext).then((response) => {
               if (response) {
@@ -219,8 +270,7 @@ export default function FeedsScreen({ navigation }) {
                 }
                 setIsMoreLoading(false);
                 setFooterLoading(false)
-                const data = [...postData, ...response.payload.results]
-                setPostData(data);
+                setPostData([...postData, ...response.payload.results]);
               }
             })
               .catch((error) => {
@@ -229,6 +279,7 @@ export default function FeedsScreen({ navigation }) {
               })
           }
         }}
+
       />
       {progressBar && <ImageProgress
           numberOfUploaded={doneUploadCount}
