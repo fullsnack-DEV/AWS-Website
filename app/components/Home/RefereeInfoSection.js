@@ -51,6 +51,7 @@ import TCTags from '../TCTags';
 import ModalLocationSearch from './ModalLocationSearch';
 import EditRefereeCertificate from './EditRefereeCertificate';
 import TCKeyboardView from '../TCKeyboardView';
+import TCThinDivider from '../TCThinDivider';
 
 const privacy_Data = [
   {
@@ -752,7 +753,7 @@ function RefereeInfoSection({
             ...styles.modalContainerViewStyle, height: hp(100), top: hp(5), backgroundColor: colors.whiteColor,
           }}>
             <LinearGradient
-            colors={[colors.orangeColor, colors.yellowColor]}
+            colors={[colors.whiteColor, colors.whiteColor]}
             end={{ x: 0.0, y: 0.25 }}
             start={{ x: 1, y: 0.5 }}
             style={styles.gradiantHeaderViewStyle}>
@@ -778,10 +779,11 @@ function RefereeInfoSection({
             }
             rightComponent={
               <TouchableOpacity onPress={onTopEditSavePress}>
-                <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.whiteColor }}>{'Save'}</Text>
+                <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
               </TouchableOpacity>
             }
           />
+            <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={1}/>
             <ScrollView style={{ flex: 1 }}>
               {editPressTitle === strings.bio && (
                 <View>
@@ -1242,7 +1244,7 @@ const styles = StyleSheet.create({
   cancelImageStyle: {
     height: 17,
     width: 17,
-    tintColor: colors.whiteColor,
+    tintColor: colors.lightBlackColor,
   },
   soccerImageStyle: {
     height: 30,
@@ -1257,7 +1259,7 @@ const styles = StyleSheet.create({
   playInTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
+    color: colors.lightBlackColor,
   },
   gradiantHeaderViewStyle: {
     position: 'absolute',

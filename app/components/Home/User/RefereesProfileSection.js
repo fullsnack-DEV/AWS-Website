@@ -7,12 +7,11 @@ import {
 } from 'react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import UserCategoryView from './UserCategoryView';
 
 export default function RefereesProfileSection({
   profileImage,
   userName,
-  feesCount,
+  location,
   onBookRefereePress,
   bookRefereeButtonVisible = true,
 }) {
@@ -24,27 +23,20 @@ export default function RefereesProfileSection({
         </View>
         <View style={styles.topTextContainer}>
           <Text style={styles.userNameTextStyle}>{userName}</Text>
-          <View style={{ flexDirection: 'row' }}>
-            <UserCategoryView title='Referees' titleColor={colors.redDelColor}/>
-          </View>
+          <Text style={styles.locationTextStyle}>{location}</Text>
         </View>
       </View>
-      <View style={styles.editViewStyle}>
-        <Text style={{ ...styles.editTextStyle }}>{`$${feesCount} CAD`}
-          <Text style={styles.perHourTextStyle}>{' (per hours)'}</Text>
-        </Text>
-        {bookRefereeButtonVisible && (
-          <TouchableOpacity onPress={onBookRefereePress}>
-            <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      {bookRefereeButtonVisible && (
+        <TouchableOpacity onPress={onBookRefereePress}>
+          <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
 const styles = StyleSheet.create({
   topViewContainer: {
-    backgroundColor: colors.lightgrayPlayInColor,
+    backgroundColor: colors.lightgrayBG,
     paddingVertical: 12,
     paddingHorizontal: 15,
   },
@@ -75,31 +67,16 @@ const styles = StyleSheet.create({
   userNameTextStyle: {
     fontSize: 20,
     fontFamily: fonts.RMedium,
-    color: colors.themeColor,
+    color: colors.lightBlackColor,
   },
-  editViewStyle: {
-    marginTop: 10,
-    flexDirection: 'row',
-    backgroundColor: colors.whiteColor,
-    paddingVertical: 10,
-    justifyContent: 'space-around',
-    borderRadius: 10,
-    shadowOpacity: 0.3,
-    shadowOffset: {
-      height: 5,
-      width: 1,
-    },
-    elevation: 10,
-    shadowColor: colors.orangeColor,
+  locationTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
   },
   editTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    color: colors.redDelColor,
-  },
-  perHourTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
     color: colors.redDelColor,
   },
 });

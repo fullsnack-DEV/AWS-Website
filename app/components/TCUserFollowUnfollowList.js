@@ -13,6 +13,7 @@ import TCInnerLoader from './TCInnerLoader';
 const TCUserFollowUnfollowList = ({
   followUser,
   unFollowUser,
+  isShowReviewButton = false,
   isShowThreeDots = false,
   title,
   subTitle = '',
@@ -25,6 +26,8 @@ const TCUserFollowUnfollowList = ({
   userID,
   statusTitle = '',
   statusColor,
+  isReviewed = false,
+  onReviewPress,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +51,56 @@ const TCUserFollowUnfollowList = ({
     }
   };
 
+  const renderButtons = () => {
+    if (isShowReviewButton) {
+      return (<TCGradientButton
+          onPress={onReviewPress}
+          title={!isReviewed ? 'Review' : 'Edit Review'}
+          startGradientColor={isReviewed ? colors.yellowColor : colors.whiteColor}
+          endGradientColor={isReviewed ? colors.themeColor : colors.whiteColor}
+          textStyle={{ color: isReviewed ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
+          style={{
+            display: myUserId === userID ? 'none' : 'flex',
+            borderRadius: 5,
+            height: 25,
+            width: 75,
+            borderWidth: 1,
+            borderColor: colors.yellowColor,
+          }} />)
+    }
+    return (
+      <>
+        {!loading && userRole === 'user' && (<TCGradientButton
+                    onPress={onFollowPress}
+                    title={is_following ? 'Following' : 'Follow'}
+                    startGradientColor={is_following ? colors.yellowColor : colors.whiteColor}
+                    endGradientColor={is_following ? colors.themeColor : colors.whiteColor}
+                    textStyle={{ color: is_following ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
+                    style={{
+                      display: myUserId === userID ? 'none' : 'flex',
+                      borderRadius: 5,
+                      height: 25,
+                      width: 75,
+                      borderWidth: 1,
+                      borderColor: colors.yellowColor,
+                    }} />
+        )}
+        {loading && userRole === 'user' && (
+          <View style={{
+            borderRadius: 5,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 25,
+            width: 75,
+            borderWidth: 1,
+            borderColor: colors.yellowColor,
+          }}>
+            <TCInnerLoader allowMargin={true} size={20} visible={loading}/>
+          </View>
+        )}
+      </>
+    )
+  }
   return (
     <View>
       <View style={{ alignItems: 'center', flexDirection: 'row' }}>
@@ -79,34 +132,8 @@ const TCUserFollowUnfollowList = ({
             </TouchableOpacity>
           ) : (
             <View>
-              {!loading && userRole === 'user' && (<TCGradientButton
-                      onPress={onFollowPress}
-                      title={is_following ? 'Following' : 'Follow'}
-                      startGradientColor={is_following ? colors.yellowColor : colors.whiteColor}
-                      endGradientColor={is_following ? colors.themeColor : colors.whiteColor}
-                      textStyle={{ color: is_following ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
-                      style={{
-                        display: myUserId === userID ? 'none' : 'flex',
-                        borderRadius: 5,
-                        height: 25,
-                        width: 75,
-                        borderWidth: 1,
-                        borderColor: colors.yellowColor,
-                      }} />
-              )}
-              {loading && userRole === 'user' && (
-                <View style={{
-                  borderRadius: 5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: 25,
-                  width: 75,
-                  borderWidth: 1,
-                  borderColor: colors.yellowColor,
-                }}>
-                  <TCInnerLoader allowMargin={true} size={20} visible={loading}/>
-                </View>
-              )}
+              {renderButtons()}
+
             </View>
           )}
 

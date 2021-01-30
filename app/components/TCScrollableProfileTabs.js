@@ -12,7 +12,7 @@ export default function TCScrollableProfileTabs({
   onChangeTab, currentTab, renderTabContain, tabItem, customStyle,
 }) {
   return (
-    <ScrollView style={customStyle} nestedScrollEnabled={true}>
+    <ScrollView style={customStyle} nestedScrollEnabled={false}>
       <ScrollableTabView
           locked={true}
         onChangeTab={onChangeTab}
@@ -28,6 +28,7 @@ export default function TCScrollableProfileTabs({
         renderTabBar={() => <ScrollableTabBar />}>
         {tabItem.map((item, key) => (<View key={key} tabLabel={item}/>))}
       </ScrollableTabView>
+
       <ScrollView style={{ flex: 1 }}>
         {renderTabContain(currentTab)}
       </ScrollView>

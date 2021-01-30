@@ -16,6 +16,9 @@ import * as RefereeUtils from '../../../../screens/referee/RefereeUtility';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import RefereeReservationStatus from '../../../../Constants/RefereeReservationStatus';
+import {
+  checkReviewExpired,
+} from '../../../../utils/gameUtils';
 
 let selectedRefereeData;
 const Referees = ({
@@ -26,6 +29,7 @@ const Referees = ({
   unFollowUser,
   navigation,
   getRefereeReservation,
+  onReviewPress,
 }) => {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext)
@@ -97,6 +101,8 @@ const Referees = ({
               statusColor={getRefereeStatusMessage(item, 'color')}
               statusTitle={getRefereeStatusMessage(item, 'status')}
               myUserId={myUserId}
+              isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
+              isReviewed={!!referee?.review_id}
               followUser={followUser}
               unFollowUser={unFollowUser}
               userID={referee?.user_id}
@@ -111,6 +117,7 @@ const Referees = ({
                 actionSheet.current.show()
               }}
               userRole={userRole}
+              onReviewPress={() => onReviewPress(referee)}
           />
     )
   }
