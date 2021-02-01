@@ -117,6 +117,11 @@ const createGameLineUp = (teamId, gameId, params, authContext) => makeAPIRequest
   data: params,
   authContext,
 })
+const getAllLineUp = (gameId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}games/${gameId}/roster`,
+  authContext,
+})
 const deleteGameLineUp = (teamId, gameId, params, authContext) => makeAPIRequest({
   method: 'delete',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/removeMembers`,
@@ -256,4 +261,5 @@ export {
   getGameReview,
   patchGameReview,
   addRefereeReview,
+  getAllLineUp,
 }

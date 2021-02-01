@@ -113,9 +113,14 @@ const getGameDateTimeInHMSformat = (date = new Date()) => moment(new Date(date *
 
 const checkReviewExpired = (date) => {
   const expiryDate = moment(date * 1000).add(REVIEW_EXPIRY_DAYS, 'days');
-  const diff = getDiffDays(expiryDate);
-  if (diff >= 0 && diff <= REVIEW_EXPIRY_DAYS) return false;
-  return true;
+  // const diff = getDiffDays(expiryDate);
+  // if (diff >= 0 && diff <= REVIEW_EXPIRY_DAYS) return false;
+  // return true;
+  if (new Date(expiryDate).getTime() > new Date().getTime()) {
+    return false
+  }
+
+  return true
 }
 
 const getDiffDays = (date) => {

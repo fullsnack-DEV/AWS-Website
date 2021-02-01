@@ -29,7 +29,7 @@ import ActivityLoader from '../../../../../components/loader/ActivityLoader';
 
 const LeaveReview = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
-  const [currentForm, setCurrentForm] = useState(1);
+  const [currentForm, setCurrentForm] = useState(route?.params?.selectedTeam === 'home' ? 1 : 2);
   const [loading, setLoading] = useState(false);
   const [sliderAttributes, setSliderAttributes] = useState([]);
   const [progressBar, setProgressBar] = useState(false);
@@ -38,85 +38,47 @@ const LeaveReview = ({ navigation, route }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
-  const [reviewsData, setReviewsData] = useState({
+  const [reviewsData, setReviewsData] = useState(currentForm === 1 ? {
+
+    team_id: route?.params?.gameData?.home_team?.group_id,
     comment: '',
     attachments: [],
     tagged: [],
-    team_reviews: [
-      {
-        team_id: route?.params?.gameData?.home_team?.group_id,
-        comment: '',
-        attachments: [],
-        tagged: [],
-      },
-      {
-        team_id: route?.params?.gameData?.away_team?.group_id,
-        comment: '',
-        attachments: [],
-        tagged: [],
-      },
-    ],
+
+  } : {
+
+    team_id: route?.params?.gameData?.away_team?.group_id,
+    comment: '',
+    attachments: [],
+    tagged: [],
+
   });
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = {
-        comment: '',
-        attachments: [],
-        tagged: [],
-        team_reviews: JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
-          ?.teamReviews,
-      };
-
+      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)?.teamReviews;
       setReviewsData({ ...reviewObj });
     }
   }, [route?.params?.gameReviewData?.results[0]?.object]);
 
   useEffect(() => {
+    const obj = { ...reviewsData }
     if (route?.params?.selectedImageList) {
-      if (currentForm === 1) {
-        const obj = { ...reviewsData }
-        obj.team_reviews[0].attachments = route?.params?.selectedImageList
-        console.log(
-          'obj of attachments::=>',
-          obj,
-        );
-        setReviewsData({ ...obj })
-      } else {
-        const obj = { ...reviewsData }
-        obj.team_reviews[1].attachments = route?.params?.selectedImageList
-        setReviewsData({ ...obj })
-      }
+      obj.attachments = route?.params?.selectedImageList
+      setReviewsData(obj)
     }
-    if (route?.params?.searchText) {
-      if (currentForm === 1) {
-        const obj = { ...reviewsData }
-        obj.team_reviews[0].comment = route?.params?.searchText ?? ''
-        setReviewsData({ ...obj })
-      } else {
-        const obj = { ...reviewsData }
-        obj.team_reviews[1].comment = route?.params?.searchText ?? ''
-        setReviewsData({ ...obj })
-      }
+    if (route?.params?.searchText?.length >= 0) {
+      obj.comment = route?.params?.searchText ?? ''
+      setReviewsData(obj)
     }
     if (route?.params?.entityTags) {
       console.table(route?.params?.entityTags)
-      if (currentForm === 1) {
-        const obj = { ...reviewsData }
-        obj.team_reviews[0].tagged = route?.params?.entityTags
-        setReviewsData({ ...obj })
-      } else {
-        const obj = { ...reviewsData }
-        obj.team_reviews[1].tagged = route?.params?.entityTags
-        setReviewsData({ ...obj })
-      }
+
+      obj.tagged = route?.params?.entityTags
+      setReviewsData(obj)
     }
   }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags]);
 
   useEffect(() => {
-    console.log(
-      'Edit review Data::=>',
-      route?.params?.gameReviewData?.results[0]?.object,
-    );
     setSliderAttributes([...route?.params?.sliderAttributes]);
 
     // console.log('Edit review Data::=>', JSON.stringify(route?.params?.gameReviewData?.results));
@@ -145,7 +107,7 @@ const LeaveReview = ({ navigation, route }) => {
       ),
       headerRight: () => (
         <Text onPress={createReview} style={styles.nextButtonStyle}>
-          {currentForm === 1 ? 'Next' : 'Done'}
+          Done
         </Text>
       ),
     });
@@ -158,9 +120,8 @@ const LeaveReview = ({ navigation, route }) => {
       attr[item] = 0;
       return true;
     });
-    const reviews = _.cloneDeep(reviewsData);
-    reviews.team_reviews[0] = { ...reviews.team_reviews[0], ...attr };
-    reviews.team_reviews[1] = { ...reviews.team_reviews[1], ...attr };
+    let reviews = _.cloneDeep(reviewsData);
+    reviews = { ...reviews, ...attr };
     setReviewsData({ ...reviews });
     setLoading(false);
   };
@@ -172,9 +133,8 @@ const LeaveReview = ({ navigation, route }) => {
       attr[item] = 0;
       return true;
     });
-    const reviews = _.cloneDeep(reviewsData);
-    reviews.team_reviews[0] = { ...reviews.team_reviews[0], ...attr };
-    reviews.team_reviews[1] = { ...reviews.team_reviews[1], ...attr };
+    let reviews = _.cloneDeep(reviewsData);
+    reviews = { ...reviews, ...attr };
     setReviewsData({ ...reviews });
     setLoading(false);
   };
@@ -183,7 +143,7 @@ const LeaveReview = ({ navigation, route }) => {
     const exceptKey = ['team_id', 'comment', 'attachments', 'tagged'];
     let isValid = true;
     const reviews = _.cloneDeep(reviewsData);
-    const review = reviews?.team_reviews?.[teamNo - 1];
+    const review = reviews
     Object.keys(review).map((key) => {
       if (!exceptKey.includes(key) && isValid && Number(review?.[key]) <= 0) {
         isValid = false;
@@ -193,30 +153,45 @@ const LeaveReview = ({ navigation, route }) => {
     return isValid;
   };
   const createReview = () => {
-    if (route?.params?.gameReviewData) {
-      if (currentForm === 1) {
-        if (isValidReview(currentForm)) {
-          setCurrentForm(2);
-        } else {
-          Alert.alert('Please, complete all ratings before moving to the next.');
-        }
-      } else if (isValidReview(currentForm)) {
-        setLoading(true);
+    console.log('Review Data::=>', JSON.stringify(reviewsData));
+    // if (route?.params?.gameReviewData) {
+    //   if (currentForm === 1) {
+    //     if (isValidReview(currentForm)) {
+    //       setCurrentForm(2);
+    //     } else {
+    //       Alert.alert('Please, complete all ratings before moving to the next.');
+    //     }
+    //   } else if (isValidReview(currentForm)) {
+    //     setLoading(true);
+    //     uploadMediaForTeamA()
+    //   } else {
+    //     Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
+    //   }
+    // } else if (currentForm === 1) {
+    //   if (isValidReview(currentForm)) {
+    //     setCurrentForm(2);
+    //   } else {
+    //     Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
+    //   }
+    // } else if (isValidReview(currentForm)) {
+    //   setLoading(true);
+    //   uploadMediaForTeamA()
+    // } else {
+    //   Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
+    // }
+
+    if (currentForm === 1) {
+      if (isValidReview(currentForm)) {
         uploadMediaForTeamA()
       } else {
-        Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
+        Alert.alert('Please, complete all ratings before moving to the next.');
       }
-    } else if (currentForm === 1) {
+    } else if (currentForm === 2) {
       if (isValidReview(currentForm)) {
-        setCurrentForm(2);
+        uploadMediaForTeamB()
       } else {
-        Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
+        Alert.alert('Please, complete all ratings before moving to the next.');
       }
-    } else if (isValidReview(currentForm)) {
-      setLoading(true);
-      uploadMediaForTeamA()
-    } else {
-      Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
     }
   };
   const onCancelImageUpload = () => {
@@ -235,114 +210,26 @@ const LeaveReview = ({ navigation, route }) => {
     setCancelApiRequest({ ...axiosTokenSource });
   }
 
-  const uploadMediaForTeamA = () => {
-    if (reviewsData?.team_reviews[0]?.attachments?.length) {
-      const UrlArray = []
-      const pathArray = []
-      const o = reviewsData?.team_reviews[0]?.attachments.map((e) => {
-        if (e.path) {
-          pathArray.push(e)
-        } else {
-          UrlArray.push(e)
-        }
-      })
-      console.log('OOOOO:', o);
-      setTotalUploadCount(pathArray?.length || 1);
-      // setProgressBar(true);
-      setLoading(true);
-      const imageArray = pathArray
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        console.log('Attachments For A::=>', attachments);
-
-        const obj = { ...reviewsData }
-        obj.team_reviews[0].attachments = [...attachments, ...UrlArray]
-        setReviewsData({ ...obj })
-        uploadMediaForTeamB()
-        // addRefereeReview(route?.params?.userData?.profile?.user_id, gameData?.game_id, dataParams, authContext)
-        //   .then(() => {
-        //     console.log('Review Created for referee');
-        //   })
-        //   .catch((error) => {
-        //     setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100)
-        //   })
-      })
-    }
-  }
-  const uploadMediaForTeamB = () => {
-    console.log('Attachments For B::=>', reviewsData?.team_reviews[1]?.attachments?.length);
-    if (reviewsData?.team_reviews[1]?.attachments?.length) {
-      const UrlArray = []
-      const pathArray = []
-      const o = reviewsData?.team_reviews[1]?.attachments.map((e) => {
-        if (e.path) {
-          pathArray.push(e)
-        } else {
-          UrlArray.push(e)
-        }
-      })
-      console.log('OOOOO:', o);
-      setTotalUploadCount(pathArray?.length || 1);
-      // setProgressBar(true);
-      const imageArray = pathArray
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        console.log('Attachments For B::=>', attachments);
-
-        const obj = { ...reviewsData }
-        obj.team_reviews[1].attachments = [...attachments, ...UrlArray]
-        setReviewsData({ ...obj })
-      })
-    }
+  const patchOrAddReview = () => {
     if (route?.params?.gameReviewData) {
-      const team1Review = reviewsData?.team_reviews?.[0]
-      delete team1Review.created_at;
-      delete team1Review.entity_type;
-      const team1ID = team1Review.entity_id
-      delete team1Review.entity_id;
-      team1Review.team_id = team1ID
-      delete team1Review.game_id;
-      const reviewID = team1Review.review_id;
-      delete team1Review.review_id;
-      delete team1Review.reviewer_id;
-      delete team1Review.sport;
-
-      const team2Review = reviewsData?.team_reviews?.[1]
-      delete team2Review.created_at;
-      delete team2Review.entity_type;
-      const team2ID = team2Review.entity_id
-      delete team2Review.entity_id;
-      team2Review.team_id = team2ID
-      delete team2Review.game_id;
-      delete team2Review.review_id;
-      delete team2Review.reviewer_id;
-      delete team2Review.sport;
+      const teamReview = reviewsData
+      delete teamReview.created_at;
+      delete teamReview.entity_type;
+      const team1ID = teamReview.entity_id
+      delete teamReview.entity_id;
+      teamReview.team_id = team1ID
+      delete teamReview.game_id;
+      const reviewID = teamReview.review_id;
+      delete teamReview.review_id;
+      delete teamReview.reviewer_id;
+      delete teamReview.sport;
 
       const reviewObj = {
-        comment: '',
-        attachments: [],
-        tagged: [],
-        team_reviews: [
-          {
-            ...team1Review,
-          },
-          {
-            ...team2Review,
-          },
-        ],
+
+        ...teamReview,
+
       };
+
       console.log('Edited Review Object::=>', reviewObj);
       patchGameReview(route?.params?.gameData?.game_id, reviewID, reviewObj, authContext)
         .then(() => {
@@ -351,10 +238,11 @@ const LeaveReview = ({ navigation, route }) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
           navigation.goBack();
         });
     } else {
+      console.log('New Review Object::=>', reviewsData);
       setLoading(true);
       addGameReview(route?.params?.gameData?.game_id, reviewsData, authContext)
         .then(() => {
@@ -363,16 +251,82 @@ const LeaveReview = ({ navigation, route }) => {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
           navigation.goBack();
         });
     }
   }
+  const uploadMediaForTeamA = () => {
+    if (reviewsData?.attachments?.length) {
+      const UrlArray = []
+      const pathArray = []
+      const o = reviewsData?.attachments.map((e) => {
+        if (e.path) {
+          pathArray.push(e)
+        } else {
+          UrlArray.push(e)
+        }
+      })
+      setTotalUploadCount(pathArray?.length || 1);
+      // setProgressBar(true);
+      setLoading(true);
+      const imageArray = pathArray
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }))
+        const obj = { ...reviewsData }
+        obj.attachments = [...attachments, ...UrlArray]
+        console.log('Attachments Full Object::=>', obj);
+        setReviewsData({ ...obj })
+        patchOrAddReview()
+      })
+    } else {
+      patchOrAddReview()
+    }
+  }
+  const uploadMediaForTeamB = () => {
+    if (reviewsData?.attachments?.length) {
+      const UrlArray = []
+      const pathArray = []
+      const o = reviewsData?.attachments.map((e) => {
+        if (e.path) {
+          pathArray.push(e)
+        } else {
+          UrlArray.push(e)
+        }
+      })
+      setTotalUploadCount(pathArray?.length || 1);
+      // setProgressBar(true);
+      setLoading(true);
+      const imageArray = pathArray
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }))
+        const obj = { ...reviewsData }
+        obj.attachments = [...attachments, ...UrlArray]
+        console.log('Attachments Full Object::=>', obj);
+        setReviewsData({ ...obj })
+        patchOrAddReview()
+      })
+    } else {
+      patchOrAddReview()
+    }
+  }
   const setTeamReview = (teamNo = 0, key = '', value = '') => {
     console.log(`key::${key}value::${value}`);
-    if (reviewsData?.team_reviews[teamNo][key] !== value) {
+    if (reviewsData[key] !== value) {
       const reviews = _.cloneDeep(reviewsData);
-      reviews.team_reviews[teamNo][key] = value;
+      reviews[key] = value;
       setReviewsData({ ...reviews });
     }
   };
@@ -381,7 +335,7 @@ const LeaveReview = ({ navigation, route }) => {
       <Header
         leftComponent={
           <TouchableOpacity
-            onPress={() => (currentForm === 1 ? navigation.goBack() : setCurrentForm(1))
+            onPress={() => (currentForm === 1 ? navigation.goBack() : navigation.pop(1))
             }>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
@@ -391,11 +345,12 @@ const LeaveReview = ({ navigation, route }) => {
         }
         rightComponent={
           <Text onPress={createReview} style={styles.nextButtonStyle}>
-            {currentForm === 1 ? 'Next' : 'Done'}
+            Done
           </Text>
         }
       />
-      <TCStep totalStep={2} currentStep={currentForm} />
+      <View style={styles.headerSeperator} />
+      {/* <TCStep totalStep={2} currentStep={currentForm} /> */}
       <ActivityLoader visible={loading} />
       {!loading && (
         <ScrollView style={styles.mainContainer}>
@@ -409,7 +364,7 @@ const LeaveReview = ({ navigation, route }) => {
               setTeamReview={setTeamReview}
               navigation = {navigation}
               route={route}
-              tags={reviewsData?.team_reviews[0]?.tagged || route?.params?.entityTags}
+              tags={reviewsData?.tagged || route?.params?.entityTags}
             />
           ) : (
             <TeamReview
@@ -421,7 +376,7 @@ const LeaveReview = ({ navigation, route }) => {
               setTeamReview={setTeamReview}
               navigation = {navigation}
               route={route}
-              tags={reviewsData?.team_reviews[0]?.tagged || route?.params?.entityTags}
+              tags={reviewsData?.tagged || route?.params?.entityTags}
             />
           )}
         </ScrollView>
@@ -445,6 +400,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     alignSelf: 'center',
+  },
+  headerSeperator: {
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 0,
+    height: 2,
+    width: '100%',
   },
 });
 

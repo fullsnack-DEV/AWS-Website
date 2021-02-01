@@ -43,7 +43,7 @@ const QUSTIONS = [
 export default function RefereeReviewScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [sliderAttributesForPlayer, setSliderAttributesForPlayer] = useState(
+  const [sliderAttributesForReferee, setSliderAttributesForReferee] = useState(
     [],
   );
   const [gameData] = useState(route?.params?.gameData);
@@ -92,6 +92,28 @@ export default function RefereeReviewScreen({ navigation, route }) {
     loadStarAttributes(route?.params?.starAttributesForReferee);
   }, [route?.params?.selectedImageList, route?.params?.searchText]);
 
+  useEffect(() => {
+    if (route?.params?.gameReviewData?.results[0]?.object) {
+      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
+        ?.refereeReview
+      setReviewsData({ ...reviewObj });
+    }
+  }, [route?.params?.gameReviewData?.results[0]?.object]);
+
+  useEffect(() => {
+    console.log(
+      'Edit review Data::=>',
+      route?.params?.gameReviewData?.results[0]?.object,
+    );
+    setSliderAttributesForReferee([...route?.params?.sliderAttributesForReferee]);
+
+    // console.log('Edit review Data::=>', JSON.stringify(route?.params?.gameReviewData?.results));
+    if (!route?.params?.gameReviewData) {
+      loadSliderAttributes(route?.params?.sliderAttributesForReferee);
+      loadStarAttributes(route?.params?.starAttributesForReferee);
+    }
+  }, []);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -104,7 +126,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
-    setSliderAttributesForPlayer([...attributes]);
+    setSliderAttributesForReferee([...attributes]);
     const attr = {};
     attributes.map((item) => {
       attr[item] = 0;
@@ -308,7 +330,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-                  {sliderAttributesForPlayer.map((item, index) => (
+                  {sliderAttributesForReferee.map((item, index) => (
                     <View
                       style={{
                         marginVertical: 10,
