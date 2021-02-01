@@ -15,7 +15,7 @@ const CustomVideoPlayer = ({
 }) => {
   const videoPlayerRef = useRef();
   const [duration, setDuration] = useState(0);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  // const [isFullScreen, setIsFullScreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [paused, setPaused] = useState(true);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
@@ -50,6 +50,7 @@ const CustomVideoPlayer = ({
   };
 
   const onLoad = (data) => {
+    videoPlayerRef.current.seek(0);
     setDuration(data.duration);
     setIsLoading(false);
   };
@@ -58,10 +59,10 @@ const CustomVideoPlayer = ({
 
   const onEnd = () => setPlayerState(PLAYER_STATES.ENDED);
 
-  const onFullScreen = () => {
-    setIsFullScreen(isFullScreen);
-    videoPlayerRef.current.presentFullscreenPlayer();
-  };
+  // const onFullScreen = () => {
+  //   setIsFullScreen(isFullScreen);
+  //   videoPlayerRef.current.presentFullscreenPlayer();
+  // };
 
   const onSeeking = (currTime) => {
     if (shouldVideoScroll) setShouldVideoScroll(false);
@@ -79,22 +80,20 @@ const CustomVideoPlayer = ({
           onLoad={onLoad}
           onLoadStart={onLoadStart}
           onProgress={onProgress}
-          onTouchStart={() => console.log('1')}
-          onTouchEnd={() => console.log(2)}
           paused={paused}
           resizeMode={resizeMode}
-          onFullScreen={isFullScreen}
-          fullscreen={isFullScreen}
+          // onFullScreen={isFullScreen}
+          // fullscreen={isFullScreen}
           fullscreenAutorotate={true}
       />
       <MediaControls
           containerStyle={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
-          sliderStyle={{ containerStyle: { paddingBottom: isLandscape ? 100 : 0 } }}
-          isFullScreen={isFullScreen}
+          sliderStyle={{ containerStyle: { paddingBottom: isLandscape ? 110 : 0 } }}
+          // isFullScreen={isFullScreen}
           duration={duration}
           isLoading={isLoading}
           mainColor={'rgba(0,0,0,0.5)'}
-          onFullScreen={onFullScreen}
+          // onFullScreen={onFullScreen}
           onPaused={onPaused}
           onReplay={onReplay}
           onSeek={onSeek}

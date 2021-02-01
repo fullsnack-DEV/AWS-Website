@@ -1,5 +1,6 @@
 import Config from 'react-native-config';
 import makeAPIRequest from '../utils/Global';
+import apiCall from '../utils/apiCall';
 
 export const patchPlayer = (params, authContext) => makeAPIRequest({
   method: 'patch',
@@ -46,6 +47,10 @@ export const createUser = (params, authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}/users/`,
   data: params,
   authContext,
+})
+export const checkTownscupEmail = (email) => apiCall({
+  method: 'get',
+  url: `${Config.BASE_URL}/users/townscup?email=${email}`,
 })
 
 export const getUsers = (authContext) => makeAPIRequest({

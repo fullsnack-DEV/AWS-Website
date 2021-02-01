@@ -82,7 +82,6 @@ export default function FollowTeams({ route }) {
       country: route.params.country,
       club_ids: followed,
     };
-
     createUser(data, authContext).then((response) => {
       if (response.status === true) {
         getUserInfo();
@@ -90,7 +89,10 @@ export default function FollowTeams({ route }) {
         setloading(false)
         Alert.alert(response.messages);
       }
-    }).catch(() => setloading(false));
+    }).catch((error) => {
+      setloading(false)
+      setTimeout(() => Alert.alert('TownsCup', error.message), 100)
+    });
   };
 
   const followUnfollowClicked = ({ item, index }) => {

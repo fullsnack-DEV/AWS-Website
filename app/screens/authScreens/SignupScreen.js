@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -27,6 +27,7 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context'
 import apiCall from '../../utils/apiCall';
+import { checkTownscupEmail } from '../../api/Users';
 
 export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -76,6 +77,31 @@ export default function SignupScreen({ navigation }) {
 
     return false;
   };
+
+  useEffect(() => {
+
+  }, [])
+
+  const checkUserIsRegistratedOrNotWithTownscup = (emailAddress) => new Promise((resolve) => {
+    checkTownscupEmail(encodeURIComponent(emailAddress)).then(() => {
+      resolve(true);
+    }).catch(() => {
+      resolve(false);
+    })
+  })
+
+  const checkUserIsRegistratedOrNotWithFirebase = (emailAddress) => new Promise((resolve, reject) => {
+    auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
+      if (isAccountThereInFirebase?.length > 0) {
+        resolve(isAccountThereInFirebase);
+      } else {
+        resolve(false);
+      }
+    }).catch((error) => {
+      reject(error);
+      console.log(error);
+    })
+  })
 
   const saveUserDetails = async (user) => {
     if (user) {
@@ -185,22 +211,41 @@ export default function SignupScreen({ navigation }) {
         if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 50);
       });
   };
-  const checkLoginForTownsCup = () => {
-    setloading(false);
-    setTimeout(() => Alert.alert('This email address is already registerd'), 100);
-  }
 
+  const registerWithAnotherProvider = (param) => new Promise((resolve, reject) => {
+    if (param[0].includes('facebook')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'facebook' });
+    } if (param[0].includes('google')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'google' });
+    }
+    resolve(true);
+  })
   const signupUser = (fname, lname, emailAddress, passwordInput) => {
     setloading(true);
-    auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
-      if (isAccountThereInFirebase?.length > 0) {
-        checkLoginForTownsCup(emailAddress, passwordInput);
+    checkUserIsRegistratedOrNotWithTownscup(email).then((userExist) => {
+      if (userExist) {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert('User is already registered with townscup!');
+        }, 100)
       } else {
-        signUpWithNewEmail(emailAddress, passwordInput);
+        checkUserIsRegistratedOrNotWithFirebase(emailAddress).then((firebaseUserExist) => {
+          if (firebaseUserExist) {
+            registerWithAnotherProvider(firebaseUserExist).then(() => {
+              signUpWithNewEmail(emailAddress, passwordInput);
+            }).catch((error) => {
+              setloading(false)
+              setTimeout(() => {
+                Alert.alert('Townscup', `This email is already registrated with ${error?.provider}`)
+              }, 100)
+            })
+          } else {
+            signUpWithNewEmail(emailAddress, passwordInput);
+          }
+        }).catch(() => setloading(false));
       }
-    }).catch((error) => {
-      setloading(false);
-      console.log(error);
     })
   }
   const hideShowPassword = () => {
