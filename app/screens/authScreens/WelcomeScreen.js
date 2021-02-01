@@ -159,17 +159,6 @@ export default function WelcomeScreen({ navigation }) {
     });
     googleFaceBookSignInSignUpOnAuthChanged();
   }
-  // const checkFirebaseUserRegistratedOrNot = (emailAddress) => new Promise((resolve) => {
-  //   auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
-  //     if (isAccountThereInFirebase?.length > 0) {
-  //       resolve(true);
-  //     }
-  //     resolve(false);
-  //   }).catch(() => {
-  //     setloading(false);
-  //     resolve(true);
-  //   })
-  // })
 
   // Login With Google manage function
   const onGoogleButtonPress = async () => {
