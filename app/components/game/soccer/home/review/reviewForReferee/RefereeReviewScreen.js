@@ -392,15 +392,15 @@ export default function RefereeReviewScreen({ navigation, route }) {
                           descriptions={route?.params?.searchText ?? ''}
                           containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
                         />
-                      ) : (
-                        <Text
+                    ) : (
+                      <Text
                       style={{
                         fontFamily: fonts.RRegular,
                         fontSize: 16,
                         color: colors.grayColor,
                       }}>
-                          {`Describe what you thought and felt about ${route?.params?.userData?.first_name} ${route?.params?.userData?.last_name} while watching or playing the game.`}
-                        </Text>)}
+                        {`Describe what you thought and felt about ${route?.params?.userData?.first_name} ${route?.params?.userData?.last_name} while watching or playing the game.`}
+                      </Text>)}
                   </View>
                 </Pressable>
               </View>

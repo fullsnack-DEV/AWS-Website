@@ -143,8 +143,11 @@ export default function FeedsScreen({ navigation }) {
           return null;
         })
       }
-      setTotalUploadCount(data.length || 1);
-      setProgressBar(true);
+      if (createUrlData?.length > 0) {
+        setTotalUploadCount(createUrlData.length || 1);
+        setProgressBar(true);
+      }
+
       const imageArray = createUrlData.map((dataItem) => (dataItem))
       uploadImages(imageArray, authContext, progressStatus).then((responses) => {
         const attachments = responses.map((item) => ({

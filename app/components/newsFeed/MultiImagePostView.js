@@ -7,15 +7,14 @@ import {
   Platform,
   Image,
   TouchableOpacity,
-  Dimensions,
+  // Dimensions,
   Text,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import ImageZoom from 'react-native-image-pan-zoom';
-import FastImage from 'react-native-fast-image';
+// import ImageZoom from 'react-native-image-pan-zoom';
 import Carousel from 'react-native-snap-carousel';
 import Orientation from 'react-native-orientation';
 import Share from 'react-native-share';
@@ -30,6 +29,7 @@ import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import PostDescSection from './PostDescSection';
 import TagView from './TagView';
 import CustomVideoPlayer from '../CustomVideoPlayer';
+import TCZoomableImage from '../TCZoomableImage';
 
 export default function MultiImagePostView({
   backBtnPress,
@@ -47,12 +47,12 @@ export default function MultiImagePostView({
   const [isLandScape, setIsLandScape] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  const [imageZoomScale, setZoomScale] = useState(1);
+  // const [imageZoomScale, setZoomScale] = useState(1);
 
-  useEffect(() => {
-    if (imageZoomScale > 1) setScroll(false);
-    else setScroll(true);
-  }, [imageZoomScale])
+  // useEffect(() => {
+  //   if (imageZoomScale > 1) setScroll(false);
+  //   else setScroll(true);
+  // }, [imageZoomScale])
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -100,7 +100,7 @@ export default function MultiImagePostView({
 
   const shareActionSheet = useRef();
 
-  const handlePageZoom = ({ scale }) => setZoomScale(scale);
+  // const handlePageZoom = ({ scale }) => setZoomScale(scale);
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.blackColor }}
@@ -139,52 +139,68 @@ export default function MultiImagePostView({
               }
               if (multiAttachItem.type === 'image') {
                 return (
-                  <View>
-                    <ImageZoom
-                      doubleClickInterval={250}
-                      cropWidth={Dimensions.get('window').width}
-                      cropHeight={Dimensions.get('window').height}
-                      imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth}
-                      imageHeight={isLandScape ? landscapeImgHeight : portraitImgHeight}
-                      minScale={1}
-                      useNativeDriver={true}
-                      onMove={handlePageZoom}
-                     >
-                      <FastImage
-                        style={[styles.uploadedImage, {
-                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                        }]}
-                        source={{ uri: multiAttachItem.thumbnail }}
-                        resizeMode={ FastImage.resizeMode.cover }
-                    />
-                      <Image
-                        style={{
-                          position: 'absolute',
-                          height: hp('10%'),
-                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                        }}
-                        source={isLandScape ? images.landscapeTopImage : images.portraitTopImage}
-                        resizeMode={'stretch'}
-                    />
-                      <Image
-                        style={{
-                          position: 'absolute',
-                          height: hp('10%'),
-                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                          bottom: 0,
-                        }}
-                        source={isLandScape ? images.landscapeBottomImage : images.portraitBottomImage}
-                        resizeMode={'stretch'}
-                    />
-                    </ImageZoom>
+                  <View style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: isLandScape ? wp(100) : hp(100),
+                    zIndex: 100,
+                  }}>
+                    <TCZoomableImage
+                          source={{ uri: multiAttachItem.thumbnail }}
+                          style={[styles.uploadedImage, {
+                            width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                            height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                          }]}
+                     />
+                    {/* <ImageZoom */}
+                    {/*    // style={{ justifyContent: 'center', alignItems: 'center' }} */}
+                    {/*  doubleClickInterval={250} */}
+                    {/*  cropWidth={Dimensions.get('window').width} */}
+                    {/*  cropHeight={Dimensions.get('window').height} */}
+                    {/*  imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth} */}
+                    {/*  imageHeight={isLandScape ? landscapeImgHeight : portraitImgHeight} */}
+                    {/*  minScale={1} */}
+                    {/*  useNativeDriver={true} */}
+                    {/*  onMove={handlePageZoom} */}
+                    {/* > */}
+                    {/*  <FastImage */}
+                    {/*    style={[styles.uploadedImage, { */}
+                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
+                    {/*      height: isLandScape ? landscapeImgHeight : portraitImgHeight, */}
+                    {/*    }]} */}
+                    {/*    source={{ uri: multiAttachItem.thumbnail }} */}
+                    {/*    resizeMode={ FastImage.resizeMode.cover } */}
+                    {/* /> */}
+                    {/*  <Image */}
+                    {/*    style={{ */}
+                    {/*      position: 'absolute', */}
+                    {/*      height: hp('10%'), */}
+                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
+                    {/*    }} */}
+                    {/*    source={isLandScape ? images.landscapeTopImage : images.portraitTopImage} */}
+                    {/*    resizeMode={'stretch'} */}
+                    {/* /> */}
+                    {/*  <Image */}
+                    {/*    style={{ */}
+                    {/*      position: 'absolute', */}
+                    {/*      height: hp('10%'), */}
+                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
+                    {/*      bottom: 0, */}
+                    {/*    }} */}
+                    {/*    source={isLandScape ? images.landscapeBottomImage : images.portraitBottomImage} */}
+                    {/*    resizeMode={'stretch'} */}
+                    {/* /> */}
+                    {/* </ImageZoom> */}
                   </View>
                 );
               }
               if (multiAttachItem.type === 'video') {
                 return (
                   <View style={{
-                    alignItems: 'center', justifyContent: 'center', flex: 1, zIndex: 100,
+                    height: isLandScape ? wp(100) : hp(100),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 100,
                   }}>
                     <Image
                       source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
@@ -194,27 +210,27 @@ export default function MultiImagePostView({
                         height: isLandScape ? landscapeImgHeight : portraitImgHeight,
                       }}
                      />
-                    <View
-                      style={[
-                        styles.singleImageDisplayStyle,
-                        {
-                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                        },
-                      ]}>
-                      <FastImage
-                        style={styles.loadimageStyle}
-                        source={images.imageLoadingGIF}
-                        resizeMode={FastImage.resizeMode.contain}
-                      />
-                      <Text style={styles.loadingTextStyle}>Loading...</Text>
-                    </View>
+                    {/* <View */}
+                    {/*  style={[ */}
+                    {/*    styles.singleImageDisplayStyle, */}
+                    {/*    { */}
+                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
+                    {/*      height: isLandScape ? landscapeImgHeight : portraitImgHeight, */}
+                    {/*    }, */}
+                    {/*  ]}> */}
+                    {/*  <FastImage */}
+                    {/*    style={styles.loadimageStyle} */}
+                    {/*    source={images.imageLoadingGIF} */}
+                    {/*    resizeMode={FastImage.resizeMode.contain} */}
+                    {/*  /> */}
+                    {/*  <Text style={styles.loadingTextStyle}>Loading...</Text> */}
+                    {/* </View> */}
                     <CustomVideoPlayer
+                        isLandscape={isLandScape}
                         onPlayerStatusChanged={(shouldVideoScroll) => {
                           setScroll(shouldVideoScroll);
                         }}
-                          isLandscape={isLandScape}
-                          sourceURL={multiAttachItem.url}
+                        sourceURL={multiAttachItem?.url}
                           containerStyle={{
                             ...styles.singleImageDisplayStyle,
                             height: isLandScape ? landscapeImgHeight : portraitImgHeight,
@@ -225,7 +241,6 @@ export default function MultiImagePostView({
                             ...styles.singleImageDisplayStyle,
                             height: isLandScape ? landscapeImgHeight : portraitImgHeight,
                             width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                            position: 'absolute',
                           }}
                       />
                   </View>
@@ -496,19 +511,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   singleImageDisplayStyle: {
-    alignItems: 'center',
-    alignSelf: 'center',
+    height: hp('65%'),
     justifyContent: 'center',
-    position: 'absolute',
+    width: wp('98%'),
+    alignSelf: 'center',
+    alignItems: 'center',
   },
-  loadimageStyle: {
-    height: 50,
-    width: 50,
-  },
-  loadingTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-    marginTop: 25,
-  },
+  // loadimageStyle: {
+  //   height: 50,
+  //   width: 50,
+  // },
+  // loadingTextStyle: {
+  //   color: colors.googleColor,
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 14,
+  //   marginTop: 25,
+  // },
 });
