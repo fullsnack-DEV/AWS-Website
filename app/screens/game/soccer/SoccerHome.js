@@ -11,7 +11,7 @@ import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgro
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/soccer/home/summary/Summary';
 import Stats from '../../../components/game/soccer/home/stats/Stats';
-import Review from '../../../components/game/soccer/home/review/Review';
+// import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
   approveDisapproveGameRecords,
@@ -33,7 +33,7 @@ import { followUser, unfollowUser } from '../../../api/Users';
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 
-const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Review', 'Gallery']
+const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery']
 const SoccerHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId);
@@ -143,17 +143,17 @@ const SoccerHome = ({ navigation, route }) => {
       )}
 
       {/* Review */}
-      {tabKey === 3 && (
+      {/* {tabKey === 3 && (
         <Review
           navigation={navigation}
           getSoccerGameReview={getSoccerGameReview}
           isAdmin={isAdmin}
           gameData={gameData}
         />
-      )}
+      )} */}
 
       {/* Gallery */}
-      {tabKey === 4 && (
+      {tabKey === 3 && (
         <Gallery
           setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)
           }

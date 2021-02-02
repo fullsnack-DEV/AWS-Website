@@ -19,7 +19,7 @@ import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 
 import { STAR_COLOR } from '../../../../../../utils';
-import { addRefereeReview } from '../../../../../../api/Games';
+import { addRefereeReview, patchRefereeReview } from '../../../../../../api/Games';
 import TCInnerLoader from '../../../../../TCInnerLoader';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
@@ -52,14 +52,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
-  const [selectImage, setSelectImage] = useState(
-    route?.params?.selectedImageList || [],
-  );
-  const [reviewsData, setReviewsData] = useState({
-    comment: '',
-    attachments: [],
-    tagged: [],
-  });
+  const [reviewsData, setReviewsData] = useState({});
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -77,37 +70,37 @@ export default function RefereeReviewScreen({ navigation, route }) {
       'Progress Data::=>',
       progressBar + totalUploadCount + doneUploadCount,
     );
-    console.log('Review data::=>', route?.params?.searchText);
 
+    const obj = { ...reviewsData }
     if (route?.params?.searchText) {
-      const obj = { ...reviewsData }
       obj.comment = route?.params?.searchText ?? ''
-      setReviewsData({ ...obj })
-      // setTeamReview('comment', route?.params?.searchText);
+      setReviewsData(obj)
     }
     if (route?.params?.selectedImageList) {
-      setSelectImage(route?.params?.selectedImageList);
+      // setSelectImage(route?.params?.selectedImageList);
+      obj.attachments = route?.params?.selectedImageList
+      setReviewsData(obj)
     }
-    loadSliderAttributes(route?.params?.sliderAttributesForReferee);
-    loadStarAttributes(route?.params?.starAttributesForReferee);
-  }, [route?.params?.selectedImageList, route?.params?.searchText]);
+    if (route?.params?.entityTags) {
+      console.table(route?.params?.entityTags)
+
+      obj.tagged = route?.params?.entityTags
+      setReviewsData(obj)
+    }
+    console.log('Review data::=>', obj);
+  }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags]);
 
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
       const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
         ?.refereeReview
+      console.log('Edit review Data::=>', reviewObj);
       setReviewsData({ ...reviewObj });
     }
   }, [route?.params?.gameReviewData?.results[0]?.object]);
 
   useEffect(() => {
-    console.log(
-      'Edit review Data::=>',
-      route?.params?.gameReviewData?.results[0]?.object,
-    );
-    setSliderAttributesForReferee([...route?.params?.sliderAttributesForReferee]);
-
-    // console.log('Edit review Data::=>', JSON.stringify(route?.params?.gameReviewData?.results));
+    // setSliderAttributesForReferee([...route?.params?.sliderAttributesForReferee]);
     if (!route?.params?.gameReviewData) {
       loadSliderAttributes(route?.params?.sliderAttributesForReferee);
       loadStarAttributes(route?.params?.starAttributesForReferee);
@@ -126,13 +119,14 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
-    setSliderAttributesForReferee([...attributes]);
+    // setSliderAttributesForReferee([...attributes]);
     const attr = {};
     attributes.map((item) => {
       attr[item] = 0;
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
+    console.log('Refrees Reviews data:=>', reviews);
     reviews = { ...reviews, ...attr };
 
     setReviewsData({ ...reviews });
@@ -203,11 +197,65 @@ export default function RefereeReviewScreen({ navigation, route }) {
     setCancelApiRequest({ ...axiosTokenSource });
   };
 
+  const patchOrAddRefereeReview = () => {
+    if (route?.params?.gameReviewData) {
+      setLoading(true);
+      const teamReview = reviewsData
+      delete teamReview.created_at;
+      delete teamReview.entity_type;
+      delete teamReview.entity_id;
+      delete teamReview.game_id;
+      const reviewID = teamReview.review_id;
+      delete teamReview.review_id;
+      delete teamReview.reviewer_id;
+      delete teamReview.sport;
+
+      const reviewObj = {
+        ...teamReview,
+      };
+      console.log('Edited Review Object::=>', reviewObj);
+      patchRefereeReview(
+        route?.params?.userData?.user_id,
+        gameData?.game_id,
+        reviewID,
+        reviewObj,
+        authContext,
+      )
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          navigation.goBack();
+        });
+    } else {
+      console.log('New Review Object::=>', reviewsData);
+      setLoading(true);
+      addRefereeReview(
+        route?.params?.userData?.user_id,
+        gameData?.game_id,
+        reviewsData,
+        authContext,
+      )
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          navigation.goBack();
+        });
+    }
+  }
+
   const uploadMedia = () => {
-    if (selectImage.length) {
+    if (reviewsData?.attachments?.includes((e) => e.path)) {
       const UrlArray = [];
       const pathArray = [];
-      const o = selectImage.map((e) => {
+      const o = reviewsData?.attachments.map((e) => {
         if (e.path) {
           pathArray.push(e);
         } else {
@@ -228,33 +276,18 @@ export default function RefereeReviewScreen({ navigation, route }) {
             media_width: item.width,
           }));
           console.log('Attachments::=>', attachments);
-          const dataParams = {
-            ...reviewsData,
-            attachments: [...attachments, ...UrlArray],
-            comment: route?.params?.searchText,
-            // text: postDesc && postDesc,
-            // attachments,
-          };
-          console.log('dataParams::=>', dataParams);
-          addRefereeReview(
-            route?.params?.userData?.user_id,
-            gameData?.game_id,
-            dataParams,
-            authContext,
-          )
-            .then(() => {
-              setLoading(false);
-              navigation.goBack();
-            })
-            .catch((error) => {
-              setLoading(false);
-              setTimeout(
-                () => Alert.alert(strings.alertmessagetitle, error?.message),
-                100,
-              );
-            });
+
+          const obj = { ...reviewsData }
+          obj.attachments = [...attachments, ...UrlArray]
+          obj.comment = route?.params?.searchText ?? ''
+          setReviewsData({ ...obj })
+
+          console.log('dataParams::=>', obj);
+          patchOrAddRefereeReview()
         },
       );
+    } else {
+      patchOrAddRefereeReview()
     }
   };
   return (
@@ -330,7 +363,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-                  {sliderAttributesForReferee.map((item, index) => (
+                  {route?.params?.sliderAttributesForReferee.map((item, index) => (
                     <View
                       style={{
                         marginVertical: 10,
@@ -342,7 +375,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                       </Text>
                       <View style={{ flex: 1 }}>
                         <TCRatingStarSlider
-                          currentRating={reviewsData[item.name]}
+                          currentRating={reviewsData[item]}
                           onPress={(star) => {
                             setTeamReview(item, star);
                           }}
@@ -391,9 +424,9 @@ export default function RefereeReviewScreen({ navigation, route }) {
                     navigation.navigate('WriteReviewScreen', {
                       comeFrom: 'RefereeReviewScreen',
                       postData: currentUserDetail,
-                      searchText: route?.params?.searchText ?? '',
+                      searchText: reviewsData?.comment ?? '',
                       // onPressDone: callthis,
-                      selectedImageList: selectImage || [],
+                      selectedImageList: reviewsData?.attachments || [],
                     });
                   }}>
                   <View pointerEvents="none">
@@ -409,9 +442,9 @@ export default function RefereeReviewScreen({ navigation, route }) {
                           padding: 15,
                         }} /> */}
 
-                    {route?.params?.searchText ? (
+                    {reviewsData?.comment !== '' ? (
                       <NewsFeedDescription
-                          descriptions={route?.params?.searchText ?? ''}
+                          descriptions={reviewsData.comment}
                           containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
                         />
                     ) : (
@@ -427,7 +460,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                 </Pressable>
               </View>
               <FlatList
-                data={selectImage || []}
+                data={reviewsData?.attachments || []}
                 horizontal={true}
                 // scrollEnabled={true}
                 showsHorizontalScrollIndicator={false}
@@ -437,14 +470,14 @@ export default function RefereeReviewScreen({ navigation, route }) {
                     isClose={false}
                     isCounter={false}
                     itemNumber={index + 1}
-                    totalItemNumber={selectImage?.length}
+                    totalItemNumber={reviewsData?.attachments?.length}
                     onItemPress={() => {
-                      const imgs = [...selectImage];
+                      const imgs = reviewsData?.attachments;
                       const idx = imgs.indexOf(item);
                       if (idx > -1) {
                         imgs.splice(idx, 1);
                       }
-                      setSelectImage(imgs);
+                      // setSelectImage(imgs);
                     }}
                   />
                 )}

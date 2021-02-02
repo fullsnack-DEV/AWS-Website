@@ -182,6 +182,14 @@ const addRefereeReview = (refereeId, gameId, params, authContext) => makeAPIRequ
   data: params,
   authContext,
 })
+
+const patchRefereeReview = (refereeId, gameId, reviewID, params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}referees/${refereeId}/games/${gameId}/reviews/${reviewID}`,
+  data: params,
+  authContext,
+})
+
 const getGameRoster = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}games/${gameId}/roster`,
@@ -261,5 +269,6 @@ export {
   getGameReview,
   patchGameReview,
   addRefereeReview,
+  patchRefereeReview,
   getAllLineUp,
 }
