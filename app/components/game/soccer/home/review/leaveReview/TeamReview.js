@@ -1,7 +1,6 @@
 import React from 'react';
 import {
-  Text, View, StyleSheet, Pressable,
-  FlatList,
+  Text, View, StyleSheet, Pressable, FlatList,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
@@ -29,19 +28,24 @@ const TeamReview = ({
 }) => (
   <TCKeyboardView>
     <View style={styles.mainContainer}>
-
       {/* Title */}
-      <Text style={styles.titleText}>Please, rate the performance of {teamData?.group_name} and leave a review for the team.</Text>
+      <Text style={styles.titleText}>
+        Please, rate the performance of {teamData?.group_name} and leave a
+        review for the team.
+      </Text>
 
       {/*  Logo Container */}
       <View style={styles.logoContainer}>
-
         {/* Image */}
         <View style={styles.imageContainer}>
           <FastImage
-               source={teamData?.full_image ? { uri: teamData?.full_image } : images.teamPlaceholder}
-               resizeMode={'contain'}
-               style={{ height: 50, width: 50 }}
+            source={
+              teamData?.full_image
+                ? { uri: teamData?.full_image }
+                : images.teamPlaceholder
+            }
+            resizeMode={'contain'}
+            style={{ height: 50, width: 50 }}
           />
         </View>
 
@@ -50,11 +54,10 @@ const TeamReview = ({
 
         {/*    Country Name */}
         <Text style={styles.countryName}>{teamData?.country}</Text>
-
       </View>
 
       {/* Seperator */}
-      <View style={styles.seperator}/>
+      <View style={styles.seperator} />
 
       {/*  Rate Performance */}
       <RatePerformance
@@ -63,7 +66,7 @@ const TeamReview = ({
         setTeamReview={(key, value) => setTeamReview(teamNo, key, value)}
         reviewAttributes={reviewAttributes}
         starColor={starColor}
-    />
+      />
 
       {/*  Leave a Review */}
       <View style={styles.leaveReviewContainer}>
@@ -82,30 +85,31 @@ const TeamReview = ({
           }}
       /> */}
         <Pressable
-        style={{
-          height: 120,
-          marginVertical: 10,
-          alignItems: 'flex-start',
-          padding: 15,
-          backgroundColor: colors.offwhite,
-          shadowColor: colors.googleColor,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 5,
-          elevation: 5,
-          borderRadius: 5,
-        }}
-        onPress={() => {
-          navigation.navigate('WriteReviewScreen', {
-            comeFrom: 'LeaveReview',
-            postData: null,
-            searchText: reviewsData?.team_reviews[teamNo]?.comment ?? '',
-            // onPressDone: callthis,
-            selectedImageList: reviewsData?.team_reviews[teamNo]?.attachments || [],
-            taggedData: reviewsData?.team_reviews[teamNo]?.tagged || [],
-          })
-        }}>
-          <View pointerEvents="none" >
+          style={{
+            height: 120,
+            marginVertical: 10,
+            alignItems: 'flex-start',
+            padding: 15,
+            backgroundColor: colors.offwhite,
+            shadowColor: colors.googleColor,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 5,
+            elevation: 5,
+            borderRadius: 5,
+          }}
+          onPress={() => {
+            navigation.navigate('WriteReviewScreen', {
+              comeFrom: 'LeaveReview',
+              postData: null,
+              searchText: reviewsData?.comment ?? '',
+              // onPressDone: callthis,
+              selectedImageList:
+                reviewsData?.attachments || [],
+              taggedData: reviewsData?.tagged || [],
+            });
+          }}>
+          <View pointerEvents="none">
             {/* <TCInputBox
                         value={reviewsData?.team_reviews[teamNo]?.comment ?? ''}
                         multiline={true}
@@ -117,46 +121,60 @@ const TeamReview = ({
                           alignItems: 'flex-start',
                           padding: 15,
                         }} /> */}
-            <Text style={{ fontFamily: fonts.RRegular, fontSize: 16, color: colors.lightBlackColor }}>{reviewsData?.team_reviews[teamNo]?.comment !== '' ? <NewsFeedDescription descriptions={reviewsData?.team_reviews[teamNo]?.comment} tags={tags}/> : `Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}</Text>
+
+            {reviewsData?.comment !== '' ? (
+              <NewsFeedDescription
+                          descriptions={reviewsData.comment}
+                          containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
+                          tags={tags}
+                        />
+                      ) : (
+                        <Text
+                      style={{
+                        fontFamily: fonts.RRegular,
+                        fontSize: 16,
+                        color: colors.grayColor,
+                      }}>
+                          {`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
+                        </Text>)}
           </View>
         </Pressable>
       </View>
       <FlatList
-          data={ reviewsData?.team_reviews[teamNo]?.attachments || [] }
-          horizontal={ true }
-          // scrollEnabled={true}
-          showsHorizontalScrollIndicator={ false }
-          renderItem={ ({ item, index }) => (
-            <SelectedImageList
-                data={ item }
-                isClose= {false}
-                isCounter={false}
-                itemNumber={ index + 1 }
-                totalItemNumber={reviewsData?.team_reviews[teamNo]?.attachments?.length }
-                onItemPress={ () => {
-                  const imgs = reviewsData?.team_reviews[teamNo]?.attachments;
-                  const idx = imgs.indexOf(item);
-                  if (idx > -1) {
-                    imgs.splice(idx, 1);
-                  }
-                  // setSelectImage(imgs);
-                } }
-              />
-          ) }
-          ItemSeparatorComponent={ () => (
-            <View style={ { width: 5 } } />
-          ) }
-          style={ { paddingTop: 10, marginHorizontal: 10 } }
-          keyExtractor={ (item, index) => index.toString() }
-        />
+        data={reviewsData?.attachments || []}
+        horizontal={true}
+        // scrollEnabled={true}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item, index }) => (
+          <SelectedImageList
+            data={item}
+            isClose={false}
+            isCounter={false}
+            itemNumber={index + 1}
+            totalItemNumber={
+              reviewsData?.attachments?.length
+            }
+            onItemPress={() => {
+              const imgs = reviewsData?.attachments;
+              const idx = imgs.indexOf(item);
+              if (idx > -1) {
+                imgs.splice(idx, 1);
+              }
+              // setSelectImage(imgs);
+            }}
+          />
+        )}
+        ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
+        style={{ paddingTop: 10, marginHorizontal: 10 }}
+        keyExtractor={(item, index) => index.toString()}
+      />
       {/*  Footer */}
       <Text style={styles.footerText}>
         (<Text style={{ color: colors.redDelColor }}>*</Text> required)
       </Text>
-
     </View>
   </TCKeyboardView>
-)
+);
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -202,8 +220,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RLight,
   },
-  leaveReviewContainer: {
-
-  },
-})
+  leaveReviewContainer: {},
+});
 export default TeamReview;

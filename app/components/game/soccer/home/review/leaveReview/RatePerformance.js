@@ -45,7 +45,7 @@ const RatePerformance = ({
               : [colors.blueGradiantEnd, colors.blueGradiantStart]}
                 setTeamReview={setTeamReview}
                 title={item}
-                rating={reviewsData?.team_reviews[teamNo][item]}
+                rating={reviewsData[item]}
             />
         </View>)) : null}
       </View>
@@ -55,7 +55,7 @@ const RatePerformance = ({
         <View style={{ marginVertical: 5 }} key={index}>
           <Text style={styles.questionText}>{item.desc}</Text>
           <TCRatingStarSlider
-            currentRating={reviewsData?.team_reviews?.[teamNo][item.attrName]}
+            currentRating={reviewsData[item.attrName]}
             onPress={(star) => {
               setTeamReview(item.attrName, star)
             }}

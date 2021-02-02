@@ -238,13 +238,13 @@ export default function WriteReviewScreen({ navigation, route }) {
       <SafeAreaView style={ styles.bottomSafeAreaStyle }>
         <View style={ styles.bottomImgView }>
           <View style={ styles.onlyMeViewStyle }>
-            <ImageButton
+            {/* <ImageButton
               source={ images.lock }
               imageStyle={ { width: 18, height: 21 } }
               onImagePress={ () => {
               } }
             />
-            <Text style={ styles.onlyMeTextStyle }>Only me</Text>
+            <Text style={ styles.onlyMeTextStyle }>Only me</Text> */}
           </View>
           <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
             <ImageButton
@@ -319,12 +319,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-end',
   },
-  onlyMeTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 15,
-    marginLeft: wp('2%'),
-  },
+  // onlyMeTextStyle: {
+  //   color: colors.googleColor,
+  //   fontFamily: fonts.RRegular,
+  //   fontSize: 15,
+  //   marginLeft: wp('2%'),
+  // },
   onlyMeViewStyle: {
     alignItems: 'center',
     flexDirection: 'row',

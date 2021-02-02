@@ -40,6 +40,7 @@ const Referees = ({
   useEffect(() => { getMyUserId() }, [])
   useEffect(() => {
     getRefereeReservation(gameData?.game_id).then((res) => {
+      console.log('Referee Reservation:', res?.payload);
       const refData = res?.payload?.filter((item) => ![RefereeReservationStatus.cancelled].includes(item?.status));
       const cloneRefData = [];
       refData.map((item) => {
@@ -94,7 +95,7 @@ const Referees = ({
   }
   const renderReferees = ({ item }) => {
     const entity = authContext?.entity;
-    const referee = item?.referee;
+    const referee = item;
 
     return (
       <TCUserFollowUnfollowList
@@ -134,7 +135,7 @@ const Referees = ({
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={refree}
+              data={gameData?.referees}
               renderItem={renderReferees}
               ListEmptyComponent={() => (
                 <View>
