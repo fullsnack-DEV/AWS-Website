@@ -84,6 +84,7 @@ const TCMessage = ({
               return (
                 <View>
                   <Video
+                      repeat={true}
                       ref={videoPlayerRef}
                       paused={!play}
                       muted={!mute}

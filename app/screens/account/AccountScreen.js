@@ -548,7 +548,7 @@ export default function AccountScreen({ navigation }) {
               <>
                 {authContext.entity.role === 'user' && sectionId === 1 && (
                   <FlatList
-                        data={authContext?.entity?.auth?.user?.registered_sports}
+                        data={authContext?.user?.registered_sports}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
                           <View

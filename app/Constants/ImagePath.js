@@ -199,7 +199,8 @@ const images = {
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
   imageLoadingGIF: require('../assets/images/image_loading.gif'),
-  imageUploadingGIF: require('../assets/images/imageUploadingLoader.gif'),
+  imageUploadingGIFOld: require('../assets/images/imageUploadingLoader.gif'),
+  imageUploadingGIF: require('../assets/images/loadingGIF.gif'),
 
   soccerImage: require('../assets/images/soccerImage.png'),
 

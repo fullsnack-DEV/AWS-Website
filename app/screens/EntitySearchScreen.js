@@ -54,10 +54,10 @@ export default function EntitySearchScreen({ navigation }) {
 
   const onProfilePress = (item) => {
     navigation.navigate('HomeScreen', {
-      uid: item.group_id ? item.group_id : item.user_id,
+      uid: ['user', 'player']?.includes(item?.entity_type) ? item?.user_id : item?.group_id,
+      role: ['user', 'player']?.includes(item?.entity_type) ? 'user' : item.entity_type,
       backButtonVisible: true,
       menuBtnVisible: false,
-      role: item.entity_type === 'player' ? 'user' : item.entity_type,
     })
   }
 

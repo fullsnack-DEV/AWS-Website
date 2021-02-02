@@ -12,8 +12,8 @@ const TCZoomableImage = ({
           pagingEnabled={true}
           source={source}
           loadingIndicatorSource={images.imageLoadingGIF}
-          androidScaleType="cover"
-          resizeMode={'cover'}
+          androidScaleType="contain"
+          resizeMode={'contain'}
           style={style}
       />
 )

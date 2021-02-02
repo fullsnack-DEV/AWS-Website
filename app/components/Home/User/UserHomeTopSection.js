@@ -19,7 +19,7 @@ export default function UserHomeTopSection({
 }) {
   let playin = userDetails.games && userDetails.games.length > 0
   let refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
-  const userRole = userDetails.roles && userDetails.roles.length > 0
+  const userRole = userDetails?.roles?.length > 0 ?? false
   if (userRole) {
     playin = false
     refereesIn = false
@@ -135,7 +135,6 @@ export default function UserHomeTopSection({
       isMember = true
     }
   }
-
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
       {isAdmin && <TCProfileButton
@@ -213,18 +212,18 @@ export default function UserHomeTopSection({
           />
         </View>
       </View>}
-      {userRole && <View>
+      <View>
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.roles, { sport_name: strings.addrole, item_type: 'add_new' }]}
+            data={userDetails?.roles ? [...userDetails?.roles, { sport_name: strings.addrole, item_type: 'add_new' }] : [{ sport_name: strings.addrole, item_type: 'add_new' }]}
             horizontal
             renderItem={renderUserRole}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />
         </View>
-      </View>}
+      </View>
     </View>
   );
 }

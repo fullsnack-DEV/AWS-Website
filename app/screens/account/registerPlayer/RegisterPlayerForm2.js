@@ -43,10 +43,8 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const registerPlayerCall = () => {
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      if (authContext.user.registered_sports) {
-        if (authContext?.user?.registered_sports.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
-          Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
-        }
+      if (authContext?.user?.registered_sports?.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
+        Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
       } else {
         setloading(true);
         bodyParams.fee = matchFee;
@@ -65,6 +63,10 @@ export default function RegisterPlayerForm2({ navigation, route }) {
         }
         patchPlayer(body, authContext).then(async (response) => {
           if (response.status === true) {
+            const entity = authContext.entity
+            entity.auth.user = response.payload;
+            entity.obj = response.payload;
+            authContext.setEntity({ ...entity })
             await Utility.setStorage('authContextUser', response.payload);
             authContext.setUser(response.payload)
             if (route.params && route.params.comeFrom === 'HomeScreen') {
