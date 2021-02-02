@@ -128,15 +128,15 @@ const TeamReview = ({
                           containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
                           tags={tags}
                         />
-                      ) : (
-                        <Text
+            ) : (
+              <Text
                       style={{
                         fontFamily: fonts.RRegular,
                         fontSize: 16,
                         color: colors.grayColor,
                       }}>
-                          {`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
-                        </Text>)}
+                {`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
+              </Text>)}
           </View>
         </Pressable>
       </View>

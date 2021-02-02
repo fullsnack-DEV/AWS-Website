@@ -3,7 +3,7 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
+  Image, TouchableOpacity,
 } from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -13,10 +13,11 @@ export default function TeamViewInfoSection({
   teamIcon,
   teamTitle,
   teamCityName,
+  onProfilePress,
 }) {
   return (
 
-    <View style={styles.topViewContainer}>
+    <TouchableOpacity onPress={onProfilePress} style={styles.topViewContainer}>
       <View style={styles.profileView}>
         <Image source={teamImage} style={styles.profileImage} resizeMode={'cover'} />
       </View>
@@ -27,7 +28,7 @@ export default function TeamViewInfoSection({
         </View>
         <Text style={styles.userNameTextStyle}>{teamCityName}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
 
   );
 }

@@ -310,7 +310,6 @@ const MessageChat = ({
       mediaType: 'video image',
     }).then((image) => {
       setUploadImageInProgress(true);
-      console.log(image);
       setSelectedImage(image ?? null);
       const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
       const validImageSize = image?.size <= MAX_FILE_SIZE;

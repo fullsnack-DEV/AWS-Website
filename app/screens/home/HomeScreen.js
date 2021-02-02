@@ -1406,19 +1406,22 @@ export default function HomeScreen({ navigation, route }) {
       />
       {(isTeamHome && authContext.entity.role === 'team')
       && <View style={ styles.challengeButtonStyle }>
-        {authContext.entity.obj.group_id !== currentUserData.group_id && <View styles={[styles.outerContainerStyle, { height: 50 }]}><TouchableOpacity onPress={ onChallengePress }>
-          <LinearGradient
+        {authContext.entity.obj.group_id !== currentUserData.group_id
+        && <View styles={[styles.outerContainerStyle, { height: 50 }]}>
+          <TouchableOpacity onPress={ onChallengePress }>
+            <LinearGradient
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           colors={[colors.greenGradientStart, colors.greenGradientEnd]}
           style={[styles.containerStyle, { justifyContent: currentUserData.game_fee ? 'space-between' : 'center' }]}>
-            {currentUserData.game_fee && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee} ${currentUserData.currency_type}`}</Text>
-              <Text style={styles.buttonTextSmall}> {strings.perHourText}</Text>
-            </View>}
-            <Text style={ [styles.buttonText, { marginRight: currentUserData.game_fee ? 26 : 0 }] }>{strings.challenge.toUpperCase()}</Text>
-          </LinearGradient>
-        </TouchableOpacity></View>}
+              {currentUserData?.game_fee
+                ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee} ${currentUserData.currency_type}`}</Text>
+                  <Text style={styles.buttonTextSmall}> {strings.perHourText}</Text>
+                </View> : null}
+              <Text style={ [styles.buttonText, { marginRight: currentUserData.game_fee ? 26 : 0 }] }>{strings.challenge.toUpperCase()}</Text>
+            </LinearGradient>
+          </TouchableOpacity></View>}
       </View>}
       <ActivityLoader visible={loading} />
       <ParallaxScrollView
@@ -2022,7 +2025,8 @@ export default function HomeScreen({ navigation, route }) {
           backdropOpacity={0}
         >
           <View style={styles.modalContainerViewStyle}>
-            <Image
+            <FastImage
+                resizeMode={'stretch'}
               style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]}
               source={images.orangeLayer}
             />
@@ -2087,6 +2091,17 @@ export default function HomeScreen({ navigation, route }) {
                       width: 1, backgroundColor: colors.whiteColor, marginVertical: 10, marginHorizontal: 15,
                     }} />}
                     renderItem={({ item: attachItem }) => <TeamViewInfoSection
+                        onProfilePress={() => {
+                          setPlaysInModalVisible(false);
+                          setTimeout(() => {
+                            navigation.push('HomeScreen', {
+                              uid: ['user', 'player']?.includes(attachItem?.entity_type) ? attachItem?.user_id : attachItem?.group_id,
+                              role: ['user', 'player']?.includes(attachItem?.entity_type) ? 'user' : attachItem.entity_type,
+                              backButtonVisible: true,
+                              menuBtnVisible: false,
+                            })
+                          }, 100)
+                        }}
                     teamImage={attachItem.thumbnail ? { uri: attachItem.thumbnail } : images.team_ph}
                     teamTitle={attachItem.group_name}
                     teamIcon={images.myTeams}

@@ -64,6 +64,14 @@ export default function UserConnections({ navigation, route }) {
                       const showFollowUnfollowButton = userRole === 'user';
                       return (
                         <TCUserList
+                            onProfilePress={() => {
+                              navigation.push('HomeScreen', {
+                                role: ['player', 'user']?.includes(item?.entity_type) ? 'user' : item?.entity_type,
+                                uid: ['player', 'user']?.includes(item?.entity_type) ? item?.user_id : item?.group_id,
+                                backButtonVisible: true,
+                                menuBtnVisible: false,
+                              })
+                            }}
                               showFollowUnfollowButton={showFollowUnfollowButton}
                               profileImage={item?.full_image}
                               entityType={item?.entity_type}

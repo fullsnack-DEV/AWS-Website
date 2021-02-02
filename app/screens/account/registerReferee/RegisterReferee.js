@@ -165,18 +165,18 @@ export default function RegisterReferee({ navigation }) {
                   source={{ uri: certificate?.[index]?.url }}
                   style={{ width: 195, height: 150, borderRadius: 10 }}
               />
-            {imageUploadingLoader !== index && (
-              <TouchableOpacity style={{
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                position: 'absolute',
-                height: 22,
-                width: 22,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 50,
-                right: -10,
-                top: -5,
-              }}
+
+            <TouchableOpacity style={{
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              position: 'absolute',
+              height: 22,
+              width: 22,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 50,
+              right: -10,
+              top: -5,
+            }}
                                   onPress={() => {
                                     const certi = certificate;
                                     delete certi[index].url;
@@ -184,14 +184,13 @@ export default function RegisterReferee({ navigation }) {
                                     setCertificate([...certi]);
                                   }}
                 >
-                <Image
+              <Image
                       source={images.menuClose}
                       style={{
                         zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
                       }}
                   />
-              </TouchableOpacity>
-            )}
+            </TouchableOpacity>
 
             {index === imageUploadingLoader && (
               <View style={{

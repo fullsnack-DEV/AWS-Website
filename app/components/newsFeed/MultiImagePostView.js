@@ -149,7 +149,7 @@ export default function MultiImagePostView({
                           source={{ uri: multiAttachItem.thumbnail }}
                           style={[styles.uploadedImage, {
                             width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                            height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                            height: isLandScape ? wp(100) : hp(100),
                           }]}
                      />
                     {/* <ImageZoom */}
