@@ -17,8 +17,8 @@ import UserInfoAddRole from './UserInfoAddRole';
 export default function UserHomeTopSection({
   userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onPlayInPress, onAddRolePress,
 }) {
-  let playin = userDetails.games && userDetails.games.length > 0
-  let refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
+  let playin = userDetails?.games?.length > 0 ?? false
+  let refereesIn = userDetails?.referee_data?.length > 0 ?? false
   const userRole = userDetails?.roles?.length > 0 ?? false
   if (userRole) {
     playin = false
@@ -212,6 +212,7 @@ export default function UserHomeTopSection({
           />
         </View>
       </View>}
+
       <View>
         <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
           <FlatList

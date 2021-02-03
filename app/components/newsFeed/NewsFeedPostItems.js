@@ -202,11 +202,7 @@ function NewsFeedPostItems({
           imageStyle={styles.previewImageStyle}
         />}
 
-        {attachedImages?.length > 0 ? (
-          <NewsFeedDescription descriptions={descriptions} character={140} />
-        ) : (
-          <NewsFeedDescription descriptions={descriptions} character={480} />
-        )}
+        <NewsFeedDescription descriptions={descriptions} character={attachedImages?.length > 0 ? 140 : 480} />
 
         <View style={{ marginTop: 10, marginLeft: 10 }}></View>
 

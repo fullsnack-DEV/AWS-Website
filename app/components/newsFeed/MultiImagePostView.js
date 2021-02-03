@@ -47,12 +47,7 @@ export default function MultiImagePostView({
   const [isLandScape, setIsLandScape] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  // const [imageZoomScale, setZoomScale] = useState(1);
 
-  // useEffect(() => {
-  //   if (imageZoomScale > 1) setScroll(false);
-  //   else setScroll(true);
-  // }, [imageZoomScale])
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -84,12 +79,13 @@ export default function MultiImagePostView({
     Orientation.unlockAllOrientations();
     Orientation.addOrientationListener(orientationChange);
     return () => {
+      Orientation.lockToPortrait();
       Orientation.removeOrientationListener(orientationChange);
     };
   }, []);
 
   const orientationChange = (orientation) => {
-    if (orientation === 'LANDSCAPE') {
+    if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) {
       setDimention({ width: hp('100%'), height: wp('100%') });
       setIsLandScape(true);
     } else {
@@ -152,45 +148,6 @@ export default function MultiImagePostView({
                             height: isLandScape ? wp(100) : hp(100),
                           }]}
                      />
-                    {/* <ImageZoom */}
-                    {/*    // style={{ justifyContent: 'center', alignItems: 'center' }} */}
-                    {/*  doubleClickInterval={250} */}
-                    {/*  cropWidth={Dimensions.get('window').width} */}
-                    {/*  cropHeight={Dimensions.get('window').height} */}
-                    {/*  imageWidth={isLandScape ? landscapeImgWidth : portraitImgWidth} */}
-                    {/*  imageHeight={isLandScape ? landscapeImgHeight : portraitImgHeight} */}
-                    {/*  minScale={1} */}
-                    {/*  useNativeDriver={true} */}
-                    {/*  onMove={handlePageZoom} */}
-                    {/* > */}
-                    {/*  <FastImage */}
-                    {/*    style={[styles.uploadedImage, { */}
-                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
-                    {/*      height: isLandScape ? landscapeImgHeight : portraitImgHeight, */}
-                    {/*    }]} */}
-                    {/*    source={{ uri: multiAttachItem.thumbnail }} */}
-                    {/*    resizeMode={ FastImage.resizeMode.cover } */}
-                    {/* /> */}
-                    {/*  <Image */}
-                    {/*    style={{ */}
-                    {/*      position: 'absolute', */}
-                    {/*      height: hp('10%'), */}
-                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
-                    {/*    }} */}
-                    {/*    source={isLandScape ? images.landscapeTopImage : images.portraitTopImage} */}
-                    {/*    resizeMode={'stretch'} */}
-                    {/* /> */}
-                    {/*  <Image */}
-                    {/*    style={{ */}
-                    {/*      position: 'absolute', */}
-                    {/*      height: hp('10%'), */}
-                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
-                    {/*      bottom: 0, */}
-                    {/*    }} */}
-                    {/*    source={isLandScape ? images.landscapeBottomImage : images.portraitBottomImage} */}
-                    {/*    resizeMode={'stretch'} */}
-                    {/* /> */}
-                    {/* </ImageZoom> */}
                   </View>
                 );
               }
@@ -210,21 +167,6 @@ export default function MultiImagePostView({
                         height: isLandScape ? landscapeImgHeight : portraitImgHeight,
                       }}
                      />
-                    {/* <View */}
-                    {/*  style={[ */}
-                    {/*    styles.singleImageDisplayStyle, */}
-                    {/*    { */}
-                    {/*      width: isLandScape ? landscapeImgWidth : portraitImgWidth, */}
-                    {/*      height: isLandScape ? landscapeImgHeight : portraitImgHeight, */}
-                    {/*    }, */}
-                    {/*  ]}> */}
-                    {/*  <FastImage */}
-                    {/*    style={styles.loadimageStyle} */}
-                    {/*    source={images.imageLoadingGIF} */}
-                    {/*    resizeMode={FastImage.resizeMode.contain} */}
-                    {/*  /> */}
-                    {/*  <Text style={styles.loadingTextStyle}>Loading...</Text> */}
-                    {/* </View> */}
                     <CustomVideoPlayer
                         isLandscape={isLandScape}
                         onPlayerStatusChanged={(shouldVideoScroll) => {
@@ -340,6 +282,7 @@ export default function MultiImagePostView({
                 }}>
                 <TouchableOpacity
                     onPress={() => {
+                      Orientation.lockToPortrait();
                       backBtnPress()
                       navigation.navigate('WriteCommentScreen', {
                         data: item,
@@ -517,14 +460,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
   },
-  // loadimageStyle: {
-  //   height: 50,
-  //   width: 50,
-  // },
-  // loadingTextStyle: {
-  //   color: colors.googleColor,
-  //   fontFamily: fonts.RBold,
-  //   fontSize: 14,
-  //   marginTop: 25,
-  // },
 });

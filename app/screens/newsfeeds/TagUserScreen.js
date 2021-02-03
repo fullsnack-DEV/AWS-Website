@@ -126,7 +126,7 @@ export default function TagUserScreen({ backBtnPress, onItemPress }) {
           renderItem={ ({ item }) => {
             if (item && item.full_name) {
               return <Text style={styles.userTextStyle} onPress={() => {
-                onItemPress(item.full_name)
+                onItemPress(item)
               }}>{item.full_name}</Text>
             }
             return <View />

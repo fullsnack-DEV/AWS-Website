@@ -76,7 +76,8 @@ const TCMessage = ({
       {/*  Attachments */}
       {fileUrls.length > 0 && (
         <View style={{
-          paddingLeft: type === 'receiver' ? wp(5) : wp(2),
+          ...messageStyle,
+          marginTop: 0,
         }}>
           {fileUrls.map((item, index) => {
             if (attachments[index]?.type === 'file') {

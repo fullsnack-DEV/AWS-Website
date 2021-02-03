@@ -9,7 +9,6 @@ import {
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-// import SingleImageModal from './SingleImageModal';
 import images from '../../Constants/ImagePath';
 import SinglePostPortraitView from './SinglePostPortraitView';
 
@@ -62,13 +61,8 @@ function SingleImage({
         isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
-        supportedOrientations={['portrait', 'landscape']}
+        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
-        {/* <SingleImageModal */}
-        {/*  uploadImageURL={uploadImageURL && uploadImageURL} */}
-        {/*  backBtnPress={() => setModalVisible(false)} */}
-        {/*  data={data} */}
-        {/* /> */}
         <SinglePostPortraitView
             openPostModal ={() => setModalVisible(true)}
           data={data}

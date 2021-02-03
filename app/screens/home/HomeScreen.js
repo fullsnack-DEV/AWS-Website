@@ -38,7 +38,9 @@ import WritePost from '../../components/newsFeed/WritePost';
 import {
   getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails,
 } from '../../api/Users';
-import { getUserPosts, createPost, getNewsFeed } from '../../api/NewsFeeds';
+import {
+  getUserPosts, createPost, getNewsFeed, createReaction,
+} from '../../api/NewsFeeds';
 import {
   getGroupDetails, getJoinedGroups, getTeamsOfClub, getGroupMembers,
   followGroup, unfollowGroup, joinTeam, leaveTeam, inviteTeam,
@@ -1176,7 +1178,7 @@ export default function HomeScreen({ navigation, route }) {
         status: 'ended',
       };
       getGameScoreboardEvents(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
-        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        const date = new Date();
         const recentMatch = [];
         const upcomingMatch = [];
         res.payload.filter((event_item) => {
@@ -1516,6 +1518,20 @@ export default function HomeScreen({ navigation, route }) {
                   <NewsFeedList
                     navigation={navigation}
                     postData={postData}
+                    onLikePress={(item) => {
+                      const bodyParams = {
+                        reaction_type: 'clap',
+                        activity_id: item.id,
+                      };
+                      createReaction(bodyParams, authContext)
+                        .then(() => getNewsFeed(authContext))
+                        .then((response) => {
+                          setPostData([...response.payload.results]);
+                        })
+                        .catch((e) => {
+                          Alert.alert('', e.messages)
+                        });
+                    }}
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >

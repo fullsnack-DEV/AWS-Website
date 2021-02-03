@@ -87,12 +87,13 @@ export default function SinglePostVideoView({
     Orientation.unlockAllOrientations();
     Orientation.addOrientationListener(orientationChange);
     return () => {
+      Orientation.lockToPortrait();
       Orientation.removeOrientationListener(orientationChange);
     };
   }, []);
 
   const orientationChange = (orientation) => {
-    if (orientation === 'LANDSCAPE') {
+    if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) {
       setDimention({ width: hp('100%'), height: wp('100%') });
       setIsLandScape(true);
       if (data.media_height > data.media_width) {
