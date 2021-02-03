@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useContext, useRef,
+} from 'react';
 import {
   View,
+  Keyboard,
   Text,
   Image,
   TouchableOpacity,
@@ -13,27 +16,42 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
-import RNUrlPreview from 'react-native-url-preview';
+import UrlPreview from 'react-native-url-preview';
+import _ from 'lodash';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import TagUserScreen from './TagUserScreen';
 import fonts from '../../Constants/Fonts'
 import colors from '../../Constants/Colors'
 import images from '../../Constants/ImagePath';
+import { getUserList } from '../../api/Users';
+import { getMyGroups } from '../../api/Groups';
+import AuthContext from '../../auth/context';
+import { getSearchData } from '../../utils';
 
 export default function WritePostScreen({ navigation, route }) {
+  const textInputFocus = useRef();
+  let keyboardDidShowListener = null;
+  let keyboardDidHideListener = null;
+  const authContext = useContext(AuthContext);
+  const [searchFieldHeight, setSearchFieldHeight] = useState();
+  const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData || []);
+  const [searchTag, setSearchTag] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState(route.params.selectedImageList);
+  const [searchUsers, setSearchUsers] = useState([]);
+  const [searchGroups, setSearchGroups] = useState([]);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const { params: { postData, onPressDone } } = route;
   let userImage = '';
   let userName = '';
@@ -48,6 +66,14 @@ export default function WritePostScreen({ navigation, route }) {
   }
 
   useEffect(() => {
+    keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
+    keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    }
+  }, [])
+  useEffect(() => {
     let tagName = '';
     if (route.params && route.params.selectedTagList) {
       if (route.params.selectedTagList.length > 0) {
@@ -60,9 +86,48 @@ export default function WritePostScreen({ navigation, route }) {
     }
   }, [route.params]);
 
+  useEffect(() => {
+    if (searchText?.length === 0) {
+      setTagsOfEntity([])
+      setUsers([]);
+      setGroups([]);
+      setModalVisible(false);
+    }
+  }, [searchText])
+  useEffect(() => {
+    getUserList(authContext)
+      .then((response) => {
+        setUsers(response.payload);
+        setSearchUsers(response.payload)
+      })
+      .catch((e) => {
+        console.log('eeeee Get Users :-', e.response);
+        Alert.alert('', e.messages)
+      });
+    getMyGroups(authContext)
+      .then((response) => {
+        setGroups(response.payload);
+        setSearchGroups(response.payload)
+      })
+      .catch((e) => {
+        console.log('eeeee Get Group Users :-', e.response);
+        Alert.alert('', e.messages)
+      });
+  }, []);
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
+
+  const searchFilterFunction = (text) => {
+    if (text.length > 0) {
+      const userData = getSearchData(searchUsers, ['first_name', 'last_name', 'group_name'], text);
+      const groupData = getSearchData(searchGroups, ['first_name', 'last_name', 'group_name'], text);
+      setUsers([...userData]);
+      setGroups([...groupData])
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={ { flex: 1 } }
@@ -86,7 +151,7 @@ export default function WritePostScreen({ navigation, route }) {
               } else {
                 setloading(false);
                 navigation.goBack();
-                onPressDone(selectImage, searchText);
+                onPressDone(selectImage, searchText, tagsOfEntity);
               }
             }}
           >
@@ -102,46 +167,76 @@ export default function WritePostScreen({ navigation, route }) {
         </View>
       </View>
 
-      <Modal
-        isVisible={ isModalVisible }
-        backdropColor="black"
-        style={{ margin: 0 }}
-        backdropOpacity={ 0 }>
-        <TagUserScreen
-                backBtnPress={() => setModalVisible(false)}
-                onItemPress={(name) => {
-                  if (name) {
-                    setSearchText(searchText + name);
-                    setModalVisible(false);
-                  }
-                }}
-              />
-      </Modal>
-
-      <ScrollView bounces={ false }>
+      <ScrollView
+          bounces={ false }
+          style={{ flex: 1 }}
+          onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
+      >
         <TextInput
-          placeholder="What's going on?"
-          value={ searchText }
-          placeholderTextColor={ colors.userPostTimeColor }
-          onKeyPress={({ nativeEvent }) => {
-            if (nativeEvent.key === 'Backspace') {
-              setLetModalVisible(false);
-            } else {
-              setLetModalVisible(true);
-            }
-          }}
-          onChangeText={ (text) => {
-            setSearchText(text);
-            const lastChar = text.slice(text.length - 1, text.length);
-            if (lastChar === '@' && letModalVisible) {
-              toggleModal()
-            }
-          }}
-          style={ styles.textInputField }
-          multiline={ true }
-          textAlignVertical={'top'}
-        />
-        {searchText.length > 0 && <RNUrlPreview
+            ref={textInputFocus}
+            onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)}
+            placeholder="What's going on?"
+            value={ searchText }
+            placeholderTextColor={ colors.userPostTimeColor }
+            onKeyPress={({ nativeEvent }) => {
+              if (nativeEvent.key === 'Backspace') {
+                setLetModalVisible(false);
+              } else {
+                setLetModalVisible(true);
+              }
+            }}
+            onChangeText={ (text) => {
+              setSearchText(text);
+
+              setSearchTag(text.split('@')?.reverse()?.[0])
+              if (text.split('@')?.reverse()?.[0] !== '' || text.split('@')?.reverse()?.[0] !== ' ') {
+                searchFilterFunction(text.split('@')?.reverse()?.[0])
+              }
+
+              const lastChar = text.slice(text.length - 1, text.length);
+              if (lastChar === '@' && letModalVisible) {
+                toggleModal()
+              }
+            }}
+            style={ styles.textInputField }
+            multiline={ true }
+            textAlignVertical={'top'}
+          />
+        {isModalVisible && [...users, ...groups]?.length > 0
+        && <View style={[styles.userListContainer, { marginTop: searchFieldHeight + 20 }]}>
+          <FlatList
+              showsVerticalScrollIndicator={false}
+              data={[...users, ...groups]}
+              keyboardShouldPersistTaps={'always'}
+              style={{ paddingTop: hp(1) }}
+              ListFooterComponent={() => <View style={{ height: hp(6) }} />}
+              renderItem={ ({ item }) => {
+                if (item?.full_name) {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const tagsArray = [];
+                        const joinedString = _.startCase(item.first_name.toLowerCase()) + _.startCase(item.last_name.toLowerCase()) || _.startCase(item.group_name.toLowerCase());
+                        const str = searchText.replace(new RegExp(`${searchTag}$`), joinedString.replace(/ /g, ''));
+                        setSearchText(`${str} `)
+                        const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
+                        const isExist = tagsArray.some((tagItem) => tagItem[entity_text] === item[tagItem])
+                        if (!isExist) tagsArray.push(item)
+                        setTagsOfEntity([...tagsOfEntity, ...tagsArray])
+                        setModalVisible(false)
+                      }}
+                      style={styles.userListStyle}>
+                      <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
+                      <Text style={styles.userTextStyle}>{`${item.first_name} ${item.last_name}` || item.group_name}</Text>
+                      <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}` || item.group_name}</Text>
+                    </TouchableOpacity>)
+                }
+                return <View />
+              }}
+              keyExtractor={ (item, index) => index.toString() }
+          />
+        </View>}
+        {searchText.length > 0 && <UrlPreview
           text={searchText}
           containerStyle={styles.previewContainerStyle}
         />}
@@ -333,5 +428,40 @@ const styles = StyleSheet.create({
     borderColor: colors.grayBackgroundColor,
     padding: 8,
     borderRadius: 10,
+  },
+
+  userTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
+    paddingVertical: hp(1),
+  },
+  locationTextStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+    marginLeft: 10,
+    paddingVertical: hp(1),
+  },
+  userListStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+
+  },
+  userListContainer: {
+    zIndex: 1,
+    backgroundColor: 'white',
+    maxHeight: 300,
+    width: 300,
+    alignSelf: 'center',
+    position: 'absolute',
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+    borderRadius: 5,
   },
 });

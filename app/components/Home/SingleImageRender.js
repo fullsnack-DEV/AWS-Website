@@ -34,7 +34,7 @@ function SingleImageRender({ data }) {
         isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
-        supportedOrientations={['portrait', 'landscape']}
+        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
         <SingleImageModal
             uploadImageURL={data.attachments[0].thumbnail}

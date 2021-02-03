@@ -53,7 +53,7 @@ const GameFeed = ({
   }
 
   const createPostAfterUpload = (dataParams) => {
-    const params = { game_id: gameData?.game_id }
+    const params = { uid: gameData?.game_id }
     createGamePostData(dataParams)
       .then(() => getGameFeedData(params))
       .then((response) => {

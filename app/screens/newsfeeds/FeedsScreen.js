@@ -87,10 +87,11 @@ export default function FeedsScreen({ navigation }) {
     setCancelApiRequest({ ...axiosTokenSource });
   }
 
-  const callthis = (data, postDesc) => {
+  const callthis = (data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
+        taggedData: tagsOfEntity ?? [],
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
@@ -108,6 +109,7 @@ export default function FeedsScreen({ navigation }) {
         const dataParams = {
           text: postDesc && postDesc,
           attachments,
+          taggedData: tagsOfEntity ?? [],
         };
         createPostAfterUpload(dataParams)
       })

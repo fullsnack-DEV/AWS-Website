@@ -16,28 +16,14 @@ function NewsFeedDescription({
   tags = [],
 }) {
   const [readMore, setReadMore] = useState();
-  // const [regX, setRegX] = useState();
 
-  // useEffect(() => {
-  //   console.table('Tags::', tags);
-  //   createRegXString()
-  // }, [tags])
   function toggleNumberOfLines() {
     setReadMore(!readMore);
   }
-  // const createRegXString = () => {
-  //   const list = tags.map((e) => e.first_name || e.group_name)
-  //   const str = list.join('|')
-
-  //   const re = `/@\b(${str})(\b\s*([A-Z]\w+)){0,2}/`;
-
-  //   setRegX(re)
-  //   console.log(regX);
-  // }
   function renderText(matchingString) {
     const pattern = /@(\w+)/;
     const match = matchingString.match(pattern);
-    return `${match[0]}`;
+    return <Text style={{ ...styles.username, color: colors.greeColor }}>{match[0]}</Text>;
   }
   function handleNamePress(name) {
     console.log(`Hello ${name}`);
@@ -55,7 +41,6 @@ function NewsFeedDescription({
               parse={
                 [{
                   pattern: /@(\w+)/,
-                  style: styles.username,
                   onPress: handleNamePress,
                   renderText,
 
@@ -89,7 +74,6 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    color: colors.greeColor,
   },
   text: {
     fontSize: 16,

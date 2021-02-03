@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   TouchableWithoutFeedback,
-  // TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
