@@ -55,7 +55,7 @@ const LeaveReview = ({ navigation, route }) => {
   });
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)?.teamReviews;
+      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)?.gameReview;
       setReviewsData({ ...reviewObj });
     }
   }, [route?.params?.gameReviewData?.results[0]?.object]);
@@ -212,6 +212,7 @@ const LeaveReview = ({ navigation, route }) => {
 
   const patchOrAddReview = () => {
     if (route?.params?.gameReviewData) {
+      setLoading(true);
       const teamReview = reviewsData
       delete teamReview.created_at;
       delete teamReview.entity_type;

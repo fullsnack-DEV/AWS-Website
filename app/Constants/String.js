@@ -539,5 +539,6 @@ const strings = {
   editReviewForTeams: 'Edit Review for Teams',
   completeReviewFirst: 'Please, complete all ratings before moving to the next.',
   punchualityDesc: 'Did the the referee arrive at the match place on time?',
+  chooseTeamFirst: 'Please choose any one team for review.',
 };
 export default strings;

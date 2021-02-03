@@ -88,6 +88,7 @@ const Summary = ({
   const [starAttributesForReferee, setStarAttributesForReferee] = useState([]);
   useEffect(() => {
     if (isFocused && gameData) {
+      console.log('Game data==:=>', gameData);
       leaveReviewButtonConfig();
       setLoading(true);
       getSportsList()
@@ -174,10 +175,14 @@ const Summary = ({
             === authContext.entity.uid
           ) {
             found = true;
-
             teamName = gameData?.away_team?.group_name;
             console.log('Team name Data:=>', teamName);
-            setLeaveReviewText(`LEAVE REVIEW TO ${teamName}`);
+            if (gameData?.home_review_id || gameData?.away_review_id) {
+              setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+            }
+            else {
+              setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+            }
             setplayerFrom('home')
             break;
           }
@@ -191,18 +196,21 @@ const Summary = ({
               found = true;
               teamName = gameData?.home_team?.group_name;
               console.log('Team name Data:=>', teamName);
-              setLeaveReviewText(`LEAVE REVIEW TO ${teamName}`);
+              if (gameData?.away_review_id || gameData?.home_review_id) {
+                setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+              } else {
+                setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+              }
               setplayerFrom('away')
               break;
             }
           }
-
           for (let i = 0; i < gameData?.referees?.length; i++) {
             if (gameData?.referees?.[i]?.referee_id === authContext.entity.uid) {
               found = true;
               // teamName = gameData?.home_team?.group_name
               // console.log('Team name Data:=>', teamName);
-              setLeaveReviewText(`LEAVE A REVIEW FOR TEAMS ${teamName}`);
+              setLeaveReviewText('LEAVE OR EDIT YOUR REVIEW');
               break;
             }
           }
@@ -221,7 +229,7 @@ const Summary = ({
       .then((response) => {
         console.log('Get review of referee::=>', response.payload);
         navigation.navigate('RefereeReviewScreen', {
-          gameReviewData: response?.payload,
+          gameReviewData: response.payload,
           gameData,
           userData: item,
           sliderAttributesForReferee,
@@ -235,14 +243,15 @@ const Summary = ({
       });
   };
 
-  const getGameReviewsData = () => {
+  const getGameReviewsData = (reviewID) => {
     setLoading(true);
-    getGameReview(gameData?.game_id, gameData?.review_id, authContext)
+    getGameReview(gameData?.game_id, reviewID, authContext)
       .then((response) => {
+        console.log('Edit Review By Review ID Response::=>', response.payload);
         navigation.navigate('LeaveReview', {
           gameData,
           gameReviewData: response.payload,
-          selectedTeam: playerFrom === 'home' ? 'away' : 'home',
+          selectedTeam: selectedTeamForReview,
           sliderAttributes,
           starAttributes,
         });
@@ -292,8 +301,10 @@ const Summary = ({
                 <TCGradientButton
                   onPress={() => {
                     if (playerFrom !== '') {
-                      if (gameData?.review_id) {
-                        getGameReviewsData();
+                      if (gameData?.home_review_id) {
+                        getGameReviewsData(gameData?.home_review_id);
+                      } else if (gameData?.away_review_id) {
+                        getGameReviewsData(gameData?.away_review_id)
                       } else {
                         navigation.navigate('LeaveReview', {
                           gameData,
@@ -444,7 +455,10 @@ const Summary = ({
           <View style={styles.bottomPopupContainer}>
             <View style={styles.titlePopup}>
               <TouchableWithoutFeedback
-                onPress={() => setIsPopupVisible(false)}>
+                onPress={() => {
+                  setIsPopupVisible(false)
+                  setSelectedTeamForReview();
+                }}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableWithoutFeedback>
               <Text style={styles.startTime}>Leave a team review</Text>
@@ -453,15 +467,36 @@ const Summary = ({
                 onPress={() => {
                   setIsPopupVisible(false);
                   console.log('gameData?.review_id:=>', gameData?.review_id);
-                  if (gameData?.review_id) {
-                    getGameReviewsData();
-                  } else {
-                    navigation.navigate('LeaveReview', {
-                      gameData,
-                      selectedTeam: selectedTeamForReview,
-                      sliderAttributes,
-                      starAttributes,
-                    });
+                  if (playerFrom === '' && selectedTeamForReview) {
+                    if (selectedTeamForReview === 'home') {
+                      if (gameData?.home_review_id) {
+                        getGameReviewsData(gameData?.home_review_id);
+                      }
+                      else {
+                        navigation.navigate('LeaveReview', {
+                          gameData,
+                          selectedTeam: selectedTeamForReview,
+                          sliderAttributes,
+                          starAttributes,
+                        });
+                      }
+                    }
+                    if (selectedTeamForReview === 'away') {
+                      if (gameData?.away_review_id) {
+                        getGameReviewsData(gameData?.away_review_id);
+                      }
+                      else {
+                        navigation.navigate('LeaveReview', {
+                          gameData,
+                          selectedTeam: selectedTeamForReview,
+                          sliderAttributes,
+                          starAttributes,
+                        });
+                      }
+                    }
+                  }
+                  else {
+                    Alert.alert(strings.alertmessagetitle, strings.chooseTeamFirst)
                   }
                 }}>
                 Done
