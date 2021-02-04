@@ -136,7 +136,7 @@ const TeamHomeReview = ({
 
           </View>
         </View>
-        )}
+      )}
       {gameData?.status === 'ended' && !isAdmin && (
         <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
           {!checkReviewExpired(gameData?.actual_enddatetime) ? (
@@ -162,7 +162,7 @@ const TeamHomeReview = ({
           )}
 
         </View>
-        )}
+      )}
       {!isAdmin && <Seperator/>}
 
       <TCInnerLoader visible={loading} size={50}/>

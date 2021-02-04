@@ -91,7 +91,7 @@ export default function UpcomingMatchScreen({
                       console.log('Error :-', e);
                     })
                   }
-                }, 100)
+                }, 1000)
               }}
               showEventNumbers={showEventNumbers}
             />

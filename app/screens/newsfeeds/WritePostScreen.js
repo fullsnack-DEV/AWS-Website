@@ -23,6 +23,7 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import UrlPreview from 'react-native-url-preview';
 import _ from 'lodash';
+import ParsedText from 'react-native-parsed-text';
 import ImageButton from '../../components/WritePost/ImageButton';
 import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -75,12 +76,17 @@ export default function WritePostScreen({ navigation, route }) {
   }, [])
   useEffect(() => {
     let tagName = '';
+    const tagsArray = [];
     if (route.params && route.params.selectedTagList) {
       if (route.params.selectedTagList.length > 0) {
         route.params.selectedTagList.map((tagItem) => {
+          const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
+          const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
+          if (!isExist) tagsArray.push(tagItem)
           tagName = `${tagName} @${tagItem.title.replace(/\s/g, '')}`;
           return null;
         })
+        setTagsOfEntity([...tagsOfEntity, ...tagsArray])
         setSearchText(searchText + tagName);
       }
     }
@@ -97,20 +103,18 @@ export default function WritePostScreen({ navigation, route }) {
   useEffect(() => {
     getUserList(authContext)
       .then((response) => {
-        setUsers(response.payload);
-        setSearchUsers(response.payload)
+        setUsers([...response.payload]);
+        setSearchUsers([...response.payload])
       })
       .catch((e) => {
-        console.log('eeeee Get Users :-', e.response);
         Alert.alert('', e.messages)
       });
     getMyGroups(authContext)
       .then((response) => {
-        setGroups(response.payload);
-        setSearchGroups(response.payload)
+        setGroups([...response.payload]);
+        setSearchGroups([...response.payload])
       })
       .catch((e) => {
-        console.log('eeeee Get Group Users :-', e.response);
         Alert.alert('', e.messages)
       });
   }, []);
@@ -127,6 +131,31 @@ export default function WritePostScreen({ navigation, route }) {
       setGroups([...groupData])
     }
   };
+
+  const onTagPress = (item) => {
+    const tagsArray = [];
+    let joinedString = '';
+    if (item?.group_name) {
+      joinedString = _.startCase(item?.group_name.toLowerCase())
+    } else {
+      const fName = _.startCase(item?.first_name?.toLowerCase());
+      const lName = _.startCase(item?.last_name?.toLowerCase());
+      joinedString = fName + lName;
+    }
+    const str = searchText.replace(new RegExp(`${searchTag}$`), joinedString.replace(/ /g, ''));
+    setSearchText(`${str} `)
+    const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
+    const isExist = tagsOfEntity.some((tagItem) => tagItem[entity_text] === item[entity_text])
+    if (!isExist) tagsArray.push(item)
+    setTagsOfEntity([...tagsOfEntity, ...tagsArray])
+    setModalVisible(false)
+  }
+
+  const renderTagText = (matchingString) => {
+    const pattern = /\B@\w+/g;
+    const match = matchingString.match(pattern);
+    return <Text style={{ ...styles.username, color: colors.greeColor }}>{match[0]}</Text>;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -150,8 +179,26 @@ export default function WritePostScreen({ navigation, route }) {
                 Alert.alert('Please write some text or select any image.');
               } else {
                 setloading(false);
+                const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+                const nameArray = []
+                tagsOfEntity.map((item) => {
+                  let joinedString = '@';
+                  if (item?.group_name) {
+                    joinedString += _.startCase(item?.group_name.toLowerCase())
+                  } else {
+                    const fName = _.startCase(item?.first_name?.toLowerCase());
+                    const lName = _.startCase(item?.last_name?.toLowerCase());
+                    joinedString += fName + lName;
+                  }
+                  nameArray.push(joinedString.replace(/ /g, ''))
+                  return null;
+                })
+                nameArray.map((item, index) => {
+                  if (!searchText.includes(item)) tagData.splice(index, 1);
+                  return null;
+                })
                 navigation.goBack();
-                onPressDone(selectImage, searchText, tagsOfEntity);
+                onPressDone(selectImage, searchText, tagData);
               }
             }}
           >
@@ -176,7 +223,6 @@ export default function WritePostScreen({ navigation, route }) {
             ref={textInputFocus}
             onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)}
             placeholder="What's going on?"
-            value={ searchText }
             placeholderTextColor={ colors.userPostTimeColor }
             onKeyPress={({ nativeEvent }) => {
               if (nativeEvent.key === 'Backspace') {
@@ -187,12 +233,10 @@ export default function WritePostScreen({ navigation, route }) {
             }}
             onChangeText={ (text) => {
               setSearchText(text);
-
               setSearchTag(text.split('@')?.reverse()?.[0])
               if (text.split('@')?.reverse()?.[0] !== '' || text.split('@')?.reverse()?.[0] !== ' ') {
                 searchFilterFunction(text.split('@')?.reverse()?.[0])
               }
-
               const lastChar = text.slice(text.length - 1, text.length);
               if (lastChar === '@' && letModalVisible) {
                 toggleModal()
@@ -201,7 +245,14 @@ export default function WritePostScreen({ navigation, route }) {
             style={ styles.textInputField }
             multiline={ true }
             textAlignVertical={'top'}
-          />
+          >
+          <ParsedText
+              parse={[{ pattern: /\B@\w+/g, renderText: renderTagText }]}
+              childrenProps={{ allowFontScaling: false }}
+          >
+            {searchText}
+          </ParsedText>
+        </TextInput>
         {isModalVisible && [...users, ...groups]?.length > 0
         && <View style={[styles.userListContainer, { marginTop: searchFieldHeight + 20 }]}>
           <FlatList
@@ -210,29 +261,16 @@ export default function WritePostScreen({ navigation, route }) {
               keyboardShouldPersistTaps={'always'}
               style={{ paddingTop: hp(1) }}
               ListFooterComponent={() => <View style={{ height: hp(6) }} />}
-              renderItem={ ({ item }) => {
-                if (item?.full_name) {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        const tagsArray = [];
-                        const joinedString = _.startCase(item.first_name.toLowerCase()) + _.startCase(item.last_name.toLowerCase()) || _.startCase(item.group_name.toLowerCase());
-                        const str = searchText.replace(new RegExp(`${searchTag}$`), joinedString.replace(/ /g, ''));
-                        setSearchText(`${str} `)
-                        const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
-                        const isExist = tagsArray.some((tagItem) => tagItem[entity_text] === item[tagItem])
-                        if (!isExist) tagsArray.push(item)
-                        setTagsOfEntity([...tagsOfEntity, ...tagsArray])
-                        setModalVisible(false)
-                      }}
+              renderItem={ ({ item }) => (
+                <TouchableOpacity
+                      onPress={() => onTagPress(item)}
                       style={styles.userListStyle}>
-                      <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
-                      <Text style={styles.userTextStyle}>{`${item.first_name} ${item.last_name}` || item.group_name}</Text>
-                      <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}` || item.group_name}</Text>
-                    </TouchableOpacity>)
-                }
-                return <View />
-              }}
+                  <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
+                  <Text style={styles.userTextStyle}>
+                    {item?.group_name ? item?.group_name : `${item.first_name} ${item.last_name}`}
+                  </Text>
+                  <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}`}</Text>
+                </TouchableOpacity>)}
               keyExtractor={ (item, index) => index.toString() }
           />
         </View>}
@@ -306,12 +344,6 @@ export default function WritePostScreen({ navigation, route }) {
                   } else {
                     setSelectImage(data);
                   }
-                  // setSelectImage(data);
-                  // uploadImage({ data: data[0] }).then((res) => {
-                  //   console.log('uploadImage :-', res);
-                  // }).catch((e) => {
-                  //   console.log('EEEE :-', e);
-                  // })
                 });
               } }
             />
@@ -319,7 +351,7 @@ export default function WritePostScreen({ navigation, route }) {
               source={ images.tagImage }
               imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
               onImagePress={() => {
-                navigation.navigate('UserTagSelectionListScreen');
+                navigation.navigate('UserTagSelectionListScreen', { comeFrom: 'WritePostScreen' });
               }}
             />
           </View>

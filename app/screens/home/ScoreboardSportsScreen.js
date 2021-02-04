@@ -94,7 +94,7 @@ export default function ScoreboardSportsScreen({
                       console.log('Error :-', e);
                     })
                   }
-                }, 100)
+                }, 1000)
               }}
             />
           ) }
