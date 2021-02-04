@@ -197,10 +197,11 @@ export default function RefereeReviewScreen({ navigation, route }) {
     setCancelApiRequest({ ...axiosTokenSource });
   };
 
-  const patchOrAddRefereeReview = () => {
+  const patchOrAddRefereeReview = (data) => {
     if (route?.params?.gameReviewData) {
       setLoading(true);
-      const teamReview = reviewsData
+      console.log('Edited Review Object reviewData::=>', data);
+      const teamReview = { ...data }
       delete teamReview.created_at;
       delete teamReview.entity_type;
       delete teamReview.entity_id;
@@ -213,7 +214,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
       const reviewObj = {
         ...teamReview,
       };
-      console.log('Edited Review Object::=>', reviewObj);
+      console.log('Edited Review Object::=>', teamReview);
       patchRefereeReview(
         route?.params?.userData?.user_id,
         gameData?.game_id,
@@ -252,7 +253,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
   }
 
   const uploadMedia = () => {
-    if (reviewsData?.attachments?.includes((e) => e.path)) {
+    if (reviewsData?.attachments?.length) {
       const UrlArray = [];
       const pathArray = [];
       const o = reviewsData?.attachments.map((e) => {
@@ -279,15 +280,13 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
           const obj = { ...reviewsData }
           obj.attachments = [...attachments, ...UrlArray]
-          obj.comment = route?.params?.searchText ?? ''
           setReviewsData({ ...obj })
-
           console.log('dataParams::=>', obj);
-          patchOrAddRefereeReview()
+          patchOrAddRefereeReview(obj)
         },
       );
     } else {
-      patchOrAddRefereeReview()
+      patchOrAddRefereeReview(reviewsData)
     }
   };
   return (

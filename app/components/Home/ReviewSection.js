@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -198,13 +198,17 @@ function ReviewSection({
   reviewsData,
   onAboutRatingPress,
   onReadMorePress,
+  reviewsFeed,
 }) {
   const [reviewAllData] = useState(review_all_data);
 
+  useEffect(() => {
+    console.log('Reviewdata::=>', JSON.parse(reviewsFeed?.reviews?.results?.[0]?.object)?.refereeReview);
+  }, [])
   return (
     <ScrollView>
       <EventItemRender
-        title={'Rating for teams (0)'}
+        title={`Rating for teams (${reviewsFeed?.reviews?.results?.length})`}
       >
         <FlatList
           data={reviewsData}
@@ -215,24 +219,24 @@ function ReviewSection({
           }} />}
           style={{ marginVertical: 15 }}
           renderItem={({ item: reviewItem }) => <ReviewRatingView
-          title={reviewItem.title}
-          rating={Number(reviewItem.rating)}
-          ratingCount={reviewItem.rating}
+          title={Object.keys(reviewItem)[0].charAt(0).toUpperCase() + Object.keys(reviewItem)[0].slice(1)}
+          rating={Number(Object.values(reviewItem)[0])}
+          ratingCount={Object.values(reviewItem)[0]}
           rateStarSize={20}
           titleStyle={{ fontFamily: fonts.RMedium }}
           containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
           />}
-          ListFooterComponent={() => <View style={{ marginTop: 6 }}>
-            <View style={styles.lastReviewItemSeprator} />
-            <ReviewRatingView
-              title={'Punctuality'}
-              rating={Number(4.0)}
-              ratingCount={'4.0'}
-              rateStarSize={20}
-              titleStyle={{ fontFamily: fonts.RMedium }}
-              containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
-            />
-          </View>}
+          // ListFooterComponent={() => <View style={{ marginTop: 6 }}>
+          //   <View style={styles.lastReviewItemSeprator} />
+          //   <ReviewRatingView
+          //     title={'Punctuality'}
+          //     rating={Number(4.0)}
+          //     ratingCount={'4.0'}
+          //     rateStarSize={20}
+          //     titleStyle={{ fontFamily: fonts.RMedium }}
+          //     containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
+          //   />
+          // </View>}
           keyExtractor={(item, index) => index.toString()}
         />
         <Text
@@ -295,12 +299,12 @@ function ReviewSection({
 }
 
 const styles = StyleSheet.create({
-  lastReviewItemSeprator: {
-    height: 1,
-    marginLeft: 12,
-    marginVertical: 5,
-    backgroundColor: colors.lightgrayColor,
-  },
+  // lastReviewItemSeprator: {
+  //   height: 1,
+  //   marginLeft: 12,
+  //   marginVertical: 5,
+  //   backgroundColor: colors.lightgrayColor,
+  // },
   detailRatingTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RRegular,

@@ -107,33 +107,6 @@ import TCInnerLoader from '../../components/TCInnerLoader';
 import TCThinDivider from '../../components/TCThinDivider';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
-const reviews_data = [
-  {
-    id: 0,
-    title: 'Fairness',
-    rating: '5.0',
-  },
-  {
-    id: 1,
-    title: 'Accuracy',
-    rating: '5.0',
-  },
-  {
-    id: 2,
-    title: 'Consistency',
-    rating: '4.0',
-  },
-  {
-    id: 3,
-    title: 'Smoothness',
-    rating: '4.0',
-  },
-  {
-    id: 4,
-    title: 'Communication',
-    rating: '4.0',
-  },
-];
 
 const { width } = Dimensions.get('window');
 
@@ -192,6 +165,9 @@ export default function HomeScreen({ navigation, route }) {
   const [currentTab, setCurrentTab] = useState(0);
   const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
 
+  const [refereeReviewData, setRefereeReviewData] = useState()
+  const [averageRefereeReview, setAverageRefereeReview] = useState()
+
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
@@ -232,7 +208,7 @@ export default function HomeScreen({ navigation, route }) {
   const [languagesName, setLanguagesName] = useState('');
   const [refereeReservData, setRefereeReserveData] = useState([]);
 
-  const [reviewsData] = useState(reviews_data);
+  // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
@@ -1099,8 +1075,21 @@ export default function HomeScreen({ navigation, route }) {
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
-      getRefereeReviewData(entity.uid || entity.auth.user_id, refereeInObject.sport_name, authContext).then((res) => {
-        console.log('Get Referee Review Data Res ::--', res);
+      getRefereeReviewData(route?.params?.uid || entity.uid, refereeInObject.sport_name, authContext).then((res) => {
+        console.log('Get Referee Review Data Res ::--', res.payload);
+
+        let array = Object.keys(res.payload.averageReviews[0].avg_review);
+        array = array.filter((e) => e !== 'total_avg');
+        const refereeProperty = []
+
+        for (let i = 0; i < array.length; i++) {
+          const obj = {
+            [array[i]]: res.payload.averageReviews[0].avg_review[array[i]],
+          }
+          refereeProperty.push(obj)
+        }
+        setAverageRefereeReview(refereeProperty)
+        setRefereeReviewData(res.payload)
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
     } else {
@@ -1360,7 +1349,8 @@ export default function HomeScreen({ navigation, route }) {
         <View>
 
           <ReviewSection
-                reviewsData={reviewsData}
+                reviewsData={averageRefereeReview}
+                reviewsFeed={refereeReviewData}
                 onReadMorePress={() => {
                   reviewerDetailModal();
                 }}
@@ -1498,7 +1488,7 @@ export default function HomeScreen({ navigation, route }) {
             onAction={onTeamAction}/>}
           <View style={styles.sepratorStyle}/>
           <TCScrollableProfileTabs
-            tabItem={['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
+            tabItem={isTeamHome ? ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
             onChangeTab={(ChangeTab) => {
               // scrollToTop.current.refs.ScrollView.scrollTo({ y: Platform.OS === 'ios' ? 280 : 320 })
               setCurrentTab(ChangeTab.i)
@@ -1582,6 +1572,7 @@ export default function HomeScreen({ navigation, route }) {
                     }}
                   />
                 </View>)}
+
                 {tabKey === 3 && (<View style={{ flex: 1 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                     <View style={{ padding: 5, height: 16, width: 16 }} />
@@ -1857,128 +1848,128 @@ export default function HomeScreen({ navigation, route }) {
                     </SafeAreaView>
                   </Modal>
                   <ActionSheet
-        ref={eventEditDeleteAction}
-        options={selectedEventItem !== null && selectedEventItem.game
-          ? refereeFound(selectedEventItem) ? ['Referee Reservation Details', 'Change Events Color', 'Cancel'] : ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
-          : ['Edit', 'Delete', 'Cancel']
-        }
-        cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
-        destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
-        onPress={(index) => {
-          if (index === 0) {
-            if (index === 0 && selectedEventItem.game) {
-              console.log('selected Event Item:', selectedEventItem);
-              if (refereeFound(selectedEventItem)) {
-                goToRefereReservationDetail(selectedEventItem)
-              } else {
-                console.log('Selected Event Item::', selectedEventItem);
-                goToChallengeDetail(selectedEventItem.game)
-              }
-            } else {
-              navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
-            }
-          }
-          if (index === 1) {
-            if (index === 1 && selectedEventItem.game) {
-              if (refereeFound(selectedEventItem)) {
-                Alert.alert(
-                  'Towns Cup',
-                  'Change Event color feature is pending',
-                  [{
-                    text: 'OK',
-                    onPress: async () => {},
-                  },
-                  ],
-                  { cancelable: false },
-                );
-              } else {
-                setloading(true);
+                    ref={eventEditDeleteAction}
+                    options={selectedEventItem !== null && selectedEventItem.game
+                      ? refereeFound(selectedEventItem) ? ['Referee Reservation Details', 'Change Events Color', 'Cancel'] : ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
+                      : ['Edit', 'Delete', 'Cancel']
+                    }
+                cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
+                destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
+                onPress={(index) => {
+                  if (index === 0) {
+                    if (index === 0 && selectedEventItem.game) {
+                      console.log('selected Event Item:', selectedEventItem);
+                      if (refereeFound(selectedEventItem)) {
+                        goToRefereReservationDetail(selectedEventItem)
+                      } else {
+                        console.log('Selected Event Item::', selectedEventItem);
+                        goToChallengeDetail(selectedEventItem.game)
+                      }
+                    } else {
+                      navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+                    }
+                  }
+                  if (index === 1) {
+                    if (index === 1 && selectedEventItem.game) {
+                      if (refereeFound(selectedEventItem)) {
+                        Alert.alert(
+                          'Towns Cup',
+                          'Change Event color feature is pending',
+                          [{
+                            text: 'OK',
+                            onPress: async () => {},
+                          },
+                          ],
+                          { cancelable: false },
+                        );
+                      } else {
+                        setloading(true);
 
-                const params = {
-                  caller_id: selectedEventItem.owner_id,
-                };
-                getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-                  console.log('Res :-', res);
+                        const params = {
+                          caller_id: selectedEventItem.owner_id,
+                        };
+                        getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                          console.log('Res :-', res);
 
-                  const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
-                  setRefereeReserveData(myReferee);
-                  if (res.payload.length > 0) {
-                    refereeReservModal();
-                    setloading(false);
-                  } else {
-                    setloading(false);
-                    setTimeout(() => {
+                          const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                          setRefereeReserveData(myReferee);
+                          if (res.payload.length > 0) {
+                            refereeReservModal();
+                            setloading(false);
+                          } else {
+                            setloading(false);
+                            setTimeout(() => {
+                              Alert.alert(
+                                'Towns Cup',
+                                'No referees invited or booked by you for this game',
+                                [{
+                                  text: 'OK',
+                                  onPress: async () => {},
+                                },
+                                ],
+                                { cancelable: false },
+                              );
+                            }, 0);
+                          }
+                        }).catch((error) => {
+                          console.log('Error :-', error);
+                        });
+                      }
+                    } else {
                       Alert.alert(
-                        'Towns Cup',
-                        'No referees invited or booked by you for this game',
+                        'Do you want to delete this event ?',
+                        '',
                         [{
-                          text: 'OK',
-                          onPress: async () => {},
+                          text: 'Delete',
+                          style: 'destructive',
+                          onPress: async () => {
+                            setloading(true);
+                            const entity = authContext.entity
+                            const uid = entity.uid || entity.auth.user_id;
+                            const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                            deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
+                              .then(() => getEvents(entityRole, uid, authContext))
+                              .then((response) => {
+                                setloading(false);
+                                setEventData(response.payload);
+                                setTimeTable(response.payload);
+                              })
+                              .catch((e) => {
+                                setloading(false);
+                                Alert.alert('', e.messages)
+                              });
+                          },
                         },
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
+                        },
+
                         ],
                         { cancelable: false },
                       );
-                    }, 0);
+                    }
                   }
-                }).catch((error) => {
-                  console.log('Error :-', error);
-                });
-              }
-            } else {
-              Alert.alert(
-                'Do you want to delete this event ?',
-                '',
-                [{
-                  text: 'Delete',
-                  style: 'destructive',
-                  onPress: async () => {
-                    setloading(true);
-                    const entity = authContext.entity
-                    const uid = entity.uid || entity.auth.user_id;
-                    const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                    deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
-                      .then(() => getEvents(entityRole, uid, authContext))
-                      .then((response) => {
-                        setloading(false);
-                        setEventData(response.payload);
-                        setTimeTable(response.payload);
-                      })
-                      .catch((e) => {
-                        setloading(false);
-                        Alert.alert('', e.messages)
-                      });
-                  },
-                },
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-
-                ],
-                { cancelable: false },
-              );
-            }
-          }
-          if (index === 2) {
-            if (index === 2 && selectedEventItem.game) {
-              if (refereeFound(selectedEventItem)) {
-                console.log('Pressed cancel button.');
-              } else {
-                Alert.alert(
-                  'Towns Cup',
-                  'Change Event color feature is pending',
-                  [{
-                    text: 'OK',
-                    onPress: async () => {},
-                  },
-                  ],
-                  { cancelable: false },
-                );
-              }
-            }
-          }
-          setSelectedEventItem(null);
-        }}
+                  if (index === 2) {
+                    if (index === 2 && selectedEventItem.game) {
+                      if (refereeFound(selectedEventItem)) {
+                        console.log('Pressed cancel button.');
+                      } else {
+                        Alert.alert(
+                          'Towns Cup',
+                          'Change Event color feature is pending',
+                          [{
+                            text: 'OK',
+                            onPress: async () => {},
+                          },
+                          ],
+                          { cancelable: false },
+                        );
+                      }
+                    }
+                  }
+                  setSelectedEventItem(null);
+                }}
       />
                   <CreateEventBtnModal
                     visible={createEventModal}
@@ -2027,6 +2018,16 @@ export default function HomeScreen({ navigation, route }) {
                   />}
                 </View>
                 )}
+                {tabKey === 5 && isTeamHome && (<View>
+
+                  {/* <TeamHomeReview
+                  navigation={navigation}
+                 // getSoccerGameReview={getSoccerGameReview}
+                  isAdmin={isAdmin}
+                  // gameData={gameData}
+                  /> */}
+                </View>)
+                }
               </View>
             )}/>
         </View>
@@ -2653,7 +2654,8 @@ export default function HomeScreen({ navigation, route }) {
                 />
               </View>
               <ReviewSection
-                reviewsData={reviewsData}
+                reviewsData={averageRefereeReview}
+                reviewsFeed={refereeReviewData}
                 onReadMorePress={() => {
                   reviewerDetailModal();
                 }}
@@ -2956,4 +2958,5 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
   },
+
 });
