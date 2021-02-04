@@ -20,12 +20,24 @@ function ReviewRatingView({
       <View style={styles.ratingCountViewStyle}>
         <AirbnbRating
           count={5}
+          fractions={1}
           showRating={false}
           defaultRating={rating}
           size={rateStarSize}
           isDisabled={true}
           selectedColor={'#f49c20'}
         />
+        {/* <Rating
+          ratingCount={5}
+          fractions={2}
+          readonly={true}
+          startingValue={rating}
+          imageSize={rateStarSize}
+          // selectedColor={'#f49c20'}
+          // ratingColor={'#f49c20'}
+          // ratingBackgroundColor={'green'}
+          style={{ ratingBackgroundColor: 'green' }}
+        /> */}
         <Text style={styles.ratingCountTextStyle}>{ratingCount}</Text>
       </View>
     </View>

@@ -11,8 +11,8 @@ import colors from '../Constants/Colors';
 
 const BASE_CHART_COLOR = colors.grayBackgroundColor;
 const BORDER_CHART_COLOR = colors.whiteColor;
-const TEAM1_CHART_COLOR = 'rgba(255, 138, 1, 0.8)';
-const TEAM2_CHART_COLOR = 'rgba(0, 122, 255,0.8)';
+const TEAM1_CHART_COLOR = 'rgba(0, 122, 255,0.8)';
+const TEAM2_CHART_COLOR = 'rgba(255, 138, 1, 0.8)';
 
 const CHART_COLOR = [
   BASE_CHART_COLOR,
@@ -79,6 +79,7 @@ const TCRadarChart = ({
   }, [radarChartData]);
 
   useEffect(() => {
+    console.log('Radar DAta:=>', radarChartData);
     setChartData(processData(radarChart));
     setMaximaData(getMaxima(radarChart));
   }, [radarChart])

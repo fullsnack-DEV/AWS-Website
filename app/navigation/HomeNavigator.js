@@ -150,6 +150,10 @@ import ReviewRefereeList from '../components/game/soccer/home/review/reviewForRe
 import RefereeReviewScreen from '../components/game/soccer/home/review/reviewForReferee/RefereeReviewScreen';
 import WriteReviewScreen from '../components/game/soccer/home/review/WriteReviewScreen';
 
+import RegisterScorekeeper from '../screens/account/registerScorekeeper/RegisterScorekeeper';
+import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/RegisterScorekeeperForm2';
+import RegisterScorekeeperSuccess from '../screens/account/registerScorekeeper/RegisterScorekeeperSuccess';
+
 const Stack = createStackNavigator();
 
 const HomeNavigator = () => (
@@ -1837,6 +1841,46 @@ const HomeNavigator = () => (
               },
             }}
         />
+    <Stack.Screen
+        name="RegisterScorekeeper"
+        component={ RegisterScorekeeper }
+        options={ {
+          title: 'Register as a scorekeeper',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            alignSelf: 'center',
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="RegisterScorekeeperForm2"
+        component={ RegisterScorekeeperForm2 }
+        options={ {
+          title: 'Register as a scorekeeper',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+          name="RegisterScorekeeperSuccess"
+          component={ RegisterScorekeeperSuccess }
+          options={ {
+            headerShown: false,
+          } }
+      />
     <Stack.Screen
             name="RefereeReviewScreen"
             component={RefereeReviewScreen}

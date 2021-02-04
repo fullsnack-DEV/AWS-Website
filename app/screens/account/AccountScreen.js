@@ -64,6 +64,7 @@ export default function AccountScreen({ navigation }) {
     { key: 'My Schedule' },
     { key: 'My Sports', member: [{ opetions: 'Add a sport' }] },
     { key: 'My Refereeing', member: [{ opetions: 'Register as a referee' }] },
+    { key: 'My Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
     { key: 'My Teams', member: [{ opetions: 'Create a Team' }] },
     { key: 'My Clubs', member: [{ opetions: 'Create a Club' }] },
     // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
@@ -344,6 +345,8 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
       navigation.navigate('RegisterPlayer');
+    } else if (section === 'Register as a scorekeeper') {
+      navigation.navigate('RegisterScorekeeper');
     } else if (section === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     } else if (section === 'Currency') {
@@ -366,6 +369,8 @@ export default function AccountScreen({ navigation }) {
   const handleOptions = async (options) => {
     if (options === 'Register as a referee') {
       navigation.navigate('RegisterReferee');
+    } else if (options === 'Register as a scorekeeper') {
+      navigation.navigate('RegisterScorekeeper');
     } else if (options === 'Add a sport') {
       navigation.navigate('RegisterPlayer');
     } else if (options === 'Create a Team') {
@@ -594,9 +599,33 @@ export default function AccountScreen({ navigation }) {
                         scrollEnabled={false}
                     />
                 )}
-                {authContext.entity.role === 'user' && (sectionId === 3 || sectionId === 4) && (
+                {authContext.entity.role === 'user' && sectionId === 3 && (
                   <FlatList
-                          data={sectionId === 3 ? teamList : clubList}
+                        data={authContext?.entity?.auth?.user?.scorekeeper_data}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                          <View
+                                style={styles.listContainer}
+                                onPress={() => {
+                                  // navigation.closeDrawer();
+                                  // alert('Referee Pressed');
+                                }}
+                            >
+                            <View style={styles.entityTextContainer}>
+                              <Image
+                                    source={images.myRefereeing}
+                                    style={styles.smallProfileImg}
+                                />
+                              <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+                            </View>
+                          </View>
+                        )}
+                        scrollEnabled={false}
+                    />
+                )}
+                {authContext.entity.role === 'user' && (sectionId === 4 || sectionId === 5) && (
+                  <FlatList
+                          data={sectionId === 4 ? teamList : clubList}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => (
                             <TouchableWithoutFeedback
@@ -685,6 +714,12 @@ export default function AccountScreen({ navigation }) {
                             style={styles.subMenuItem}
                         />
                   )}
+                  {rowItem.opetions === 'Register as a scorekeeper' && (
+                    <Image
+                            source={images.registerReferee}
+                            style={styles.subMenuItem}
+                        />
+                  )}
                   {rowItem.opetions === 'Create a Team' && (
                     <Image source={images.createTeam} style={styles.subMenuItem} />
                   )}
@@ -738,6 +773,9 @@ export default function AccountScreen({ navigation }) {
                   <Image source={images.mySports} style={styles.menuItem} />
                 )}
                 {section === 'My Refereeing' && (
+                  <Image source={images.myRefereeing} style={styles.menuItem} />
+                )}
+                {section === 'My Scorekeeping' && (
                   <Image source={images.myRefereeing} style={styles.menuItem} />
                 )}
                 {section === 'My Teams' && (

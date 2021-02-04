@@ -31,6 +31,7 @@ import {
   getGameStatsData,
   getRefereeReviewData,
   getScroreboardGameDetails,
+  getTeamReviews,
 } from '../../api/Games';
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
@@ -99,6 +100,7 @@ import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
 import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
+
 import RefereeReservationItem from '../../components/Schedule/RefereeReservationItem';
 import { getRefereeReservationDetails } from '../../api/Reservations';
 import TCSearchBox from '../../components/TCSearchBox';
@@ -167,6 +169,9 @@ export default function HomeScreen({ navigation, route }) {
 
   const [refereeReviewData, setRefereeReviewData] = useState()
   const [averageRefereeReview, setAverageRefereeReview] = useState()
+
+  const [teamReviewData, setTeamReviewData] = useState()
+  const [averageTeamReview, setAverageTeamReview] = useState()
 
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
@@ -419,6 +424,33 @@ export default function HomeScreen({ navigation, route }) {
     }
   }, [authContext.entity, navigation, isFocused]);
 
+  useEffect(() => {
+    console.log('Home type::=>', isTeamHome);
+    if (isTeamHome) {
+      getTeamReviews(route?.params?.uid || authContext.entity.uid, authContext).then((res) => {
+        console.log('Get team Review Data Res ::--', res?.payload);
+
+        if (res?.payload?.averageReviews?.[0]) {
+          let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
+          array = array.filter((e) => e !== 'total_avg');
+          const teamProperty = []
+
+          for (let i = 0; i < array.length; i++) {
+            const obj = {
+              [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
+            }
+            teamProperty.push(obj)
+          }
+          setAverageTeamReview(teamProperty)
+          setTeamReviewData(res?.payload)
+        } else {
+          setAverageTeamReview([])
+          setTeamReviewData()
+        }
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
+    }
+  }, [isTeamHome])
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
   }
@@ -1024,6 +1056,84 @@ export default function HomeScreen({ navigation, route }) {
 
   let language_string = '';
 
+  const scorekeeperInModal = (refereeInObject) => {
+    console.log('refereeInObject', refereeInObject)
+    // navigation.navigate('RegisterReferee');
+
+    if (refereeInObject) {
+      const entity = authContext.entity;
+      let languagesListName = [];
+      if (currentUserData) {
+        currentUserData.referee_data.map((refereeItem) => {
+          if (refereeItem.sport_name === refereeInObject.sport_name) {
+            setSelectRefereeData(refereeItem);
+            languagesListName = refereeItem.language;
+          }
+          return null;
+        })
+      }
+      if (languagesListName.length > 0) {
+        languagesListName.map((langItem, index) => {
+          language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+          return null;
+        })
+        setLanguagesName(language_string);
+      }
+      setRefereesInModalVisible(!refereesInModalVisible);
+      setSportName(refereeInObject.sport_name);
+
+      getRefereedMatch(entity.uid || entity.auth.user_id, refereeInObject.sport_name, authContext).then((res) => {
+        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        const recentMatch = [];
+        const upcomingMatch = [];
+        console.log('Recentest Match API Response::->', res);
+        if (res.payload.length > 0) {
+          res.payload.filter((event_item) => {
+            const eventStartDate = new Date(event_item.start_datetime * 1000)
+            if (eventStartDate > date) {
+              upcomingMatch.push(event_item);
+              setRefereeUpcomingMatch([...upcomingMatch]);
+            } else {
+              recentMatch.push(event_item);
+
+              setRefereeRecentMatch([...recentMatch]);
+            }
+            return null;
+          });
+        } else {
+          setRefereeUpcomingMatch([]);
+          setRefereeRecentMatch([]);
+        }
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
+
+      getRefereeReviewData(route?.params?.uid || entity.uid, refereeInObject.sport_name, authContext).then((res) => {
+        console.log('Get Referee Review Data Res ::--', res?.payload);
+
+        if (res?.payload?.averageReviews?.[0]) {
+          let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
+          array = array.filter((e) => e !== 'total_avg');
+          const refereeProperty = []
+
+          for (let i = 0; i < array.length; i++) {
+            const obj = {
+              [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
+            }
+            refereeProperty.push(obj)
+          }
+          setAverageRefereeReview(refereeProperty)
+          setRefereeReviewData(res?.payload)
+        } else {
+          setAverageRefereeReview([])
+          setRefereeReviewData()
+        }
+      })
+        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
+    } else {
+      navigation.navigate('RegisterScorekeeper');
+    }
+  };
+
   const refereesInModal = (refereeInObject) => {
     console.log('refereeInObject', refereeInObject)
     // navigation.navigate('RegisterReferee');
@@ -1076,20 +1186,25 @@ export default function HomeScreen({ navigation, route }) {
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
       getRefereeReviewData(route?.params?.uid || entity.uid, refereeInObject.sport_name, authContext).then((res) => {
-        console.log('Get Referee Review Data Res ::--', res.payload);
+        console.log('Get Referee Review Data Res ::--', res?.payload);
 
-        let array = Object.keys(res.payload.averageReviews[0].avg_review);
-        array = array.filter((e) => e !== 'total_avg');
-        const refereeProperty = []
+        if (res?.payload?.averageReviews?.[0]) {
+          let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
+          array = array.filter((e) => e !== 'total_avg');
+          const refereeProperty = []
 
-        for (let i = 0; i < array.length; i++) {
-          const obj = {
-            [array[i]]: res.payload.averageReviews[0].avg_review[array[i]],
+          for (let i = 0; i < array.length; i++) {
+            const obj = {
+              [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
+            }
+            refereeProperty.push(obj)
           }
-          refereeProperty.push(obj)
+          setAverageRefereeReview(refereeProperty)
+          setRefereeReviewData(res?.payload)
+        } else {
+          setAverageRefereeReview([])
+          setRefereeReviewData()
         }
-        setAverageRefereeReview(refereeProperty)
-        setRefereeReviewData(res.payload)
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
     } else {
@@ -1355,26 +1470,7 @@ export default function HomeScreen({ navigation, route }) {
                   reviewerDetailModal();
                 }}
               />
-          <ReviewRecentMatch
-                    eventColor={colors.yellowColor}
-                    startDate1={'Sep'}
-                    startDate2={'25'}
-                    title={'Soccer'}
-                    startTime={'7:00pm -'}
-                    endTime={'9:10pm'}
-                    location={'BC Stadium'}
-                    firstUserImage={images.team_ph}
-                    firstTeamText={'Vancouver Whitecaps'}
-                    secondUserImage={images.team_ph}
-                    secondTeamText={'Newyork City FC'}
-                    firstTeamPoint={3}
-                    secondTeamPoint={1}
-                  />
-          <RefereeReviewerList
-                    navigation={navigation}
-                    postData={postData}
-                    userID={userID}
-                  />
+
         </View>
       )}
 
@@ -1384,8 +1480,8 @@ export default function HomeScreen({ navigation, route }) {
     <View style={ styles.mainContainer }>
       <ActionSheet
         ref={addRoleActionSheet}
-        options={[strings.addPlaying, strings.addRefereeing, strings.cancel]}
-        cancelButtonIndex={2}
+        options={[strings.addPlaying, strings.addRefereeing, strings.addScorekeeping, strings.cancel]}
+        cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
             // Add Playing
@@ -1393,6 +1489,9 @@ export default function HomeScreen({ navigation, route }) {
           } else if (index === 1) {
             // Add Refereeing
             navigation.navigate('RegisterReferee');
+          } else if (index === 2) {
+            // Add Scorekeeper
+            navigation.navigate('RegisterScorekeeper');
           }
         }}
       />
@@ -1476,6 +1575,7 @@ export default function HomeScreen({ navigation, route }) {
                     loggedInEntity={authContext.entity}
                     onAddRolePress={onAddRolePress}
                     onRefereesInPress={refereesInModal}
+                    onScorekeeperInPress={scorekeeperInModal}
                     onPlayInPress={playInModel}
                     onAction={onUserAction}/>}
           {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
@@ -2020,9 +2120,18 @@ export default function HomeScreen({ navigation, route }) {
                 )}
                 {tabKey === 5 && isTeamHome && (<View>
 
+                  <ReviewSection
+                  isTeamReviewSection={true}
+                reviewsData={averageTeamReview}
+                reviewsFeed={teamReviewData}
+                onReadMorePress={() => {
+                  reviewerDetailModal();
+                }}
+              />
                   {/* <TeamHomeReview
                   navigation={navigation}
-                 // getSoccerGameReview={getSoccerGameReview}
+                  teamID={route?.params?.uid || authContext.entity.uid}
+                  getSoccerTeamReview={getTeamReviewById}
                   isAdmin={isAdmin}
                   // gameData={gameData}
                   /> */}

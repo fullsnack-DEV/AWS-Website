@@ -130,3 +130,10 @@ export const getUserFollowerFollowing = (userId, entity_type, type, authContext)
   url: `${Config.BASE_URL}/${entity_type}/${userId}/${type}`,
   authContext,
 })
+
+export const patchRegisterScorekeeperDetails = (params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}/users`,
+  data: params,
+  authContext,
+})

@@ -15,6 +15,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import EventItemRender from '../Schedule/EventItemRender';
+import TCRadarChart from '../TCRadarChart';
 import ReviewerItemView from './ReviewerItemView';
 import ReviewRatingView from './ReviewRatingView';
 import ReviewRecentMatch from './ReviewRecentMatch';
@@ -195,22 +196,39 @@ const review_all_data = [
 ];
 
 function ReviewSection({
+  isTeamReviewSection = false,
   reviewsData,
   onAboutRatingPress,
   onReadMorePress,
   reviewsFeed,
 }) {
   const [reviewAllData] = useState(review_all_data);
+  const [teamPropertyList, setTeamPropertyList] = useState([]);
+  const [teamKeyValueList, setTeamKeyValueList] = useState([]);
 
   useEffect(() => {
-    console.log('Reviewdata::=>', JSON.parse(reviewsFeed?.reviews?.results?.[0]?.object)?.refereeReview);
+    if (isTeamReviewSection) {
+      const teamProperty = []
+      let Obj = {}
+      for (let i = 0; i < reviewsData?.length; i++) {
+        Obj = { ...Obj }
+        Obj[Object.keys(reviewsData[i])[0]] = Object.values(reviewsData[i])[0]
+        teamProperty.push(Object.keys(reviewsData[i])[0])
+      }
+      setTeamPropertyList(teamProperty)
+      setTeamKeyValueList([{ ...Obj }])
+    }
   }, [])
   return (
     <ScrollView>
+      {isTeamReviewSection && <TCRadarChart
+                    radarChartAttributes={teamPropertyList}
+                    radarChartData = {teamKeyValueList}
+                  />}
       <EventItemRender
-        title={`Rating for teams (${reviewsFeed?.reviews?.results?.length})`}
+        title={`Rating for teams (${reviewsFeed?.reviews?.results?.length || 0})`}
       >
-        <FlatList
+        {reviewsData && <FlatList
           data={reviewsData}
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -219,10 +237,10 @@ function ReviewSection({
           }} />}
           style={{ marginVertical: 15 }}
           renderItem={({ item: reviewItem }) => <ReviewRatingView
-          title={Object.keys(reviewItem)[0].charAt(0).toUpperCase() + Object.keys(reviewItem)[0].slice(1)}
-          rating={Number(Object.values(reviewItem)[0])}
-          ratingCount={Object.values(reviewItem)[0]}
-          rateStarSize={20}
+          title={Object.keys(reviewItem)?.[0]?.charAt(0).toUpperCase() + Object.keys(reviewItem)?.[0]?.slice(1)}
+          rating={parseFloat(Object.values(reviewItem)?.[0]).toFixed(2)}
+          ratingCount={Object.values(reviewItem)?.[0]}
+          rateStarSize={18}
           titleStyle={{ fontFamily: fonts.RMedium }}
           containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
           />}
@@ -238,7 +256,7 @@ function ReviewSection({
           //   />
           // </View>}
           keyExtractor={(item, index) => index.toString()}
-        />
+        />}
         <Text
           style={styles.detailRatingTextStyle}
           onPress={onAboutRatingPress}
