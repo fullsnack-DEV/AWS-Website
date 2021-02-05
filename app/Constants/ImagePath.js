@@ -149,6 +149,7 @@ const images = {
   mySchedule: require('../assets/images/My_Schedule.png'),
   mySports: require('../assets/images/My_Sports.png'),
   myRefereeing: require('../assets/images/My_Refereeing.png'),
+  myScoreKeeping: require('../assets/images/scorekeeper_in.png'),
   myTeams: require('../assets/images/My_Teams.png'),
   myClubs: require('../assets/images/My_Clubs.png'),
   myLeagues: require('../assets/images/My_Leagues.png'),

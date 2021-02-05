@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, StyleSheet, FlatList,
 } from 'react-native';
@@ -13,16 +13,23 @@ import TCProfileButton from '../../TCProfileButton'
 import TCGradientButton from '../../TCGradientButton'
 import fonts from '../../../Constants/Fonts';
 import UserInfoAddRole from './UserInfoAddRole';
+import UserInfoScorekeeperInItem from './UserInfoScorekeeperInItem';
 
 export default function UserHomeTopSection({
-  userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onPlayInPress, onAddRolePress,
+  userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onScorekeeperInPress, onPlayInPress, onAddRolePress,
 }) {
+  useEffect(() => {
+    console.log('UserDetail::=>', userDetails);
+  }, [])
+
   let playin = userDetails?.games?.length > 0 ?? false
   let refereesIn = userDetails?.referee_data?.length > 0 ?? false
+  let scorekeeperIn = userDetails?.scorekeeper_data?.length > 0 ?? false
   const userRole = userDetails?.roles?.length > 0 ?? false
   if (userRole) {
     playin = false
     refereesIn = false
+    scorekeeperIn = false
   }
 
   const renderPlayIn = ({ item }) => {
@@ -56,7 +63,21 @@ export default function UserHomeTopSection({
         }}
       />)
   }
+  const renderScorekeeperIn = ({ item }) => {
+    if (item.item_type) {
+      return renderAddScorekeeperRole({ item })
+    }
 
+    return (<UserInfoScorekeeperInItem
+        title={item.sport_name}
+        thumbURL={images.myScoreKeeping}
+        onRefereesInPress={() => {
+          if (onScorekeeperInPress) {
+            onScorekeeperInPress(item)
+          }
+        }}
+      />)
+  }
   const renderAddRole = () => {
     if (isAdmin) {
       return (
@@ -90,7 +111,22 @@ export default function UserHomeTopSection({
     }
     return null;
   }
-
+  const renderAddScorekeeperRole = ({ item }) => {
+    if (isAdmin) {
+      return (
+        <UserInfoAddRole
+              title={item.sport_name}
+              thumbURL={images.addRole}
+              onPress={() => {
+                if (onScorekeeperInPress) {
+                  onScorekeeperInPress()
+                }
+              }}
+          />
+      );
+    }
+    return null;
+  }
   const renderAddPlayInRole = ({ item }) => {
     if (isAdmin) {
       return (
@@ -113,7 +149,7 @@ export default function UserHomeTopSection({
       return renderAddRole()
     }
 
-    if (item.sport_type) {
+    if (item.item_type) {
       return renderPlayIn({ item })
     }
 
@@ -207,6 +243,19 @@ export default function UserHomeTopSection({
             data={[...userDetails.referee_data, { sport_name: strings.addRefereeing, item_type: 'add_new' }]}
             horizontal
             renderItem={renderRefereesIn}
+            keyExtractor={(item, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </View>}
+      {scorekeeperIn && <View>
+        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+          <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.scorekeeperIn}/>
+          <FlatList
+            style={{ marginTop: 10, marginBottom: 0 }}
+            data={[...userDetails.scorekeeper_data, { sport_name: strings.addScorekeeping, item_type: 'add_new' }]}
+            horizontal
+            renderItem={renderScorekeeperIn}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />

@@ -100,6 +100,12 @@ const getGameReviews = (gameId, authContext) => makeAPIRequest({
   authContext,
 })
 
+const getTeamReviews = (teamId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/teams/${teamId}/reviews`,
+  authContext,
+})
+
 const getGameLineUp = (teamId, gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/roster?fetchNonRoster=true&reviewStatus=true`,
@@ -271,4 +277,5 @@ export {
   addRefereeReview,
   patchRefereeReview,
   getAllLineUp,
+  getTeamReviews,
 }

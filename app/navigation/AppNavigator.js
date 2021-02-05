@@ -86,6 +86,9 @@ const getTabBarVisibility = (route) => {
     || routeName === 'AlterRequestSent'
     || routeName === 'ReservationAcceptDeclineScreen'
     || routeName === 'AlterRequestAccept'
+    || routeName === 'RegisterScorekeeper'
+    || routeName === 'RegisterScorekeeperForm2'
+
   ) {
     return false;
   }

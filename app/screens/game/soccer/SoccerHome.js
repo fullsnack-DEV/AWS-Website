@@ -32,6 +32,7 @@ import { followUser, unfollowUser } from '../../../api/Users';
 
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
+// import Review from '../../../components/game/soccer/home/review/Review';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery']
 const SoccerHome = ({ navigation, route }) => {

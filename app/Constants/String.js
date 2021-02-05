@@ -360,6 +360,7 @@ const strings = {
   weightplaceholder: 'Enter Your Weight',
   playin: 'Plays In',
   refereesin: 'Referees In',
+  scorekeeperIn: 'Scorekeeper In',
   totalGames: 'game',
   message: 'Message',
   follow: 'Follow',
@@ -463,6 +464,7 @@ const strings = {
   addrole: 'Add Role',
   addPlaying: 'Add playing',
   addRefereeing: 'Add refereeing',
+  addScorekeeping: 'Add scorekeeping',
   cards: 'Cards',
   addcard: 'Add New Card...',
   endingin: ' ****',
@@ -540,5 +542,6 @@ const strings = {
   completeReviewFirst: 'Please, complete all ratings before moving to the next.',
   punchualityDesc: 'Did the the referee arrive at the match place on time?',
   chooseTeamFirst: 'Please choose any one team for review.',
+  descriptionScorekeeperPlaceholder: 'Describe yourself as a scorekeeper',
 };
 export default strings;
