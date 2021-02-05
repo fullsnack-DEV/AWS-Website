@@ -11,7 +11,7 @@ import images from '../../../../../Constants/ImagePath';
 import TCGameUserStats from '../../../../TCGameUserStats';
 import TCInnerLoader from '../../../../TCInnerLoader';
 import TCGameCard from '../../../../TCGameCard';
-import Rivalry from '../../../common/stats/Rivalry';
+import Rivalry from './Rivalry';
 import { soccerGamePlayStatsImage } from '../../../../../utils/gameUtils';
 
 const SECTIONS = ['Goal', 'Assist', 'Yellow Card', 'Red Card', 'Injured', 'Rivalry', 'Previous Game'];

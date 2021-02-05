@@ -15,12 +15,13 @@ export default class AppleStyleSwipeableRow extends Component {
   }
 
   renderRightAction = (text, color, x, progress) => {
+    const { style } = this.props;
     const trans = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [x, 0],
     });
     return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
+      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }], ...style }}>
         <RectButton
           style={[styles.rightAction, { backgroundColor: color }]}
           onPress={this.onPress}>

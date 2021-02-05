@@ -58,23 +58,24 @@ const uploadImage = (data, authContext, cancelToken) => {
         uri: image.path,
         type: image.mime,
         cancelToken,
-        // type: image.path.split('.')[1] || 'jpeg',
       }),
-      // FIXME: resize image here.
       uploadImageOnPreSignedUrls({
         url: preSignedUrls[1],
         uri: image.path,
         type: image.mime,
         cancelToken,
-        // type: image.path.split('.')[1] || 'jpeg',
       }),
-    ]).then(([fullImage, thumbnail]) => ({
-      fullImage,
-      thumbnail,
-      height: image.height,
-      width: image.width,
-      type: image?.mime?.split('/')?.[0],
-    }))
+    ]).then(([fullImage, thumbnail]) => {
+      console.log('FI: ', fullImage);
+      console.log('TH: ', thumbnail);
+      return ({
+        fullImage,
+        thumbnail,
+        height: image.height,
+        width: image.width,
+        type: image?.mime?.split('/')?.[0],
+      })
+    })
   });
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity, Image,
 } from 'react-native';
@@ -15,9 +15,11 @@ import images from '../../Constants/ImagePath'
 function SelectedImageList({
   data, onItemPress, itemNumber, totalItemNumber, isClose = true, isCounter = true,
 }) {
+  const [showExtraButtons, setShowExtraButtons] = useState(false);
   return (
     <View style={styles.uploadedImage}>
       {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'image' && <FastImage
+        onLoad={() => setShowExtraButtons(true)}
         style={styles.uploadedImage}
         source={{ uri: data.path || data.thumbnail }}
         resizeMode={FastImage.resizeMode.cover}
@@ -31,10 +33,10 @@ function SelectedImageList({
         paused={false}
         controls={true}
       />}
-      {isClose && <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
+      {isClose && showExtraButtons && <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
         <Image source={images.cancelImage} style={styles.cancelImageStyle} />
       </TouchableOpacity>}
-      {isCounter && <View style={styles.lengthViewStyle}>
+      {isCounter && showExtraButtons && <View style={styles.lengthViewStyle}>
         <Text style={styles.lengthTextStyle}>
           {itemNumber}
           {'/'}

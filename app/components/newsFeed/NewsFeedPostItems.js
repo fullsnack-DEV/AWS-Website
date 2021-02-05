@@ -106,7 +106,7 @@ function NewsFeedPostItems({
           }}>
           <Image
             style={styles.dotImageStyle}
-            source={images.horizontalThreeDot}
+            source={images.threeDotIcon}
             resizeMode={'contain'}
           />
         </TouchableOpacity>}

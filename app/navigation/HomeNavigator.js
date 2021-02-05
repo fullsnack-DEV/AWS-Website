@@ -153,6 +153,7 @@ import WriteReviewScreen from '../components/game/soccer/home/review/WriteReview
 import RegisterScorekeeper from '../screens/account/registerScorekeeper/RegisterScorekeeper';
 import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/RegisterScorekeeperForm2';
 import RegisterScorekeeperSuccess from '../screens/account/registerScorekeeper/RegisterScorekeeperSuccess';
+import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 
 const Stack = createStackNavigator();
 
@@ -251,6 +252,24 @@ const HomeNavigator = () => (
         },
       } }
     />
+
+    <Stack.Screen
+          name="EditPostScreen"
+          component={ EditPostScreen }
+          options={ {
+            title: 'Edit Post',
+            headerTintColor: colors.blackColor,
+            headerTitleStyle: {
+              fontWeight: '500',
+            },
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: colors.whiteColor,
+              borderBottomColor: colors.grayColor,
+              borderBottomWidth: 0.3,
+            },
+          } }
+      />
 
     <Stack.Screen
       name="UserTagSelectionListScreen"

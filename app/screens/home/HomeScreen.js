@@ -40,7 +40,7 @@ import {
   getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails,
 } from '../../api/Users';
 import {
-  getUserPosts, createPost, getNewsFeed, createReaction,
+  getUserPosts, createPost, createReaction, deletePost, updatePost,
 } from '../../api/NewsFeeds';
 import {
   getGroupDetails, getJoinedGroups, getTeamsOfClub, getGroupMembers,
@@ -286,9 +286,7 @@ export default function HomeScreen({ navigation, route }) {
   }, [selectedEventItem]);
 
   const getUserData = async (uid, admin) => {
-    const params = {
-      uid,
-    };
+    const params = { uid };
     setloading(true);
     const promises = [getUserDetails(uid, authContext),
       getJoinedGroups(uid, authContext), getUserPosts(params, authContext),
@@ -323,7 +321,7 @@ export default function HomeScreen({ navigation, route }) {
         userDetails.joined_clubs = res2.payload.clubs;
       }
       if (res3) {
-        setPostData(res3.payload.results);
+        setPostData([...res3.payload.results]);
       }
       if (res4) {
         setGalleryData(res4.payload);
@@ -368,7 +366,7 @@ export default function HomeScreen({ navigation, route }) {
         groupDetails.history = history_Data
         groupDetails.joined_members = res2.payload;
         if (res3) {
-          setPostData(res3.payload.results);
+          setPostData([...res3.payload.results]);
         }
         if (res4) {
           setGalleryData(res4.payload);
@@ -415,7 +413,6 @@ export default function HomeScreen({ navigation, route }) {
       }
 
       getData(uid, role, admin).catch((error) => {
-        console.log('error', error)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 0.3)
@@ -457,9 +454,9 @@ export default function HomeScreen({ navigation, route }) {
 
   const createPostAfterUpload = (dataParams) => {
     createPost(dataParams, authContext)
-      .then(() => getNewsFeed(authContext))
+      .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
       .then((response) => {
-        setPostData(response.payload.results)
+        setPostData([...response.payload.results])
         setProgressBar(false);
         setDoneUploadCount(0);
         setTotalUploadCount(0);
@@ -476,10 +473,79 @@ export default function HomeScreen({ navigation, route }) {
       })
   }
 
-  const callthis = (data, postDesc) => {
+  const updatePostAfterUpload = (dataParams) => {
+    updatePost(dataParams, authContext)
+      .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
+      .then((response) => {
+        setProgressBar(false);
+        setPostData([...response.payload.results])
+        setDoneUploadCount(0);
+        setTotalUploadCount(0);
+        getGallery(userID, authContext).then((res) => {
+          setGalleryData(res.payload);
+        });
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
+
+  const editPostDoneCall = (data, postDesc, selectEditItem, tagData) => {
+    let attachmentsData = [];
+    const alreadyUrlDone = [];
+    const createUrlData = [];
+
+    if (postDesc.trim().length > 0 && data?.length === 0) {
+      const dataParams = {
+        activity_id: selectEditItem.id,
+        text: postDesc,
+        taggedData: tagData ?? [],
+      };
+      updatePostAfterUpload(dataParams);
+    } else if (data) {
+      if (data.length > 0) {
+        data.map((dataItem) => {
+          if (dataItem.thumbnail) {
+            alreadyUrlDone.push(dataItem);
+          } else {
+            createUrlData.push(dataItem);
+          }
+          return null;
+        })
+      }
+      if (createUrlData?.length > 0) {
+        setTotalUploadCount(createUrlData.length || 1);
+        setProgressBar(true);
+      }
+
+      const imageArray = createUrlData.map((dataItem) => (dataItem))
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
+        const attachments = responses.map((item) => ({
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }))
+        attachmentsData = [...alreadyUrlDone, ...attachments];
+        const dataParams = {
+          activity_id: selectEditItem.id,
+          text: postDesc,
+          attachments: attachmentsData,
+          taggedData: tagData ?? [],
+        };
+        updatePostAfterUpload(dataParams)
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+  }
+
+  const callthis = (data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
+        taggedData: tagsOfEntity ?? [],
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
@@ -497,8 +563,9 @@ export default function HomeScreen({ navigation, route }) {
         const dataParams = {
           text: postDesc && postDesc,
           attachments,
+          taggedData: tagsOfEntity ?? [],
         };
-        createPostAfterUpload(dataParams);
+        createPostAfterUpload(dataParams)
       })
     }
   }
@@ -1606,22 +1673,43 @@ export default function HomeScreen({ navigation, route }) {
                   />}
                   <View style={styles.sepratorView} />
                   <NewsFeedList
-                    navigation={navigation}
-                    postData={postData}
-                    onLikePress={(item) => {
-                      const bodyParams = {
-                        reaction_type: 'clap',
-                        activity_id: item.id,
-                      };
-                      createReaction(bodyParams, authContext)
-                        .then(() => getNewsFeed(authContext))
-                        .then((response) => {
-                          setPostData([...response.payload.results]);
-                        })
-                        .catch((e) => {
-                          Alert.alert('', e.messages)
-                        });
-                    }}
+                      onDeletePost={(item) => {
+                        setloading(true);
+                        const params = {
+                          activity_id: item.id,
+                        };
+                        if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
+                          params.entity_type = authContext?.entity?.obj?.entity_type;
+                          params.entity_id = authContext?.entity?.uid;
+                        }
+                        deletePost(params, authContext)
+                          .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
+                          .then((response) => {
+                            setloading(false);
+                            setPostData([...response.payload.results]);
+                          })
+                          .catch((e) => {
+                            setloading(false);
+                            Alert.alert('', e.messages)
+                          });
+                      }}
+                      navigation={navigation}
+                      postData={postData}
+                      onEditPressDone={editPostDoneCall}
+                      onLikePress={(item) => {
+                        const bodyParams = {
+                          reaction_type: 'clap',
+                          activity_id: item.id,
+                        };
+                        createReaction(bodyParams, authContext)
+                          .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
+                          .then((response) => {
+                            setPostData([...response.payload.results]);
+                          })
+                          .catch((e) => {
+                            Alert.alert('', e.messages)
+                          });
+                      }}
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >

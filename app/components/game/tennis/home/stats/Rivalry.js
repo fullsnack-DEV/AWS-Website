@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gradiantIndicator: {
+    marginTop: hp(0.3),
     height: 7,
     width: 7,
     borderRadius: 4,
