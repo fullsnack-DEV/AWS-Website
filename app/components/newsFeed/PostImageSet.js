@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Text, Image, TouchableWithoutFeedback,
+  StyleSheet, View, Text, TouchableWithoutFeedback,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
@@ -72,7 +72,7 @@ function PostImageSet({
       <TouchableWithoutFeedback onPress={() => {
         toggleModal();
       }}>
-        <Image
+        <FastImage
           style={ [styles.uploadedImage, { position: 'absolute' }] }
           source={ {
             uri: uploadImageURL,

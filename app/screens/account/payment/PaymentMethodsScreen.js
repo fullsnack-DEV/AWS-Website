@@ -13,7 +13,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../auth/context'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
-import { paymentMethods, attachPaymentMethod, deletePaymentMethod } from '../../../api/Users';
+import {
+  paymentMethods, attachPaymentMethod, deletePaymentMethod, updateUserProfile,
+} from '../../../api/Users';
 import strings from '../../../Constants/String'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
@@ -26,7 +28,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
-  const [selectedCard, setSelectedCard] = useState()
+  const [selectedCard, setSelectedCard] = useState();
   const [cards, setCards] = useState([])
 
   useEffect(() => {
@@ -49,6 +51,8 @@ export default function PaymentMethodsScreen({ navigation, route }) {
     setloading(true)
     paymentMethods(authContext)
       .then((response) => {
+        const selectCard = response?.payload?.filter((item) => item?.id === authContext?.entity?.obj?.source)
+        if (selectCard?.length > 0) setSelectedCard(selectCard[0]);
         setCards([...response.payload])
         setloading(false)
         if (response.payload.length === 0) {
@@ -65,9 +69,27 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   }
 
   const onCardSelected = async (item) => {
-    navigation.navigate(route?.params?.comeFrom, {
-      paymentMethod: item,
-    });
+    setloading(true);
+    const body = { source: item?.id }
+    updateUserProfile(body, authContext).then(async (response) => {
+      const currentEntity = {
+        ...authContext.entity, obj: response.payload,
+      }
+      authContext.setEntity({ ...currentEntity })
+      await Utility.setStorage('authContextEntity', { ...currentEntity })
+      if (route?.params?.comeFrom !== 'HomeScreen') {
+        navigation.navigate(route?.params?.comeFrom, {
+          paymentMethod: item,
+        });
+      } else {
+        navigation.goBack();
+      }
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e);
+      }, 0.7);
+    })
   }
 
   const onDeleteCard = (item) => {
@@ -101,7 +123,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   };
 
   const renderCard = ({ item }) => (
-    <AppleStyleSwipeableRow onPress={() => onDeleteCard(item)} color={colors.redDelColor} image={images.deleteIcon}>
+    <AppleStyleSwipeableRow style={{ height: 70 }} onPress={() => onDeleteCard(item)} color={colors.redDelColor} image={images.deleteIcon}>
 
       {selectedCard && selectedCard?.id === item.id ? <LinearGradient
           colors={ [colors.orangeEventColor, colors.assistTextColor] }
@@ -284,9 +306,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     borderRadius: 10,
-    // flexDirection: 'row',
     elevation: 2,
-
     height: 70,
     backgroundColor: colors.whiteColor,
     justifyContent: 'center',

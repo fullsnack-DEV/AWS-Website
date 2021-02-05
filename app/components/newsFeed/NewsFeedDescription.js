@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
 import Hyperlink from 'react-native-hyperlink'
 import _ from 'lodash';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import AuthContext from '../../auth/context';
 
 function NewsFeedDescription({
   descriptions,
@@ -17,6 +18,7 @@ function NewsFeedDescription({
   tagData = [],
   navigation,
 }) {
+  const authContext = useContext(AuthContext);
   const [readMore, setReadMore] = useState();
   const [taggedData, setTaggedData] = useState([]);
 
@@ -52,12 +54,14 @@ function NewsFeedDescription({
     const fetchedEntity = tagData?.[entityIndex];
     const entity_text = ['player', 'user']?.includes(fetchedEntity?.entity_type) ? 'user_id' : 'group_id'
     if (fetchedEntity?.[entity_text]) {
-      navigation.push('HomeScreen', {
-        uid: fetchedEntity[entity_text],
-        role: ['user', 'player']?.includes(fetchedEntity.entity_type) ? 'user' : fetchedEntity.entity_type,
-        backButtonVisible: true,
-        menuBtnVisible: false,
-      })
+      if (fetchedEntity[entity_text] !== authContext?.entity?.uid) {
+        navigation.push('HomeScreen', {
+          uid: fetchedEntity[entity_text],
+          role: ['user', 'player']?.includes(fetchedEntity.entity_type) ? 'user' : fetchedEntity.entity_type,
+          backButtonVisible: true,
+          menuBtnVisible: false,
+        })
+      }
     }
   }
 

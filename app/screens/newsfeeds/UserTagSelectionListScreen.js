@@ -220,7 +220,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
         />
       )}
       <TCScrollableProfileTabs
-        tabItem={['People', 'Groups']}
+        tabItem={['People', 'Groups', 'Games']}
         onChangeTab={(ChangeTab) => {
           setCurrentTab(ChangeTab.i)
           setSearchText('')

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity, Image,
 } from 'react-native';
@@ -15,11 +15,12 @@ function EditSelectedImages({
   data, onItemPress, itemNumber, totalItemNumber,
 }) {
   const videoPlayerRef = useRef();
-  console.log('DATA: ', data);
+  const [showExtraButtons, setShowExtraButtons] = useState(false);
   return (
     <View style={ styles.uploadedImage }>
       {data?.type === 'image' || data?.mime?.includes('image') ? (
         <FastImage
+              onLoad={() => setShowExtraButtons(true)}
               style={ styles.uploadedImage }
               source={ { uri: data.thumbnail ? data.thumbnail : data.path } }
               resizeMode={ FastImage.resizeMode.cover }
@@ -59,16 +60,16 @@ function EditSelectedImages({
         </View>
       )}
 
-      <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
+      {showExtraButtons && <TouchableOpacity style={ styles.cancelBtnView } onPress={ onItemPress }>
         <Image source={ images.cancelImage } style={ styles.cancelImageStyle } />
-      </TouchableOpacity>
-      <View style={ styles.lengthViewStyle }>
+      </TouchableOpacity>}
+      {showExtraButtons && <View style={ styles.lengthViewStyle }>
         <Text style={ styles.lengthTextStyle }>
           {itemNumber}
           {'/'}
           {totalItemNumber}
         </Text>
-      </View>
+      </View>}
     </View>
   );
 }

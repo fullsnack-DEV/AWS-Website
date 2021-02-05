@@ -249,7 +249,7 @@ export default function WriteReviewScreen({ navigation, route }) {
           <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
             <ImageButton
               source={ images.pickImage }
-              imageStyle={ { width: 19, height: 19, marginHorizontal: wp('2%') } }
+              imageStyle={ { width: 30, height: 30, marginHorizontal: wp('2%') } }
               onImagePress={ () => {
                 ImagePicker.openPicker({
                   width: 300,
@@ -284,7 +284,7 @@ export default function WriteReviewScreen({ navigation, route }) {
             />
             <ImageButton
               source={ images.tagImage }
-              imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
+              imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
               onImagePress={() => {
                 navigation.navigate('UserTagSelectionListScreen');
               }}

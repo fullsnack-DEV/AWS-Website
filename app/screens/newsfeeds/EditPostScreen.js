@@ -13,7 +13,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
-  Alert, Keyboard,
+  Alert,
+  // Keyboard,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -41,8 +42,8 @@ const EditPostScreen = ({
 }) => {
   const { params: { data, onPressDone } } = route;
   const textInputFocus = useRef();
-  let keyboardDidShowListener = null;
-  let keyboardDidHideListener = null;
+  // const keyboardDidShowListener = null;
+  // const keyboardDidHideListener = null;
   let postText = '';
   let postAttachments = [];
   if (data && data.object) {
@@ -65,11 +66,11 @@ const EditPostScreen = ({
   const [searchGroups, setSearchGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  // const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   useEffect(() => {
-    keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
-    keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+    // keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
+    // keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
 
     getUserList(authContext)
       .then((response) => {
@@ -88,10 +89,10 @@ const EditPostScreen = ({
       .catch((e) => {
         Alert.alert('', e.messages)
       });
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    }
+    // return () => {
+    //   keyboardDidShowListener.remove();
+    //   keyboardDidHideListener.remove();
+    // }
   }, [])
 
   const onTagPress = (item) => {
@@ -213,7 +214,7 @@ const EditPostScreen = ({
       <ScrollView
           bounces={ false }
           style={{ flex: 1 }}
-          onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
+          // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
       >
         <TextInput
             ref={textInputFocus}
@@ -308,7 +309,7 @@ const EditPostScreen = ({
           <View style={styles.onlyMeViewStyle}>
             <ImageButton
               source={images.lock}
-              imageStyle={{ width: 18, height: 21 }}
+              imageStyle={ { width: 30, height: 30 } }
               onImagePress={() => {}}
             />
             <Text style={styles.onlyMeTextStyle}>Only me</Text>
@@ -316,7 +317,7 @@ const EditPostScreen = ({
           <View style={[styles.onlyMeViewStyle, { justifyContent: 'flex-end' }]}>
             <ImageButton
               source={images.pickImage}
-              imageStyle={{ width: 19, height: 19, marginHorizontal: wp('2%') }}
+              imageStyle={{ width: 30, height: 30, marginHorizontal: wp('2%') }}
               onImagePress={() => {
                 ImagePicker.openPicker({
                   width: 300,
@@ -345,7 +346,7 @@ const EditPostScreen = ({
             />
             <ImageButton
               source={images.tagImage}
-              imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
+              imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
               onImagePress={() => {
                 navigation.navigate('UserTagSelectionListScreen', { comeFrom: 'EditPostScreen' });
               }}

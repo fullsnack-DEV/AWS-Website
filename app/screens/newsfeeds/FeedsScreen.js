@@ -192,35 +192,6 @@ export default function FeedsScreen({ navigation }) {
         console.log(error);
       })
     }
-
-    //   const imageArray = createUrlData.map((dataItem) => (dataItem))
-    //   uploadImages(imageArray, authContext, progressStatus).then((responses) => {
-    //     const attachments = responses.map((item) => ({
-    //       type: item.type,
-    //       url: item.fullImage,
-    //       thumbnail: item.thumbnail,
-    //       media_height: item.height,
-    //       media_width: item.width,
-    //     }))
-    //     attachmentsData = [...alreadyUrlDone, ...attachments];
-    //     const params = {
-    //       activity_id: selectEditItem.id,
-    //       text: postDesc,
-    //       attachments: attachmentsData,
-    //     };
-    //     updatePost(params, authContext)
-    //       .then(() => getNewsFeed(authContext))
-    //       .then((response) => {
-    //         setProgressBar(false);
-    //         setPostData([...response.payload.results])
-    //         setDoneUploadCount(0);
-    //         setTotalUploadCount(0);
-    //       })
-    //       .catch((e) => {
-    //         Alert.alert('', e.messages)
-    //       });
-    //   })
-    // }
   }
 
   const onCancelImageUpload = () => {

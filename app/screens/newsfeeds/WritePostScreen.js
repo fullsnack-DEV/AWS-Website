@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import {
   View,
-  Keyboard,
+  // Keyboard,
   Text,
   Image,
   TouchableOpacity,
@@ -37,8 +37,9 @@ import { getSearchData } from '../../utils';
 
 export default function WritePostScreen({ navigation, route }) {
   const textInputFocus = useRef();
-  let keyboardDidShowListener = null;
-  let keyboardDidHideListener = null;
+  // let currentTextInputIndex = 0;
+  // const keyboardDidShowListener = null;
+  // const keyboardDidHideListener = null;
   const authContext = useContext(AuthContext);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData || []);
@@ -52,7 +53,7 @@ export default function WritePostScreen({ navigation, route }) {
   const [letModalVisible, setLetModalVisible] = useState(true);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  // const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const { params: { postData, onPressDone } } = route;
   let userImage = '';
   let userName = '';
@@ -66,14 +67,14 @@ export default function WritePostScreen({ navigation, route }) {
     userName = postData.group_name;
   }
 
-  useEffect(() => {
-    keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
-    keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    }
-  }, [])
+  // useEffect(() => {
+  //   keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
+  //   keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+  //   return () => {
+  //     keyboardDidShowListener.remove();
+  //     keyboardDidHideListener.remove();
+  //   }
+  // }, [])
   useEffect(() => {
     let tagName = '';
     const tagsArray = [];
@@ -217,13 +218,16 @@ export default function WritePostScreen({ navigation, route }) {
       <ScrollView
           bounces={ false }
           style={{ flex: 1 }}
-          onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
+          // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
       >
         <TextInput
             ref={textInputFocus}
             onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)}
             placeholder="What's going on?"
             placeholderTextColor={ colors.userPostTimeColor }
+            onSelectionChange={() => {
+              // currentTextInputIndex = e?.nativeEvent?.selection?.end;
+            }}
             onKeyPress={({ nativeEvent }) => {
               if (nativeEvent.key === 'Backspace') {
                 setLetModalVisible(false);
@@ -311,16 +315,15 @@ export default function WritePostScreen({ navigation, route }) {
           <View style={ styles.onlyMeViewStyle }>
             <ImageButton
               source={ images.lock }
-              imageStyle={ { width: 18, height: 21 } }
-              onImagePress={ () => {
-              } }
+              imageStyle={ { width: 30, height: 30 } }
+              onImagePress={ () => {}}
             />
             <Text style={ styles.onlyMeTextStyle }>Only me</Text>
           </View>
           <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
             <ImageButton
               source={ images.pickImage }
-              imageStyle={ { width: 19, height: 19, marginHorizontal: wp('2%') } }
+              imageStyle={ { width: 30, height: 30, marginHorizontal: wp('2%') } }
               onImagePress={ () => {
                 ImagePicker.openPicker({
                   width: 300,
@@ -349,7 +352,7 @@ export default function WritePostScreen({ navigation, route }) {
             />
             <ImageButton
               source={ images.tagImage }
-              imageStyle={{ width: 22, height: 22, marginLeft: wp('2%') }}
+              imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
               onImagePress={() => {
                 navigation.navigate('UserTagSelectionListScreen', { comeFrom: 'WritePostScreen' });
               }}

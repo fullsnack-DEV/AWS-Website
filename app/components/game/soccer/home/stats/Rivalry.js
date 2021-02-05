@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { heightPercentageToDP as hp } from '../../../../utils';
-import colors from '../../../../Constants/Colors';
-import TCWinningRangeChart from '../../../TCWinningRangeChart';
-import TCTeamVS from '../../../TCTeamVS';
+import { heightPercentageToDP as hp } from '../../../../../utils';
+import colors from '../../../../../Constants/Colors';
+import TCWinningRangeChart from '../../../../TCWinningRangeChart';
+import TCTeamVS from '../../../../TCTeamVS';
 
 const Rivalry = ({ gameData, rivalryData }) => {
   const GradiantIndicator = ({ gradiantColor, style }) => (<LinearGradient
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   gradiantIndicator: {
+    marginTop: hp(0.3),
     height: 14,
     width: 14,
     borderRadius: 15,

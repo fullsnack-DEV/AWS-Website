@@ -37,11 +37,15 @@ export default function NewsFeedList({
   }, []);
 
   const onProfilePress = (item) => {
-    navigation.navigate('HomeScreen', {
-      uid: item.actor.id,
-      backButtonVisible: true,
-      role: item.actor.data.entity_type === 'player' ? 'user' : item.actor.data.entity_type,
-    })
+    if (item?.actor?.id) {
+      if (item?.actor?.id !== authContext?.entity?.uid) {
+        navigation.navigate('HomeScreen', {
+          uid: item.actor.id,
+          backButtonVisible: true,
+          role: item?.actor?.data?.entity_type === 'player' ? 'user' : item?.actor?.data?.entity_type,
+        })
+      }
+    }
   }
 
   return (

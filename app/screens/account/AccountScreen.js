@@ -383,7 +383,7 @@ export default function AccountScreen({ navigation }) {
     } else if (options === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     } else if (options === 'Payment Method') {
-      navigation.navigate('PaymentMethodsScreen');
+      navigation.navigate('PaymentMethodsScreen', { comeFrom: 'HomeScreen' });
     } else if (options === 'Payout Method') {
       navigation.navigate('PayoutMethodScreen');
     }

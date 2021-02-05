@@ -189,7 +189,7 @@ function AppNavigator({ navigation }) {
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
-            onTabPress();
+            if (focused) onTabPress();
             return (
               <Image
                       source={ focused ? images.tab_home_selected : images.tab_home }
@@ -205,7 +205,7 @@ function AppNavigator({ navigation }) {
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
-            onTabPress();
+            if (focused) onTabPress();
             return (
               <Image
                       source={
@@ -224,7 +224,7 @@ function AppNavigator({ navigation }) {
           ...(unreadNotificationCount > 0 && { tabBarBadge: unreadNotificationCount }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
-            onTabPress();
+            if (focused) onTabPress();
             return (
               <Image
                       source={
@@ -243,7 +243,7 @@ function AppNavigator({ navigation }) {
           ...(unreadCount > 0 && { tabBarBadge: unreadCount }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
-            onTabPress();
+            if (focused) onTabPress();
             return (
               <Image
               source={ focused ? images.tab_message_selected : images.tab_message }
@@ -261,7 +261,7 @@ function AppNavigator({ navigation }) {
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => {
-              onTabPress();
+              if (focused) onTabPress();
               return (
                 <Image
                         source={

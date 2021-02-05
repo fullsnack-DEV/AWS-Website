@@ -19,19 +19,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      options={{
-        // title: 'Account',
-        // headerTintColor: colors.blackColor,
-        // headerTitleStyle: {
-        //   fontWeight: '500',
-        // },
-        // headerStyle: {
-        //   backgroundColor: colors.whiteColor,
-        //   borderBottomColor: colors.grayColor,
-        //   borderBottomWidth: 0.3,
-        // },
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
 
   </Stack.Navigator>
