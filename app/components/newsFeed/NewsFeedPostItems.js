@@ -202,10 +202,14 @@ function NewsFeedPostItems({
           imageStyle={styles.previewImageStyle}
         />}
 
-        <NewsFeedDescription descriptions={descriptions} character={attachedImages?.length > 0 ? 140 : 480} />
+        <NewsFeedDescription
+            descriptions={descriptions}
+            character={attachedImages?.length > 0 ? 140 : 480}
+            tagData={JSON.parse(item?.object)?.taggedData ?? []}
+            navigation={navigation}
+        />
 
         <View style={{ marginTop: 10, marginLeft: 10 }}></View>
-
         <View style={styles.commentShareLikeView}>
           <View
             style={{

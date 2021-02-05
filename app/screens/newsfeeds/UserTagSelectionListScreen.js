@@ -26,7 +26,7 @@ import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 
-export default function UserTagSelectionListScreen({ navigation }) {
+export default function UserTagSelectionListScreen({ navigation, route }) {
   const [searchText, setSearchText] = useState('');
   const [currentTab, setCurrentTab] = useState(0);
   const [userData, setUserData] = useState([]);
@@ -194,7 +194,9 @@ export default function UserTagSelectionListScreen({ navigation }) {
         }
         rightComponent={
           <TouchableOpacity style={{ padding: 2 }} onPress={() => {
-            navigation.navigate('WritePostScreen', { selectedTagList: selectedUsers });
+            if (route?.params?.comeFrom) {
+              navigation.navigate(route?.params?.comeFrom, { selectedTagList: selectedUsers });
+            }
           }}>
             <Text style={styles.doneTextStyle}>Done</Text>
           </TouchableOpacity>

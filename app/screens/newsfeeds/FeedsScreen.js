@@ -130,11 +130,32 @@ export default function FeedsScreen({ navigation }) {
       });
   }
 
-  const editPostDoneCall = (data, postDesc, selectEditItem) => {
+  const updatePostAfterUpload = (dataParams) => {
+    updatePost(dataParams, authContext)
+      .then(() => getNewsFeed(authContext))
+      .then((response) => {
+        setProgressBar(false);
+        setPostData([...response.payload.results])
+        setDoneUploadCount(0);
+        setTotalUploadCount(0);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }
+  const editPostDoneCall = (data, postDesc, selectEditItem, tagData) => {
     let attachmentsData = [];
     const alreadyUrlDone = [];
     const createUrlData = [];
-    if (data) {
+
+    if (postDesc.trim().length > 0 && data?.length === 0) {
+      const dataParams = {
+        activity_id: selectEditItem.id,
+        text: postDesc,
+        taggedData: tagData ?? [],
+      };
+      updatePostAfterUpload(dataParams);
+    } else if (data) {
       if (data.length > 0) {
         data.map((dataItem) => {
           if (dataItem.thumbnail) {
@@ -151,7 +172,7 @@ export default function FeedsScreen({ navigation }) {
       }
 
       const imageArray = createUrlData.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
+      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
         const attachments = responses.map((item) => ({
           type: item.type,
           url: item.fullImage,
@@ -160,24 +181,46 @@ export default function FeedsScreen({ navigation }) {
           media_width: item.width,
         }))
         attachmentsData = [...alreadyUrlDone, ...attachments];
-        const params = {
+        const dataParams = {
           activity_id: selectEditItem.id,
           text: postDesc,
           attachments: attachmentsData,
+          taggedData: tagData ?? [],
         };
-        updatePost(params, authContext)
-          .then(() => getNewsFeed(authContext))
-          .then((response) => {
-            setProgressBar(false);
-            setPostData([...response.payload.results])
-            setDoneUploadCount(0);
-            setTotalUploadCount(0);
-          })
-          .catch((e) => {
-            Alert.alert('', e.messages)
-          });
+        updatePostAfterUpload(dataParams)
+      }).catch((error) => {
+        console.log(error);
       })
     }
+
+    //   const imageArray = createUrlData.map((dataItem) => (dataItem))
+    //   uploadImages(imageArray, authContext, progressStatus).then((responses) => {
+    //     const attachments = responses.map((item) => ({
+    //       type: item.type,
+    //       url: item.fullImage,
+    //       thumbnail: item.thumbnail,
+    //       media_height: item.height,
+    //       media_width: item.width,
+    //     }))
+    //     attachmentsData = [...alreadyUrlDone, ...attachments];
+    //     const params = {
+    //       activity_id: selectEditItem.id,
+    //       text: postDesc,
+    //       attachments: attachmentsData,
+    //     };
+    //     updatePost(params, authContext)
+    //       .then(() => getNewsFeed(authContext))
+    //       .then((response) => {
+    //         setProgressBar(false);
+    //         setPostData([...response.payload.results])
+    //         setDoneUploadCount(0);
+    //         setTotalUploadCount(0);
+    //       })
+    //       .catch((e) => {
+    //         Alert.alert('', e.messages)
+    //       });
+    //   })
+    // }
   }
 
   const onCancelImageUpload = () => {
@@ -222,7 +265,6 @@ export default function FeedsScreen({ navigation }) {
           setIsMoreLoading(false);
           setIsNextDataLoading(true);
           setFooterLoading(false)
-          setPostData([]);
           setPullRefresh(true);
           getNewsFeed(authContext)
             .then((response) => {
