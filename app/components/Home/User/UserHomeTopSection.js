@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, { useEffect } from 'react';
 import {
   View, StyleSheet, FlatList,
@@ -14,6 +15,7 @@ import TCGradientButton from '../../TCGradientButton'
 import fonts from '../../../Constants/Fonts';
 import UserInfoAddRole from './UserInfoAddRole';
 import UserInfoScorekeeperInItem from './UserInfoScorekeeperInItem';
+import EntityStatus from '../../../Constants/GeneralConstants';
 
 export default function UserHomeTopSection({
   userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onScorekeeperInPress, onPlayInPress, onAddRolePress,
@@ -22,14 +24,37 @@ export default function UserHomeTopSection({
     console.log('UserDetail::=>', userDetails);
   }, [])
 
-  let playin = userDetails?.games?.length > 0 ?? false
-  let refereesIn = userDetails?.referee_data?.length > 0 ?? false
-  let scorekeeperIn = userDetails?.scorekeeper_data?.length > 0 ?? false
-  const userRole = userDetails?.roles?.length > 0 ?? false
-  if (userRole) {
-    playin = false
-    refereesIn = false
-    scorekeeperIn = false
+  const isSectionEnable = () => {
+    const gameLength = userDetails?.games?.length ?? 0
+    const refereeLength = userDetails?.referee_data?.length ?? 0
+    const scorekeeperLength = userDetails?.scorekeeper_data?.length ?? 0
+    const totalLength = gameLength + refereeLength + scorekeeperLength
+    console.log('Total length ::=> ', totalLength);
+    if (totalLength > 5) {
+      return true
+    }
+
+    return false
+  }
+
+  const oneLineSection = () => {
+    const games = userDetails?.games?.map((obj) => {
+      const o = { ...obj };
+      o.type = EntityStatus.playin;
+      return o;
+    }) ?? []
+
+    const referee = userDetails?.referee_data?.map((obj) => {
+      const o = { ...obj };
+      o.type = EntityStatus.refereein;
+      return o;
+    }) ?? []
+    const scorekeeper = userDetails?.scorekeeper_data?.map((obj) => {
+      const o = { ...obj };
+      o.type = EntityStatus.scorekeeperin;
+      return o;
+    }) ?? []
+    return [...games, ...referee, ...scorekeeper, { sport_name: strings.addrole, item_type: EntityStatus.addNew }]
   }
 
   const renderPlayIn = ({ item }) => {
@@ -145,15 +170,19 @@ export default function UserHomeTopSection({
   }
 
   const renderUserRole = ({ item }) => {
-    if (item.item_type) {
+    if (item?.item_type === EntityStatus.addNew) {
       return renderAddRole()
     }
 
-    if (item.item_type) {
+    if (item?.type === EntityStatus.playin) {
       return renderPlayIn({ item })
     }
-
-    return renderRefereesIn({ item })
+    if (item?.type === EntityStatus.refereein) {
+      return renderRefereesIn({ item })
+    }
+    if (item?.type === EntityStatus.scorekeeperin) {
+      return renderScorekeeperIn({ item })
+    }
   }
 
   // check member status
@@ -222,58 +251,56 @@ export default function UserHomeTopSection({
         onPressProfile = {() => { onAction('message') }}/>
       </View> }
       {/* Play in section */}
-      {playin && <View>
-        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-          <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
-          <FlatList
+      { isSectionEnable() ? <View>
+        {userDetails?.games && userDetails?.games?.length > 0 && <View>
+          <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+            <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
+            <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: 'add_new' }]}
+            data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: EntityStatus.addNew }]}
             horizontal
             renderItem={renderPlayIn}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />
-        </View>
-      </View>}
-      {refereesIn && <View>
-        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-          <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin}/>
-          <FlatList
+          </View>
+        </View>}
+        {userDetails?.referee_data && userDetails?.referee_data?.length > 0 && <View>
+          <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+            <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin}/>
+            <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.referee_data, { sport_name: strings.addRefereeing, item_type: 'add_new' }]}
+            data={[...userDetails.referee_data, { sport_name: strings.addRefereeing, item_type: EntityStatus.addNew }]}
             horizontal
             renderItem={renderRefereesIn}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />
-        </View>
-      </View>}
-      {scorekeeperIn && <View>
-        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-          <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.scorekeeperIn}/>
-          <FlatList
+          </View>
+        </View>}
+        {userDetails?.scorekeeper_data && userDetails?.scorekeeper_data?.length > 0 && <View>
+          <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+            <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.scorekeeperIn}/>
+            <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.scorekeeper_data, { sport_name: strings.addScorekeeping, item_type: 'add_new' }]}
+            data={[...userDetails.scorekeeper_data, { sport_name: strings.addScorekeeping, item_type: EntityStatus.addNew }]}
             horizontal
             renderItem={renderScorekeeperIn}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />
-        </View>
-      </View>}
-
-      <View>
-        <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-          <FlatList
+          </View>
+        </View>}
+      </View> : <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+        <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={userDetails?.roles ? [...userDetails?.roles, { sport_name: strings.addrole, item_type: 'add_new' }] : [{ sport_name: strings.addrole, item_type: 'add_new' }]}
+            data={oneLineSection()}
             horizontal
             renderItem={renderUserRole}
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
           />
-        </View>
-      </View>
+      </View>}
     </View>
   );
 }

@@ -33,6 +33,11 @@ const getRefereedMatch = async (userID, sport, authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}/games/users/${userID}?sport=${sport}&role=referee`,
   authContext,
 })
+const getScorekeeperMatch = async (userID, sport, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/games/users/${userID}?sport=${sport}&role=scorekeeper`,
+  authContext,
+})
 
 const deleteGameRecord = (gameId, recordId, authContext) => makeAPIRequest({
   method: 'delete',
@@ -213,6 +218,11 @@ const getRefereeReviewData = async (userID, sport, authContext) => makeAPIReques
   url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=referee`,
   authContext,
 })
+const getScorekeeperReviewData = async (userID, sport, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/users/${userID}/reviews?sport=${sport}&role=scorekeeper`,
+  authContext,
+})
 
 const getGameSlots = async (entity_type, entity_id, queryString, headers, authContext) => makeAPIRequest({
   method: 'get',
@@ -278,4 +288,6 @@ export {
   patchRefereeReview,
   getAllLineUp,
   getTeamReviews,
+  getScorekeeperReviewData,
+  getScorekeeperMatch,
 }

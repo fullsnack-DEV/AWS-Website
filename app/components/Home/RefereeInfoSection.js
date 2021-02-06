@@ -384,7 +384,7 @@ function RefereeInfoSection({
     setLanguageList([...languageList]);
   };
 
-  const onTopEditSavePress = (certiData = null) => {
+  const onTopEditSavePress = (certiData) => {
     const langNameItem = {
       language_name: '',
     };
@@ -778,7 +778,7 @@ function RefereeInfoSection({
               </View>
             }
             rightComponent={
-              <TouchableOpacity onPress={onTopEditSavePress}>
+              <TouchableOpacity onPress={() => onTopEditSavePress(certificatesData)}>
                 <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
               </TouchableOpacity>
             }
