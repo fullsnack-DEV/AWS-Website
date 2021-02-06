@@ -16,6 +16,13 @@ export const patchRegisterRefereeDetails = (params, authContext) => makeAPIReque
   authContext,
 })
 
+export const patchRegisterScorekeeperDetails = (params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}/users`,
+  data: params,
+  authContext,
+})
+
 export const updateUserProfile = (params, authContext) => makeAPIRequest({
   method: 'patch',
   url: `${Config.BASE_URL}/users/`,
@@ -128,12 +135,5 @@ export const deletePaymentMethod = (paymentMehtodId, authContext) => makeAPIRequ
 export const getUserFollowerFollowing = (userId, entity_type, type, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}/${entity_type}/${userId}/${type}`,
-  authContext,
-})
-
-export const patchRegisterScorekeeperDetails = (params, authContext) => makeAPIRequest({
-  method: 'patch',
-  url: `${Config.BASE_URL}/users`,
-  data: params,
   authContext,
 })

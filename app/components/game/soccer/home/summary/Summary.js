@@ -159,47 +159,54 @@ const Summary = ({
       .then((response) => {
         console.log('AllRoster Data:=>', response.payload);
         console.log('Game Data:=>', gameData);
+        const homeTeamPlayers = response.payload.home_team.roster.concat(response.payload.home_team.non_roster)
+
+        const awayTeamPlayers = response.payload.away_team.roster.concat(response.payload.away_team.non_roster)
         const homeTeamRoasters = []
         const awayTeamRoasters = []
-        if (response?.payload?.home_team?.roster?.length > 0) {
-          response.payload.home_team.roster.map((item) => homeTeamRoasters.push(item?.member_id))
+        if (homeTeamPlayers.length > 0) {
+          homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id))
         }
-        if (response?.payload?.away_team?.roster?.length > 0) {
-          response.payload.away_team.roster.map((item) => awayTeamRoasters.push(item?.member_id))
+        if (awayTeamPlayers.length > 0) {
+          awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id))
         }
         if ([...homeTeamRoasters, ...awayTeamRoasters].includes(authContext.entity.uid)) setLineUpUser(true);
 
-        for (let i = 0; i < response?.payload?.home_team?.roster?.length; i++) {
+        for (let i = 0; i < homeTeamPlayers.length; i++) {
           if (
-            response?.payload?.home_team?.roster?.[i]?.member_id
+            homeTeamPlayers?.[i]?.member_id
             === authContext.entity.uid
           ) {
             found = true;
             teamName = gameData?.away_team?.group_name;
             console.log('Team name Data:=>', teamName);
             if (gameData?.home_review_id || gameData?.away_review_id) {
-              setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+              // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+              setLeaveReviewText(strings.editReviewText);
             }
             else {
-              setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+              // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+              setLeaveReviewText(strings.leaveReviewText);
             }
             setplayerFrom('home')
             break;
           }
         }
         if (!found) {
-          for (let i = 0; i < response?.payload?.away_team?.roster?.length; i++) {
+          for (let i = 0; i < awayTeamPlayers.length; i++) {
             if (
-              response?.payload?.away_team?.roster?.[i]?.member_id
+              awayTeamPlayers?.[i]?.member_id
               === authContext.entity.uid
             ) {
               found = true;
               teamName = gameData?.home_team?.group_name;
               console.log('Team name Data:=>', teamName);
               if (gameData?.away_review_id || gameData?.home_review_id) {
-                setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+                // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
+                setLeaveReviewText(strings.editReviewText);
               } else {
-                setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+                // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
+                setLeaveReviewText(strings.leaveReviewText);
               }
               setplayerFrom('away')
               break;
@@ -210,7 +217,7 @@ const Summary = ({
               found = true;
               // teamName = gameData?.home_team?.group_name
               // console.log('Team name Data:=>', teamName);
-              setLeaveReviewText('LEAVE OR EDIT YOUR REVIEW');
+              setLeaveReviewText(strings.leaveOrEditReviewText);
               break;
             }
           }

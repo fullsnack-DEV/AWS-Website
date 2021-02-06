@@ -32,12 +32,14 @@ import {
   getRefereeReviewData,
   getScroreboardGameDetails,
   getTeamReviews,
+  getScorekeeperReviewData,
+  getScorekeeperMatch,
 } from '../../api/Games';
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import WritePost from '../../components/newsFeed/WritePost';
 import {
-  getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails,
+  getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails, patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import {
   getUserPosts, createPost, createReaction, deletePost, updatePost,
@@ -107,8 +109,10 @@ import TCSearchBox from '../../components/TCSearchBox';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import TCThinDivider from '../../components/TCThinDivider';
+import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSection';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
+const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
 
 const { width } = Dimensions.get('window');
 
@@ -149,10 +153,14 @@ export default function HomeScreen({ navigation, route }) {
   const [isTeamHome, setIsTeamHome] = useState(false)
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false)
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
+  const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(false)
+
   const [infoModalVisible, setInfoModalVisible] = useState(false)
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false)
+  const [scorekeeperInfoModalVisible, setScorekeeperInfoModalVisible] = useState(false)
   const [scoreboardModalVisible, setScoreboardModalVisible] = useState(false)
   const [refereeMatchModalVisible, setRefereeMatchModalVisible] = useState(false)
+  const [scorekeeperMatchModalVisible, setScorekeeperMatchModalVisible] = useState(false)
   const [statsModalVisible, setStatsModalVisible] = useState(false)
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false)
   const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(false)
@@ -166,9 +174,13 @@ export default function HomeScreen({ navigation, route }) {
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
+  const [currentScorekeeperTab, setScorekeeperCurrentTab] = useState(0);
 
   const [refereeReviewData, setRefereeReviewData] = useState()
   const [averageRefereeReview, setAverageRefereeReview] = useState()
+
+  const [scorekeeperReviewData, setScorekeeperReviewData] = useState()
+  const [averageScorekeeperReview, setAverageScorekeeperReview] = useState()
 
   const [teamReviewData, setTeamReviewData] = useState()
   const [averageTeamReview, setAverageTeamReview] = useState()
@@ -181,6 +193,11 @@ export default function HomeScreen({ navigation, route }) {
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
   const [upcomingMatchData, setUpcomingMatchData] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
+
+  const [scorekeeperRecentMatch, setScorekeeperRecentMatch] = useState([]);
+
+  const [scorekeeperUpcomingMatch, setScorekeeperUpcomingMatch] = useState([]);
+
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [gamesChartData, setGamesChartData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [gameStatsData, setGameStatsData] = useState({
@@ -209,6 +226,7 @@ export default function HomeScreen({ navigation, route }) {
   const [locationDetail, setLocationDetail] = useState(null);
   const [sportName, setSportName] = useState('');
   const [selectRefereeData, setSelectRefereeData] = useState(null);
+  const [selectScorekeeperData, setSelectScorekeeperData] = useState(null);
   const [selectPlayerData, setSelectPlayerData] = useState(null);
   const [languagesName, setLanguagesName] = useState('');
   const [refereeReservData, setRefereeReserveData] = useState([]);
@@ -1123,18 +1141,18 @@ export default function HomeScreen({ navigation, route }) {
 
   let language_string = '';
 
-  const scorekeeperInModal = (refereeInObject) => {
-    console.log('refereeInObject', refereeInObject)
+  const scorekeeperInModal = (scorekeeperInObject) => {
+    console.log('ScorekeeperInObject', scorekeeperInObject)
     // navigation.navigate('RegisterReferee');
 
-    if (refereeInObject) {
+    if (scorekeeperInObject) {
       const entity = authContext.entity;
       let languagesListName = [];
       if (currentUserData) {
-        currentUserData.referee_data.map((refereeItem) => {
-          if (refereeItem.sport_name === refereeInObject.sport_name) {
-            setSelectRefereeData(refereeItem);
-            languagesListName = refereeItem.language;
+        currentUserData.scorekeeper_data.map((scorekeeperItem) => {
+          if (scorekeeperItem.sport_name === scorekeeperInObject.sport_name) {
+            setSelectScorekeeperData(scorekeeperItem);
+            languagesListName = scorekeeperItem.language;
           }
           return null;
         })
@@ -1146,10 +1164,10 @@ export default function HomeScreen({ navigation, route }) {
         })
         setLanguagesName(language_string);
       }
-      setRefereesInModalVisible(!refereesInModalVisible);
-      setSportName(refereeInObject.sport_name);
+      setScorekeeperInModalVisible(!scorekeeperInModalVisible);
+      setSportName(scorekeeperInObject.sport_name);
 
-      getRefereedMatch(entity.uid || entity.auth.user_id, refereeInObject.sport_name, authContext).then((res) => {
+      getScorekeeperMatch(entity.uid || entity.auth.user_id, scorekeeperInObject.sport_name, authContext).then((res) => {
         const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         const recentMatch = [];
         const upcomingMatch = [];
@@ -1159,40 +1177,40 @@ export default function HomeScreen({ navigation, route }) {
             const eventStartDate = new Date(event_item.start_datetime * 1000)
             if (eventStartDate > date) {
               upcomingMatch.push(event_item);
-              setRefereeUpcomingMatch([...upcomingMatch]);
+              setScorekeeperUpcomingMatch([...upcomingMatch]);
             } else {
               recentMatch.push(event_item);
 
-              setRefereeRecentMatch([...recentMatch]);
+              setScorekeeperRecentMatch([...recentMatch]);
             }
             return null;
           });
         } else {
-          setRefereeUpcomingMatch([]);
-          setRefereeRecentMatch([]);
+          setScorekeeperUpcomingMatch([]);
+          setScorekeeperRecentMatch([]);
         }
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
 
-      getRefereeReviewData(route?.params?.uid || entity.uid, refereeInObject.sport_name, authContext).then((res) => {
+      getScorekeeperReviewData(route?.params?.uid || entity.uid, scorekeeperInObject.sport_name, authContext).then((res) => {
         console.log('Get Referee Review Data Res ::--', res?.payload);
 
         if (res?.payload?.averageReviews?.[0]) {
           let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
           array = array.filter((e) => e !== 'total_avg');
-          const refereeProperty = []
+          const scorekeeperProperty = []
 
           for (let i = 0; i < array.length; i++) {
             const obj = {
               [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
             }
-            refereeProperty.push(obj)
+            scorekeeperProperty.push(obj)
           }
-          setAverageRefereeReview(refereeProperty)
-          setRefereeReviewData(res?.payload)
+          setAverageScorekeeperReview(scorekeeperProperty)
+          setScorekeeperReviewData(res?.payload)
         } else {
           setAverageRefereeReview([])
-          setRefereeReviewData()
+          setScorekeeperReviewData()
         }
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
@@ -1475,6 +1493,98 @@ export default function HomeScreen({ navigation, route }) {
                 if (refereeItem.sport_name === sportName) {
                   setSelectRefereeData(refereeItem);
                   languagesListName = refereeItem.language;
+                }
+                return null;
+              })
+            }
+            if (languagesListName.length > 0) {
+              languagesListName.map((langItem, index) => {
+                language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+                return null;
+              })
+              setLanguagesName(language_string);
+            }
+          }).catch((error) => {
+            console.log('error coming', error)
+            Alert.alert(strings.alertmessagetitle, error.message)
+          })
+        }}
+      />
+      )}
+
+      {/* Recent Match */}
+      {tabKey === 1 && <View>
+        <ScheduleTabView
+                firstTabTitle={`Completed (${refereeRecentMatch.length})`}
+                secondTabTitle={`Upcoming (${refereeUpcomingMatch.length})`}
+                indexCounter={scoreboardTabNumber}
+                eventPrivacyContianer={{ width: wp('70%') }}
+                onFirstTabPress={() => setScroboardTabNumber(0)}
+                onSecondTabPress={() => setScroboardTabNumber(1)}
+              />
+        {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
+                sportsData={refereeRecentMatch}
+                showEventNumbers={false}
+                showAssistReferee={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setRefereeMatchModalVisible(false);
+                  setRefereesInModalVisible(false);
+                }}
+              />}
+        {scoreboardTabNumber === 1 && <UpcomingMatchScreen
+                sportsData={refereeUpcomingMatch}
+                showEventNumbers={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScoreboardModalVisible(false);
+                  setPlaysInModalVisible(false);
+                }}
+              />}
+      </View>
+      }
+
+      {/* Reviews */}
+      {tabKey === 2 && (
+        <View>
+
+          <ReviewSection
+                reviewsData={averageRefereeReview}
+                reviewsFeed={refereeReviewData}
+                onReadMorePress={() => {
+                  reviewerDetailModal();
+                }}
+              />
+
+        </View>
+      )}
+
+    </View>
+  )
+  const renderScorekeeperTabContainer = (tabKey) => (
+    <View style={{ flex: 1 }}>
+
+      {/* Referee Info */}
+      {tabKey === 0 && (
+        <ScorekeeperInfoSection
+        data={currentUserData}
+        selectScorekeeperData={selectScorekeeperData}
+        searchLocation={searchLocation}
+        languagesName={languagesName}
+        onSavePress={(params) => {
+          let languagesListName = [];
+          patchRegisterScorekeeperDetails(params, authContext).then((res) => {
+            const changedata = currentUserData;
+            changedata.scorekeeper_data = res.payload.scorekeeper_data;
+            changedata.gender = res.payload.gender;
+            changedata.birthday = res.payload.birthday;
+            setCurrentUserData(changedata);
+
+            if (res.payload.scorekeeper_data) {
+              res.payload.scorekeeper_data.map((scorekeeperItem) => {
+                if (scorekeeperItem.sport_name === sportName) {
+                  setSelectRefereeData(scorekeeperItem);
+                  languagesListName = scorekeeperItem.language;
                 }
                 return null;
               })
@@ -2232,7 +2342,7 @@ export default function HomeScreen({ navigation, route }) {
           isVisible={playsInModalVisible}
           backdropColor="black"
           style={{
-            margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+            margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
           }}
           hasBackdrop
           onBackdropPress={() => setPlaysInModalVisible(false)}
@@ -2399,7 +2509,7 @@ export default function HomeScreen({ navigation, route }) {
             isVisible={infoModalVisible}
             backdropColor="black"
             style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
             }}
             hasBackdrop
             onBackdropPress={() => setInfoModalVisible(false)}
@@ -2477,7 +2587,7 @@ export default function HomeScreen({ navigation, route }) {
             isVisible={scoreboardModalVisible}
             backdropColor="black"
             style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
             }}
             hasBackdrop
             onBackdropPress={() => setScoreboardModalVisible(false)}
@@ -2542,7 +2652,7 @@ export default function HomeScreen({ navigation, route }) {
             isVisible={statsModalVisible}
             backdropColor="black"
             style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
             }}
             hasBackdrop
             onBackdropPress={() => setStatsModalVisible(false)}
@@ -2618,7 +2728,7 @@ export default function HomeScreen({ navigation, route }) {
           isVisible={refereesInModalVisible}
           backdropColor="black"
           style={{
-            margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+            margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
           }}
           hasBackdrop
           onBackdropPress={() => setRefereesInModalVisible(false)}
@@ -2673,7 +2783,7 @@ export default function HomeScreen({ navigation, route }) {
             isVisible={refereeInfoModalVisible}
             backdropColor="black"
             style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
             }}
             hasBackdrop
             onBackdropPress={() => setRefereeInfoModalVisible(false)}
@@ -2748,7 +2858,7 @@ export default function HomeScreen({ navigation, route }) {
             isVisible={refereeMatchModalVisible}
             backdropColor="black"
             style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
             }}
             hasBackdrop
             onBackdropPress={() => setRefereeMatchModalVisible(false)}
@@ -2816,7 +2926,7 @@ export default function HomeScreen({ navigation, route }) {
             isVisible={reviewsModalVisible}
             backdropColor="black"
             style={{
-              margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
             }}
             hasBackdrop
             onBackdropPress={() => setReviewsModalVisible(false)}
@@ -2863,7 +2973,7 @@ export default function HomeScreen({ navigation, route }) {
               isVisible={reviewerDetailModalVisible}
               backdropColor="black"
               style={{
-                margin: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)',
+                margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
               }}
               hasBackdrop
               onBackdropPress={() => setReviewerDetailModalVisible(false)}
@@ -2923,6 +3033,319 @@ export default function HomeScreen({ navigation, route }) {
             </Modal>
           </Modal>
         </Modal>
+        {/* Scorekeeper model */}
+        <Modal
+          isVisible={scorekeeperInModalVisible}
+          backdropColor="black"
+          style={{
+            margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+          }}
+          hasBackdrop
+          onBackdropPress={() => setScorekeeperInModalVisible(false)}
+          backdropOpacity={0}
+        >
+          <View style={styles.modalContainerViewStyle}>
+            {/* <Image style={[styles.background, { transform: [{ rotate: '180deg' }], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }]} source={images.orangeLayer} /> */}
+            <SafeAreaView style={{ flex: 1 }}>
+
+              <Header
+                mainContainerStyle={styles.headerMainContainerStyle}
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{`Scorekeeper in ${sportName || ''}`}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => {
+                    setScorekeeperInModalVisible(false)
+                    setScorekeeperCurrentTab(0)
+                  }} style={{ padding: 10 }}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
+              <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
+              <RefereesProfileSection
+                  bookRefereeButtonVisible={authContext?.entity?.uid !== currentUserData?.user_id}
+                profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
+                userName={fullName}
+                location={location}
+                feesCount={(selectScorekeeperData && selectScorekeeperData.fee) ? selectScorekeeperData.fee : 0}
+                onBookRefereePress={() => {
+                  setScorekeeperInModalVisible(false);
+                  navigation.navigate('RefereeBookingDateAndTime', { userData: currentUserData, showMatches: true, navigationName: 'HomeScreen' });
+                }}
+              />
+
+              <TCScrollableProfileTabs
+                    tabItem={TAB_ITEMS_SCOREKEEPER}
+                    onChangeTab={(ChangeTab) => setScorekeeperCurrentTab(ChangeTab.i)}
+                    currentTab={currentScorekeeperTab}
+                    renderTabContain={(tabKey) => renderScorekeeperTabContainer(tabKey)}
+                    tabVerticalScroll={false}
+                />
+
+            </SafeAreaView>
+          </View>
+
+          <Modal
+            isVisible={scorekeeperInfoModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setScorekeeperInfoModalVisible(false)}
+            backdropOpacity={0}
+          >
+            <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+              <LinearGradient
+                  colors={[colors.orangeColor, colors.yellowColor]}
+                  end={{ x: 0.0, y: 0.25 }}
+                  start={{ x: 1, y: 0.5 }}
+                  style={styles.gradiantHeaderViewStyle}>
+              </LinearGradient>
+              <Header
+                mainContainerStyle={styles.headerMainContainerStyle}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setScorekeeperInfoModalVisible(false)}>
+                    <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Info'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setScorekeeperInfoModalVisible(false)}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
+              <ScorekeeperInfoSection
+                data={currentUserData}
+                selectScorekeeperData={selectScorekeeperData}
+                searchLocation={searchLocation}
+                languagesName={languagesName}
+                onSavePress={(params) => {
+                  let languagesListName = [];
+                  patchRegisterScorekeeperDetails(params, authContext).then((res) => {
+                    const changedata = currentUserData;
+                    changedata.scorekeeper_data = res.payload.scorekeeper_data;
+                    changedata.gender = res.payload.gender;
+                    changedata.birthday = res.payload.birthday;
+                    setCurrentUserData(changedata);
+
+                    if (res.payload.scorekeeper_data) {
+                      res.payload.scorekeeper_data.map((scorekeeperItem) => {
+                        if (scorekeeperItem.sport_name === sportName) {
+                          setSelectScorekeeperData(scorekeeperItem);
+                          languagesListName = scorekeeperItem.language;
+                        }
+                        return null;
+                      })
+                    }
+                    if (languagesListName.length > 0) {
+                      languagesListName.map((langItem, index) => {
+                        language_string = language_string + (index ? ', ' : '') + langItem.language_name;
+                        return null;
+                      })
+                      setLanguagesName(language_string);
+                    }
+                  }).catch((error) => {
+                    console.log('error coming', error)
+                    Alert.alert(strings.alertmessagetitle, error.message)
+                  })
+                }}
+              />
+            </SafeAreaView>
+          </Modal>
+
+          <Modal
+            isVisible={scorekeeperMatchModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setScorekeeperMatchModalVisible(false)}
+            backdropOpacity={0}
+          >
+            <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+              <View>
+                <LinearGradient
+                  colors={[colors.orangeColor, colors.yellowColor]}
+                  end={{ x: 0.0, y: 0.25 }}
+                  start={{ x: 1, y: 0.5 }}
+                  style={styles.gradiantHeaderViewStyle}>
+                </LinearGradient>
+                <Header
+                  mainContainerStyle={styles.headerMainContainerStyle}
+                  leftComponent={
+                    <TouchableOpacity onPress={() => setScorekeeperMatchModalVisible(false)}>
+                      <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                  centerComponent={
+                    <View style={styles.headerCenterViewStyle}>
+                      <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                      <Text style={styles.playInTextStyle}>{'Scoreboard'}</Text>
+                    </View>
+                  }
+                  rightComponent={
+                    <TouchableOpacity onPress={() => setScorekeeperMatchModalVisible(false)}>
+                      <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                />
+              </View>
+              <ScheduleTabView
+                firstTabTitle={`Completed (${scorekeeperRecentMatch.length})`}
+                secondTabTitle={`Upcoming (${scorekeeperUpcomingMatch.length})`}
+                indexCounter={scoreboardTabNumber}
+                eventPrivacyContianer={{ width: wp('70%') }}
+                onFirstTabPress={() => setScroboardTabNumber(0)}
+                onSecondTabPress={() => setScroboardTabNumber(1)}
+              />
+              {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
+                sportsData={scorekeeperRecentMatch}
+                showEventNumbers={false}
+                showAssistReferee={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScorekeeperMatchModalVisible(false);
+                  setScorekeeperInModalVisible(false);
+                }}
+              />}
+              {scoreboardTabNumber === 1 && <UpcomingMatchScreen
+                sportsData={scorekeeperUpcomingMatch}
+                showEventNumbers={true}
+                navigation={navigation}
+                onItemPress={() => {
+                  setScoreboardModalVisible(false);
+                  setPlaysInModalVisible(false);
+                }}
+              />}
+            </SafeAreaView>
+          </Modal>
+
+          <Modal
+            isVisible={reviewsModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setReviewsModalVisible(false)}
+            backdropOpacity={0}
+          >
+            <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+              <View>
+                <LinearGradient
+                  colors={[colors.orangeColor, colors.yellowColor]}
+                  end={{ x: 0.0, y: 0.25 }}
+                  start={{ x: 1, y: 0.5 }}
+                  style={styles.gradiantHeaderViewStyle}>
+                </LinearGradient>
+                <Header
+                  mainContainerStyle={styles.headerMainContainerStyle}
+                  leftComponent={
+                    <TouchableOpacity onPress={() => setReviewsModalVisible(false)}>
+                      <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                  centerComponent={
+                    <View style={styles.headerCenterViewStyle}>
+                      <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                      <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                    </View>
+                  }
+                  rightComponent={
+                    <TouchableOpacity onPress={() => setReviewsModalVisible(false)}>
+                      <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                />
+              </View>
+              <ReviewSection
+                reviewsData={averageScorekeeperReview}
+                reviewsFeed={scorekeeperReviewData}
+                onReadMorePress={() => {
+                  reviewerDetailModal();
+                }}
+              />
+            </SafeAreaView>
+
+            <Modal
+              isVisible={reviewerDetailModalVisible}
+              backdropColor="black"
+              style={{
+                margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+              }}
+              hasBackdrop
+              onBackdropPress={() => setReviewerDetailModalVisible(false)}
+              backdropOpacity={0}
+            >
+              <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
+                <View>
+                  <LinearGradient
+                    colors={[colors.orangeColor, colors.yellowColor]}
+                    end={{ x: 0.0, y: 0.25 }}
+                    start={{ x: 1, y: 0.5 }}
+                    style={styles.gradiantHeaderViewStyle}>
+                  </LinearGradient>
+                  <Header
+                    mainContainerStyle={styles.headerMainContainerStyle}
+                    leftComponent={
+                      <TouchableOpacity onPress={() => setReviewerDetailModalVisible(false)}>
+                        <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                      </TouchableOpacity>
+                    }
+                    centerComponent={
+                      <View style={styles.headerCenterViewStyle}>
+                        <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                        <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                      </View>
+                    }
+                    rightComponent={
+                      <TouchableOpacity onPress={() => setReviewerDetailModalVisible(false)}>
+                        <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                      </TouchableOpacity>
+                    }
+                  />
+                </View>
+                <ScrollView>
+                  <ReviewRecentMatch
+                    eventColor={colors.yellowColor}
+                    startDate1={'Sep'}
+                    startDate2={'25'}
+                    title={'Soccer'}
+                    startTime={'7:00pm -'}
+                    endTime={'9:10pm'}
+                    location={'BC Stadium'}
+                    firstUserImage={images.team_ph}
+                    firstTeamText={'Vancouver Whitecaps'}
+                    secondUserImage={images.team_ph}
+                    secondTeamText={'Newyork City FC'}
+                    firstTeamPoint={3}
+                    secondTeamPoint={1}
+                  />
+                  <RefereeReviewerList
+                    navigation={navigation}
+                    postData={postData}
+                    userID={userID}
+                  />
+                </ScrollView>
+              </SafeAreaView>
+            </Modal>
+          </Modal>
+        </Modal>
+
+        {/* scorekeeper modal */}
+
       </ParallaxScrollView>
       {!createEventModal && currentTab === 3 && <CreateEventButton
         source={images.plus}

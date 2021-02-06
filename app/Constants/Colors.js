@@ -88,5 +88,6 @@ const colors = {
   darkOrangColor: '#FF4E00',
   lightgrayBG: '#D8D8D8',
   refereeHomeDividerColor: '#D0D0D0',
+  blackOpacityColor: 'rgba(0,0,0,0.5)',
 };
 export default colors;
