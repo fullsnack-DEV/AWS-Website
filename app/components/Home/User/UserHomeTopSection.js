@@ -54,7 +54,7 @@ export default function UserHomeTopSection({
       o.type = EntityStatus.scorekeeperin;
       return o;
     }) ?? []
-    return [...games, ...referee, ...scorekeeper, { sport_name: strings.addrole, item_type: 'add_new' }]
+    return [...games, ...referee, ...scorekeeper, { sport_name: strings.addrole, item_type: EntityStatus.addNew }]
   }
 
   const renderPlayIn = ({ item }) => {
@@ -170,17 +170,17 @@ export default function UserHomeTopSection({
   }
 
   const renderUserRole = ({ item }) => {
-    if (item?.item_type === 'add_new') {
+    if (item?.item_type === EntityStatus.addNew) {
       return renderAddRole()
     }
 
-    if (item?.type === 'playin') {
+    if (item?.type === EntityStatus.playin) {
       return renderPlayIn({ item })
     }
-    if (item?.type === 'refereein') {
+    if (item?.type === EntityStatus.refereein) {
       return renderRefereesIn({ item })
     }
-    if (item?.type === 'scorekeeperin') {
+    if (item?.type === EntityStatus.scorekeeperin) {
       return renderScorekeeperIn({ item })
     }
   }
@@ -257,7 +257,7 @@ export default function UserHomeTopSection({
             <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
             <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: 'add_new' }]}
+            data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: EntityStatus.addNew }]}
             horizontal
             renderItem={renderPlayIn}
             keyExtractor={(item, index) => index.toString()}
@@ -270,7 +270,7 @@ export default function UserHomeTopSection({
             <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin}/>
             <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.referee_data, { sport_name: strings.addRefereeing, item_type: 'add_new' }]}
+            data={[...userDetails.referee_data, { sport_name: strings.addRefereeing, item_type: EntityStatus.addNew }]}
             horizontal
             renderItem={renderRefereesIn}
             keyExtractor={(item, index) => index.toString()}
@@ -283,7 +283,7 @@ export default function UserHomeTopSection({
             <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.scorekeeperIn}/>
             <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.scorekeeper_data, { sport_name: strings.addScorekeeping, item_type: 'add_new' }]}
+            data={[...userDetails.scorekeeper_data, { sport_name: strings.addScorekeeping, item_type: EntityStatus.addNew }]}
             horizontal
             renderItem={renderScorekeeperIn}
             keyExtractor={(item, index) => index.toString()}
