@@ -283,6 +283,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   ) => {
     setloading(true);
     cancelAlterReservation(
+      'referees',
       reservationId,
       callerID,
       versionNo,
@@ -592,7 +593,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     if (bodyParams?.referee?.user_id !== entity.uid) {
       callerId = entity.uid
     }
-    updateReservation(reservationId, callerId, body, authContext)
+    updateReservation('referees', reservationId, callerId, body, authContext)
       .then(() => {
         setloading(false);
         navigation.push('AlterRequestSent');

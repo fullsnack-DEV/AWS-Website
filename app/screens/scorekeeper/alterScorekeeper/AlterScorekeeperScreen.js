@@ -61,6 +61,8 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
   const [editPayment, setEditPayment] = useState(false);
   const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
+  const [editMatch, setEditMatch] = useState(false);
+
   const [defaultCard, setDefaultCard] = useState()
 
   useLayoutEffect(() => {
@@ -163,7 +165,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     sectionEdited();
-  }, [bodyParams, isOld, editVenue, editRules, editScorekeeper, editInfo]);
+  }, [bodyParams, isOld, editVenue, editRules, editScorekeeper, editInfo, editMatch]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
@@ -207,6 +209,12 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
       } else {
         setEditPayment(false);
       }
+      if (
+        bodyParams.game.game_id !== oldVersion.game.game_id) {
+        setEditMatch(true);
+      } else {
+        setEditMatch(false);
+      }
     }
   };
 
@@ -227,7 +235,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
 
     setloading(true);
     getEntityFeesEstimation(
-      'scorekeeper',
+      'scorekeepers',
       bodyParams?.scorekeeper?.user_id,
       body,
       authContext,
@@ -262,6 +270,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
   ) => {
     setloading(true);
     cancelAlterReservation(
+      'scorekeepers',
       reservationId,
       callerID,
       versionNo,
@@ -570,7 +579,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
     if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
       callerId = entity.uid
     }
-    updateReservation(reservationId, callerId, body, authContext)
+    updateReservation('scorekeepers', reservationId, callerId, body, authContext)
       .then(() => {
         setloading(false);
         navigation.navigate('AlterRequestSent');
@@ -936,7 +945,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
               {/* Choose Match */}
               <View style={styles.contentContainer}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Title text={'Match'} />
+                  <TCLabel title={'Match'} isNew={editMatch} style={{ marginLeft: 0 }}/>
 
                   {(!isPendingRequestPayment) && (
                     <TouchableOpacity
@@ -1012,14 +1021,6 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
               )}
             </View>
           )}
-          <CurruentVersionView
-                    onPress={() => {
-                      navigation.navigate('CurruentScorekeeperReservationScreen', {
-                        reservationObj: oldVersion,
-                      });
-                    }}
-                    />
-          <TCThickDivider marginTop={15}/>
           <CurruentVersionView
                     onPress={() => {
                       navigation.navigate('CurruentScorekeeperReservationScreen', {

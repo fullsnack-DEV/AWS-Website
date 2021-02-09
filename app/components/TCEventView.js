@@ -103,6 +103,9 @@ export default function TCEventView({
     }
   }
   const refereeFound = (dataObj) => (dataObj?.game?.referees || []).some((e) => entity.uid === e.referee_id)
+  const scorekeeperFound = (dataObj) => (dataObj?.game?.scorekeepers || []).some((e) => entity.uid === e.scorekeeper_id)
+
+  console.log('scorekeeperFound::', scorekeeperFound());
   let moreBtnVisible = true;
   if (data && data.game) {
     // const merchantID = entity.obj.merchant_id;
@@ -120,7 +123,7 @@ export default function TCEventView({
       (data?.game?.home_team?.user_id || data?.game?.home_team?.group_id)
         === userID
       || (data?.game?.away_team?.user_id || data?.game?.away_team?.group_id)
-        === userID || refereeFound(data)
+        === userID || refereeFound(data) || scorekeeperFound(data)
     ) {
       if (!screenUserId) {
         moreBtnVisible = true;

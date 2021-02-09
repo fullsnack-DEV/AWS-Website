@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: wp('86%'),
-    marginTop: 15,
+    // marginTop: 15,
   },
   bottomView: {
     flexDirection: 'row',

@@ -429,8 +429,7 @@ export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
     || data.activities[0].verb.includes(NotificationType.gameRestoredDuringAwaitingPayment)) {
     return parseChallengeAwaitingPaymentRequestNotification(data, selectedEntity, loggedInEntity)
   } if (data.activities[0].verb.includes(NotificationType.refereeRequest)
-    || data.activities[0].verb.includes(NotificationType.changeRefereeRequest)
-    || data.activities[0].verb.includes(NotificationType.scorekeeperRequest)) {
+    || data.activities[0].verb.includes(NotificationType.changeRefereeRequest)) {
     return parseRefereeRequestNotification(data)
   } if (data.activities[0].verb.includes(NotificationType.refereeReservationInitialPaymentFail)
     || data.activities[0].verb.includes(NotificationType.refereeReservationAlterPaymentFail)
@@ -441,7 +440,7 @@ export const parseRequest = async (data, selectedEntity, loggedInEntity) => {
     || data.activities[0].verb.includes(NotificationType.refereeReservationRestoredDuringAwaitingPayment)) {
     return parseRefereeAwaitingPaymentRequestNotification(data)
   } if (data.activities[0].verb.includes(NotificationType.scorekeeperRequest)
-  || data.activities[0].verb.includes(NotificationType.changescorekeeperRequest)) {
+  || data.activities[0].verb.includes(NotificationType.changeScorekeeperRequest)) {
     return parseScorekeeperRequestNotification(data)
   } if (data.activities[0].verb.includes(NotificationType.scorekeeperReservationInitialPaymentFail)
   || data.activities[0].verb.includes(NotificationType.scorekeeperReservationAlterPaymentFail)

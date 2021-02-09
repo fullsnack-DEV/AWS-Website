@@ -553,6 +553,7 @@ const strings = {
 
   scorekeeperRequestScreenTitle: 'Scorekeeper Reservation Request',
   scorekeeperScreenTitle: 'Scorekeeper Reservation',
+  chooseScorekeeperText: 'Choose a scorekeeper',
 
 };
 export default strings;

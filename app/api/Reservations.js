@@ -22,3 +22,9 @@ export const getRefereeReservationDetails = (gameID, params, authContext) => mak
   params,
   authContext,
 })
+export const getScorekeeperReservationDetails = (gameID, params, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}scorekeepers/game/${gameID}/reservation`,
+  params,
+  authContext,
+})

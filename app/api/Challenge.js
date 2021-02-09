@@ -95,9 +95,9 @@ export const acceptDeclineAlterReservation = async (reservationEntityType, reser
   headers: { caller_id: callerID },
   authContext,
 })
-export const cancelAlterReservation = async (reservationID, callerID, versionNo, authContext) => makeAPIRequest({
+export const cancelAlterReservation = async (reservationEntityType, reservationID, callerID, versionNo, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}referees/reservation/${reservationID}/cancelRequest?version=${versionNo}`,
+  url: `${Config.BASE_URL}${reservationEntityType}/reservation/${reservationID}/cancelRequest?version=${versionNo}`,
   headers: { caller_id: callerID },
   authContext,
 })
@@ -115,9 +115,9 @@ export const updateChallenge = async (challengeId, params, authContext) => makeA
   data: params,
   authContext,
 })
-export const updateReservation = async (reservationId, callerID, params, authContext) => makeAPIRequest({
+export const updateReservation = async (reservationEntityType, reservationId, callerID, params, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}referees/reservation/${reservationId}`,
+  url: `${Config.BASE_URL}${reservationEntityType}/reservation/${reservationId}`,
   data: params,
   headers: { caller_id: callerID },
   authContext,
