@@ -232,12 +232,12 @@ export default function RefereeReviewScreen({ navigation, route }) {
           navigation.goBack();
         });
     } else {
-      console.log('New Review Object::=>', reviewsData);
+      console.log('New Review Object::=>', data);
       setLoading(true);
       addRefereeReview(
         route?.params?.userData?.user_id,
         gameData?.game_id,
-        reviewsData,
+        data,
         authContext,
       )
         .then(() => {

@@ -8,8 +8,10 @@ import strings from '../../Constants/String';
 // eslint-disable-next-line import/prefer-default-export
 export const getRefereeReservationDetail = (reservationID, callerID, authContext) => {
   const Obj = {}
+  console.log('data of referee reservation details::=>', reservationID);
   // eslint-disable-next-line consistent-return
-  return getReservation(reservationID, callerID && callerID, authContext).then((response) => {
+  return getReservation('referees', reservationID, callerID && callerID, authContext).then((response) => {
+    console.log('Response of referee reservation details::=>', response);
     if (RefereeReservationStatus.changeRequest === response.payload[0].status
           || RefereeReservationStatus.pendingrequestpayment === response.payload[0].status) {
       Obj.reservationObj = response.payload

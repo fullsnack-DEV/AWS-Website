@@ -12,7 +12,6 @@ import {
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import _ from 'lodash';
 
 import * as Utility from '../../../utils';
 import {
@@ -44,13 +43,12 @@ import TCProfileView from '../../../components/TCProfileView';
 import TCGameCard from '../../../components/TCGameCard';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../../utils/gameUtils';
 import CurruentVersionView from '../../../components/challenge/CurruentVersionView';
-import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
+import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
 
 let entity = {};
 const scroll = React.createRef();
-export default function EditRefereeReservation({ navigation, route }) {
+export default function EditScorekeeperReservation({ navigation, route }) {
   const authContext = useContext(AuthContext);
-  const [chiefOrAssistant, setChiefOrAssistant] = useState('');
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [homeTeam, setHomeTeam] = useState();
@@ -59,41 +57,35 @@ export default function EditRefereeReservation({ navigation, route }) {
   const [paymentCard, setPaymentCard] = useState();
   const [editRules, setEditRules] = useState(false);
   const [editVenue, setEditVenue] = useState(false);
-  const [editReferee, setEditReferee] = useState(false);
   const [editScorekeeper, setEditScoreKeeper] = useState(false);
   const [oldVersion, setOldVersion] = useState();
   const [editInfo, setEditInfo] = useState(false);
   const [editPayment, setEditPayment] = useState(false);
   const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
-  const [refereeUpdate, setRefereeUpdate] = useState(false);
 
   const [defaultCard, setDefaultCard] = useState()
   const [isDeclined, setIsDeclined] = useState(false)
-  useEffect(() => {
-    const is_chief = bodyParams?.chief_referee ? 'chief' : 'assistant'
-    setChiefOrAssistant(is_chief);
-  }, [bodyParams])
 
   const getNavigationTitle = () => {
-    if (bodyParams?.status === RefereeReservationStatus.changeRequest) {
-      return 'Referee Reservation'
+    if (bodyParams?.status === ScorekeeperReservationStatus.changeRequest) {
+      return 'Scorekeeper Reservation'
     }
 
-    return 'Change Referee Reservation'
+    return 'Change Scorekeeper Reservation'
   }
   useLayoutEffect(() => {
     navigation.setOptions({
       title: getNavigationTitle(),
     });
-  }, [navigation, bodyParams, refereeUpdate]);
+  }, [navigation, bodyParams]);
   useEffect(() => {
     entity = authContext.entity;
     const { reservationObj } = route.params ?? {};
     if (reservationObj.length > 0) {
       setIsPendingRequestPayment(true);
       for (let i = 0; i < reservationObj.length; i++) {
-        if (reservationObj[i].status === RefereeReservationStatus.accepted) {
+        if (reservationObj[i].status === ScorekeeperReservationStatus.accepted) {
           if (isOld === false) {
             setbodyParams(reservationObj[0]);
             setOldVersion(reservationObj[i]);
@@ -180,7 +172,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   }, [isFocused]);
   useLayoutEffect(() => {
     sectionEdited();
-  }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard]);
+  }, [bodyParams, isOld, editVenue, editRules, editScorekeeper, editInfo, defaultCard]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
@@ -199,11 +191,7 @@ export default function EditRefereeReservation({ navigation, route }) {
       } else {
         setEditVenue(false);
       }
-      if (bodyParams.referee !== oldVersion.referee) {
-        setEditReferee(true);
-      } else {
-        setEditReferee(false);
-      }
+
       if (bodyParams.scorekeeper !== oldVersion.scorekeeper) {
         setEditScoreKeeper(true);
       } else {
@@ -248,8 +236,8 @@ export default function EditRefereeReservation({ navigation, route }) {
 
     setloading(true);
     getEntityFeesEstimation(
-      'referees',
-      bodyParams?.referee?.user_id,
+      'scorekeeper',
+      bodyParams?.scorekeeper?.user_id,
       body,
       authContext,
     )
@@ -312,7 +300,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   ) => {
     setloading(true);
     acceptDeclineReservation(
-      'referees',
+      'scorekeepers',
       reservationId,
       versionNo,
       status,
@@ -324,24 +312,24 @@ export default function EditRefereeReservation({ navigation, route }) {
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
 
         if (status === 'accept') {
-          navigation.navigate('RefereeRequestSent', {
+          navigation.navigate('ScorekeeperRequestSent', {
             operationType: strings.reservationRequestAccepted,
             imageAnimation: true,
           });
         } else if (status === 'decline') {
           if (isRestored) {
-            navigation.navigate('RefereeRequestSent', {
+            navigation.navigate('ScorekeeperRequestSent', {
               operationType: strings.reservationRequestRestored,
               imageAnimation: false,
             });
           } else {
-            navigation.navigate('RefereeRequestSent', {
+            navigation.navigate('ScorekeeperRequestSent', {
               operationType: strings.reservationRequestDeclined,
               imageAnimation: false,
             });
           }
         } else if (status === 'cancel') {
-          navigation.navigate('RefereeRequestSent', {
+          navigation.navigate('ScorekeeperRequestSent', {
             operationType: strings.reservationRequestCancelled,
             imageAnimation: false,
           });
@@ -363,8 +351,9 @@ export default function EditRefereeReservation({ navigation, route }) {
     paymentID,
   ) => {
     setloading(true);
+
     acceptDeclineAlterReservation(
-      'referees',
+      'scorekeepers',
       reservationId,
       callerID,
       versionNo,
@@ -376,17 +365,17 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         console.log('ACCEPT RESPONSE::', JSON.stringify(response.payload));
         if (status === 'accept') {
-          navigation.navigate('RefereeRequestSent', {
+          navigation.navigate('ScorekeeperRequestSent', {
             operationType: strings.reservationAlterRequestAccepted,
             imageAnimation: false,
           });
         } else if (status === 'decline') {
-          navigation.navigate('RefereeRequestSent', {
+          navigation.navigate('ScorekeeperRequestSent', {
             operationType: strings.reservationAlterRequestDeclined,
             imageAnimation: false,
           });
         } else if (status === 'cancel') {
-          navigation.navigate('RefereeRequestSent', {
+          navigation.navigate('ScorekeeperRequestSent', {
             operationType: strings.reservationAlterRequestCancelled,
             imageAnimation: false,
           });
@@ -416,7 +405,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   };
 
   const getRequester = (param) => {
-    if (entity.uid === param?.referee?.user_id) {
+    if (entity.uid === param?.scorekeeper?.user_id) {
       if (param?.initiated_by === (param?.game?.home_team?.group_id || param?.game?.home_team?.user_id)) {
         return param?.game?.home_team
       }
@@ -471,7 +460,7 @@ export default function EditRefereeReservation({ navigation, route }) {
       })
   }
   const checkSenderForPayment = (reservationObj) => {
-    if (reservationObj?.referee?.user_id === entity.uid) {
+    if (reservationObj?.scorekeeper?.user_id === entity.uid) {
       return 'receiver'
     }
 
@@ -481,8 +470,8 @@ export default function EditRefereeReservation({ navigation, route }) {
   const checkSenderOrReceiver = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-        || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
+        || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -497,12 +486,12 @@ export default function EditRefereeReservation({ navigation, route }) {
       }
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
-        if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && entity.obj.entity_type === 'team') {
+        if (teampObj?.automatic_request && teampObj?.status === ScorekeeperReservationStatus.changeRequest && entity.obj.entity_type === 'team') {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
-      } else if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && teampObj?.referee?.user_id !== entity.uid) {
+      } else if (teampObj?.automatic_request && teampObj?.status === ScorekeeperReservationStatus.changeRequest && teampObj?.scorekeeper?.user_id !== entity.uid) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
         teampObj.requested_by = teampObj.updated_by.uid;
@@ -518,11 +507,11 @@ export default function EditRefereeReservation({ navigation, route }) {
     return 'receiver'
   };
 
-  const checkRefereeOrTeam = (reservationObj) => {
+  const checkScorekeeperOrTeam = (reservationObj) => {
     const teampObj = { ...reservationObj }
     if (
-      teampObj?.status === RefereeReservationStatus.pendingpayment
-        || teampObj?.status === RefereeReservationStatus.pendingrequestpayment
+      teampObj?.status === ScorekeeperReservationStatus.pendingpayment
+        || teampObj?.status === ScorekeeperReservationStatus.pendingrequestpayment
     ) {
       if (teampObj?.updated_by) {
         if (teampObj?.updated_by?.group_id) {
@@ -537,12 +526,12 @@ export default function EditRefereeReservation({ navigation, route }) {
       }
     } else if (teampObj?.updated_by) {
       if (teampObj?.updated_by?.group_id) {
-        if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && entity.obj.entity_type === 'team') {
+        if (teampObj?.automatic_request && teampObj?.status === ScorekeeperReservationStatus.changeRequest && entity.obj.entity_type === 'team') {
           teampObj.requested_by = teampObj.initiated_by;
         } else {
           teampObj.requested_by = teampObj.updated_by.group_id;
         }
-      } else if (teampObj?.automatic_request && teampObj?.status === RefereeReservationStatus.changeRequest && teampObj?.referee?.user_id !== entity.uid) {
+      } else if (teampObj?.automatic_request && teampObj?.status === ScorekeeperReservationStatus.changeRequest && teampObj?.scorekeeper?.user_id !== entity.uid) {
         teampObj.requested_by = teampObj.initiated_by;
       } else {
         teampObj.requested_by = teampObj.updated_by.uid;
@@ -553,24 +542,23 @@ export default function EditRefereeReservation({ navigation, route }) {
       teampObj.requested_by = teampObj.created_by.uid;
     }
 
-    if (entity.uid === teampObj?.referee?.user_id) {
+    if (entity.uid === teampObj?.scorekeeper?.user_id) {
       if (teampObj?.requested_by === entity.uid) {
-        return 'referee'
+        return 'scorekeeper'
       }
       return 'team'
     }
     if (teampObj?.requested_by === entity.uid) {
       return 'team'
     }
-    return 'referee'
+    return 'scorekeeper'
   };
   const updateReservationDetail = () => {
     setloading(true);
     const body = {}
-    body.referee_id = bodyParams?.referee?.user_id;
+    body.scorekeeper_id = bodyParams?.scorekeeper?.user_id;
     body.game_id = bodyParams?.game?.game_id;
     console.log('Payment card data::', paymentCard);
-    body.chief_referee = (chiefOrAssistant === 'chief');
     body.service_fee1_charges = paymentCard?.service_fee1_charges;
     body.total_game_charges = paymentCard?.total_game_charges;
     body.service_fee2_charges = paymentCard?.service_fee2_charges;
@@ -589,7 +577,7 @@ export default function EditRefereeReservation({ navigation, route }) {
     const reservationId = bodyParams?.reservation_id;
     console.log('FINAL BODY PARAMS::', body);
     let callerId = '';
-    if (bodyParams?.referee?.user_id !== entity.uid) {
+    if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
       callerId = entity.uid
     }
     updateReservation(reservationId, callerId, body, authContext)
@@ -605,13 +593,13 @@ export default function EditRefereeReservation({ navigation, route }) {
       });
   };
   const getOpponentEntity = (reservationObj) => {
-    if (reservationObj?.referee?.user_id === entity.uid) {
+    if (reservationObj?.scorekeeper?.user_id === entity.uid) {
       if (reservationObj?.initiated_by === reservationObj?.game?.home_team?.user_id) {
         return reservationObj?.game?.away_team
       }
       return reservationObj?.game?.home_team
     }
-    return reservationObj?.referee
+    return reservationObj?.scorekeeper
   }
   const getPendingRequestPaymentMessage = () => {
     if (bodyParams?.change_requested_by === entity.uid) {
@@ -643,7 +631,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   }
   const getEntityName = (reservationObj) => {
     if (reservationObj?.initiated_by === entity.uid) {
-      return `${reservationObj?.referee?.first_name} ${reservationObj?.referee?.last_name}`
+      return `${reservationObj?.scorekeeper?.first_name} ${reservationObj?.scorekeeper?.last_name}`
     }
     if (!reservationObj?.game?.singlePlayerGame) {
       if (reservationObj?.initiated_by === reservationObj?.game?.home_team?.group_id) {
@@ -657,14 +645,14 @@ export default function EditRefereeReservation({ navigation, route }) {
     }
     return `${reservationObj?.game?.away_team.first_name} ${reservationObj?.game?.away_team.last_name}`
   };
-  const acceptDeclineRefereeReservation = (
+  const acceptDeclineScorekeeperReservation = (
     reservationID,
     versionNo,
     status,
   ) => {
     setloading(true);
     acceptDeclineReservation(
-      'referees',
+      'scorekeepers',
       reservationID,
       versionNo,
       status,
@@ -705,7 +693,7 @@ export default function EditRefereeReservation({ navigation, route }) {
       <ActivityLoader visible={loading} />
       {homeTeam && awayTeam && bodyParams && (
         <View style={{ marginBottom: 15 }}>
-          {(!isPendingRequestPayment || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
+          {(!isPendingRequestPayment || (bodyParams.status === ScorekeeperReservationStatus.declined && isDeclined)) && (
             <TouchableOpacity onPress={() => console.log('OK')}>
               <LinearGradient
                   colors={[colors.yellowColor, colors.themeColor]}
@@ -760,7 +748,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
               <View style={styles.teamView}>
                 <Image
-                    source={bodyParams?.referee?.thumbnail ? { uri: bodyParams?.referee?.thumbnail } : images.teamPlaceholder}
+                    source={bodyParams?.scorekeeper?.thumbnail ? { uri: bodyParams?.scorekeeper?.thumbnail } : images.teamPlaceholder}
                     style={styles.teamImage}
                   />
                 <Text
@@ -770,14 +758,14 @@ export default function EditRefereeReservation({ navigation, route }) {
                       fontSize: 16,
                       color: colors.lightBlackColor,
                     }}>
-                  {`${bodyParams?.referee?.first_name} ${bodyParams?.referee?.last_name}`}
+                  {`${bodyParams?.scorekeeper?.first_name} ${bodyParams?.scorekeeper?.last_name}`}
                 </Text>
               </View>
             </View>
           </View>
           {/* Status declined */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === RefereeReservationStatus.declined && (
+              && bodyParams.status === ScorekeeperReservationStatus.declined && (
                 <View>
                   <Text
                     style={[
@@ -787,12 +775,12 @@ export default function EditRefereeReservation({ navigation, route }) {
                     DECLINED
                   </Text>
                   <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee' ? `You have declined a referee request from ${getEntityName(bodyParams)}.` : `Your team have declined referee reservation request from ${getEntityName(bodyParams)}.` }
+                    {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper' ? `You have declined a scorekeeper request from ${getEntityName(bodyParams)}.` : `Your team have declined scorekeeper reservation request from ${getEntityName(bodyParams)}.` }
                   </Text>
                 </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.declined && (
+              && bodyParams.status === ScorekeeperReservationStatus.declined && (
                 <View>
                   <Text
                     style={[
@@ -802,31 +790,31 @@ export default function EditRefereeReservation({ navigation, route }) {
                     DECLINED
                   </Text>
                   <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee' ? `${getEntityName(bodyParams)} has declined a referee request from your team.` : `${getEntityName(bodyParams)} have declined a referee reservation request sent by you.` }
+                    {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper' ? `${getEntityName(bodyParams)} has declined a scorekeeper request from your team.` : `${getEntityName(bodyParams)} have declined a scorekeeper reservation request sent by you.` }
                   </Text>
                 </View>
           )}
           {/* Status declined */}
           {/* status change requested */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === RefereeReservationStatus.changeRequest && (
+              && bodyParams.status === ScorekeeperReservationStatus.changeRequest && (
                 <View>
                   <Text style={[styles.challengeMessage, { color: colors.requestSentColor }]}>
                     ALTERATION REQUEST SENT
                   </Text>
                   <Text style={styles.challengeText}>
-                    {checkRefereeOrTeam(bodyParams) === 'referee' ? `You sent a referee reservation alteration request to ${getEntityName(bodyParams)}.` : `Your team sent a referee reservation alteration request to ${getEntityName(bodyParams)}`}
+                    {checkScorekeeperOrTeam(bodyParams) === 'scorekeeper' ? `You sent a scorekeeper reservation alteration request to ${getEntityName(bodyParams)}.` : `Your team sent a scorekeeper reservation alteration request to ${getEntityName(bodyParams)}`}
                   </Text>
                 </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.changeRequest && (
+              && bodyParams.status === ScorekeeperReservationStatus.changeRequest && (
                 <View>
                   <Text style={styles.challengeMessage}>
                     ALTERATION REQUEST PENDING
                   </Text>
                   <Text style={styles.challengeText}>
-                    {bodyParams?.referee?.user_id === entity.uid ? `You received a referee reservation alteration request from ${getEntityName(bodyParams)}.` : `Your team received a referee reservation alteration request from ${getEntityName(bodyParams)}.`}
+                    {bodyParams?.scorekeeper?.user_id === entity.uid ? `You received a scorekeeper reservation alteration request from ${getEntityName(bodyParams)}.` : `Your team received a scorekeeper reservation alteration request from ${getEntityName(bodyParams)}.`}
                     {' '}Please, respond within <Text style={{ color: colors.themeColor }}>
                       {getDayTimeDifferent(
                         bodyParams?.expiry_datetime * 1000,
@@ -840,7 +828,7 @@ export default function EditRefereeReservation({ navigation, route }) {
 
           {/* status pending request payment */}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+              && bodyParams.status === ScorekeeperReservationStatus.pendingrequestpayment && (
                 <View>
                   <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                   <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} your payment hasn't gone through yet.`}
@@ -858,7 +846,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                 </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+              && bodyParams.status === ScorekeeperReservationStatus.pendingrequestpayment && (
                 <View>
                   <Text style={styles.challengeMessage}>AWAITING PAYMENT</Text>
                   <Text style={styles.challengeText}>{`${getPendingRequestPaymentMessage()} the payment hasn't gone through yet.`}
@@ -875,20 +863,20 @@ export default function EditRefereeReservation({ navigation, route }) {
           {/* status pending request payment */}
 
           {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+              && bodyParams.status === ScorekeeperReservationStatus.pendingrequestpayment && (
                 <TCGradientButton
                   title={'TRY TO PAY AGAIN'}
                   onPress={() => {
-                    navigation.navigate('PayAgainRefereeScreen', {
+                    navigation.navigate('PayAgainScorekeeperScreen', {
                       body: { ...bodyParams, ...paymentCard },
-                      comeFrom: RefereeReservationStatus.pendingrequestpayment,
+                      comeFrom: ScorekeeperReservationStatus.pendingrequestpayment,
                     })
                   }}
                   marginBottom={15}
                 />
           )}
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.pendingrequestpayment && (
+              && bodyParams.status === ScorekeeperReservationStatus.pendingrequestpayment && (
                 <TCGradientButton
                   title={'RESTORE TO PREVIOUS VERSION'}
                   onPress={() => {
@@ -907,13 +895,13 @@ export default function EditRefereeReservation({ navigation, route }) {
           <TCThickDivider />
           {/* Name and country */}
           <View style={styles.contentContainer}>
-            <Title text={'Referee'} />
+            <Title text={'Scorekeeper'} />
             <View style={{ marginVertical: 10 }}>
               <TCProfileView
                     type={'medium'}
-                    name={bodyParams?.referee?.full_name}
-                    location={`${bodyParams?.referee?.city} , ${bodyParams?.referee?.country}`}
-                    image={bodyParams?.referee?.full_image ? { uri: bodyParams?.referee?.full_image } : images.profilePlaceHolder}
+                    name={bodyParams?.scorekeeper?.full_name}
+                    location={`${bodyParams?.scorekeeper?.city} , ${bodyParams?.scorekeeper?.country}`}
+                    image={bodyParams?.scorekeeper?.full_image ? { uri: bodyParams?.scorekeeper?.full_image } : images.profilePlaceHolder}
                 />
             </View>
           </View>
@@ -925,7 +913,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Title text={'Match'} />
 
-                  {bodyParams?.referee?.user_id !== entity.uid && (
+                  {bodyParams?.scorekeeper?.user_id !== entity.uid && (
                     <TouchableOpacity
                   style={styles.editTouchArea}
                   hitSlop={{
@@ -935,10 +923,10 @@ export default function EditRefereeReservation({ navigation, route }) {
                     right: 15,
                   }}
                   onPress={() => {
-                    navigation.navigate('RefereeSelectMatch', {
-                      userData: bodyParams?.referee,
+                    navigation.navigate('ScorekeeperSelectMatch', {
+                      userData: bodyParams?.scorekeeper,
                       sport: bodyParams?.sport,
-                      comeFrom: 'EditRefereeReservation',
+                      comeFrom: 'EditScorekeeperReservation',
                     });
                   }}>
                       <Image source={images.editSection} style={styles.editButton} />
@@ -1006,66 +994,7 @@ export default function EditRefereeReservation({ navigation, route }) {
           )}
           <CurruentVersionView
                       onPress={() => {
-                        navigation.navigate('CurruentRefereeReservationScreen', {
-                          reservationObj: oldVersion,
-                        });
-                      }}
-                      />
-          <TCThickDivider marginTop={15}/>
-          {/* {bodyParams && (
-              <View>
-                <TCLabel title={'Rules of the match'} />
-                <Text style={styles.rulesText}>{bodyParams?.game?.special_rule}</Text>
-              </View>
-            )}
-            <CurruentVersionView
-                      onPress={() => {
-                        navigation.navigate('CurruentRefereeReservationScreen', {
-                          reservationObj: oldVersion,
-                        });
-                      }}
-                      />
-            <TCThickDivider marginTop={15} /> */}
-          {/* Chief or assistant */}
-          <View style={styles.contentContainer}>
-            <Title text={'Chief or assistant'} />
-            {['chief', 'assistant'].map((item, index) => (
-              <View
-                      key={index}
-                      style={{
-                        margin: 7,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}>
-                <Text style={{
-                  fontFamily: fonts.RRegular,
-                  fontSize: 16,
-                  color: colors.lightBlackColor,
-                }}>{_.startCase(item)} Referee</Text>
-                <TouchableOpacity style={{
-                  borderColor: colors.magnifyIconColor, height: 22, width: 22, borderWidth: 2, borderRadius: 50, alignItems: 'center', justifyContent: 'center',
-                }}
-                    onPress={() => {
-                      setRefereeUpdate(true)
-                      setChiefOrAssistant(item)
-                    }}>
-                  {item === chiefOrAssistant && (
-                    <LinearGradient
-                              colors={[colors.orangeColor, colors.yellowColor]}
-                              end={{ x: 0.0, y: 0.25 }}
-                              start={{ x: 1, y: 0.5 }}
-                              style={{ height: 13, width: 13, borderRadius: 50 }}>
-                    </LinearGradient>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-
-          <CurruentVersionView
-                      onPress={() => {
-                        navigation.navigate('CurruentRefereeReservationScreen', {
+                        navigation.navigate('CurruentScorekeeperReservationScreen', {
                           reservationObj: oldVersion,
                         });
                       }}
@@ -1084,12 +1013,12 @@ export default function EditRefereeReservation({ navigation, route }) {
                     isNew={editPayment}
                 />
               <TouchableOpacity onPress={() => {
-                navigation.navigate('RefereeSelectMatch');
+                navigation.navigate('ScorekeeperSelectMatch');
               }}>
 
               </TouchableOpacity>
             </View>
-            {(!isPendingRequestPayment || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
+            {(!isPendingRequestPayment || (bodyParams.status === ScorekeeperReservationStatus.declined && isDeclined)) && (
               <TouchableOpacity
                   style={styles.editTouchArea}
                   hitSlop={{
@@ -1098,7 +1027,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                     left: 15,
                     right: 15,
                   }}
-                  onPress={() => navigation.navigate('EditRefereeFeeScreen', {
+                  onPress={() => navigation.navigate('EditScorekeeperFeeScreen', {
                     editableAlter: true,
                     body: bodyParams,
                   })
@@ -1123,7 +1052,7 @@ export default function EditRefereeReservation({ navigation, route }) {
               showNextArrow={true}
               onPress={() => {
                 navigation.navigate('PaymentMethodsScreen', {
-                  comeFrom: 'EditRefereeReservation',
+                  comeFrom: 'EditScorekeeperReservation',
                 })
               }}
             />
@@ -1148,7 +1077,7 @@ export default function EditRefereeReservation({ navigation, route }) {
             </View>
           )}
           {checkSenderOrReceiver(bodyParams) === 'sender'
-              && bodyParams.status === RefereeReservationStatus.changeRequest
+              && bodyParams.status === ScorekeeperReservationStatus.changeRequest
                && (
                  <View style={{ marginTop: 15 }}>
                    <TCBorderButton
@@ -1159,7 +1088,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                     shadow={true}
                     onPress={() => {
                       let callerId = '';
-                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                      if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }
                       cancelAlterReservationOperation(
@@ -1173,14 +1102,14 @@ export default function EditRefereeReservation({ navigation, route }) {
                )}
 
           {checkSenderOrReceiver(bodyParams) === 'receiver'
-              && bodyParams.status === RefereeReservationStatus.changeRequest
+              && bodyParams.status === ScorekeeperReservationStatus.changeRequest
               && bodyParams.expiry_datetime < new Date().getTime() && (
                 <View style={{ marginTop: 15 }}>
                   <TCGradientButton
                     title={strings.accept}
                     onPress={() => {
                       let callerId = '';
-                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                      if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }
                       acceptDeclineAlterReservationOperation(
@@ -1209,7 +1138,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                 </View>
           )}
 
-          {(((bodyParams.status === RefereeReservationStatus.accepted || bodyParams.status === RefereeReservationStatus.restored) && !isPendingRequestPayment) || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
+          {(((bodyParams.status === ScorekeeperReservationStatus.accepted || bodyParams.status === ScorekeeperReservationStatus.restored) && !isPendingRequestPayment) || (bodyParams.status === ScorekeeperReservationStatus.declined && isDeclined)) && (
             <View>
               <TCGradientButton
                     title={strings.sendAlterRequest}
@@ -1222,7 +1151,6 @@ export default function EditRefereeReservation({ navigation, route }) {
                     onPress={() => {
                       if (
                         editInfo
-                        || refereeUpdate
                         || editPayment
                       ) {
                         updateReservationDetail();
@@ -1247,8 +1175,8 @@ export default function EditRefereeReservation({ navigation, route }) {
                   />
             </View>
           )}
-          {(bodyParams.status === RefereeReservationStatus.changeRequest
-              || bodyParams.status === RefereeReservationStatus.pendingrequestpayment) && (
+          {(bodyParams.status === ScorekeeperReservationStatus.changeRequest
+              || bodyParams.status === ScorekeeperReservationStatus.pendingrequestpayment) && (
                 <View>
                   <TCBorderButton
                   title={strings.cancelreservation}
@@ -1266,7 +1194,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                       && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
                     ) {
                       let callerId = '';
-                      if (bodyParams?.referee?.user_id !== entity.uid) {
+                      if (bodyParams?.scorekeeper?.user_id !== entity.uid) {
                         callerId = entity.uid
                       }
                       acceptDeclineAlterReservationOperation(
@@ -1284,7 +1212,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                 />
                 </View>
           )}
-          {(bodyParams.status === RefereeReservationStatus.declined && !isDeclined) && (
+          {(bodyParams.status === ScorekeeperReservationStatus.declined && !isDeclined) && (
             <View>
               <TCBorderButton
                   title={strings.alterReservation}
@@ -1297,19 +1225,6 @@ export default function EditRefereeReservation({ navigation, route }) {
                     setIsDeclined(true)
                     setbodyParams(oldVersion)
                     scroll.current.scrollTo(0, 0)
-                    // if (
-                    //   (bodyParams?.game?.status === GameStatus.accepted
-                    //     || bodyParams?.game?.status === GameStatus.reset)
-                    //   && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
-                    // ) {
-                    //   navigation.navigate('AlterRefereeScreen', {
-                    //     reservationObj: bodyParams,
-                    //   });
-                    // } else {
-                    //   Alert.alert(
-                    //     'Reservation cannot be change after game time passed or offer expired.',
-                    //   );
-                    // }
                   }}
                 />
               <TCBorderButton
@@ -1323,7 +1238,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                   marginTop={15}
                   onPress={() => {
                     if (bodyParams?.game?.status === (GameStatus.accepted || GameStatus.reset)) {
-                      acceptDeclineRefereeReservation(
+                      acceptDeclineScorekeeperReservation(
                         bodyParams.reservation_id,
                         bodyParams.version,
                         'cancel',

@@ -42,6 +42,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 import * as Utils from '../challenge/ChallengeUtility';
 import * as RefereeUtils from '../referee/RefereeUtility';
+import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import {
   getQBAccountType,
   QB_ACCOUNT_TYPE,
@@ -107,6 +108,26 @@ function NotificationsListScreen({ navigation }) {
           ?.reservation_id;
         setloading(true);
         RefereeUtils.getRefereeReservationDetail(a, authContext.entity.uid, authContext).then((obj) => {
+          console.log('Reservation Object:', obj.reservationObj);
+          console.log('Screen name of Reservation:', obj.screenName);
+          navigation.navigate(obj.screenName, {
+            reservationObj: obj.reservationObj || obj.reservationObj[0],
+          });
+          setloading(false);
+        }).catch(() => setloading(false));
+      } else if (verb.includes(NotificationType.scorekeeperReservationInitialPaymentFail)
+       || verb.includes(NotificationType.scorekeeperReservationAlterPaymentFail)
+       || verb.includes(NotificationType.scorekeeperReservationAwaitingPaymentPaid)
+       || verb.includes(NotificationType.scorekeeperReservationAutoCanceledDueToInitialPaymentFailed)
+       || verb.includes(NotificationType.scorekeeperReservationAutoRestoredDueToAlterPaymentFailed)
+       || verb.includes(NotificationType.scorekeeperReservationCanceledDuringAwaitingPayment)
+       || verb.includes(NotificationType.scorekeeperReservationRestoredDuringAwaitingPayment)
+       || verb.includes(NotificationType.scorekeeperRequest)
+       || verb.includes(NotificationType.changeScorekeeperRequest)) {
+        const a = JSON.parse(item.activities[0].object)?.reservationObject
+          ?.reservation_id;
+        setloading(true);
+        ScorekeeperUtils.getScorekeeperReservationDetail(a, authContext.entity.uid, authContext).then((obj) => {
           console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
           console.log('Screen name of Reservation:', obj.screenName);
           navigation.navigate(obj.screenName, {
@@ -114,9 +135,10 @@ function NotificationsListScreen({ navigation }) {
           });
           setloading(false);
         }).catch(() => setloading(false));
-      } else if (verb.includes(NotificationType.scorekeeperRequest)) {
-        Alert.alert('Remain Functionality')
       }
+      // else if (verb.includes(NotificationType.scorekeeperRequest)) {
+      //   Alert.alert('Remain Functionality')
+      // }
     } else {
       showSwitchProfilePopup()
     }

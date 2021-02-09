@@ -91,12 +91,12 @@ const BookScorekeeper = ({ navigation, route }) => {
           {/*  Total and Filter */}
           <View style={styles.totalAndFilterContainer}>
             <Text style={styles.totalScorekeeperText}>Total {scorekeepersData?.length ?? 0} Scorekeepers</Text>
-            <Text style={styles.filtersText}>Filters</Text>
           </View>
 
           {/*  Scorekeeper List Container */}
           {!loading && (
             <FlatList
+            showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item?.user_id}
             bounces={false}
               data={searchText === '' ? scorekeepersData : searchData}
@@ -180,11 +180,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  filtersText: {
-    fontSize: 14,
-    fontFamily: fonts.RBold,
-    color: colors.themeColor,
-  },
+
   emptySectionListItem: {
     fontSize: 16,
     fontFamily: fonts.RLight,
