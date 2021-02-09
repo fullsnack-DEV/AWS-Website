@@ -8,9 +8,9 @@ export const getFeesEstimation = async (entityID, params, authContext) => makeAP
   authContext,
 })
 
-export const getRefereeFeesEstimation = async (refereeId, params, authContext) => makeAPIRequest({
+export const getEntityFeesEstimation = async (reservationEntityType, refereeId, params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}referees/reservation/${refereeId}/estimateGameFee`,
+  url: `${Config.BASE_URL}${reservationEntityType}/reservation/${refereeId}/estimateGameFee`,
   data: params,
   authContext,
 })
@@ -42,6 +42,19 @@ export const payAgainReferee = async (reservationID, params, authContext) => mak
   authContext,
 })
 
+export const payAgainAlterScorekeeper = async (reservationID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}scorekeepers/${reservationID}/alterrequest/payment`,
+  data: params,
+  authContext,
+})
+export const payAgainScorekeeper = async (reservationID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}scorekeepers/${reservationID}/payment`,
+  data: params,
+  authContext,
+})
+
 export const createChallenge = async (entityID, type, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}${type}/${entityID}/challenge`,
@@ -55,9 +68,9 @@ export const getChallenge = async (challengeId, authContext) => makeAPIRequest({
   url: `${Config.BASE_URL}teams/challenge/${challengeId}`,
   authContext,
 })
-export const getReservation = async (reservationId, callerID, authContext) => makeAPIRequest({
+export const getReservation = async (bookingType = 'referees', reservationId, callerID, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}referees/reservation/${reservationId}`,
+  url: `${Config.BASE_URL}${bookingType}/reservation/${reservationId}`,
   headers: { caller_id: callerID },
   authContext,
 })
@@ -67,17 +80,17 @@ export const acceptDeclineChallenge = async (teamId, challengeId, versionNo, sta
   data: params,
   authContext,
 })
-export const acceptDeclineReservation = async (reservationID, callerID, versionNo, status, params = {}, authContext) => makeAPIRequest({
+export const acceptDeclineReservation = async (reservationEntityType, reservationID, callerID, versionNo, status, params = {}, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}referees/reservation/${reservationID}/${status}?version=${versionNo}`,
+  url: `${Config.BASE_URL}${reservationEntityType}/reservation/${reservationID}/${status}?version=${versionNo}`,
   data: params,
   headers: { caller_id: callerID },
   authContext,
 })
 
-export const acceptDeclineAlterReservation = async (reservationID, callerID, versionNo, status, params = {}, authContext) => makeAPIRequest({
+export const acceptDeclineAlterReservation = async (reservationEntityType, reservationID, callerID, versionNo, status, params = {}, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}referees/reservation/${reservationID}/${status}/alterrequest?version=${versionNo}`,
+  url: `${Config.BASE_URL}${reservationEntityType}/reservation/${reservationID}/${status}/alterrequest?version=${versionNo}`,
   data: params,
   headers: { caller_id: callerID },
   authContext,
@@ -112,6 +125,13 @@ export const updateReservation = async (reservationId, callerID, params, authCon
 export const getRefereeGameFeeEstimation = async (entityID, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}referees/reservation/${entityID}/estimateGameFee`,
+  data: params,
+  authContext,
+})
+
+export const getScorekeeperGameFeeEstimation = async (entityID, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}scorekeepers/reservation/${entityID}/estimateGameFee`,
   data: params,
   authContext,
 })

@@ -1469,6 +1469,16 @@ export default function HomeScreen({ navigation, route }) {
   const cancelRequest = (axiosTokenSource) => {
     setCancelApiRequest({ ...axiosTokenSource });
   }
+
+  const actionSheetOpetions = () => {
+    if (selectedEventItem !== null && selectedEventItem.game) {
+      if (refereeFound(selectedEventItem)) {
+        return ['Referee Reservation Details', 'Change Events Color', 'Cancel']
+      }
+      return ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
+    }
+    return ['Edit', 'Delete', 'Cancel']
+  }
   const renderRefereesTabContainer = (tabKey) => (
     <View style={{ flex: 1 }}>
 
@@ -2147,10 +2157,7 @@ export default function HomeScreen({ navigation, route }) {
                   </Modal>
                   <ActionSheet
                     ref={eventEditDeleteAction}
-                    options={selectedEventItem !== null && selectedEventItem.game
-                      ? refereeFound(selectedEventItem) ? ['Referee Reservation Details', 'Change Events Color', 'Cancel'] : ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
-                      : ['Edit', 'Delete', 'Cancel']
-                    }
+                    options={actionSheetOpetions()}
                 cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
                 destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
                 onPress={(index) => {
@@ -2757,6 +2764,8 @@ export default function HomeScreen({ navigation, route }) {
               />
               <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
               <RefereesProfileSection
+               isReferee = {true}
+
                   bookRefereeButtonVisible={authContext?.entity?.uid !== currentUserData?.user_id}
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
@@ -2764,7 +2773,9 @@ export default function HomeScreen({ navigation, route }) {
                 feesCount={(selectRefereeData && selectRefereeData.fee) ? selectRefereeData.fee : 0}
                 onBookRefereePress={() => {
                   setRefereesInModalVisible(false);
-                  navigation.navigate('RefereeBookingDateAndTime', { userData: currentUserData, showMatches: true, navigationName: 'HomeScreen' });
+                  navigation.navigate('RefereeBookingDateAndTime', {
+                    userData: currentUserData, showMatches: true, navigationName: 'HomeScreen', sportName,
+                  });
                 }}
               />
 
@@ -3067,6 +3078,7 @@ export default function HomeScreen({ navigation, route }) {
               />
               <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
               <RefereesProfileSection
+              isReferee = {false}
                   bookRefereeButtonVisible={authContext?.entity?.uid !== currentUserData?.user_id}
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
@@ -3074,7 +3086,9 @@ export default function HomeScreen({ navigation, route }) {
                 feesCount={(selectScorekeeperData && selectScorekeeperData.fee) ? selectScorekeeperData.fee : 0}
                 onBookRefereePress={() => {
                   setScorekeeperInModalVisible(false);
-                  navigation.navigate('RefereeBookingDateAndTime', { userData: currentUserData, showMatches: true, navigationName: 'HomeScreen' });
+                  navigation.navigate('ScorekeeperBookingDateAndTime', {
+                    userData: currentUserData, showMatches: true, navigationName: 'HomeScreen', sportName,
+                  });
                 }}
               />
 

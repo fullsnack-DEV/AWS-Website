@@ -1,25 +1,27 @@
 import React from 'react';
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image, TouchableOpacity,
+  Text, View, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
+import strings from '../../../Constants/String';
 
 export default function RefereesProfileSection({
+  isReferee,
+  feesCount,
   profileImage,
   userName,
   location,
   onBookRefereePress,
   bookRefereeButtonVisible = true,
 }) {
+  console.log('Currunt user data:=>', feesCount);
   return (
     <View style={styles.topViewContainer}>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.profileView}>
-          <Image source={profileImage} style={ styles.profileImage } />
+          <Image source={profileImage} style={styles.profileImage} />
         </View>
         <View style={styles.topTextContainer}>
           <Text style={styles.userNameTextStyle}>{userName}</Text>
@@ -27,8 +29,18 @@ export default function RefereesProfileSection({
         </View>
       </View>
       {bookRefereeButtonVisible && (
-        <TouchableOpacity onPress={onBookRefereePress}>
-          <Text style={styles.editTextStyle}>{'BOOK REFEREE'}</Text>
+        <TouchableOpacity
+          onPress={onBookRefereePress}>
+          <LinearGradient
+            colors={isReferee ? [colors.themeColor, colors.yellowColor] : [colors.blueGradiantStart, colors.blueGradiantEnd]}
+            style={isReferee ? styles.refereeButtonStyle : styles.scorekeeperButtonStyle}>
+            <Text style={styles.editTextStyle}>
+              ${feesCount} CAD (per hours)
+            </Text>
+            <Text style={styles.editTextStyle}>
+              {isReferee ? strings.bookReferee : strings.bookScorekeeper}
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
       )}
     </View>
@@ -77,6 +89,42 @@ const styles = StyleSheet.create({
   editTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RBold,
-    color: colors.redDelColor,
+    color: colors.whiteColor,
+  },
+  refereeButtonStyle: {
+    height: 40,
+    width: '98%',
+    backgroundColor: colors.themeColor,
+    alignSelf: 'center',
+    marginTop: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 15,
+    paddingRight: 15,
+    alignItems: 'center',
+    borderRadius: 10,
+    shadowColor: colors.themeColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  scorekeeperButtonStyle: {
+    height: 40,
+    width: '98%',
+    backgroundColor: colors.blueGradiantStart,
+    alignSelf: 'center',
+    marginTop: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 15,
+    paddingRight: 15,
+    alignItems: 'center',
+    borderRadius: 10,
+    shadowColor: colors.blueGradiantStart,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

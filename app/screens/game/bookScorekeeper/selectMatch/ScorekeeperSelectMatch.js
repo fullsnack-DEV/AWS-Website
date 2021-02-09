@@ -17,7 +17,7 @@ import GameCard from '../../../../components/TCGameCard';
 
 const TYPING_SPEED = 200;
 
-const RefereeSelectMatch = ({ navigation, route }) => {
+const ScorekeeperSelectMatch = ({ navigation, route }) => {
   const sport = route?.params?.sport;
   const userData = route?.params?.userData;
   const authContext = useContext(AuthContext)
@@ -32,9 +32,9 @@ const RefereeSelectMatch = ({ navigation, route }) => {
     const headers = {}
     headers.caller_id = authContext?.entity?.uid;
     getGameSlots(
-      'referees',
+      'scorekeepers',
       userData?.user_id,
-      `status=accepted&sport=${sport}&refereeDetail=true`,
+      `status=accepted&sport=${sport}&scorekeeperDetail=true`,
       headers,
       authContext,
     )
@@ -97,23 +97,17 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                     data={item}
                     onPress={() => {
                       const game = item;
-                      let isSameReferee = false;
-                      const sameRefereeCount = game?.referees?.filter((gameReferee) => gameReferee?.user_id === userData?.user_id);
-                      if (sameRefereeCount?.length > 0) isSameReferee = true;
-                      const isCheif = userData?.chief_referee;
-                      const cheifCnt = game?.referees?.filter((chal_ref) => chal_ref?.chief_referee)?.length;
-                      const assistantCnt = game?.referees?.filter((chal_ref) => !chal_ref?.chief_referee)?.length;
+                      let isSameScorekeeper = false;
+                      const sameScorekeeperCount = game?.scorekeepers?.filter((gameScorekeeper) => gameScorekeeper?.user_id === userData?.user_id);
+                      if (sameScorekeeperCount?.length > 0) isSameScorekeeper = true;
+
                       let message = '';
-                      if (isSameReferee) {
-                        message = 'This referee is already booked for this game.';
+                      if (isSameScorekeeper) {
+                        message = 'This scorekeeper is already booked for this game.';
                       } else if (!game.isAvailable) {
-                        message = 'There is no available slot of a referee who you can book in this game.';
-                      } else if ((game?.referees?.count ?? 0) >= 3) {
-                        message = 'There is no available slot of a referee who you can book in this game.';
-                      } else if (isCheif && cheifCnt >= 1) {
-                        message = 'There is no available slot of a chief referee who you can book in this game.';
-                      } else if (!isCheif && assistantCnt >= 2) {
-                        message = 'There is no available slot of an assistant referee who you can book in this game.';
+                        message = 'There is no available slot of a scorekeeper who you can book in this game.';
+                      } else if ((game?.scorekeepers?.count ?? 0) >= 3) {
+                        message = 'There is no available slot of a scorekeeper who you can book in this game.';
                       }
                       if (message === '') {
                         navigation.navigate(route?.params?.comeFrom, {
@@ -170,4 +164,4 @@ const styles = StyleSheet.create({
   },
 
 })
-export default RefereeSelectMatch;
+export default ScorekeeperSelectMatch;

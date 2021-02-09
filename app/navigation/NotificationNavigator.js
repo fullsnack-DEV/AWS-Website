@@ -17,6 +17,7 @@ import AlterRequestSent from '../screens/challenge/alterChallenge/AlterRequestSe
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterRefereeScreen from '../screens/referee/alterReferee/AlterRefereeScreen';
 import EditRefereeReservation from '../screens/referee/alterReferee/EditRefereeReservation';
+
 import CurruentRefereeReservationScreen from '../screens/referee/alterReferee/CurruentRefereeReservationScreen';
 import EditRefereeFeeScreen from '../screens/referee/alterReferee/EditRefereeFeeScreen';
 import RefereeRequestSent from '../screens/referee/RefereeRequestSent';
@@ -56,6 +57,17 @@ import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekee
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
 import SoccerApproveDisapproveConfirmation
   from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
+
+// Scorekeeper screens
+import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
+import ScorekeeperRequestSent from '../screens/scorekeeper/ScorekeeperRequestSent';
+import EditScorekeeperReservation from '../screens/scorekeeper/alterScorekeeper/EditScorekeeperReservation';
+import EditScorekeeperFeeScreen from '../screens/scorekeeper/alterScorekeeper/EditScorekeeperFeeScreen';
+import PayAgainScorekeeperScreen from '../screens/scorekeeper/PayAgainScorekeeperScreen';
+import CurruentScorekeeperReservationScreen from '../screens/scorekeeper/alterScorekeeper/CurruentScorekeeperReservationScreen';
+import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen';
+import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
+import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAcceptDeclineScreen';
 
 const Stack = createStackNavigator();
 
@@ -374,6 +386,7 @@ function NotificationNavigator() {
           headerShown: false,
         } }
       />
+
       <Stack.Screen
         name="CreateChallengeForm1"
         component={ CreateChallengeForm1 }
@@ -672,6 +685,127 @@ function NotificationNavigator() {
                 borderBottomWidth: 0.3,
               },
             } }
+        />
+      {/* Scorekeeper screens */}
+      <Stack.Screen
+            name="ScorekeeperReservationScreen"
+            component={ScorekeeperReservationScreen}
+            options={{
+              title: 'Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+      <Stack.Screen
+        name="ScorekeeperRequestSent"
+        component={ ScorekeeperRequestSent
+        }
+        options={ {
+          headerShown: false,
+        } }
+      />
+      <Stack.Screen
+            name="EditScorekeeperReservation"
+            component={EditScorekeeperReservation}
+            options={{
+              title: 'Change Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+      <Stack.Screen
+        name="EditScorekeeperFeeScreen"
+        component={ EditScorekeeperFeeScreen }
+        options={ {
+          title: 'Scorekeeper Fee',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+      <Stack.Screen
+        name="PayAgainScorekeeperScreen"
+        component={ PayAgainScorekeeperScreen }
+        options={ {
+          title: 'Pay',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+      <Stack.Screen
+        name="CurruentScorekeeperReservationScreen"
+        component={ CurruentScorekeeperReservationScreen }
+        options={ {
+          title: 'Curruent Scorekeeper Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+      <Stack.Screen
+            name="AlterScorekeeperScreen"
+            component={AlterScorekeeperScreen}
+            options={{
+              title: 'Change Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+      <Stack.Screen
+            name="ScorekeeperSelectMatch"
+            component={ScorekeeperSelectMatch}
+            options={{
+              headerShown: false,
+            }}
+        />
+      <Stack.Screen
+         name="ScorekeeperAcceptDeclineScreen"
+         component={ScorekeeperAcceptDeclineScreen}
+         options={{
+           headerShown: false,
+         }}
         />
     </Stack.Navigator>
   );

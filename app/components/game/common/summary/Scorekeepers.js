@@ -12,8 +12,10 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import TCUserFollowUnfollowList from '../../../TCUserFollowUnfollowList';
 import TCGradientButton from '../../../TCGradientButton';
 import AuthContext from '../../../../auth/context';
-// import ActivityLoader from '../../../loader/ActivityLoader';
+import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
+import * as ScorekeeperUtils from '../../../../screens/scorekeeper/ScorekeeperUtility';
+
 import ScorekeeperReservationStatus from '../../../../Constants/ScorekeeperReservationStatus';
 
 let selectedScorekeeperData;
@@ -28,8 +30,9 @@ const Scorekeepers = ({
 }) => {
   const [scorekeeper, setScorekeeper] = useState([]);
   const actionSheet = useRef();
+
   const authContext = useContext(AuthContext)
-  // const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(false);
   const [myUserId, setMyUserId] = useState(null);
 
   useEffect(() => { getMyUserId() }, [])
@@ -52,16 +55,16 @@ const Scorekeepers = ({
 
   const goToScorekeeperReservationDetail = (data) => {
     console.log('Reservation data:', JSON.stringify(data));
-    // setloading(true);
-    // RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
-    //   setloading(false);
-    //   console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-    //   console.log('Screen name of Reservation:', obj.screenName);
-    //   navigation.navigate(obj.screenName, {
-    //     reservationObj: obj.reservationObj || obj.reservationObj[0],
-    //   });
-    //   setloading(false);
-    // }).catch(() => setloading(false));
+    setloading(true);
+    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+      setloading(false);
+      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+      console.log('Screen name of Reservation:', obj.screenName);
+      navigation.navigate(obj.screenName, {
+        reservationObj: obj.reservationObj || obj.reservationObj[0],
+      });
+      setloading(false);
+    }).catch(() => setloading(false));
   }
   const onFollowPress = (userID, status) => {
     const sKeeper = _.cloneDeep(scorekeeper);
@@ -120,7 +123,7 @@ const Scorekeepers = ({
   }
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
-      {/* <ActivityLoader visible={loading} /> */}
+      <ActivityLoader visible={loading} />
       <Text style={styles.title}>
         Scorekeepers
       </Text>

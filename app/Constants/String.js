@@ -546,5 +546,13 @@ const strings = {
   editReviewText: 'EDIT REVIEW FOR A TEAM',
   leaveReviewText: 'LEAVE REVIEW FOR A TEAM',
   leaveOrEditReviewText: 'LEAVE OR EDIT YOUR REVIEW',
+  bookReferee: 'BOOK REFEREE',
+  bookScorekeeper: 'BOOK SCOREKEEPER',
+  refereeRequestScreenTitle: 'Referee Reservation Request',
+  refereeScreenTitle: 'Referee Reservation',
+
+  scorekeeperRequestScreenTitle: 'Scorekeeper Reservation Request',
+  scorekeeperScreenTitle: 'Scorekeeper Reservation',
+
 };
 export default strings;

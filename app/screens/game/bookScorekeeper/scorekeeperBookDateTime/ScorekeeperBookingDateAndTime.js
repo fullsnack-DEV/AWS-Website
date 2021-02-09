@@ -29,15 +29,24 @@ import TCProfileView from '../../../../components/TCProfileView';
 import TCGameCard from '../../../../components/TCGameCard';
 import TCInfoField from '../../../../components/TCInfoField';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../../../utils/gameUtils';
-// import { getFeesEstimation } from '../../../../api/Challenge';
+import { getScorekeeperGameFeeEstimation } from '../../../../api/Challenge';
 import { createUserReservation } from '../../../../api/Reservations';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
+import TCTouchableLabel from '../../../../components/TCTouchableLabel';
+import * as Utility from '../../../../utils';
+import MatchFeesCard from '../../../../components/challenge/MatchFeesCard';
+import strings from '../../../../Constants/String';
 
+let body = {};
 const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
+  const sportName = route?.params?.sportName;
   const userData = route?.params?.userData;
   const gameData = route?.params?.gameData;
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
+
+  const [challengeObject, setChallengeObject] = useState()
+  const [hourly_game_fee, setHourlyGameFee] = useState(0);
 
   // const getFeeEstimation = () => {
   //   if (gameData?.challenge_scorekeeper?.[0]?.responsible_team_id !== 'none') {
@@ -51,8 +60,39 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
   //       });
   //   }
   // }
+  const getFeeDetail = () => {
+    const gData = route?.params?.gameData;
+    if (gData) {
+      const hFee = userData?.scorekeeper_data.filter((item) => item?.sport_name?.toLowerCase() === gData?.sport?.toLowerCase())?.[0]?.fee ?? 0;
+      const cType = userData?.scorekeeper_data.filter((item) => item?.sport_name?.toLowerCase() === gData?.sport?.toLowerCase())?.[0]?.currency_type ?? 'CAD';
+      setHourlyGameFee(hFee);
+      setLoading(true);
+      body = {
+        sport: gData?.sport,
+        manual_fee: false,
+        start_datetime: gData?.start_datetime,
+        end_datetime: gData?.end_datetime,
+      };
+      getScorekeeperGameFeeEstimation(userData?.user_id, body, authContext).then((response) => {
+        body.total_payout = response?.payload?.total_payout ?? 0;
+        body.service_fee1_charges = response?.payload?.total_service_fee1 ?? 0;
+        body.service_fee2_charges = response?.payload?.total_service_fee2 ?? 0;
+        body.total_charges = response?.payload?.total_amount ?? 0;
+        body.total_game_charges = response?.payload?.total_game_fee ?? 0;
+        body.payment_method_type = 'card';
+        body = { ...body, hourly_game_fee: hFee, currency_type: cType };
+        setChallengeObject(body);
+        setLoading(false);
+      })
+        .catch(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    // getFeeEstimation();
+    getFeeDetail();
   }, [])
   const Title = ({ text, required }) => (
     <Text style={styles.titleText}>
@@ -73,19 +113,48 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
   }
 
   const handleOnNext = () => {
-    setLoading(true);
+    // setLoading(true);
+    // const bodyParams = {
+    //   scorekeeper_id: userData?.user_id,
+    //   game_id: gameData?.game_id,
+    // }
+    // createUserReservation('scorekeepers', bodyParams, authContext).then(() => {
+    //   setLoading(false);
+    //   const navigationName = getGameHomeScreen(gameData?.sport);
+    //   navigation.navigate('BookScorekeeperSuccess', { navigationScreenName: navigationName })
+    // }).catch((error) => {
+    //   setLoading(false);
+    //   setTimeout(() => Alert.alert('Towns Cup', error?.message), 200);
+    // });
+    // return true;
+    if (!gameData?.game_id) {
+      Alert.alert('Towns Cup', 'You don\'t have any selected match');
+      return false;
+    }
     const bodyParams = {
+      source: route?.params?.paymentMethod?.id,
       scorekeeper_id: userData?.user_id,
       game_id: gameData?.game_id,
+      ...challengeObject,
     }
+    delete bodyParams.sport;
+    delete bodyParams.start_datetime;
+    delete bodyParams.end_datetime;
+
+    if (Number(bodyParams.hourly_game_fee) > 0 && !bodyParams?.source) {
+      Alert.alert('Towns Cup', 'Select Payment Method')
+      return false;
+    }
+    if (Number(bodyParams.hourly_game_fee) === 0) delete bodyParams.source;
+
+    delete bodyParams.hourly_game_fee
+    setLoading(true);
     createUserReservation('scorekeepers', bodyParams, authContext).then(() => {
-      setLoading(false);
-      const navigationName = getGameHomeScreen(gameData?.sport);
+      const navigationName = route?.params?.navigationName ?? getGameHomeScreen(gameData?.sport);
       navigation.navigate('BookScorekeeperSuccess', { navigationScreenName: navigationName })
     }).catch((error) => {
-      setLoading(false);
-      setTimeout(() => Alert.alert('Towns Cup', error?.message), 200);
-    });
+      setTimeout(() => Alert.alert('Towns Cup', error?.message), 200)
+    }).finally(() => setLoading(false));
     return true;
   }
   return (
@@ -124,15 +193,43 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
 
           {/* Choose Match */}
           <View style={styles.contentContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Title text={'Choose a Match'} required={true} />
+
+            {/* <Title text={'Choose a Match'} required={true} />
               {!gameData && (
                 <FastImage
                   source={images.arrowGraterthan}
                   style={{ width: 12, height: 12 }}
               />
-              )}
-            </View>
+              )} */}
+            <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('ScorekeeperSelectMatch', {
+                        userData,
+                        sport: sportName,
+                        comeFrom: 'ScorekeeperBookingDateAndTime',
+                      });
+                    }}
+                    disabled={!route?.params?.showMatches}
+                    activeOpacity={!route?.params?.showMatches ? 1 : 0.7}
+                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Title text={'Choose a Match'} required={true} />
+              {route?.params?.showMatches && (
+                <View onPress={() => {
+                  navigation.navigate('ScorekeeperSelectMatch', {
+                    userData,
+                    sport: sportName,
+                    comeFrom: 'ScorekeeperBookingDateAndTime',
+                  });
+                }}>
+
+                  <FastImage
+                              source={images.arrowGraterthan}
+                              style={{ width: 12, height: 12 }}
+                          />
+                </View>
+                )}
+            </TouchableOpacity>
+
             {gameData && <TCGameCard data={gameData} onPress={() => {
               const routeName = getGameHomeScreen(gameData?.sport);
               navigation.push(routeName, { gameId: gameData?.game_id })
@@ -146,7 +243,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
                 <Title text={'Date & Time'} />
                 <TCInfoField
                     title={'Date'}
-                    value={gameData?.timestamp && moment(gameData?.timestamp * 1000).format('MMM DD, YYYY')}
+                    value={gameData?.start_datetime && moment(gameData?.start_datetime * 1000).format('MMM DD, YYYY')}
                     titleStyle={{ alignSelf: 'flex-start', fontFamily: fonts.RRegular }}
                 />
                 <Seperator height={2}/>
@@ -190,7 +287,37 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
             </View>
           )}
           <Seperator/>
+          {/* Payment Method */}
+          {Number(hourly_game_fee) > 0 && (
+            <View style={styles.contentContainer}>
+              <Title text={'Payment Method'} />
+              <View style={{ marginTop: 10 }}>
+                <TCTouchableLabel
+                          title={route.params.paymentMethod ? Utility.capitalize(route.params.paymentMethod.card.brand) : strings.addOptionMessage}
+                          subTitle={route.params.paymentMethod?.card.last4 }
+                          showNextArrow={true}
+                          onPress={() => {
+                            navigation.navigate('PaymentMethodsScreen', {
+                              comeFrom: 'ScorekeeperBookingDateAndTime',
+                            })
+                          }}
+                      />
+              </View>
+            </View>
+          )}
 
+          {/* Payment */}
+          { gameData && (
+            <View style={styles.contentContainer}>
+              <Title text={'Payment'} />
+              <View style={{ marginTop: 10 }}>
+
+                <MatchFeesCard challengeObj={challengeObject} senderOrReceiver={'sender'} type='scorekeeper' />
+              </View>
+            </View>
+          )}
+
+          <Seperator />
           {/* Next Button */}
           <TCGradientButton
               title={'Next'}

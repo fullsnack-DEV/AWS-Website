@@ -12,6 +12,7 @@ const NotificationType = {
   refereeRequest: 'refereeRequest',
   changeRefereeRequest: 'changeRefereeRequest',
   scorekeeperRequest: 'scorekeeperRequest',
+  changeScorekeeperRequest: 'changeScorekeeperRequest',
 
   initialChallengePaymentFail: 'initialChallengePaymentFail',
   alterChallengePaymentFail: 'alterChallengePaymentFail',
@@ -28,6 +29,14 @@ const NotificationType = {
   refereeReservationAutoRestoredDueToAlterPaymentFailed: 'refereeReservationAutoRestoredDueToAlterPaymentFailed',
   refereeReservationCanceledDuringAwaitingPayment: 'refereeReservationCanceledDuringAwaitingPayment',
   refereeReservationRestoredDuringAwaitingPayment: 'refereeReservationRestoredDuringAwaitingPayment',
+
+  scorekeeperReservationInitialPaymentFail: 'scorekeeperReservationInitialPaymentFail',
+  scorekeeperReservationAlterPaymentFail: 'scorekeeperReservationAlterPaymentFail',
+  scorekeeperReservationAwaitingPaymentPaid: 'scorekeeperReservationAwaitingPaymentPaid',
+  scorekeeperReservationAutoCanceledDueToInitialPaymentFailed: 'scorekeeperReservationAutoCanceledDueToInitialPaymentFailed',
+  scorekeeperReservationAutoRestoredDueToAlterPaymentFailed: 'scorekeeperReservationAutoRestoredDueToAlterPaymentFailed',
+  scorekeeperReservationCanceledDuringAwaitingPayment: 'scorekeeperReservationCanceledDuringAwaitingPayment',
+  scorekeeperReservationRestoredDuringAwaitingPayment: 'scorekeeperReservationRestoredDuringAwaitingPayment',
 };
 
 export default NotificationType

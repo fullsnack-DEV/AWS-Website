@@ -155,6 +155,11 @@ import RegisterScorekeeperForm2 from '../screens/account/registerScorekeeper/Reg
 import RegisterScorekeeperSuccess from '../screens/account/registerScorekeeper/RegisterScorekeeperSuccess';
 import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 
+// Scorekeeper reservation screens
+import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
+
+// Scorekeeper reservation screens
+
 const Stack = createStackNavigator();
 
 const HomeNavigator = () => (
@@ -1914,7 +1919,22 @@ const HomeNavigator = () => (
               headerShown: false,
             }}
         />
-
+    <Stack.Screen
+            name="ScorekeeperReservationScreen"
+            component={ScorekeeperReservationScreen}
+            options={{
+              title: 'Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
   </Stack.Navigator>
 );
 

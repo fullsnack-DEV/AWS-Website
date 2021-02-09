@@ -13,7 +13,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
 // NotificationsListScreen
-const RefereeRequestSent = ({ navigation, route }) => {
+const ScorekeeperRequestSent = ({ navigation, route }) => {
   const imagesSet = [
     images.emailSent1,
     images.emailSent2,
@@ -76,4 +76,4 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
-export default RefereeRequestSent;
+export default ScorekeeperRequestSent;

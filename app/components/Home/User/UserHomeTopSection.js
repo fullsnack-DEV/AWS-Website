@@ -38,11 +38,14 @@ export default function UserHomeTopSection({
   }
 
   const oneLineSection = () => {
-    const games = userDetails?.games?.map((obj) => {
-      const o = { ...obj };
-      o.type = EntityStatus.playin;
-      return o;
-    }) ?? []
+    let games = []
+    if (userDetails?.games?.status) {
+      games = userDetails?.games?.map((obj) => {
+        const o = { ...obj };
+        o.type = EntityStatus.playin;
+        return o;
+      }) ?? []
+    }
 
     const referee = userDetails?.referee_data?.map((obj) => {
       const o = { ...obj };

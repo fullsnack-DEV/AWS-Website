@@ -183,6 +183,15 @@ export default function ScheduleScreen({ navigation }) {
       });
     }
   }
+  const actionSheetOpetions = () => {
+    if (selectedEventItem !== null && selectedEventItem.game) {
+      if (refereeFound(selectedEventItem)) {
+        return ['Referee Reservation Details', 'Change Events Color', 'Cancel']
+      }
+      return ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
+    }
+    return ['Edit', 'Delete', 'Cancel']
+  }
   const goToRefereReservationDetail = (data) => {
     setloading(true);
     RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
@@ -535,10 +544,7 @@ export default function ScheduleScreen({ navigation }) {
 
       <ActionSheet
         ref={eventEditDeleteAction}
-        options={selectedEventItem !== null && selectedEventItem.game
-          ? refereeFound(selectedEventItem) ? ['Referee Reservation Details', 'Change Events Color', 'Cancel'] : ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
-          : ['Edit', 'Delete', 'Cancel']
-        }
+        options={actionSheetOpetions()}
         cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
         destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
         onPress={(index) => {
