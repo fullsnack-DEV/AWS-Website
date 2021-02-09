@@ -227,7 +227,7 @@ const ScorekeeperBookingDateAndTime = ({ navigation, route }) => {
                               style={{ width: 12, height: 12 }}
                           />
                 </View>
-                )}
+              )}
             </TouchableOpacity>
 
             {gameData && <TCGameCard data={gameData} onPress={() => {

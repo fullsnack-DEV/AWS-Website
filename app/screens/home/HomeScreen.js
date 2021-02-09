@@ -69,7 +69,7 @@ import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
 import ClubHomeTopSection from '../../components/Home/Club/ClubHomeTopSection';
 import TeamHomeTopSection from '../../components/Home/Team/TeamHomeTopSection';
 import strings from '../../Constants/String';
-import ProfileViewSection from '../../components/Home/User/ProfileViewSection';
+import PlayInProfileViewSection from './playInModule/PlayInProfileViewSection';
 import RefereesInItem from '../../components/Home/RefereesInItem';
 import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
 import TeamViewInfoSection from '../../components/Home/TeamViewInfoSection';
@@ -110,6 +110,7 @@ import { getGameHomeScreen } from '../../utils/gameUtils';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import TCThinDivider from '../../components/TCThinDivider';
 import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSection';
+import PlayInModule from './playInModule/PlayInModule';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
@@ -208,6 +209,7 @@ export default function HomeScreen({ navigation, route }) {
     draw: 0,
   });
   useEffect(() => {
+    console.log(2);
     console.log('CUR: ', currentUserData);
   }, [currentUserData])
   const [eventData, setEventData] = useState(null);
@@ -230,6 +232,7 @@ export default function HomeScreen({ navigation, route }) {
   const [selectPlayerData, setSelectPlayerData] = useState(null);
   const [languagesName, setLanguagesName] = useState('');
   const [refereeReservData, setRefereeReserveData] = useState([]);
+  const [currentPlayInObject, setCurrentPlayInObject] = useState(null);
 
   // const [reviewsData] = useState(reviews_data);
 
@@ -239,6 +242,7 @@ export default function HomeScreen({ navigation, route }) {
   const addRoleActionSheet = useRef();
 
   useEffect(() => {
+    console.log(3);
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
@@ -298,6 +302,7 @@ export default function HomeScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
+    console.log(4);
     if (selectedEventItem) {
       eventEditDeleteAction.current.show();
     }
@@ -407,12 +412,14 @@ export default function HomeScreen({ navigation, route }) {
     }
   };
   useEffect(() => {
+    console.log(5);
     if (route?.params?.fromAccountScreen) {
       console.log(route?.params?.homeNavigateParams);
       navigation.push('HomeScreen', route?.params?.homeNavigateParams);
     }
   }, [route?.params?.fromAccountScreen])
   useEffect(() => {
+    console.log(6);
     if (isFocused) {
       const loginEntity = authContext.entity
       let uid = loginEntity.uid
@@ -440,6 +447,7 @@ export default function HomeScreen({ navigation, route }) {
   }, [authContext.entity, navigation, isFocused]);
 
   useEffect(() => {
+    console.log(7);
     console.log('Home type::=>', isTeamHome);
     if (isTeamHome) {
       getTeamReviews(route?.params?.uid || authContext.entity.uid, authContext).then((res) => {
@@ -1338,11 +1346,16 @@ export default function HomeScreen({ navigation, route }) {
     });
   }
   const playInModel = (playInObject) => {
-    console.log('playInObject now', playInObject)
     if (playInObject) {
       setPlaysInModalVisible(!playsInModalVisible);
+      setSportName(playInObject?.sport_name);
+      setCurrentPlayInObject({ ...playInObject });
+    } else {
+      navigation.navigate('RegisterPlayer');
+    }
+
+    if (false) {
       const entity = authContext.entity
-      setSportName(playInObject.sport_name);
       setGamesChartData([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       setGameStatsData({
         from_date: false,
@@ -1354,7 +1367,7 @@ export default function HomeScreen({ navigation, route }) {
       if (currentUserData) {
         if (currentUserData?.registered_sports?.length) {
           currentUserData.registered_sports.map((playsInItem) => {
-            if (playsInItem.sport_name === playInObject.sport_name) {
+            if (playsInItem?.sport_name === playInObject?.sport_name) {
               setSelectPlayerData(playsInItem);
             }
             return null;
@@ -1407,7 +1420,7 @@ export default function HomeScreen({ navigation, route }) {
       })
         .catch((error) => Alert.alert(strings.alertmessagetitle, error.message));
     } else {
-      navigation.navigate('RegisterPlayer');
+      // navigation.navigate('RegisterPlayer');
     }
   };
 
@@ -2345,8 +2358,18 @@ export default function HomeScreen({ navigation, route }) {
               </View>
             )}/>
         </View>
+
+        <PlayInModule
+            onModalClose={() => setPlaysInModalVisible(false)}
+            navigation={navigation}
+            visible={playsInModalVisible}
+            userData={currentUserData}
+            playInObject={currentPlayInObject}
+            isAdmin={isAdmin}
+         />
+
         <Modal
-          isVisible={playsInModalVisible}
+          isVisible={false}
           backdropColor="black"
           style={{
             margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
@@ -2377,7 +2400,7 @@ export default function HomeScreen({ navigation, route }) {
                   </TouchableOpacity>
                 }
               />
-              <ProfileViewSection
+              <PlayInProfileViewSection
                 profileImage={userThumbnail ? { uri: userThumbnail } : images.profilePlaceHolder}
                 userName={fullName}
                 feesCount={(selectPlayerData && selectPlayerData.fee) ? selectPlayerData.fee : 0}

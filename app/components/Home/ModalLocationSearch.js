@@ -21,7 +21,7 @@ import Separator from '../Separator';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import { searchLocations } from '../../api/External'
+import { searchLocationPlaceDetail, searchLocations } from '../../api/External'
 
 export default function ModalLocationSearch({ visible, onSelect, onClose }) {
   const authContext = useContext(AuthContext)
@@ -49,8 +49,15 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
     <TouchableOpacity
             style={ styles.listItem }
             onPress={ () => {
-              onClose();
-              onSelect(item)
+              searchLocationPlaceDetail(item?.place_id, authContext).then((response) => {
+                const data = {
+                  ...item,
+                  longitude: response?.result?.geometry?.location?.lng,
+                  latitude: response?.result?.geometry?.location?.lat,
+                }
+                onClose();
+                onSelect(data);
+              }).catch(onClose)
             } }>
       <Text style={ styles.cityList }>{cityData[index].description}</Text>
 

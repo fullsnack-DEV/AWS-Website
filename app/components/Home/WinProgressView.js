@@ -23,12 +23,13 @@ export default function WinProgressView({
       <Text style={[styles.textStyle, textStyle]}>{titleText}</Text>
       <Text style={[styles.percentageTextStyle, percentageTextStyle]}>{percentageCount}</Text>
       <Progress.Bar
-        progress={progress}
-        width={100}
-        height={6}
-        borderRadius={8}
-        style={[styles.progressBarStyle, progressBarStyle]}
-        color={prgressColor}
+          animated={false}
+          progress={progress}
+          width={100}
+          height={6}
+          borderRadius={8}
+          style={[styles.progressBarStyle, progressBarStyle]}
+          color={prgressColor}
         />
     </View>
   );

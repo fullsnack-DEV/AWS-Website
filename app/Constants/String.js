@@ -554,5 +554,6 @@ const strings = {
   scorekeeperRequestScreenTitle: 'Scorekeeper Reservation Request',
   scorekeeperScreenTitle: 'Scorekeeper Reservation',
 
+  privacySettings: 'Privacy Settings',
 };
 export default strings;

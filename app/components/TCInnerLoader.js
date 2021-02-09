@@ -4,7 +4,7 @@ import images from '../Constants/ImagePath';
 
 const TCInnerLoader = ({
   visible,
-  size = 30,
+  size = 40,
   loaderStyle = {},
   allowMargin = true,
 }) => (

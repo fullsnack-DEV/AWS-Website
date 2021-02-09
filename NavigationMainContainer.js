@@ -31,8 +31,11 @@ export default function NavigationMainContainer() {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       unsubscribe()
       if (user) {
-        const refreshedToken = await user.getIdTokenResult(true).catch(() => reject());
-        resolve(refreshedToken)
+        user.getIdTokenResult(true).then((refreshedToken) => {
+          resolve(refreshedToken)
+        }).catch(() => {
+          reject()
+        });
       } else {
         reject();
       }
@@ -56,7 +59,6 @@ export default function NavigationMainContainer() {
         await authContext.setUser({ ...authContextUser });
         setAppInitialize(true);
       } else {
-        console.log('Token Expired From App State');
         getRefereshToken().then(async (refereshToken) => {
           const token = {
             token: refereshToken.token,
