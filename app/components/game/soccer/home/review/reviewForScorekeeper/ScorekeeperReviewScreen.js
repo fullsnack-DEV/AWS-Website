@@ -19,7 +19,7 @@ import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 
 import { STAR_COLOR } from '../../../../../../utils';
-import { addRefereeReview, patchRefereeReview } from '../../../../../../api/Games';
+import { addScorekeeperReview, patchScorekeeperReview } from '../../../../../../api/Games';
 import TCInnerLoader from '../../../../../TCInnerLoader';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
@@ -38,14 +38,12 @@ import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 const QUSTIONS = [
   // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
   // { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-  { attrName: 'punctuality', desc: strings.punchualityDesc },
+  { attrName: 'punctuality', desc: strings.punchualityDescScorekeeper },
 ];
-export default function RefereeReviewScreen({ navigation, route }) {
+export default function ScorekeeperReviewScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [sliderAttributesForReferee, setSliderAttributesForReferee] = useState(
-    [],
-  );
+
   const [gameData] = useState(route?.params?.gameData);
   const [progressBar, setProgressBar] = useState(false);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
@@ -93,17 +91,16 @@ export default function RefereeReviewScreen({ navigation, route }) {
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
       const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
-        ?.refereeReview
+        ?.scorekeeperReview
       console.log('Edit review Data::=>', reviewObj);
       setReviewsData({ ...reviewObj });
     }
   }, [route?.params?.gameReviewData?.results[0]?.object]);
 
   useEffect(() => {
-    // setSliderAttributesForReferee([...route?.params?.sliderAttributesForReferee]);
     if (!route?.params?.gameReviewData) {
-      loadSliderAttributes(route?.params?.sliderAttributesForReferee);
-      loadStarAttributes(route?.params?.starAttributesForReferee);
+      loadSliderAttributes(route?.params?.sliderAttributesForScorekeeper);
+      loadStarAttributes(route?.params?.starAttributesForScorekeeper);
     }
   }, []);
 
@@ -197,7 +194,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
     setCancelApiRequest({ ...axiosTokenSource });
   };
 
-  const patchOrAddRefereeReview = (data) => {
+  const patchOrAddScorekeeperReview = (data) => {
     if (route?.params?.gameReviewData) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
@@ -215,7 +212,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
         ...teamReview,
       };
       console.log('Edited Review Object::=>', teamReview);
-      patchRefereeReview(
+      patchScorekeeperReview(
         route?.params?.userData?.user_id,
         gameData?.game_id,
         reviewID,
@@ -234,7 +231,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
     } else {
       console.log('New Review Object::=>', data);
       setLoading(true);
-      addRefereeReview(
+      addScorekeeperReview(
         route?.params?.userData?.user_id,
         gameData?.game_id,
         data,
@@ -282,14 +279,13 @@ export default function RefereeReviewScreen({ navigation, route }) {
           obj.attachments = [...attachments, ...UrlArray]
           setReviewsData({ ...obj })
           console.log('dataParams::=>', obj);
-          patchOrAddRefereeReview(obj)
+          patchOrAddScorekeeperReview(obj)
         },
       );
     } else {
-      patchOrAddRefereeReview(reviewsData)
+      patchOrAddScorekeeperReview(reviewsData)
     }
   };
-  console.log('reviewsData?.comment', reviewsData);
   return (
     <View style={{ flex: 1 }}>
       <Header
@@ -299,7 +295,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
           </TouchableOpacity>
         }
         centerComponent={
-          <Text style={styles.eventTextStyle}>Leave a Referee review</Text>
+          <Text style={styles.eventTextStyle}>Leave a scorekeeper review</Text>
         }
         rightComponent={
           <Text onPress={createReview} style={styles.nextButtonStyle}>
@@ -319,7 +315,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                 Please, rate the performance of{' '}
                 {route?.params?.userData?.first_name}{' '}
                 {route?.params?.userData?.last_name} and leave a review for the
-                referee.
+                scorekeeper.
               </Text>
 
               {/*  Logo Container */}
@@ -363,7 +359,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-                  {route?.params?.sliderAttributesForReferee.map((item, index) => (
+                  {route?.params?.sliderAttributesForScorekeeper.map((item, index) => (
                     <View
                       style={{
                         marginVertical: 10,
@@ -422,7 +418,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                 }}
                   onPress={() => {
                     navigation.navigate('WriteReviewScreen', {
-                      comeFrom: 'RefereeReviewScreen',
+                      comeFrom: 'ScorekeeperReviewScreen',
                       postData: currentUserDetail,
                       searchText: reviewsData?.comment ?? '',
                       // onPressDone: callthis,

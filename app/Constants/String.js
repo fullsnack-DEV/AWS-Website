@@ -541,6 +541,7 @@ const strings = {
   editReviewForTeams: 'Edit Review for Teams',
   completeReviewFirst: 'Please, complete all ratings before moving to the next.',
   punchualityDesc: 'Did the the referee arrive at the match place on time?',
+  punchualityDescScorekeeper: 'Did the the scorekeeper arrive at the match place on time?',
   chooseTeamFirst: 'Please choose any one team for review.',
   descriptionScorekeeperPlaceholder: 'Describe yourself as a scorekeeper',
   editReviewText: 'EDIT REVIEW FOR A TEAM',
@@ -556,5 +557,6 @@ const strings = {
   chooseScorekeeperText: 'Choose a scorekeeper',
 
   privacySettings: 'Privacy Settings',
+  gameEndedAlertText: 'Game is ended, so you can not change reservation.',
 };
 export default strings;

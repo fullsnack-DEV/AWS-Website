@@ -167,6 +167,11 @@ import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/
 import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAcceptDeclineScreen';
 // Scorekeeper reservation screens
 
+// Scorekeeper Review Screen
+import ReviewScorekeeperList from '../components/game/soccer/home/review/reviewForScorekeeper/ReviewScorekeeperList';
+import ScorekeeperReviewScreen from '../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperReviewScreen';
+// Scorekeeper Review Screen
+
 const Stack = createStackNavigator();
 
 const HomeNavigator = () => (
@@ -2046,6 +2051,31 @@ const HomeNavigator = () => (
          options={{
            headerShown: false,
          }}
+        />
+
+    {/* Scorekeeper Review Screen */}
+    <Stack.Screen
+            name="ScorekeeperReviewScreen"
+            component={ScorekeeperReviewScreen}
+            options={{
+              headerShown: false,
+            }}
+        />
+    <Stack.Screen
+            name="ReviewScorekeeperList"
+            component={ReviewScorekeeperList}
+            options={{
+              title: 'Referee',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
         />
   </Stack.Navigator>
 );

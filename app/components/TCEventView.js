@@ -208,6 +208,15 @@ export default function TCEventView({
               // }
             />
           )}
+          {data?.game?.scorekeepers?.length > 0 && (
+            <EventOfItem
+              eventOfText={'Scorekeeper'}
+              refereeList = {data?.game?.scorekeepers}
+              // countryIcon={
+              //   refereeImage ? { uri: refereeImage } : images.profilePlaceHolder
+              // }
+            />
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>

@@ -48,6 +48,7 @@ const Summary = ({
   gameData,
   isAdmin,
   isRefereeAdmin,
+  isScorekeeperAdmin,
   userRole,
   navigation,
   followSoccerUser,
@@ -86,6 +87,16 @@ const Summary = ({
     [],
   );
   const [starAttributesForReferee, setStarAttributesForReferee] = useState([]);
+
+  const [
+    sliderAttributesForScorekeeper,
+    setSliderAttributesForScorekeeper,
+  ] = useState([]);
+  const [
+    starAttributesForScorekeeper,
+    setStarAttributesForScorekeeper,
+  ] = useState([]);
+
   useEffect(() => {
     if (isFocused && gameData) {
       console.log('Game data==:=>', gameData);
@@ -103,12 +114,16 @@ const Summary = ({
           const teamReviewProp = soccerSportData?.team_review_properties ?? [];
           const playerReviewProp = soccerSportData?.player_review_properties ?? [];
           const refereeReviewProp = soccerSportData?.referee_review_properties ?? [];
+          const scorekeeperReviewProp = soccerSportData?.scorekeeper_review_properties ?? [];
           const sliderReviewProp = [];
           const starReviewProp = [];
           const sliderReviewPropForPlayer = [];
           const starReviewPropForPlayer = [];
           const sliderReviewPropForReferee = [];
           const starReviewPropForReferee = [];
+
+          const sliderReviewPropForScorekeeper = [];
+          const starReviewPropForScorekeeper = [];
 
           if (teamReviewProp?.length) {
             teamReviewProp.filter((item) => {
@@ -146,6 +161,28 @@ const Summary = ({
             setSliderAttributesForReferee([...sliderReviewPropForReferee]);
             setStarAttributesForReferee([...starReviewPropForReferee]);
           }
+          if (scorekeeperReviewProp?.length) {
+            scorekeeperReviewProp.filter((item) => {
+              if (item.type === 'topstar') {
+                sliderReviewPropForScorekeeper.push(item?.name.toLowerCase());
+              } else if (item.type === 'star') {
+                starReviewPropForScorekeeper.push(item?.name.toLowerCase());
+              }
+              return true;
+            });
+            console.log(
+              'sliderReviewPropForScorekeeper',
+              sliderReviewPropForScorekeeper,
+            );
+            console.log(
+              'starReviewPropForScorekeeper',
+              starReviewPropForScorekeeper,
+            );
+            setSliderAttributesForScorekeeper([
+              ...sliderReviewPropForScorekeeper,
+            ]);
+            setStarAttributesForScorekeeper([...starReviewPropForScorekeeper]);
+          }
         })
         .finally(() => setLoading(false));
     }
@@ -159,45 +196,46 @@ const Summary = ({
       .then((response) => {
         console.log('AllRoster Data:=>', response.payload);
         console.log('Game Data:=>', gameData);
-        const homeTeamPlayers = response.payload.home_team.roster.concat(response.payload.home_team.non_roster)
+        const homeTeamPlayers = response.payload.home_team.roster.concat(
+          response.payload.home_team.non_roster,
+        );
 
-        const awayTeamPlayers = response.payload.away_team.roster.concat(response.payload.away_team.non_roster)
-        const homeTeamRoasters = []
-        const awayTeamRoasters = []
+        const awayTeamPlayers = response.payload.away_team.roster.concat(
+          response.payload.away_team.non_roster,
+        );
+        const homeTeamRoasters = [];
+        const awayTeamRoasters = [];
         if (homeTeamPlayers.length > 0) {
-          homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id))
+          homeTeamPlayers.map((item) => homeTeamRoasters.push(item?.member_id));
         }
         if (awayTeamPlayers.length > 0) {
-          awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id))
+          awayTeamPlayers.map((item) => awayTeamRoasters.push(item?.member_id));
         }
-        if ([...homeTeamRoasters, ...awayTeamRoasters].includes(authContext.entity.uid)) setLineUpUser(true);
+        if (
+          [...homeTeamRoasters, ...awayTeamRoasters].includes(
+            authContext.entity.uid,
+          )
+        ) { setLineUpUser(true); }
 
         for (let i = 0; i < homeTeamPlayers.length; i++) {
-          if (
-            homeTeamPlayers?.[i]?.member_id
-            === authContext.entity.uid
-          ) {
+          if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
             found = true;
             teamName = gameData?.away_team?.group_name;
             console.log('Team name Data:=>', teamName);
             if (gameData?.home_review_id || gameData?.away_review_id) {
               // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
               setLeaveReviewText(strings.editReviewText);
-            }
-            else {
+            } else {
               // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
               setLeaveReviewText(strings.leaveReviewText);
             }
-            setplayerFrom('home')
+            setplayerFrom('home');
             break;
           }
         }
         if (!found) {
           for (let i = 0; i < awayTeamPlayers.length; i++) {
-            if (
-              awayTeamPlayers?.[i]?.member_id
-              === authContext.entity.uid
-            ) {
+            if (awayTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
               found = true;
               teamName = gameData?.home_team?.group_name;
               console.log('Team name Data:=>', teamName);
@@ -208,27 +246,27 @@ const Summary = ({
                 // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.leaveReviewText);
               }
-              setplayerFrom('away')
+              setplayerFrom('away');
               break;
             }
           }
-          for (let i = 0; i < gameData?.referees?.length; i++) {
-            if (gameData?.referees?.[i]?.referee_id === authContext.entity.uid) {
-              found = true;
-              // teamName = gameData?.home_team?.group_name
-              // console.log('Team name Data:=>', teamName);
-              setLeaveReviewText(strings.leaveOrEditReviewText);
-              break;
-            }
+          const data = [...gameData?.referees ?? [], ...gameData?.scorekeepers ?? []]
+          if (
+            data.some(
+              (obj) => obj?.referee_id === authContext.entity.uid
+                || obj?.scorekeeper_id === authContext.entity.uid,
+            )
+          ) {
+            setLeaveReviewText(strings.leaveOrEditReviewText);
           }
         }
       })
       .catch((error) => {
-        console.log('error L ', error)
+        console.log('error L ', error);
         Alert.alert(strings.alertmessagetitle, error);
       });
   };
-  const showLeaveReviewButton = () => (lineUpUser || isRefereeAdmin);
+  const showLeaveReviewButton = () => lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
 
   const getRefereeReviewsData = (item) => {
     setLoading(true);
@@ -241,6 +279,25 @@ const Summary = ({
           userData: item,
           sliderAttributesForReferee,
           starAttributesForReferee,
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
+      });
+  };
+  const getScorekeeperReviewsData = (item) => {
+    setLoading(true);
+    getGameReview(gameData?.game_id, item?.review_id, authContext)
+      .then((response) => {
+        console.log('Get review of scorekeeper::=>', response.payload);
+        navigation.navigate('ScorekeeperReviewScreen', {
+          gameReviewData: response.payload,
+          gameData,
+          userData: item,
+          sliderAttributesForScorekeeper,
+          starAttributesForScorekeeper,
         });
         setLoading(false);
       })
@@ -280,7 +337,7 @@ const Summary = ({
           backgroundColor: colors.whiteColor,
           padding: 10,
         }}>
-        {(isAdmin || isRefereeAdmin) && (
+        {(isAdmin || isRefereeAdmin || isScorekeeperAdmin) && (
           <TCGradientButton
             onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData.game_id })
             }
@@ -311,7 +368,7 @@ const Summary = ({
                       if (gameData?.home_review_id) {
                         getGameReviewsData(gameData?.home_review_id);
                       } else if (gameData?.away_review_id) {
-                        getGameReviewsData(gameData?.away_review_id)
+                        getGameReviewsData(gameData?.away_review_id);
                       } else {
                         navigation.navigate('LeaveReview', {
                           gameData,
@@ -321,7 +378,7 @@ const Summary = ({
                         });
                       }
                     } else {
-                      setIsPopupVisible(true)
+                      setIsPopupVisible(true);
                     }
                   }}
                   startGradientColor={colors.yellowColor}
@@ -340,36 +397,39 @@ const Summary = ({
             </View>
         )}
 
-        {!loading && gameData?.status === 'ended' && !isAdmin && showLeaveReviewButton() && (
-          <View
-            style={{
-              marginBottom: hp(1),
-              backgroundColor: colors.whiteColor,
-              marginLeft: 10,
-            }}>
-            {!checkReviewExpired(gameData?.actual_enddatetime) ? (
-              <Text style={styles.reviewPeriod}>
-                The review period will be expired within{' '}
-                <Text style={{ fontFamily: fonts.RBold }}>
-                  {getGameDateTimeInDHMformat(
-                    moment(gameData?.actual_enddatetime * 1000).add(
-                      REVIEW_EXPIRY_DAYS,
-                      'days',
-                    ) / 1000,
-                  )}
+        {!loading
+          && gameData?.status === 'ended'
+          && !isAdmin
+          && showLeaveReviewButton() && (
+            <View
+              style={{
+                marginBottom: hp(1),
+                backgroundColor: colors.whiteColor,
+                marginLeft: 10,
+              }}>
+              {!checkReviewExpired(gameData?.actual_enddatetime) ? (
+                <Text style={styles.reviewPeriod}>
+                  The review period will be expired within{' '}
+                  <Text style={{ fontFamily: fonts.RBold }}>
+                    {getGameDateTimeInDHMformat(
+                      moment(gameData?.actual_enddatetime * 1000).add(
+                        REVIEW_EXPIRY_DAYS,
+                        'days',
+                      ) / 1000,
+                    )}
+                  </Text>
                 </Text>
-              </Text>
-            ) : (
-              <Text
-                style={{
-                  ...styles.reviewPeriod,
-                  marginVertical: 10,
-                }}>
-                The review period is{' '}
-                <Text style={{ fontFamily: fonts.RBold }}>expired</Text>
-              </Text>
-            )}
-          </View>
+              ) : (
+                <Text
+                  style={{
+                    ...styles.reviewPeriod,
+                    marginVertical: 10,
+                  }}>
+                  The review period is{' '}
+                  <Text style={{ fontFamily: fonts.RBold }}>expired</Text>
+                </Text>
+              )}
+            </View>
         )}
       </View>
 
@@ -429,6 +489,24 @@ const Summary = ({
         navigation={navigation}
         isAdmin={isAdmin}
         userRole={userRole}
+        onReviewPress={(scorekeeper) => {
+          console.log('scorekeeper review data:=>', scorekeeper);
+          // navigation.navigate('ReviewRefereeList', {
+          //   gameData,
+          //   sliderAttributesForReferee,
+          //   starAttributesForReferee,
+          // });
+          if (scorekeeper?.review_id) {
+            getScorekeeperReviewsData(scorekeeper);
+          }
+          navigation.navigate('ScorekeeperReviewScreen', {
+            gameData,
+            userData: scorekeeper,
+            sliderAttributesForScorekeeper,
+            starAttributesForScorekeeper,
+          });
+          console.log('Scorekeeper data::=>', scorekeeper);
+        }}
       />
 
       {/* Game Feed */}
@@ -452,7 +530,6 @@ const Summary = ({
         onRequestClose={() => {
           // this.closeButtonFunction()
         }}>
-
         <View
           style={{
             // height: '50%',
@@ -463,7 +540,7 @@ const Summary = ({
             <View style={styles.titlePopup}>
               <TouchableWithoutFeedback
                 onPress={() => {
-                  setIsPopupVisible(false)
+                  setIsPopupVisible(false);
                   setSelectedTeamForReview();
                 }}>
                 <Image source={images.cancelImage} style={styles.closeButton} />
@@ -478,8 +555,7 @@ const Summary = ({
                     if (selectedTeamForReview === 'home') {
                       if (gameData?.home_review_id) {
                         getGameReviewsData(gameData?.home_review_id);
-                      }
-                      else {
+                      } else {
                         navigation.navigate('LeaveReview', {
                           gameData,
                           selectedTeam: selectedTeamForReview,
@@ -491,8 +567,7 @@ const Summary = ({
                     if (selectedTeamForReview === 'away') {
                       if (gameData?.away_review_id) {
                         getGameReviewsData(gameData?.away_review_id);
-                      }
-                      else {
+                      } else {
                         navigation.navigate('LeaveReview', {
                           gameData,
                           selectedTeam: selectedTeamForReview,
@@ -501,9 +576,11 @@ const Summary = ({
                         });
                       }
                     }
-                  }
-                  else {
-                    Alert.alert(strings.alertmessagetitle, strings.chooseTeamFirst)
+                  } else {
+                    Alert.alert(
+                      strings.alertmessagetitle,
+                      strings.chooseTeamFirst,
+                    );
                   }
                 }}>
                 Done
@@ -584,7 +661,6 @@ const Summary = ({
             </View>
           </View>
         </View>
-
       </Modal>
 
       <ActionSheet

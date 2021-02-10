@@ -14,7 +14,7 @@ import TCGradientButton from '../../../../components/TCGradientButton';
 import AuthContext from '../../../../auth/context'
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import { getSearchData } from '../../../../utils';
-import { getUserList } from '../../../../api/Users';
+import { getGameUser } from '../../../../api/Games';
 import TCStep from '../../../../components/TCStep';
 
 const TYPING_SPEED = 200;
@@ -29,7 +29,8 @@ const BookScorekeeper = ({ navigation, route }) => {
   const [typingTimeout, setTypingTimeout] = useState(0);
   useEffect(() => {
     setLoading(true);
-    getUserList(authContext).then((res) => {
+    getGameUser(gameData?.sport, 'scorekeepers', authContext).then((res) => {
+      console.log('Scorekeeper list::=>', res?.payload);
       setScorekeepersData([...res?.payload]);
     }).finally(() => setLoading(false))
   }, [])

@@ -22,6 +22,7 @@ export default function UserHomeTopSection({
 }) {
   useEffect(() => {
     console.log('UserDetail::=>', userDetails);
+    isSectionEnable()
   }, [])
 
   const isSectionEnable = () => {
@@ -29,6 +30,12 @@ export default function UserHomeTopSection({
     const refereeLength = userDetails?.referee_data?.length ?? 0
     const scorekeeperLength = userDetails?.scorekeeper_data?.length ?? 0
     const totalLength = gameLength + refereeLength + scorekeeperLength
+
+    console.log('userDetails?.games length ::=> ', userDetails?.games);
+    console.log('gameLength length ::=> ', gameLength);
+    console.log('refereeLength length ::=> ', refereeLength);
+    console.log('scorekeeperLength length ::=> ', scorekeeperLength);
+
     console.log('Total length ::=> ', totalLength);
     if (totalLength > 5) {
       return true
@@ -39,7 +46,8 @@ export default function UserHomeTopSection({
 
   const oneLineSection = () => {
     let games = []
-    if (userDetails?.games?.status) {
+    console.log('Game data:=>', userDetails?.games);
+    if (userDetails?.games) {
       games = userDetails?.games?.map((obj) => {
         const o = { ...obj };
         o.type = EntityStatus.playin;
@@ -203,6 +211,8 @@ export default function UserHomeTopSection({
       isMember = true
     }
   }
+  console.log('oneLineSection', oneLineSection());
+  console.log('isSectionEnable', isSectionEnable());
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
       {isAdmin && <TCProfileButton
@@ -253,6 +263,7 @@ export default function UserHomeTopSection({
         showArrow={false}
         onPressProfile = {() => { onAction('message') }}/>
       </View> }
+
       {/* Play in section */}
       { isSectionEnable() ? <View>
         {userDetails?.games && userDetails?.games?.length > 0 && <View>

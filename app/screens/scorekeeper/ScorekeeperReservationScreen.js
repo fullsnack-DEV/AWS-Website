@@ -302,6 +302,7 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
     return param?.game?.away_team
   };
 
+  console.log('bodyParams::=>', bodyParams);
   return (
     <TCKeyboardView>
       <ScrollView style={{ flex: 1 }}>
@@ -779,14 +780,18 @@ export default function ScorekeeperReservationScreen({ navigation, route }) {
                   if (
                     (bodyParams?.game?.status === GameStatus.accepted
                       || bodyParams?.game?.status === GameStatus.reset)
-                    && bodyParams.start_datetime > parseFloat(new Date().getTime() / 1000).toFixed(0)
+                    && bodyParams.start_datetime * 1000 > new Date().getTime()
                   ) {
                     navigation.navigate('EditScorekeeperReservation', {
                       reservationObj: bodyParams,
                     });
+                  } else if (bodyParams?.game?.status === GameStatus.ended) {
+                    Alert.alert(
+                      strings.gameEndedAlertText,
+                    );
                   } else {
                     Alert.alert(
-                      'Reservation cannot be change after game time passed or offer expired.',
+                      strings.cannotChangeReservationText,
                     );
                   }
                 }}

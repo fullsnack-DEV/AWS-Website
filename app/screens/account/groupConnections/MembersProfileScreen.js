@@ -248,21 +248,18 @@ export default function MembersProfileScreen({ navigation, route }) {
                     );
                   } else if (index === 1) {
                     Alert.alert(
+                      strings.alertmessagetitle,
                       `Do you want to remove ${memberDetail.first_name} ${memberDetail.last_name} from ${switchUser.obj.group_name}?`,
-
-                      [{
-                        text: 'Yes',
-                        onPress: async () => {
-                          deleteMemberProfile(switchUser.uid, memberDetail.user_id)
+                      [
+                        {
+                          text: 'Ok',
+                          onPress: deleteMemberProfile(switchUser.uid, memberDetail.user_id),
                         },
-                      },
-                      {
-                        text: 'Cancel',
-                        style: 'cancel',
-                      },
-
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
+                        },
                       ],
-                      { cancelable: false },
                     );
                   }
                 }}
