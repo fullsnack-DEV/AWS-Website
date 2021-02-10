@@ -36,21 +36,25 @@ import EventAgendaSection from '../../../components/Schedule/EventAgendaSection'
 import CalendarTimeTableView from '../../../components/Schedule/CalendarTimeTableView';
 import AuthContext from '../../../auth/context'
 import * as RefereeUtils from '../../referee/RefereeUtility';
+import * as ScorekeeperUtils from '../../scorekeeper/ScorekeeperUtility';
+
 import * as Utils from '../../challenge/ChallengeUtility';
 
 import {
-  deleteEvent, getEventById, getEvents, getSlots,
+  getEventById, getEvents, getSlots,
+  // deleteEvent
 } from '../../../api/Schedule';
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
 import strings from '../../../Constants/String';
-import { getRefereeReservationDetails } from '../../../api/Reservations';
+import { getRefereeReservationDetails, getScorekeeperReservationDetails } from '../../../api/Reservations';
 import Header from '../../../components/Home/Header';
 import RefereeReservationItem from '../../../components/Schedule/RefereeReservationItem';
 import { getGameHomeScreen } from '../../../utils/gameUtils';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCInnerLoader from '../../../components/TCInnerLoader';
+import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
 
 const { width } = Dimensions.get('window');
 
@@ -69,7 +73,9 @@ export default function ScheduleScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [createEventModal, setCreateEventModal] = useState(false);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
+  const [isScorekeeperModal, setIsScorekeeperModal] = useState(false);
   const [refereeReservData, setRefereeReserveData] = useState([]);
+  const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
   const [searchEvents, setSearchEvents] = useState();
   useEffect(() => {
     setloading(true);
@@ -150,6 +156,7 @@ export default function ScheduleScreen({ navigation }) {
   }, [selectedEventItem]);
 
   const refereeFound = (data) => (data?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id)
+  const scorekeeperFound = (data) => (data?.game?.scorekeepers || []).some((e) => authContext.entity.uid === e.scorekeeper_id)
 
   const actionSheet = useRef();
   const eventEditDeleteAction = useRef();
@@ -159,13 +166,18 @@ export default function ScheduleScreen({ navigation }) {
   const refereeReservModal = () => {
     setIsRefereeModal(!isRefereeModal);
   };
-
+  const scorekeeperReservModal = () => {
+    setIsScorekeeperModal(!isScorekeeperModal);
+  };
   const findCancelButtonIndex = (data) => {
     if (data?.game && refereeFound(data)) {
       return 2
     }
+    if (data?.game && scorekeeperFound(data)) {
+      return 2
+    }
     if (data?.game) {
-      return 3
+      return 4
     }
     return 2
   }
@@ -188,7 +200,10 @@ export default function ScheduleScreen({ navigation }) {
       if (refereeFound(selectedEventItem)) {
         return ['Referee Reservation Details', 'Change Events Color', 'Cancel']
       }
-      return ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
+      if (scorekeeperFound(selectedEventItem)) {
+        return ['Scorekeeper Reservation Details', 'Change Events Color', 'Cancel']
+      }
+      return ['Game Reservation Details', 'Referee Reservation Details', 'Scorekeeper Reservation Details', 'Change Events Color', 'Cancel']
     }
     return ['Edit', 'Delete', 'Cancel']
   }
@@ -203,6 +218,19 @@ export default function ScheduleScreen({ navigation }) {
       });
       setloading(false);
     });
+  }
+  const goToScorekeeperReservationDetail = (data) => {
+    console.log('Reservation data:', JSON.stringify(data));
+    setloading(true);
+    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+      setloading(false);
+      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
+      console.log('Screen name of Reservation:', obj.screenName);
+      navigation.navigate(obj.screenName, {
+        reservationObj: obj.reservationObj || obj.reservationObj[0],
+      });
+      setloading(false);
+    }).catch(() => setloading(false));
   }
   const searchFilterFunction = (text) => {
     const result = searchEvents.filter(
@@ -541,125 +569,141 @@ export default function ScheduleScreen({ navigation }) {
           />
         </SafeAreaView>
       </Modal>
-
+      {/* Scorekeeper modal */}
+      <Modal
+        isVisible={isScorekeeperModal}
+        backdropColor="black"
+        style={{ margin: 0, justifyContent: 'flex-end' }}
+        hasBackdrop
+        onBackdropPress={() => {
+          setIsScorekeeperModal(false);
+        }}
+        backdropOpacity={0}
+      >
+        <SafeAreaView style={styles.modalMainViewStyle}>
+          <Header
+            mainContainerStyle={styles.headerMainContainerStyle}
+            leftComponent={
+              <TouchableOpacity onPress={() => {
+                setIsScorekeeperModal(false);
+              }}>
+                <Image source={images.cancelImage} style={styles.cancelImageStyle} resizeMode={'contain'} />
+              </TouchableOpacity>
+            }
+            centerComponent={
+              <Text style={styles.headerCenterStyle}>{strings.chooseScorekeeperText}</Text>
+            }
+          />
+          <View style={styles.sepratorStyle} />
+          <FlatList
+            data={scorekeeperReservData}
+            bounces={false}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={[styles.sepratorStyle, { marginHorizontal: 15 }]} />}
+            renderItem={({ item }) => <ScorekeeperReservationItem
+              data={item}
+              onPressButton = {() => {
+                setIsScorekeeperModal(false);
+                console.log('choose Scorekeeper:', item);
+                goToScorekeeperReservationDetail(item)
+              }}
+            />}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </SafeAreaView>
+      </Modal>
+      {/* Scorekeeper modal */}
       <ActionSheet
         ref={eventEditDeleteAction}
         options={actionSheetOpetions()}
         cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
         destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
         onPress={(index) => {
-          if (index === 0) {
-            if (index === 0 && selectedEventItem.game) {
-              console.log('selected Event Item:', selectedEventItem);
-              if (refereeFound(selectedEventItem)) {
-                goToRefereReservationDetail(selectedEventItem)
-              } else {
-                console.log('Selected Event Item::', selectedEventItem);
-                goToChallengeDetail(selectedEventItem.game)
-              }
+          if (actionSheetOpetions()?.[index] === 'Referee Reservation Details') {
+            if (refereeFound(selectedEventItem)) {
+              goToRefereReservationDetail(selectedEventItem)
             } else {
-              navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+              setloading(true);
+              const params = {
+                caller_id: selectedEventItem.owner_id,
+              };
+              getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                console.log('Res :-', res);
+                const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                setRefereeReserveData(myReferee);
+                if (res.payload.length > 0) {
+                  refereeReservModal();
+                  setloading(false);
+                } else {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(
+                      'Towns Cup',
+                      'No referees invited or booked by you for this game',
+                      [{
+                        text: 'OK',
+                        onPress: async () => {},
+                      },
+                      ],
+                      { cancelable: false },
+                    );
+                  }, 0);
+                }
+              }).catch((error) => {
+                setloading(false);
+                console.log('Error :-', error);
+              });
             }
+            console.log('Referee:::', index);
           }
-          if (index === 1) {
-            if (index === 1 && selectedEventItem.game) {
-              if (refereeFound(selectedEventItem)) {
-                Alert.alert(
-                  'Towns Cup',
-                  'Change Event color feature is pending',
-                  [{
-                    text: 'OK',
-                    onPress: async () => {},
-                  },
-                  ],
-                  { cancelable: false },
-                );
-              } else {
-                setloading(true);
-                const params = {
-                  caller_id: selectedEventItem.owner_id,
-                };
-                getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-                  console.log('Res :-', res);
-                  const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
-                  setRefereeReserveData(myReferee);
-                  if (res.payload.length > 0) {
-                    refereeReservModal();
-                    setloading(false);
-                  } else {
-                    setloading(false);
-                    setTimeout(() => {
-                      Alert.alert(
-                        'Towns Cup',
-                        'No referees invited or booked by you for this game',
-                        [{
-                          text: 'OK',
-                          onPress: async () => {},
-                        },
-                        ],
-                        { cancelable: false },
-                      );
-                    }, 0);
-                  }
-                }).catch((error) => {
-                  console.log('Error :-', error);
-                });
-              }
+          if (actionSheetOpetions()?.[index] === 'Scorekeeper Reservation Details') {
+            if (scorekeeperFound(selectedEventItem)) {
+              goToScorekeeperReservationDetail(selectedEventItem)
             } else {
-              Alert.alert(
-                'Do you want to delete this event ?',
-                '',
-                [{
-                  text: 'Delete',
-                  style: 'destructive',
-                  onPress: async () => {
-                    setloading(true);
-                    const entity = authContext.entity
-                    const uid = entity.uid || entity.auth.user_id;
-                    const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                    deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
-                      .then(() => getEvents(entityRole, uid, authContext))
-                      .then((response) => {
-                        setloading(false);
-                        setEventData(response.payload);
-                        setTimeTable(response.payload);
-                      })
-                      .catch((e) => {
-                        setloading(false);
-                        Alert.alert('', e.messages)
-                      });
-                  },
-                },
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-
-                ],
-                { cancelable: false },
-              );
+              setloading(true);
+              const params = {
+                caller_id: selectedEventItem.owner_id,
+              };
+              getScorekeeperReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                console.log('Res :-', res);
+                const myScorekeeper = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                setScorekeeperReserveData(myScorekeeper);
+                if (res.payload.length > 0) {
+                  scorekeeperReservModal();
+                  setloading(false);
+                } else {
+                  setloading(false);
+                  setTimeout(() => {
+                    Alert.alert(
+                      'Towns Cup',
+                      'No referees invited or booked by you for this game',
+                      [{
+                        text: 'OK',
+                        onPress: async () => {},
+                      },
+                      ],
+                      { cancelable: false },
+                    );
+                  }, 0);
+                }
+              }).catch((error) => {
+                setloading(false);
+                console.log('Error :-', error);
+              });
             }
+            console.log('Scorekeeper:::', index);
           }
-          if (index === 2) {
-            if (index === 2 && selectedEventItem.game) {
-              if (refereeFound(selectedEventItem)) {
-                console.log('Pressed cancel button.');
-              } else {
-                Alert.alert(
-                  'Towns Cup',
-                  'Change Event color feature is pending',
-                  [{
-                    text: 'OK',
-                    onPress: async () => {},
-                  },
-                  ],
-                  { cancelable: false },
-                );
-              }
-            }
+          if (actionSheetOpetions()?.[index] === 'Game Reservation Details') {
+            goToChallengeDetail(selectedEventItem.game)
+            console.log('Game:::', index);
+          }
+          if (actionSheetOpetions()?.[index] === 'Change Events Color') {
+            navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+            console.log('Event:::', index);
           }
           setSelectedEventItem(null);
-        }}
+        }
+        }
       />
     </View>
   );

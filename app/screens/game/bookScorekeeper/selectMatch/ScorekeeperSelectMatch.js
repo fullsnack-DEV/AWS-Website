@@ -111,6 +111,7 @@ const ScorekeeperSelectMatch = ({ navigation, route }) => {
                       }
                       if (message === '') {
                         navigation.navigate(route?.params?.comeFrom, {
+                          comeFrom: 'ScorekeeperSelectMatch',
                           gameData: item,
                         });
                       } else {

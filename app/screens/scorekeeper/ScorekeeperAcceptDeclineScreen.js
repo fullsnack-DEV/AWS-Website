@@ -42,7 +42,7 @@ export default function ScorekeeperAcceptDeclineScreen({ navigation, route }) {
           </Text>
           <Text style={styles.infoText}>
             {(route.params.status === 'accept'
-              && `A reservation between ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} and your team has been scheduled.`)
+              && `A reservation between ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} and you has been scheduled.`)
               || (route.params.status === 'decline'
                 && `The reservation reservation request from ${route.params.teamObj.group_name || `${route.params.teamObj.first_name} ${route.params.teamObj.last_name}`} has been declined.`)
               || (route.params.status === 'cancel'

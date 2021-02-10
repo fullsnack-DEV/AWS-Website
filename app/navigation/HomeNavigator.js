@@ -157,7 +157,14 @@ import EditPostScreen from '../screens/newsfeeds/EditPostScreen';
 
 // Scorekeeper reservation screens
 import ScorekeeperReservationScreen from '../screens/scorekeeper/ScorekeeperReservationScreen';
-
+import ScorekeeperRequestSent from '../screens/scorekeeper/ScorekeeperRequestSent';
+import EditScorekeeperReservation from '../screens/scorekeeper/alterScorekeeper/EditScorekeeperReservation';
+import EditScorekeeperFeeScreen from '../screens/scorekeeper/alterScorekeeper/EditScorekeeperFeeScreen';
+import PayAgainScorekeeperScreen from '../screens/scorekeeper/PayAgainScorekeeperScreen';
+import CurruentScorekeeperReservationScreen from '../screens/scorekeeper/alterScorekeeper/CurruentScorekeeperReservationScreen';
+import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen';
+import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
+import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAcceptDeclineScreen';
 // Scorekeeper reservation screens
 
 const Stack = createStackNavigator();
@@ -1919,6 +1926,7 @@ const HomeNavigator = () => (
               headerShown: false,
             }}
         />
+    {/* Scorekeeper screens */}
     <Stack.Screen
             name="ScorekeeperReservationScreen"
             component={ScorekeeperReservationScreen}
@@ -1934,6 +1942,110 @@ const HomeNavigator = () => (
                 borderBottomWidth: 0.3,
               },
             }}
+        />
+    <Stack.Screen
+        name="ScorekeeperRequestSent"
+        component={ ScorekeeperRequestSent
+        }
+        options={ {
+          headerShown: false,
+        } }
+      />
+    <Stack.Screen
+            name="EditScorekeeperReservation"
+            component={EditScorekeeperReservation}
+            options={{
+              title: 'Change Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+        name="EditScorekeeperFeeScreen"
+        component={ EditScorekeeperFeeScreen }
+        options={ {
+          title: 'Scorekeeper Fee',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
+        name="PayAgainScorekeeperScreen"
+        component={ PayAgainScorekeeperScreen }
+        options={ {
+          title: 'Pay',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+    <Stack.Screen
+        name="CurruentScorekeeperReservationScreen"
+        component={ CurruentScorekeeperReservationScreen }
+        options={ {
+          title: 'Curruent Scorekeeper Reservation',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
+            name="AlterScorekeeperScreen"
+            component={AlterScorekeeperScreen}
+            options={{
+              title: 'Change Scorekeeper Reservation',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                fontWeight: '500',
+              },
+              headerStyle: {
+                backgroundColor: colors.whiteColor,
+                borderBottomColor: colors.grayColor,
+                borderBottomWidth: 0.3,
+              },
+            }}
+        />
+    <Stack.Screen
+            name="ScorekeeperSelectMatch"
+            component={ScorekeeperSelectMatch}
+            options={{
+              headerShown: false,
+            }}
+        />
+    <Stack.Screen
+         name="ScorekeeperAcceptDeclineScreen"
+         component={ScorekeeperAcceptDeclineScreen}
+         options={{
+           headerShown: false,
+         }}
         />
   </Stack.Navigator>
 );
