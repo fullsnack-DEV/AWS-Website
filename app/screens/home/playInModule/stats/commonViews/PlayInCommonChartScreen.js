@@ -51,8 +51,8 @@ export default function PlayInCommonChartScreen({
       ?.map((item) => ({
         key: item,
         value: gameStatsData[item] !== 0 ? (100 * gameStatsData[item]) / gameStatsData.total_games : 0,
-        svg: { fill: `url(#${item})` },
-        // svg: { fill: 'gray' },
+        // svg: { fill: `url(#${item})` },
+        svg: { fill: 'gray' },
       }))
     setPieData([...data]);
   }, [gameStatsData]);
