@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     height: 13,
     width: 13,
     borderRadius: 13 / 2,
-    backgroundColor: colors.greeColor,
+    backgroundColor: colors.yellowColor,
   },
   viewSecondStyle: {
   },

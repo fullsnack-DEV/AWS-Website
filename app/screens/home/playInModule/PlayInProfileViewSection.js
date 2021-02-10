@@ -3,16 +3,19 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
+  Image, TouchableOpacity,
 } from 'react-native';
+import _ from 'lodash';
+import FastImage from 'react-native-fast-image';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import UserCategoryView from './UserCategoryView';
+import images from '../../../Constants/ImagePath';
 
-export default function ProfileViewSection({
+export default function PlayInProfileViewSection({
   profileImage,
   userName,
-  feesCount,
+  cityName,
+  onSettingPress,
 }) {
   return (
     <View style={styles.topViewContainer}>
@@ -21,24 +24,25 @@ export default function ProfileViewSection({
           <Image source={profileImage} style={ styles.profileImage } />
         </View>
         <View style={styles.topTextContainer}>
-          <Text style={styles.userNameTextStyle}>{userName}</Text>
-          <View style={{ flexDirection: 'row' }}>
-            <UserCategoryView title='Player' titleColor={colors.blueColor}/>
-          </View>
+          <Text style={styles.userNameTextStyle}>{_.startCase(userName.toLowerCase())}</Text>
+          <Text style={styles.cityName}>{cityName}</Text>
         </View>
-      </View>
-      <View style={styles.editViewStyle}>
-        <Text style={styles.editTextStyle}>{'Game Fees'}</Text>
-        <Text style={styles.editTextStyle}>{`$${feesCount} CAD`}
-          <Text style={styles.perHourTextStyle}>{' (per hours)'}</Text>
-        </Text>
+        <View style={styles.settingButtonContainer}>
+          <TouchableOpacity onPress={onSettingPress}>
+            <FastImage
+                resizeMode={'contain'}
+                source={images.SettingPrivacy}
+                style={{ width: 40, height: 40 }}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
   topViewContainer: {
-    backgroundColor: colors.lightgrayPlayInColor,
+    backgroundColor: colors.searchGrayColor,
     paddingVertical: 12,
     paddingHorizontal: 15,
   },
@@ -63,37 +67,23 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   topTextContainer: {
+    flex: 1,
     marginLeft: 10,
     alignSelf: 'center',
   },
   userNameTextStyle: {
     fontSize: 20,
     fontFamily: fonts.RMedium,
-    color: colors.themeColor,
+    color: colors.lightBlackColor,
   },
-  editViewStyle: {
-    marginTop: 10,
-    flexDirection: 'row',
-    backgroundColor: colors.whiteColor,
-    paddingVertical: 10,
-    justifyContent: 'space-around',
-    borderRadius: 10,
-    shadowOpacity: 0.3,
-    shadowOffset: {
-      height: 5,
-      width: 1,
-    },
-    elevation: 10,
-    shadowColor: colors.orangeColor,
+  cityName: {
+    color: colors.lightBlackColor,
+    fontSize: 14,
+    marginTop: 2,
+    fontFamily: fonts.RLight,
   },
-  editTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.redDelColor,
-  },
-  perHourTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.redDelColor,
+  settingButtonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

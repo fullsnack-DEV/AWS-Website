@@ -52,7 +52,7 @@ const privacy_Data = [
   },
 ];
 
-function PersonalSportsInfo({
+const PersonalSportsInfo = ({
   data,
   onItemPress,
   searchLocation,
@@ -61,7 +61,7 @@ function PersonalSportsInfo({
   sportName,
   selectPlayerData,
   isAdmin,
-}) {
+}) => {
   let latVal = null;
   let longVal = null;
   if (locationDetail) {
