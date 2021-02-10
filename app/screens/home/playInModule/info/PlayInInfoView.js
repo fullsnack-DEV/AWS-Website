@@ -8,6 +8,7 @@ import PlaysInTeams from './teams/PlaysInTeams';
 import PlaysInBasicInfo from './basicInfo/PlaysInBasicInfo';
 import PlaysInNTRP from './ntrp/PlaysInNTRP';
 import PlaysInHomePlace from './homePlace/PlaysInHomePlace';
+import { heightPercentageToDP as hp } from '../../../../utils';
 
 const PlayInInfoView = ({
   currentUserData,
@@ -17,7 +18,7 @@ const PlayInInfoView = ({
   onSave,
   navigation,
 }) => (
-  <View style={{ flex: 1 }}>
+  <View style={{ flex: 1, paddingBottom: hp(10) }}>
     {/*  Bio */}
     <PlaysInBio
           onSave={onSave}

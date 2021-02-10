@@ -6,12 +6,12 @@ import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React, { useContext, useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import Header from '../../../components/Home/Header';
 import PlayInProfileViewSection from './PlayInProfileViewSection';
 import fonts from '../../../Constants/Fonts';
-import TCThinDivider from '../../../components/TCThinDivider';
 import PlayInInfoView from './info/PlayInInfoView';
 import ScrollableTabs from '../../../components/ScrollableTabs';
 import PlayInScoreboardView from './scoreboard/PlayInScoreboardView';
@@ -20,6 +20,8 @@ import { patchPlayer } from '../../../api/Users';
 import strings from '../../../Constants/String';
 import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
+import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
+import TCGradientDivider from '../../../components/TCThinGradientDivider';
 
 const TAB_ITEMS = ['Info', 'Scoreboard', 'Stats']
 const PlayInModule = ({
@@ -30,10 +32,12 @@ const PlayInModule = ({
   isAdmin,
   navigation,
 }) => {
+  const [sportName, setSportName] = useState('');
+  const [mainTitle, setMainTitle] = useState();
   const authContext = useContext(AuthContext);
   const [currentUserData, setCurrentUserData] = useState();
   const [currentTab, setCurrentTab] = useState(0);
-
+  console.log(playInObject);
   const onClose = () => {
     onModalClose();
     setCurrentTab(0);
@@ -42,6 +46,19 @@ const PlayInModule = ({
     if (userData) setCurrentUserData(userData);
   }, [userData]);
 
+  useEffect(() => {
+    if (playInObject?.sport_name) setSportName(playInObject?.sport_name);
+  }, [playInObject])
+
+  useEffect(() => {
+    if (sportName) {
+      if (sportName.toLowerCase() === 'tennis') {
+        setMainTitle({ title: `Player in ${sportName}`, titleIcon: images.tennisSingleHeaderIcon })
+      } else {
+        setMainTitle({ title: `Play in ${sportName}`, titleIcon: images.soccerImage })
+      }
+    }
+  }, [sportName])
   const onSave = (params) => new Promise((resolve, reject) => {
     patchPlayer(params, authContext).then(async (res) => {
       const entity = authContext.entity
@@ -106,8 +123,8 @@ const PlayInModule = ({
                         mainContainerStyle={styles.headerMainContainerStyle}
                         centerComponent={
                           <View style={styles.headerCenterViewStyle}>
-                            <FastImage source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                            <Text style={styles.playInTextStyle}>{`Plays in ${playInObject?.sport_name || ''}`}</Text>
+                            <FastImage source={mainTitle?.titleIcon} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                            <Text style={styles.playInTextStyle}>{mainTitle?.title ?? ''}</Text>
                           </View>
                         }
                         rightComponent={
@@ -116,10 +133,57 @@ const PlayInModule = ({
                           </TouchableOpacity>
                         }
                     />
-          <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
+          <TCGradientDivider width={'100%'} height={3}/>
+
+          {/* Challenge Button */}
+          {currentTab === 0 && authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
+            <TouchableOpacity
+              onPress={() => {
+                if (authContext?.user?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
+                  onClose();
+                  setTimeout(() => {
+                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName, game_fee: playInObject?.fee ?? 0 } })
+                  }, 500)
+                } else {
+                  Alert.alert('Towns Cup', 'Both Player have a different sports')
+                }
+              }}
+              style={styles.challengeButtonContainer}>
+              <LinearGradient
+                colors={[colors.themeColor, '#FF3B00']}
+                style={styles.challengeLinearContainer}>
+                <View style={{
+                  width: '100%', paddingHorizontal: 25, flexDirection: 'row', justifyContent: 'space-between',
+                }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={styles.challengeTextStyle}>{`$${playInObject?.fee ?? 0}`}</Text>
+                    <Text style={{ ...styles.challengeTextStyle, fontSize: 13, fontFamily: fonts.RRegular }}> (per hours)</Text>
+                  </View>
+                  <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
 
           {/* Profile View Section */}
           <PlayInProfileViewSection
+              onSettingPress={() => {}}
+              onMessageButtonPress={() => {
+                const navigateToMessage = (userId) => {
+                  navigation.push('MessageChat', {
+                    screen: 'MessageChatRoom',
+                    params: { userId },
+                  })
+                }
+                const accountType = getQBAccountType(currentUserData?.entity_type);
+                const entityId = ['user', 'player']?.includes(currentUserData?.entity_type) ? currentUserData?.user_id : currentUserData?.group_id
+                QBcreateUser(entityId, currentUserData, accountType)
+                  .finally(() => {
+                    onClose();
+                    navigateToMessage(entityId);
+                  })
+              }}
+            isAdmin={isAdmin}
             profileImage={currentUserData?.thumbnail ? { uri: currentUserData?.thumbnail } : images.profilePlaceHolder}
             userName={currentUserData?.full_name ?? ''}
             cityName={currentUserData?.city ?? ''}
@@ -148,6 +212,19 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
+  challengeLinearContainer: {
+    flex: 1,
+    width: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: '#FF3B00',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 10,
+  },
   headerMainContainerStyle: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -158,9 +235,9 @@ const styles = StyleSheet.create({
     width: 17,
   },
   soccerImageStyle: {
-    height: 20,
-    width: 20,
-    marginHorizontal: 10,
+    height: 23,
+    width: 23,
+    marginRight: 10,
   },
   headerCenterViewStyle: {
     alignItems: 'center',
@@ -171,6 +248,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+  },
+  challengeButtonContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    alignItems: 'center',
+    right: 0,
+    left: 0,
+    bottom: 0,
+    marginBottom: 15,
+    zIndex: 10,
+  },
+  challengeTextStyle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 16,
   },
 });
 
