@@ -79,7 +79,6 @@ import StatsView from '../../components/Home/StatsView';
 import PersonalSportsInfo from '../../components/Home/PersonalSportsInfo';
 import ScoreboardSportsScreen from './ScoreboardSportsScreen';
 import UpcomingMatchScreen from './UpcomingMatchScreen';
-import StatsScreen from './StatsScreen';
 import {
   deleteEvent,
   getEventById,
@@ -111,6 +110,7 @@ import TCInnerLoader from '../../components/TCInnerLoader';
 import TCThinDivider from '../../components/TCThinDivider';
 import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSection';
 import PlayInModule from './playInModule/PlayInModule';
+import PlayInCommonChartScreen from './playInModule/stats/commonViews/PlayInCommonChartScreen';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
@@ -2714,8 +2714,8 @@ export default function HomeScreen({ navigation, route }) {
                   </TouchableOpacity>
                 }
               />
-              <StatsScreen
-                gameChartData={gamesChartData.length > 0 ? gamesChartData : []}
+              <PlayInCommonChartScreen
+                gameChartData={gamesChartData}
                 gameStatsData={gameStatsData}
                 isLoading={loading}
                 onDonePress={(selectValue) => {

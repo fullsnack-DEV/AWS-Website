@@ -33,11 +33,11 @@ const PlayInModule = ({
   navigation,
 }) => {
   const [sportName, setSportName] = useState('');
+  const [singlePlayerGame, setSinglePlayerGame] = useState(true);
   const [mainTitle, setMainTitle] = useState();
   const authContext = useContext(AuthContext);
   const [currentUserData, setCurrentUserData] = useState();
   const [currentTab, setCurrentTab] = useState(0);
-  console.log(playInObject);
   const onClose = () => {
     onModalClose();
     setCurrentTab(0);
@@ -47,7 +47,9 @@ const PlayInModule = ({
   }, [userData]);
 
   useEffect(() => {
+    console.log(playInObject);
     if (playInObject?.sport_name) setSportName(playInObject?.sport_name);
+    if (playInObject?.sport_type !== 'single') setSinglePlayerGame(false);
   }, [playInObject])
 
   useEffect(() => {
@@ -58,7 +60,7 @@ const PlayInModule = ({
         setMainTitle({ title: `Play in ${sportName}`, titleIcon: images.soccerImage })
       }
     }
-  }, [sportName])
+  }, [sportName, singlePlayerGame])
   const onSave = (params) => new Promise((resolve, reject) => {
     patchPlayer(params, authContext).then(async (res) => {
       const entity = authContext.entity
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
   headerMainContainerStyle: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    paddingVertical: 15,
+    paddingVertical: 10,
   },
   cancelImageStyle: {
     height: 17,

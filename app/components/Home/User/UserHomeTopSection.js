@@ -64,7 +64,6 @@ export default function UserHomeTopSection({
     if (item.item_type) {
       return renderAddPlayInRole({ item })
     }
-
     return (<UserInfoPlaysInItem
         title={item.sport_name}
         totalGames={item.totalGames}

@@ -37,21 +37,30 @@ const PlayInInfoView = ({
     <TCThickDivider />
 
     {/*  NTRP */}
-    <PlaysInNTRP
-          onSave={onSave}
-          sportName={sportName}
-          isAdmin={isAdmin}
-          currentUserData={currentUserData}
-      />
-    <TCThickDivider/>
+    {['tennis', 'tennis double']?.includes(sportName.toLowerCase())
+          ? <>
+            <PlaysInNTRP
+                  onSave={onSave}
+                  sportName={sportName}
+                  isAdmin={isAdmin}
+                  currentUserData={currentUserData}
+              />
+            <TCThickDivider/>
+          </>
+        : null}
+
     {/*  Home Place */}
-    <PlaysInHomePlace
-          onSave={onSave}
-          sportName={sportName}
-          isAdmin={isAdmin}
-          currentUserData={currentUserData}
-      />
-    <TCThickDivider />
+    {sportName.toLowerCase() === 'tennis' ? (
+      <>
+        <PlaysInHomePlace
+                  onSave={onSave}
+                  sportName={sportName}
+                  isAdmin={isAdmin}
+                  currentUserData={currentUserData}
+              />
+        <TCThickDivider />
+      </>
+          ) : null}
 
     {/*  Teams */}
     <PlaysInTeams

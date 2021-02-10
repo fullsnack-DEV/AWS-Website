@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect,
+  useState, useEffect, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -30,16 +30,19 @@ import strings from '../../../Constants/String';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
 import TCKeyboardView from '../../../components/TCKeyboardView';
+import { getSportsList } from '../../../api/Games';
+import AuthContext from '../../../auth/context';
 
 export default function RegisterPlayer({ navigation, route }) {
+  const authContext = useContext(AuthContext);
   const [sports, setSports] = useState('');
   const [description, setDescription] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [languagesName, setLanguagesName] = useState('');
   const [languages, setLanguages] = useState([]);
+  const [sportsData, setSportsData] = useState([]);
   const selectedLanguage = [];
-
   useEffect(() => {
     const language = [
       { language: 'English', id: 1 },
@@ -58,6 +61,19 @@ export default function RegisterPlayer({ navigation, route }) {
       arr.push(tempData);
     }
     setLanguages(arr);
+
+    getSportsList(authContext).then((res) => {
+      const sportArr = [];
+      res.payload.map((item) => {
+        sportArr.push({ label: item?.sport_name, value: item?.sport_name })
+        return null;
+      })
+      setSportsData([...sportArr]);
+    }).catch((e) => {
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 0.7);
+    });
   }, []);
 
   const toggleModal = () => {
@@ -135,7 +151,7 @@ export default function RegisterPlayer({ navigation, route }) {
             label: strings.selectSportPlaceholder,
             value: '',
           } }
-          items={ [{ label: 'Tennis', value: 'Tennis' }] }
+          items={sportsData ?? []}
           onValueChange={ (value) => {
             setSports(value);
           } }
@@ -251,16 +267,10 @@ export default function RegisterPlayer({ navigation, route }) {
         <TouchableOpacity onPress={ () => {
           if (checkValidation()) {
             const bodyParams = {};
-
             bodyParams.sport_name = sports;
-            bodyParams.Tennis = 'single-multiplayer';
             bodyParams.descriptions = description;
             bodyParams.currency_type = 'CAD';
             bodyParams.language = selectedLanguages;
-
-            // registered_sports[0]=bodyParams;
-            // bodyParams={registered_sports};
-
             navigation.navigate('RegisterPlayerForm2', {
               bodyParams,
               comeFrom: (route && route.params && route.params.comeFrom) ? route.params.comeFrom : null,

@@ -8,12 +8,12 @@ import {
   BarChart, XAxis, PieChart as SVGPieChart,
 } from 'react-native-svg-charts'
 import { Defs, LinearGradient, Stop } from 'react-native-svg';
-import WinProgressView from '../../components/Home/WinProgressView';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
-import TCThickDivider from '../../components/TCThickDivider';
-import StatsSelectionView from '../../components/Home/StatsSelectionView';
-import strings from '../../Constants/String';
+import WinProgressView from '../../../../../components/Home/WinProgressView';
+import colors from '../../../../../Constants/Colors';
+import fonts from '../../../../../Constants/Fonts';
+import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
+import strings from '../../../../../Constants/String';
+import PlayInCommonScoreTypesData from './PlayInCommonScoreTypesData';
 
 const Gradient = () => (
   <Defs key={'gradient'}>
@@ -37,10 +37,10 @@ const monthsSelectionData = [
   { label: 'Past 12 Months', value: 'Past 12 Months' },
 ]
 
-export default function StatsScreen({
-  gameChartData,
+export default function PlayInCommonChartScreen({
+  gameChartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   gameStatsData,
-  gameChartMonths,
+  gameChartMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   selectWeekMonth,
   setSelectWeekMonth,
 }) {
@@ -51,8 +51,8 @@ export default function StatsScreen({
       ?.map((item) => ({
         key: item,
         value: gameStatsData[item] !== 0 ? (100 * gameStatsData[item]) / gameStatsData.total_games : 0,
-        // svg: { fill: `url(#${item})` },
-        svg: { fill: 'gray' },
+        svg: { fill: `url(#${item})` },
+        // svg: { fill: 'gray' },
       }))
     setPieData([...data]);
   }, [gameStatsData]);
@@ -150,24 +150,10 @@ export default function StatsScreen({
           </View>
         </View>
       </View>
-      <TCThickDivider/>
 
       {/* Bar Chart */}
       <View>
-        <View style={{
-          justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 15,
-        }}>
-          <View style={{ ...styles.totalGameViewStyle }}>
-            <Text style={styles.totalGameTextStyle}>{'Monthly Matches'}</Text>
-          </View>
-          <StatsSelectionView
-            dataSource={monthsSelectionData}
-            placeholder={strings.selectTimePlaceholder}
-            value={selectWeekMonth}
-            onValueChange={setSelectWeekMonth}
-        />
-        </View>
-        <View style={{ height: 250, marginVertical: 30 }}>
+        <View style={{ height: 250, marginTop: 30 }}>
           <BarChart
             style={{ flex: 1 }}
             data={gameChartData}
@@ -199,6 +185,9 @@ export default function StatsScreen({
         />
         </View>
       </View>
+
+      {/*   Bottom Selection */}
+      <PlayInCommonScoreTypesData />
     </View>
   );
 }

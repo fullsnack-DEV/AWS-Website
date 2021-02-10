@@ -9,9 +9,9 @@ import colors from '../../../../Constants/Colors';
 import images from '../../../../Constants/ImagePath';
 import Header from '../../../../components/Home/Header';
 import fonts from '../../../../Constants/Fonts';
-import TCThinDivider from '../../../../components/TCThinDivider';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import TCGradientDivider from '../../../../components/TCThinGradientDivider';
 
 const PlayInEditModal = ({
   visible = false,
@@ -55,14 +55,12 @@ const PlayInEditModal = ({
             }
             rightComponent={
               <TouchableOpacity
-                  onPress={() => {
-                    onSavePress();
-                  }}>
+                  onPress={onSavePress}>
                 <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
               </TouchableOpacity>
             }
         />
-          <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
+          <TCGradientDivider width={'100%'} height={3}/>
           {loading && (
             <View style={{
               position: 'absolute',
