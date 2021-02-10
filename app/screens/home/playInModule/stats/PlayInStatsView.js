@@ -1,10 +1,8 @@
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import strings from '../../../../Constants/String';
 import { getGameStatsChartData, getGameStatsData } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import StatsScreen from '../../StatsScreen';
-import StatsSelectionView from '../../../../components/Home/StatsSelectionView';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
 
 const monthsSelectionData = [
@@ -99,20 +97,12 @@ const PlayInStatsView = ({
           <TCInnerLoader loaderStyle={{ top: '10%' }} visible={true} size={50}/>
         </View>
       )}
-      <View>
-        <StatsSelectionView
-            dataSource={monthsSelectionData}
-            placeholder={strings.selectTimePlaceholder}
-            value={selectWeekMonth}
-            onValueChange={(val) => {
-              setSelectWeekMonth(val)
-              if (Platform.OS === 'android') loadStatsData(val);
-            }}
-            onDonePress={loadStatsData}
-        />
-      </View>
-
       <StatsScreen
+          selectWeekMonth={selectWeekMonth}
+          setSelectWeekMonth={(val) => {
+            setSelectWeekMonth(val)
+            loadStatsData(val);
+          }}
           gameChartData={gamesChartData.length > 0 ? gamesChartData : []}
           gameStatsData={gameStatsData}
           gameChartMonths={gameChartMonths}

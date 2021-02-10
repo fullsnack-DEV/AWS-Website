@@ -814,7 +814,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
                   {getRequester(bodyParams)?.group_id
                     ? `${getRequester(bodyParams)?.group_name}`
                     : `${getRequester(bodyParams)?.first_name} ${
-                        getRequester(bodyParams)?.last_name
+                      getRequester(bodyParams)?.last_name
                     }`}
                 </Text>
               </View>
@@ -931,8 +931,8 @@ export default function EditScorekeeperReservation({ navigation, route }) {
                     Please, respond within{' '}
                     <Text style={{ color: colors.themeColor }}>
                       {getDayTimeDifferent(
-                      bodyParams?.expiry_datetime * 1000,
-                      new Date().getTime(),
+                        bodyParams?.expiry_datetime * 1000,
+                        new Date().getTime(),
                       )}
                     </Text>
                   </Text>
@@ -1102,8 +1102,8 @@ export default function EditScorekeeperReservation({ navigation, route }) {
                         bodyParams?.game?.start_datetime
                         && bodyParams?.game?.end_datetime
                           ? getDateDuration(
-                              bodyParams?.game?.start_datetime,
-                              bodyParams?.game?.end_datetime,
+                            bodyParams?.game?.start_datetime,
+                            bodyParams?.game?.end_datetime,
                           )
                           : ''
                       }

@@ -10,12 +10,15 @@ import FastImage from 'react-native-fast-image';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
 
 export default function PlayInProfileViewSection({
   profileImage,
   userName,
   cityName,
-  onSettingPress,
+  onSettingPress = () => {},
+  onMessageButtonPress = () => {},
+  isAdmin,
 }) {
   return (
     <View style={styles.topViewContainer}>
@@ -28,13 +31,19 @@ export default function PlayInProfileViewSection({
           <Text style={styles.cityName}>{cityName}</Text>
         </View>
         <View style={styles.settingButtonContainer}>
-          <TouchableOpacity onPress={onSettingPress}>
-            <FastImage
+          {isAdmin ? (
+            <TouchableOpacity onPress={onSettingPress}>
+              <FastImage
                 resizeMode={'contain'}
                 source={images.SettingPrivacy}
                 style={{ width: 40, height: 40 }}
             />
-          </TouchableOpacity>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.messageBtnStyle} onPress={onMessageButtonPress}>
+              <Text style={[styles.detailBtnTextStyle, { color: colors.lightBlackColor }]}>{strings.message}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -85,5 +94,22 @@ const styles = StyleSheet.create({
   settingButtonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  detailBtnTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RBold,
+    textAlign: 'center',
+  },
+  messageBtnStyle: {
+    height: 25,
+    paddingHorizontal: 15,
+    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    justifyContent: 'center',
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.16,
+    shadowRadius: 1,
+    elevation: 10,
   },
 });

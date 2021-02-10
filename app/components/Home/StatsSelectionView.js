@@ -1,11 +1,10 @@
 import React from 'react';
 import {
-  StyleSheet, Platform, Image, View,
+  StyleSheet, Image, View,
 
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -16,7 +15,7 @@ export default function StatsSelectionView({
   value,
   onValueChange,
   containerStyle,
-  onDonePress,
+  onDonePress = () => {},
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
@@ -29,11 +28,18 @@ export default function StatsSelectionView({
         onValueChange={onValueChange}
         onDonePress={onDonePress}
         useNativeAndroidPickerStyle={false}
-
-        style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+        textInputProps={{
+          style: { ...styles.inputStyle, ...styles },
+        }}
         value={value}
         Icon={() => (
-          <Image source={images.dropDownArrow} style={styles.downArrow} />
+          <View style={{
+            justifyContent: 'center',
+            top: '40%',
+            paddingRight: 5,
+          }}>
+            <Image source={images.dropDownArrow} style={styles.downArrow} />
+          </View>
         )}
       />
     </View>
@@ -42,46 +48,28 @@ export default function StatsSelectionView({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: wp('92%'),
     alignSelf: 'center',
-    marginTop: 20,
   },
-  inputAndroid: {
+  inputStyle: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 20,
     color: colors.lightBlackColor,
-    elevation: 3,
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: fonts.RRegular,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
-    width: '100%',
-  },
-  inputIOS: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 20,
-    color: colors.lightBlackColor,
-    elevation: 3,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    elevation: 10,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
-    width: '100%',
+    paddingRight: 25,
   },
   downArrow: {
     height: 15,
     resizeMode: 'contain',
-    right: 15,
     tintColor: colors.grayColor,
-    top: 14,
     width: 15,
   },
 });

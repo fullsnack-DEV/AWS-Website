@@ -12,6 +12,8 @@ import WinProgressView from '../../components/Home/WinProgressView';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCThickDivider from '../../components/TCThickDivider';
+import StatsSelectionView from '../../components/Home/StatsSelectionView';
+import strings from '../../Constants/String';
 
 const Gradient = () => (
   <Defs key={'gradient'}>
@@ -28,10 +30,19 @@ const Gradient = () => (
   </Defs>
 );
 
+const monthsSelectionData = [
+  { label: 'Past 3 Months', value: 'Past 3 Months' },
+  { label: 'Past 6 Months', value: 'Past 6 Months' },
+  { label: 'Past 9 Months', value: 'Past 9 Months' },
+  { label: 'Past 12 Months', value: 'Past 12 Months' },
+]
+
 export default function StatsScreen({
   gameChartData,
   gameStatsData,
   gameChartMonths,
+  selectWeekMonth,
+  setSelectWeekMonth,
 }) {
   const [pieData, setPieData] = useState([]);
   useEffect(() => {
@@ -40,7 +51,8 @@ export default function StatsScreen({
       ?.map((item) => ({
         key: item,
         value: gameStatsData[item] !== 0 ? (100 * gameStatsData[item]) / gameStatsData.total_games : 0,
-        svg: { fill: 'red' },
+        // svg: { fill: `url(#${item})` },
+        svg: { fill: 'gray' },
       }))
     setPieData([...data]);
   }, [gameStatsData]);
@@ -70,13 +82,24 @@ export default function StatsScreen({
 
   return (
     <View>
+      <View style={{
+        justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 15,
+      }}>
+        <View style={styles.totalGameViewStyle}>
+          <Text style={styles.totalGameTextStyle}>{'Total Matches'}</Text>
+          <Text style={styles.totalGameCounterText}>{gameStatsData ? gameStatsData.total_games : ''}</Text>
+        </View>
+        <StatsSelectionView
+            dataSource={monthsSelectionData}
+            placeholder={strings.selectTimePlaceholder}
+            value={selectWeekMonth}
+            onValueChange={setSelectWeekMonth}
+        />
+      </View>
       <View style={styles.containerStyle}>
         <View>
-          <View style={styles.totalGameViewStyle}>
-            <Text style={styles.totalGameTextStyle}>{'Total Matches'}</Text>
-            <Text style={styles.totalGameCounterText}>{gameStatsData ? gameStatsData.total_games : ''}</Text>
-          </View>
-          <WinProgressView
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <WinProgressView
               titleText={'Wins'}
               percentageCount={gameStatsData ? gameStatsData.winner : ''}
               progress={gameStatsData.winner !== 0 ? (1 * gameStatsData.winner) / gameStatsData.total_games : 0}
@@ -86,7 +109,7 @@ export default function StatsScreen({
               containerStyle={{ marginVertical: 5 }}
               progressBarStyle={{ backgroundColor: colors.lightgrayColor }}
           />
-          <WinProgressView
+            <WinProgressView
               titleText={'Draws'}
               percentageCount={gameStatsData ? gameStatsData.draw : ''}
               progress={gameStatsData.draw !== 0 ? (1 * gameStatsData.draw) / gameStatsData.total_games : 0}
@@ -95,7 +118,7 @@ export default function StatsScreen({
               textStyle={styles.textStyle}
               progressBarStyle={{ backgroundColor: colors.lightgrayColor }}
           />
-          <WinProgressView
+            <WinProgressView
               titleText={'Losses'}
               percentageCount={gameStatsData ? gameStatsData.looser : ''}
               progress={gameStatsData.looser !== 0 ? (1 * gameStatsData.looser) / gameStatsData.total_games : 0}
@@ -105,6 +128,7 @@ export default function StatsScreen({
               containerStyle={{ marginVertical: 5 }}
               progressBarStyle={{ backgroundColor: colors.lightgrayColor }}
           />
+          </View>
         </View>
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <SVGPieChart
@@ -130,10 +154,19 @@ export default function StatsScreen({
 
       {/* Bar Chart */}
       <View>
-        <View style={{ ...styles.totalGameViewStyle, padding: 15 }}>
-          <Text style={styles.totalGameTextStyle}>{'Monthly Matches'}</Text>
+        <View style={{
+          justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 15,
+        }}>
+          <View style={{ ...styles.totalGameViewStyle }}>
+            <Text style={styles.totalGameTextStyle}>{'Monthly Matches'}</Text>
+          </View>
+          <StatsSelectionView
+            dataSource={monthsSelectionData}
+            placeholder={strings.selectTimePlaceholder}
+            value={selectWeekMonth}
+            onValueChange={setSelectWeekMonth}
+        />
         </View>
-
         <View style={{ height: 250, marginVertical: 30 }}>
           <BarChart
             style={{ flex: 1 }}
@@ -172,9 +205,7 @@ export default function StatsScreen({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    paddingVertical: 12,
     marginHorizontal: 20,
-    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

@@ -281,6 +281,7 @@ const images = {
   requestSentImage: require('../assets/images/requestSentImage.png'),
   whiteTick: require('../assets/images/whiteTick.png'),
   undoImage: require('../assets/images/undo.png'),
+  tennisSingleHeaderIcon: require('../assets/images/tennisSingleHeaderIcon.png'),
 };
 
 export default images;
