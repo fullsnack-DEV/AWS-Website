@@ -44,6 +44,8 @@ const SoccerHome = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRefereeAdmin, setIsRefereeAdmin] = useState(false);
+  const [isScorekeeperAdmin, setIsScorekeeperAdmin] = useState(false);
+
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
@@ -74,8 +76,13 @@ const SoccerHome = ({ navigation, route }) => {
           refereeIds = res?.payload?.referees?.map((e) => e.user_id);
           const checkIsRefereeAdmin = refereeIds?.includes(entity?.uid);
 
+          let scorekeeperIds = [];
+          scorekeeperIds = res?.payload?.scorekeepers?.map((e) => e.user_id);
+          const checkIsScorekeeperAdmin = scorekeeperIds?.includes(entity?.uid);
+
           setIsAdmin(checkIsAdmin);
           setIsRefereeAdmin(checkIsRefereeAdmin);
+          setIsScorekeeperAdmin(checkIsScorekeeperAdmin);
           console.log('DD', res.payload);
           setGameData(res.payload);
         }
@@ -123,6 +130,7 @@ const SoccerHome = ({ navigation, route }) => {
           gameData={gameData}
           isAdmin={isAdmin}
           isRefereeAdmin={isRefereeAdmin}
+          isScorekeeperAdmin={isScorekeeperAdmin}
           userRole={userRole}
           userId={userId}
           getGameLineUp={getGameLineUp}

@@ -201,6 +201,20 @@ const patchRefereeReview = (refereeId, gameId, reviewID, params, authContext) =>
   authContext,
 })
 
+const addScorekeeperReview = (scorekeeperId, gameId, params, authContext) => makeAPIRequest({
+  method: 'post',
+  url: `${Config.BASE_URL}scorekeeper/${scorekeeperId}/games/${gameId}/reviews`,
+  data: params,
+  authContext,
+})
+
+const patchScorekeeperReview = (scorekeeperId, gameId, reviewID, params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}scorekeeper/${scorekeeperId}/games/${gameId}/reviews/${reviewID}`,
+  data: params,
+  authContext,
+})
+
 const getGameRoster = (gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}games/${gameId}/roster`,
@@ -290,4 +304,6 @@ export {
   getTeamReviews,
   getScorekeeperReviewData,
   getScorekeeperMatch,
+  addScorekeeperReview,
+  patchScorekeeperReview,
 }

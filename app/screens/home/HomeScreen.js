@@ -316,6 +316,7 @@ export default function HomeScreen({ navigation, route }) {
       getGallery(uid, authContext)]
     Promise.all(promises).then(([res1, res2, res3, res4]) => {
       const userDetails = res1.payload;
+      console.log('Get user detail by ID:=>', userDetails);
       if (!userDetails.games) {
         userDetails.games = []
       }

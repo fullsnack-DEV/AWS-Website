@@ -676,7 +676,7 @@ export default function ScheduleScreen({ navigation }) {
                   setTimeout(() => {
                     Alert.alert(
                       'Towns Cup',
-                      'No referees invited or booked by you for this game',
+                      'No scorekeepers invited or booked by you for this game',
                       [{
                         text: 'OK',
                         onPress: async () => {},

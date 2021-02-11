@@ -15,6 +15,9 @@ import AuthContext from '../../../../auth/context';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import * as ScorekeeperUtils from '../../../../screens/scorekeeper/ScorekeeperUtility';
+import {
+  checkReviewExpired,
+} from '../../../../utils/gameUtils';
 
 import ScorekeeperReservationStatus from '../../../../Constants/ScorekeeperReservationStatus';
 
@@ -27,6 +30,7 @@ const Scorekeepers = ({
   unFollowUser,
   navigation,
   getScorekeeperReservation,
+  onReviewPress,
 }) => {
   const [scorekeeper, setScorekeeper] = useState([]);
   const actionSheet = useRef();
@@ -101,6 +105,8 @@ const Scorekeepers = ({
             statusColor={getScorekeeperStatusMessage(item, 'color')}
             statusTitle={getScorekeeperStatusMessage(item, 'status')}
             myUserId={myUserId}
+            isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
+            isReviewed={!!sKeeper?.review_id}
             followUser={followUser}
             unFollowUser={unFollowUser}
             userID={sKeeper?.user_id}
@@ -114,6 +120,7 @@ const Scorekeepers = ({
               actionSheet.current.show()
             }}
             userRole={userRole}
+            onReviewPress={() => onReviewPress(sKeeper)}
         />
     )
   }
