@@ -80,10 +80,12 @@ const Referees = ({
   }
 
   const getRefereeStatusMessage = (item, type) => {
+    console.log('Referee status::=>', item);
     const status = item?.status;
     let statusData = '';
     const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
     switch (status) {
+      case RefereeReservationStatus.accepted: statusData = { status: 'Confirmed', color: colors.greeColor }; break;
       case RefereeReservationStatus.pendingpayment: statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
       case RefereeReservationStatus.offered:
         if (isExpired) statusData = { status: 'REFEREE RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
@@ -96,7 +98,7 @@ const Referees = ({
   const renderReferees = ({ item }) => {
     const entity = authContext?.entity;
     const referee = item;
-
+console.log('ITEM::=>', item);
     return (
       <TCUserFollowUnfollowList
               statusColor={getRefereeStatusMessage(item, 'color')}
@@ -112,7 +114,7 @@ const Referees = ({
               is_following={referee?.is_following}
               onFollowUnfollowPress={onFollowPress}
               profileImage={referee?.thumbnail}
-              isShowThreeDots={item?.initiated_by === entity?.uid}
+              isShowThreeDots={item?.booked_by === entity?.uid}
               onThreeDotPress={() => {
                 selectedRefereeData = item
                 actionSheet.current.show()
@@ -126,6 +128,7 @@ const Referees = ({
   const handleBookReferee = () => {
     navigation.navigate('BookReferee', { gameData })
   }
+  console.log('Game Data::=>', gameData);
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <ActivityLoader visible={loading} />

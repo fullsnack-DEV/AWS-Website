@@ -64,6 +64,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   const [oldVersion, setOldVersion] = useState();
   const [editInfo, setEditInfo] = useState(false);
   const [editPayment, setEditPayment] = useState(false);
+  const [editMatch, setEditMatch] = useState(false);
   const [isPendingRequestPayment, setIsPendingRequestPayment] = useState();
   const [isOld, setIsOld] = useState(false);
   const [refereeUpdate, setRefereeUpdate] = useState(false);
@@ -178,9 +179,16 @@ export default function EditRefereeReservation({ navigation, route }) {
       setDefaultCard(route?.params?.paymentMethod)
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    if (route?.params?.comeFrom === 'RefereeSelectMatch') {
+      setbodyParams({ ...bodyParams, game: route?.params?.gameData });
+      getFeesEstimationDetail()
+    }
+  }, [route?.params?.gameData]);
   useLayoutEffect(() => {
     sectionEdited();
-  }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard]);
+  }, [bodyParams, isOld, editVenue, editRules, editReferee, editScorekeeper, editInfo, defaultCard, editMatch]);
 
   const sectionEdited = () => {
     if (bodyParams && oldVersion) {
@@ -228,6 +236,12 @@ export default function EditRefereeReservation({ navigation, route }) {
       } else {
         setEditPayment(false);
       }
+      if (
+        bodyParams.game.game_id !== oldVersion.game.game_id) {
+        setEditMatch(true);
+      } else {
+        setEditMatch(false);
+      }
     }
   };
 
@@ -272,7 +286,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -301,7 +315,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -352,7 +366,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -397,7 +411,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -448,7 +462,7 @@ export default function EditRefereeReservation({ navigation, route }) {
   //       setloading(false)
   //       setTimeout(() => {
   //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 0.3)
+  //       }, 10)
   //     })
   // }
   const getPaymentMethods = (source) => {
@@ -468,7 +482,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       })
   }
   const checkSenderForPayment = (reservationObj) => {
@@ -602,7 +616,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const getOpponentEntity = (reservationObj) => {
@@ -697,7 +711,7 @@ export default function EditRefereeReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   console.log('Default card:', defaultCard);
@@ -924,7 +938,7 @@ export default function EditRefereeReservation({ navigation, route }) {
               {/* Choose Match */}
               <View style={styles.contentContainer}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Title text={'Match'} />
+                  <TCLabel title={'Match'} isNew={editMatch} style={{ marginLeft: 0 }}/>
 
                   {bodyParams?.referee?.user_id !== entity.uid && (
                     <TouchableOpacity
@@ -1225,6 +1239,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                         editInfo
                         || refereeUpdate
                         || editPayment
+                        || editMatch
                       ) {
                         updateReservationDetail();
                       } else {

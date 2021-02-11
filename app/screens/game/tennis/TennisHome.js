@@ -60,16 +60,13 @@ const TennisHome = ({ navigation, route }) => {
         const homeTeamId = res?.payload?.singlePlayerGame ? res?.payload?.home_team?.user_id : res?.payload?.home_team?.group_id;
         const awayTeamId = res?.payload?.singlePlayerGame ? res?.payload?.away_team?.user_id : res?.payload?.away_team?.group_id;
         let refereeIds = []
-        refereeIds = res?.payload?.referees.map((e) => e.user_id)
+        refereeIds = res?.payload?.referees?.map((e) => e.user_id)
         const teamIds = [homeTeamId, awayTeamId]
-        const checkIsAdmin = teamIds.includes(entity?.uid);
-        const checkIsRefereeAdmin = refereeIds.includes(entity?.uid);
+        const checkIsAdmin = teamIds?.includes(entity?.uid);
+        const checkIsRefereeAdmin = refereeIds?.includes(entity?.uid);
         setIsAdmin(checkIsAdmin)
         setIsRefereeAdmin(checkIsRefereeAdmin)
-        console.log('Check Admin::', checkIsAdmin);
-        console.log('Check Referee Admin::', checkIsRefereeAdmin);
         setGameData(res.payload);
-        console.log('GET GAME DETAIL::', res.payload);
       }
     }).catch((error) => {
       console.log(error);
@@ -137,7 +134,7 @@ const TennisHome = ({ navigation, route }) => {
       setLoading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 

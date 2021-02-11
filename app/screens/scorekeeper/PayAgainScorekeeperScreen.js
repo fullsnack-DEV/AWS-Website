@@ -58,7 +58,7 @@ export default function PayAgainScorekeeperScreen({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3);
+        }, 10);
       });
   };
   const payAgainForScorekeeperRequest = () => {
@@ -76,7 +76,7 @@ export default function PayAgainScorekeeperScreen({ navigation, route }) {
           setloading(false)
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         })
       } else {
         payAgainScorekeeper(reservationObj.reservation_id, bodyParams, authContext).then(() => {
@@ -86,7 +86,7 @@ export default function PayAgainScorekeeperScreen({ navigation, route }) {
           setloading(false)
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         })
       }
     } else {

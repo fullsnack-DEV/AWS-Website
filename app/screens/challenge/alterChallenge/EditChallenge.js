@@ -274,7 +274,7 @@ export default function EditChallenge({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const acceptDeclineChallengeOperation = (
@@ -325,7 +325,7 @@ export default function EditChallenge({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -373,7 +373,7 @@ export default function EditChallenge({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -471,7 +471,7 @@ export default function EditChallenge({ navigation, route }) {
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       })
   }
   // eslint-disable-next-line consistent-return
@@ -564,7 +564,7 @@ export default function EditChallenge({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 

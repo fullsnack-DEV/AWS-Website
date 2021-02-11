@@ -78,7 +78,7 @@ export default function CreateClubForm3({ navigation, route }) {
         setTimeout(() => {
           setloading(false)
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
     });
   };

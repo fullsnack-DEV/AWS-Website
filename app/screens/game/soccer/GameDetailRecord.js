@@ -277,7 +277,7 @@ export default function GameDetailRecord({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const resetGameDetail = (gameId) => {
@@ -303,7 +303,7 @@ export default function GameDetailRecord({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const getMemberName = (memberID) => {
@@ -470,7 +470,7 @@ export default function GameDetailRecord({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const checkMemberOnBench = (memberID) => homeBench.some((e) => e.member_id === memberID)

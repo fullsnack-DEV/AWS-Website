@@ -67,7 +67,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   }
   const connectMemberProfile = () => {
@@ -83,7 +83,7 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         });
     } else {
       Alert.alert('Towns Cup', 'Please select one member for connect with profile.')

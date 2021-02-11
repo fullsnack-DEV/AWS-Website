@@ -68,7 +68,7 @@ export default function EditRefereeFeeScreen({ navigation, route }) {
                   updatedFee: true,
                 })
               } else {
-                Alert.alert('Please enter valid game fee.')
+                Alert.alert(strings.enterValidGameFee)
               }
             }}/>
     </View>

@@ -114,7 +114,7 @@ export default function ChooseLocationScreen({ navigation }) {
       }).catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
     } else {
       setNoData(true);
@@ -148,7 +148,7 @@ export default function ChooseLocationScreen({ navigation }) {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 
@@ -178,7 +178,7 @@ export default function ChooseLocationScreen({ navigation }) {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 

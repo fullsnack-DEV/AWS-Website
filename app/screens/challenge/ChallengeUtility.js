@@ -53,6 +53,6 @@ export const getChallengeDetail = (challengeID, authContext) => {
   }).catch((e) => {
     setTimeout(() => {
       Alert.alert(strings.alertmessagetitle, e.message);
-    }, 0.7);
+    }, 10);
   });
 };

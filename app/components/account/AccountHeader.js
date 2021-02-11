@@ -47,7 +47,7 @@ export default function AccountHeader({ authEntity, entityRole }) {
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 

@@ -80,7 +80,7 @@ export default function EditMemberInfoScreen({ navigation, route }) {
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         });
     } else {
       bodyParams = {
@@ -99,7 +99,7 @@ export default function EditMemberInfoScreen({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   }
   const checkValidation = () => {

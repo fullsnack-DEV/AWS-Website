@@ -464,7 +464,7 @@ export default function TennisRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const getGameDetail = (gameId, isLoading) => {
@@ -500,7 +500,7 @@ export default function TennisRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const decreaseGameScoreRecord = (teamId, gameId) => {
@@ -530,7 +530,7 @@ export default function TennisRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const addGameRecordDetail = (gameId, params) => {
@@ -589,7 +589,7 @@ export default function TennisRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const matchEnd = () => {

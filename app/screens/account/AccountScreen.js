@@ -150,7 +150,7 @@ export default function AccountScreen({ navigation }) {
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -173,7 +173,7 @@ export default function AccountScreen({ navigation }) {
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -184,7 +184,7 @@ export default function AccountScreen({ navigation }) {
       }).catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
     } else {
       getJoinedGroups(authContext.entity.uid, authContext).then((response) => {
@@ -192,7 +192,7 @@ export default function AccountScreen({ navigation }) {
       }).catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
     }
   };
@@ -203,7 +203,7 @@ export default function AccountScreen({ navigation }) {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 
@@ -216,7 +216,7 @@ export default function AccountScreen({ navigation }) {
       setloading(false)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     })
   }
 

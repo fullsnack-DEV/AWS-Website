@@ -31,7 +31,6 @@ export default function PayoutMethodScreen({ navigation }) {
     setloading(true)
     merchantAuthDetail(authContext.entity.uid, authContext)
       .then((response) => {
-        setloading(false)
         setState(response.payload.state)
         setRedirectURI(response.payload.redirect_uri)
         let urlString = `${resgisterMerchantURL}?client_id=${response.payload.client_id}&state=${response.payload.state}&redirect_uri=${encodeURI(response.payload.redirect_uri)}`;
@@ -41,14 +40,15 @@ export default function PayoutMethodScreen({ navigation }) {
         urlString = `${urlString}&stripe_user[email]=${encodeURIComponent(authContext.entity.role === ('team' || 'club') ? authContext.entity.auth.user.email : authContext.entity.obj.email)}`
         urlString = `${urlString}&stripe_user[country]=CA`
         setMerchantURL(urlString)
-        console.log(urlString)
+        console.log('URL::=>', urlString)
+        setloading(false)
       })
       .catch((e) => {
         console.log('error in payout method', e)
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       })
   }
 
@@ -61,23 +61,27 @@ export default function PayoutMethodScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, 'Your Account Added Successfully', [
             { text: 'OK', onPress: () => navigation.goBack() },
           ]);
-        }, 0.3)
+        }, 10)
       })
       .catch((e) => {
         console.log('error in payout method callAddMercentAccountAPI', e)
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       })
   }
-
+  const renderLoadingView = () => (
+    <ActivityLoader visible={loading} />
+    )
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       {merchantURL && <WebView
         ref={webView}
         source={{ uri: merchantURL }}
+        renderLoading={renderLoadingView}
+        startInLoadingState={true}
         onShouldStartLoadWithRequest={(request) => {
           const { url } = request;
           if (!url) return false;
@@ -97,6 +101,7 @@ export default function PayoutMethodScreen({ navigation }) {
               }
             }
           }
+
           return true;
         }}
       />}

@@ -113,7 +113,7 @@ const TopBackgroundHeader = ({
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const goToChallengeDetail = (data) => {

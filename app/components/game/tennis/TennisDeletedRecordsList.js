@@ -325,7 +325,7 @@ export default function TennisDeletedRecordsList({
       setFullScreenLoading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 

@@ -36,7 +36,7 @@ export default function JoinedTeamsScreen() {
       }).catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
     } else {
       getJoinedGroups(authContext).then((response) => {
@@ -44,7 +44,7 @@ export default function JoinedTeamsScreen() {
       }).catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
     }
   };

@@ -52,6 +52,6 @@ export const getScorekeeperReservationDetail = (reservationID, callerID, authCon
   }).catch((e) => {
     setTimeout(() => {
       Alert.alert(strings.alertmessagetitle, e.message);
-    }, 0.7);
+    }, 10);
   });
 };
