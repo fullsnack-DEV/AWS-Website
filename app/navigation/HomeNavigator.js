@@ -170,6 +170,7 @@ import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAc
 // Scorekeeper Review Screen
 import ReviewScorekeeperList from '../components/game/soccer/home/review/reviewForScorekeeper/ReviewScorekeeperList';
 import ScorekeeperReviewScreen from '../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperReviewScreen';
+import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPlayerSuccess';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -766,6 +767,13 @@ const HomeNavigator = () => (
           component={ RegisterRefereeSuccess }
           options={ {
             headerShown: false,
+          } }
+      />
+    <Stack.Screen
+          name="RegisterPlayerSuccess"
+          component={ RegisterPlayerSuccess }
+          options={ {
+              headerShown: false,
           } }
       />
     <Stack.Screen

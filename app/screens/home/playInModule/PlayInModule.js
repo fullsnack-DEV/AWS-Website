@@ -22,8 +22,9 @@ import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
 import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
 import TCGradientDivider from '../../../components/TCThinGradientDivider';
+import PlayInReviewsView from './stats/PlayInReviewsView';
 
-const TAB_ITEMS = ['Info', 'Scoreboard', 'Stats']
+let TAB_ITEMS = []
 const PlayInModule = ({
   visible = false,
   onModalClose = () => {},
@@ -49,7 +50,11 @@ const PlayInModule = ({
   useEffect(() => {
     console.log(playInObject);
     if (playInObject?.sport_name) setSportName(playInObject?.sport_name);
-    if (playInObject?.sport_type !== 'single') setSinglePlayerGame(false);
+    console.log(playInObject?.sport_type);
+    if (playInObject?.sport_type !== 'single') {
+      TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
+      setSinglePlayerGame(false);
+    } else TAB_ITEMS = ['Info', 'Scoreboard', 'Stats', 'Reviews']
   }, [playInObject])
 
   useEffect(() => {
@@ -103,6 +108,15 @@ const PlayInModule = ({
             playInObject={playInObject}
             sportName={playInObject?.sport_name}
         />
+      )
+    }
+    if (currentTab === 3) {
+      return (
+        <PlayInReviewsView
+              currentUserData={currentUserData}
+              playInObject={playInObject}
+              sportName={playInObject?.sport_name}
+          />
       )
     }
     return null;

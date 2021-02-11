@@ -10,7 +10,7 @@ export default function TCGradientDivider({
   height = 1,
   width = '90%',
   startGradiantColor = colors.themeColor,
-  endGradiantColor = colors.yellowColor,
+  endGradiantColor = colors.themeColor2,
 }) {
   return (
     <LinearGradient

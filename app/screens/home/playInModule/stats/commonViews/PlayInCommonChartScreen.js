@@ -13,7 +13,6 @@ import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
 import strings from '../../../../../Constants/String';
-import PlayInCommonScoreTypesData from './PlayInCommonScoreTypesData';
 
 const Gradient = () => (
   <Defs key={'gradient'}>
@@ -51,10 +50,13 @@ export default function PlayInCommonChartScreen({
       ?.map((item) => ({
         key: item,
         value: gameStatsData[item] !== 0 ? (100 * gameStatsData[item]) / gameStatsData.total_games : 0,
-        // svg: { fill: `url(#${item})` },
-        svg: { fill: 'gray' },
+        svg: { fill: `url(#${item})` },
       }))
-    setPieData([...data]);
+      if (data?.filter((item) => item?.value === 0)?.length === 3) {
+        setPieData([{ key: 'nullData', value: 100, svg: { fill: colors.lightgrayColor } }]);
+      } else {
+        setPieData([...data]);
+      }
   }, [gameStatsData]);
 
   const GradientView = ({ keyName }) => {
@@ -79,7 +81,6 @@ export default function PlayInCommonChartScreen({
       </Defs>
     )
   };
-
   return (
     <View>
       <View style={{
@@ -133,7 +134,11 @@ export default function PlayInCommonChartScreen({
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <SVGPieChart
               style={{ height: 160, width: 160 }}
-              data={pieData}
+              data={pieData ?? [{
+                key: 'nullData',
+                value: 100,
+                svg: { fill: colors.lightgrayColor },
+}]}
               spacing={0}
               radius={60}
               outerRadius={60}
@@ -186,8 +191,6 @@ export default function PlayInCommonChartScreen({
         </View>
       </View>
 
-      {/*   Bottom Selection */}
-      <PlayInCommonScoreTypesData />
     </View>
   );
 }

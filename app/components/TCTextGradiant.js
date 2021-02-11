@@ -9,12 +9,11 @@ const TCTextGradiant = ({
   textStyle = {},
   text,
 }) => {
-  const [gradientText, setGradiantText] = useState(text);
+  const [gradientText, setGradiantText] = useState('');
   useEffect(() => setGradiantText(text), [text])
   return (
     <LinearTextGradient
           style={textStyle}
-          useViewFrame={true}
           colors={colors}
           start={start}
           end={end}

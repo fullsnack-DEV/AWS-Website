@@ -413,14 +413,11 @@ export default function HomeScreen({ navigation, route }) {
     }
   };
   useEffect(() => {
-    console.log(5);
     if (route?.params?.fromAccountScreen) {
-      console.log(route?.params?.homeNavigateParams);
-      navigation.push('HomeScreen', route?.params?.homeNavigateParams);
+      navigation.push(route?.params?.navigateToScreen, route?.params?.homeNavigateParams);
     }
   }, [route?.params?.fromAccountScreen])
   useEffect(() => {
-    console.log(6);
     if (isFocused) {
       const loginEntity = authContext.entity
       let uid = loginEntity.uid
