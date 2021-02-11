@@ -15,6 +15,8 @@ module.exports = {
     },
   },
   rules: {
+    'template-curly-spacing': 'off',
+    indent: 'off',
     'prefer-destructuring': 0,
     'no-use-before-define': [
       'error',

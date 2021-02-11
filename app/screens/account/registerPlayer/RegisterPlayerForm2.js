@@ -43,7 +43,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const registerPlayerCall = () => {
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      if (authContext?.entity?.obj?.registered_sports?.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
+      if (authContext?.entity?.obj?.registered_sports?.some((e) => (e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase() && e?.singlePlayerGame === bodyParams.singlePlayerGame))) {
         Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
       } else {
         setloading(true);

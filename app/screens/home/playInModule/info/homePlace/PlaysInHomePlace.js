@@ -36,20 +36,23 @@ const PlaysInHomePlace = ({
           title={strings.homePlaceTitle}
           onEditPress={() => actionSheet.current.show()}
       >
-        <Text style={styles.bioTextStyle}>{registerSport?.homePlace}</Text>
-        <EventMapView
-            region={{
-              latitude: registerSport?.latitude ? Number(registerSport?.latitude) : 0.0,
-              longitude: registerSport?.longitude ? Number(registerSport?.longitude) : 0.0,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            coordinate={{
-              latitude: registerSport?.latitude ? Number(registerSport?.latitude) : 0.0,
-              longitude: registerSport?.longitude ? Number(registerSport?.longitude) : 0.0,
-            }}
-            style={{ marginVertical: 15 }}
-        />
+        <Text style={styles.bioTextStyle}>{registerSport?.homePlace ?? '-'}</Text>
+        {registerSport?.homePlace ? (
+          <EventMapView
+                  region={{
+                    latitude: registerSport?.latitude ? Number(registerSport?.latitude) : 0.0,
+                    longitude: registerSport?.longitude ? Number(registerSport?.longitude) : 0.0,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  coordinate={{
+                    latitude: registerSport?.latitude ? Number(registerSport?.latitude) : 0.0,
+                    longitude: registerSport?.longitude ? Number(registerSport?.longitude) : 0.0,
+                  }}
+                  style={{ marginVertical: 15 }}
+              />
+          ) : null}
+
       </EditEventItem>
       <ActionSheet
             ref={actionSheet}

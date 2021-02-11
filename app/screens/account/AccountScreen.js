@@ -367,6 +367,7 @@ export default function AccountScreen({ navigation }) {
   };
 
   const handleOptions = async (options) => {
+    navigation.closeDrawer();
     if (options === 'Register as a referee') {
       navigation.navigate('RegisterReferee');
     } else if (options === 'Register as a scorekeeper') {
@@ -557,18 +558,18 @@ export default function AccountScreen({ navigation }) {
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
                           <View
-                                style={styles.listContainer}
-                                onPress={() => {
-                                  // navigation.closeDrawer();
-                                  // alert('Game Pressed');
-                                }}
-                            >
+                                  style={styles.listContainer}
+                                  onPress={() => {
+                                    // navigation.closeDrawer();
+                                    // alert('Game Pressed');
+                                  }}
+                              >
                             <View style={styles.entityTextContainer}>
                               <Image
-                                  source={images.mySports}
-                                  style={styles.smallProfileImg}
-                              />
-                              <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+                                      source={images.mySports}
+                                      style={styles.smallProfileImg}
+                                  />
+                              <Text style={styles.entityName}>{item.sport_name}</Text>
                             </View>
                           </View>
                         )}

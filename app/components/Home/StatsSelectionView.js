@@ -20,6 +20,7 @@ export default function StatsSelectionView({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <RNPickerSelect
+        doneText={'Close'}
         placeholder={{
           label: placeholder,
           value: '',
