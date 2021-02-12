@@ -2,9 +2,14 @@ import { View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { getGameStatsChartData, getGameStatsData } from '../../../../../api/Games';
 import AuthContext from '../../../../../auth/context';
-import PlayInCommonChartScreen from './PlayInCommonChartScreen';
+import PlayInCommonChartScreen from '../commonViews/PlayInCommonChartScreen';
 import TCInnerLoader from '../../../../../components/TCInnerLoader';
-import PlayInCommonScoreTypesData from './PlayInCommonScoreTypesData';
+import TCThickDivider from '../../../../../components/TCThickDivider';
+import PlayInTennisSingleHomeAwayMatch from './PlayInTennisSingleHomeAwayMatch';
+import PlayInTennisSingleRDMPercentage from './PlayInTennisSingleRDMPercentage';
+import PlayInTennisSingleFiveSetsGame from './PlayInTennisSingleFiveSetsGame';
+import PlayInTennisSingleThreeSetsGame from './PlayInTennisSingleThreeSetsGame';
+import PlayInCommonScoreTypesData from '../commonViews/PlayInCommonScoreTypesData';
 import images from '../../../../../Constants/ImagePath';
 import { monthsSelectionData } from '../../../../../utils/constant';
 
@@ -20,39 +25,47 @@ const game_data = [
 
     {
         id: 1,
-        image: images.goalsImage,
+        image: images.tennisGeneral,
         selectImage: images.goalsSelected,
-        title: 'Goals',
+        title: 'General',
         total: 12,
         isSelected: false,
     },
     {
         id: 2,
-        image: images.assistsImage,
+        image: images.tennisAce,
         selectImage: images.assistsSelected,
-        title: 'Assists',
+        title: 'Ace',
         total: 5,
         isSelected: false,
     },
     {
         id: 3,
-        image: images.yellowCardImage,
+        image: images.tennisWinner,
         selectImage: images.yellowCardSelected,
-        title: 'Yellow card',
+        title: 'Winner',
         total: 6,
         isSelected: false,
     },
     {
         id: 4,
-        image: images.yellowCardImage,
+        image: images.tennisUnForced,
         selectImage: images.yellowCardSelected,
-        title: 'Red card',
+        title: 'Unforced',
+        total: 2,
+        isSelected: false,
+    },
+    {
+        id: 5,
+        image: images.tennisFault,
+        selectImage: images.yellowCardSelected,
+        title: 'Fault',
         total: 2,
         isSelected: false,
     },
 ];
 
-const PlayInCommonStatsView = ({
+const PlayInTennisSingleStatsView = ({
          playInObject,
          currentUserData,
          sportName,
@@ -107,7 +120,6 @@ const PlayInCommonStatsView = ({
                 if (barChartData.payload && barChartData.payload.length > 0) {
                     barChartData.payload[0].data.map((gameChartItem) => {
                         gameChart.push(gameChartItem.value);
-                        console.log(gameChartItem);
                         months.push(gameChartItem?.month_name);
                         return null;
                     })
@@ -115,13 +127,12 @@ const PlayInCommonStatsView = ({
                     setGamesChartData([...gameChart]);
                 }
             }
-
             setLoading(false);
-        }).catch((error) => {
-            console.log(error);
+        }).catch(() => {
             setLoading(false)
         });
     }
+
     return (
       <View style={{ flex: 1 }}>
         {loading && (
@@ -137,6 +148,8 @@ const PlayInCommonStatsView = ({
             <TCInnerLoader loaderStyle={{ top: '10%' }} visible={true} size={50}/>
           </View>
             )}
+
+        {/* Chart */}
         <PlayInCommonChartScreen
                 selectWeekMonth={selectWeekMonth}
                 setSelectWeekMonth={(val) => {
@@ -148,9 +161,51 @@ const PlayInCommonStatsView = ({
                 gameChartMonths={gameChartMonths}
 
             />
+
         <PlayInCommonScoreTypesData game_data={game_data}/>
+        <View style={{ marginVertical: 10 }}>
+          <TCThickDivider />
+        </View>
+
+        {/*    Home And Away Matches */}
+        <PlayInTennisSingleHomeAwayMatch
+            sportName={sportName}
+            currentUserData={currentUserData}
+            playInObject={playInObject}
+         />
+        <View style={{ marginVertical: 10 }}>
+          <TCThickDivider />
+        </View>
+
+        {/* RDM Percentage */}
+        <PlayInTennisSingleRDMPercentage
+              sportName={sportName}
+              currentUserData={currentUserData}
+              playInObject={playInObject}
+          />
+        <View style={{ marginVertical: 10 }}>
+          <TCThickDivider />
+        </View>
+        {/* Stats per game (5 Sets) */}
+        <PlayInTennisSingleFiveSetsGame
+              sportName={sportName}
+              currentUserData={currentUserData}
+              playInObject={playInObject}
+          />
+        <View style={{ marginVertical: 10 }}>
+          <TCThickDivider />
+        </View>
+
+        {/* Stats per game (3 Sets) */}
+        <PlayInTennisSingleThreeSetsGame
+              sportName={sportName}
+              currentUserData={currentUserData}
+              playInObject={playInObject}
+          />
+        <View style={{ marginVertical: 10 }}>
+          <TCThickDivider />
+        </View>
       </View>
     )
 }
-
-export default PlayInCommonStatsView;
+export default PlayInTennisSingleStatsView;

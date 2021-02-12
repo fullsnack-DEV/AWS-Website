@@ -153,7 +153,7 @@ export default function WritePostScreen({ navigation, route }) {
   }
 
   const renderTagText = (matchingString) => {
-    const pattern = /\B@\w+/g;
+    const pattern = /\B@\w+/gm;
     const match = matchingString.match(pattern);
     return <Text style={{ ...styles.username, color: colors.greeColor }}>{match[0]}</Text>;
   }
@@ -251,7 +251,7 @@ export default function WritePostScreen({ navigation, route }) {
             textAlignVertical={'top'}
           >
           <ParsedText
-              parse={[{ pattern: /\B@\w+/g, renderText: renderTagText }]}
+              parse={[{ pattern: /\B@\w+/gm, renderText: renderTagText }]}
               childrenProps={{ allowFontScaling: false }}
           >
             {searchText}

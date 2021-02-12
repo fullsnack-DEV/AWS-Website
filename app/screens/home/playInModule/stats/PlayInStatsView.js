@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import React from 'react';
 import PlayInCommonStatsView from './commonViews/PlayInCommonStatsView';
+import PlayInTennisSingleStatsView from './tennisSingle/PlayInTennisSingleStatsView';
 
 const PlayInStatsView = ({
        playInObject,
@@ -10,7 +11,7 @@ const PlayInStatsView = ({
     const renderStats = () => {
         if (sportName.toLowerCase() === 'tennis') {
             return (
-              <PlayInCommonStatsView
+              <PlayInTennisSingleStatsView
                     playInObject={playInObject}
                     currentUserData={currentUserData}
                     sportName={sportName}

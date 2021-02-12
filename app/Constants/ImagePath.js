@@ -276,12 +276,15 @@ const images = {
   tennisWinner: require('../assets/images/tennisWinner.png'),
   yellowDownArrow: require('../assets/images/yellowDownArrow.png'),
   refereeSucessBG: require('../assets/images/RefereeSucessBG.png'),
+  playerSucessBG: require('../assets/images/playerSucessBG.png'),
   // Tennis recorder
   tennisGeneral: require('../assets/images/ic_tennis_general.png'),
   requestSentImage: require('../assets/images/requestSentImage.png'),
   whiteTick: require('../assets/images/whiteTick.png'),
   undoImage: require('../assets/images/undo.png'),
   tennisSingleHeaderIcon: require('../assets/images/tennisSingleHeaderIcon.png'),
+  orangeCheckBox: require('../assets/images/orangeCheckBox.png'),
+  radioSelectYellow: require('../assets/images/radioSelectYellow.png'),
 };
 
 export default images;

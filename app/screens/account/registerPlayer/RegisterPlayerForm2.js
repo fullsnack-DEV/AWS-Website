@@ -43,7 +43,7 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const registerPlayerCall = () => {
     if (route.params && route.params.bodyParams) {
       const bodyParams = { ...route.params.bodyParams };
-      if (authContext?.entity?.obj?.registered_sports?.some((e) => (e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase() && e?.singlePlayerGame === bodyParams.singlePlayerGame))) {
+      if (authContext?.user?.registered_sports?.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
         Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
       } else {
         setloading(true);
@@ -67,13 +67,9 @@ export default function RegisterPlayerForm2({ navigation, route }) {
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({ ...entity })
-            await Utility.setStorage('authContextUser', response.payload);
             authContext.setUser(response.payload)
-            if (route.params && route.params.comeFrom === 'HomeScreen') {
-              navigation.navigate('HomeScreen');
-            } else {
-              navigation.navigate('HomeScreen');
-            }
+            await Utility.setStorage('authContextUser', response.payload);
+            navigation.navigate('RegisterPlayerSuccess');
           } else {
             Alert.alert('Towns Cup', response.messages);
           }
