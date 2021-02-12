@@ -292,7 +292,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -315,7 +315,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -366,7 +366,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -412,7 +412,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 
@@ -469,7 +469,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
   //       setloading(false)
   //       setTimeout(() => {
   //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 0.3)
+  //       }, 10)
   //     })
   // }
   const getPaymentMethods = (source) => {
@@ -489,7 +489,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3);
+        }, 10);
       });
   };
   const checkSenderForPayment = (reservationObj) => {
@@ -641,7 +641,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const getOpponentEntity = (reservationObj) => {
@@ -755,7 +755,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   return (

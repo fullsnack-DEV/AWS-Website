@@ -133,7 +133,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 

@@ -72,7 +72,7 @@ export default function MembersViewPrivacyScreen({ navigation }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   }
 

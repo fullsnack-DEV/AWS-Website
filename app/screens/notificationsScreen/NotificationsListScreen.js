@@ -248,7 +248,7 @@ function NotificationsListScreen({ navigation }) {
       setloading(false)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     })
   }
 
@@ -299,7 +299,7 @@ function NotificationsListScreen({ navigation }) {
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
-          }, 0.3);
+          }, 10);
         });
     } else {
       showSwitchProfilePopup()
@@ -316,7 +316,7 @@ function NotificationsListScreen({ navigation }) {
           setloading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
-          }, 0.3);
+          }, 10);
         });
     } else {
       showSwitchProfilePopup()

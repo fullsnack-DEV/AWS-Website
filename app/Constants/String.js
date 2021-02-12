@@ -558,5 +558,6 @@ const strings = {
 
   privacySettings: 'Privacy Settings',
   gameEndedAlertText: 'Game is ended, so you can not change reservation.',
+  enterValidGameFee: 'Please enter valid game fee.',
 };
 export default strings;

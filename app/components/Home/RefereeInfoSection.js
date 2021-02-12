@@ -967,7 +967,11 @@ function RefereeInfoSection({
               {editPressTitle === strings.refereeFee && <EventTextInput
             value={refereeFeeCount.toString()}
             onChangeText={(text) => {
-              setRefereeFeeCount(text);
+              if (text <= 0.0 || text >= 1.0) {
+                setRefereeFeeCount(text);
+              } else {
+                Alert.alert(strings.enterValidGameFee)
+              }
             }}
             keyboardType={'numeric'}
             displayLastTitle={true}

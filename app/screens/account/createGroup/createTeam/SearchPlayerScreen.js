@@ -55,7 +55,7 @@ export default function SearchPlayerScreen({ navigation, route }) {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
   const selectPlayer = (item) => {

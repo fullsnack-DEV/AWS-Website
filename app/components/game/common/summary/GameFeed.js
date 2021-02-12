@@ -72,7 +72,7 @@ const GameFeed = ({
         setTotalUploadCount(0);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message)
-        }, 0.3)
+        }, 10)
       })
   }
   const onPressDone = (data, postDesc, tagsOfEntity) => {

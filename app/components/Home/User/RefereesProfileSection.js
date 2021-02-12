@@ -48,7 +48,7 @@ export default function RefereesProfileSection({
 }
 const styles = StyleSheet.create({
   topViewContainer: {
-    backgroundColor: colors.lightgrayBG,
+    backgroundColor: colors.searchGrayColor,
     paddingVertical: 12,
     paddingHorizontal: 15,
   },

@@ -92,7 +92,7 @@ export default function ChangePasswordScreen({ navigation }) {
           setloading(false);
           setTimeout(() => {
             Alert.alert('Towns Cup', 'Your new password has beed set successfully');
-          }, 0.7);
+          }, 10);
           navigation.goBack()
         })
       }).catch((error) => {

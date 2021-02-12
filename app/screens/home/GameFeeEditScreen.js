@@ -63,7 +63,7 @@ export default function GameFeeEditScreen({ navigation, route }) {
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       }).finally(() => {
         setloading(false);
       })

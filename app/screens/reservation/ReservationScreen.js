@@ -52,7 +52,7 @@ export default function ReservationScreen({ navigation }) {
       setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
   const goToReservationDetail = (data) => {

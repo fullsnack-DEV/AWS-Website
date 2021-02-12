@@ -64,7 +64,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       })
   }
 
@@ -89,7 +89,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e);
-      }, 0.7);
+      }, 10);
     })
   }
 
@@ -115,7 +115,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
               setloading(false)
               setTimeout(() => {
                 Alert.alert(strings.alertmessagetitle, e.message);
-              }, 0.3)
+              }, 10)
             })
         },
       },
@@ -229,7 +229,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       })
   }
 
@@ -251,7 +251,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       if (e.message !== 'Cancelled by user') {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3)
+        }, 10)
       }
     })
   }

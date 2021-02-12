@@ -62,7 +62,7 @@ export default function CreateMemberProfileClubForm2({ navigation, route }) {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
   return (

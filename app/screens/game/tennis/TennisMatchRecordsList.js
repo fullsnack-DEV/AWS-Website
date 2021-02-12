@@ -439,7 +439,7 @@ export default function TennisMatchRecordsList({
       setFullScreenLoading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 

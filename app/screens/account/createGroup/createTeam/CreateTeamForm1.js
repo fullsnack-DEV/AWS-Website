@@ -148,7 +148,7 @@ export default function CreateTeamForm1({ navigation, route }) {
       setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   }
 

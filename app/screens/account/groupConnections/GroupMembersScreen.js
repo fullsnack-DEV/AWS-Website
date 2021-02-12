@@ -124,7 +124,7 @@ export default function GroupMembersScreen({ navigation, route }) {
         .catch((e) => {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         });
     }
   }

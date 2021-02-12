@@ -117,6 +117,7 @@ const RefereeSelectMatch = ({ navigation, route }) => {
                       }
                       if (message === '') {
                         navigation.navigate(route?.params?.comeFrom, {
+                          comeFrom: 'RefereeSelectMatch',
                           gameData: item,
                         });
                       } else {

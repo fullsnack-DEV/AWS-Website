@@ -40,7 +40,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
         setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
 

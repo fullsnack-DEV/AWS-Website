@@ -59,7 +59,7 @@ export default function PayAgainScreen({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.3);
+        }, 10);
       });
   };
   const payAgainForAlterRequest = () => {
@@ -77,7 +77,7 @@ export default function PayAgainScreen({ navigation, route }) {
           setloading(false)
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         })
       } else {
         payAgain(challengeObj.challenge_id, bodyParams, authContext).then(() => {
@@ -87,7 +87,7 @@ export default function PayAgainScreen({ navigation, route }) {
           setloading(false)
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.7);
+          }, 10);
         })
       }
     } else {
@@ -136,7 +136,7 @@ export default function PayAgainScreen({ navigation, route }) {
   //           setloading(false);
   //           setTimeout(() => {
   //             Alert.alert(strings.alertmessagetitle, e.message);
-  //           }, 0.7);
+  //           }, 10);
   //         });
   //     }
   //   };

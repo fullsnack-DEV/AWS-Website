@@ -99,6 +99,7 @@ const Scorekeepers = ({
   const renderScorekeepers = ({ item }) => {
     const entity = authContext?.entity;
     const sKeeper = item?.scorekeeper;
+    console.log('ITEM SCOREKEEPER::=>', item);
 
     return (
       <TCUserFollowUnfollowList
@@ -111,6 +112,7 @@ const Scorekeepers = ({
             unFollowUser={unFollowUser}
             userID={sKeeper?.user_id}
             title={sKeeper?.full_name}
+            // subTitle={'Assistant'}
             is_following={sKeeper?.is_following}
             onFollowUnfollowPress={onFollowPress}
             profileImage={sKeeper?.thumbnail}

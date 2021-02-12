@@ -625,13 +625,13 @@ export default function ScheduleScreen({ navigation }) {
             } else {
               setloading(true);
               const params = {
-                caller_id: selectedEventItem.owner_id,
+                caller_id: authContext.entity.uid,
               };
               getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
                 console.log('Res :-', res);
                 const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
                 setRefereeReserveData(myReferee);
-                if (res.payload.length > 0) {
+                if (myReferee.length > 0) {
                   refereeReservModal();
                   setloading(false);
                 } else {
@@ -662,13 +662,13 @@ export default function ScheduleScreen({ navigation }) {
             } else {
               setloading(true);
               const params = {
-                caller_id: selectedEventItem.owner_id,
+                caller_id: authContext.entity.uid,
               };
               getScorekeeperReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
                 console.log('Res :-', res);
                 const myScorekeeper = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
                 setScorekeeperReserveData(myScorekeeper);
-                if (res.payload.length > 0) {
+                if (myScorekeeper.length > 0) {
                   scorekeeperReservModal();
                   setloading(false);
                 } else {

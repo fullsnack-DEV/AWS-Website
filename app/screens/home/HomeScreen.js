@@ -111,6 +111,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSection';
 import PlayInModule from './playInModule/PlayInModule';
 import PlayInCommonChartScreen from './playInModule/stats/commonViews/PlayInCommonChartScreen';
+import TCGradientDivider from '../../components/TCThinGradientDivider';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
@@ -285,7 +286,7 @@ export default function HomeScreen({ navigation, route }) {
       }).catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message)
-        }, 0.3)
+        }, 10)
       })
 
       getScroreboardGameDetails(uid, authContext).then((res) => {
@@ -359,7 +360,7 @@ export default function HomeScreen({ navigation, route }) {
       console.log('promise error', errResponse)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, strings.defaultError);
-      }, 0.3)
+      }, 10)
       navigation.goBack();
     }).finally(() => setloading(false));
   }
@@ -407,7 +408,7 @@ export default function HomeScreen({ navigation, route }) {
         console.log('promise error', errResponse)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.defaultError);
-        }, 0.3)
+        }, 10)
         navigation.goBack();
       }).finally(() => setloading(false));
     }
@@ -438,7 +439,7 @@ export default function HomeScreen({ navigation, route }) {
       getData(uid, role, admin).catch((error) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
-        }, 0.3)
+        }, 10)
         setloading(false);
       });
     }
@@ -493,7 +494,7 @@ export default function HomeScreen({ navigation, route }) {
         console.log('error coming', error)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message)
-        }, 0.3)
+        }, 10)
       })
   }
 
@@ -809,7 +810,7 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -832,7 +833,7 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -844,12 +845,12 @@ export default function HomeScreen({ navigation, route }) {
     inviteUser(params, userID, authContext).then(() => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.first_name} ${currentUserData.last_name}“ is invited successfully`);
-      }, 0.3)
+      }, 10)
     }).catch((error) => {
       console.log('clubInviteUser error with userID', error, userID)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -871,7 +872,7 @@ export default function HomeScreen({ navigation, route }) {
       if (silentlyCall === false) {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
-        }, 0.3)
+        }, 10)
       }
     });
   };
@@ -895,7 +896,7 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -916,7 +917,7 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -936,7 +937,7 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -945,12 +946,12 @@ export default function HomeScreen({ navigation, route }) {
     inviteTeam(params, authContext.entity.uid, authContext).then(() => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`);
-      }, 0.3)
+      }, 10)
     }).catch((error) => {
       console.log('clubInviteTeam error with userID', error, authContext.entity.uid)
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -973,7 +974,7 @@ export default function HomeScreen({ navigation, route }) {
       }
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     }).finally(() => {
       authContext.setEntity({ ...e })
       Utility.setStorage('authContextEntity', { ...e })
@@ -1024,7 +1025,7 @@ export default function HomeScreen({ navigation, route }) {
       setCurrentUserData({ ...currentUserData });
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, error.message);
-      }, 0.3)
+      }, 10)
     });
   };
 
@@ -1168,6 +1169,7 @@ export default function HomeScreen({ navigation, route }) {
           language_string = language_string + (index ? ', ' : '') + langItem.language_name;
           return null;
         })
+        console.log('Language string::=>', language_string);
         setLanguagesName(language_string);
       }
       setScorekeeperInModalVisible(!scorekeeperInModalVisible);
@@ -2783,7 +2785,8 @@ export default function HomeScreen({ navigation, route }) {
                   </TouchableOpacity>
                 }
               />
-              <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/>
+              {/* <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={2}/> */}
+              <TCGradientDivider width={'100%'} height={3}/>
               <RefereesProfileSection
                isReferee = {true}
 

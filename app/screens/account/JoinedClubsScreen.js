@@ -31,7 +31,7 @@ export default function JoinedClubsScreen() {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   }, []);
 

@@ -226,7 +226,7 @@ export default function SoccerRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const resetGameDetail = (gameId) => {
@@ -252,7 +252,7 @@ export default function SoccerRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const decreaseGameScoreRecord = (teamId, gameId) => {
@@ -277,7 +277,7 @@ export default function SoccerRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const addGameRecordDetail = (gameId, params) => {
@@ -329,7 +329,7 @@ export default function SoccerRecording({ navigation, route }) {
         setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 0.7);
+        }, 10);
       });
   };
   const onChange = (event, selectedDate) => {

@@ -47,7 +47,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
       setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   }, []);
 
@@ -90,7 +90,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
       setloading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 10);
     });
   };
 

@@ -56,7 +56,7 @@ export default function EditMemberClubInfoScreen({ navigation }) {
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
-      }, 0.7);
+      }, 0);
     });
   };
   return (
