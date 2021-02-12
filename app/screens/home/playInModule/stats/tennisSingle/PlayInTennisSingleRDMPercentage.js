@@ -7,13 +7,7 @@ import colors from '../../../../../Constants/Colors';
 import TCRangeChart from './TCRangeChart';
 import TCTextTableView from './TCTextTableView';
 import TCThinDivider from '../../../../../components/TCThinDivider';
-
-const monthsSelectionData = [
-    { label: 'Past 3 Months', value: 'Past 3 Months' },
-    { label: 'Past 6 Months', value: 'Past 6 Months' },
-    { label: 'Past 9 Months', value: 'Past 9 Months' },
-    { label: 'Past 12 Months', value: 'Past 12 Months' },
-]
+import { monthsSelectionData } from '../../../../../utils/constant';
 
 const TopHeader = ({ title, selectWeekMonth, setSelectWeekMonth }) => (
   <View style={{

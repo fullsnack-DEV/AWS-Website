@@ -11,13 +11,7 @@ import PlayInTennisSingleFiveSetsGame from './PlayInTennisSingleFiveSetsGame';
 import PlayInTennisSingleThreeSetsGame from './PlayInTennisSingleThreeSetsGame';
 import PlayInCommonScoreTypesData from '../commonViews/PlayInCommonScoreTypesData';
 import images from '../../../../../Constants/ImagePath';
-
-const monthsSelectionData = [
-    { label: 'Past 3 Months', value: 'Past 3 Months' },
-    { label: 'Past 6 Months', value: 'Past 6 Months' },
-    { label: 'Past 9 Months', value: 'Past 9 Months' },
-    { label: 'Past 12 Months', value: 'Past 12 Months' },
-]
+import { monthsSelectionData } from '../../../../../utils/constant';
 
 const game_data = [
     {

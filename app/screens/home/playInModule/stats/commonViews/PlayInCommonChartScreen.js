@@ -13,6 +13,7 @@ import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import StatsSelectionView from '../../../../../components/Home/StatsSelectionView';
 import strings from '../../../../../Constants/String';
+import { monthsSelectionData } from '../../../../../utils/constant';
 
 const Gradient = () => (
   <Defs key={'gradient'}>
@@ -28,13 +29,6 @@ const Gradient = () => (
     </LinearGradient>
   </Defs>
 );
-
-const monthsSelectionData = [
-  { label: 'Past 3 Months', value: 'Past 3 Months' },
-  { label: 'Past 6 Months', value: 'Past 6 Months' },
-  { label: 'Past 9 Months', value: 'Past 9 Months' },
-  { label: 'Past 12 Months', value: 'Past 12 Months' },
-]
 
 export default function PlayInCommonChartScreen({
   gameChartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
