@@ -63,7 +63,6 @@ import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
 import GroupInfo from '../../components/Home/GroupInfo';
 import ScheduleTabView from '../../components/Home/ScheduleTabView';
-import TouchableIcon from '../../components/Home/TouchableIcon';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
 import UserHomeTopSection from '../../components/Home/User/UserHomeTopSection';
 import ClubHomeTopSection from '../../components/Home/Club/ClubHomeTopSection';
@@ -1896,7 +1895,7 @@ export default function HomeScreen({ navigation, route }) {
 
                 {tabKey === 3 && (<View style={{ flex: 1 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                    <View style={{ padding: 5, height: 16, width: 16 }} />
+
                     <ScheduleTabView
                       firstTabTitle={'Events'}
                       secondTabTitle={'Calender'}
@@ -1904,10 +1903,7 @@ export default function HomeScreen({ navigation, route }) {
                       onFirstTabPress={() => setScheduleIndexCounter(0)}
                       onSecondTabPress={() => setScheduleIndexCounter(1)}
                     />
-                    <TouchableIcon
-                      source={images.searchLocation}
-                      onItemPress={() => {}}
-                    />
+
                   </View>
                   {!eventData && <TCInnerLoader visible={true}/>}
                   {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>

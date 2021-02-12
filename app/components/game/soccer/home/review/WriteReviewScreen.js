@@ -1,6 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React, {
+  useState, useEffect, useContext, useRef,
+} from 'react';
 import {
   View,
+  // Keyboard,
   Text,
   Image,
   TouchableOpacity,
@@ -18,192 +22,264 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
-import RNUrlPreview from 'react-native-url-preview';
-import ImageButton from '../../../../WritePost/ImageButton';
+import UrlPreview from 'react-native-url-preview';
+import _ from 'lodash';
+import ParsedText from 'react-native-parsed-text';
 import SelectedImageList from '../../../../WritePost/SelectedImageList';
+import ActivityLoader from '../../../../loader/ActivityLoader';
+
 import { getUserList } from '../../../../../api/Users';
 import { getMyGroups } from '../../../../../api/Groups';
-import fonts from '../../../../../Constants/Fonts'
-import colors from '../../../../../Constants/Colors'
+import AuthContext from '../../../../../auth/context';
+import { getSearchData } from '../../../../../utils';
+import ImageButton from '../../../../WritePost/ImageButton';
+import colors from '../../../../../Constants/Colors';
+import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
-import AuthContext from '../../../../../auth/context'
-import Header from '../../../../Home/Header';
+import strings from '../../../../../Constants/String';
 
-const tagsArray = []
 export default function WriteReviewScreen({ navigation, route }) {
-  const authContext = useContext(AuthContext)
+  const textInputFocus = useRef();
+  // let currentTextInputIndex = 0;
+  // const keyboardDidShowListener = null;
+  // const keyboardDidHideListener = null;
+  const authContext = useContext(AuthContext);
+  const [searchFieldHeight, setSearchFieldHeight] = useState();
+  const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData || []);
+  const [searchTag, setSearchTag] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState(route?.params?.searchText ?? '');
-  const [selectImage, setSelectImage] = useState(route.params.selectedImageList || []);
-  const [users, setUsers] = useState([]);
-  const [groups, setGroups] = useState([]);
+  const [selectImage, setSelectImage] = useState(route.params.selectedImageList);
   const [searchUsers, setSearchUsers] = useState([]);
   const [searchGroups, setSearchGroups] = useState([]);
-  const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData || []);
+  const [loading, setloading] = useState(false);
+  const [letModalVisible, setLetModalVisible] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [groups, setGroups] = useState([]);
+  // const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const { params: { postData } } = route;
+  let userImage = '';
+  let userName = '';
+  if (postData && postData.thumbnail) {
+    userImage = postData.thumbnail;
+  }
+  if (postData && postData.full_name) {
+    userName = postData.full_name;
+  }
+  if (postData && postData.group_name) {
+    userName = postData.group_name;
+  }
 
-  const [searchFieldHeight, setSearchFieldHeight] = useState();
-  const [searchTag, setSearchTag] = useState();
-
-  useEffect(() => {
-    getUserList(authContext)
-      .then((response) => {
-        setUsers(response.payload);
-        setSearchUsers(response.payload)
-      })
-      .catch((e) => {
-        console.log('eeeee Get Users :-', e.response);
-        Alert.alert('', e.messages)
-      });
-  }, []);
-
-  useEffect(() => {
-    getMyGroups(authContext)
-      .then((response) => {
-        setGroups(response.payload);
-        setSearchGroups(response.payload)
-      })
-      .catch((e) => {
-        console.log('eeeee Get Group Users :-', e.response);
-        Alert.alert('', e.messages)
-      });
-  }, []);
-
+  // useEffect(() => {
+  //   keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
+  //   keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+  //   return () => {
+  //     keyboardDidShowListener.remove();
+  //     keyboardDidHideListener.remove();
+  //   }
+  // }, [])
   useEffect(() => {
     let tagName = '';
+    const tagsArray = [];
     if (route.params && route.params.selectedTagList) {
       if (route.params.selectedTagList.length > 0) {
         route.params.selectedTagList.map((tagItem) => {
+          const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
+          const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
+          if (!isExist) tagsArray.push(tagItem)
           tagName = `${tagName} @${tagItem.title.replace(/\s/g, '')}`;
           return null;
         })
+        setTagsOfEntity([...tagsOfEntity, ...tagsArray])
         setSearchText(searchText + tagName);
       }
     }
   }, [route.params]);
 
+  useEffect(() => {
+    if (searchText?.length === 0) {
+      setTagsOfEntity([])
+      setUsers([]);
+      setGroups([]);
+      setModalVisible(false);
+    }
+  }, [searchText])
+  useEffect(() => {
+    getUserList(authContext)
+      .then((response) => {
+        setUsers([...response.payload]);
+        setSearchUsers([...response.payload])
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+    getMyGroups(authContext)
+      .then((response) => {
+        setGroups([...response.payload]);
+        setSearchGroups([...response.payload])
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
+  }, []);
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
+
   const searchFilterFunction = (text) => {
-    console.log('TEXT::=>', text);
     if (text.length > 0) {
-      setUsers(searchUsers.filter((x) => x?.first_name?.includes(text) || x?.last_name?.includes(text) || x?.group_name?.includes(text)));
-      setGroups(searchGroups.filter(
-        (x) => x?.first_name?.includes(text) || x?.last_name?.includes(text) || x?.group_name?.includes(text),
-      ));
+      const userData = getSearchData(searchUsers, ['first_name', 'last_name', 'group_name'], text);
+      const groupData = getSearchData(searchGroups, ['first_name', 'last_name', 'group_name'], text);
+      setUsers([...userData]);
+      setGroups([...groupData])
     }
   };
+
+  const onTagPress = (item) => {
+    const tagsArray = [];
+    let joinedString = '';
+    if (item?.group_name) {
+      joinedString = _.startCase(item?.group_name.toLowerCase())
+    } else {
+      const fName = _.startCase(item?.first_name?.toLowerCase());
+      const lName = _.startCase(item?.last_name?.toLowerCase());
+      joinedString = fName + lName;
+    }
+    const str = searchText.replace(new RegExp(`${searchTag}$`), joinedString.replace(/ /g, ''));
+    setSearchText(`${str} `)
+    const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
+    const isExist = tagsOfEntity.some((tagItem) => tagItem[entity_text] === item[entity_text])
+    if (!isExist) tagsArray.push(item)
+    setTagsOfEntity([...tagsOfEntity, ...tagsArray])
+    setModalVisible(false)
+  }
+
+  const renderTagText = (matchingString) => {
+    const pattern = /\B@\w+/gm;
+    const match = matchingString.match(pattern);
+    return <Text style={{ ...styles.username, color: colors.greeColor }}>{match[0]}</Text>;
+  }
 
   return (
     <KeyboardAvoidingView
       style={ { flex: 1 } }
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-
-      <Header
-          leftComponent={
+      <ActivityLoader visible={ loading } />
+      <SafeAreaView>
+        <View style={ styles.containerStyle }>
+          <View style={ styles.backIconViewStyle }>
             <TouchableOpacity onPress={ () => navigation.goBack() }>
               <Image source={ images.backArrow } style={ styles.backImage } />
             </TouchableOpacity>
-          }
-          centerComponent={
-            <View style={ styles.writePostViewStyle }>
-              <Text style={ styles.writePostTextStyle }>Write review</Text>
-            </View>
-          }
-          rightComponent={
-            <TouchableOpacity
+          </View>
+          <View style={ styles.writePostViewStyle }>
+            <Text style={ styles.writePostTextStyle }>Write Review</Text>
+          </View>
+          <TouchableOpacity
             style={styles.doneViewStyle}
             onPress={() => {
               if (searchText.trim().length === 0 && selectImage.length === 0) {
-                Alert.alert('Please write some text or select any image.');
+                Alert.alert(strings.writeText);
               } else {
-                // setloading(false);
+                setloading(false);
+                const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+                const nameArray = []
+                tagsOfEntity.map((item) => {
+                  let joinedString = '@';
+                  if (item?.group_name) {
+                    joinedString += _.startCase(item?.group_name.toLowerCase())
+                  } else {
+                    const fName = _.startCase(item?.first_name?.toLowerCase());
+                    const lName = _.startCase(item?.last_name?.toLowerCase());
+                    joinedString += fName + lName;
+                  }
+                  nameArray.push(joinedString.replace(/ /g, ''))
+                  return null;
+                })
+                nameArray.map((item, index) => {
+                  if (!searchText.includes(item)) tagData.splice(index, 1);
+                  return null;
+                })
                 navigation.navigate(route?.params?.comeFrom, { selectedImageList: selectImage, searchText, entityTags: tagsOfEntity });
-
-                // onPressDone(selectImage, searchText);
+                // navigation.goBack();
+                // onPressDone(selectImage, searchText, tagData);
               }
             }}
           >
-              <Text style={styles.doneTextStyle}>Done</Text>
-            </TouchableOpacity>
-          }
-
-      />
-
+            <Text style={styles.doneTextStyle}>Done</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
       <View style={ styles.sperateLine } />
+      <View style={ styles.userDetailView }>
+        <Text style={ styles.userTxt }>Leave a review</Text>
+      </View>
 
-      <Text style={ styles.userTxt }>Leave a review</Text>
-      <ScrollView bounces={ false }>
-
-        <View style={{ zIndex: 1 }}>
-
-          <TextInput
-          onLayout={(event) => {
-            const {
-              height,
-            } = event.nativeEvent.layout;
-            setSearchFieldHeight(height)
-          }}
-          placeholder="What's going on?"
-          value={ searchText }
-          placeholderTextColor={ colors.userPostTimeColor }
-
-          onKeyPress={({ nativeEvent }) => {
-            console.log(nativeEvent.key)
-            if (nativeEvent.key === 'Backspace') {
-              setModalVisible(false);
-            }
-          }}
-          onChangeText={ (text) => {
-            setSearchText(text);
-
-            setSearchTag(text.split('@')?.reverse()?.[0])
-            if (text.split('@')?.reverse()?.[0] !== '' || text.split('@')?.reverse()?.[0] !== ' ') {
-              searchFilterFunction(text.split('@')?.reverse()?.[0])
-            }
-
-            const lastChar = text.slice(text.length - 1, text.length);
-            if (lastChar === '@') {
-              toggleModal()
-            }
-          }}
-          style={ styles.textInputField }
-          multiline={ true }
-          textAlignVertical={'top'}
-        />
-          {isModalVisible
+      <ScrollView
+          bounces={ false }
+          style={{ flex: 1 }}
+          // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
+      >
+        <TextInput
+            ref={textInputFocus}
+            onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)}
+            placeholder={strings.whatsGoingText}
+            placeholderTextColor={ colors.userPostTimeColor }
+            onSelectionChange={() => {
+              // currentTextInputIndex = e?.nativeEvent?.selection?.end;
+            }}
+            onKeyPress={({ nativeEvent }) => {
+              if (nativeEvent.key === 'Backspace') {
+                setLetModalVisible(false);
+              } else {
+                setLetModalVisible(true);
+              }
+            }}
+            onChangeText={ (text) => {
+              setSearchText(text);
+              setSearchTag(text.split('@')?.reverse()?.[0])
+              if (text.split('@')?.reverse()?.[0] !== '' || text.split('@')?.reverse()?.[0] !== ' ') {
+                searchFilterFunction(text.split('@')?.reverse()?.[0])
+              }
+              const lastChar = text.slice(text.length - 1, text.length);
+              if (lastChar === '@' && letModalVisible) {
+                toggleModal()
+              }
+            }}
+            style={ styles.textInputField }
+            multiline={ true }
+            textAlignVertical={'top'}
+          >
+          <ParsedText
+              parse={[{ pattern: /\B@\w+/gm, renderText: renderTagText }]}
+              childrenProps={{ allowFontScaling: false }}
+          >
+            {searchText}
+          </ParsedText>
+        </TextInput>
+        {isModalVisible && [...users, ...groups]?.length > 0
         && <View style={[styles.userListContainer, { marginTop: searchFieldHeight + 20 }]}>
           <FlatList
-          showsVerticalScrollIndicator={false}
-          data={[...users, ...groups]}
-          keyboardShouldPersistTaps={'always'}
-          style={{ paddingTop: hp(1) }}
-          ListFooterComponent={() => <View style={{ height: hp(6) }} />}
-          renderItem={ ({ item }) => {
-            if (item && item.full_name) {
-              return (<View style={styles.userListStyle}>
-                <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
-                <Text style={styles.userTextStyle} onPress={() => {
-                  const str = searchText.replace(new RegExp(`${searchTag}$`), `${item.first_name} ${item.last_name}` || item.group_name)
-                  setSearchText(`${str} `)
-
-                  if (!tagsArray.includes((e) => `${e.first_name} ${e.last_name}` === `${item.first_name} ${item.last_name}` || e.group_name === item.group_name)) {
-                    tagsArray.push(item)
-                  }
-                  setTagsOfEntity([...tagsOfEntity, ...tagsArray])
-                  setModalVisible(false)
-                }}>{`${item.first_name} ${item.last_name}` || item.group_name}</Text>
-                <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}` || item.group_name}</Text>
-              </View>)
-            }
-            return <View />
-          } }
-          keyExtractor={ (item, index) => index.toString() }
-        />
+              showsVerticalScrollIndicator={false}
+              data={[...users, ...groups]}
+              keyboardShouldPersistTaps={'always'}
+              style={{ paddingTop: hp(1) }}
+              ListFooterComponent={() => <View style={{ height: hp(6) }} />}
+              renderItem={ ({ item }) => (
+                <TouchableOpacity
+                      onPress={() => onTagPress(item)}
+                      style={styles.userListStyle}>
+                  <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
+                  <Text style={styles.userTextStyle}>
+                    {item?.group_name ? item?.group_name : `${item.first_name} ${item.last_name}`}
+                  </Text>
+                  <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}`}</Text>
+                </TouchableOpacity>)}
+              keyExtractor={ (item, index) => index.toString() }
+          />
         </View>}
-        </View>
-
-        {searchText.length > 0 && <RNUrlPreview
+        {searchText.length > 0 && <UrlPreview
           text={searchText}
           containerStyle={styles.previewContainerStyle}
         />}
@@ -238,13 +314,7 @@ export default function WriteReviewScreen({ navigation, route }) {
       <SafeAreaView style={ styles.bottomSafeAreaStyle }>
         <View style={ styles.bottomImgView }>
           <View style={ styles.onlyMeViewStyle }>
-            {/* <ImageButton
-              source={ images.lock }
-              imageStyle={ { width: 18, height: 21 } }
-              onImagePress={ () => {
-              } }
-            />
-            <Text style={ styles.onlyMeTextStyle }>Only me</Text> */}
+
           </View>
           <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
             <ImageButton
@@ -273,12 +343,6 @@ export default function WriteReviewScreen({ navigation, route }) {
                   } else {
                     setSelectImage(data);
                   }
-                  // setSelectImage(data);
-                  // uploadImage({ data: data[0] }).then((res) => {
-                  //   console.log('uploadImage :-', res);
-                  // }).catch((e) => {
-                  //   console.log('EEEE :-', e);
-                  // })
                 });
               } }
             />
@@ -286,7 +350,7 @@ export default function WriteReviewScreen({ navigation, route }) {
               source={ images.tagImage }
               imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
               onImagePress={() => {
-                navigation.navigate('UserTagSelectionListScreen');
+                navigation.navigate('UserTagSelectionListScreen', { comeFrom: 'WriteReviewScreen' });
               }}
             />
           </View>
@@ -297,6 +361,10 @@ export default function WriteReviewScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+  backIconViewStyle: {
+    justifyContent: 'center',
+    width: wp('17%'),
+  },
   backImage: {
     height: hp('2%'),
     tintColor: colors.lightBlackColor,
@@ -309,7 +377,13 @@ const styles = StyleSheet.create({
     paddingVertical: hp('1%'),
     width: wp('92%'),
   },
-
+  containerStyle: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: hp('1%'),
+    width: wp('92%'),
+  },
   doneTextStyle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
@@ -319,12 +393,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-end',
   },
-  // onlyMeTextStyle: {
-  //   color: colors.googleColor,
-  //   fontFamily: fonts.RRegular,
-  //   fontSize: 15,
-  //   marginLeft: wp('2%'),
-  // },
+
   onlyMeViewStyle: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -342,18 +411,20 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     marginBottom: 10,
   },
+  userDetailView: {
+    flexDirection: 'row',
+    margin: wp('3%'),
+  },
+
   userTxt: {
     fontFamily: fonts.RRegular,
     fontSize: 20,
-    marginLeft: 15,
-    marginBottom: 20,
-  },
 
+  },
   writePostTextStyle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
-
   },
   writePostViewStyle: {
     alignItems: 'center',
@@ -375,6 +446,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 10,
   },
+
   userTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
@@ -396,8 +468,9 @@ const styles = StyleSheet.create({
 
   },
   userListContainer: {
+    zIndex: 1,
     backgroundColor: 'white',
-    height: 300,
+    maxHeight: 300,
     width: 300,
     alignSelf: 'center',
     position: 'absolute',

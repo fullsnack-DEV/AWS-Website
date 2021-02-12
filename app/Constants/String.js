@@ -520,6 +520,7 @@ const strings = {
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
   cannotChangeReservationText: 'Reservation can not be change after game has been started.',
+  cannotChangeReservationGameStartedText: 'Reservation can not be change after game time has beed expired or offer expired.',
   cannotCancelReservationText: 'Reservation cannot be cancel after game time passed or offer expired.',
   selectSetText: 'Select sets',
   selectNumberOfGameText: 'Select number of games',
@@ -559,5 +560,8 @@ const strings = {
   privacySettings: 'Privacy Settings',
   gameEndedAlertText: 'Game is ended, so you can not change reservation.',
   enterValidGameFee: 'Please enter valid game fee.',
+  whatsGoingText: 'What\'s going on?',
+  writeText: 'Please write some text or select any image.',
+  cannotCancelReservationAfterGameStartText: 'Reservation cannot be cancel after game game has beed started.',
 };
 export default strings;

@@ -810,7 +810,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                       body: bodyParams,
                     });
                   } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
-                    Alert.alert(strings.cannotCancelReservationText);
+                    Alert.alert(strings.cannotChangeReservationGameStartedText);
                   } else {
                     Alert.alert(strings.cannotChangeReservationText);
                   }
@@ -836,7 +836,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
                   } else if (bodyParams.start_datetime * 1000 < new Date().getTime()) {
                     Alert.alert(strings.cannotCancelReservationText);
                   } else {
-                    Alert.alert(strings.cannotChangeReservationText);
+                    Alert.alert(strings.cannotCancelReservationAfterGameStartText);
                   }
                 }}
               />
