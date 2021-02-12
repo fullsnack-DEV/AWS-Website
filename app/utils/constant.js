@@ -16,3 +16,10 @@ export const firebaseConfig = {
   appId: '1:1003329053001:web:f079b7ed53716fa8463a98',
   measurementId: 'G-N44NC0Z1Q7',
 };
+
+export const monthsSelectionData = [
+  { label: 'Past 3 Months', value: 'Past 3 Months' },
+  { label: 'Past 6 Months', value: 'Past 6 Months' },
+  { label: 'Past 9 Months', value: 'Past 9 Months' },
+  { label: 'Past 12 Months', value: 'Past 12 Months' },
+]

@@ -84,6 +84,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       } else {
         navigation.goBack();
       }
+      setloading(false);
     }).catch((e) => {
       setloading(false);
       setTimeout(() => {

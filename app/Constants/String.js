@@ -121,7 +121,7 @@ const strings = {
   star: '*',
   newText: 'new',
   SportsTextFieldTitle: 'Sports',
-  selectSportPlaceholder: 'Select Sport',
+  selectSportPlaceholder: 'Choose a Sport',
   teamNameTitle: 'Team Name',
   teamNamePlaceholder: 'Enter Team Name',
   playerTitle: 'Players',

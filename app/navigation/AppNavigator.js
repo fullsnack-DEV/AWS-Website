@@ -78,6 +78,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'MessageNewGroupScreen'
     || routeName === 'TennisRecording'
     || routeName === 'RegisterRefereeSuccess'
+    || routeName === 'RegisterPlayerSuccess'
     || routeName === 'BookRefereeSuccess'
     || routeName === 'RefereeRequestSent'
     || routeName === 'BookScorekeeperSuccess'

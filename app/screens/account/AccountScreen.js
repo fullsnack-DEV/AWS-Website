@@ -384,7 +384,16 @@ export default function AccountScreen({ navigation }) {
     } else if (options === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     } else if (options === 'Payment Method') {
-      navigation.navigate('PaymentMethodsScreen', { comeFrom: 'HomeScreen' });
+      navigation.navigate('Home', {
+        screen: 'HomeScreen',
+        params: {
+          fromAccountScreen: true,
+          navigateToScreen: 'PaymentMethodsScreen',
+          homeNavigateParams: {
+            comeFrom: 'HomeScreen',
+          },
+        },
+      })
     } else if (options === 'Payout Method') {
       navigation.navigate('PayoutMethodScreen');
     }
@@ -632,16 +641,11 @@ export default function AccountScreen({ navigation }) {
                             <TouchableWithoutFeedback
                                   style={styles.listContainer}
                                   onPress={() => {
-                                    // navigation.setParams({
-                                    //   uid: item.group_id,
-                                    //   backButtonVisible: true,
-                                    //   menuBtnVisible: false,
-                                    //   role: item.entity_type,
-                                    // })
                                     navigation.navigate('Home', {
                                       screen: 'HomeScreen',
                                       params: {
                                         fromAccountScreen: true,
+                                        navigateToScreen: 'HomeScreen',
                                         homeNavigateParams: {
                                           uid: item.group_id,
                                           backButtonVisible: true,

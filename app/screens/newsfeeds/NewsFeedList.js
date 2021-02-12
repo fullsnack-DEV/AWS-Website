@@ -95,7 +95,7 @@ export default function NewsFeedList({
           }
           onRefreshPress();
         }}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => `feed1${index.toString()}`}
       />
     </View>
   );

@@ -4,54 +4,11 @@ import {
     View,
 } from 'react-native';
 import colors from '../../../../../Constants/Colors';
-import images from '../../../../../Constants/ImagePath';
 import StatsGradiantView from '../../../../../components/Home/StatsGradiantView';
 
-const game_data = [
-    {
-        id: 0,
-        image: images.gamesImage,
-        selectImage: images.gamesSelected,
-        title: 'Games',
-        total: 139,
-        isSelected: true,
-    },
-
-    {
-        id: 1,
-        image: images.goalsImage,
-        selectImage: images.goalsSelected,
-        title: 'Goals',
-        total: 12,
-        isSelected: false,
-    },
-    {
-        id: 2,
-        image: images.assistsImage,
-        selectImage: images.assistsSelected,
-        title: 'Assists',
-        total: 5,
-        isSelected: false,
-    },
-    {
-        id: 3,
-        image: images.yellowCardImage,
-        selectImage: images.yellowCardSelected,
-        title: 'Yellow card',
-        total: 6,
-        isSelected: false,
-    },
-    {
-        id: 4,
-        image: images.yellowCardImage,
-        selectImage: images.yellowCardSelected,
-        title: 'Red card',
-        total: 2,
-        isSelected: false,
-    },
-];
-
-const PlayInCommonScoreTypesData = () => {
+const PlayInCommonScoreTypesData = ({
+    game_data,
+}) => {
     const [gameData, setGameData] = useState(game_data);
 
     return (

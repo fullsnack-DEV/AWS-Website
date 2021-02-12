@@ -147,7 +147,7 @@ function NewsFeedPostItems({
                 }
                 return <View />;
               }}
-              keyExtractor={(index) => index.toString()}
+              keyExtractor={(index) => `feed2${ index.toString()}`}
             />
           ) : (
             <Carousel
