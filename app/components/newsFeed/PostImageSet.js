@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback,
 } from 'react-native';
@@ -9,7 +9,6 @@ import {
 } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-// import MultipleImageModal from './MultipleImageModal';
 import images from '../../Constants/ImagePath';
 import MultiImagePostView from './MultiImagePostView';
 
@@ -18,7 +17,6 @@ function PostImageSet({
   itemNumber,
   totalItemNumber,
   attachedImages,
-  // activeIndex,
   item,
   caller_id,
   navigation,
@@ -49,11 +47,6 @@ function PostImageSet({
         style={{ margin: 0 }}
         supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
-        {/* <MultipleImageModal
-          activeIndex={activeIndex}
-          attachedImages={attachedImages.length > 0 ? attachedImages : []}
-          backBtnPress={() => setModalVisible(false)}
-        /> */}
         <MultiImagePostView
           openPostModal={() => setModalVisible(true)}
           attachedImages={attachedImages}
@@ -69,9 +62,7 @@ function PostImageSet({
           onLikePress={onLikePress}
         />
       </Modal>
-      <TouchableWithoutFeedback onPress={() => {
-        toggleModal();
-      }}>
+      <TouchableWithoutFeedback onPress={() => toggleModal()}>
         <FastImage
           style={ [styles.uploadedImage, { position: 'absolute' }] }
           source={ {
@@ -130,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostImageSet;
+export default memo(PostImageSet);

@@ -22,13 +22,14 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCSearchBox from '../../components/TCSearchBox';
-import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
+import ScrollableTabs from '../../components/ScrollableTabs';
 
 export default function UserTagSelectionListScreen({ navigation, route }) {
   const [searchText, setSearchText] = useState('');
   const [currentTab, setCurrentTab] = useState(0);
+  const [currentGrpupTab, setCurrentGroupTab] = useState('team');
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -109,32 +110,55 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
     }
   }, [searchText])
 
-  const renderTabContain = (tabKey) => {
+  const renderTabContain = () => {
     const dataTabList = [userData, groupData]
     return (
       <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
-        {renderSingleTab(searchText === '' ? dataTabList[tabKey] : searchData)}
+        {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
       </View>
     )
   }
 
-  const renderSingleTab = (data) => (
-    <FlatList
-      ListEmptyComponent={
-        <Text style={{
-          textAlign: 'center',
-          marginTop: hp(2),
-          color: colors.userPostTimeColor,
-        }}>No Records Found</Text>}
-      data={data}
-      ListHeaderComponent={() => <View style={{ height: 8 }} />}
-      ListFooterComponent={() => <View style={{ height: 8, marginBottom: 50 }} />}
-      ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
-      style={{ paddingHorizontal: 15 }}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-    />
-  )
+  const renderSingleTab = (data) => {
+    let filteredData = data;
+    if (currentTab === 1) {
+      filteredData = data?.filter((item) => item?.entity_type === currentGrpupTab)
+    }
+    return (
+      <View>
+        {currentTab === 1 && (
+          <View style={{ flexDirection: 'row', borderBottomColor: colors.lightgrayColor, borderBottomWidth: 1 }}>
+            {['team', 'club', 'league'].map((item) => (
+              <TouchableOpacity key={item} style={{ padding: 10 }} onPress={() => setCurrentGroupTab(item)}>
+                <Text style={{
+                        color: item === currentGrpupTab ? colors.themeColor : colors.lightBlackColor,
+                        fontFamily: item === currentGrpupTab ? fonts.RBold : fonts.RRegular,
+                }}>
+                  {_.startCase(item)}
+                </Text>
+              </TouchableOpacity>
+                ))}
+
+          </View>
+          )}
+        <FlatList
+              ListEmptyComponent={
+                <Text style={{
+                  textAlign: 'center',
+                  marginTop: hp(2),
+                  color: colors.userPostTimeColor,
+                }}>No Records Found</Text>}
+              data={filteredData}
+              ListHeaderComponent={() => <View style={{ height: 8 }} />}
+              ListFooterComponent={() => <View style={{ height: 8, marginBottom: 50 }} />}
+              ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
+              style={{ paddingHorizontal: 15 }}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+          />
+      </View>
+    )
+  }
 
   const toggleSelection = (isChecked, user) => {
     const data = selectedUsers;
@@ -219,16 +243,25 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
         }}
         />
       )}
-      <TCScrollableProfileTabs
-        tabItem={['People', 'Groups', 'Games']}
-        onChangeTab={(ChangeTab) => {
-          setCurrentTab(ChangeTab.i)
-          setSearchText('')
-        }}
-        customStyle={{ flex: 1 }}
-        currentTab={currentTab}
-        renderTabContain={renderTabContain}
+      <ScrollableTabs
+          tabs={['People', 'Groups', 'Games']}
+          onTabPress={(tab) => {
+            setCurrentTab(tab)
+            setSearchText('');
+          }}
+          currentTab={currentTab}
       />
+      {renderTabContain()}
+      {/* <TCScrollableProfileTabs */}
+      {/*  tabItem={['People', 'Groups', 'Games']} */}
+      {/*  onChangeTab={(ChangeTab) => { */}
+      {/*    setCurrentTab(ChangeTab.i) */}
+      {/*    setSearchText('') */}
+      {/*  }} */}
+      {/*  customStyle={{ flex: 1 }} */}
+      {/*  currentTab={currentTab} */}
+      {/*  renderTabContain={renderTabContain} */}
+      {/* /> */}
     </KeyboardAvoidingView>
   );
 }

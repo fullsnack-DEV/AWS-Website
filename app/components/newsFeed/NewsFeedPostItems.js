@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+ useCallback, memo, useEffect, useRef, useState,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -82,6 +84,110 @@ function NewsFeedPostItems({
     threeDotBtnDisplay = false;
   }
 
+  const renderSinglePostItems = useCallback(({ item: attachItem }) => {
+    if (attachItem?.type === 'image') {
+      return <SingleImage
+          item={item}
+          data={attachItem}
+          caller_id={caller_id}
+          navigation={navigation}
+          onImageProfilePress={onImageProfilePress}
+          onLikePress={onLikePress}
+      />;
+    }
+    if (attachItem?.type === 'video') {
+      return (
+        <VideoPost
+              item={item}
+              data={attachItem}
+              caller_id={caller_id}
+              navigation={navigation}
+              onImageProfilePress={onImageProfilePress}
+              onLikePress={onLikePress}
+          />
+      );
+    }
+    return <View />;
+  }, [item])
+
+  const listSpace = () => <View style={{ width: wp('2%') }} />
+
+  const renderMultiplePostItems = useCallback(({ item: multiAttachItem, index }) => {
+    if (multiAttachItem?.type === 'image') {
+      return (
+        <PostImageSet
+              activeIndex={index}
+              data={multiAttachItem}
+              itemNumber={index + 1}
+              attachedImages={attachedImages}
+              totalItemNumber={attachedImages?.length}
+              item={item}
+              caller_id={caller_id}
+              navigation={navigation}
+              onImageProfilePress={onImageProfilePress}
+              onLikePress={onLikePress}
+          />
+      );
+    }
+    if (multiAttachItem?.type === 'video') {
+      return (
+        <MultiPostVideo
+              activeIndex={index}
+              data={multiAttachItem}
+              itemNumber={index + 1}
+              attachedImages={attachedImages}
+              totalItemNumber={attachedImages.length}
+              item={item}
+              caller_id={caller_id}
+              navigation={navigation}
+              onImageProfilePress={onImageProfilePress}
+              onLikePress={onLikePress}
+          />
+      );
+    }
+    return <View />;
+  }, [item])
+
+  const newsFeedItemsKeyExtractor = (keyItem, index) => `feed2${ index.toString()}`
+
+  const onNewsFeedLikePress = () => {
+    setLike(!like);
+    if (like) {
+      setLikeCount(likeCount - 1);
+    } else {
+      setLikeCount(likeCount + 1);
+    }
+    onLikePress()
+  }
+
+  const onActionSheetItemPress = (index) => {
+    if (index === 0) {
+      navigation.navigate('EditPostScreen', {
+        data: item,
+        onPressDone: onEditPressDone,
+      });
+    } else if (index === 1) {
+      onDeletePost();
+    }
+  }
+
+  const onShareActionSheetItemPress = (index) => {
+    if (index === 0) {
+      const options = {
+        message: descriptions,
+      }
+      Share.open(options)
+          .then((res) => {
+            console.log('res :-', res);
+          })
+          .catch((err) => {
+            console.log('err :-', err);
+          });
+    } else if (index === 1) {
+      Clipboard.setString(descriptions);
+    }
+  }
+
   return (
     <View key={key}>
       <View style={styles.mainContainer}>
@@ -95,7 +201,6 @@ function NewsFeedPostItems({
         <View style={styles.userNameView}>
           <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
           <Text style={styles.activeTimeAgoTxt}>
-            {/* {moment(item.time).startOf('hour').fromNow()} */}
             {commentPostTimeCalculate(item?.time)}
           </Text>
         </View>
@@ -119,74 +224,16 @@ function NewsFeedPostItems({
               horizontal={true}
               bounces={false}
               showsHorizontalScrollIndicator={false}
-              ListHeaderComponent={() => <View style={{ width: wp('2%') }} />}
-              ListFooterComponent={() => <View style={{ width: wp('2%') }} />}
-              ItemSeparatorComponent={() => <View style={{ width: wp('2%') }} />}
-              renderItem={({ item: attachItem }) => {
-                if (attachItem?.type === 'image') {
-                  return <SingleImage
-                    item={item}
-                    data={attachItem}
-                    caller_id={caller_id}
-                    navigation={navigation}
-                    onImageProfilePress={onImageProfilePress}
-                    onLikePress={onLikePress}
-                  />;
-                }
-                if (attachItem?.type === 'video') {
-                  return (
-                    <VideoPost
-                      item={item}
-                      data={attachItem}
-                      caller_id={caller_id}
-                      navigation={navigation}
-                      onImageProfilePress={onImageProfilePress}
-                      onLikePress={onLikePress}
-                    />
-                  );
-                }
-                return <View />;
-              }}
-              keyExtractor={(index) => `feed2${ index.toString()}`}
+              ListHeaderComponent={listSpace}
+              ListFooterComponent={listSpace}
+              ItemSeparatorComponent={listSpace}
+              renderItem={renderSinglePostItems}
+              keyExtractor={newsFeedItemsKeyExtractor}
             />
           ) : (
             <Carousel
               data={attachedImages}
-              renderItem={({ item: multiAttachItem, index }) => {
-                if (multiAttachItem?.type === 'image') {
-                  return (
-                    <PostImageSet
-                    activeIndex={index}
-                    data={multiAttachItem}
-                    itemNumber={index + 1}
-                    attachedImages={attachedImages}
-                    totalItemNumber={attachedImages?.length}
-                    item={item}
-                    caller_id={caller_id}
-                    navigation={navigation}
-                    onImageProfilePress={onImageProfilePress}
-                    onLikePress={onLikePress}
-                  />
-                  );
-                }
-                if (multiAttachItem?.type === 'video') {
-                  return (
-                    <MultiPostVideo
-                      activeIndex={index}
-                      data={multiAttachItem}
-                      itemNumber={index + 1}
-                      attachedImages={attachedImages}
-                      totalItemNumber={attachedImages.length}
-                      item={item}
-                      caller_id={caller_id}
-                      navigation={navigation}
-                      onImageProfilePress={onImageProfilePress}
-                      onLikePress={onLikePress}
-                    />
-                  );
-                }
-                return <View />;
-              }}
+              renderItem={renderMultiplePostItems}
               inactiveSlideScale={1}
               inactiveSlideOpacity={1}
               sliderWidth={wp(100)}
@@ -250,9 +297,7 @@ function NewsFeedPostItems({
                 marginLeft: 10,
               }}>
               <TouchableOpacity
-                onPress={() => {
-                  shareActionSheet.current.show();
-                }}
+                onPress={() => shareActionSheet.current.show()}
                 style={styles.imageTouchStyle}>
                 <Image
                   style={styles.commentImage}
@@ -283,15 +328,7 @@ function NewsFeedPostItems({
               </Text>
             )}
             <TouchableOpacity
-              onPress={() => {
-                setLike(!like);
-                if (like) {
-                  setLikeCount(likeCount - 1);
-                } else {
-                  setLikeCount(likeCount + 1);
-                }
-                onLikePress()
-              }}
+              onPress={onNewsFeedLikePress}
               style={styles.imageTouchStyle}>
               <Image
                 style={styles.commentImage}
@@ -307,16 +344,7 @@ function NewsFeedPostItems({
           options={['Edit Post', 'Delete Post', 'Cancel']}
           cancelButtonIndex={2}
           destructiveButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              navigation.navigate('EditPostScreen', {
-                data: item,
-                onPressDone: onEditPressDone,
-              });
-            } else if (index === 1) {
-              onDeletePost();
-            }
-          }}
+          onPress={onActionSheetItemPress}
         />
 
         <ActionSheet
@@ -325,22 +353,7 @@ function NewsFeedPostItems({
           options={['Share', 'Copy Link', 'More Options', 'Cancel']}
           cancelButtonIndex={3}
           // destructiveButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              const options = {
-                message: descriptions,
-              }
-              Share.open(options)
-                .then((res) => {
-                  console.log('res :-', res);
-                })
-                .catch((err) => {
-                  console.log('err :-', err);
-                });
-            } else if (index === 1) {
-              Clipboard.setString(descriptions);
-            }
-          }}
+          onPress={onShareActionSheetItemPress}
         />
       </View>
     </View>
@@ -421,4 +434,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewsFeedPostItems;
+export default memo(NewsFeedPostItems);

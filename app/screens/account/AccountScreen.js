@@ -385,13 +385,9 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('CreateClubForm1');
     } else if (options === 'Payment Method') {
       navigation.navigate('Home', {
-        screen: 'HomeScreen',
+        screen: 'PaymentMethodsScreen',
         params: {
-          fromAccountScreen: true,
-          navigateToScreen: 'PaymentMethodsScreen',
-          homeNavigateParams: {
             comeFrom: 'HomeScreen',
-          },
         },
       })
     } else if (options === 'Payout Method') {

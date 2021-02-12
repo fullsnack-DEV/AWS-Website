@@ -11,7 +11,6 @@ import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-// import SingleVideoModal from './SingleVideoModal';
 import SinglePostVideoView from './SinglePostVideoView';
 
 function VideoPost({
@@ -73,11 +72,6 @@ function VideoPost({
         style={{ margin: 0 }}
         supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
-        {/* <SingleVideoModal
-          data={data}
-          uploadVideoURL={uploadVideoURL && uploadVideoURL}
-          backBtnPress={() => setModalVisible(false)}
-        /> */}
         <SinglePostVideoView
           openPostModal={() => setModalVisible(true)}
           item={item}
@@ -99,21 +93,21 @@ function VideoPost({
         }}>
         <Video
             ref={videoPlayerRef}
-          paused={!play}
-          muted={!mute}
-          source={{ uri: data.url }}
-          style={[
-            styles.singleImageDisplayStyle,
-            {
-              height,
-              position: 'absolute',
-            },
-          ]}
-          resizeMode={'cover'}
-          onLoad={() => {
-            videoPlayerRef.current.seek(0)
-            setVideoLoad(true);
-          }}
+            paused={!play}
+            muted={!mute}
+            source={{ uri: data.url }}
+            style={[
+              styles.singleImageDisplayStyle,
+              {
+                height,
+                position: 'absolute',
+              },
+            ]}
+            resizeMode={'cover'}
+            onLoad={() => {
+              videoPlayerRef.current.seek(0)
+              setVideoLoad(true);
+            }}
         />
       </TouchableWithoutFeedback>
       {videoLoad && (
