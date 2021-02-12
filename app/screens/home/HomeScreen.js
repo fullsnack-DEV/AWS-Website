@@ -414,9 +414,16 @@ export default function HomeScreen({ navigation, route }) {
   };
   useEffect(() => {
     if (route?.params?.fromAccountScreen) {
-      navigation.push(route?.params?.navigateToScreen, route?.params?.homeNavigateParams);
+      const navigateScreen = route?.params?.navigateToScreen;
+      const params = route?.params?.homeNavigateParams;
+      const allParams = route?.params;
+      delete allParams?.fromAccountScreen;
+      delete allParams?.navigateToScreen;
+      delete allParams?.homeNavigateParams;
+      navigation.setParams(allParams);
+      navigation.push(navigateScreen, params);
     }
-  }, [route?.params?.fromAccountScreen])
+  }, [route?.params])
   useEffect(() => {
     if (isFocused) {
       const loginEntity = authContext.entity

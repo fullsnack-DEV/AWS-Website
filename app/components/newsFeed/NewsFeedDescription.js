@@ -9,6 +9,8 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 
+const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
+const tagRegex = /\B@\w+/gmi
 function NewsFeedDescription({
   descriptions,
   character,
@@ -43,11 +45,17 @@ function NewsFeedDescription({
   const toggleNumberOfLines = () => setReadMore(!readMore);
 
   function renderText(matchingString) {
-    const pattern = /\B@\w+/g;
+    const pattern = tagRegex;
     const match = matchingString.match(pattern);
     let color = colors.black;
     if (taggedData?.includes(match?.[0])) color = colors.greeColor;
     return <Text style={{ ...styles.username, color }}>{match?.[0]}</Text>
+  }
+  const renderURLText = (matchingString) => {
+    const pattern = urlRegex;
+    const match = matchingString.match(pattern);
+    const color = colors.navyBlue;
+    return <Text style={{ color }}>{match?.[0]}</Text>
   }
   function handleNamePress(name) {
     const entityIndex = taggedData?.findIndex((item) => item === name);
@@ -75,12 +83,10 @@ function NewsFeedDescription({
             <ParsedText
               style={[styles.text, descriptionTxt]}
               parse={
-                [{
-                  pattern: /\B@\w+/g,
-                  onPress: handleNamePress,
-                  renderText,
-
-                }]
+                [
+                    { pattern: tagRegex, onPress: handleNamePress, renderText },
+                    { pattern: urlRegex, renderText: renderURLText },
+              ]
               }
               childrenProps={{ allowFontScaling: false }}
             >

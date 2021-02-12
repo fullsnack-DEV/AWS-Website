@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity, Image,
 } from 'react-native';
@@ -16,6 +16,7 @@ function SelectedImageList({
   data, onItemPress, itemNumber, totalItemNumber, isClose = true, isCounter = true,
 }) {
   const [showExtraButtons, setShowExtraButtons] = useState(false);
+  const videoPlayerRef = useRef();
   return (
     <View style={styles.uploadedImage}>
       {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'image' && <FastImage
@@ -25,14 +26,39 @@ function SelectedImageList({
         resizeMode={FastImage.resizeMode.cover}
       />}
       {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'video'
-        && <Video
-        source={{ uri: data.path || data.thumbnail }}
-        style={styles.uploadedImage}
-        resizeMode={'cover'}
-        muted={true}
-        paused={false}
-        controls={true}
-      />}
+      && <View>
+        <View style={{
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'absolute',
+        }}>
+          <FastImage
+              source={images.videoPlayBtn}
+              tintColor={'white'}
+              resizeMode={'contain'}
+              style={{
+                height: 30,
+                width: 30,
+              }}/>
+        </View>
+        <Video
+            ref={videoPlayerRef}
+            paused={true}
+            muted={true}
+            source={{ uri: data.path || data.thumbnail }}
+            style={styles.uploadedImage}
+            resizeMode={'cover'}
+            onLoad={() => {
+              setShowExtraButtons(true);
+              videoPlayerRef.current.seek(0);
+            }}
+        />
+      </View>}
       {isClose && showExtraButtons && <TouchableOpacity style={styles.cancelBtnView} onPress={onItemPress}>
         <Image source={images.cancelImage} style={styles.cancelImageStyle} />
       </TouchableOpacity>}

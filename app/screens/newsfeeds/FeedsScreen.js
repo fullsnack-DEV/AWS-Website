@@ -2,7 +2,7 @@ import React, {
   useEffect, useState, useLayoutEffect, useContext,
 } from 'react';
 import {
-  StyleSheet, View, TouchableWithoutFeedback, Image, Alert,
+  StyleSheet, View, Image, Alert, TouchableOpacity,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import WritePost from '../../components/newsFeed/WritePost';
@@ -37,9 +37,6 @@ export default function FeedsScreen({ navigation }) {
   const [pullRefresh, setPullRefresh] = useState(false);
 
   useEffect(() => {
-    console.log('postData: ', postData);
-  }, [postData])
-  useEffect(() => {
     if (isFocused) {
       setloading(true);
       const entity = authContext.entity;
@@ -68,14 +65,15 @@ export default function FeedsScreen({ navigation }) {
     };
   }, [authContext.entity]);
 
+  const topRightButton = () => (
+    <TouchableOpacity
+              onPress={() => navigation.navigate('EntitySearchScreen')}>
+      <Image source={images.vertical3Dot} style={styles.headerRightImg} />
+    </TouchableOpacity>
+      )
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <TouchableWithoutFeedback
-          onPress={() => navigation.navigate('EntitySearchScreen')}>
-          <Image source={images.vertical3Dot} style={styles.headerRightImg} />
-        </TouchableWithoutFeedback>
-      ),
+      headerRight: topRightButton,
     });
   }, []);
 
@@ -202,122 +200,134 @@ export default function FeedsScreen({ navigation }) {
     setDoneUploadCount(0);
     setTotalUploadCount(0);
   }
+
+  const onDeletePost = (item) => {
+    setloading(true);
+    const params = {
+      activity_id: item.id,
+    };
+    if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
+      params.entity_type = authContext?.entity?.obj?.entity_type;
+      params.entity_id = authContext?.entity?.uid;
+    }
+    deletePost(params, authContext)
+        .then(() => getNewsFeed(authContext))
+        .then((response) => {
+          setloading(false);
+          setPostData([...response.payload.results]);
+        })
+        .catch((e) => {
+          setloading(false);
+          Alert.alert('', e.messages)
+        });
+  }
+
+  const onRefreshPress = () => {
+    setIsMoreLoading(false);
+    setIsNextDataLoading(true);
+    setFooterLoading(false)
+    setPullRefresh(true);
+    getNewsFeed(authContext)
+        .then((response) => {
+          setPostData([...response.payload.results]);
+          setPullRefresh(false);
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages)
+          setPullRefresh(false);
+        });
+  }
+
+  const feedScreenHeader = () => (
+    <View>
+      <WritePost
+        navigation={navigation}
+        postDataItem={currentUserDetail}
+        onWritePostPress={() => {
+          navigation.navigate('WritePostScreen', {
+            postData: currentUserDetail,
+            onPressDone: callthis,
+            selectedImageList: [],
+          })
+        }}
+    />
+      <View style={styles.sepratorView} />
+    </View>
+  )
+
+  const onLikePress = (item) => {
+    const bodyParams = {
+      reaction_type: 'clap',
+      activity_id: item.id,
+    };
+    createReaction(bodyParams, authContext)
+        .then(() => getNewsFeed(authContext))
+        .then((response) => {
+          setPostData([...response.payload.results]);
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages)
+        });
+  }
+
+  const onEndReached = () => {
+    setIsMoreLoading(true);
+    setFooterLoading(true);
+    const id_lt = postData?.[postData.length - 1]?.id;
+    if (id_lt && isMoreLoading && isNextDataLoading) {
+      getNewsFeedNextList(id_lt, authContext).then((response) => {
+        if (response) {
+          if (response.payload.next === '') {
+            setIsNextDataLoading(false);
+          }
+          setIsMoreLoading(false);
+          setFooterLoading(false)
+          setPostData([...postData, ...response.payload.results]);
+        }
+      })
+          .catch(() => {
+            setFooterLoading(false)
+          })
+    }
+  }
+
+  const onImagePregressCancelPress = () => {
+    Alert.alert(
+        'Cancel Upload?',
+        'If you cancel your upload now, your post will not be saved.',
+        [{
+          text: 'Go back',
+        },
+          {
+            text: 'Cancel upload',
+            onPress: onCancelImageUpload,
+          },
+        ],
+    );
+  }
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+
       <NewsFeedList
         pullRefresh={pullRefresh}
-        onDeletePost={(item) => {
-          setloading(true);
-          const params = {
-            activity_id: item.id,
-
-          };
-          if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
-            params.entity_type = authContext?.entity?.obj?.entity_type;
-            params.entity_id = authContext?.entity?.uid;
-          }
-          deletePost(params, authContext)
-            .then(() => getNewsFeed(authContext))
-            .then((response) => {
-              setloading(false);
-              setPostData([...response.payload.results]);
-            })
-            .catch((e) => {
-              setloading(false);
-              Alert.alert('', e.messages)
-            });
-        }}
+        onDeletePost={onDeletePost}
         navigation={navigation}
         newsFeedData={newsFeedData}
         postData={postData}
         onEditPressDone={editPostDoneCall}
-        onRefreshPress={() => {
-          setIsMoreLoading(false);
-          setIsNextDataLoading(true);
-          setFooterLoading(false)
-          setPullRefresh(true);
-          getNewsFeed(authContext)
-            .then((response) => {
-              setPostData([...response.payload.results]);
-              setPullRefresh(false);
-            })
-            .catch((e) => {
-              Alert.alert('', e.messages)
-              setPullRefresh(false);
-            });
-        }}
+        onRefreshPress={onRefreshPress}
         footerLoading={footerLoading && isNextDataLoading}
-        ListHeaderComponent={() => <View>
-          <WritePost
-            navigation={navigation}
-            postDataItem={currentUserDetail}
-            onWritePostPress={() => {
-              navigation.navigate('WritePostScreen', {
-                postData: currentUserDetail,
-                onPressDone: callthis,
-                selectedImageList: [],
-              })
-            }}
-          />
-          <View style={styles.sepratorView} />
-        </View>}
-        onLikePress={(item) => {
-          const bodyParams = {
-            reaction_type: 'clap',
-            activity_id: item.id,
-          };
-          createReaction(bodyParams, authContext)
-            .then(() => getNewsFeed(authContext))
-            .then((response) => {
-              setPostData([...response.payload.results]);
-            })
-            .catch((e) => {
-              Alert.alert('', e.messages)
-            });
-        }}
-        onEndReached={() => {
-          setIsMoreLoading(true);
-          setFooterLoading(true);
-          const id_lt = postData?.[postData.length - 1]?.id;
-          if (id_lt && isMoreLoading && isNextDataLoading) {
-            getNewsFeedNextList(id_lt, authContext).then((response) => {
-              if (response) {
-                if (response.payload.next === '') {
-                  setIsNextDataLoading(false);
-                }
-                setIsMoreLoading(false);
-                setFooterLoading(false)
-                setPostData([...postData, ...response.payload.results]);
-              }
-            })
-              .catch((error) => {
-                setFooterLoading(false)
-                console.log('Next Data Error :-', error);
-              })
-          }
-        }}
-
-      />
+        ListHeaderComponent={feedScreenHeader}
+        onLikePress={onLikePress}
+        onEndReached={onEndReached}
+       />
       {progressBar && <ImageProgress
           numberOfUploaded={doneUploadCount}
           totalUpload={totalUploadCount}
-          onCancelPress={() => {
-            Alert.alert(
-              'Cancel Upload?',
-              'If you cancel your upload now, your post will not be saved.',
-              [{
-                text: 'Go back',
-              },
-              {
-                text: 'Cancel upload',
-                onPress: onCancelImageUpload,
-              },
-              ],
-            );
-          }}
+          onCancelPress={onImagePregressCancelPress}
           postDataItem={currentUserDetail}
-      />}
+       />}
     </View>
   );
 }

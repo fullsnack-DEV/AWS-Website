@@ -60,7 +60,6 @@ export default function PaymentMethodsScreen({ navigation, route }) {
         }
       })
       .catch((e) => {
-        console.log('error in payment method', e)
         setloading(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -69,28 +68,30 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   }
 
   const onCardSelected = async (item) => {
+    const body = { source: item?.id ?? null }
+    if (body?.source) {
     setloading(true);
-    const body = { source: item?.id }
-    updateUserProfile(body, authContext).then(async (response) => {
-      const currentEntity = {
-        ...authContext.entity, obj: response.payload,
-      }
-      authContext.setEntity({ ...currentEntity })
-      await Utility.setStorage('authContextEntity', { ...currentEntity })
-      if (route?.params?.comeFrom !== 'HomeScreen') {
-        navigation.navigate(route?.params?.comeFrom, {
-          paymentMethod: item,
-        });
-      } else {
-        navigation.goBack();
-      }
-      setloading(false);
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e);
-      }, 10);
-    })
+      updateUserProfile(body, authContext).then(async (response) => {
+        const currentEntity = {
+          ...authContext.entity, obj: response.payload,
+        }
+        authContext.setEntity({ ...currentEntity })
+        await Utility.setStorage('authContextEntity', { ...currentEntity })
+        if (route?.params?.comeFrom !== 'HomeScreen') {
+          navigation.navigate(route?.params?.comeFrom, {
+            paymentMethod: item,
+          });
+        } else {
+          navigation.goBack();
+        }
+        setloading(false);
+      }).catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e);
+        }, 0.7);
+      })
+    }
   }
 
   const onDeleteCard = (item) => {

@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   TextInput,
   FlatList,
   TouchableOpacity,
@@ -15,6 +14,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import Separator from '../Separator';
@@ -74,7 +74,7 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
           width: wp(100),
           margin: 0,
           justifyContent: 'flex-end',
-          backgroundColor: 'rgba(0,0,0,1)',
+          backgroundColor: colors.yellowColor,
           marginLeft: 0,
           marginRight: 0,
           marginBottom: 0,
@@ -83,17 +83,17 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
         onBackdropPress={onClose}
         backdropOpacity={0}
     >
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
+      <FastImage style={ styles.background } resizeMode={'stretch'} source={ images.orangeLayer } />
+      <FastImage style={ styles.background } resizeMode={'stretch'} source={ images.bgImage } />
       <TouchableOpacity onPress={onClose} style={{
         position: 'absolute', right: wp(5), top: hp(8),
       }}>
-        <Image source={images.cancelImage} style={styles.closeButton}/>
+        <FastImage source={images.cancelImage} resizeMode={'contain'} tintColor={colors.whiteColor} style={styles.closeButton}/>
       </TouchableOpacity>
       <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
       <View style={ styles.sectionStyle }>
-        <Image source={ images.searchLocation } style={ styles.searchImg } />
+        <FastImage source={ images.searchLocation } resizeMode={'contain'} style={ styles.searchImg } />
         <TextInput
                     style={ styles.textInput }
                     placeholder={ strings.locationPlaceholderText }
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
   background: {
     height: '100%',
     position: 'absolute',
-    resizeMode: 'stretch',
     width: '100%',
   },
   cityList: {
@@ -149,9 +148,7 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: 'center',
     width: 20,
-    tintColor: colors.whiteColor,
     height: 20,
-    resizeMode: 'contain',
   },
   noDataText: {
     alignSelf: 'center',
@@ -166,8 +163,6 @@ const styles = StyleSheet.create({
   searchImg: {
     alignSelf: 'center',
     height: hp('4%'),
-
-    resizeMode: 'contain',
     width: wp('4%'),
   },
   sectionStyle: {
