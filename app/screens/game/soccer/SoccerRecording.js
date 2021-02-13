@@ -21,7 +21,7 @@ import moment from 'moment';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-date-picker'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
@@ -43,6 +43,7 @@ let entity = {};
 let timer, timerForTimeline;
 let lastTimeStamp;
 let lastVerb;
+let date;
 export default function SoccerRecording({ navigation, route }) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext);
@@ -54,7 +55,7 @@ export default function SoccerRecording({ navigation, route }) {
   const [gameObj, setGameObj] = useState();
   const [selectedTeam, setSelectedTeam] = useState();
   const [timelineTimer, setTimelineTimer] = useState('00 : 00 : 00');
-  const [date, setDate] = useState();
+  // const [date, setDate] = useState();
 
   useEffect(() => {
     entity = authContext.entity;
@@ -83,52 +84,76 @@ export default function SoccerRecording({ navigation, route }) {
       setTimelineTimer(
         getTimeDifferent(new Date().getTime(), new Date().getTime()),
       );
-    } else if (gameObj && gameObj.status === GameStatus.paused) {
+    } else if (gameObj?.status === GameStatus.paused) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.pause_datetime && gameObj.pause_datetime * 1000,
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
+          gameObj?.pause_datetime * 1000,
+            gameObj?.actual_startdatetime * 1000,
         ),
       );
     } else if (date) {
-      setTimelineTimer(
-        getTimeDifferent(
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
-          new Date(date).getTime(),
-        ),
-      );
+      if (GameStatus.playing === gameObj.status) {
+        setTimelineTimer(
+          getTimeDifferent(
+            gameObj?.actual_startdatetime * 1000,
+            new Date(date).getTime(),
+          ),
+        );
+      } else {
+        setTimelineTimer(
+          getTimeDifferent(
+            new Date().getTime(),
+            new Date(date).getTime(),
+          ),
+        );
+      }
     } else {
       timerForTimeline = setInterval(() => {
-        if (gameObj) {
-          setTimelineTimer(
-            getTimeDifferent(
-              new Date().getTime(),
-              gameObj
-                && gameObj.actual_startdatetime
-                && gameObj.actual_startdatetime * 1000,
-            ),
-          );
-        }
+        setTimelineTimer(
+          getTimeDifferent(
+            new Date().getTime(), gameObj?.actual_startdatetime * 1000,
+          ),
+        );
       }, 1000);
     }
   };
+  // useFocusEffect(() => {
+  //   startStopTimerTimeline();
+  //   timer = setInterval(() => {
+  //     if (gameObj && gameObj.status !== GameStatus.ended) {
+  //       getGameDetail(gameObj?.game_id, false);
+  //     }
+  //   }, 3000);
+
+  //   return () => {
+  //     clearInterval(timer);
+  //     clearInterval(timerForTimeline);
+  //   };
+  // }, []);
+
   useFocusEffect(() => {
-    startStopTimerTimeline();
+    if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)) {
+      startStopTimerTimeline()
+    }
     timer = setInterval(() => {
       if (gameObj && gameObj.status !== GameStatus.ended) {
-        getGameDetail(gameObj?.game_id, false);
+        getGameDetail(route?.params?.gameDetail?.game_id, false);
       }
-    }, 3000);
+    }, 10000);
+    // timer = setInterval(() => {
+    //   if (gameObj && gameObj.status !== GameStatus.ended) {
+    //     getGameDetail(route?.params?.gameDetail?.game_id, false);
+    //   }
+    // }, 3000);
+    // timerForTimeline = setInterval(() => {
+    //   startStopTimerTimeline()
+    // }, 1000);
 
     return () => {
-      clearInterval(timer);
-      clearInterval(timerForTimeline);
-    };
-  }, []);
+      clearInterval(timer)
+      clearInterval(timerForTimeline)
+    }
+  }, [])
 
   // eslint-disable-next-line consistent-return
   const getTimeDifferent = (sDate, eDate) => {
@@ -245,7 +270,8 @@ export default function SoccerRecording({ navigation, route }) {
         });
         startStopTimerTimeline();
         setloading(false);
-        setDate();
+        // setDate();
+        date = null;
         console.log('RESET GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -285,7 +311,8 @@ export default function SoccerRecording({ navigation, route }) {
     addGameRecord(gameId, params, authContext)
       .then((response) => {
         setloading(false);
-        setDate();
+       // setDate();
+       date = null;
         if (lastVerb === GameVerb.Goal) {
           if (selectedTeam === gameObj?.home_team?.group_id) {
             setGameObj({
@@ -332,11 +359,12 @@ export default function SoccerRecording({ navigation, route }) {
         }, 10);
       });
   };
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setPickerShow(Platform.OS === 'ios');
+
+  const onChange = (selectedDate) => {
+    console.log('selected Date::', selectedDate);
+    date = selectedDate;
     startStopTimerTimeline();
-    setDate(currentDate);
+    setPickerShow(Platform.OS === 'ios' || Platform.OS === 'android');
   };
   return (
     <>
@@ -373,13 +401,13 @@ export default function SoccerRecording({ navigation, route }) {
 
               <View style={styles.centerView}>
                 <Text style={styles.centerText}>
-                  {gameObj.home_team_goal > gameObj.away_team_goal ? (
+                  {gameObj?.home_team_goal > gameObj?.away_team_goal ? (
                     <Text
                       style={{
                         fontFamily: fonts.RBold,
                         color: colors.themeColor,
                       }}>
-                      {gameObj.home_team_goal}
+                      {gameObj?.home_team_goal}
                     </Text>
                   ) : (
                     <Text
@@ -387,11 +415,11 @@ export default function SoccerRecording({ navigation, route }) {
                         fontFamily: fonts.RLight,
                         color: colors.lightBlackColor,
                       }}>
-                      {gameObj.home_team_goal}
+                      {gameObj?.home_team_goal}
                     </Text>
                   )}{' '}
                   :{' '}
-                  {gameObj.away_team_goal > gameObj.home_team_goal ? (
+                  {gameObj?.away_team_goal > gameObj?.home_team_goal ? (
                     <Text
                       style={{
                         fontFamily: fonts.RBold,
@@ -444,7 +472,8 @@ export default function SoccerRecording({ navigation, route }) {
                 <View style={styles.curruentTimeView}>
                   <TouchableOpacity
                     onPress={() => {
-                      setDate();
+                      // setDate();
+                      date = null;
                     }}>
                     <Image
                       source={images.curruentTime}
@@ -474,14 +503,24 @@ export default function SoccerRecording({ navigation, route }) {
             </View>
             {pickerShow && (
               <View>
-                <RNDateTimePicker
+                {/* <RNDateTimePicker
                   display="spinner"
                   value={date || new Date()}
                   onChange={onChange}
                   mode={'datetime'}
                   minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date() : new Date(gameObj.actual_startdatetime * 1000)}
                   maximumDate={new Date()}
-                />
+                /> */}
+                <DatePicker
+                testID={'startsDateDateTimePicker'}
+                style={styles.dateTimePickerStyle}
+                date={date || new Date()}
+                onDateChange={(dt) => {
+                  onChange(dt)
+                }}
+                minimumDate={gameObj.status === GameStatus.accepted || gameObj.status === GameStatus.reset ? new Date(1950, 0, 1) : new Date(gameObj.actual_startdatetime * 1000)}
+                    maximumDate={new Date()}
+              />
                 <View style={styles.separatorLine} />
               </View>
             )}
@@ -500,7 +539,7 @@ export default function SoccerRecording({ navigation, route }) {
                 }>
                 <TouchableOpacity
                   onPress={() => setSelectedTeam(gameObj?.home_team?.group_id)}>
-                  {selectedTeam === gameObj.home_team.group_id ? (
+                  {selectedTeam === gameObj?.home_team?.group_id ? (
                     <LinearGradient
                       colors={
                         selectedTeam === gameObj?.home_team?.group_id
@@ -1145,5 +1184,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingLeft: 15,
     paddingRight: 15,
+  },
+  dateTimePickerStyle: {
+    alignSelf: 'center',
+    width: wp(100),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
