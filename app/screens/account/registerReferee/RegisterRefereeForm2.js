@@ -85,7 +85,13 @@ export default function RegisterRefereeForm2({ navigation, route }) {
           <TextInput
             placeholder={ strings.enterFeePlaceholder }
             style={ styles.feeText }
-            onChangeText={ (text) => onMatchFeeChanged(text) }
+            onChangeText={ (text) => {
+              if (text <= 0.0 || text >= 1.0) {
+                onMatchFeeChanged(text)
+                } else {
+                Alert.alert(strings.enterValidGameFee)
+              }
+            } }
             value={matchFee}
             keyboardType={ 'decimal-pad' }/>
           <Text style={ styles.curruency } numberOfLines={1}>CAD/hour</Text>
