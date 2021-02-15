@@ -1,10 +1,9 @@
 import React, {
-  useEffect, useState, useLayoutEffect, useContext,
+  useEffect, useState, useLayoutEffect, useContext, useMemo,
 } from 'react';
 import {
   StyleSheet, View, Image, Alert, TouchableOpacity,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -20,11 +19,9 @@ import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context'
 
-export default function FeedsScreen({ navigation }) {
+const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
-  const isFocused = useIsFocused();
   const [postData, setPostData] = useState([]);
-  const [newsFeedData] = useState([]);
   const [loading, setloading] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
@@ -35,12 +32,9 @@ export default function FeedsScreen({ navigation }) {
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
-
   useEffect(() => {
-    if (isFocused) {
-      setloading(true);
+    setloading(true);
       const entity = authContext.entity;
-      console.log('Entity :-', entity);
       setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
         .then((response) => {
@@ -51,19 +45,7 @@ export default function FeedsScreen({ navigation }) {
           setloading(false);
           setTimeout(() => Alert.alert('', e.message), 100)
         });
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const entity = authContext.entity;
-      setCurrentUserDetail(entity.obj || entity.auth.user);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [authContext.entity]);
+  }, [authContext?.entity]);
 
   const topRightButton = () => (
     <TouchableOpacity
@@ -238,7 +220,7 @@ export default function FeedsScreen({ navigation }) {
         });
   }
 
-  const feedScreenHeader = () => (
+  const feedScreenHeader = useMemo(() => (
     <View>
       <WritePost
         navigation={navigation}
@@ -253,7 +235,7 @@ export default function FeedsScreen({ navigation }) {
     />
       <View style={styles.sepratorView} />
     </View>
-  )
+  ), [currentUserDetail])
 
   const onLikePress = (item) => {
     const bodyParams = {
@@ -305,6 +287,7 @@ export default function FeedsScreen({ navigation }) {
         ],
     );
   }
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -313,7 +296,6 @@ export default function FeedsScreen({ navigation }) {
         pullRefresh={pullRefresh}
         onDeletePost={onDeletePost}
         navigation={navigation}
-        newsFeedData={newsFeedData}
         postData={postData}
         onEditPressDone={editPostDoneCall}
         onRefreshPress={onRefreshPress}
@@ -327,7 +309,7 @@ export default function FeedsScreen({ navigation }) {
           totalUpload={totalUploadCount}
           onCancelPress={onImagePregressCancelPress}
           postDataItem={currentUserDetail}
-       />}
+      />}
     </View>
   );
 }
@@ -349,3 +331,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteGradientColor,
   },
 });
+
+export default FeedsScreen;

@@ -8,7 +8,7 @@ module.exports = {
   root: true,
   // extends: ["plugin:react-native/all"],
   extends: ['eslint:recommended', 'plugin:react/recommended', 'airbnb-base'],
-  plugins: ['react', 'react-native'],
+  plugins: ['react', 'react-native', 'react-hooks'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -42,6 +42,8 @@ module.exports = {
     'one-var': [0],
     semi: [0, 'never'],
     camelcase: [0],
+    'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
+    'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
   },
   globals: {
     fetch: false,

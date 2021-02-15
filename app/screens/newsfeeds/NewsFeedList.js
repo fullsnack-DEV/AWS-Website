@@ -38,7 +38,7 @@ const NewsFeedList = ({
     };
   }, []);
 
-  const onProfilePress = (item) => {
+  const onProfilePress = useCallback((item) => {
     if (item?.actor?.id) {
       if (item?.actor?.id !== authContext?.entity?.uid) {
         navigation.navigate('HomeScreen', {
@@ -48,7 +48,7 @@ const NewsFeedList = ({
         })
       }
     }
-  }
+  }, [])
 
   const renderNewsFeed = useCallback(({ item, key }) => (
     <NewsFeedPostItems
@@ -58,11 +58,11 @@ const NewsFeedList = ({
           navigation={navigation}
           caller_id={userID}
           onEditPressDone={onEditPressDone}
-          onImageProfilePress={() => onProfilePress(item) }
+          onImageProfilePress={() => onProfilePress(item)}
           onLikePress={() => onLikePress(item)}
           onDeletePost={() => onDeletePost(item)}
       />
-  ), [postData])
+  ), [postData, userID, onProfilePress])
 
   const newsFeedListItemSeperator = () => (
     <View
