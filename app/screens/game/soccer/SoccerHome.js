@@ -59,6 +59,7 @@ const SoccerHome = ({ navigation, route }) => {
     setLoading(true);
     getSoccerGameData(soccerGameId)
       .then(async (res) => {
+        console.log('SOCCER GAME DATA::=>', res.payload);
         if (res.status) {
           const entity = authContext.entity;
           setUserRole(entity?.role);

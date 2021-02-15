@@ -61,41 +61,41 @@ export default function SoccerRecording({ navigation, route }) {
     entity = authContext.entity;
 
     const { gameId } = route.params ?? {};
-    console.log('GAME IDD::', gameId);
+
     getGameDetail(gameId, true);
+    console.log('GAME IDD::', gameId);
   }, [isFocused]);
 
-  const startStopTimerTimeline = () => {
+  const startStopTimerTimeline = (obj) => {
     clearInterval(timer);
     clearInterval(timerForTimeline);
-    if (gameObj && gameObj.status === GameStatus.ended) {
+    if (obj?.status === GameStatus.ended) {
       setTimelineTimer(
         getTimeDifferent(
-          gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime * 1000,
-          gameObj
-            && gameObj.actual_startdatetime
-            && gameObj.actual_startdatetime * 1000,
+          obj?.actual_enddatetime * 1000,
+          obj?.actual_startdatetime * 1000,
         ),
       );
     } else if (
-      (gameObj && gameObj.status === GameStatus.accepted)
-      || (gameObj && gameObj.status === GameStatus.reset)
-    ) {
+
+      (obj?.status === GameStatus.accepted || obj?.status === GameStatus.reset)) {
       setTimelineTimer(
         getTimeDifferent(new Date().getTime(), new Date().getTime()),
       );
-    } else if (gameObj?.status === GameStatus.paused) {
+    } else if (obj?.status === GameStatus.paused) {
+     console.log('last status::=', obj?.status);
       setTimelineTimer(
         getTimeDifferent(
-          gameObj?.pause_datetime * 1000,
-            gameObj?.actual_startdatetime * 1000,
+          obj?.pause_datetime * 1000,
+          obj?.actual_startdatetime * 1000,
         ),
       );
     } else if (date) {
-      if (GameStatus.playing === gameObj.status) {
+      if (GameStatus.playing === obj?.status) {
+        console.log('playing');
         setTimelineTimer(
           getTimeDifferent(
-            gameObj?.actual_startdatetime * 1000,
+            obj?.actual_startdatetime * 1000,
             new Date(date).getTime(),
           ),
         );
@@ -111,12 +111,65 @@ export default function SoccerRecording({ navigation, route }) {
       timerForTimeline = setInterval(() => {
         setTimelineTimer(
           getTimeDifferent(
-            new Date().getTime(), gameObj?.actual_startdatetime * 1000,
+            new Date().getTime(), obj?.actual_startdatetime * 1000,
           ),
         );
       }, 1000);
     }
   };
+
+  // const startStopTimerTimeline = () => {
+  //   clearInterval(timer);
+  //   clearInterval(timerForTimeline);
+  //   if (gameObj && gameObj.status === GameStatus.ended) {
+  //     setTimelineTimer(
+  //       getTimeDifferent(
+  //         gameObj && gameObj.actual_enddatetime && gameObj.actual_enddatetime * 1000,
+  //         gameObj
+  //           && gameObj.actual_startdatetime
+  //           && gameObj.actual_startdatetime * 1000,
+  //       ),
+  //     );
+  //   } else if (
+  //     (gameObj && gameObj.status === GameStatus.accepted)
+  //     || (gameObj && gameObj.status === GameStatus.reset)
+  //   ) {
+  //     setTimelineTimer(
+  //       getTimeDifferent(new Date().getTime(), new Date().getTime()),
+  //     );
+  //   } else if (gameObj?.status === GameStatus.paused) {
+  //     setTimelineTimer(
+  //       getTimeDifferent(
+  //         gameObj?.pause_datetime * 1000,
+  //           gameObj?.actual_startdatetime * 1000,
+  //       ),
+  //     );
+  //   } else if (date) {
+  //     if (GameStatus.playing === gameObj.status) {
+  //       setTimelineTimer(
+  //         getTimeDifferent(
+  //           gameObj?.actual_startdatetime * 1000,
+  //           new Date(date).getTime(),
+  //         ),
+  //       );
+  //     } else {
+  //       setTimelineTimer(
+  //         getTimeDifferent(
+  //           new Date().getTime(),
+  //           new Date(date).getTime(),
+  //         ),
+  //       );
+  //     }
+  //   } else {
+  //     timerForTimeline = setInterval(() => {
+  //       setTimelineTimer(
+  //         getTimeDifferent(
+  //           new Date().getTime(), gameObj?.actual_startdatetime * 1000,
+  //         ),
+  //       );
+  //     }, 1000);
+  //   }
+  // };
   // useFocusEffect(() => {
   //   startStopTimerTimeline();
   //   timer = setInterval(() => {
@@ -133,18 +186,15 @@ export default function SoccerRecording({ navigation, route }) {
 
   useFocusEffect(() => {
     if (![GameStatus.accepted, GameStatus.reset].includes(gameObj?.status)) {
-      startStopTimerTimeline()
+      startStopTimerTimeline(gameObj)
     }
+    console.log('route?.params?.gameDetail', route?.params?.gameDetail);
     timer = setInterval(() => {
       if (gameObj && gameObj.status !== GameStatus.ended) {
-        getGameDetail(route?.params?.gameDetail?.game_id, false);
+        getGameDetail(route?.params?.gameId, false);
       }
     }, 10000);
-    // timer = setInterval(() => {
-    //   if (gameObj && gameObj.status !== GameStatus.ended) {
-    //     getGameDetail(route?.params?.gameDetail?.game_id, false);
-    //   }
-    // }, 3000);
+
     // timerForTimeline = setInterval(() => {
     //   startStopTimerTimeline()
     // }, 1000);
@@ -238,13 +288,13 @@ export default function SoccerRecording({ navigation, route }) {
         } else {
           setGameObj(response.payload);
         }
-
         if (entity === gameObj?.home_team?.group_id) {
           setActionByTeamID(gameObj?.home_team?.group_id);
         } else {
           setActionByTeamID(gameObj?.away_team?.group_id);
         }
         setloading(false);
+
         console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -258,21 +308,15 @@ export default function SoccerRecording({ navigation, route }) {
     setloading(true);
     resetGame(gameId, authContext)
       .then((response) => {
-        setGameObj({
-          ...gameObj,
-          actual_startdatetime: undefined,
-          actual_enddatetime: undefined,
-          pause_datetime: undefined,
-          resume_datetime: undefined,
-          away_team_goal: 0,
-          home_team_goal: 0,
-          status: GameStatus.accepted,
-        });
-        startStopTimerTimeline();
-        setloading(false);
-        // setDate();
         date = null;
-        console.log('RESET GAME RESPONSE::', response.payload);
+
+        console.log('RESET GAME OBJECT::', gameObj);
+
+        getGameDetail(gameId, true);
+
+        setloading(false);
+        startStopTimerTimeline(gameObj)
+        console.log('RESET GAME RESPONSE::', response);
       })
       .catch((e) => {
         setloading(false);
@@ -331,25 +375,26 @@ export default function SoccerRecording({ navigation, route }) {
             actual_startdatetime: lastTimeStamp,
             status: GameStatus.playing,
           });
-          startStopTimerTimeline();
+          startStopTimerTimeline(gameObj);
         } else if (lastVerb === GameVerb.Pause) {
           setGameObj({
             ...gameObj,
             pause_datetime: lastTimeStamp,
             status: GameStatus.paused,
           });
-          startStopTimerTimeline();
+          startStopTimerTimeline(gameObj);
         } else if (lastVerb === GameVerb.Resume) {
           setGameObj({ ...gameObj, status: GameStatus.resume });
-          startStopTimerTimeline();
+          startStopTimerTimeline(gameObj);
         } else if (lastVerb === GameVerb.End) {
           setGameObj({
             ...gameObj,
             actual_enddatetime: lastTimeStamp,
             status: GameStatus.ended,
           });
-          startStopTimerTimeline();
+          startStopTimerTimeline(gameObj);
         }
+        getGameDetail(gameId, true);
         console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -363,7 +408,7 @@ export default function SoccerRecording({ navigation, route }) {
   const onChange = (selectedDate) => {
     console.log('selected Date::', selectedDate);
     date = selectedDate;
-    startStopTimerTimeline();
+    startStopTimerTimeline(gameObj);
     setPickerShow(Platform.OS === 'ios' || Platform.OS === 'android');
   };
   return (

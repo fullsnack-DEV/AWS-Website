@@ -159,6 +159,8 @@ export default function EditLineUpScreen({ navigation, route }) {
         console.log('ITEM BTYPE::', bType);
         console.log('ITEM PRESSED::', item);
       }}
+      OnRowPress={() => {
+      }}
     />
   );
   const renderNonRosterMultiple = ({ item }) => (
@@ -386,29 +388,19 @@ export default function EditLineUpScreen({ navigation, route }) {
   }
 
   const searchFilterFunction = (text) => {
-    if (text.length > 0) {
       setStarting(searchStarting.filter(
-        (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+        (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
       ));
       setSubs(searchSubs.filter(
-        (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+        (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
       ));
       setNonRoster(searchNonRoster.filter(
-        (x) => x.profile.first_name.toLowerCase().includes(text.toLowerCase()) || x.profile.last_name.toLowerCase().includes(text.toLowerCase()),
+        (x) => x.profile.first_name.includes(text) || x.profile.last_name.includes(text),
       ));
-    } else {
-      // setStarting([...tempararyStarting])
-      // setSubs([...tempararySubs])
-      // setNonRoster([...tempararyNonRoster])
 
-      getLineUpOfTeams(
-        route?.params?.selectedTeam === 'home'
-          ? route?.params?.gameObj?.home_team?.group_id
-          : route?.params?.gameObj?.away_team?.group_id,
-        route?.params?.gameObj?.game_id,
-        false,
-      );
-    }
+      console.log('STARTING::', starting);
+    console.log('SUBS::', subs);
+    console.log('NON_ROSTER::', nonRoster);
   };
   return (
     <SafeAreaView style={{ flex: 1 }}>

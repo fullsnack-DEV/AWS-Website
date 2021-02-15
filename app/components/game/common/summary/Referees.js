@@ -86,10 +86,12 @@ const Referees = ({
     const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
     switch (status) {
       case RefereeReservationStatus.accepted: statusData = { status: 'Confirmed', color: colors.greeColor }; break;
-      case RefereeReservationStatus.pendingpayment: statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
+      case RefereeReservationStatus.restored: statusData = { status: 'Restored', color: colors.greeColor }; break;
+      case RefereeReservationStatus.cancelled: statusData = { status: 'Cancelled', color: colors.greeColor }; break;
+      case RefereeReservationStatus.pendingpayment: statusData = { status: 'Pending', color: colors.yellowColor }; break;
       case RefereeReservationStatus.offered:
-        if (isExpired) statusData = { status: 'REFEREE RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
-        else statusData = { status: 'REFEREE RESERVATION REQUEST SENT', color: colors.yellowColor };
+        if (isExpired) statusData = { status: 'Expired', color: colors.userPostTimeColor };
+        else statusData = { status: 'Sent', color: colors.yellowColor };
         break;
       default: statusData = { status: '' };
     }
@@ -105,23 +107,45 @@ console.log('ITEM::=>', item);
               statusTitle={getRefereeStatusMessage(item, 'status')}
               myUserId={myUserId}
               isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
-              isReviewed={!!referee?.review_id}
+              isReviewed={!!referee?.referee?.review_id}
               followUser={followUser}
               unFollowUser={unFollowUser}
-              userID={referee?.user_id}
-              title={referee?.full_name}
+              userID={referee?.referee?.user_id}
+              title={referee?.referee?.full_name}
               subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
-              is_following={referee?.is_following}
+              is_following={referee?.referee?.is_following}
               onFollowUnfollowPress={onFollowPress}
-              profileImage={referee?.thumbnail}
+              profileImage={referee?.referee?.thumbnail}
               isShowThreeDots={item?.booked_by === entity?.uid}
               onThreeDotPress={() => {
                 selectedRefereeData = item
                 actionSheet.current.show()
               }}
               userRole={userRole}
-              onReviewPress={() => onReviewPress(referee)}
+              onReviewPress={() => onReviewPress(referee?.referee)}
           />
+      //     <TCUserFollowUnfollowList
+      //     statusColor={getRefereeStatusMessage(item, 'color')}
+      //     statusTitle={getRefereeStatusMessage(item, 'status')}
+      //     myUserId={myUserId}
+      //     isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
+      //     isReviewed={!!referee?.review_id}
+      //     followUser={followUser}
+      //     unFollowUser={unFollowUser}
+      //     userID={referee?.user_id}
+      //     title={referee?.full_name}
+      //     subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
+      //     is_following={referee?.is_following}
+      //     onFollowUnfollowPress={onFollowPress}
+      //     profileImage={referee?.thumbnail}
+      //     isShowThreeDots={item?.booked_by === entity?.uid}
+      //     onThreeDotPress={() => {
+      //       selectedRefereeData = item
+      //       actionSheet.current.show()
+      //     }}
+      //     userRole={userRole}
+      //     onReviewPress={() => onReviewPress(referee)}
+      // />
     )
   }
 
@@ -138,7 +162,7 @@ console.log('ITEM::=>', item);
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={gameData?.referees}
+              data={gameData?.referee_reservations}
               renderItem={renderReferees}
               ListEmptyComponent={() => (
                 <View>
