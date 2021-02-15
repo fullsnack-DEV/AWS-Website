@@ -194,7 +194,6 @@ export default function ChooseLocationScreen({ navigation }) {
 
   return (
     <View style={ styles.mainContainer }>
-      {/* <Loader visible={getTeamListing.loading} /> */}
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
       <Text style={ styles.LocationText }>{strings.locationText}</Text>

@@ -62,12 +62,10 @@ function PostImageSet({
           onLikePress={onLikePress}
         />
       </Modal>
-      <TouchableWithoutFeedback onPress={() => toggleModal()}>
+      <TouchableWithoutFeedback onPress={toggleModal}>
         <FastImage
           style={ [styles.uploadedImage, { position: 'absolute' }] }
-          source={ {
-            uri: uploadImageURL,
-          } }
+          source={{ uri: uploadImageURL }}
           resizeMode={ FastImage.resizeMode.cover }
         />
       </TouchableWithoutFeedback>

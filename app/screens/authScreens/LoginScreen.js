@@ -337,7 +337,6 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {/* <Loader visible={getUserData.loading} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
       <TCKeyboardView>

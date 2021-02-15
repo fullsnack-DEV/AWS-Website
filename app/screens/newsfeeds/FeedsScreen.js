@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useLayoutEffect, useContext, useMemo,
+  useEffect, memo, useState, useLayoutEffect, useContext, useMemo, useCallback,
 } from 'react';
 import {
   StyleSheet, View, Image, Alert, TouchableOpacity,
@@ -45,7 +45,7 @@ const FeedsScreen = ({ navigation }) => {
           setloading(false);
           setTimeout(() => Alert.alert('', e.message), 100)
         });
-  }, [authContext?.entity]);
+  }, [authContext, authContext.entity]);
 
   const topRightButton = () => (
     <TouchableOpacity
@@ -67,7 +67,21 @@ const FeedsScreen = ({ navigation }) => {
     setCancelApiRequest({ ...axiosTokenSource });
   }
 
-  const callthis = (data, postDesc, tagsOfEntity) => {
+  const createPostAfterUpload = useCallback((dataParams) => {
+    createPost(dataParams, authContext)
+        .then(() => getNewsFeed(authContext))
+        .then((response) => {
+          setPostData([...response.payload.results])
+          setProgressBar(false);
+          setDoneUploadCount(0);
+          setTotalUploadCount(0);
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages)
+        });
+  }, [authContext])
+
+  const callthis = useCallback((data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
@@ -94,21 +108,7 @@ const FeedsScreen = ({ navigation }) => {
         createPostAfterUpload(dataParams)
       })
     }
-  }
-
-  const createPostAfterUpload = (dataParams) => {
-    createPost(dataParams, authContext)
-      .then(() => getNewsFeed(authContext))
-      .then((response) => {
-        setPostData([...response.payload.results])
-        setProgressBar(false);
-        setDoneUploadCount(0);
-        setTotalUploadCount(0);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-      });
-  }
+  }, [authContext, createPostAfterUpload])
 
   const updatePostAfterUpload = (dataParams) => {
     updatePost(dataParams, authContext)
@@ -174,14 +174,14 @@ const FeedsScreen = ({ navigation }) => {
     }
   }
 
-  const onCancelImageUpload = () => {
+  const onCancelImageUpload = useCallback(() => {
     if (cancelApiRequest) {
       cancelApiRequest.cancel('Cancel Image Uploading');
     }
     setProgressBar(false);
     setDoneUploadCount(0);
     setTotalUploadCount(0);
-  }
+  }, [cancelApiRequest])
 
   const onDeletePost = (item) => {
     setloading(true);
@@ -223,19 +223,19 @@ const FeedsScreen = ({ navigation }) => {
   const feedScreenHeader = useMemo(() => (
     <View>
       <WritePost
-        navigation={navigation}
-        postDataItem={currentUserDetail}
-        onWritePostPress={() => {
-          navigation.navigate('WritePostScreen', {
-            postData: currentUserDetail,
-            onPressDone: callthis,
-            selectedImageList: [],
-          })
-        }}
-    />
+              navigation={navigation}
+              postDataItem={currentUserDetail}
+              onWritePostPress={() => {
+                navigation.navigate('WritePostScreen', {
+                  postData: currentUserDetail,
+                  onPressDone: callthis,
+                  selectedImageList: [],
+                })
+              }}
+          />
       <View style={styles.sepratorView} />
     </View>
-  ), [currentUserDetail])
+    ), [callthis, currentUserDetail, navigation])
 
   const onLikePress = (item) => {
     const bodyParams = {
@@ -273,7 +273,7 @@ const FeedsScreen = ({ navigation }) => {
     }
   }
 
-  const onImagePregressCancelPress = () => {
+  const onImageProgressCancelPress = useCallback(() => {
     Alert.alert(
         'Cancel Upload?',
         'If you cancel your upload now, your post will not be saved.',
@@ -286,8 +286,18 @@ const FeedsScreen = ({ navigation }) => {
           },
         ],
     );
-  }
+  }, [onCancelImageUpload])
 
+  const renderImageProgress = useMemo(() => (
+    <>
+      {progressBar && <ImageProgress
+              numberOfUploaded={doneUploadCount}
+              totalUpload={totalUploadCount}
+              onCancelPress={onImageProgressCancelPress}
+              postDataItem={currentUserDetail}
+          />}
+    </>
+    ), [progressBar, totalUploadCount, doneUploadCount, currentUserDetail, onImageProgressCancelPress])
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -304,12 +314,7 @@ const FeedsScreen = ({ navigation }) => {
         onLikePress={onLikePress}
         onEndReached={onEndReached}
        />
-      {progressBar && <ImageProgress
-          numberOfUploaded={doneUploadCount}
-          totalUpload={totalUploadCount}
-          onCancelPress={onImagePregressCancelPress}
-          postDataItem={currentUserDetail}
-      />}
+      {renderImageProgress}
     </View>
   );
 }
@@ -332,4 +337,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FeedsScreen;
+export default memo(FeedsScreen);

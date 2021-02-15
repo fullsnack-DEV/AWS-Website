@@ -2,11 +2,12 @@ import React, {
   useEffect, memo, useState, useContext, useCallback,
 } from 'react';
 import {
-  View, FlatList, ActivityIndicator,
+  View, ActivityIndicator,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { OptimizedFlatList } from 'react-native-optimized-flatlist'
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
@@ -50,19 +51,23 @@ const NewsFeedList = ({
     }
   }, [])
 
-  const renderNewsFeed = useCallback(({ item, key }) => (
-    <NewsFeedPostItems
-          pullRefresh={pullRefresh}
-          key={key}
-          item={item}
-          navigation={navigation}
-          caller_id={userID}
-          onEditPressDone={onEditPressDone}
-          onImageProfilePress={() => onProfilePress(item)}
-          onLikePress={() => onLikePress(item)}
-          onDeletePost={() => onDeletePost(item)}
-      />
-  ), [postData, userID, onProfilePress])
+  const renderNewsFeed = useCallback(({ item }) => {
+    const onDeleteButtonPress = () => onDeletePost(item)
+    const onProfileButtonPress = () => onProfilePress(item)
+    const onLikeButtonPress = () => onLikePress(item)
+    return (
+      <NewsFeedPostItems
+            pullRefresh={pullRefresh}
+            item={item}
+            navigation={navigation}
+            caller_id={userID}
+            onEditPressDone={onEditPressDone}
+            onImageProfilePress={onProfileButtonPress}
+            onLikePress={onLikeButtonPress}
+            onDeletePost={onDeleteButtonPress}
+        />
+    )
+  }, [postData, userID, onProfilePress])
 
   const newsFeedListItemSeperator = () => (
     <View
@@ -90,11 +95,14 @@ const NewsFeedList = ({
     onRefreshPress();
   }
 
-  const newsFeedKeyExtractor = (item, index) => `feed1${index.toString()}`
+  const newsFeedKeyExtractor = (item) => `feed1${item?.id?.toString()}`
 
   return (
     <View>
-      <FlatList
+      <OptimizedFlatList
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        initialNumToRender={5}
         bounces={true}
         data={postData ?? []}
         ItemSeparatorComponent={newsFeedListItemSeperator}

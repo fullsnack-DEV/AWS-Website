@@ -254,7 +254,6 @@ export default function SignupScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {/* <Loader visible={true} /> */}
       <Image style={styles.background} source={images.orangeLayer} />
       <Image style={styles.background} source={images.bgImage} />
       <TCKeyboardView>

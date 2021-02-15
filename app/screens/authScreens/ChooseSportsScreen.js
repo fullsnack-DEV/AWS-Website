@@ -171,7 +171,6 @@ export default function ChooseSportsScreen({ navigation, route }) {
     <>
       <View style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
-        {/* <Loader visible={getSportsList.loading} /> */}
         <FastImage style={ styles.background } source={ images.orangeLayer } />
         <FastImage style={ styles.background } source={ images.bgImage } />
 
