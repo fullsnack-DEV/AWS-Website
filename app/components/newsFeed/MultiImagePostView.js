@@ -96,7 +96,119 @@ export default function MultiImagePostView({
 
   const shareActionSheet = useRef();
 
-  // const handlePageZoom = ({ scale }) => setZoomScale(scale);
+  const renderMultipleImagePostView = ({ item: multiAttachItem }) => {
+      let portraitImgWidth = wp('100%');
+      let portraitImgHeight = hp('50%');
+      let landscapeImgWidth = hp('50%');
+      let landscapeImgHeight = wp('100%');
+      if (!isLandScape) {
+          if (multiAttachItem.media_height > multiAttachItem.media_width) {
+              portraitImgWidth = wp('100%');
+              portraitImgHeight = hp('72%');
+          } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
+              portraitImgWidth = wp('100%');
+              portraitImgHeight = hp('28%');
+          } else {
+              portraitImgWidth = wp('100%');
+              portraitImgHeight = hp('50%');
+          }
+      }
+      if (isLandScape) {
+          if (multiAttachItem.media_height > multiAttachItem.media_width) {
+              landscapeImgWidth = hp('28%');
+              landscapeImgHeight = wp('100%');
+          } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
+              landscapeImgWidth = hp('72%');
+              landscapeImgHeight = wp('100%');
+          } else {
+              landscapeImgWidth = hp('50%');
+              landscapeImgHeight = wp('100%');
+          }
+      }
+      if (multiAttachItem.type === 'image') {
+          return (
+            <View style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: isLandScape ? wp(100) : hp(100),
+                  zIndex: 100,
+            }}>
+              <TCZoomableImage
+                      source={{ uri: multiAttachItem.thumbnail }}
+                      style={[styles.uploadedImage, {
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                          height: isLandScape ? wp(100) : hp(100),
+                      }]}
+                  />
+            </View>
+          );
+      }
+      if (multiAttachItem.type === 'video') {
+          return (
+            <View style={{
+                  height: isLandScape ? wp(100) : hp(100),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 100,
+            }}>
+              <Image
+                      source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
+                      resizeMode={'cover'}
+                      style={{
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                      }}
+                  />
+              <CustomVideoPlayer
+                      isLandscape={isLandScape}
+                      onPlayerStatusChanged={(shouldVideoScroll) => {
+                          setScroll(shouldVideoScroll);
+                      }}
+                      sourceURL={multiAttachItem?.url}
+                      containerStyle={{
+                          ...styles.singleImageDisplayStyle,
+                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                          position: 'absolute',
+                      }}
+                      videoStyle={{
+                          ...styles.singleImageDisplayStyle,
+                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                      }}
+                  />
+            </View>
+          );
+      }
+      return <View />;
+  }
+
+  const onBackPress = () => {
+      Orientation.lockToPortrait();
+      backBtnPress()
+      navigation.navigate('WriteCommentScreen', {
+          data: item,
+          onDonePress: () => openPostModal(),
+      });
+  }
+
+  const onShareActionSheetItemPress = (index) => {
+      if (index === 0) {
+          const options = {
+              message: descriptions,
+          }
+          Share.open(options)
+              .then((res) => {
+                  console.log('res :-', res);
+              })
+              .catch((err) => {
+                  console.log('err :-', err);
+              });
+      } else if (index === 1) {
+          Clipboard.setString(descriptions);
+      }
+  }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.blackColor }}
@@ -104,92 +216,7 @@ export default function MultiImagePostView({
       <View style={{ flex: 1 }}>
         <Carousel
             data={attachedImages}
-            renderItem={({ item: multiAttachItem }) => {
-              let portraitImgWidth = wp('100%');
-              let portraitImgHeight = hp('50%');
-              let landscapeImgWidth = hp('50%');
-              let landscapeImgHeight = wp('100%');
-              if (!isLandScape) {
-                if (multiAttachItem.media_height > multiAttachItem.media_width) {
-                  portraitImgWidth = wp('100%');
-                  portraitImgHeight = hp('72%');
-                } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
-                  portraitImgWidth = wp('100%');
-                  portraitImgHeight = hp('28%');
-                } else {
-                  portraitImgWidth = wp('100%');
-                  portraitImgHeight = hp('50%');
-                }
-              }
-              if (isLandScape) {
-                if (multiAttachItem.media_height > multiAttachItem.media_width) {
-                  landscapeImgWidth = hp('28%');
-                  landscapeImgHeight = wp('100%');
-                } else if (multiAttachItem.media_height < multiAttachItem.media_width) {
-                  landscapeImgWidth = hp('72%');
-                  landscapeImgHeight = wp('100%');
-                } else {
-                  landscapeImgWidth = hp('50%');
-                  landscapeImgHeight = wp('100%');
-                }
-              }
-              if (multiAttachItem.type === 'image') {
-                return (
-                  <View style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: isLandScape ? wp(100) : hp(100),
-                    zIndex: 100,
-                  }}>
-                    <TCZoomableImage
-                          source={{ uri: multiAttachItem.thumbnail }}
-                          style={[styles.uploadedImage, {
-                            width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                            height: isLandScape ? wp(100) : hp(100),
-                          }]}
-                     />
-                  </View>
-                );
-              }
-              if (multiAttachItem.type === 'video') {
-                return (
-                  <View style={{
-                    height: isLandScape ? wp(100) : hp(100),
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 100,
-                  }}>
-                    <Image
-                      source={isLandScape ? images.landscapeVideoImage : images.portraitVideoImage}
-                      resizeMode={'cover'}
-                      style={{
-                        width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                        height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                      }}
-                     />
-                    <CustomVideoPlayer
-                        isLandscape={isLandScape}
-                        onPlayerStatusChanged={(shouldVideoScroll) => {
-                          setScroll(shouldVideoScroll);
-                        }}
-                        sourceURL={multiAttachItem?.url}
-                          containerStyle={{
-                            ...styles.singleImageDisplayStyle,
-                            height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                            width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                            position: 'absolute',
-                          }}
-                          videoStyle={{
-                            ...styles.singleImageDisplayStyle,
-                            height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                            width: isLandScape ? landscapeImgWidth : portraitImgWidth,
-                          }}
-                      />
-                  </View>
-                );
-              }
-              return <View />;
-            }}
+            renderItem={renderMultipleImagePostView}
             contentContainerCustomStyle={{ alignSelf: 'center' }}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
@@ -281,14 +308,7 @@ export default function MultiImagePostView({
                   flexDirection: 'row',
                 }}>
                 <TouchableOpacity
-                    onPress={() => {
-                      Orientation.lockToPortrait();
-                      backBtnPress()
-                      navigation.navigate('WriteCommentScreen', {
-                        data: item,
-                        onDonePress: () => openPostModal(),
-                      });
-                    }}
+                    onPress={onBackPress}
                     style={styles.imageTouchStyle}>
                   <Image
                     style={[styles.commentImage, { top: 2 }]}
@@ -378,22 +398,7 @@ export default function MultiImagePostView({
           title={'News Feed Post'}
           options={['Share', 'Copy Link', 'More Options', 'Cancel']}
           cancelButtonIndex={3}
-          onPress={(index) => {
-            if (index === 0) {
-              const options = {
-                message: descriptions,
-              }
-              Share.open(options)
-                .then((res) => {
-                  console.log('res :-', res);
-                })
-                .catch((err) => {
-                  console.log('err :-', err);
-                });
-            } else if (index === 1) {
-              Clipboard.setString(descriptions);
-            }
-          }}
+          onPress={onShareActionSheetItemPress}
         />
       </View>
     </KeyboardAvoidingView>

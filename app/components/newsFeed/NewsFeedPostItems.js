@@ -34,7 +34,6 @@ import fonts from '../../Constants/Fonts'
 
 function NewsFeedPostItems({
   navigation,
-  key,
   item,
   onLikePress,
   caller_id,
@@ -148,7 +147,7 @@ function NewsFeedPostItems({
     return <View />;
   }, [item])
 
-  const newsFeedItemsKeyExtractor = (keyItem, index) => `feed2${ index.toString()}`
+  const newsFeedItemsKeyExtractor = (keyItem, index) => `innerFeed${ index?.id?.toString()}`
 
   const onNewsFeedLikePress = () => {
     setLike(!like);
@@ -189,7 +188,7 @@ function NewsFeedPostItems({
   }
 
   return (
-    <View key={key}>
+    <View>
       <View style={styles.mainContainer}>
         <TouchableWithoutFeedback onPress={onImageProfilePress}>
           <Image
@@ -220,6 +219,8 @@ function NewsFeedPostItems({
         {
           attachedImages && attachedImages?.length === 1 ? (
             <FlatList
+                initialNumToRender={1}
+                maxToRenderPerBatch={5}
               data={attachedImages}
               horizontal={true}
               bounces={false}

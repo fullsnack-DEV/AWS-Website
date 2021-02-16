@@ -37,12 +37,11 @@ import {
 } from '../../api/Games';
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
-import WritePost from '../../components/newsFeed/WritePost';
 import {
   getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails, patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import {
-  getUserPosts, createPost, createReaction, deletePost, updatePost,
+  createPost,
 } from '../../api/NewsFeeds';
 import {
   getGroupDetails, getJoinedGroups, getTeamsOfClub, getGroupMembers,
@@ -50,7 +49,6 @@ import {
 } from '../../api/Groups';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as Utils from '../challenge/ChallengeUtility';
-import NewsFeedList from '../newsfeeds/NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import TabView from '../../components/Home/TabView';
 import AddPhotoItem from '../../components/Home/AddPhotoItem';
@@ -111,6 +109,7 @@ import ScorekeeperInfoSection from '../../components/Home/User/ScorekeeperInfoSe
 import PlayInModule from './playInModule/PlayInModule';
 import PlayInCommonChartScreen from './playInModule/stats/commonViews/PlayInCommonChartScreen';
 import TCGradientDivider from '../../components/TCThinGradientDivider';
+import HomeFeed from '../homeFeed/HomeFeed';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
@@ -166,7 +165,6 @@ export default function HomeScreen({ navigation, route }) {
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false)
   const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [postData, setPostData] = useState([]);
   const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(true);
@@ -302,19 +300,17 @@ export default function HomeScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    console.log(4);
     if (selectedEventItem) {
       eventEditDeleteAction.current.show();
     }
   }, [selectedEventItem]);
 
   const getUserData = async (uid, admin) => {
-    const params = { uid };
     setloading(true);
     const promises = [getUserDetails(uid, authContext),
-      getJoinedGroups(uid, authContext), getUserPosts(params, authContext),
+      getJoinedGroups(uid, authContext),
       getGallery(uid, authContext)]
-    Promise.all(promises).then(([res1, res2, res3, res4]) => {
+    Promise.all(promises).then(([res1, res2, res3]) => {
       const userDetails = res1.payload;
       console.log('Get user detail by ID:=>', userDetails);
       if (!userDetails.games) {
@@ -345,10 +341,7 @@ export default function HomeScreen({ navigation, route }) {
         userDetails.joined_clubs = res2.payload.clubs;
       }
       if (res3) {
-        setPostData([...res3.payload.results]);
-      }
-      if (res4) {
-        setGalleryData(res4.payload);
+        setGalleryData(res3.payload);
       }
       setCurrentUserData({ ...userDetails });
       setIsClubHome(false)
@@ -373,30 +366,25 @@ export default function HomeScreen({ navigation, route }) {
     if (userHome) {
       getUserData(uid, admin)
     } else {
-      const params = {
-        uid,
-      };
       const promises = [getGroupDetails(uid, authContext),
-        getGroupMembers(uid, authContext), getUserPosts(params, authContext),
+        getGroupMembers(uid, authContext),
         getGallery(uid, authContext)]
       if (clubHome) {
         promises.push(getTeamsOfClub(uid, authContext))
       }
-      Promise.all(promises).then(([res1, res2, res3, res4, res5]) => {
+      Promise.all(promises).then(([res1, res2, res3, res4]) => {
         const groupDetails = res1.payload;
         console.log('groupDetails', groupDetails)
 
         groupDetails.joined_leagues = league_Data
         groupDetails.history = history_Data
         groupDetails.joined_members = res2.payload;
+
         if (res3) {
-          setPostData([...res3.payload.results]);
-        }
-        if (res4) {
           setGalleryData(res4.payload);
         }
-        if (res5) {
-          groupDetails.joined_teams = res5.payload;
+        if (res4) {
+          groupDetails.joined_teams = res4.payload;
         }
         setCurrentUserData(groupDetails);
         setIsClubHome(clubHome)
@@ -404,6 +392,7 @@ export default function HomeScreen({ navigation, route }) {
         setIsUserHome(userHome)
         setUserID(uid);
       }).catch((errResponse) => {
+        setloading(false)
         console.log('promise error', errResponse)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.defaultError);
@@ -485,9 +474,7 @@ export default function HomeScreen({ navigation, route }) {
 
   const createPostAfterUpload = (dataParams) => {
     createPost(dataParams, authContext)
-      .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
-      .then((response) => {
-        setPostData([...response.payload.results])
+      .then(() => {
         setProgressBar(false);
         setDoneUploadCount(0);
         setTotalUploadCount(0);
@@ -502,74 +489,6 @@ export default function HomeScreen({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, error.message)
         }, 10)
       })
-  }
-
-  const updatePostAfterUpload = (dataParams) => {
-    updatePost(dataParams, authContext)
-      .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
-      .then((response) => {
-        setProgressBar(false);
-        setPostData([...response.payload.results])
-        setDoneUploadCount(0);
-        setTotalUploadCount(0);
-        getGallery(userID, authContext).then((res) => {
-          setGalleryData(res.payload);
-        });
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages)
-      });
-  }
-
-  const editPostDoneCall = (data, postDesc, selectEditItem, tagData) => {
-    let attachmentsData = [];
-    const alreadyUrlDone = [];
-    const createUrlData = [];
-
-    if (postDesc.trim().length > 0 && data?.length === 0) {
-      const dataParams = {
-        activity_id: selectEditItem.id,
-        text: postDesc,
-        taggedData: tagData ?? [],
-      };
-      updatePostAfterUpload(dataParams);
-    } else if (data) {
-      if (data.length > 0) {
-        data.map((dataItem) => {
-          if (dataItem.thumbnail) {
-            alreadyUrlDone.push(dataItem);
-          } else {
-            createUrlData.push(dataItem);
-          }
-          return null;
-        })
-      }
-      if (createUrlData?.length > 0) {
-        setTotalUploadCount(createUrlData.length || 1);
-        setProgressBar(true);
-      }
-
-      const imageArray = createUrlData.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        attachmentsData = [...alreadyUrlDone, ...attachments];
-        const dataParams = {
-          activity_id: selectEditItem.id,
-          text: postDesc,
-          attachments: attachmentsData,
-          taggedData: tagData ?? [],
-        };
-        updatePostAfterUpload(dataParams)
-      }).catch((error) => {
-        console.log(error);
-      })
-    }
   }
 
   const callthis = (data, postDesc, tagsOfEntity) => {
@@ -658,7 +577,7 @@ export default function HomeScreen({ navigation, route }) {
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
+              navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -709,7 +628,7 @@ export default function HomeScreen({ navigation, route }) {
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
+              navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -760,7 +679,7 @@ export default function HomeScreen({ navigation, route }) {
               multiple: true,
               maxFiles: 10,
             }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
+              navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -1803,52 +1722,18 @@ export default function HomeScreen({ navigation, route }) {
             renderTabContain={(tabKey) => (
               <View>
                 {tabKey === 0 && (<View>
-                  {isAdmin && <WritePost
-                    navigation={navigation}
-                    postDataItem={currentUserData}
-                    onWritePostPress={() => {
-                      navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: [] })
-                    }}
-                  />}
-                  <View style={styles.sepratorView} />
-                  <NewsFeedList
-                      onDeletePost={(item) => {
-                        setloading(true);
-                        const params = {
-                          activity_id: item.id,
-                        };
-                        if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
-                          params.entity_type = authContext?.entity?.obj?.entity_type;
-                          params.entity_id = authContext?.entity?.uid;
-                        }
-                        deletePost(params, authContext)
-                          .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
-                          .then((response) => {
-                            setloading(false);
-                            setPostData([...response.payload.results]);
-                          })
-                          .catch((e) => {
-                            setloading(false);
-                            Alert.alert('', e.messages)
-                          });
-                      }}
+
+                  <HomeFeed
+                      currentUserData={currentUserData}
+                      isAdmin={isAdmin}
                       navigation={navigation}
-                      postData={postData}
-                      onEditPressDone={editPostDoneCall}
-                      onLikePress={(item) => {
-                        const bodyParams = {
-                          reaction_type: 'clap',
-                          activity_id: item.id,
-                        };
-                        createReaction(bodyParams, authContext)
-                          .then(() => getUserPosts({ uid: route?.params?.uid ?? authContext.entity?.uid }, authContext))
-                          .then((response) => {
-                            setPostData([...response.payload.results]);
-                          })
-                          .catch((e) => {
-                            Alert.alert('', e.messages)
-                          });
-                      }}
+                      cancelRequest={cancelRequest}
+                      progressStatus={progressStatus}
+                      setDoneUploadCount={setDoneUploadCount}
+                      setGalleryData={setGalleryData}
+                      setProgressBar={setProgressBar}
+                      setTotalUploadCount={setTotalUploadCount}
+                      userID={route?.params?.uid ?? authContext.entity?.uid}
                   />
                 </View>)}
                 {tabKey === 1 && (<View style={{ flex: 1 }} >
@@ -3063,7 +2948,7 @@ export default function HomeScreen({ navigation, route }) {
                   />
                   <RefereeReviewerList
                     navigation={navigation}
-                    postData={postData}
+                    postData={[]}
                     userID={userID}
                   />
                 </ScrollView>
@@ -3376,7 +3261,7 @@ export default function HomeScreen({ navigation, route }) {
                   />
                   <RefereeReviewerList
                     navigation={navigation}
-                    postData={postData}
+                    postData={[]}
                     userID={userID}
                   />
                 </ScrollView>
@@ -3589,10 +3474,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-  },
-  sepratorView: {
-    height: 1,
-    backgroundColor: colors.grayBackgroundColor,
   },
   modalMainViewStyle: {
     shadowOpacity: 0.15,

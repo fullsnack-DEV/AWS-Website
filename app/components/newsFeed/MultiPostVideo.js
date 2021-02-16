@@ -56,11 +56,6 @@ function MultiPostVideo({
         backdropColor="black"
         style={{ margin: 0 }}
         backdropOpacity={0}>
-        {/* <MultipleImageModal
-          activeIndex={activeIndex}
-          attachedImages={attachedImages.length > 0 ? attachedImages : []}
-          backBtnPress={() => setModalVisible(false)}
-        /> */}
         <MultiImagePostView
           openPostModal={() => setModalVisible(true)}
           attachedImages={attachedImages}
