@@ -29,10 +29,8 @@ const Scorekeepers = ({
   followUser,
   unFollowUser,
   navigation,
-  getScorekeeperReservation,
   onReviewPress,
 }) => {
-  const [scorekeeper, setScorekeeper] = useState([]);
   const actionSheet = useRef();
 
   const authContext = useContext(AuthContext)
@@ -40,22 +38,6 @@ const Scorekeepers = ({
   const [myUserId, setMyUserId] = useState(null);
 
   useEffect(() => { getMyUserId() }, [])
-  useEffect(() => {
-    getScorekeeperReservation(gameData?.game_id).then((res) => {
-      const userData = res?.payload?.filter((item) => ![ScorekeeperReservationStatus.cancelled].includes(item?.status));
-      const cloneUserData = [];
-      userData.map((item) => {
-        const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
-        if (item?.status === ScorekeeperReservationStatus.offered && !isExpired) {
-          cloneUserData.push(item);
-        } else if (item?.status !== ScorekeeperReservationStatus.offered) {
-          cloneUserData.push(item);
-        }
-        return false;
-      })
-      setScorekeeper([...cloneUserData]);
-    });
-  }, [gameData]);
 
   const goToScorekeeperReservationDetail = (data) => {
     console.log('Reservation data:', JSON.stringify(data));
@@ -71,10 +53,10 @@ const Scorekeepers = ({
     }).catch(() => setloading(false));
   }
   const onFollowPress = (userID, status) => {
-    const sKeeper = _.cloneDeep(scorekeeper);
+    const sKeeper = _.cloneDeep(gameData?.scorekeeper_reservations);
     const index = sKeeper.findIndex((item) => item?.scorekeeper?.user_id === userID);
     if (index > -1) sKeeper[index].scorekeeper.is_following = status
-    setScorekeeper(sKeeper);
+    // setScorekeeper(sKeeper);
   };
 
   const getMyUserId = async () => {
@@ -87,10 +69,13 @@ const Scorekeepers = ({
     let statusData = '';
     const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
     switch (status) {
-      case ScorekeeperReservationStatus.pendingpayment: statusData = { status: 'AWAITING PAYMENT', color: colors.yellowColor }; break;
+      case ScorekeeperReservationStatus.accepted: statusData = { status: 'Confirmed', color: colors.greeColor }; break;
+      case ScorekeeperReservationStatus.restored: statusData = { status: 'Restored', color: colors.greeColor }; break;
+      case ScorekeeperReservationStatus.cancelled: statusData = { status: 'Cancelled', color: colors.greeColor }; break;
+      case ScorekeeperReservationStatus.pendingpayment: statusData = { status: 'Pending', color: colors.yellowColor }; break;
       case ScorekeeperReservationStatus.offered:
-        if (isExpired) statusData = { status: 'SCOREKEEPER RESERVATION REQUEST EXPIRED', color: colors.userPostTimeColor };
-        else statusData = { status: 'SCOREKEEPER RESERVATION REQUEST SENT', color: colors.yellowColor };
+        if (isExpired) statusData = { status: 'Expired', color: colors.userPostTimeColor };
+        else statusData = { status: 'Sent', color: colors.yellowColor };
         break;
       default: statusData = { status: '' };
     }
@@ -139,7 +124,7 @@ const Scorekeepers = ({
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={scorekeeper}
+              data={gameData?.scorekeeper_reservations}
               renderItem={renderScorekeepers}
               ListEmptyComponent={() => (
                 <View>

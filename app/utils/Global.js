@@ -107,9 +107,10 @@ const globalApiCall = async ({
   cancelToken,
 }) => {
   const entity = authContext?.entity;
-  console.log('entity::', entity, url);
+
   let caller_id;
   let caller;
+  console.log('entity::', entity, url);
   console.log('entity.role', entity.role);
   if (entity.role === 'team' || entity.role === 'club') {
     caller_id = entity.uid;
