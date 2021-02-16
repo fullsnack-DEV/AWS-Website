@@ -18,7 +18,7 @@ import _ from 'lodash';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-
+import RNRestart from 'react-native-restart';
 // import ActionSheet from 'react-native-actionsheet';
 import { useIsDrawerOpen } from '@react-navigation/drawer';
 import firebase from '@react-native-firebase/app';
@@ -320,12 +320,14 @@ export default function AccountScreen({ navigation }) {
       [{
         text: 'OK',
         onPress: async () => {
+          setloading(true);
           QBLogout();
           await firebase.auth().signOut();
           await Utility.clearStorage();
-          await authContext.setTokenData(null);
-          authContext.setUser(null);
-          authContext.setEntity(null)
+          setloading(false);
+          setTimeout(() => {
+            RNRestart.Restart();
+          }, 2000)
         },
       },
       {
