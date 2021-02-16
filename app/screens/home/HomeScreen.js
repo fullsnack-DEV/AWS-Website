@@ -379,9 +379,8 @@ export default function HomeScreen({ navigation, route }) {
         groupDetails.joined_leagues = league_Data
         groupDetails.history = history_Data
         groupDetails.joined_members = res2.payload;
-
         if (res3) {
-          setGalleryData(res4.payload);
+          setGalleryData(res3.payload);
         }
         if (res4) {
           groupDetails.joined_teams = res4.payload;
@@ -1601,6 +1600,533 @@ export default function HomeScreen({ navigation, route }) {
 
     </View>
   )
+
+  const onScoreboardSearchTextChange = (text) => {
+    setScoreboardSearchText(text);
+    const result = scoreboardGameData.filter(
+        (x) => (
+            (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))
+            || (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))),
+    );
+    setFilterScoreboardGameData(result);
+  }
+
+  const onSchedultEventItemPress = async (item) => {
+    const entity = authContext.entity;
+    if (item?.game_id) {
+      if (item?.game?.sport) {
+        const gameHome = getGameHomeScreen(item.game.sport);
+        navigation.navigate(gameHome, {
+          gameId: item?.game_id,
+        })
+      }
+    } else {
+      getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
+        navigation.navigate('EventScreen', { data: response.payload, gameData: item });
+      }).catch((e) => {
+        console.log('Error :-', e);
+      })
+    }
+  }
+
+  const renderHomeMainTabContain = (tabKey) => (
+    <View>
+      {tabKey === 0 && (<View>
+        <HomeFeed
+              currentUserData={currentUserData}
+              isAdmin={isAdmin}
+              navigation={navigation}
+              cancelRequest={cancelRequest}
+              progressStatus={progressStatus}
+              setDoneUploadCount={setDoneUploadCount}
+              setGalleryData={setGalleryData}
+              setProgressBar={setProgressBar}
+              setTotalUploadCount={setTotalUploadCount}
+              userID={route?.params?.uid ?? authContext.entity?.uid}
+          />
+      </View>)}
+      {tabKey === 1 && (<View style={{ flex: 1 }} >
+        {isUserHome && <UserInfo
+              navigation={navigation}
+              userDetails={currentUserData}
+              isAdmin={isAdmin}
+              onGroupListPress={onGroupListPress}
+              onGroupPress={onTeamPress}
+              onRefereesInPress={refereesInModal}
+              onPlayInPress={playInModel}
+          />}
+        {(isClubHome || isTeamHome) && <GroupInfo
+              navigation={navigation}
+              groupDetails={currentUserData}
+              isAdmin={isAdmin}
+              onGroupListPress={onGroupListPress}
+              onGroupPress={onTeamPress}
+              onMemberPress={onMemberPress}
+          />}
+      </View>)}
+      {tabKey === 2 && (<View style={{ flex: 1 }}>
+        <TCSearchBox
+              onChangeText={onScoreboardSearchTextChange}
+              marginTop={20}
+              marginBottom={5}
+              alignSelf={'center'}
+              width={wp('94%')}
+              borderRadius={0}
+              backgroundColor={colors.grayBackgroundColor}
+              height={40}
+              shadowOpacity={0}
+          />
+        <ScoreboardSportsScreen
+              sportsData={scoreboardSearchText.length > 0 ? filterScoreboardGameData : scoreboardGameData}
+              navigation={navigation}
+              onItemPress={() => {
+                setRefereeMatchModalVisible(false);
+                setRefereesInModalVisible(false);
+              }}
+          />
+      </View>)}
+      {tabKey === 3 && (<View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+
+          <ScheduleTabView
+                firstTabTitle={'Events'}
+                secondTabTitle={'Calender'}
+                indexCounter={scheduleIndexCounter}
+                onFirstTabPress={() => setScheduleIndexCounter(0)}
+                onSecondTabPress={() => setScheduleIndexCounter(1)}
+            />
+
+        </View>
+        {!eventData && <TCInnerLoader visible={true}/>}
+        {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+          <EventScheduleScreen
+                eventData={eventData}
+                navigation={navigation}
+                profileID={route?.params?.uid || authContext.entity.uid}
+                screenUserId={route?.params?.uid}
+                onThreeDotPress={(item) => setSelectedEventItem(item)}
+                onItemPress={onSchedultEventItemPress}
+                entity={authContext.entity}
+            />
+        </View>}
+
+        {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
+          <View style={styles.shceduleCalenderView}>
+            <BackForwardView
+                  textValue={moment(selectionDate).format('MMMM YYYY')}
+              />
+            <View>
+              <TwoTabView
+                    firstTabTitle={'Events'}
+                    secondTabTitle={'Timetable'}
+                    indexCounter={calenderInnerIndexCounter}
+                    onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
+                    onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
+                />
+            </View>
+          </View>
+
+          {calenderInnerIndexCounter === 0 && <EventAgendaSection
+                items={{
+                  [selectionDate.toString()]: [filterEventData],
+                }}
+                selected={selectionDate}
+                onDayPress={(day) => {
+                  setEventSelectDate(day.dateString);
+                  const date = moment(day.dateString).format('YYYY-MM-DD');
+                  const data = [];
+                  eventData.filter((event_item) => {
+                    const startDate = new Date(event_item.start_datetime * 1000);
+                    const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+                    if (eventDateSelect === date) {
+                      data.push(event_item);
+                    }
+                    return null;
+                  });
+                  setFilterEventData(data);
+                  return null;
+                }}
+                renderItem={(item) => {
+                  const entity = authContext.entity
+                  if (item.length > 0) {
+                    return (
+                      <FlatList
+                            data={item}
+                            renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
+                                onPress={async () => {
+                                  if (itemValue?.game_id) {
+                                    if (itemValue?.game?.sport) {
+                                      const gameHome = getGameHomeScreen(itemValue.game.sport);
+                                      navigation.navigate(gameHome, {
+                                        gameId: itemValue.game_id,
+                                      })
+                                    }
+                                  } else {
+                                    getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
+                                      navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
+                                    }).catch((e) => {
+                                      console.log('Error :-', e);
+                                    })
+                                  }
+                                }}
+                                eventBetweenSection={itemValue.game}
+                                eventOfSection={itemValue.game && itemValue.game.referees && itemValue.game.referees.length > 0}
+                                onThreeDotPress={() => {
+                                  setSelectedEventItem(itemValue);
+                                }}
+                                data={itemValue}
+                                entity={authContext.entity}
+                            />)}
+                            ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
+                              <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
+                              <Text style={styles.headerTodayText}>
+                                {moment(selectionDate).calendar(null, {
+                                  lastWeek: '[Last] dddd',
+                                  lastDay: '[Yesterday]',
+                                  sameDay: '[Today]',
+                                  nextDay: '[Tomorrow]',
+                                  nextWeek: 'dddd',
+                                })}
+                              </Text>
+                            </View>}
+                            bounces={false}
+                            style={{ flex: 1 }}
+                            keyExtractor={(itemValueKey, index) => index.toString()}
+                        />
+                    );
+                  }
+                  return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
+                }}
+            />}
+
+          {calenderInnerIndexCounter === 1 && <EventAgendaSection
+                items={{
+                  [timeTableSelectionDate.toString()]: [filterTimeTable],
+                }}
+                onDayPress={(day) => {
+                  setTimeTableSelectDate(day.dateString);
+                  const date = moment(day.dateString).format('YYYY-MM-DD');
+                  const dataItem = [];
+                  timeTable.filter((time_table_item) => {
+                    const startDate = new Date(time_table_item.start_datetime * 1000);
+                    const endDate = new Date(time_table_item.end_datetime * 1000);
+                    const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+                    if (eventDateSelect === date) {
+                      const obj = {
+                        ...time_table_item,
+                        start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
+                        end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+                      };
+                      dataItem.push(obj);
+                    }
+                    return null;
+                  });
+                  setFilterTimeTable(dataItem);
+                  return null;
+                }}
+                renderItem={(item) => <View>
+                  <EventCalendar
+                      eventTapped={(event) => { console.log('Event ::--', event) }}
+                      events={item}
+                      width={width}
+                      initDate={timeTableSelectionDate}
+                      scrollToFirst={true}
+                      renderEvent={(event) => {
+                        let event_color = colors.themeColor;
+                        let eventTitle = 'Game';
+                        let eventDesc = 'Game With';
+                        let eventDesc2 = '';
+                        if (event.color && event.color.length > 0) {
+                          if (event.color[0] !== '#') {
+                            event_color = `#${event.color}`;
+                          } else {
+                            event_color = event.color;
+                          }
+                        }
+                        if (event && event.title) {
+                          eventTitle = event.title;
+                        }
+                        if (event && event.descriptions) {
+                          eventDesc = event.descriptions;
+                        }
+                        if (event.game && event.game.away_team) {
+                          eventDesc2 = event.game.away_team.group_name;
+                        }
+                        return (
+                          <View style={{ flex: 1 }}>
+                            {event.cal_type === 'event' && <CalendarTimeTableView
+                                  title={eventTitle}
+                                  summary={`${eventDesc} ${eventDesc2}`}
+                                  containerStyle={{ borderLeftColor: event_color, width: event.width }}
+                                  eventTitleStyle={{ color: event_color }}
+                              />}
+                            {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
+                                width: event.width + 68, height: event.height,
+                              }]} />}
+                          </View>
+                        );
+                      }}
+                      styles={{
+                        event: styles.eventViewStyle,
+                        line: { backgroundColor: colors.lightgrayColor },
+                      }}
+                  />
+                  {item.length > 0 && <FlatList
+                      data={item}
+                      scrollEnabled={false}
+                      showsHorizontalScrollIndicator={ false }
+                      renderItem={ ({ item: blockItem }) => {
+                        if (blockItem.cal_type === 'blocked') {
+                          return (
+                            <EventBlockTimeTableView
+                                  blockText={'Blocked Zone'}
+                                  blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
+                              />
+                          );
+                        }
+                        return <View />;
+                      }}
+                      ItemSeparatorComponent={ () => (
+                        <View style={ { height: wp('3%') } } />
+                      ) }
+                      style={ { marginVertical: wp('4%') } }
+                      keyExtractor={(itemValue, index) => index.toString() }
+                  />}
+                </View>}
+            />}
+        </View>}
+
+        <Modal
+              isVisible={isRefereeModal}
+              backdropColor="black"
+              style={{ margin: 0, justifyContent: 'flex-end' }}
+              hasBackdrop
+              onBackdropPress={() => {
+                setIsRefereeModal(false);
+              }}
+              backdropOpacity={0}
+          >
+          <SafeAreaView style={styles.modalMainViewStyle}>
+            <Header
+                  mainContainerStyle={styles.refereeHeaderMainStyle}
+                  leftComponent={
+                    <TouchableOpacity onPress={() => {
+                      setIsRefereeModal(false);
+                    }}>
+                      <Image source={images.cancelImage} style={[styles.cancelImageStyle, { tintColor: colors.blackColor }]} resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  }
+                  centerComponent={
+                    <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
+                  }
+              />
+            <View style={styles.refereeSepratorStyle} />
+            <FlatList
+                  data={refereeReservData}
+                  bounces={false}
+                  showsHorizontalScrollIndicator={false}
+                  ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
+                  renderItem={({ item }) => <RefereeReservationItem
+                      data={item}
+                      onPressButton = {() => {
+                        setIsRefereeModal(false);
+                        console.log('choose Referee:', item);
+                        goToRefereReservationDetail(item)
+                      }}
+                  />}
+                  keyExtractor={(item, index) => index.toString()}
+              />
+          </SafeAreaView>
+        </Modal>
+        <ActionSheet
+              ref={eventEditDeleteAction}
+              options={actionSheetOpetions()}
+              cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
+              destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
+              onPress={(index) => {
+                if (index === 0) {
+                  if (index === 0 && selectedEventItem.game) {
+                    console.log('selected Event Item:', selectedEventItem);
+                    if (refereeFound(selectedEventItem)) {
+                      goToRefereReservationDetail(selectedEventItem)
+                    } else {
+                      console.log('Selected Event Item::', selectedEventItem);
+                      goToChallengeDetail(selectedEventItem.game)
+                    }
+                  } else {
+                    navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+                  }
+                }
+                if (index === 1) {
+                  if (index === 1 && selectedEventItem.game) {
+                    if (refereeFound(selectedEventItem)) {
+                      Alert.alert(
+                          'Towns Cup',
+                          'Change Event color feature is pending',
+                          [{
+                            text: 'OK',
+                            onPress: async () => {},
+                          },
+                          ],
+                          { cancelable: false },
+                      );
+                    } else {
+                      setloading(true);
+
+                      const params = {
+                        caller_id: selectedEventItem.owner_id,
+                      };
+                      getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                        console.log('Res :-', res);
+
+                        const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                        setRefereeReserveData(myReferee);
+                        if (res.payload.length > 0) {
+                          refereeReservModal();
+                          setloading(false);
+                        } else {
+                          setloading(false);
+                          setTimeout(() => {
+                            Alert.alert(
+                                'Towns Cup',
+                                'No referees invited or booked by you for this game',
+                                [{
+                                  text: 'OK',
+                                  onPress: async () => {},
+                                },
+                                ],
+                                { cancelable: false },
+                            );
+                          }, 0);
+                        }
+                      }).catch((error) => {
+                        console.log('Error :-', error);
+                      });
+                    }
+                  } else {
+                    Alert.alert(
+                        'Do you want to delete this event ?',
+                        '',
+                        [{
+                          text: 'Delete',
+                          style: 'destructive',
+                          onPress: async () => {
+                            setloading(true);
+                            const entity = authContext.entity
+                            const uid = entity.uid || entity.auth.user_id;
+                            const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                            deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
+                                .then(() => getEvents(entityRole, uid, authContext))
+                                .then((response) => {
+                                  setloading(false);
+                                  setEventData(response.payload);
+                                  setTimeTable(response.payload);
+                                })
+                                .catch((e) => {
+                                  setloading(false);
+                                  Alert.alert('', e.messages)
+                                });
+                          },
+                        },
+                          {
+                            text: 'Cancel',
+                            style: 'cancel',
+                          },
+
+                        ],
+                        { cancelable: false },
+                    );
+                  }
+                }
+                if (index === 2) {
+                  if (index === 2 && selectedEventItem.game) {
+                    if (refereeFound(selectedEventItem)) {
+                      console.log('Pressed cancel button.');
+                    } else {
+                      Alert.alert(
+                          'Towns Cup',
+                          'Change Event color feature is pending',
+                          [{
+                            text: 'OK',
+                            onPress: async () => {},
+                          },
+                          ],
+                          { cancelable: false },
+                      );
+                    }
+                  }
+                }
+                setSelectedEventItem(null);
+              }}
+          />
+        <CreateEventBtnModal
+              visible={createEventModal}
+              onCancelPress={() => setCreateEventModal(false)}
+              onCreateEventPress={() => {
+                setCreateEventModal(false)
+                navigation.navigate('CreateEventScreen', { comeName: 'ScheduleScreen' })
+              }}
+              onChallengePress={() => {
+                setCreateEventModal(false)
+                navigation.navigate('EditChallengeAvailability')
+              }}
+          />
+      </View>)}
+      {tabKey === 4 && (<View>
+        <TabView
+                  indexCounter={indexCounter}
+                  onFirstTabPress={() => setIndexCounter(0)}
+                  onSecondTabPress={() => setIndexCounter(1)}
+                  onThirdTabPress={() => setIndexCounter(2)}
+              />
+        <View style={styles.sepratorLineStyle} />
+        {indexCounter === 0 && <FlatList
+                  data={['0', ...allData]}
+                  bounces={false}
+                  renderItem={({ item, index }) => allGalleryRenderItem(item, index)}
+                  numColumns={3}
+                  style={{ marginHorizontal: 1.5 }}
+                  keyExtractor={(item, index) => index}
+              />}
+        {indexCounter === 1 && <FlatList
+                  data={['0', ...fromMeData]}
+                  bounces={false}
+                  renderItem={({ item, index }) => fromMeRenderItem(item, index)}
+                  numColumns={3}
+                  style={{ marginHorizontal: 1.5 }}
+                  keyExtractor={(item, index) => index}
+              />}
+        {indexCounter === 2 && <FlatList
+                  data={['0', ...taggedData]}
+                  bounces={false}
+                  renderItem={({ item, index }) => taggedRenderItem(item, index)}
+                  numColumns={3}
+                  style={{ marginHorizontal: 1.5 }}
+                  keyExtractor={(item, index) => index}
+              />}
+      </View>
+        )}
+      {tabKey === 5 && isTeamHome && (<View>
+
+        <ReviewSection
+              isTeamReviewSection={true}
+              reviewsData={averageTeamReview}
+              reviewsFeed={teamReviewData}
+              onReadMorePress={() => {
+                reviewerDetailModal();
+              }}
+          />
+        {/* <TeamHomeReview
+                  navigation={navigation}
+                  teamID={route?.params?.uid || authContext.entity.uid}
+                  getSoccerTeamReview={getTeamReviewById}
+                  isAdmin={isAdmin}
+                  // gameData={gameData}
+                  /> */}
+      </View>)
+        }
+    </View>
+  )
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -1719,532 +2245,7 @@ export default function HomeScreen({ navigation, route }) {
               setCurrentTab(ChangeTab.i)
             }}
             currentTab={currentTab}
-            renderTabContain={(tabKey) => (
-              <View>
-                {tabKey === 0 && (<View>
-
-                  <HomeFeed
-                      currentUserData={currentUserData}
-                      isAdmin={isAdmin}
-                      navigation={navigation}
-                      cancelRequest={cancelRequest}
-                      progressStatus={progressStatus}
-                      setDoneUploadCount={setDoneUploadCount}
-                      setGalleryData={setGalleryData}
-                      setProgressBar={setProgressBar}
-                      setTotalUploadCount={setTotalUploadCount}
-                      userID={route?.params?.uid ?? authContext.entity?.uid}
-                  />
-                </View>)}
-                {tabKey === 1 && (<View style={{ flex: 1 }} >
-                  {isUserHome && <UserInfo
-                    navigation={navigation}
-                    userDetails={currentUserData}
-                    isAdmin={isAdmin}
-                    onGroupListPress={onGroupListPress}
-                    onGroupPress={onTeamPress}
-                    onRefereesInPress={refereesInModal}
-                    onPlayInPress={playInModel}
-                  />}
-                  {(isClubHome || isTeamHome) && <GroupInfo
-                    navigation={navigation}
-                    groupDetails={currentUserData}
-                    isAdmin={isAdmin}
-                    onGroupListPress={onGroupListPress}
-                    onGroupPress={onTeamPress}
-                    onMemberPress={onMemberPress}
-                  />}
-                </View>)}
-                {tabKey === 2 && (<View style={{ flex: 1 }}>
-                  <TCSearchBox
-                    onChangeText={(text) => {
-                      setScoreboardSearchText(text);
-                      const result = scoreboardGameData.filter(
-                        (x) => (
-                          (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))
-                        || (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))),
-                      );
-                      setFilterScoreboardGameData(result);
-                    }}
-                    marginTop={20}
-                    marginBottom={5}
-                    alignSelf={'center'}
-                    width={wp('94%')}
-                    borderRadius={0}
-                    backgroundColor={colors.grayBackgroundColor}
-                    height={40}
-                    shadowOpacity={0}
-                  />
-                  <ScoreboardSportsScreen
-                    sportsData={scoreboardSearchText.length > 0 ? filterScoreboardGameData : scoreboardGameData}
-                    navigation={navigation}
-                    onItemPress={() => {
-                      setRefereeMatchModalVisible(false);
-                      setRefereesInModalVisible(false);
-                    }}
-                  />
-                </View>)}
-
-                {tabKey === 3 && (<View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-
-                    <ScheduleTabView
-                      firstTabTitle={'Events'}
-                      secondTabTitle={'Calender'}
-                      indexCounter={scheduleIndexCounter}
-                      onFirstTabPress={() => setScheduleIndexCounter(0)}
-                      onSecondTabPress={() => setScheduleIndexCounter(1)}
-                    />
-
-                  </View>
-                  {!eventData && <TCInnerLoader visible={true}/>}
-                  {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
-                    <EventScheduleScreen
-                      eventData={eventData}
-                      navigation={navigation}
-                      profileID={route?.params?.uid || authContext.entity.uid}
-                      screenUserId={route?.params?.uid}
-                      onThreeDotPress={(item) => {
-                        setSelectedEventItem(item);
-                      }}
-                      onItemPress={async (item) => {
-                        const entity = authContext.entity;
-                        if (item?.game_id) {
-                          if (item?.game?.sport) {
-                            const gameHome = getGameHomeScreen(item.game.sport);
-                            navigation.navigate(gameHome, {
-                              gameId: item?.game_id,
-                            })
-                          }
-                        } else {
-                          getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
-                            navigation.navigate('EventScreen', { data: response.payload, gameData: item });
-                          }).catch((e) => {
-                            console.log('Error :-', e);
-                          })
-                        }
-                      }}
-                      entity={authContext.entity}
-                    />
-                  </View>}
-
-                  {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
-                    <View style={styles.shceduleCalenderView}>
-                      <BackForwardView
-                        textValue={moment(selectionDate).format('MMMM YYYY')}
-                      />
-                      <View>
-                        <TwoTabView
-                          firstTabTitle={'Events'}
-                          secondTabTitle={'Timetable'}
-                          indexCounter={calenderInnerIndexCounter}
-                          onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
-                          onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
-                        />
-                      </View>
-                    </View>
-
-                    {calenderInnerIndexCounter === 0 && <EventAgendaSection
-                      items={{
-                        [selectionDate.toString()]: [filterEventData],
-                      }}
-                      selected={selectionDate}
-                      onDayPress={(day) => {
-                        setEventSelectDate(day.dateString);
-                        const date = moment(day.dateString).format('YYYY-MM-DD');
-                        const data = [];
-                        eventData.filter((event_item) => {
-                          const startDate = new Date(event_item.start_datetime * 1000);
-                          const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-                          if (eventDateSelect === date) {
-                            data.push(event_item);
-                          }
-                          return null;
-                        });
-                        setFilterEventData(data);
-                        return null;
-                      }}
-                      renderItem={(item) => {
-                        const entity = authContext.entity
-                        if (item.length > 0) {
-                          return (
-                            <FlatList
-                              data={item}
-                              renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
-                                onPress={async () => {
-                                  if (itemValue?.game_id) {
-                                    if (itemValue?.game?.sport) {
-                                      const gameHome = getGameHomeScreen(itemValue.game.sport);
-                                      navigation.navigate(gameHome, {
-                                        gameId: itemValue.game_id,
-                                      })
-                                    }
-                                  } else {
-                                    getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
-                                      navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
-                                    }).catch((e) => {
-                                      console.log('Error :-', e);
-                                    })
-                                  }
-                                }}
-                                eventBetweenSection={itemValue.game}
-                                eventOfSection={itemValue.game && itemValue.game.referees && itemValue.game.referees.length > 0}
-                                onThreeDotPress={() => {
-                                  setSelectedEventItem(itemValue);
-                                }}
-                                data={itemValue}
-                                entity={authContext.entity}
-                              />)}
-                              ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
-                                <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
-                                <Text style={styles.headerTodayText}>
-                                  {moment(selectionDate).calendar(null, {
-                                    lastWeek: '[Last] dddd',
-                                    lastDay: '[Yesterday]',
-                                    sameDay: '[Today]',
-                                    nextDay: '[Tomorrow]',
-                                    nextWeek: 'dddd',
-                                  })}
-                                </Text>
-                              </View>}
-                              bounces={false}
-                              style={{ flex: 1 }}
-                              keyExtractor={(itemValueKey, index) => index.toString()}
-                            />
-                          );
-                        }
-                        return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
-                      }}
-                    />}
-
-                    {calenderInnerIndexCounter === 1 && <EventAgendaSection
-                      items={{
-                        [timeTableSelectionDate.toString()]: [filterTimeTable],
-                      }}
-                      onDayPress={(day) => {
-                        setTimeTableSelectDate(day.dateString);
-                        const date = moment(day.dateString).format('YYYY-MM-DD');
-                        const dataItem = [];
-                        timeTable.filter((time_table_item) => {
-                          const startDate = new Date(time_table_item.start_datetime * 1000);
-                          const endDate = new Date(time_table_item.end_datetime * 1000);
-                          const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-                          if (eventDateSelect === date) {
-                            const obj = {
-                              ...time_table_item,
-                              start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
-                              end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-                            };
-                            dataItem.push(obj);
-                          }
-                          return null;
-                        });
-                        setFilterTimeTable(dataItem);
-                        return null;
-                      }}
-                      renderItem={(item) => <View>
-                        <EventCalendar
-                          eventTapped={(event) => { console.log('Event ::--', event) }}
-                          events={item}
-                          width={width}
-                          initDate={timeTableSelectionDate}
-                          scrollToFirst={true}
-                          renderEvent={(event) => {
-                            let event_color = colors.themeColor;
-                            let eventTitle = 'Game';
-                            let eventDesc = 'Game With';
-                            let eventDesc2 = '';
-                            if (event.color && event.color.length > 0) {
-                              if (event.color[0] !== '#') {
-                                event_color = `#${event.color}`;
-                              } else {
-                                event_color = event.color;
-                              }
-                            }
-                            if (event && event.title) {
-                              eventTitle = event.title;
-                            }
-                            if (event && event.descriptions) {
-                              eventDesc = event.descriptions;
-                            }
-                            if (event.game && event.game.away_team) {
-                              eventDesc2 = event.game.away_team.group_name;
-                            }
-                            return (
-                              <View style={{ flex: 1 }}>
-                                {event.cal_type === 'event' && <CalendarTimeTableView
-                                  title={eventTitle}
-                                  summary={`${eventDesc} ${eventDesc2}`}
-                                  containerStyle={{ borderLeftColor: event_color, width: event.width }}
-                                  eventTitleStyle={{ color: event_color }}
-                                />}
-                                {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
-                                  width: event.width + 68, height: event.height,
-                                }]} />}
-                              </View>
-                            );
-                          }}
-                          styles={{
-                            event: styles.eventViewStyle,
-                            line: { backgroundColor: colors.lightgrayColor },
-                          }}
-                        />
-                        {item.length > 0 && <FlatList
-                          data={item}
-                          scrollEnabled={false}
-                          showsHorizontalScrollIndicator={ false }
-                          renderItem={ ({ item: blockItem }) => {
-                            if (blockItem.cal_type === 'blocked') {
-                              return (
-                                <EventBlockTimeTableView
-                                  blockText={'Blocked Zone'}
-                                  blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
-                                />
-                              );
-                            }
-                            return <View />;
-                          }}
-                          ItemSeparatorComponent={ () => (
-                            <View style={ { height: wp('3%') } } />
-                          ) }
-                          style={ { marginVertical: wp('4%') } }
-                          keyExtractor={(itemValue, index) => index.toString() }
-                        />}
-                      </View>}
-                    />}
-                  </View>}
-
-                  <Modal
-                    isVisible={isRefereeModal}
-                    backdropColor="black"
-                    style={{ margin: 0, justifyContent: 'flex-end' }}
-                    hasBackdrop
-                    onBackdropPress={() => {
-                      setIsRefereeModal(false);
-                    }}
-                    backdropOpacity={0}
-                  >
-                    <SafeAreaView style={styles.modalMainViewStyle}>
-                      <Header
-                        mainContainerStyle={styles.refereeHeaderMainStyle}
-                        leftComponent={
-                          <TouchableOpacity onPress={() => {
-                            setIsRefereeModal(false);
-                          }}>
-                            <Image source={images.cancelImage} style={[styles.cancelImageStyle, { tintColor: colors.blackColor }]} resizeMode={'contain'} />
-                          </TouchableOpacity>
-                        }
-                        centerComponent={
-                          <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
-                        }
-                      />
-                      <View style={styles.refereeSepratorStyle} />
-                      <FlatList
-                        data={refereeReservData}
-                        bounces={false}
-                        showsHorizontalScrollIndicator={false}
-                        ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
-                        renderItem={({ item }) => <RefereeReservationItem
-                          data={item}
-                          onPressButton = {() => {
-                            setIsRefereeModal(false);
-                            console.log('choose Referee:', item);
-                            goToRefereReservationDetail(item)
-                          }}
-                        />}
-                        keyExtractor={(item, index) => index.toString()}
-                      />
-                    </SafeAreaView>
-                  </Modal>
-                  <ActionSheet
-                    ref={eventEditDeleteAction}
-                    options={actionSheetOpetions()}
-                cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
-                destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
-                onPress={(index) => {
-                  if (index === 0) {
-                    if (index === 0 && selectedEventItem.game) {
-                      console.log('selected Event Item:', selectedEventItem);
-                      if (refereeFound(selectedEventItem)) {
-                        goToRefereReservationDetail(selectedEventItem)
-                      } else {
-                        console.log('Selected Event Item::', selectedEventItem);
-                        goToChallengeDetail(selectedEventItem.game)
-                      }
-                    } else {
-                      navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
-                    }
-                  }
-                  if (index === 1) {
-                    if (index === 1 && selectedEventItem.game) {
-                      if (refereeFound(selectedEventItem)) {
-                        Alert.alert(
-                          'Towns Cup',
-                          'Change Event color feature is pending',
-                          [{
-                            text: 'OK',
-                            onPress: async () => {},
-                          },
-                          ],
-                          { cancelable: false },
-                        );
-                      } else {
-                        setloading(true);
-
-                        const params = {
-                          caller_id: selectedEventItem.owner_id,
-                        };
-                        getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-                          console.log('Res :-', res);
-
-                          const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
-                          setRefereeReserveData(myReferee);
-                          if (res.payload.length > 0) {
-                            refereeReservModal();
-                            setloading(false);
-                          } else {
-                            setloading(false);
-                            setTimeout(() => {
-                              Alert.alert(
-                                'Towns Cup',
-                                'No referees invited or booked by you for this game',
-                                [{
-                                  text: 'OK',
-                                  onPress: async () => {},
-                                },
-                                ],
-                                { cancelable: false },
-                              );
-                            }, 0);
-                          }
-                        }).catch((error) => {
-                          console.log('Error :-', error);
-                        });
-                      }
-                    } else {
-                      Alert.alert(
-                        'Do you want to delete this event ?',
-                        '',
-                        [{
-                          text: 'Delete',
-                          style: 'destructive',
-                          onPress: async () => {
-                            setloading(true);
-                            const entity = authContext.entity
-                            const uid = entity.uid || entity.auth.user_id;
-                            const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                            deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
-                              .then(() => getEvents(entityRole, uid, authContext))
-                              .then((response) => {
-                                setloading(false);
-                                setEventData(response.payload);
-                                setTimeTable(response.payload);
-                              })
-                              .catch((e) => {
-                                setloading(false);
-                                Alert.alert('', e.messages)
-                              });
-                          },
-                        },
-                        {
-                          text: 'Cancel',
-                          style: 'cancel',
-                        },
-
-                        ],
-                        { cancelable: false },
-                      );
-                    }
-                  }
-                  if (index === 2) {
-                    if (index === 2 && selectedEventItem.game) {
-                      if (refereeFound(selectedEventItem)) {
-                        console.log('Pressed cancel button.');
-                      } else {
-                        Alert.alert(
-                          'Towns Cup',
-                          'Change Event color feature is pending',
-                          [{
-                            text: 'OK',
-                            onPress: async () => {},
-                          },
-                          ],
-                          { cancelable: false },
-                        );
-                      }
-                    }
-                  }
-                  setSelectedEventItem(null);
-                }}
-      />
-                  <CreateEventBtnModal
-                    visible={createEventModal}
-                    onCancelPress={() => setCreateEventModal(false)}
-                    onCreateEventPress={() => {
-                      setCreateEventModal(false)
-                      navigation.navigate('CreateEventScreen', { comeName: 'ScheduleScreen' })
-                    }}
-                    onChallengePress={() => {
-                      setCreateEventModal(false)
-                      navigation.navigate('EditChallengeAvailability')
-                    }}
-                  />
-                </View>)}
-                {tabKey === 4 && (<View>
-                  <TabView
-                    indexCounter={indexCounter}
-                    onFirstTabPress={() => setIndexCounter(0)}
-                    onSecondTabPress={() => setIndexCounter(1)}
-                    onThirdTabPress={() => setIndexCounter(2)}
-                  />
-                  <View style={styles.sepratorLineStyle} />
-                  {indexCounter === 0 && <FlatList
-                    data={['0', ...allData]}
-                    bounces={false}
-                    renderItem={({ item, index }) => allGalleryRenderItem(item, index)}
-                    numColumns={3}
-                    style={{ marginHorizontal: 1.5 }}
-                    keyExtractor={(item, index) => index}
-                  />}
-                  {indexCounter === 1 && <FlatList
-                    data={['0', ...fromMeData]}
-                    bounces={false}
-                    renderItem={({ item, index }) => fromMeRenderItem(item, index)}
-                    numColumns={3}
-                    style={{ marginHorizontal: 1.5 }}
-                    keyExtractor={(item, index) => index}
-                  />}
-                  {indexCounter === 2 && <FlatList
-                    data={['0', ...taggedData]}
-                    bounces={false}
-                    renderItem={({ item, index }) => taggedRenderItem(item, index)}
-                    numColumns={3}
-                    style={{ marginHorizontal: 1.5 }}
-                    keyExtractor={(item, index) => index}
-                  />}
-                </View>
-                )}
-                {tabKey === 5 && isTeamHome && (<View>
-
-                  <ReviewSection
-                  isTeamReviewSection={true}
-                reviewsData={averageTeamReview}
-                reviewsFeed={teamReviewData}
-                onReadMorePress={() => {
-                  reviewerDetailModal();
-                }}
-              />
-                  {/* <TeamHomeReview
-                  navigation={navigation}
-                  teamID={route?.params?.uid || authContext.entity.uid}
-                  getSoccerTeamReview={getTeamReviewById}
-                  isAdmin={isAdmin}
-                  // gameData={gameData}
-                  /> */}
-                </View>)
-                }
-              </View>
-            )}/>
+            renderTabContain={renderHomeMainTabContain}/>
         </View>
 
         <PlayInModule
