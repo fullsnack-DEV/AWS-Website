@@ -133,10 +133,8 @@ const TCUserFollowUnfollowList = ({
           ) : (
             <View>
               {renderButtons()}
-
             </View>
           )}
-
         </View>
       </View>
       <View style={styles.seperateContainer}/>

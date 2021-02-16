@@ -19,7 +19,7 @@ import TCInnerLoader from '../TCInnerLoader';
 import AuthContext from '../../auth/context';
 import TCThinDivider from '../TCThinDivider';
 
-const MAX_CERTIFICATE_UPLOAD = 2;
+const MAX_CERTIFICATE_UPLOAD = 3;
 const EditRefereeCertificate = ({
   visible,
   onClose,
@@ -192,7 +192,8 @@ const EditRefereeCertificate = ({
   )
 
   return (
-    <Modal
+    <View>
+      <Modal
       isVisible={visible}
       backdropColor="black"
       style={{
@@ -202,14 +203,15 @@ const EditRefereeCertificate = ({
       onBackdropPress={onClose}
       backdropOpacity={0}
     >
-      <SafeAreaView style={{ ...styles.modalContainerViewStyle, backgroundColor: colors.whiteColor }}>
-        <LinearGradient
+
+        <SafeAreaView style={{ ...styles.modalContainerViewStyle, backgroundColor: colors.whiteColor }}>
+          <LinearGradient
                     colors={[colors.whiteColor, colors.whiteColor]}
                     end={{ x: 0.0, y: 0.25 }}
                     start={{ x: 1, y: 0.5 }}
                     style={styles.gradiantHeaderViewStyle}>
-        </LinearGradient>
-        <Header
+          </LinearGradient>
+          <Header
                     mainContainerStyle={styles.headerMainContainerStyle}
                     leftComponent={
                       <TouchableOpacity onPress={onClose}>
@@ -241,21 +243,22 @@ const EditRefereeCertificate = ({
                       </TouchableOpacity>
                     }
                 />
-        <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={1}/>
-        <KeyboardAwareScrollView enableOnAndroid={false}>
-          <EventItemRender
+          <TCThinDivider backgroundColor={colors.refereeHomeDividerColor} width={'100%'} height={1}/>
+          <KeyboardAwareScrollView enableOnAndroid={false}>
+            <EventItemRender
                        title={strings.addCertiMainTitle}
                        headerTextStyle={{ fontSize: 16 }}
                    >
-            <FlatList
-               scrollEnabled={false}
+              <FlatList
+               scrollEnabled={true}
                data={certificatesData}
                renderItem={renderCertificates}
             />
-          </EventItemRender>
-        </KeyboardAwareScrollView>
-      </SafeAreaView>
-    </Modal>
+            </EventItemRender>
+          </KeyboardAwareScrollView>
+        </SafeAreaView>
+      </Modal>
+    </View>
   )
 }
 

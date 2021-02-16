@@ -39,10 +39,10 @@ export default function RecentMatchItems({
             {title}
           </Text>
           <View style={styles.bottomView}>
-            <Text style={styles.eventTime}>{startTime}</Text>
+            <Text style={styles.eventTime}>{startTime} - </Text>
             <Text style={styles.eventTime}>{endTime}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
+            <Text style={[styles.eventTime, { width: wp('42%') }]} numberOfLines={1}>{location}</Text>
           </View>
           <MatchBetweenSection
             firstUserImage={firstUserImage}
