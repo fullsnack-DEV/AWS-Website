@@ -84,7 +84,7 @@ const TennisHome = ({ navigation, route }) => {
   const getGameSportsList = () => getSportsList(authContext)
   const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
   const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
-  const getGameFeedData = (params) => getGameFeed(params, authContext)
+  const getGameFeedData = () => getGameFeed(gameData?.game_id, authContext)
   const createGamePostData = (params) => createGamePost(params, authContext)
 
   const renderTabContain = (tabKey) => (

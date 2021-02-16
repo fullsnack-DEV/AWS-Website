@@ -89,7 +89,7 @@ export default function UpcomingMatchItems({
             <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
+            <Text numberOfLines={1} style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
           <MatchBetweenUpcomingView
             firstUserImage={team1Image ? { uri: team1Image } : images.team_ph}

@@ -156,9 +156,6 @@ export default function ConnectMemberAccountScreen({ navigation, route }) {
       <View tabLabel='Members' style={{ flex: 1 }}>
         <View style={styles.searchBarView}>
           <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) }/>
-          {/* <TouchableWithoutFeedback onPress={() => toggleModal()}>
-              <Image source={ images.filterIcon } style={ styles.filterImage } />
-            </TouchableWithoutFeedback> */}
         </View>
 
         {/* {members.length > 0 && <FlatList

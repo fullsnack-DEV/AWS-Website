@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  Image, Platform, StyleSheet, NativeEventEmitter, StatusBar,
+    Image, Platform, StyleSheet, NativeEventEmitter, StatusBar,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -166,9 +166,6 @@ function AppNavigator({ navigation }) {
   return (
     <Tab.Navigator
         backBehavior={'history'}
-        screenOptions={{
-          // unmountOnBlur: true,
-        }}
       tabBarOptions={ {
         activeTintColor: colors.themeColor,
         inactiveTintColor: colors.grayColor,

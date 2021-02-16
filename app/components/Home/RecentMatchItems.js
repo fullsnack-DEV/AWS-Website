@@ -95,7 +95,7 @@ export default function RecentMatchItems({
             <Text style={styles.eventTime}>{`${moment(startDate).format('LT')} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
             <View style={styles.timeCityDividerStyle} />
-            <Text style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
+            <Text numberOfLines={1} style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
           {showAssistReferee && <View style={styles.assistRefereeViewStyle}>
             <Image source={images.assistReferee} style={styles.assistRefereeStyle} />
