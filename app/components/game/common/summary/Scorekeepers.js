@@ -83,31 +83,31 @@ const Scorekeepers = ({
   }
   const renderScorekeepers = ({ item }) => {
     const entity = authContext?.entity;
-    const sKeeper = item?.scorekeeper;
+    const reservationDetail = item?.reservation;
     console.log('ITEM SCOREKEEPER::=>', item);
 
     return (
       <TCUserFollowUnfollowList
-            statusColor={getScorekeeperStatusMessage(item, 'color')}
-            statusTitle={getScorekeeperStatusMessage(item, 'status')}
+            statusColor={getScorekeeperStatusMessage(reservationDetail, 'color')}
+            statusTitle={getScorekeeperStatusMessage(reservationDetail, 'status')}
             myUserId={myUserId}
             isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
-            isReviewed={!!sKeeper?.review_id}
+            isReviewed={!!item?.review_id}
             followUser={followUser}
             unFollowUser={unFollowUser}
-            userID={sKeeper?.user_id}
-            title={sKeeper?.full_name}
+            userID={reservationDetail?.scorekeeper?.user_id}
+            title={reservationDetail?.scorekeeper?.full_name}
             // subTitle={'Assistant'}
-            is_following={sKeeper?.is_following}
+            is_following={reservationDetail?.scorekeeper?.is_following}
             onFollowUnfollowPress={onFollowPress}
-            profileImage={sKeeper?.thumbnail}
+            profileImage={reservationDetail?.scorekeeper?.thumbnail}
             isShowThreeDots={item?.initiated_by === entity?.uid}
             onThreeDotPress={() => {
               selectedScorekeeperData = item
               actionSheet.current.show()
             }}
             userRole={userRole}
-            onReviewPress={() => onReviewPress(sKeeper)}
+            onReviewPress={() => onReviewPress(item)}
         />
     )
   }
@@ -124,7 +124,7 @@ const Scorekeepers = ({
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={gameData?.scorekeeper_reservations}
+              data={gameData?.scorekeepers}
               renderItem={renderScorekeepers}
               ListEmptyComponent={() => (
                 <View>

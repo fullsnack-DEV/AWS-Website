@@ -9,10 +9,11 @@ import {
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import moment from 'moment';
 import Carousel from 'react-native-snap-carousel';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
+// import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import EventItemRender from '../Schedule/EventItemRender';
 import TCRadarChart from '../TCRadarChart';
@@ -20,180 +21,180 @@ import ReviewerItemView from './ReviewerItemView';
 import ReviewRatingView from './ReviewRatingView';
 import ReviewRecentMatch from './ReviewRecentMatch';
 
-const review_all_data = [
-  {
-    color: colors.yellowColor,
-    startDate1: 'Sep',
-    startDate2: '25',
-    title: 'Soccer',
-    startTime: '7:00pm -',
-    endTime: '9:10pm',
-    location: 'BC Stadium',
-    firstUserImage: images.team_ph,
-    firstTeamText: 'Vancouver Whitecaps',
-    secondUserImage: images.team_ph,
-    secondTeamText: 'Newyork City FC',
-    firstTeamPoint: 3,
-    secondTeamPoint: 1,
-    reviewData: [
-      {
-        userImage: images.team_ph,
-        userName: 'Christiano Ronaldo',
-        created_date: 'Apr 23',
-        description: strings.aboutValue,
-        attachments: [
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-        ],
-        commentCount: 1,
-        shareCount: 2,
-        likeCount: 9,
-      },
-      {
-        userImage: images.team_ph,
-        userName: 'Christiano Ronaldo',
-        created_date: 'Apr 23',
-        description: strings.aboutValue,
-        attachments: [
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-        ],
-        commentCount: 1,
-        shareCount: 2,
-        likeCount: 9,
-      },
-      {
-        userImage: images.team_ph,
-        userName: 'Christiano Ronaldo',
-        created_date: 'Apr 23',
-        description: strings.aboutValue,
-        attachments: [
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-        ],
-        commentCount: 1,
-        shareCount: 2,
-        likeCount: 9,
-      },
-      {
-        userImage: images.team_ph,
-        userName: 'Christiano Ronaldo',
-        created_date: 'Apr 23',
-        description: strings.aboutValue,
-        attachments: [
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-        ],
-        commentCount: 1,
-        shareCount: 2,
-        likeCount: 9,
-      },
-    ],
-  },
-  {
-    color: colors.blueColor,
-    startDate1: 'Sep',
-    startDate2: '25',
-    title: 'Soccer',
-    startTime: '7:00pm -',
-    endTime: '9:10pm',
-    location: 'BC Stadium',
-    firstUserImage: images.team_ph,
-    firstTeamText: 'Vancouver Whitecaps',
-    secondUserImage: images.team_ph,
-    secondTeamText: 'Newyork City FC',
-    firstTeamPoint: 3,
-    secondTeamPoint: 1,
-    reviewData: [
-      {
-        userImage: images.team_ph,
-        userName: 'Christiano Ronaldo',
-        created_date: 'Apr 23',
-        description: strings.aboutValue,
-        attachments: [
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-        ],
-        commentCount: 1,
-        shareCount: 2,
-        likeCount: 9,
-      },
-      {
-        userImage: images.team_ph,
-        userName: 'Christiano Ronaldo',
-        created_date: 'Apr 23',
-        description: strings.aboutValue,
-        attachments: [
-          {
-            thumbnail: images.orangeGradient,
-            type: 'image',
-          },
-        ],
-        commentCount: 1,
-        shareCount: 2,
-        likeCount: 9,
-      },
-    ],
-  },
-];
+// const review_all_data = [
+//   {
+//     color: colors.yellowColor,
+//     startDate1: 'Sep',
+//     startDate2: '25',
+//     title: 'Soccer',
+//     startTime: '7:00pm -',
+//     endTime: '9:10pm',
+//     location: 'BC Stadium',
+//     firstUserImage: images.team_ph,
+//     firstTeamText: 'Vancouver Whitecaps',
+//     secondUserImage: images.team_ph,
+//     secondTeamText: 'Newyork City FC',
+//     firstTeamPoint: 3,
+//     secondTeamPoint: 1,
+//     reviewData: [
+//       {
+//         userImage: images.team_ph,
+//         userName: 'Christiano Ronaldo',
+//         created_date: 'Apr 23',
+//         description: strings.aboutValue,
+//         attachments: [
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//         ],
+//         commentCount: 1,
+//         shareCount: 2,
+//         likeCount: 9,
+//       },
+//       {
+//         userImage: images.team_ph,
+//         userName: 'Christiano Ronaldo',
+//         created_date: 'Apr 23',
+//         description: strings.aboutValue,
+//         attachments: [
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//         ],
+//         commentCount: 1,
+//         shareCount: 2,
+//         likeCount: 9,
+//       },
+//       {
+//         userImage: images.team_ph,
+//         userName: 'Christiano Ronaldo',
+//         created_date: 'Apr 23',
+//         description: strings.aboutValue,
+//         attachments: [
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//         ],
+//         commentCount: 1,
+//         shareCount: 2,
+//         likeCount: 9,
+//       },
+//       {
+//         userImage: images.team_ph,
+//         userName: 'Christiano Ronaldo',
+//         created_date: 'Apr 23',
+//         description: strings.aboutValue,
+//         attachments: [
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//         ],
+//         commentCount: 1,
+//         shareCount: 2,
+//         likeCount: 9,
+//       },
+//     ],
+//   },
+//   {
+//     color: colors.blueColor,
+//     startDate1: 'Sep',
+//     startDate2: '25',
+//     title: 'Soccer',
+//     startTime: '7:00pm -',
+//     endTime: '9:10pm',
+//     location: 'BC Stadium',
+//     firstUserImage: images.team_ph,
+//     firstTeamText: 'Vancouver Whitecaps',
+//     secondUserImage: images.team_ph,
+//     secondTeamText: 'Newyork City FC',
+//     firstTeamPoint: 3,
+//     secondTeamPoint: 1,
+//     reviewData: [
+//       {
+//         userImage: images.team_ph,
+//         userName: 'Christiano Ronaldo',
+//         created_date: 'Apr 23',
+//         description: strings.aboutValue,
+//         attachments: [
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//         ],
+//         commentCount: 1,
+//         shareCount: 2,
+//         likeCount: 9,
+//       },
+//       {
+//         userImage: images.team_ph,
+//         userName: 'Christiano Ronaldo',
+//         created_date: 'Apr 23',
+//         description: strings.aboutValue,
+//         attachments: [
+//           {
+//             thumbnail: images.orangeGradient,
+//             type: 'image',
+//           },
+//         ],
+//         commentCount: 1,
+//         shareCount: 2,
+//         likeCount: 9,
+//       },
+//     ],
+//   },
+// ];
 
 function ReviewSection({
   isTeamReviewSection = false,
@@ -202,9 +203,14 @@ function ReviewSection({
   onReadMorePress,
   reviewsFeed,
 }) {
-  const [reviewAllData] = useState(review_all_data);
+  // const [reviewAllData] = useState(review_all_data);
+  const [reviewAllData] = useState(reviewsFeed?.reviews?.results ?? []);
   const [teamPropertyList, setTeamPropertyList] = useState([]);
   const [teamKeyValueList, setTeamKeyValueList] = useState([]);
+
+useEffect(() => {
+console.log('ReviewAllData::=>', reviewAllData[0]);
+}, [reviewsFeed?.reviews?.results])
 
   useEffect(() => {
     if (isTeamReviewSection) {
@@ -268,39 +274,56 @@ function ReviewSection({
         containerStyle={{ width: wp('100%'), padding: 0 }}
         headerTextStyle={{ paddingLeft: 12 }}
       >
+        {/* review_all_data */}
+        {/* reviewsFeed?.reviews?.results || []  */}
         <FlatList
-            data={reviewAllData}
+            data={reviewsFeed?.reviews?.results || []}
             bounces={false}
             showsHorizontalScrollIndicator={false}
             ItemSeparatorComponent={() => <View style={{
               marginVertical: 6,
             }} />}
             style={{ marginVertical: 15 }}
-            renderItem={({ item: reviewAllItem }) => (
+            renderItem={({ item }) => (
               <View>
+                {/* <ReviewRecentMatch
+                  eventColor={item.color}
+                  startDate1={item.startDate1}
+                  startDate2={item.startDate2}
+                  title={item.title}
+                  startTime={item.startTime}
+                  endTime={item.endTime}
+                  location={item.location}
+                  firstUserImage={item.firstUserImage}
+                  firstTeamText={item.firstTeamText}
+                  secondUserImage={item.secondUserImage}
+                  secondTeamText={item.secondTeamText}
+                  firstTeamPoint={item.firstTeamPoint}
+                  secondTeamPoint={item.secondTeamPoint}
+                /> */}
                 <ReviewRecentMatch
-                  eventColor={reviewAllItem.color}
-                  startDate1={reviewAllItem.startDate1}
-                  startDate2={reviewAllItem.startDate2}
-                  title={reviewAllItem.title}
-                  startTime={reviewAllItem.startTime}
-                  endTime={reviewAllItem.endTime}
-                  location={reviewAllItem.location}
-                  firstUserImage={reviewAllItem.firstUserImage}
-                  firstTeamText={reviewAllItem.firstTeamText}
-                  secondUserImage={reviewAllItem.secondUserImage}
-                  secondTeamText={reviewAllItem.secondTeamText}
-                  firstTeamPoint={reviewAllItem.firstTeamPoint}
-                  secondTeamPoint={reviewAllItem.secondTeamPoint}
+                  eventColor={colors.themeColor}
+                  startDate1={moment(new Date(item?.game?.data?.start_time * 1000)).format('MMM')}
+                  startDate2={moment(new Date(item?.game?.data?.start_time * 1000)).format('DD')}
+                  title={item?.game?.data?.sport}
+                  startTime={moment(new Date(item?.game?.data?.start_time * 1000)).format('hh:mm a')}
+                  endTime={moment(new Date(item?.game?.data?.end_time * 1000)).format('hh:mm a')}
+                  location={item?.game?.data?.venue?.address}
+                  firstUserImage={item?.game?.home_team?.data?.full_image}
+                  firstTeamText={item?.game?.home_team?.data?.full_name}
+                  secondUserImage={item?.game?.away_team?.data?.full_image}
+                  secondTeamText={item?.game?.away_team?.data?.full_name}
+                  firstTeamPoint={8}
+                  secondTeamPoint={10}
                 />
                 <Carousel
-                  data={reviewAllItem.reviewData.slice(0, 3)}
-                  renderItem={({ item, index }) => <ReviewerItemView
-                      item={item}
-                      indexNumber={index}
-                      totalData={reviewAllItem.reviewData}
-                      onReadMorePress={onReadMorePress}
-                  />}
+                  data={item.reviews}
+                  renderItem={({ item: reviewData, index }) => <ReviewerItemView
+                  item={reviewData}
+                  indexNumber={index}
+                  totalData={reviewData.reviewData}
+                  onReadMorePress={onReadMorePress}
+              />}
                   inactiveSlideScale={1}
                   inactiveSlideOpacity={1}
                   sliderWidth={wp(100)}

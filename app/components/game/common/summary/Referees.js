@@ -99,30 +99,30 @@ const Referees = ({
   }
   const renderReferees = ({ item }) => {
     const entity = authContext?.entity;
-    const referee = item;
+    const reservationDetail = item?.reservation;
 console.log('ITEM::=>', item);
     return (
       <TCUserFollowUnfollowList
-              statusColor={getRefereeStatusMessage(item, 'color')}
-              statusTitle={getRefereeStatusMessage(item, 'status')}
+              statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
+              statusTitle={getRefereeStatusMessage(reservationDetail, 'status')}
               myUserId={myUserId}
               isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
-              isReviewed={!!referee?.referee?.review_id}
+              isReviewed={!!item?.review_id}
               followUser={followUser}
               unFollowUser={unFollowUser}
-              userID={referee?.referee?.user_id}
-              title={referee?.referee?.full_name}
+              userID={reservationDetail?.referee?.user_id}
+              title={reservationDetail?.referee?.full_name}
               subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
-              is_following={referee?.referee?.is_following}
+              is_following={reservationDetail?.referee?.is_following}
               onFollowUnfollowPress={onFollowPress}
-              profileImage={referee?.referee?.thumbnail}
+              profileImage={reservationDetail?.referee?.thumbnail}
               isShowThreeDots={item?.booked_by === entity?.uid}
               onThreeDotPress={() => {
                 selectedRefereeData = item
                 actionSheet.current.show()
               }}
               userRole={userRole}
-              onReviewPress={() => onReviewPress(referee?.referee)}
+              onReviewPress={() => onReviewPress(item)}
           />
       //     <TCUserFollowUnfollowList
       //     statusColor={getRefereeStatusMessage(item, 'color')}
@@ -162,7 +162,7 @@ console.log('ITEM::=>', item);
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={gameData?.referee_reservations}
+              data={gameData?.referees}
               renderItem={renderReferees}
               ListEmptyComponent={() => (
                 <View>

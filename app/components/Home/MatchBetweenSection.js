@@ -20,7 +20,7 @@ function MatchBetweenSection({
         <View style={styles.eventImageViewStyle}>
           <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
-        <Text style={[styles.textStyle, { marginLeft: 8 }]}>{firstText}</Text>
+        <Text style={[styles.textStyle, { marginLeft: 8 }]} numberOfLines={2}>{firstText}</Text>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text style={{ fontSize: 16, fontFamily: fonts.RBold, color: colors.themeColor }}>{firstTeamPoint}</Text>
@@ -28,7 +28,7 @@ function MatchBetweenSection({
         <Text style={{ fontSize: 16, fontFamily: fonts.RRegular, color: colors.googleColor }}>{secondTeamPoint}</Text>
       </View>
       <View style={styles.firstUserViewStyle}>
-        <Text style={[styles.textStyle, { textAlign: 'right', marginRight: 8 }]}>{secondText}</Text>
+        <Text style={[styles.textStyle, { textAlign: 'right', marginRight: 8 }]} numberOfLines={2}>{secondText}</Text>
         <View style={styles.eventImageViewStyle}>
           <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'cover'} />
         </View>

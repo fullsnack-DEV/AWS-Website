@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -32,7 +32,9 @@ function ReviewerItemView({
   if (item.attachments) {
     attachedImages = item.attachments;
   }
-
+useEffect(() => {
+  console.log('Feed data::=>', item);
+}, [])
   return (
     <View>
       <View style={styles.containerStyle}>
@@ -201,14 +203,14 @@ function ReviewerItemView({
           />
         </View>
       </View>
-      {(totalData.length > 3 && indexNumber === 2) && <View style={styles.maxReviewImageView}>
+      {(totalData?.length > 3 && indexNumber === 2) && <View style={styles.maxReviewImageView}>
         <Image source={images.themeGradientImage} style={styles.maxReviewImageStyle} resizeMode={'cover'} />
       </View>}
-      {(totalData.length > 3 && indexNumber === 2) && <TouchableOpacity
+      {(totalData?.length > 3 && indexNumber === 2) && <TouchableOpacity
         style={styles.maxReviewTouchStyle}
         onPress={onReadMorePress}
       >
-        <Text style={styles.maxCountTextStyle}>{totalData.length > 0 ? `+${totalData.length - 3} ` : ''}</Text>
+        <Text style={styles.maxCountTextStyle}>{totalData?.length > 0 ? `+${totalData?.length - 3} ` : ''}</Text>
         <Text style={styles.reviewsTextStyle}>reviews</Text>
       </TouchableOpacity>}
     </View>
