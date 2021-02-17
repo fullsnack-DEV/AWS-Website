@@ -54,7 +54,7 @@ const patchGameRecord = (gameId, recordId, data, authContext) => makeAPIRequest(
 
 const getGameFeed = async (game_id, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/newsfeeds?feed_type=game&feed_id=${game_id}`,
+  url: `${Config.BASE_URL}/newsfeeds?entity_type=game&entity_id=${game_id}`,
   authContext,
 });
 

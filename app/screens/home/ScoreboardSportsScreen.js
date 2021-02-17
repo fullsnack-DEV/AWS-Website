@@ -19,6 +19,7 @@ export default function ScoreboardSportsScreen({
   showAssistReferee,
   navigation,
   onItemPress,
+  onBackPress = () => {},
 }) {
   const authContext = useContext(AuthContext)
   let filterData = [];
@@ -75,6 +76,7 @@ export default function ScoreboardSportsScreen({
           const gameHome = getGameHomeScreen(item?.sport);
           navigation.navigate(gameHome, {
             gameId: item?.game_id,
+            onBackPress: () => onBackPress(),
           })
         }
       } else {

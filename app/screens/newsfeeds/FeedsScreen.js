@@ -199,9 +199,8 @@ const FeedsScreen = ({ navigation }) => {
           setloading(false);
           setPostData([...response.payload.results]);
         })
-        .catch((e) => {
+        .catch(() => {
           setloading(false);
-          Alert.alert('', e.messages)
         });
   }
 

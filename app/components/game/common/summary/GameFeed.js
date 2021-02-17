@@ -172,19 +172,20 @@ const GameFeed = ({
     const params = {
       activity_id: item.id,
     };
+
+    if (item?.game_id) params.entity_type = 'game';
     if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
-      params.entity_type = authContext?.entity?.obj?.entity_type;
-      params.entity_id = authContext?.entity?.uid;
-    }
+        params.entity_id = authContext?.entity?.uid;
+      }
+
     deletePost(params, authContext)
         .then(() => getGameFeedData())
         .then((response) => {
-          setLoading(false);
           setGameFeedData([...response.payload.results]);
-        })
-        .catch((e) => {
           setLoading(false);
-          Alert.alert('', e.messages)
+        })
+        .catch(() => {
+          setLoading(false);
         });
   }
 

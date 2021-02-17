@@ -17,6 +17,7 @@ const PlayInInfoView = ({
   sportName,
   onSave,
   navigation,
+  openPlayInModal,
 }) => (
   <View style={{ flex: 1, paddingBottom: hp(10) }}>
     {/*  Bio */}
@@ -64,6 +65,7 @@ const PlayInInfoView = ({
 
     {/*  Teams */}
     <PlaysInTeams
+            openPlayInModal={openPlayInModal}
             sportName={sportName}
           closePlayInModal={closePlayInModal}
           navigation={navigation}
@@ -74,6 +76,7 @@ const PlayInInfoView = ({
 
     {/* Clubs */}
     <PlaysInClubs
+        openPlayInModal={openPlayInModal}
         sportName={sportName}
         closePlayInModal={closePlayInModal}
         navigation={navigation}
@@ -84,6 +87,7 @@ const PlayInInfoView = ({
 
     {/* Leagues */}
     <PlaysInLeagues
+        openPlayInModal={openPlayInModal}
         sportName={sportName}
           closePlayInModal={closePlayInModal}
           navigation={navigation}

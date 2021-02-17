@@ -16,6 +16,7 @@ const PlaysInTeams = ({
   onSave,
   sportName,
   navigation,
+  openPlayInModal = () => {},
 }) => {
   const actionSheet = useRef();
   const [showEditPlaysInModal, setShowEditPlaysInModal] = useState(false);
@@ -41,6 +42,7 @@ const PlaysInTeams = ({
                       closePlayInModal();
                       setTimeout(() => {
                         navigation.push('HomeScreen', {
+                          onBackPress: () => openPlayInModal(),
                           uid: ['user', 'player']?.includes(item?.entity_type) ? item?.user_id : item?.group_id,
                           role: ['user', 'player']?.includes(item?.entity_type) ? 'user' : item.entity_type,
                           backButtonVisible: true,

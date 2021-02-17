@@ -217,7 +217,7 @@ const HomeFeed = ({
         <NewsFeedList
             onDeletePost={onDeletePost}
             navigation={navigation}
-            postData={postData}
+            postData={postData.slice(0, 5)}
             onEditPressDone={editPostDoneCall}
             onLikePress={onLikePress}
         />

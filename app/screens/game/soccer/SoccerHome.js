@@ -52,7 +52,9 @@ const SoccerHome = ({ navigation, route }) => {
 
   const isFocused = useIsFocused();
   useEffect(() => {
-    getGameDetails();
+    if (isFocused) {
+      getGameDetails();
+    }
   }, [navigation, isFocused]);
 
   const getGameDetails = () => {
@@ -185,6 +187,7 @@ const SoccerHome = ({ navigation, route }) => {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <TopBackgroundHeader
+          onBackPress={route?.params?.onBackPress}
         isAdmin={isAdmin}
         navigation={navigation}
         gameData={gameData}>
