@@ -77,7 +77,6 @@ export default function UserHomeTopSection({
         totalGames={item.totalGames}
         thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
         onPlayInPress={() => {
-          console.log('renderPlayIn', item)
           if (onPlayInPress) {
             onPlayInPress(item)
           }

@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: colors.uploadTextColor,
     fontSize: 14,
-    fontFamily: fonts.LRegular,
+    fontFamily: fonts.RRegular,
   },
   cancelImagestyle: {
     alignSelf: 'center',

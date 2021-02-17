@@ -1,10 +1,7 @@
 /* eslint-disable global-require */
 const images = {
   orangeLayer: require('../assets/images/orange_layer.png'),
-  headerGradiantImage: require('../assets/images/Header_Image.png'),
   signUpBg1: require('../assets/images/ic_signup_bg_1.png'),
-  signUpBg2: require('../assets/images/ic_signup_bg_2.png'),
-  signUpBg3: require('../assets/images/ic_signup_bg_3.png'),
   townsCupLogo: require('../assets/images/ic_townscup_logo.png'),
 
   hidePassword: require('../assets/images/ic_hidepassword.png'),
@@ -27,7 +24,6 @@ const images = {
   check: require('../assets/images/check.png'),
   checkGreen: require('../assets/images/green_check.png'),
   whiteUncheck: require('../assets/images/white_uncheck.png'),
-  moveButton: require('../assets/images/move_btn.png'),
   uncheckWhite: require('../assets/images/ic_white_uncheck.png'),
   checkEditor: require('../assets/images/ic_check_editor.png'),
   uncheckEditor: require('../assets/images/ic_uncheck_editor.png'),
@@ -44,12 +40,9 @@ const images = {
   groupIcon: require('../assets/images/ic_group.png'),
   club_ph: require('../assets/images/club_profile_placeholder.png'),
   team_ph: require('../assets/images/team_profile_placeholder.png'),
-  tab_newsfeed: require('../assets/images/tab_newsfeed.png'),
-  tab_search: require('../assets/images/tab_search.png'),
   tab_home: require('../assets/images/tab_home.png'),
   tab_notification: require('../assets/images/tab_notification.png'),
   tab_account: require('../assets/images/tab_account.png'),
-  messageBox_account: require('../assets/images/ic_message_box.png'),
   nextArrow: require('../assets/images/ic_next_arrow.png'),
   backArrow: require('../assets/images/ic_back_arrow.png'),
   menu: require('../assets/images/menu.png'),
@@ -57,7 +50,6 @@ const images = {
   vertical3Dot: require('../assets/images/ic_dot.png'),
   horizontal3Dot: require('../assets/images/ic_horizontal_dot.png'),
   downArrow: require('../assets/images/ic_down_arrow.png'),
-  upArrow: require('../assets/images/ic_up_arrow.png'),
   dropDownArrow: require('../assets/images/down_arrow.png'),
   dropDownArrow2: require('../assets/images/down_arrow.png'),
   curruentTime: require('../assets/images/ic_game_curruent_time.png'),
@@ -87,15 +79,11 @@ const images = {
   tagGreenImage: require('../assets/images/Tag_Icon.png'),
   cancelImage: require('../assets/images/cancel.png'),
   createEventImage: require('../assets/images/create_event_image.png'),
-  challengeAvailableImage: require('../assets/images/challenge_available_image.png'),
   cancelWhite: require('../assets/images/cancelWhite.png'),
-  videoPlayerHandle: require('../assets/images/oval.png'),
   tab_home_selected: require('../assets/images/tab_home_selected.png'),
 
   landscapeTopImage: require('../assets/images/Landscape_Top.png'),
   landscapeBottomImage: require('../assets/images/Landscape_Bottom.png'),
-  portraitTopImage: require('../assets/images/Portrait_Top.png'),
-  portraitBottomImage: require('../assets/images/Portrait_Bottom.png'),
 
   portraitVideoImage: require('../assets/images/Portrait_Video_Image.png'),
   landscapeVideoImage: require('../assets/images/Landscape_Video_Image.png'),
@@ -114,9 +102,7 @@ const images = {
   tab_account_group_selected: require('../assets/images/tab_account_group_selected.png'),
 
   certificateUpload: require('../assets/images/ic_img_upload.png'),
-  certificateImage: require('../assets/images/Certificate_Image.png'),
   certiImagePick: require('../assets/images/certi_image_pick.png'),
-  noImagePH: require('../assets/images/no_image.png'),
 
   radioSelect: require('../assets/images/ic_radio_select.png'),
   plus: require('../assets/images/plus.png'),
@@ -124,22 +110,12 @@ const images = {
   radioUnselect: require('../assets/images/ic_radio_unselect.png'),
 
   dotImage: require('../assets/images/ic_dot.png'),
-  horizontalThreeDot: require('../assets/images/horizontal_three_dot.png'),
-  footplayer: require('../assets/images/footballPlayer.png'),
-  footballGround: require('../assets/images/footballGround.png'),
-  comment: require('../assets/images/comment.png'),
-  share: require('../assets/images/share.png'),
   mute: require('../assets/images/mute.png'),
   videoPlayBtn: require('../assets/images/video_play_button.png'),
   unmute: require('../assets/images/unmute.png'),
-  playPause: require('../assets/images/play_pause.png'),
   videoPlayButton: require('../assets/images/video_play_btn.png'),
   videoPauseButton: require('../assets/images/video_pause_btn.png'),
-  exitGrey: require('../assets/images/exitGrey.png'),
-  gallaryImage: require('../assets/images/image.png'),
-  bagTick: require('../assets/images/bagTick.png'),
-  attatchmentGrey: require('../assets/images/attachmentGrey.png'),
-  // likeOrange: require('../assets/images/orangeLike.png'),
+
   commentImage: require('../assets/images/msg_icon.png'),
   shareImage: require('../assets/images/share_icon.png'),
   likeImage: require('../assets/images/like_icon.png'),
@@ -155,7 +131,6 @@ const images = {
   myLeagues: require('../assets/images/My_Leagues.png'),
   paymentPayout: require('../assets/images/PaymentPayout.png'),
   SettingPrivacy: require('../assets/images/SettingPrivacy.png'),
-  settingImage: require('../assets/images/Setting_Image.png'),
   refereesInImage: require('../assets/images/referees_in_image.png'),
   Members: require('../assets/images/members.png'),
 
@@ -176,9 +151,6 @@ const images = {
   clubPlaceholderSmall: require('../assets/images/clubplaceholder.png'),
 
   usaImage: require('../assets/images/NewYorkCityFC.png'),
-  chelseaFCImage: require('../assets/images/chelseaFC.png'),
-  FCBarcelonaImage: require('../assets/images/FCBarcelona.png'),
-  uefaChampionsImage: require('../assets/images/UEFAChampionsLeague.png'),
 
   Payout_method: require('../assets/images/Payout_method.png'),
   Transations: require('../assets/images/Transations.png'),
@@ -191,7 +163,6 @@ const images = {
 
   logoutIcon: require('../assets/images/logout_icon.png'),
 
-  allSportLoader: require('../assets/images/all_sport_loader.png'),
   basketballLoader: require('../assets/images/basketball_loader.png'),
   soccerLoader: require('../assets/images/soccer_loader.png'),
   volleyballLoader: require('../assets/images/volleyball_loader.png'),
@@ -200,7 +171,6 @@ const images = {
   footballLoader: require('../assets/images/football_loader.png'),
   football2Loader: require('../assets/images/football2_loader.png'),
   imageLoadingGIF: require('../assets/images/image_loading.gif'),
-  imageUploadingGIFOld: require('../assets/images/imageUploadingLoader.gif'),
   imageUploadingGIF: require('../assets/images/loadingGIF.gif'),
 
   soccerImage: require('../assets/images/soccerImage.png'),
@@ -211,12 +181,10 @@ const images = {
   dottedLine: require('../assets/images/dotLine.png'),
 
   // members
-  filterIcon: require('../assets/images/ic_filter.png'),
   arrowGraterthan: require('../assets/images/arrow_graterthan.png'),
   teamT: require('../assets/images/team_T.png'),
   clubC: require('../assets/images/club_C.png'),
   editSection: require('../assets/images/ic_edit.png'),
-  editSectionOrange: require('../assets/images/ic_edit_orange.png'),
   tagDivider: require('../assets/images/tag_divider.png'),
   chain: require('../assets/images/chain.png'),
   emailSent1: require('../assets/images/InvitationEmail1.png'),
@@ -248,8 +216,6 @@ const images = {
   // Game Module
   leave_chat_room: require('../assets/images/leave_chat_room.png'),
   soccerBackground: require('../assets/images/soccerBackground.png'),
-  firstVSTeam: require('../assets/images/firstTeam.png'),
-  secondVSTeam: require('../assets/images/secondTeam.png'),
   warningIcon: require('../assets/images/warning.png'),
   popupUpArrow: require('../assets/images/topPopupArrow.png'),
   assistBy: require('../assets/images/assistBy.png'),
@@ -277,6 +243,7 @@ const images = {
   yellowDownArrow: require('../assets/images/yellowDownArrow.png'),
   refereeSucessBG: require('../assets/images/RefereeSucessBG.png'),
   playerSucessBG: require('../assets/images/playerSucessBG.png'),
+
   // Tennis recorder
   tennisGeneral: require('../assets/images/ic_tennis_general.png'),
   requestSentImage: require('../assets/images/requestSentImage.png'),

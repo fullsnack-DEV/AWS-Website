@@ -145,7 +145,7 @@ const history_Data = [{
   year: '2002',
 }]
 
-export default function HomeScreen({ navigation, route }) {
+const HomeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [isUserHome, setIsUserHome] = useState(false)
@@ -206,10 +206,6 @@ export default function HomeScreen({ navigation, route }) {
     looser: 0,
     draw: 0,
   });
-  useEffect(() => {
-    console.log(2);
-    console.log('CUR: ', currentUserData);
-  }, [currentUserData])
   const [eventData, setEventData] = useState(null);
   const [timeTable, setTimeTable] = useState([]);
   const [scoreboardGameData, setScoreboardGameData] = useState([]);
@@ -240,7 +236,6 @@ export default function HomeScreen({ navigation, route }) {
   const addRoleActionSheet = useRef();
 
   useEffect(() => {
-    console.log(3);
     const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
@@ -440,7 +435,6 @@ export default function HomeScreen({ navigation, route }) {
   }, [authContext.entity, navigation, isFocused]);
 
   useEffect(() => {
-    console.log(7);
     console.log('Home type::=>', isTeamHome);
     if (isTeamHome) {
       getTeamReviews(route?.params?.uid || authContext.entity.uid, authContext).then((res) => {
@@ -2127,6 +2121,53 @@ export default function HomeScreen({ navigation, route }) {
         }
     </View>
   )
+
+  const renderFixedHeader = () => (
+    <Header
+          safeAreaStyle={{ position: 'absolute' }}
+          leftComponent={
+            (route && route.params && route.params.backButtonVisible) && (
+              <TouchableOpacity
+                    style={{
+                      backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
+                    }}
+                    onPress={() => {
+                      if (route?.params?.sourceScreen) {
+                        navigation.popToTop()
+                      } else {
+                        navigation.goBack()
+                      }
+                    }}>
+                <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
+              </TouchableOpacity>)
+          }
+          rightComponent={(currentUserData?.user_id || currentUserData?.group_id) === authContext?.entity?.uid && (<TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
+              }}
+              onPress={() => navigation.openDrawer()}>
+            <Image source={images.menu} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
+          </TouchableOpacity>)
+          }
+      />
+  )
+
+  const renderStickyHeader = () => (
+    <View>
+      {bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
+      <Header
+            safeAreaStyle={{ position: 'absolute' }}
+            centerComponent={
+              <Text style={styles.userTextStyle}>{fullName}</Text>
+            }
+        />
+    </View>
+  )
+
+  const renderBackground = () => (
+      bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
+  )
+
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -2146,7 +2187,7 @@ export default function HomeScreen({ navigation, route }) {
           }
         }}
       />
-      {(isTeamHome && authContext.entity.role === 'team')
+      {(!loading && isTeamHome && authContext.entity.role === 'team')
       && <View style={ styles.challengeButtonStyle }>
         {authContext.entity.obj.group_id !== currentUserData.group_id
         && <View styles={[styles.outerContainerStyle, { height: 50 }]}>
@@ -2173,49 +2214,9 @@ export default function HomeScreen({ navigation, route }) {
         parallaxHeaderHeight={hp(30)}
         stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
         fadeOutForeground={false}
-        renderFixedHeader={() => (
-          <Header
-            safeAreaStyle={{ position: 'absolute' }}
-            leftComponent={
-              (route && route.params && route.params.backButtonVisible) && (
-                <TouchableOpacity
-                    style={{
-                      backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
-                    }}
-                    onPress={() => {
-                      if (route?.params?.sourceScreen) {
-                        navigation.popToTop()
-                      } else {
-                        navigation.goBack()
-                      }
-                    }}>
-                  <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
-                </TouchableOpacity>)
-            }
-            rightComponent={(currentUserData?.user_id || currentUserData?.group_id) === authContext?.entity?.uid && (<TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
-              }}
-                  onPress={() => navigation.openDrawer()}>
-              <Image source={images.menu} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
-            </TouchableOpacity>)
-            }
-          />
-        )}
-        renderStickyHeader={() => (
-          <View>
-            {bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
-            <Header
-              safeAreaStyle={{ position: 'absolute' }}
-              centerComponent={
-                <Text style={styles.userTextStyle}>{fullName}</Text>
-              }
-            />
-          </View>
-        )}
-        renderBackground={() => (
-          bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
-        )}>
+        renderFixedHeader={renderFixedHeader}
+        renderStickyHeader={renderStickyHeader}
+        renderBackground={renderBackground}>
         <BackgroundProfile
             currentUserData={currentUserData}
             onConnectionButtonPress={onConnectionButtonPress}
@@ -3503,3 +3504,5 @@ const styles = StyleSheet.create({
   },
 
 });
+
+export default HomeScreen;

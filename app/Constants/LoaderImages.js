@@ -3,7 +3,6 @@ import colors from './Colors';
 import images from './ImagePath';
 
 export const loaderImage = [
-  // {id: 0, image: PATH.allSportLoader},
   { id: 1, image: images.basketballLoader },
   { id: 2, image: images.soccerLoader },
   { id: 3, image: images.volleyballLoader },

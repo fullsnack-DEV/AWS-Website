@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   titleLabel: {
     fontSize: 20,
-    fontFamily: fonts.LRegular,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   title: {

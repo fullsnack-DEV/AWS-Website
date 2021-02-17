@@ -91,6 +91,7 @@ export default function NavigationMainContainer() {
       ) : (
         <ActivityLoader visible={true}/>
       )}
+
     </Fragment>
   );
 }

@@ -47,16 +47,17 @@ const FeedsScreen = ({ navigation }) => {
         });
   }, [authContext, authContext.entity]);
 
+  const onThreeDotPress = () => {
+    setTimeout(() => navigation.navigate('EntitySearchScreen'), 0);
+  }
+
   const topRightButton = () => (
-    <TouchableOpacity
-              onPress={() => navigation.navigate('EntitySearchScreen')}>
+    <TouchableOpacity onPress={onThreeDotPress}>
       <Image source={images.vertical3Dot} style={styles.headerRightImg} />
     </TouchableOpacity>
       )
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: topRightButton,
-    });
+    navigation.setOptions({ headerRight: topRightButton });
   }, []);
 
   const progressStatus = (completed, total) => {

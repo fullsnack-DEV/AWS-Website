@@ -65,6 +65,28 @@ export default function ScoreboardSportsScreen({
       },
     ];
   }
+
+  const onGameCardClick = (item) => {
+    onItemPress();
+    setTimeout(() => {
+      const entity = authContext.entity
+      if (item?.game_id) {
+        if (item?.sport) {
+          const gameHome = getGameHomeScreen(item?.sport);
+          navigation.navigate(gameHome, {
+            gameId: item?.game_id,
+          })
+        }
+      } else {
+        getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
+          navigation.navigate('EventScreen', { data: response.payload, gameData: item });
+        }).catch((e) => {
+          console.log('Error :-', e);
+        })
+      }
+    }, 1000)
+  }
+
   return (
     <KeyboardAvoidingView style={ styles.mainContainer }>
       {dataNotFound
@@ -76,26 +98,7 @@ export default function ScoreboardSportsScreen({
               // onThreeDotPress={() => {}}
               showEventNumbers={showEventNumbers}
               showAssistReferee={showAssistReferee}
-              onItemPress={() => {
-                onItemPress();
-                setTimeout(() => {
-                  const entity = authContext.entity
-                  if (item?.game_id) {
-                    if (item?.sport) {
-                      const gameHome = getGameHomeScreen(item?.sport);
-                      navigation.navigate(gameHome, {
-                        gameId: item?.game_id,
-                      })
-                    }
-                  } else {
-                    getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, item.cal_id, authContext).then((response) => {
-                      navigation.navigate('EventScreen', { data: response.payload, gameData: item });
-                    }).catch((e) => {
-                      console.log('Error :-', e);
-                    })
-                  }
-                }, 1000)
-              }}
+              onItemPress={() => onGameCardClick(item)}
             />
           ) }
           renderSectionHeader={ ({ section }) => (

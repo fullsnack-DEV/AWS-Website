@@ -30,8 +30,7 @@ const GameFeed = ({
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (isFocused && gameData) {
-      const params = { uid: gameData?.game_id }
-      getGameFeedData(params).then((res) => {
+      getGameFeedData().then((res) => {
         setGameFeedData([...res?.payload?.results])
       })
     }
@@ -57,9 +56,8 @@ const GameFeed = ({
   }
 
   const createPostAfterUpload = (dataParams) => {
-    const params = { uid: gameData?.game_id }
-    createGamePostData(dataParams)
-      .then(() => getGameFeedData(params))
+    createGamePostData({ ...dataParams, game_id: gameData?.game_id })
+      .then(() => getGameFeedData())
       .then((response) => {
         setGameFeedData([...response?.payload?.results])
         setProgressBar(false);
@@ -79,7 +77,6 @@ const GameFeed = ({
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
-        game_id: gameData?.game_id,
         taggedData: tagsOfEntity ?? [],
       };
       createPostAfterUpload(dataParams);
@@ -96,7 +93,6 @@ const GameFeed = ({
           media_width: item.width,
         }))
         const dataParams = {
-          game_id: gameData?.game_id,
           text: postDesc && postDesc,
           attachments,
           taggedData: tagsOfEntity ?? [],
@@ -107,9 +103,8 @@ const GameFeed = ({
   }
 
   const updatePostAfterUpload = (dataParams) => {
-    const params = { uid: gameData?.game_id }
     updatePost(dataParams, authContext)
-      .then(() => getGameFeedData(params))
+      .then(() => getGameFeedData())
       .then((response) => {
         setGameFeedData([...response.payload.results])
         setProgressBar(false);
@@ -128,7 +123,6 @@ const GameFeed = ({
 
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
-        game_id: gameData?.game_id,
         activity_id: selectEditItem.id,
         text: postDesc,
         taggedData: tagData ?? [],
@@ -161,7 +155,6 @@ const GameFeed = ({
         }))
         attachmentsData = [...alreadyUrlDone, ...attachments];
         const dataParams = {
-          game_id: gameData?.game_id,
           activity_id: selectEditItem.id,
           text: postDesc,
           attachments: attachmentsData,
@@ -172,6 +165,43 @@ const GameFeed = ({
         console.log(error);
       })
     }
+  }
+
+  const onDeletePost = (item) => {
+    setLoading(true);
+    const params = {
+      activity_id: item.id,
+    };
+    if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
+      params.entity_type = authContext?.entity?.obj?.entity_type;
+      params.entity_id = authContext?.entity?.uid;
+    }
+    deletePost(params, authContext)
+        .then(() => getGameFeedData())
+        .then((response) => {
+          setLoading(false);
+          setGameFeedData([...response.payload.results]);
+        })
+        .catch((e) => {
+          setLoading(false);
+          Alert.alert('', e.messages)
+        });
+  }
+
+  const onLikePress = (item) => {
+    const bodyParams = {
+      reaction_type: 'clap',
+      activity_id: item.id,
+    };
+    createReaction(bodyParams, authContext)
+        .then(() => getGameFeedData())
+        .then((response) => {
+          setGameFeedData([...response.payload.results]);
+        })
+        .catch((e) => {
+          console.log(e);
+          Alert.alert('', e.messages)
+        });
   }
 
   return (
@@ -186,46 +216,11 @@ const GameFeed = ({
         />
       <View style={styles.sepratorView} />
       <NewsFeedList
-          onDeletePost={(item) => {
-            setLoading(true);
-            const params = {
-              activity_id: item.id,
-            };
-            if (['team', 'club', 'league'].includes(authContext?.entity?.obj?.entity_type)) {
-              params.entity_type = authContext?.entity?.obj?.entity_type;
-              params.entity_id = authContext?.entity?.uid;
-            }
-            const feedParams = { uid: gameData?.game_id }
-            deletePost(params, authContext)
-              .then(() => getGameFeedData(feedParams))
-              .then((response) => {
-                setLoading(false);
-                setGameFeedData([...response.payload.results]);
-              })
-              .catch((e) => {
-                setLoading(false);
-                Alert.alert('', e.messages)
-              });
-          }}
+          onDeletePost={onDeletePost}
           navigation={navigation}
           postData={gameFeedData}
           onEditPressDone={editPostDoneCall}
-          onLikePress={(item) => {
-            const bodyParams = {
-              reaction_type: 'clap',
-              activity_id: item.id,
-            };
-            const params = { uid: gameData?.game_id }
-            createReaction(bodyParams, authContext)
-              .then(() => getGameFeedData(params))
-              .then((response) => {
-                setGameFeedData([...response.payload.results]);
-              })
-              .catch((e) => {
-                console.log(e);
-                Alert.alert('', e.messages)
-              });
-          }}
+          onLikePress={onLikePress}
       />
 
     </View>

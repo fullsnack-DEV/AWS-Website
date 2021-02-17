@@ -2,12 +2,11 @@ import React, {
   useEffect, memo, useState, useContext, useCallback,
 } from 'react';
 import {
-  View, ActivityIndicator,
+  View, ActivityIndicator, FlatList,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { OptimizedFlatList } from 'react-native-optimized-flatlist'
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
@@ -99,7 +98,7 @@ const NewsFeedList = ({
 
   return (
     <View>
-      <OptimizedFlatList
+      <FlatList
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}

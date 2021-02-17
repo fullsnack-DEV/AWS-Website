@@ -665,7 +665,7 @@ const styles = StyleSheet.create({
   },
   ntrpValueStyle: {
     fontSize: 16,
-    fontFamily: fonts.LRegular,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginBottom: 10,
   },
