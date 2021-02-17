@@ -236,7 +236,7 @@ const HomeScreen = ({ navigation, route }) => {
   const addRoleActionSheet = useRef();
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
+    // const unsubscribe = navigation.addListener('focus', async () => {
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = authContext.entity
       const entityRole = (route?.params?.role === 'user' ? 'users' : 'groups') || (entity.role === 'user' ? 'users' : 'groups');
@@ -287,10 +287,10 @@ const HomeScreen = ({ navigation, route }) => {
       }).catch((error) => {
         console.log('error :-', error);
       });
-      return null;
-    });
+      // return null;
+    // });
     return () => {
-      unsubscribe();
+      // unsubscribe();
     };
   }, []);
 
@@ -299,6 +299,80 @@ const HomeScreen = ({ navigation, route }) => {
       eventEditDeleteAction.current.show();
     }
   }, [selectedEventItem]);
+
+  useEffect(() => {
+    if (route?.params?.fromAccountScreen) {
+      const navigateScreen = route?.params?.navigateToScreen;
+      const params = route?.params?.homeNavigateParams;
+      const allParams = route?.params;
+      delete allParams?.fromAccountScreen;
+      delete allParams?.navigateToScreen;
+      delete allParams?.homeNavigateParams;
+      navigation.setParams(allParams);
+      navigation.push(navigateScreen, params);
+    }
+    if (route?.params?.locationName) {
+      setInfoModalVisible(true);
+      setPlaysInModalVisible(true);
+      setSearchLocation(route.params.locationName);
+      setLocationDetail(route.params.locationDetail);
+    }
+  }, [route?.params])
+
+  useEffect(() => {
+    if (isFocused) {
+      const loginEntity = authContext.entity
+      let uid = loginEntity.uid
+      let role = loginEntity.role
+      let admin = false
+      if (route.params && route.params.uid && route.params.role) {
+        uid = route.params.uid;
+        role = route.params.role;
+        if (loginEntity.uid === uid) {
+          admin = true
+          setIsAdmin(true)
+        }
+      } else {
+        admin = true
+        setIsAdmin(true)
+      }
+
+      getData(uid, role, admin).catch((error) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10)
+        setloading(false);
+      });
+    }
+  }, [authContext?.entity, isFocused]);
+
+  useEffect(() => {
+    console.log('Home type::=>', isTeamHome);
+    if (isTeamHome) {
+      getTeamReviews(route?.params?.uid || authContext.entity.uid, authContext).then((res) => {
+        console.log('Get team Review Data Res ::--', res?.payload);
+
+        if (res?.payload?.averageReviews?.[0]) {
+          let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
+          array = array.filter((e) => e !== 'total_avg');
+          const teamProperty = []
+
+          for (let i = 0; i < array.length; i++) {
+            const obj = {
+              [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
+            }
+            teamProperty.push(obj)
+          }
+          setAverageTeamReview(teamProperty)
+          setTeamReviewData(res?.payload)
+        } else {
+          setAverageTeamReview([])
+          setTeamReviewData()
+        }
+      })
+          .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
+    }
+  }, [isTeamHome])
 
   const getUserData = async (uid, admin) => {
     setloading(true);
@@ -395,72 +469,7 @@ const HomeScreen = ({ navigation, route }) => {
       }).finally(() => setloading(false));
     }
   };
-  useEffect(() => {
-    if (route?.params?.fromAccountScreen) {
-      const navigateScreen = route?.params?.navigateToScreen;
-      const params = route?.params?.homeNavigateParams;
-      const allParams = route?.params;
-      delete allParams?.fromAccountScreen;
-      delete allParams?.navigateToScreen;
-      delete allParams?.homeNavigateParams;
-      navigation.setParams(allParams);
-      navigation.push(navigateScreen, params);
-    }
-  }, [route?.params])
-  useEffect(() => {
-    if (isFocused) {
-      const loginEntity = authContext.entity
-      let uid = loginEntity.uid
-      let role = loginEntity.role
-      let admin = false
-      if (route.params && route.params.uid && route.params.role) {
-        uid = route.params.uid;
-        role = route.params.role;
-        if (loginEntity.uid === uid) {
-          admin = true
-          setIsAdmin(true)
-        }
-      } else {
-        admin = true
-        setIsAdmin(true)
-      }
 
-      getData(uid, role, admin).catch((error) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10)
-        setloading(false);
-      });
-    }
-  }, [authContext.entity, navigation, isFocused]);
-
-  useEffect(() => {
-    console.log('Home type::=>', isTeamHome);
-    if (isTeamHome) {
-      getTeamReviews(route?.params?.uid || authContext.entity.uid, authContext).then((res) => {
-        console.log('Get team Review Data Res ::--', res?.payload);
-
-        if (res?.payload?.averageReviews?.[0]) {
-          let array = Object.keys(res?.payload?.averageReviews?.[0]?.avg_review);
-          array = array.filter((e) => e !== 'total_avg');
-          const teamProperty = []
-
-          for (let i = 0; i < array.length; i++) {
-            const obj = {
-              [array[i]]: res?.payload?.averageReviews?.[0]?.avg_review[array[i]],
-            }
-            teamProperty.push(obj)
-          }
-          setAverageTeamReview(teamProperty)
-          setTeamReviewData(res?.payload)
-        } else {
-          setAverageTeamReview([])
-          setTeamReviewData()
-        }
-      })
-        .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
-    }
-  }, [isTeamHome])
   const progressStatus = (completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
   }
@@ -1366,15 +1375,6 @@ const HomeScreen = ({ navigation, route }) => {
     setIsRefereeModal(!isRefereeModal);
   };
 
-  useEffect(() => {
-    if (route.params && route.params.locationName) {
-      setInfoModalVisible(true);
-      setPlaysInModalVisible(true);
-      setSearchLocation(route.params.locationName);
-      setLocationDetail(route.params.locationDetail);
-    }
-  }, [route.params]);
-
   const onConnectionButtonPress = (tab) => {
     let entity_type = authContext?.entity?.role;
     let user_id = authContext?.entity?.uid;
@@ -1464,6 +1464,7 @@ const HomeScreen = ({ navigation, route }) => {
                 onSecondTabPress={() => setScroboardTabNumber(1)}
               />
         {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
+                onBackPress={ () => setRefereesInModalVisible(true)}
                 sportsData={refereeRecentMatch}
                 showEventNumbers={false}
                 showAssistReferee={true}
@@ -1474,7 +1475,8 @@ const HomeScreen = ({ navigation, route }) => {
                 }}
               />}
         {scoreboardTabNumber === 1 && <UpcomingMatchScreen
-                sportsData={refereeUpcomingMatch}
+            onBackPress={ () => setRefereesInModalVisible(true)}
+            sportsData={refereeUpcomingMatch}
                 showEventNumbers={true}
                 navigation={navigation}
                 onItemPress={() => {
@@ -1556,21 +1558,23 @@ const HomeScreen = ({ navigation, route }) => {
                 onSecondTabPress={() => setScroboardTabNumber(1)}
               />
         {scoreboardTabNumber === 0 && <ScoreboardSportsScreen
+                onBackPress={() => setScorekeeperInModalVisible(true)}
                 sportsData={refereeRecentMatch}
                 showEventNumbers={false}
                 showAssistReferee={true}
                 navigation={navigation}
                 onItemPress={() => {
                   setRefereeMatchModalVisible(false);
-                  setRefereesInModalVisible(false);
+                  setScorekeeperInModalVisible(false);
                 }}
               />}
         {scoreboardTabNumber === 1 && <UpcomingMatchScreen
+                onBackPress={() => setScorekeeperInModalVisible(true)}
                 sportsData={refereeUpcomingMatch}
                 showEventNumbers={true}
                 navigation={navigation}
                 onItemPress={() => {
-                  setScoreboardModalVisible(false);
+                  setScorekeeperInModalVisible(false);
                   setPlaysInModalVisible(false);
                 }}
               />}
@@ -1625,7 +1629,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderHomeMainTabContain = (tabKey) => (
     <View>
-      {tabKey === 0 && (<View>
+      {tabKey === 1 && (<View>
         <HomeFeed
               currentUserData={currentUserData}
               isAdmin={isAdmin}
@@ -1639,7 +1643,7 @@ const HomeScreen = ({ navigation, route }) => {
               userID={route?.params?.uid ?? authContext.entity?.uid}
           />
       </View>)}
-      {tabKey === 1 && (<View style={{ flex: 1 }} >
+      {tabKey === 0 && (<View style={{ flex: 1 }} >
         {isUserHome && <UserInfo
               navigation={navigation}
               userDetails={currentUserData}
@@ -2135,6 +2139,7 @@ const HomeScreen = ({ navigation, route }) => {
                       if (route?.params?.sourceScreen) {
                         navigation.popToTop()
                       } else {
+                        if (route.params.onBackPress) route.params.onBackPress();
                         navigation.goBack()
                       }
                     }}>
@@ -2240,7 +2245,7 @@ const HomeScreen = ({ navigation, route }) => {
             onAction={onTeamAction}/>}
           <View style={styles.sepratorStyle}/>
           <TCScrollableProfileTabs
-            tabItem={isTeamHome ? ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
+            tabItem={isTeamHome ? ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery']}
             onChangeTab={(ChangeTab) => {
               // scrollToTop.current.refs.ScrollView.scrollTo({ y: Platform.OS === 'ios' ? 280 : 320 })
               setCurrentTab(ChangeTab.i)
@@ -2250,6 +2255,7 @@ const HomeScreen = ({ navigation, route }) => {
         </View>
 
         <PlayInModule
+            openPlayInModal={() => setPlaysInModalVisible(true)}
             onModalClose={() => setPlaysInModalVisible(false)}
             navigation={navigation}
             visible={playsInModalVisible}
@@ -2697,7 +2703,7 @@ const HomeScreen = ({ navigation, route }) => {
                     tabItem={TAB_ITEMS}
                     onChangeTab={(ChangeTab) => setRefereeCurrentTab(ChangeTab.i)}
                     currentTab={currentRefereeTab}
-                    renderTabContain={(tabKey) => renderRefereesTabContainer(tabKey)}
+                    renderTabContain={renderRefereesTabContainer}
                     tabVerticalScroll={false}
                 />
 

@@ -32,7 +32,7 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
-function NewsFeedPostItems({
+const NewsFeedPostItems = ({
   navigation,
   item,
   onLikePress,
@@ -40,9 +40,10 @@ function NewsFeedPostItems({
   onDeletePost,
   onImageProfilePress,
   onEditPressDone,
-}) {
+}) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [showThreeDot, setShowThreeDot] = useState(false);
 
   useEffect(() => {
     let filterLike = [];
@@ -59,6 +60,7 @@ function NewsFeedPostItems({
     } else {
       setLike(false);
     }
+    setShowThreeDot((item?.ownerId || item?.foreign_id) === caller_id);
   }, [item]);
   const actionSheet = useRef();
   const shareActionSheet = useRef();
@@ -75,12 +77,6 @@ function NewsFeedPostItems({
       attachedImages = JSON.parse(item?.object)?.attachments;
     }
     descriptions = JSON.parse(item?.object).text;
-  }
-  let threeDotBtnDisplay = false;
-  if (item?.foreign_id === caller_id) {
-    threeDotBtnDisplay = true;
-  } else {
-    threeDotBtnDisplay = false;
   }
 
   const renderSinglePostItems = useCallback(({ item: attachItem }) => {
@@ -203,7 +199,7 @@ function NewsFeedPostItems({
             {commentPostTimeCalculate(item?.time)}
           </Text>
         </View>
-        {threeDotBtnDisplay && <TouchableOpacity
+        {showThreeDot && <TouchableOpacity
           style={styles.dotImageTouchStyle}
           onPress={() => {
             actionSheet.current.show();

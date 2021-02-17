@@ -140,7 +140,12 @@ const TennisHome = ({ navigation, route }) => {
 
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />
-    <TopBackgroundHeader isAdmin={isAdmin} resetGameDetail={resetGameDetail} navigation={navigation} gameData={gameData}>
+    <TopBackgroundHeader
+        onBackPress={route?.params?.onBackPress}
+        isAdmin={isAdmin}
+        resetGameDetail={resetGameDetail}
+        navigation={navigation}
+        gameData={gameData}>
       <TCScrollableProfileTabs
         tabItem={TAB_ITEMS}
         onChangeTab={(ChangeTab) => {

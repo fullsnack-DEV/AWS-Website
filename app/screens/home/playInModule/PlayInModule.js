@@ -32,6 +32,7 @@ const PlayInModule = ({
   playInObject,
   isAdmin,
   navigation,
+  openPlayInModal,
 }) => {
   const [sportName, setSportName] = useState('');
   const [singlePlayerGame, setSinglePlayerGame] = useState(true);
@@ -40,8 +41,10 @@ const PlayInModule = ({
   const [currentUserData, setCurrentUserData] = useState();
   const [currentTab, setCurrentTab] = useState(0);
   const onClose = () => {
-    onModalClose();
-    setCurrentTab(0);
+    setTimeout(() => {
+      setCurrentTab(0);
+    }, 1000);
+    setTimeout(() => onModalClose(), 0);
   }
   useEffect(() => {
     if (userData) setCurrentUserData(userData);
@@ -85,6 +88,7 @@ const PlayInModule = ({
     if (currentTab === 0) {
       return (
         <PlayInInfoView
+            openPlayInModal={openPlayInModal}
             onSave={onSave}
             sportName={playInObject?.sport_name}
             closePlayInModal={onClose}
@@ -96,6 +100,7 @@ const PlayInModule = ({
     } if (currentTab === 1) {
       return (
         <PlayInScoreboardView
+            openPlayInModal={openPlayInModal}
             closePlayInModal={onClose}
             navigation={navigation}
             sportName={playInObject?.sport_name}

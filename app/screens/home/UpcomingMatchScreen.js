@@ -18,6 +18,7 @@ export default function UpcomingMatchScreen({
   showEventNumbers,
   navigation,
   onItemPress,
+  onBackPress,
 }) {
   const authContext = useContext(AuthContext)
   let filterData = [];
@@ -74,6 +75,7 @@ export default function UpcomingMatchScreen({
           const gameHome = getGameHomeScreen(item?.sport);
           navigation.navigate(gameHome, {
             gameId: item?.game_id,
+            onBackPress: () => onBackPress(),
           })
         }
       } else {

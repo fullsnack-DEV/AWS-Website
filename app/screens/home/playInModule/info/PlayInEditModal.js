@@ -36,46 +36,47 @@ const PlayInEditModal = ({
                                <View style={styles.modalContainerViewStyle}>
                                  <SafeAreaView style={{ flex: 1 }}>
                                    <Header
-                safeAreaStyle={{ marginTop: 10 }}
-                mainContainerStyle={styles.headerMainContainerStyle}
-                leftComponent={
-                  <TouchableOpacity onPress={onClose}>
-                    <FastImage
-                        tintColor={colors.lightBlackColor}
-                        source={images.backArrow}
-                        resizeMode={'contain'}
-                        style={{ height: 20, width: 16 }} />
-                  </TouchableOpacity>
-                }
-                centerComponent={
-                  <View style={styles.headerCenterViewStyle}>
-                    <FastImage source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                    <Text style={styles.playInTextStyle}>{heading}</Text>
-                  </View>
-                }
-                rightComponent={
-                  <TouchableOpacity
-                      onPress={onSavePress}>
-                    <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
-                  </TouchableOpacity>
-                }
-            />
+                                        safeAreaStyle={{ marginTop: 10 }}
+                                        mainContainerStyle={styles.headerMainContainerStyle}
+                                        leftComponent={
+                                          <TouchableOpacity onPress={onClose}>
+                                            <FastImage
+                                                tintColor={colors.lightBlackColor}
+                                                source={images.backArrow}
+                                                resizeMode={'contain'}
+                                                style={{ height: 20, width: 16 }} />
+                                          </TouchableOpacity>
+                                        }
+                                        centerComponent={
+                                          <View style={styles.headerCenterViewStyle}>
+                                            <FastImage source={images.soccerImage} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                                            <Text style={styles.playInTextStyle}>{heading}</Text>
+                                          </View>
+                                        }
+                                        rightComponent={
+                                          <TouchableOpacity
+                                              onPress={onSavePress}>
+                                            <Text style={{ fontSize: 16, fontFamily: fonts.RLight, color: colors.lightBlackColor }}>{'Save'}</Text>
+                                          </TouchableOpacity>
+                                        }
+                                    />
                                    <TCGradientDivider width={'100%'} height={3}/>
                                    {loading && (
                                      <View style={{
-                  position: 'absolute',
-                  height: '100%',
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'rgba(255,255,255,0.7)',
-                  zIndex: 1,
-                  borderTopLeftRadius: 12,
-                  borderTopRightRadius: 12,
+                                          marginTop: 15,
+                                          position: 'absolute',
+                                          height: '100%',
+                                          width: '100%',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          backgroundColor: 'rgba(255,255,255,0.7)',
+                                          zIndex: 1,
+                                          borderTopLeftRadius: 12,
+                                          borderTopRightRadius: 12,
                                      }}>
                                        <TCInnerLoader visible={true} size={50}/>
                                      </View>
-            )}
+                                    )}
                                    <ScrollView style={{ backgroundColor: colors.whiteColor }}>
                                      {children}
                                    </ScrollView>

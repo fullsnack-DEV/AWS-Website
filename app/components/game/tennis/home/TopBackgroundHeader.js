@@ -22,7 +22,7 @@ import { getChallengeDetail } from '../../../../screens/challenge/ChallengeUtili
 
 const bgImage = images.tennisBackground;
 const TopBackgroundHeader = ({
-  gameData, navigation, children, resetGameDetail, isAdmin,
+  gameData, navigation, children, resetGameDetail, isAdmin, onBackPress,
 }) => {
   const authContext = useContext(AuthContext);
   const threeDotActionSheet = useRef();
@@ -174,6 +174,12 @@ const TopBackgroundHeader = ({
       { cancelable: false },
     );
   }
+
+  const handleGoBack = () => {
+    navigation.goBack();
+    if (onBackPress) onBackPress();
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading}/>
@@ -181,7 +187,7 @@ const TopBackgroundHeader = ({
           barStyle={'light-content'}
             safeAreaStyle={{ position: 'absolute' }}
             leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack()}>
+              <TouchableOpacity onPress={handleGoBack}>
                 <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
               </TouchableOpacity>
             }
@@ -210,7 +216,7 @@ const TopBackgroundHeader = ({
                   barStyle={'light-content'}
                 safeAreaStyle={{ position: 'absolute' }}
                 leftComponent={
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <TouchableOpacity onPress={handleGoBack}>
                     <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
                   </TouchableOpacity>
                 }

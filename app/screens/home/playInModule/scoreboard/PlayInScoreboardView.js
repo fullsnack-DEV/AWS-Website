@@ -12,6 +12,7 @@ const PlayInScoreboardView = ({
   sportName,
   navigation,
   closePlayInModal = () => {},
+  openPlayInModal = () => {},
 }) => {
   const authContext = useContext(AuthContext);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
@@ -65,8 +66,10 @@ const PlayInScoreboardView = ({
                 sportsData={recentMatchData}
                 navigation={navigation}
                 onItemPress={closePlayInModal}
+                onBackPress={openPlayInModal}
             />}
           {scoreboardTabNumber === 1 && <UpcomingMatchScreen
+                onBackPress={openPlayInModal}
                 sportsData={upcomingMatchData}
                 navigation={navigation}
                 onItemPress={closePlayInModal}

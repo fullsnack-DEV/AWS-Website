@@ -25,7 +25,7 @@ import strings from '../../../../Constants/String';
 
 const bgImage = images.soccerBackground;
 const TopBackgroundHeader = ({
-  gameData, navigation, children, isAdmin,
+  gameData, navigation, children, isAdmin, onBackPress,
 }) => {
   const threeDotActionSheet = useRef();
   const [headerTitleShown, setHeaderTitleShown] = useState(true);
@@ -129,6 +129,11 @@ const TopBackgroundHeader = ({
       }).catch(() => setloading(false));
     }
   }
+
+  const handleGoBack = () => {
+    navigation.goBack();
+    if (onBackPress) onBackPress();
+  }
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading}/>
@@ -136,7 +141,7 @@ const TopBackgroundHeader = ({
           barStyle={'light-content'}
             safeAreaStyle={{ position: 'absolute' }}
             leftComponent={
-              <TouchableOpacity onPress={() => navigation.goBack()}>
+              <TouchableOpacity onPress={handleGoBack}>
                 <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
               </TouchableOpacity>
             }
@@ -158,7 +163,7 @@ const TopBackgroundHeader = ({
                   barStyle={'light-content'}
                 safeAreaStyle={{ position: 'absolute' }}
                 leftComponent={
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <TouchableOpacity onPress={handleGoBack}>
                     <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
                   </TouchableOpacity>
                 }
