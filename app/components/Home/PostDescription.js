@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   descriptionTxt: {
     fontSize: 16,
     paddingVertical: '2%',
+    height: 80,
   },
 });
 

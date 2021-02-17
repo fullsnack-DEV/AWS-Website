@@ -38,6 +38,7 @@ const HomeFeed = ({
         const params = { uid: userID };
         setLoading(true);
         getUserPosts(params, authContext).then((res) => {
+            console.log('res?.payload?.results::=>', res?.payload?.results);
             setPostData([...res?.payload?.results])
             setLoading(false);
         }).catch(() => {
@@ -217,7 +218,7 @@ const HomeFeed = ({
         <NewsFeedList
             onDeletePost={onDeletePost}
             navigation={navigation}
-            postData={postData}
+            postData={postData.slice(0, 5)}
             onEditPressDone={editPostDoneCall}
             onLikePress={onLikePress}
         />
