@@ -27,8 +27,7 @@ const HomeFeed = ({
   cancelRequest,
   currentUserData,
   isAdmin,
-                  }) => {
-    console.log('Render Home Feed');
+}) => {
     const [loading, setLoading] = useState(true);
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const authContext = useContext(AuthContext)
@@ -218,7 +217,7 @@ const HomeFeed = ({
         <NewsFeedList
             onDeletePost={onDeletePost}
             navigation={navigation}
-            postData={postData.slice(0, 5)}
+            postData={postData}
             onEditPressDone={editPostDoneCall}
             onLikePress={onLikePress}
         />

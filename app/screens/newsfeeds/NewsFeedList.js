@@ -7,6 +7,7 @@ import {
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { useIsFocused } from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
@@ -25,18 +26,16 @@ const NewsFeedList = ({
   onLikePress,
 }) => {
   const [userID, setUserID] = useState('');
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext)
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
+    if (isFocused) {
       const entity = authContext.entity
       if (entity) {
         setUserID(entity.uid || entity.auth.user_id);
       }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    }
+  }, [isFocused]);
 
   const onProfilePress = useCallback((item) => {
     if (item?.actor?.id) {

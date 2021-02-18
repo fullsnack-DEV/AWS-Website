@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { memo } from 'react';
 import {
   StyleSheet,
   View,
   Image,
-  Text, TouchableOpacity,
+  Text,
+  TouchableOpacity,
+  Animated,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -22,6 +24,7 @@ function BackgroundProfile({
   profileImageStyle,
   currentUserData,
   onConnectionButtonPress,
+  imageSize,
 }) {
   let bgImage = '';
   if (currentUserData && currentUserData.background_full_image) {
@@ -79,8 +82,11 @@ function BackgroundProfile({
       {/* </View> */}
       <View style={{ backgroundColor: colors.whiteColor }} >
         <View style={{ width: '100%', marginBottom: 20 }}>
-          <FastImage style={[styles.profileImageStyle, profileImageStyle]}
-            source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
+          <Animated.Image
+              style={{
+ ...styles.profileImageStyle, height: imageSize, width: imageSize, profileImageStyle,
+              }}
+              source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
           />
           <View style={styles.userViewStyle}>
             <Text style={styles.userTextStyle}>{fullName}</Text>
@@ -211,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BackgroundProfile;
+export default memo(BackgroundProfile);

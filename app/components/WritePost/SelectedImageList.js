@@ -44,6 +44,7 @@ function SelectedImageList({
               style={{
                 height: 30,
                 width: 30,
+                zIndex: 1,
               }}/>
         </View>
         <Video
@@ -76,6 +77,7 @@ function SelectedImageList({
 const styles = StyleSheet.create({
   cancelBtnView: {
     position: 'absolute',
+    zIndex: 1,
     backgroundColor: 'rgba(0,0,0,0.3)',
     // alignSelf: 'flex-end',
     top: wp('1%'),
