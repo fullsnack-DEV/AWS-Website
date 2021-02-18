@@ -37,13 +37,15 @@ import {
   getScorekeeperReviewData,
   getScorekeeperMatch,
 } from '../../api/Games';
+
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import {
   getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails, patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import {
-  createPost,
+  createPost, createReaction,
+  // getNewsFeed,
 } from '../../api/NewsFeeds';
 import {
   getGroupDetails, getJoinedGroups, getTeamsOfClub, getGroupMembers,
@@ -162,6 +164,9 @@ const HomeScreen = ({ navigation, route }) => {
 
   const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(false)
   const [feedDataIndex, setFeedDataIndex] = useState(0);
+  const [feedDetailIndex, setFeedDetailIndex] = useState(0);
+  const [orangeFeed, setOrangeFeed] = useState(false)
+
   const [reviewGameData, setReviewGameData] = useState();
 
   const [infoModalVisible, setInfoModalVisible] = useState(false)
@@ -2260,13 +2265,29 @@ const HomeScreen = ({ navigation, route }) => {
           currentTab={currentTab}/>
   )
 
-const onFeedPress = (feed, index, gameData) => {
+const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
 console.log('Feed Data::=>', feed);
 console.log('Feed Data index::=>', index);
-
+console.log('Orange feed ??::=>', orangeFeedPress);
 setReviewGameData(gameData)
 setFeedDataIndex(index)
+setFeedDetailIndex(detailIndex)
+setOrangeFeed(orangeFeedPress)
 setReviewDetailModalVisible(true)
+}
+
+const onLikePress = (item) => {
+  const bodyParams = {
+    reaction_type: 'clap',
+    activity_id: item.id,
+  };
+  createReaction(bodyParams, authContext)
+      .then((response) => {
+        console.log('Like review feed res::=>', response);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages)
+      });
 }
 const newsFeedListItemSeperator = () => (
   <View
@@ -2277,21 +2298,38 @@ const newsFeedListItemSeperator = () => (
         }}
     />
 )
+// const onProfilePress = useCallback((item) => {
+//   if (item?.actor?.id) {
+//     if (item?.actor?.id !== authContext?.entity?.uid) {
+//       navigation.navigate('HomeScreen', {
+//         uid: item.actor.id,
+//         backButtonVisible: true,
+//         role: item?.actor?.data?.entity_type === 'player' ? 'user' : item?.actor?.data?.entity_type,
+//       })
+//     }
+//   }
+// }, [])
 const renderNewsFeed = useCallback(({ item }) => {
   console.log('Render feed:=>', item);
   // const onDeleteButtonPress = () => onDeletePost(item)
   // const onProfileButtonPress = () => onProfilePress(item)
   // const onLikeButtonPress = () => onLikePress(item)
   const onDeleteButtonPress = () => alert('Delete')
-  const onProfileButtonPress = () => alert('Profile')
-  const onLikeButtonPress = () => alert('like')
+  const onProfileButtonPress = () => {
+    console.log('Profile pressed');
+    // setReviewDetailModalVisible(!reviewDetailModalVisible)
+    // setRefereeInfoModalVisible(!refereeInfoModalVisible)
+
+    //  onProfilePress(item)
+    }
+  const onLikeButtonPress = () => onLikePress(item)
   return (
 
     <RefereeFeedPostItems
           // pullRefresh={pullRefresh}
           item={item}
           navigation={navigation}
-          caller_id={userID}
+          caller_id={authContext.entity.uid}
           // onEditPressDone={onEditPressDone}
           onImageProfilePress={onProfileButtonPress}
           onLikePress={onLikeButtonPress}
@@ -2299,8 +2337,6 @@ const renderNewsFeed = useCallback(({ item }) => {
       />
   )
 }, [])
-
-const newsFeedKeyExtractor = (item) => `feed1${item?.id?.toString()}`
 
 const feedScreenHeader = useMemo(() => (
   <View>
@@ -2887,6 +2923,10 @@ const feedScreenHeader = useMemo(() => (
         ItemSeparatorComponent={newsFeedListItemSeperator}
         ListHeaderComponent={feedScreenHeader}
         scrollEnabled={true}
+        initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
+        onScrollToIndexFailed={(error) => {
+          console.log('falsed to load index', error);
+        }}
         // ListFooterComponent={newsFeedListFooterComponent}
         showsVerticalScrollIndicator={false}
         renderItem={renderNewsFeed}
@@ -2894,7 +2934,7 @@ const feedScreenHeader = useMemo(() => (
         // onEndReachedThreshold={0.5}
         // refreshing={pullRefresh}
         // onRefresh={newsFeedOnRefresh}
-        keyExtractor={newsFeedKeyExtractor}
+        keyExtractor={(item) => `feeds${item?.id?.toString()}`}
       />
             {/* <NewsFeedPostItems
           // pullRefresh={pullRefresh}

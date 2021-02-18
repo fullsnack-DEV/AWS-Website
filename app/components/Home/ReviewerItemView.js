@@ -10,11 +10,14 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import Video from 'react-native-video';
+import FastImage from 'react-native-fast-image';
+
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 import PostDescription from './PostDescription';
 
 function ReviewerItemView({
@@ -27,6 +30,7 @@ function ReviewerItemView({
   onReadMorePress,
   onFeedPress,
 }) {
+  const videoPlayerRef = useRef();
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [reviewObj, setReviewObj] = useState();
@@ -35,36 +39,61 @@ function ReviewerItemView({
   if (reviewObj?.attachments) {
     attachedImages = reviewObj.attachments;
   }
-useEffect(() => {
-  console.log('Feed data::=>', item);
-  console.log('Feed Review data::=>', JSON.parse(item?.object)
-  ?.refereeReview);
-  setReviewObj(JSON.parse(item?.object)
-  ?.refereeReview)
-  console.log('totalData length::', totalData);
-  console.log('Index::', indexNumber);
-}, [])
+  useEffect(() => {
+    console.log('Feed data::=>', item);
+    console.log(
+      'Feed Review data::=>',
+      JSON.parse(item?.object)?.refereeReview,
+    );
+    setReviewObj(JSON.parse(item?.object)?.refereeReview);
+    console.log('totalData length::', totalData);
+    console.log('Index::', indexNumber);
+  }, []);
+
   return (
-    <TouchableOpacity onPress={() => onFeedPress(item, feedIndex, gameData)}>
+    <TouchableOpacity onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, false)}>
       <View style={styles.containerStyle}>
         <View style={styles.mainContainer}>
           <TouchableWithoutFeedback onPress={onImageProfilePress}>
             <Image
               style={styles.background}
-              source={item?.actor?.data?.full_image ? { uri: item?.actor?.data?.full_image } : images.profilePlaceHolder}
+              source={
+                item?.actor?.data?.full_image
+                  ? { uri: item?.actor?.data?.full_image }
+                  : images.profilePlaceHolder
+              }
               resizeMode={'cover'}
             />
           </TouchableWithoutFeedback>
           <View style={styles.userNameView}>
-            <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3 }}>
-              <Text style={styles.activeTimeAgoTxt}>
-                {item.created_date}
-              </Text>
+            <Text style={styles.userNameTxt} onPress={onImageProfilePress}>
+              {item?.actor?.data?.full_name}
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 3,
+              }}>
+              <Text style={styles.activeTimeAgoTxt}>{item.created_date}</Text>
               <View style={styles.eventImageViewStyle}>
-                <Image source={item?.actor?.data?.full_image ? item?.actor?.data?.full_image : images.usaImage} style={styles.imageStyle} resizeMode={'contain'} />
+                <Image
+                  source={
+                    item?.actor?.data?.full_image
+                      ? item?.actor?.data?.full_image
+                      : images.usaImage
+                  }
+                  style={styles.imageStyle}
+                  resizeMode={'contain'}
+                />
               </View>
-              <Text style={[styles.activeTimeAgoTxt, { fontSize: 12, fontFamily: fonts.RMedium }]}>{'Newyork City FC'}</Text>
+              <Text
+                style={[
+                  styles.activeTimeAgoTxt,
+                  { fontSize: 12, fontFamily: fonts.RMedium },
+                ]}>
+                {'Newyork City FC'}
+              </Text>
             </View>
           </View>
           <TouchableOpacity
@@ -86,30 +115,163 @@ useEffect(() => {
             containerStyle={{ marginHorizontal: 12 }}
             onReadMorePress={onReadMorePress}
           />
-          {
-              attachedImages.length > 0 && <View style={styles.mainImageView}>
-                {attachedImages.length >= 1 && <Image
-                  source={{ uri: attachedImages[0].thumbnail }}
-                  style={styles.postImageStyle}
-                  resizeMode={'cover'}
-                />}
-                {attachedImages.length >= 2 && <Image
-                  source={{ uri: attachedImages[1].thumbnail }}
-                  style={styles.postImageStyle}
-                  resizeMode={'cover'}
-                />}
-                {attachedImages.length >= 3 && <View style={styles.threePlusImageView}>
+          {attachedImages.length > 0 && (
+            <View style={styles.mainImageView}>
+              {attachedImages.length >= 1
+                && attachedImages[0]?.type?.split('/')[0] === 'image' && (
                   <Image
+                    source={{ uri: attachedImages[0].thumbnail }}
+                    style={styles.postImageStyle}
+                    resizeMode={'cover'}
+                  />
+                )}
+              {attachedImages.length >= 1
+                && attachedImages[0]?.type?.split('/')[0] === 'video' && (
+                  <View>
+                    <View
+                      style={{
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'absolute',
+                      }}>
+                      <FastImage
+                        source={images.videoPlayBtn}
+                        tintColor={'white'}
+                        resizeMode={'contain'}
+                        style={{
+                          height: 30,
+                          width: 30,
+                        }}
+                      />
+                    </View>
+                    <Video
+                      ref={videoPlayerRef}
+                      paused={false}
+                      muted={true}
+                      source={{ uri: attachedImages[0].url }}
+                      style={styles.uploadedImage}
+                      resizeMode={'cover'}
+                      onLoad={() => {
+                        videoPlayerRef.current.seek(0);
+                      }}
+                    />
+                  </View>
+                )}
+              {attachedImages.length >= 2
+                && attachedImages[1]?.type?.split('/')[0] === 'image' && (
+                  <Image
+                    source={{ uri: attachedImages[1].thumbnail }}
+                    style={styles.postImageStyle}
+                    resizeMode={'cover'}
+                  />
+                )}
+              {attachedImages.length >= 2
+                && attachedImages[1]?.type?.split('/')[0] === 'video' && (
+                  <View>
+                    <View
+                      style={{
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'absolute',
+                      }}>
+                      <FastImage
+                        source={images.videoPlayBtn}
+                        tintColor={'white'}
+                        resizeMode={'contain'}
+                        style={{
+                          height: 30,
+                          width: 30,
+                        }}
+                      />
+                    </View>
+                    <Video
+                      ref={videoPlayerRef}
+                      paused={false}
+                      muted={true}
+                      source={{ uri: attachedImages[1].url }}
+                      style={styles.uploadedImage}
+                      resizeMode={'cover'}
+                      onLoad={() => {
+                        videoPlayerRef.current.seek(0);
+                      }}
+                    />
+                  </View>
+                )}
+              {attachedImages.length >= 3
+                && attachedImages[2]?.type?.split('/')[0] === 'image' && (
+                  <View style={styles.threePlusImageView}>
+                    <Image
                       source={{ uri: attachedImages[2].thumbnail }}
                       style={styles.postImageStyle}
                       resizeMode={'cover'}
-                  />
-                  {attachedImages.length > 3 && <Text style={styles.plusCountTextStyle}>
-                    {attachedImages.length > 0 ? `+${attachedImages.length - 3}` : ''}
-                  </Text>}
-                </View>}
-              </View>
-          }
+                    />
+                    {attachedImages.length > 3 && (
+                      <Text style={styles.plusCountTextStyle}>
+                        {attachedImages.length > 0
+                          ? `+${attachedImages.length - 3}`
+                          : ''}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              {attachedImages.length >= 3
+                && attachedImages[2]?.type?.split('/')[0] === 'video' && (
+                  <View style={styles.threePlusImageView}>
+                    <View>
+                      <View
+                      style={{
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'absolute',
+                      }}>
+                        <FastImage
+                        source={images.videoPlayBtn}
+                        tintColor={'white'}
+                        resizeMode={'contain'}
+                        style={{
+                          height: 30,
+                          width: 30,
+                        }}
+                      />
+                      </View>
+                      <Video
+                      ref={videoPlayerRef}
+                      paused={false}
+                      muted={true}
+                      source={{ uri: attachedImages[2].url }}
+                      style={styles.uploadedImage}
+                      resizeMode={'cover'}
+                      onLoad={() => {
+                        videoPlayerRef.current.seek(0);
+                      }}
+                    />
+                    </View>
+                    {attachedImages.length > 3 && (
+                      <Text style={styles.plusCountTextStyle}>
+                        {attachedImages.length > 0
+                          ? `+${attachedImages.length - 3}`
+                          : ''}
+                      </Text>
+                    )}
+                  </View>
+                )}
+            </View>
+          )}
 
           <View style={{ marginTop: 10, marginLeft: 10 }}></View>
 
@@ -132,7 +294,7 @@ useEffect(() => {
                     resizeMode={'contain'}
                   />
                 </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>1</Text>
+                <Text style={styles.commentlengthStyle}>{item?.latest_reactions?.comment?.length ?? 0}</Text>
               </View>
 
               <View
@@ -163,12 +325,15 @@ useEffect(() => {
                 alignItems: 'center',
               }}>
               <Text
-                  style={[
-                    styles.commentlengthStyle,
-                    {
-                      color: like === true ? '#FF8A01' : colors.reactionCountColor,
-                    },
-                  ]}>9</Text>
+                style={[
+                  styles.commentlengthStyle,
+                  {
+                    color:
+                      like === true ? '#FF8A01' : colors.reactionCountColor,
+                  },
+                ]}>
+                {item?.latest_reactions?.clap?.length ?? 0}
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   setLike(!like);
@@ -197,31 +362,42 @@ useEffect(() => {
             </View>
           </View>
           <ActionSheet
-              ref={actionSheet}
-              title={'News Feed Post'}
-              options={['Edit Post', 'Delete Post', 'Cancel']}
-              cancelButtonIndex={2}
-              destructiveButtonIndex={1}
-              onPress={(index) => {
-                if (index === 0) {
-                  // navigation.navigate('EditPostScreen', { data: item });
-                } else if (index === 1) {
-                  // onDeletePost();
-                }
-              }}
+            ref={actionSheet}
+            title={'News Feed Post'}
+            options={['Edit Post', 'Delete Post', 'Cancel']}
+            cancelButtonIndex={2}
+            destructiveButtonIndex={1}
+            onPress={(index) => {
+              if (index === 0) {
+                // navigation.navigate('EditPostScreen', { data: item });
+              } else if (index === 1) {
+                // onDeletePost();
+              }
+            }}
           />
         </View>
       </View>
-      {(totalData?.length > 1 && indexNumber === 1) && <View style={styles.maxReviewImageView}>
-        <Image source={images.themeGradientImage} style={styles.maxReviewImageStyle} resizeMode={'cover'} />
-      </View>}
-      {(totalData?.length > 1 && indexNumber === 1) && <TouchableOpacity
-        style={styles.maxReviewTouchStyle}
-        onPress={onReadMorePress}
-      >
-        <Text style={styles.maxCountTextStyle}>{(totalData?.length > 1 && indexNumber === 1) ? `+${totalData?.length - 1} ` : ''}</Text>
-        <Text style={styles.reviewsTextStyle}>reviews</Text>
-      </TouchableOpacity>}
+      {totalData?.length > 2 && indexNumber === 2 && (
+        <View style={styles.maxReviewImageView}>
+          <Image
+            source={images.themeGradientImage}
+            style={styles.maxReviewImageStyle}
+            resizeMode={'cover'}
+          />
+        </View>
+      )}
+      {totalData?.length > 2 && indexNumber === 2 && (
+        <TouchableOpacity
+          style={styles.maxReviewTouchStyle}
+          onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, true)}>
+          <Text style={styles.maxCountTextStyle}>
+            {totalData?.length > 2 && indexNumber === 2
+              ? `+${totalData?.length - 2} `
+              : ''}
+          </Text>
+          <Text style={styles.reviewsTextStyle}>reviews</Text>
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 }
@@ -374,6 +550,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.whiteColor,
+  },
+  uploadedImage: {
+    borderRadius: wp('3%'),
+    height: wp('28%'),
+    marginVertical: '1%',
+    width: wp('28%'),
+
   },
 });
 
