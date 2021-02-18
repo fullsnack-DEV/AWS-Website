@@ -9,7 +9,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCScrollableProfileTabs({
-  onChangeTab, currentTab, renderTabContain, tabItem, customStyle,
+  onChangeTab, currentTab, renderTabContain = () => {}, tabItem, customStyle,
 }) {
   return (
     <ScrollView style={customStyle} nestedScrollEnabled={false}>

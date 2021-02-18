@@ -17,6 +17,8 @@ target 'townscup_reactnative' do
 
   pod 'react-native-orientation', :path => '../node_modules/react-native-orientation'
 
+  pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
+
   target 'townscup_reactnativeTests' do
     inherit! :complete
     # Pods for testing
