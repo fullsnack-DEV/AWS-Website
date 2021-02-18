@@ -2386,9 +2386,8 @@ const feedScreenHeader = useMemo(() => (
           data={[1]}
           renderItem={renderMainFlatList}
           ListHeaderComponent={renderMainHeaderComponent}
-          // ListFooterComponent={renderHomeMainTabContain}
+          ListFooterComponent={renderHomeMainTabContain}
       />
-      {renderHomeMainTabContain()}
       <PlayInModule
           openPlayInModal={() => setPlaysInModalVisible(true)}
           onModalClose={() => setPlaysInModalVisible(false)}
