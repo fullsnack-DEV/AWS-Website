@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -202,6 +203,8 @@ function ReviewSection({
   onAboutRatingPress,
   onReadMorePress,
   reviewsFeed,
+  onFeedPress = () => {},
+
 }) {
   // const [reviewAllData] = useState(review_all_data);
   const [reviewAllData] = useState(reviewsFeed?.reviews?.results ?? []);
@@ -270,7 +273,7 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
       </EventItemRender>
       <View style={styles.sepratorViewStyle} />
       <EventItemRender
-        title={'Reviews (10)'}
+        title={`Reviews (${reviewsFeed?.reviews?.results?.length || 0})`}
         containerStyle={{ width: wp('100%'), padding: 0 }}
         headerTextStyle={{ paddingLeft: 12 }}
       >
@@ -284,7 +287,7 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
               marginVertical: 6,
             }} />}
             style={{ marginVertical: 15 }}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View>
                 {/* <ReviewRecentMatch
                   eventColor={item.color}
@@ -318,10 +321,13 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
                 />
                 <Carousel
                   data={item.reviews}
-                  renderItem={({ item: reviewData, index }) => <ReviewerItemView
+                  renderItem={({ item: reviewData, index: i }) => <ReviewerItemView
                   item={reviewData}
-                  indexNumber={index}
-                  totalData={reviewData.reviewData}
+                  gameData={item?.game}
+                  indexNumber={i}
+                  feedIndex = {index}
+                  totalData={item.reviews}
+                  onFeedPress={onFeedPress}
                   onReadMorePress={onReadMorePress}
               />}
                   inactiveSlideScale={1}

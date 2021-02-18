@@ -38,6 +38,7 @@ const HomeFeed = ({
         const params = { uid: userID };
         setLoading(true);
         getUserPosts(params, authContext).then((res) => {
+            console.log('res?.payload?.results::=>', res?.payload?.results);
             setPostData([...res?.payload?.results])
             setLoading(false);
         }).catch(() => {

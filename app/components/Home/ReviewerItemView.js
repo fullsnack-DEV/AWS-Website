@@ -21,39 +21,48 @@ function ReviewerItemView({
   item,
   onImageProfilePress,
   indexNumber,
+  feedIndex,
+  gameData,
   totalData,
   onReadMorePress,
+  onFeedPress,
 }) {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [reviewObj, setReviewObj] = useState();
   const actionSheet = useRef();
   let attachedImages = [];
-  const descriptions = 'This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description. This is the test description.';
-  if (item.attachments) {
-    attachedImages = item.attachments;
+  if (reviewObj?.attachments) {
+    attachedImages = reviewObj.attachments;
   }
 useEffect(() => {
   console.log('Feed data::=>', item);
+  console.log('Feed Review data::=>', JSON.parse(item?.object)
+  ?.refereeReview);
+  setReviewObj(JSON.parse(item?.object)
+  ?.refereeReview)
+  console.log('totalData length::', totalData);
+  console.log('Index::', indexNumber);
 }, [])
   return (
-    <View>
+    <TouchableOpacity onPress={() => onFeedPress(item, feedIndex, gameData)}>
       <View style={styles.containerStyle}>
         <View style={styles.mainContainer}>
           <TouchableWithoutFeedback onPress={onImageProfilePress}>
             <Image
               style={styles.background}
-              source={images.profilePlaceHolder}
+              source={item?.actor?.data?.full_image ? { uri: item?.actor?.data?.full_image } : images.profilePlaceHolder}
               resizeMode={'cover'}
             />
           </TouchableWithoutFeedback>
           <View style={styles.userNameView}>
-            <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.userName}</Text>
+            <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3 }}>
               <Text style={styles.activeTimeAgoTxt}>
                 {item.created_date}
               </Text>
               <View style={styles.eventImageViewStyle}>
-                <Image source={images.usaImage} style={styles.imageStyle} resizeMode={'contain'} />
+                <Image source={item?.actor?.data?.full_image ? item?.actor?.data?.full_image : images.usaImage} style={styles.imageStyle} resizeMode={'contain'} />
               </View>
               <Text style={[styles.activeTimeAgoTxt, { fontSize: 12, fontFamily: fonts.RMedium }]}>{'Newyork City FC'}</Text>
             </View>
@@ -72,7 +81,7 @@ useEffect(() => {
         </View>
         <View>
           <PostDescription
-            descriptions={descriptions}
+            descriptions={reviewObj?.comment ?? ''}
             character={125}
             containerStyle={{ marginHorizontal: 12 }}
             onReadMorePress={onReadMorePress}
@@ -80,18 +89,18 @@ useEffect(() => {
           {
               attachedImages.length > 0 && <View style={styles.mainImageView}>
                 {attachedImages.length >= 1 && <Image
-                  source={attachedImages[0].thumbnail}
+                  source={{ uri: attachedImages[0].thumbnail }}
                   style={styles.postImageStyle}
                   resizeMode={'cover'}
                 />}
                 {attachedImages.length >= 2 && <Image
-                  source={attachedImages[1].thumbnail}
+                  source={{ uri: attachedImages[1].thumbnail }}
                   style={styles.postImageStyle}
                   resizeMode={'cover'}
                 />}
                 {attachedImages.length >= 3 && <View style={styles.threePlusImageView}>
                   <Image
-                      source={attachedImages[2].thumbnail}
+                      source={{ uri: attachedImages[2].thumbnail }}
                       style={styles.postImageStyle}
                       resizeMode={'cover'}
                   />
@@ -203,17 +212,17 @@ useEffect(() => {
           />
         </View>
       </View>
-      {(totalData?.length > 3 && indexNumber === 2) && <View style={styles.maxReviewImageView}>
+      {(totalData?.length > 1 && indexNumber === 1) && <View style={styles.maxReviewImageView}>
         <Image source={images.themeGradientImage} style={styles.maxReviewImageStyle} resizeMode={'cover'} />
       </View>}
-      {(totalData?.length > 3 && indexNumber === 2) && <TouchableOpacity
+      {(totalData?.length > 1 && indexNumber === 1) && <TouchableOpacity
         style={styles.maxReviewTouchStyle}
         onPress={onReadMorePress}
       >
-        <Text style={styles.maxCountTextStyle}>{totalData?.length > 0 ? `+${totalData?.length - 3} ` : ''}</Text>
+        <Text style={styles.maxCountTextStyle}>{(totalData?.length > 1 && indexNumber === 1) ? `+${totalData?.length - 1} ` : ''}</Text>
         <Text style={styles.reviewsTextStyle}>reviews</Text>
       </TouchableOpacity>}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -307,6 +316,9 @@ const styles = StyleSheet.create({
     height: wp(28),
     width: wp(28),
     borderRadius: wp(3),
+    resizeMode: 'center',
+    marginRight: 5,
+    // backgroundColor: 'red',
   },
   threePlusImageView: {
     justifyContent: 'center',

@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, {
-  useEffect, useRef, useState, useContext,
+  useEffect, useRef, useState, useContext, useCallback, useMemo,
 } from 'react';
 import FastImage from 'react-native-fast-image';
 import {
@@ -110,6 +110,7 @@ import PlayInModule from './playInModule/PlayInModule';
 import PlayInCommonChartScreen from './playInModule/stats/commonViews/PlayInCommonChartScreen';
 import TCGradientDivider from '../../components/TCThinGradientDivider';
 import HomeFeed from '../homeFeed/HomeFeed';
+import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
@@ -154,6 +155,10 @@ const HomeScreen = ({ navigation, route }) => {
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false)
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
   const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(false)
+
+  const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(false)
+  const [feedDataIndex, setFeedDataIndex] = useState(0);
+  const [reviewGameData, setReviewGameData] = useState();
 
   const [infoModalVisible, setInfoModalVisible] = useState(false)
   const [refereeInfoModalVisible, setRefereeInfoModalVisible] = useState(false)
@@ -1492,6 +1497,7 @@ const HomeScreen = ({ navigation, route }) => {
         <View>
 
           <ReviewSection
+                onFeedPress={onFeedPress}
                 reviewsData={averageRefereeReview}
                 reviewsFeed={refereeReviewData}
                 onReadMorePress={() => {
@@ -1588,6 +1594,7 @@ const HomeScreen = ({ navigation, route }) => {
           <ReviewSection
                 reviewsData={averageRefereeReview}
                 reviewsFeed={refereeReviewData}
+                onFeedPress={() => alert(4)}
                 onReadMorePress={() => {
                   reviewerDetailModal();
                 }}
@@ -2110,6 +2117,7 @@ const HomeScreen = ({ navigation, route }) => {
               isTeamReviewSection={true}
               reviewsData={averageTeamReview}
               reviewsFeed={teamReviewData}
+              onFeedPress={() => alert(5)}
               onReadMorePress={() => {
                 reviewerDetailModal();
               }}
@@ -2173,6 +2181,68 @@ const HomeScreen = ({ navigation, route }) => {
       bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
   )
 
+const onFeedPress = (feed, index, gameData) => {
+console.log('Feed Data::=>', feed);
+console.log('Feed Data index::=>', index);
+
+setReviewGameData(gameData)
+setFeedDataIndex(index)
+setReviewDetailModalVisible(true)
+}
+const newsFeedListItemSeperator = () => (
+  <View
+        style={{
+          marginTop: 10,
+          height: 8,
+          backgroundColor: colors.whiteGradientColor,
+        }}
+    />
+)
+const renderNewsFeed = useCallback(({ item }) => {
+  console.log('Render feed:=>', item);
+  // const onDeleteButtonPress = () => onDeletePost(item)
+  // const onProfileButtonPress = () => onProfilePress(item)
+  // const onLikeButtonPress = () => onLikePress(item)
+  const onDeleteButtonPress = () => alert('Delete')
+  const onProfileButtonPress = () => alert('Profile')
+  const onLikeButtonPress = () => alert('like')
+  return (
+
+    <RefereeFeedPostItems
+          // pullRefresh={pullRefresh}
+          item={item}
+          navigation={navigation}
+          caller_id={userID}
+          // onEditPressDone={onEditPressDone}
+          onImageProfilePress={onProfileButtonPress}
+          onLikePress={onLikeButtonPress}
+          onDeletePost={onDeleteButtonPress}
+      />
+  )
+}, [])
+
+const newsFeedKeyExtractor = (item) => `feed1${item?.id?.toString()}`
+
+const feedScreenHeader = useMemo(() => (
+  <View>
+    <ReviewRecentMatch
+                  eventColor={colors.themeColor}
+                  startDate1={moment(new Date(reviewGameData?.data?.start_time * 1000)).format('MMM')}
+                  startDate2={moment(new Date(reviewGameData?.data?.start_time * 1000)).format('DD')}
+                  title={reviewGameData?.data?.sport}
+                  startTime={moment(new Date(reviewGameData?.data?.start_time * 1000)).format('hh:mm a')}
+                  endTime={moment(new Date(reviewGameData?.data?.end_time * 1000)).format('hh:mm a')}
+                  location={reviewGameData?.data?.venue?.address}
+                  firstUserImage={reviewGameData?.home_team?.data?.full_image}
+                  firstTeamText={reviewGameData?.home_team?.data?.full_name}
+                  secondUserImage={reviewGameData?.away_team?.data?.full_image}
+                  secondTeamText={reviewGameData?.away_team?.data?.full_name}
+                  firstTeamPoint={8}
+                  secondTeamPoint={10}
+                />
+    <View style={styles.sepratorView} />
+  </View>
+  ), [reviewGameData])
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -2709,7 +2779,71 @@ const HomeScreen = ({ navigation, route }) => {
 
             </SafeAreaView>
           </View>
+          {/* Review Detail View */}
+          <Modal
+            isVisible={reviewDetailModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setRefereeInfoModalVisible(false)}
+            backdropOpacity={0}
+          >
+            <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
 
+              <Header
+                mainContainerStyle={styles.headerMainContainerStyle}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setReviewDetailModalVisible(false)}>
+                    <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setReviewDetailModalVisible(false)}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
+              <TCGradientDivider width={'100%'} height={3}/>
+
+              <FlatList
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        initialNumToRender={5}
+        bounces={true}
+        data={refereeReviewData?.reviews?.results?.[feedDataIndex]?.reviews ?? []}
+        ItemSeparatorComponent={newsFeedListItemSeperator}
+        ListHeaderComponent={feedScreenHeader}
+        scrollEnabled={true}
+        // ListFooterComponent={newsFeedListFooterComponent}
+        showsVerticalScrollIndicator={false}
+        renderItem={renderNewsFeed}
+        // onEndReached={onEndReached}
+        // onEndReachedThreshold={0.5}
+        // refreshing={pullRefresh}
+        // onRefresh={newsFeedOnRefresh}
+        keyExtractor={newsFeedKeyExtractor}
+      />
+              {/* <NewsFeedPostItems
+          // pullRefresh={pullRefresh}
+          item={reviewFeedData}
+          navigation={navigation}
+          caller_id={userID}
+          // onEditPressDone={onEditPressDone}
+          // onImageProfilePress={onProfileButtonPress}
+          // onLikePress={onLikeButtonPress}
+          // onDeletePost={onDeleteButtonPress}
+      /> */}
+            </SafeAreaView>
+          </Modal>
+          {/* Review Detail View */}
           <Modal
             isVisible={refereeInfoModalVisible}
             backdropColor="black"
@@ -2894,6 +3028,7 @@ const HomeScreen = ({ navigation, route }) => {
               <ReviewSection
                 reviewsData={averageRefereeReview}
                 reviewsFeed={refereeReviewData}
+                onFeedPress={() => alert(3)}
                 onReadMorePress={() => {
                   reviewerDetailModal();
                 }}
@@ -3207,6 +3342,7 @@ const HomeScreen = ({ navigation, route }) => {
               <ReviewSection
                 reviewsData={averageScorekeeperReview}
                 reviewsFeed={scorekeeperReviewData}
+                onFeedPress={() => alert(6)}
                 onReadMorePress={() => {
                   reviewerDetailModal();
                 }}
