@@ -253,17 +253,6 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
           titleStyle={{ fontFamily: fonts.RMedium }}
           containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
           />}
-          // ListFooterComponent={() => <View style={{ marginTop: 6 }}>
-          //   <View style={styles.lastReviewItemSeprator} />
-          //   <ReviewRatingView
-          //     title={'Punctuality'}
-          //     rating={Number(4.0)}
-          //     ratingCount={'4.0'}
-          //     rateStarSize={20}
-          //     titleStyle={{ fontFamily: fonts.RMedium }}
-          //     containerStyle={{ marginHorizontal: 0, marginLeft: 12 }}
-          //   />
-          // </View>}
           keyExtractor={(item, index) => index.toString()}
         />}
         <Text
@@ -289,21 +278,6 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
             style={{ marginVertical: 15 }}
             renderItem={({ item, index }) => (
               <View>
-                {/* <ReviewRecentMatch
-                  eventColor={item.color}
-                  startDate1={item.startDate1}
-                  startDate2={item.startDate2}
-                  title={item.title}
-                  startTime={item.startTime}
-                  endTime={item.endTime}
-                  location={item.location}
-                  firstUserImage={item.firstUserImage}
-                  firstTeamText={item.firstTeamText}
-                  secondUserImage={item.secondUserImage}
-                  secondTeamText={item.secondTeamText}
-                  firstTeamPoint={item.firstTeamPoint}
-                  secondTeamPoint={item.secondTeamPoint}
-                /> */}
                 <ReviewRecentMatch
                   eventColor={colors.themeColor}
                   startDate1={moment(new Date(item?.game?.data?.start_time * 1000)).format('MMM')}
@@ -346,12 +320,7 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
 }
 
 const styles = StyleSheet.create({
-  // lastReviewItemSeprator: {
-  //   height: 1,
-  //   marginLeft: 12,
-  //   marginVertical: 5,
-  //   backgroundColor: colors.lightgrayColor,
-  // },
+
   detailRatingTextStyle: {
     fontSize: 12,
     fontFamily: fonts.RRegular,
