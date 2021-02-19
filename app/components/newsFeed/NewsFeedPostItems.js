@@ -184,7 +184,7 @@ const NewsFeedPostItems = ({
   }
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <View style={styles.mainContainer}>
         <TouchableWithoutFeedback onPress={onImageProfilePress}>
           <Image

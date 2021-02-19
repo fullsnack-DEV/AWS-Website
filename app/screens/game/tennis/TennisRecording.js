@@ -76,6 +76,7 @@ export default function TennisRecording({ navigation, route }) {
   const isFocused = useIsFocused();
   const actionSheet = useRef();
   const scrollView = useRef();
+  const matchRecordsRef = useRef();
   const headerActionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
@@ -156,6 +157,8 @@ export default function TennisRecording({ navigation, route }) {
       clearInterval(timerForTimeline)
     }
   }, [])
+
+  const refreshMatchRecords = () => matchRecordsRef?.current?.refreshMatchRecords()
 
   const configurePeriodOpetions = (data) => {
     const opetions = ['End Match', 'Cancel'];
@@ -583,6 +586,7 @@ export default function TennisRecording({ navigation, route }) {
           startStopTimerTimeline();
         }
         getGameDetail(gameId, true);
+        refreshMatchRecords();
         console.log('GAME RESPONSE::', response.payload);
       })
       .catch((e) => {
@@ -853,7 +857,7 @@ export default function TennisRecording({ navigation, route }) {
                 <TennisScoreView scoreDataSource={gameObj}/>
               </View>
               <View style={styles.view2}>
-                <TennisMatchRecordsList isAdmin={route?.params?.isAdmin} matchData={gameData} visibleSetScore={false} visibleAddSetGameButton={visibleAddSetAndGameButton}/>
+                <TennisMatchRecordsList matchRef={matchRecordsRef} isAdmin={route?.params?.isAdmin} matchData={gameData} visibleSetScore={false} visibleAddSetGameButton={visibleAddSetAndGameButton}/>
               </View>
             </ScrollView>
           </View>

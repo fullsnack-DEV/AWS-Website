@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, Fragment, useContext,
+  useState, useEffect, Fragment, useContext, forwardRef, useImperativeHandle,
 } from 'react';
 import moment from 'moment';
 import {
@@ -39,14 +39,15 @@ import strings from '../../../Constants/String';
 import * as Utils from '../../challenge/ChallengeUtility';
 import AddSetGameModal from './AddSetGameModal';
 
-export default function TennisMatchRecordsList({
+const TennisMatchRecordsList = ({
+                                  matchRef,
   navigation,
   matchData,
   visibleSetScore = true,
   isAdmin,
   visibleAddSetGameButton = false,
   matchRecords3DotRef,
-}) {
+}) => {
   const authContext = useContext(AuthContext)
   const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
   const [editorChecked, setEditorChecked] = useState(false);
@@ -62,6 +63,11 @@ export default function TennisMatchRecordsList({
   const [visibleAddSetModal, setVisibleAddSetModal] = useState(false);
   const [visibleAddGameModal, setVisibleAddGameModal] = useState(false);
 
+  useImperativeHandle(matchRef, () => ({
+    refreshMatchRecords() {
+      loadAtOnce();
+    },
+  }))
   useEffect(() => {
     setVisibleAddSetAndGameButton(visibleAddSetGameButton)
   }, [visibleAddSetGameButton]);
@@ -893,3 +899,5 @@ const styles = StyleSheet.create({
     width: 12,
   },
 });
+
+export default forwardRef(TennisMatchRecordsList);

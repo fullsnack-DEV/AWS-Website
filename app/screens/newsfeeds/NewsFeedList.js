@@ -15,15 +15,16 @@ import AuthContext from '../../auth/context'
 const NewsFeedList = ({
   navigation,
   postData,
-  onEndReached,
+  onEndReached = () => {},
   footerLoading = false,
   scrollEnabled,
   ListHeaderComponent,
-  onEditPressDone,
-  onRefreshPress,
-  onDeletePost,
+  onEditPressDone = () => {},
+  onRefreshPress = () => {},
+  onDeletePost = () => {},
   pullRefresh = false,
-  onLikePress,
+  onLikePress = () => {},
+  onStartShouldSetResponderCapture = () => {},
 }) => {
   const [userID, setUserID] = useState('');
   const isFocused = useIsFocused();
@@ -96,8 +97,9 @@ const NewsFeedList = ({
   const newsFeedKeyExtractor = (item) => `feed1${item?.id?.toString()}`
 
   return (
-    <View>
+    <View onStartShouldSetResponderCapture={onStartShouldSetResponderCapture} style={{ flex: 1 }}>
       <FlatList
+        style={{ flex: 1 }}
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
@@ -113,6 +115,7 @@ const NewsFeedList = ({
         onEndReachedThreshold={0.5}
         refreshing={pullRefresh}
         onRefresh={newsFeedOnRefresh}
+        nestedScrollEnabled={true}
         keyExtractor={newsFeedKeyExtractor}
       />
     </View>
