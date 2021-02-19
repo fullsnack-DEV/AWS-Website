@@ -84,7 +84,7 @@ function BackgroundProfile({
         <View style={{ width: '100%', marginBottom: 20 }}>
           <Animated.Image
               style={{
- ...styles.profileImageStyle, height: imageSize, width: imageSize, profileImageStyle,
+ ...styles.profileImageStyle, height: imageSize, width: imageSize, ...profileImageStyle,
               }}
               source={profileImage ? { uri: profileImage } : profileImagePlaceholder}
           />

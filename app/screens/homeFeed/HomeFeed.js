@@ -17,7 +17,7 @@ import colors from '../../Constants/Colors';
 import TCInnerLoader from '../../components/TCInnerLoader';
 
 const HomeFeed = ({
-    userID,
+  userID,
   setProgressBar,
   setDoneUploadCount,
   setTotalUploadCount,
@@ -27,6 +27,7 @@ const HomeFeed = ({
   cancelRequest,
   currentUserData,
   isAdmin,
+  onStartShouldSetResponderCapture,
 }) => {
     const [loading, setLoading] = useState(true);
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
@@ -197,7 +198,7 @@ const HomeFeed = ({
         }
     }, [authContext, cancelRequest])
     return (
-      <>
+      <View style={{ flex: 1 }}>
         {useMemo(() => (isAdmin
           && <View>
             <WritePost
@@ -215,13 +216,14 @@ const HomeFeed = ({
         <ActivityLoader visible={fullScreenLoading}/>
         <TCInnerLoader visible={loading}/>
         <NewsFeedList
+            onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
             onDeletePost={onDeletePost}
             navigation={navigation}
-            postData={postData}
+            postData={postData?.slice(0, 5)}
             onEditPressDone={editPostDoneCall}
             onLikePress={onLikePress}
         />
-      </>
+      </View>
     )
 }
 

@@ -161,7 +161,6 @@ const HomeScreen = ({ navigation, route }) => {
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
   const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(false)
   const mainFlatListFromTop = new Animated.Value(0);
-
   const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(false)
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
@@ -1815,9 +1814,9 @@ const HomeScreen = ({ navigation, route }) => {
       }}
   />
 
-  const renderHomeMainTabContain = (tabKey) => (
-    <View>
-      {tabKey === 1 && (<View>
+  const renderHomeMainTabContain = (tabKey = currentTab) => (
+    <View style={{ flex: 1 }}>
+      {tabKey === 1 && (
         <HomeFeed
                 currentUserData={currentUserData}
                 isAdmin={isAdmin}
@@ -1830,7 +1829,7 @@ const HomeScreen = ({ navigation, route }) => {
                 setTotalUploadCount={setTotalUploadCount}
                 userID={route?.params?.uid ?? authContext.entity?.uid}
             />
-      </View>)}
+        )}
       {tabKey === 0 && (<View style={{ flex: 1 }} >
         {isUserHome && <UserInfo
                 navigation={navigation}
@@ -2124,14 +2123,14 @@ const HomeScreen = ({ navigation, route }) => {
       {tabKey === 5 && isTeamHome && (<View>
 
         <ReviewSection
-              isTeamReviewSection={true}
-              reviewsData={averageTeamReview}
-              reviewsFeed={teamReviewData}
-              onFeedPress={() => alert(5)}
-              onReadMorePress={() => {
-                reviewerDetailModal();
-              }}
-          />
+                isTeamReviewSection={true}
+                reviewsData={averageTeamReview}
+                reviewsFeed={teamReviewData}
+                onFeedPress={() => alert(5)}
+                onReadMorePress={() => {
+                  reviewerDetailModal();
+                }}
+            />
         {/* <TeamHomeReview
                   navigation={navigation}
                   teamID={route?.params?.uid || authContext.entity.uid}
@@ -2198,11 +2197,7 @@ const HomeScreen = ({ navigation, route }) => {
   const renderMainHeaderComponent = () => (
     <>
       <BackgroundProfile
-          imageSize={mainFlatListFromTop.interpolate({
-              inputRange: [0, 60, 75],
-              outputRange: [82, 65, 65],
-            })
-          }
+          imageSize={82}
           currentUserData={currentUserData}
           onConnectionButtonPress={onConnectionButtonPress}
       />
@@ -2224,28 +2219,21 @@ const HomeScreen = ({ navigation, route }) => {
                                            loggedInEntity={authContext.entity}
                                            onAction={onTeamAction}/>}
         <View style={styles.sepratorStyle}/>
-        {/* <TCScrollableProfileTabs */}
-        {/*  tabItem={isTeamHome ? ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery']} */}
-        {/*  onChangeTab={(ChangeTab) => { */}
-        {/*    // scrollToTop.current.refs.ScrollView.scrollTo({ y: Platform.OS === 'ios' ? 280 : 320 }) */}
-        {/*    setCurrentTab(ChangeTab.i) */}
-        {/*  }} */}
-        {/*  currentTab={currentTab} */}
-        {/*  renderTabContain={renderHomeMainTabContain}/> */}
       </View>
 
     </>
     )
 
   const renderMainFlatList = () => (
-    <>
+    <View style={{ flex: 1 }}>
       {renderMainHeaderComponent()}
       <TCScrollableProfileTabs
-      tabItem={isTeamHome ? ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery']}
-      onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
-      currentTab={currentTab}
-      renderTabContain={renderHomeMainTabContain}/>
-    </>
+        tabItem={isTeamHome ? ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery']}
+        onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
+        currentTab={currentTab}
+      />
+      {renderHomeMainTabContain()}
+    </View>
   )
 
 const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
@@ -2380,7 +2368,12 @@ const feedScreenHeader = useMemo(() => (
           </TouchableOpacity></View>}
       </View>}
       <ActivityLoader visible={loading} />
-      <ParallaxScrollView
+      <View style={{ flex: 1 }}>
+        <ParallaxScrollView
+          style={{ flex: 1 }}
+          nestedScrollEnabled={true}
+          scrollEventThrottle={16}
+          scrollEnabled={true}
           onScroll={handleMainRefOnScroll}
           ref={scrollToTop}
           backgroundColor="white"
@@ -2391,9 +2384,10 @@ const feedScreenHeader = useMemo(() => (
           renderFixedHeader={renderFixedHeader}
           renderStickyHeader={renderStickyHeader}
           renderBackground={renderBackground}>
-        {renderMainFlatList()}
-      </ParallaxScrollView>
+          {renderMainFlatList()}
+        </ParallaxScrollView>
 
+      </View>
       <PlayInModule
           openPlayInModal={() => setPlaysInModalVisible(true)}
           onModalClose={() => setPlaysInModalVisible(false)}
