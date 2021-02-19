@@ -202,14 +202,14 @@ const patchRefereeReview = (refereeId, gameId, reviewID, params, authContext) =>
 
 const addScorekeeperReview = (scorekeeperId, gameId, params, authContext) => makeAPIRequest({
   method: 'post',
-  url: `${Config.BASE_URL}scorekeeper/${scorekeeperId}/games/${gameId}/reviews`,
+  url: `${Config.BASE_URL}scorekeepers/${scorekeeperId}/games/${gameId}/reviews`,
   data: params,
   authContext,
 })
 
 const patchScorekeeperReview = (scorekeeperId, gameId, reviewID, params, authContext) => makeAPIRequest({
   method: 'patch',
-  url: `${Config.BASE_URL}scorekeeper/${scorekeeperId}/games/${gameId}/reviews/${reviewID}`,
+  url: `${Config.BASE_URL}scorekeepers/${scorekeeperId}/games/${gameId}/reviews/${reviewID}`,
   data: params,
   authContext,
 })

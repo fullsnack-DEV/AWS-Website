@@ -207,12 +207,11 @@ function ReviewSection({
 
 }) {
   // const [reviewAllData] = useState(review_all_data);
-  const [reviewAllData] = useState(reviewsFeed?.reviews?.results ?? []);
   const [teamPropertyList, setTeamPropertyList] = useState([]);
   const [teamKeyValueList, setTeamKeyValueList] = useState([]);
 
 useEffect(() => {
-console.log('ReviewAllData::=>', reviewAllData[0]);
+console.log('ReviewAllData::=>', reviewsData);
 }, [reviewsFeed?.reviews?.results])
 
   useEffect(() => {
@@ -290,8 +289,8 @@ console.log('ReviewAllData::=>', reviewAllData[0]);
                   firstTeamText={item?.game?.home_team?.data?.full_name}
                   secondUserImage={item?.game?.away_team?.data?.full_image}
                   secondTeamText={item?.game?.away_team?.data?.full_name}
-                  firstTeamPoint={8}
-                  secondTeamPoint={10}
+                  firstTeamPoint={item?.game?.data?.home_team_goal ?? 0}
+                  secondTeamPoint={item?.game?.data?.away_team_goal ?? 0}
                 />
                 <Carousel
                   data={item.reviews}
