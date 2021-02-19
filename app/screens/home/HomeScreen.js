@@ -5,8 +5,8 @@ import React, {
 import FastImage from 'react-native-fast-image';
 import {
   Image,
-    Animated,
-  StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, ScrollView, SafeAreaView, Dimensions,
+  Animated,
+  StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, ScrollView, SafeAreaView, Dimensions, Platform,
 
 } from 'react-native';
 import {
@@ -15,7 +15,7 @@ import {
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import moment from 'moment';
-// import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
 // import { BlurView } from '@react-native-community/blur';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -247,7 +247,6 @@ const HomeScreen = ({ navigation, route }) => {
   const timeTableSelectionDate = moment(timetableSelectDate).format('YYYY-MM-DD');
   const eventEditDeleteAction = useRef();
   const addRoleActionSheet = useRef();
-  const mainFlatListRef = useRef();
 
   useEffect(() => {
     // const unsubscribe = navigation.addListener('focus', async () => {
@@ -536,7 +535,7 @@ const HomeScreen = ({ navigation, route }) => {
     }
   }
 
-  // const scrollToTop = useRef();
+  const scrollToTop = useRef();
 
   const allData = [];
   const fromMeData = [];
@@ -1642,12 +1641,184 @@ const HomeScreen = ({ navigation, route }) => {
     }
   }
 
-  const renderHomeMainTabContain = () => {
-    const tabKey = currentTab;
-    return (
-      <ScrollView>
-        {tabKey === 0 && (<View>
-          <HomeFeed
+  const onCalenderDayPress = (day) => {
+    setEventSelectDate(day.dateString);
+    const date = moment(day.dateString).format('YYYY-MM-DD');
+    const data = [];
+    eventData.filter((event_item) => {
+      const startDate = new Date(event_item.start_datetime * 1000);
+      const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+      if (eventDateSelect === date) {
+        data.push(event_item);
+      }
+      return null;
+    });
+    setFilterEventData(data);
+    return null;
+  }
+
+  const renderChildCalender = ({ item: itemValue }) => {
+    const entity = authContext.entity
+    return (itemValue.cal_type === 'event' && <EventInCalender
+        onPress={async () => {
+          if (itemValue?.game_id) {
+            if (itemValue?.game?.sport) {
+              const gameHome = getGameHomeScreen(itemValue.game.sport);
+              navigation.navigate(gameHome, {
+                gameId: itemValue.game_id,
+              })
+            }
+          } else {
+            getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
+              navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
+            }).catch((e) => {
+              console.log('Error :-', e);
+            })
+          }
+        }}
+        eventBetweenSection={itemValue.game}
+        eventOfSection={itemValue.game && itemValue.game.referees && itemValue.game.referees.length > 0}
+        onThreeDotPress={() => setSelectedEventItem(itemValue)}
+        data={itemValue}
+        entity={authContext.entity}
+    />)
+  }
+
+  const renderCalenderHeaderComponent = () => (
+    <View style={{ flexDirection: 'row' }}>
+      <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
+      <Text style={styles.headerTodayText}>
+        {moment(selectionDate).calendar(null, {
+        lastWeek: '[Last] dddd',
+        lastDay: '[Yesterday]',
+        sameDay: '[Today]',
+        nextDay: '[Tomorrow]',
+        nextWeek: 'dddd',
+      })}
+      </Text>
+    </View>
+)
+  const renderMainCalender = (item) => {
+    if (item.length > 0) {
+      return (
+        <FlatList
+              data={item}
+              renderItem={renderChildCalender}
+              ListHeaderComponent={renderCalenderHeaderComponent}
+              bounces={false}
+              style={{ flex: 1 }}
+              keyExtractor={(itemValueKey, index) => index.toString()}
+          />
+      );
+    }
+    return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
+  }
+
+  const onInnerCalenderDayPress = (day) => {
+    setTimeTableSelectDate(day.dateString);
+    const date = moment(day.dateString).format('YYYY-MM-DD');
+    const dataItem = [];
+    timeTable.filter((time_table_item) => {
+      const startDate = new Date(time_table_item.start_datetime * 1000);
+      const endDate = new Date(time_table_item.end_datetime * 1000);
+      const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
+      if (eventDateSelect === date) {
+        const obj = {
+          ...time_table_item,
+          start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
+          end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+        };
+        dataItem.push(obj);
+      }
+      return null;
+    });
+    setFilterTimeTable(dataItem);
+    return null;
+  }
+
+  const renderInnerCalender = (item) => <View>
+    <EventCalendar
+        eventTapped={(event) => { console.log('Event ::--', event) }}
+        events={item}
+        width={width}
+        initDate={timeTableSelectionDate}
+        scrollToFirst={true}
+        renderEvent={(event) => {
+          let event_color = colors.themeColor;
+          let eventTitle = 'Game';
+          let eventDesc = 'Game With';
+          let eventDesc2 = '';
+          if (event.color && event.color.length > 0) {
+            if (event.color[0] !== '#') {
+              event_color = `#${event.color}`;
+            } else {
+              event_color = event.color;
+            }
+          }
+          if (event && event.title) {
+            eventTitle = event.title;
+          }
+          if (event && event.descriptions) {
+            eventDesc = event.descriptions;
+          }
+          if (event.game && event.game.away_team) {
+            eventDesc2 = event.game.away_team.group_name;
+          }
+          return (
+            <View style={{ flex: 1 }}>
+              {event.cal_type === 'event' && <CalendarTimeTableView
+                    title={eventTitle}
+                    summary={`${eventDesc} ${eventDesc2}`}
+                    containerStyle={{ borderLeftColor: event_color, width: event.width }}
+                    eventTitleStyle={{ color: event_color }}
+                />}
+              {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
+                  width: event.width + 68, height: event.height,
+                }]} />}
+            </View>
+          );
+        }}
+        styles={{
+          event: styles.eventViewStyle,
+          line: { backgroundColor: colors.lightgrayColor },
+        }}
+    />
+    {item.length > 0 && <FlatList
+        data={item}
+        scrollEnabled={false}
+        showsHorizontalScrollIndicator={ false }
+        renderItem={ ({ item: blockItem }) => {
+          if (blockItem.cal_type === 'blocked') {
+            return (
+              <EventBlockTimeTableView
+                    blockText={'Blocked Zone'}
+                    blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
+                />
+            );
+          }
+          return <View />;
+        }}
+        ItemSeparatorComponent={ () => (
+          <View style={ { height: wp('3%') } } />
+        ) }
+        style={ { marginVertical: wp('4%') } }
+        keyExtractor={(itemValue, index) => index.toString() }
+    />}
+  </View>
+
+  const renderRefereeReservation = ({ item }) => <RefereeReservationItem
+      data={item}
+      onPressButton = {() => {
+        setIsRefereeModal(false);
+        console.log('choose Referee:', item);
+        goToRefereReservationDetail(item)
+      }}
+  />
+
+  const renderHomeMainTabContain = (tabKey) => (
+    <View>
+      {tabKey === 1 && (<View>
+        <HomeFeed
                 currentUserData={currentUserData}
                 isAdmin={isAdmin}
                 navigation={navigation}
@@ -1659,9 +1830,9 @@ const HomeScreen = ({ navigation, route }) => {
                 setTotalUploadCount={setTotalUploadCount}
                 userID={route?.params?.uid ?? authContext.entity?.uid}
             />
-        </View>)}
-        {tabKey === 1 && (<View style={{ flex: 1 }} >
-          {isUserHome && <UserInfo
+      </View>)}
+      {tabKey === 0 && (<View style={{ flex: 1 }} >
+        {isUserHome && <UserInfo
                 navigation={navigation}
                 userDetails={currentUserData}
                 isAdmin={isAdmin}
@@ -1670,7 +1841,7 @@ const HomeScreen = ({ navigation, route }) => {
                 onRefereesInPress={refereesInModal}
                 onPlayInPress={playInModel}
             />}
-          {(isClubHome || isTeamHome) && <GroupInfo
+        {(isClubHome || isTeamHome) && <GroupInfo
                 navigation={navigation}
                 groupDetails={currentUserData}
                 isAdmin={isAdmin}
@@ -1678,9 +1849,9 @@ const HomeScreen = ({ navigation, route }) => {
                 onGroupPress={onTeamPress}
                 onMemberPress={onMemberPress}
             />}
-        </View>)}
-        {tabKey === 2 && (<View style={{ flex: 1 }}>
-          <TCSearchBox
+      </View>)}
+      {tabKey === 2 && (<View style={{ flex: 1 }}>
+        <TCSearchBox
                 onChangeText={onScoreboardSearchTextChange}
                 marginTop={20}
                 marginBottom={5}
@@ -1691,7 +1862,7 @@ const HomeScreen = ({ navigation, route }) => {
                 height={40}
                 shadowOpacity={0}
             />
-          <ScoreboardSportsScreen
+        <ScoreboardSportsScreen
                 sportsData={scoreboardSearchText.length > 0 ? filterScoreboardGameData : scoreboardGameData}
                 navigation={navigation}
                 onItemPress={() => {
@@ -1699,22 +1870,20 @@ const HomeScreen = ({ navigation, route }) => {
                   setRefereesInModalVisible(false);
                 }}
             />
-        </View>)}
-        {tabKey === 3 && (<View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-
-            <ScheduleTabView
+      </View>)}
+      {tabKey === 3 && (<View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+          <ScheduleTabView
                   firstTabTitle={'Events'}
                   secondTabTitle={'Calender'}
                   indexCounter={scheduleIndexCounter}
                   onFirstTabPress={() => setScheduleIndexCounter(0)}
                   onSecondTabPress={() => setScheduleIndexCounter(1)}
               />
-
-          </View>
-          {!eventData && <TCInnerLoader visible={true}/>}
-          {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
-            <EventScheduleScreen
+        </View>
+        {!eventData && <TCInnerLoader visible={true}/>}
+        {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+          <EventScheduleScreen
                   eventData={eventData}
                   navigation={navigation}
                   profileID={route?.params?.uid || authContext.entity.uid}
@@ -1723,211 +1892,49 @@ const HomeScreen = ({ navigation, route }) => {
                   onItemPress={onSchedultEventItemPress}
                   entity={authContext.entity}
               />
-          </View>}
+        </View>}
 
-          {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
-            <View style={styles.shceduleCalenderView}>
-              <BackForwardView
-                    textValue={moment(selectionDate).format('MMMM YYYY')}
-                />
-              <View>
-                <TwoTabView
+        {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
+          <View style={styles.shceduleCalenderView}>
+            <BackForwardView textValue={moment(selectionDate).format('MMMM YYYY')} />
+            <View>
+              <TwoTabView
                       firstTabTitle={'Events'}
                       secondTabTitle={'Timetable'}
                       indexCounter={calenderInnerIndexCounter}
                       onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
                       onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
                   />
-              </View>
             </View>
+          </View>
 
-            {calenderInnerIndexCounter === 0 && <EventAgendaSection
-                  items={{
-                    [selectionDate.toString()]: [filterEventData],
-                  }}
+          {calenderInnerIndexCounter === 0 && <EventAgendaSection
+                  items={{ [selectionDate.toString()]: [filterEventData] }}
                   selected={selectionDate}
-                  onDayPress={(day) => {
-                    setEventSelectDate(day.dateString);
-                    const date = moment(day.dateString).format('YYYY-MM-DD');
-                    const data = [];
-                    eventData.filter((event_item) => {
-                      const startDate = new Date(event_item.start_datetime * 1000);
-                      const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-                      if (eventDateSelect === date) {
-                        data.push(event_item);
-                      }
-                      return null;
-                    });
-                    setFilterEventData(data);
-                    return null;
-                  }}
-                  renderItem={(item) => {
-                    const entity = authContext.entity
-                    if (item.length > 0) {
-                      return (
-                        <FlatList
-                              data={item}
-                              renderItem={({ item: itemValue }) => (itemValue.cal_type === 'event' && <EventInCalender
-                                  onPress={async () => {
-                                    if (itemValue?.game_id) {
-                                      if (itemValue?.game?.sport) {
-                                        const gameHome = getGameHomeScreen(itemValue.game.sport);
-                                        navigation.navigate(gameHome, {
-                                          gameId: itemValue.game_id,
-                                        })
-                                      }
-                                    } else {
-                                      getEventById(entity.role === 'user' ? 'users' : 'groups', entity.uid || entity.auth.user_id, itemValue.cal_id, authContext).then((response) => {
-                                        navigation.navigate('EventScreen', { data: response.payload, gameData: itemValue });
-                                      }).catch((e) => {
-                                        console.log('Error :-', e);
-                                      })
-                                    }
-                                  }}
-                                  eventBetweenSection={itemValue.game}
-                                  eventOfSection={itemValue.game && itemValue.game.referees && itemValue.game.referees.length > 0}
-                                  onThreeDotPress={() => {
-                                    setSelectedEventItem(itemValue);
-                                  }}
-                                  data={itemValue}
-                                  entity={authContext.entity}
-                              />)}
-                              ListHeaderComponent={() => <View style={{ flexDirection: 'row' }}>
-                                <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
-                                <Text style={styles.headerTodayText}>
-                                  {moment(selectionDate).calendar(null, {
-                                    lastWeek: '[Last] dddd',
-                                    lastDay: '[Yesterday]',
-                                    sameDay: '[Today]',
-                                    nextDay: '[Tomorrow]',
-                                    nextWeek: 'dddd',
-                                  })}
-                                </Text>
-                              </View>}
-                              bounces={false}
-                              style={{ flex: 1 }}
-                              keyExtractor={(itemValueKey, index) => index.toString()}
-                          />
-                      );
-                    }
-                    return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
-                  }}
+                  onDayPress={onCalenderDayPress}
+                  renderItem={renderMainCalender}
               />}
 
-            {calenderInnerIndexCounter === 1 && <EventAgendaSection
-                  items={{
-                    [timeTableSelectionDate.toString()]: [filterTimeTable],
-                  }}
-                  onDayPress={(day) => {
-                    setTimeTableSelectDate(day.dateString);
-                    const date = moment(day.dateString).format('YYYY-MM-DD');
-                    const dataItem = [];
-                    timeTable.filter((time_table_item) => {
-                      const startDate = new Date(time_table_item.start_datetime * 1000);
-                      const endDate = new Date(time_table_item.end_datetime * 1000);
-                      const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
-                      if (eventDateSelect === date) {
-                        const obj = {
-                          ...time_table_item,
-                          start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
-                          end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-                        };
-                        dataItem.push(obj);
-                      }
-                      return null;
-                    });
-                    setFilterTimeTable(dataItem);
-                    return null;
-                  }}
-                  renderItem={(item) => <View>
-                    <EventCalendar
-                        eventTapped={(event) => { console.log('Event ::--', event) }}
-                        events={item}
-                        width={width}
-                        initDate={timeTableSelectionDate}
-                        scrollToFirst={true}
-                        renderEvent={(event) => {
-                          let event_color = colors.themeColor;
-                          let eventTitle = 'Game';
-                          let eventDesc = 'Game With';
-                          let eventDesc2 = '';
-                          if (event.color && event.color.length > 0) {
-                            if (event.color[0] !== '#') {
-                              event_color = `#${event.color}`;
-                            } else {
-                              event_color = event.color;
-                            }
-                          }
-                          if (event && event.title) {
-                            eventTitle = event.title;
-                          }
-                          if (event && event.descriptions) {
-                            eventDesc = event.descriptions;
-                          }
-                          if (event.game && event.game.away_team) {
-                            eventDesc2 = event.game.away_team.group_name;
-                          }
-                          return (
-                            <View style={{ flex: 1 }}>
-                              {event.cal_type === 'event' && <CalendarTimeTableView
-                                    title={eventTitle}
-                                    summary={`${eventDesc} ${eventDesc2}`}
-                                    containerStyle={{ borderLeftColor: event_color, width: event.width }}
-                                    eventTitleStyle={{ color: event_color }}
-                                />}
-                              {event.cal_type === 'blocked' && <View style={[styles.blockedViewStyle, {
-                                  width: event.width + 68, height: event.height,
-                                }]} />}
-                            </View>
-                          );
-                        }}
-                        styles={{
-                          event: styles.eventViewStyle,
-                          line: { backgroundColor: colors.lightgrayColor },
-                        }}
-                    />
-                    {item.length > 0 && <FlatList
-                        data={item}
-                        scrollEnabled={false}
-                        showsHorizontalScrollIndicator={ false }
-                        renderItem={ ({ item: blockItem }) => {
-                          if (blockItem.cal_type === 'blocked') {
-                            return (
-                              <EventBlockTimeTableView
-                                    blockText={'Blocked Zone'}
-                                    blockZoneTime={`${moment(blockItem.start).format('hh:mma')} - ${moment(blockItem.end).format('hh:mma')}`}
-                                />
-                            );
-                          }
-                          return <View />;
-                        }}
-                        ItemSeparatorComponent={ () => (
-                          <View style={ { height: wp('3%') } } />
-                        ) }
-                        style={ { marginVertical: wp('4%') } }
-                        keyExtractor={(itemValue, index) => index.toString() }
-                    />}
-                  </View>}
+          {calenderInnerIndexCounter === 1 && <EventAgendaSection
+                  items={{ [timeTableSelectionDate.toString()]: [filterTimeTable] }}
+                  onDayPress={onInnerCalenderDayPress}
+                  renderItem={renderInnerCalender}
               />}
-          </View>}
+        </View>}
 
-          <Modal
+        <Modal
                 isVisible={isRefereeModal}
                 backdropColor="black"
                 style={{ margin: 0, justifyContent: 'flex-end' }}
                 hasBackdrop
-                onBackdropPress={() => {
-                  setIsRefereeModal(false);
-                }}
+                onBackdropPress={() => setIsRefereeModal(false)}
                 backdropOpacity={0}
             >
-            <SafeAreaView style={styles.modalMainViewStyle}>
-              <Header
+          <SafeAreaView style={styles.modalMainViewStyle}>
+            <Header
                     mainContainerStyle={styles.refereeHeaderMainStyle}
                     leftComponent={
-                      <TouchableOpacity onPress={() => {
-                        setIsRefereeModal(false);
-                      }}>
+                      <TouchableOpacity onPress={() => setIsRefereeModal(false)}>
                         <Image source={images.cancelImage} style={[styles.cancelImageStyle, { tintColor: colors.blackColor }]} resizeMode={'contain'} />
                       </TouchableOpacity>
                     }
@@ -1935,25 +1942,18 @@ const HomeScreen = ({ navigation, route }) => {
                       <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
                     }
                 />
-              <View style={styles.refereeSepratorStyle} />
-              <FlatList
+            <View style={styles.refereeSepratorStyle} />
+            <FlatList
                     data={refereeReservData}
                     bounces={false}
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
-                    renderItem={({ item }) => <RefereeReservationItem
-                        data={item}
-                        onPressButton = {() => {
-                          setIsRefereeModal(false);
-                          console.log('choose Referee:', item);
-                          goToRefereReservationDetail(item)
-                        }}
-                    />}
+                    renderItem={renderRefereeReservation}
                     keyExtractor={(item, index) => index.toString()}
                 />
-            </SafeAreaView>
-          </Modal>
-          <ActionSheet
+          </SafeAreaView>
+        </Modal>
+        <ActionSheet
                 ref={eventEditDeleteAction}
                 options={actionSheetOpetions()}
                 cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
@@ -2074,7 +2074,7 @@ const HomeScreen = ({ navigation, route }) => {
                   setSelectedEventItem(null);
                 }}
             />
-          <CreateEventBtnModal
+        <CreateEventBtnModal
                 visible={createEventModal}
                 onCancelPress={() => setCreateEventModal(false)}
                 onCreateEventPress={() => {
@@ -2086,16 +2086,16 @@ const HomeScreen = ({ navigation, route }) => {
                   navigation.navigate('EditChallengeAvailability')
                 }}
             />
-        </View>)}
-        {tabKey === 4 && (<View>
-          <TabView
+      </View>)}
+      {tabKey === 4 && (<View>
+        <TabView
                     indexCounter={indexCounter}
                     onFirstTabPress={() => setIndexCounter(0)}
                     onSecondTabPress={() => setIndexCounter(1)}
                     onThirdTabPress={() => setIndexCounter(2)}
                 />
-          <View style={styles.sepratorLineStyle} />
-          {indexCounter === 0 && <FlatList
+        <View style={styles.sepratorLineStyle} />
+        {indexCounter === 0 && <FlatList
                     data={['0', ...allData]}
                     bounces={false}
                     renderItem={({ item, index }) => allGalleryRenderItem(item, index)}
@@ -2103,7 +2103,7 @@ const HomeScreen = ({ navigation, route }) => {
                     style={{ marginHorizontal: 1.5 }}
                     keyExtractor={(item, index) => index}
                 />}
-          {indexCounter === 1 && <FlatList
+        {indexCounter === 1 && <FlatList
                     data={['0', ...fromMeData]}
                     bounces={false}
                     renderItem={({ item, index }) => fromMeRenderItem(item, index)}
@@ -2111,7 +2111,7 @@ const HomeScreen = ({ navigation, route }) => {
                     style={{ marginHorizontal: 1.5 }}
                     keyExtractor={(item, index) => index}
                 />}
-          {indexCounter === 2 && <FlatList
+        {indexCounter === 2 && <FlatList
                     data={['0', ...taggedData]}
                     bounces={false}
                     renderItem={({ item, index }) => taggedRenderItem(item, index)}
@@ -2119,11 +2119,11 @@ const HomeScreen = ({ navigation, route }) => {
                     style={{ marginHorizontal: 1.5 }}
                     keyExtractor={(item, index) => index}
                 />}
-        </View>
+      </View>
           )}
-        {tabKey === 5 && isTeamHome && (<View>
+      {tabKey === 5 && isTeamHome && (<View>
 
-          <ReviewSection
+        <ReviewSection
               isTeamReviewSection={true}
               reviewsData={averageTeamReview}
               reviewsFeed={teamReviewData}
@@ -2132,18 +2132,17 @@ const HomeScreen = ({ navigation, route }) => {
                 reviewerDetailModal();
               }}
           />
-          {/* <TeamHomeReview
+        {/* <TeamHomeReview
                   navigation={navigation}
                   teamID={route?.params?.uid || authContext.entity.uid}
                   getSoccerTeamReview={getTeamReviewById}
                   isAdmin={isAdmin}
                   // gameData={gameData}
                   /> */}
-        </View>)
+      </View>)
           }
-      </ScrollView>
+    </View>
     )
-  }
 
   const handleMainRefOnScroll = (event) => {
     mainFlatListFromTop.setValue(event?.nativeEvent?.contentOffset?.y ?? 0);
@@ -2181,43 +2180,23 @@ const HomeScreen = ({ navigation, route }) => {
   )
 
   const renderStickyHeader = () => (
-    <Animated.View style={{
-      position: 'absolute',
-      zIndex: 1,
-      width: wp(100),
-      height: 75,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'black',
-        opacity: mainFlatListFromTop.interpolate({
-          inputRange: [0, 75],
-          outputRange: [0, 1],
-        }),
-    }}>
-      <View style={{
- position: 'absolute', top: 0, right: 0, left: 0, alignItems: 'center', justifyContent: 'center',
-      }}>
-        <FastImage source={{ uri: bgImage }} resizeMode={FastImage.resizeMode.cover} style={{ width: wp(100), height: 75 }} />
-      </View>
-      {/* <BlurView */}
-      {/*    viewRef={viewRef} */}
-      {/*    style={styles.blurViewStyle} */}
-      {/*    blurType="light" */}
-      {/*    blurAmount={2} */}
-      {/*    blurRadius={10} */}
-      {/*    reducedTransparencyFallbackColor="white" */}
-      {/* /> */}
-      <Text style={styles.userTextStyle}>{fullName}</Text>
-    </Animated.View>
+    <View>
+      {bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
+      <Header
+            safeAreaStyle={{ position: 'absolute' }}
+            centerComponent={
+              <Text style={styles.userTextStyle}>{fullName}</Text>
+            }
+        />
+    </View>
   )
 
   const renderBackground = () => (
       bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
   )
 
-  const renderMainHeaderComponent = (
+  const renderMainHeaderComponent = () => (
     <>
-      {renderBackground()}
       <BackgroundProfile
           imageSize={mainFlatListFromTop.interpolate({
               inputRange: [0, 60, 75],
@@ -2259,10 +2238,14 @@ const HomeScreen = ({ navigation, route }) => {
     )
 
   const renderMainFlatList = () => (
-    <TCScrollableProfileTabs
-          tabItem={isTeamHome ? ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
-          onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
-          currentTab={currentTab}/>
+    <>
+      {renderMainHeaderComponent()}
+      <TCScrollableProfileTabs
+      tabItem={isTeamHome ? ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery']}
+      onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
+      currentTab={currentTab}
+      renderTabContain={renderHomeMainTabContain}/>
+    </>
   )
 
 const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
@@ -2359,7 +2342,7 @@ const feedScreenHeader = useMemo(() => (
   </View>
   ), [reviewGameData])
   return (
-    <ScrollView style={ styles.mainContainer }>
+    <View style={ styles.mainContainer }>
       <ActionSheet
         ref={addRoleActionSheet}
         options={[strings.addPlaying, strings.addRefereeing, strings.addScorekeeping, strings.cancel]}
@@ -2397,33 +2380,20 @@ const feedScreenHeader = useMemo(() => (
           </TouchableOpacity></View>}
       </View>}
       <ActivityLoader visible={loading} />
-      {renderFixedHeader()}
-      {renderStickyHeader()}
-      {/* <ParallaxScrollView */}
-      {/*    ref={scrollToTop} */}
-      {/*    backgroundColor="white" */}
-      {/*    contentBackgroundColor="white" */}
-      {/*    parallaxHeaderHeight={hp(30)} */}
-      {/*    stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50} */}
-      {/*    fadeOutForeground={false} */}
-      {/*    renderFixedHeader={renderFixedHeader} */}
-      {/*    renderStickyHeader={renderStickyHeader} */}
-      {/*    renderBackground={renderBackground}> */}
-      {/*  <TCScrollableProfileTabs */}
-      {/*      tabItem={isTeamHome ? ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Info', 'Post', 'Scoreboard', 'Schedule', 'Gallery']} */}
-      {/*      onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)} */}
-      {/*      currentTab={currentTab} */}
-      {/*      renderTabContain={renderHomeMainTabContain}/> */}
-      {/* </ParallaxScrollView> */}
-      <FlatList
-          bounces={false}
+      <ParallaxScrollView
           onScroll={handleMainRefOnScroll}
-          ref={mainFlatListRef}
-          data={[1]}
-          renderItem={renderMainFlatList}
-          ListHeaderComponent={renderMainHeaderComponent}
-          ListFooterComponent={renderHomeMainTabContain}
-      />
+          ref={scrollToTop}
+          backgroundColor="white"
+          contentBackgroundColor="white"
+          parallaxHeaderHeight={200}
+          stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
+          fadeOutForeground={true}
+          renderFixedHeader={renderFixedHeader}
+          renderStickyHeader={renderStickyHeader}
+          renderBackground={renderBackground}>
+        {renderMainFlatList()}
+      </ParallaxScrollView>
+
       <PlayInModule
           openPlayInModal={() => setPlaysInModalVisible(true)}
           onModalClose={() => setPlaysInModalVisible(false)}
@@ -3543,7 +3513,7 @@ const feedScreenHeader = useMemo(() => (
         }}
         postDataItem={currentUserData}
       />}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -3569,6 +3539,7 @@ const styles = StyleSheet.create({
     marginVertical: 1,
   },
   bgImageStyle: {
+    backgroundColor: colors.darkGrayTrashColor,
     width: wp(100),
     height: 200,
     alignItems: 'center',
@@ -3737,6 +3708,10 @@ const styles = StyleSheet.create({
   refereeSepratorStyle: {
     height: 1,
     backgroundColor: colors.writePostSepratorColor,
+  },
+  stickyImageStyle: {
+    width: wp('100%'),
+    height: 90,
   },
   // blurViewStyle: {
   //   position: 'absolute',
