@@ -31,8 +31,6 @@ function ReviewerItemView({
   onFeedPress,
 }) {
   const videoPlayerRef = useRef();
-  const [like, setLike] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
   const [reviewObj, setReviewObj] = useState();
   const actionSheet = useRef();
   let attachedImages = [];
@@ -41,14 +39,8 @@ function ReviewerItemView({
   }
   useEffect(() => {
     console.log('Feed data::=>', item);
-    console.log(
-      'Feed Review data::=>',
-      JSON.parse(item?.object)?.refereeReview,
-    );
-    setReviewObj(JSON.parse(item?.object)?.refereeReview);
-    console.log('totalData length::', totalData);
-    console.log('Index::', indexNumber);
-  }, []);
+    setReviewObj(JSON.parse(item?.object)?.refereeReview || JSON.parse(item?.object)?.scorekeeperReview);
+  }, [item]);
 
   return (
     <TouchableOpacity onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, false)}>
@@ -285,16 +277,13 @@ function ReviewerItemView({
                 style={{
                   flexDirection: 'row',
                 }}>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={styles.imageTouchStyle}>
-                  <Image
+
+                <Image
                     style={[styles.commentImage, { top: 2 }]}
                     source={images.commentImage}
                     resizeMode={'contain'}
                   />
-                </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>{item?.latest_reactions?.comment?.length ?? 0}</Text>
+                <Text style={styles.commentlengthStyle}>{item?.reaction_counts?.comment ?? 0}</Text>
               </View>
 
               <View
@@ -304,16 +293,14 @@ function ReviewerItemView({
                   justifyContent: 'center',
                   marginLeft: 10,
                 }}>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={styles.imageTouchStyle}>
-                  <Image
+
+                <Image
                     style={styles.commentImage}
                     source={images.shareImage}
                     resizeMode={'contain'}
                   />
-                </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>2</Text>
+
+                <Text style={styles.commentlengthStyle}>0</Text>
               </View>
             </View>
 
@@ -325,40 +312,14 @@ function ReviewerItemView({
                 alignItems: 'center',
               }}>
               <Text
-                style={[
-                  styles.commentlengthStyle,
-                  {
-                    color:
-                      like === true ? '#FF8A01' : colors.reactionCountColor,
-                  },
-                ]}>
-                {item?.latest_reactions?.clap?.length ?? 0}
+                style={styles.commentlengthStyle}>
+                {item?.reaction_counts?.clap ?? 0}
               </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setLike(!like);
-                  if (like) {
-                    setLikeCount(likeCount - 1);
-                  } else {
-                    setLikeCount(likeCount + 1);
-                  }
-                  // onLikePress()
-                }}
-                style={styles.imageTouchStyle}>
-                {like === true ? (
-                  <Image
-                    style={styles.commentImage}
-                    source={images.likeImage}
-                    resizeMode={'contain'}
-                  />
-                ) : (
-                  <Image
+              <Image
                     style={styles.commentImage}
                     source={images.unlikeImage}
                     resizeMode={'contain'}
                   />
-                )}
-              </TouchableOpacity>
             </View>
           </View>
           <ActionSheet
@@ -455,12 +416,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
   },
-  imageTouchStyle: {
-    alignItems: 'center',
-    height: hp('3%'),
-    justifyContent: 'center',
-    width: hp('3%'),
-  },
+
   mainContainer: {
     flexDirection: 'row',
     margin: wp('3%'),

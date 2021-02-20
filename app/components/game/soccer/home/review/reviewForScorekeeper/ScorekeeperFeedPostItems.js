@@ -44,7 +44,7 @@ import MultiPostVideo from '../../../../../newsFeed/MultiPostVideo';
 import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 import WriteReviewComment from '../../../../../newsFeed/WriteReviewComment';
 
-function RefereeFeedPostItems({
+function ScorekeeperFeedPostItems({
   navigation,
   item,
   onLikePress,
@@ -81,6 +81,7 @@ function RefereeFeedPostItems({
   }, []);
 
   useEffect(() => {
+    console.log('ITEM::=>', item);
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
       setLikeCount(item?.reaction_counts?.clap);
@@ -110,12 +111,12 @@ function RefereeFeedPostItems({
   let descriptions = '';
   if (item?.object) {
     if (
-      JSON.parse(item?.object)?.refereeReview?.attachments !== undefined
-      && JSON.parse(item?.object)?.refereeReview?.attachments?.length > 0
+      JSON.parse(item?.object)?.scorekeeperReview?.attachments !== undefined
+      && JSON.parse(item?.object)?.scorekeeperReview?.attachments?.length > 0
     ) {
-      attachedImages = JSON.parse(item?.object)?.refereeReview?.attachments;
+      attachedImages = JSON.parse(item?.object)?.scorekeeperReview?.attachments;
     }
-    descriptions = JSON.parse(item?.object)?.refereeReview?.comment;
+    descriptions = JSON.parse(item?.object)?.scorekeeperReview?.comment;
   }
   let threeDotBtnDisplay = false;
   if (item?.foreign_id === caller_id) {
@@ -302,7 +303,7 @@ function RefereeFeedPostItems({
         <NewsFeedDescription
             descriptions={descriptions}
             character={attachedImages?.length > 0 ? 140 : 480}
-            tagData={JSON.parse(item?.object)?.refereeReview?.tagged ?? []}
+            tagData={JSON.parse(item?.object)?.scorekeeperReview?.tagged ?? []}
             navigation={navigation}
           />
         <View style={{ marginTop: 10, marginLeft: 10 }}></View>
@@ -482,6 +483,7 @@ function RefereeFeedPostItems({
             keyExtractor={(index) => index.toString()}
           />
         )}
+
       {profileObject?.user_id === authContext?.entity?.uid && <View style={{ marginLeft: 15, marginRight: 15, flexDirection: 'row' }}>
         <Image
             style={styles.background}
@@ -613,4 +615,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(RefereeFeedPostItems);
+export default memo(ScorekeeperFeedPostItems);

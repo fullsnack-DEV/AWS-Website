@@ -115,9 +115,10 @@ import PlayInCommonChartScreen from './playInModule/stats/commonViews/PlayInComm
 import TCGradientDivider from '../../components/TCThinGradientDivider';
 import HomeFeed from '../homeFeed/HomeFeed';
 import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
+import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
-const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeeper Match', 'Reviews']
+const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
 
 const { width } = Dimensions.get('window');
 
@@ -1520,7 +1521,7 @@ const HomeScreen = ({ navigation, route }) => {
   const renderScorekeeperTabContainer = (tabKey) => (
     <View style={{ flex: 1 }}>
 
-      {/* Referee Info */}
+      {/* scorekeeper Info */}
       {tabKey === 0 && (
         <ScorekeeperInfoSection
         data={currentUserData}
@@ -1594,19 +1595,17 @@ const HomeScreen = ({ navigation, route }) => {
       </View>
       }
 
-      {/* Reviews */}
+      {/* scorekeeper Reviews tab */}
       {tabKey === 2 && (
         <View>
-
           <ReviewSection
-                reviewsData={averageRefereeReview}
-                reviewsFeed={refereeReviewData}
-                onFeedPress={() => alert(4)}
+                onFeedPress={onScorekeeperFeedPress}
+                reviewsData={averageScorekeeperReview}
+                reviewsFeed={scorekeeperReviewData}
                 onReadMorePress={() => {
                   reviewerDetailModal();
                 }}
               />
-
         </View>
       )}
     </View>
@@ -2247,6 +2246,18 @@ setOrangeFeed(orangeFeedPress)
 setReviewDetailModalVisible(true)
 }
 
+const onScorekeeperFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
+  console.log('onScorekeeperFeedPress Data::=>', gameData);
+  console.log('Feed Data::=>', feed);
+  console.log('Feed Data index::=>', index);
+  console.log('Orange feed ??::=>', orangeFeedPress);
+  setReviewGameData(gameData)
+  setFeedDataIndex(index)
+  setFeedDetailIndex(detailIndex)
+  setOrangeFeed(orangeFeedPress)
+  setReviewDetailModalVisible(true)
+  }
+
 const onLikePress = (item) => {
   const bodyParams = {
     reaction_type: 'clap',
@@ -2305,6 +2316,38 @@ const renderNewsFeed = useCallback(({ item }) => {
           onImageProfilePress={onProfileButtonPress}
           onLikePress={onLikeButtonPress}
           onDeletePost={onDeleteButtonPress}
+          profileObject={currentUserData}
+      />
+  )
+}, [])
+
+const renderScorekeeperFeed = useCallback(({ item }) => {
+  console.log('Profile Object::=>', currentUserData);
+  console.log('Render feed:=>', item);
+  // const onDeleteButtonPress = () => onDeletePost(item)
+  // const onProfileButtonPress = () => onProfilePress(item)
+  // const onLikeButtonPress = () => onLikePress(item)
+  const onDeleteButtonPress = () => alert('Delete')
+  const onProfileButtonPress = () => {
+    console.log('Profile pressed');
+    // setReviewDetailModalVisible(!reviewDetailModalVisible)
+    // setRefereeInfoModalVisible(!refereeInfoModalVisible)
+
+    //  onProfilePress(item)
+    }
+  const onLikeButtonPress = () => onLikePress(item)
+  return (
+
+    <ScorekeeperFeedPostItems
+          // pullRefresh={pullRefresh}
+          item={item}
+          navigation={navigation}
+          caller_id={authContext.entity.uid}
+          // onEditPressDone={onEditPressDone}
+          onImageProfilePress={onProfileButtonPress}
+          onLikePress={onLikeButtonPress}
+          onDeletePost={onDeleteButtonPress}
+          profileObject={currentUserData}
       />
   )
 }, [])
@@ -2323,8 +2366,8 @@ const feedScreenHeader = useMemo(() => (
                   firstTeamText={reviewGameData?.home_team?.data?.full_name}
                   secondUserImage={reviewGameData?.away_team?.data?.full_image}
                   secondTeamText={reviewGameData?.away_team?.data?.full_name}
-                  firstTeamPoint={8}
-                  secondTeamPoint={10}
+                  firstTeamPoint={reviewGameData?.data?.home_team_goal ?? 0}
+                  secondTeamPoint={reviewGameData?.data?.away_team_goal ?? 0}
                 />
     <View style={styles.sepratorView} />
   </View>
@@ -3227,7 +3270,75 @@ const feedScreenHeader = useMemo(() => (
 
           </SafeAreaView>
         </View>
+        {/* Review Detail View */}
+        <Modal
+            isVisible={reviewDetailModalVisible}
+            backdropColor="black"
+            style={{
+              margin: 0, justifyContent: 'flex-end', backgroundColor: colors.blackOpacityColor,
+            }}
+            hasBackdrop
+            onBackdropPress={() => setRefereeInfoModalVisible(false)}
+            backdropOpacity={0}
+          >
+          <SafeAreaView style={[styles.modalContainerViewStyle, { backgroundColor: colors.whiteColor }]}>
 
+            <Header
+                mainContainerStyle={styles.headerMainContainerStyle}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setReviewDetailModalVisible(false)}>
+                    <Image source={images.backArrow} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <View style={styles.headerCenterViewStyle}>
+                    <Image source={images.myScoreKeeping} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                    <Text style={styles.playInTextStyle}>{'Reviews'}</Text>
+                  </View>
+                }
+                rightComponent={
+                  <TouchableOpacity onPress={() => setReviewDetailModalVisible(false)}>
+                    <Image source={images.cancelWhite} style={styles.cancelImageStyle} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+              />
+            <TCGradientDivider width={'100%'} height={3}/>
+
+            <FlatList
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        initialNumToRender={5}
+        bounces={true}
+        data={scorekeeperReviewData?.reviews?.results?.[feedDataIndex]?.reviews ?? []}
+        ItemSeparatorComponent={newsFeedListItemSeperator}
+        ListHeaderComponent={feedScreenHeader}
+        scrollEnabled={true}
+        initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
+        onScrollToIndexFailed={(error) => {
+          console.log('falsed to load index', error);
+        }}
+        // ListFooterComponent={newsFeedListFooterComponent}
+        showsVerticalScrollIndicator={false}
+        renderItem={renderScorekeeperFeed}
+        // onEndReached={onEndReached}
+        // onEndReachedThreshold={0.5}
+        // refreshing={pullRefresh}
+        // onRefresh={newsFeedOnRefresh}
+        keyExtractor={(item) => `feeds${item?.id?.toString()}`}
+      />
+            {/* <NewsFeedPostItems
+          // pullRefresh={pullRefresh}
+          item={reviewFeedData}
+          navigation={navigation}
+          caller_id={userID}
+          // onEditPressDone={onEditPressDone}
+          // onImageProfilePress={onProfileButtonPress}
+          // onLikePress={onLikeButtonPress}
+          // onDeletePost={onDeleteButtonPress}
+      /> */}
+          </SafeAreaView>
+        </Modal>
+        {/* Review Detail View */}
         <Modal
             isVisible={scorekeeperInfoModalVisible}
             backdropColor="black"

@@ -1,11 +1,14 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 
 function MatchBetweenSection({
+  title,
   firstUserImage,
   firstText,
   secondUserImage,
@@ -18,19 +21,19 @@ function MatchBetweenSection({
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.firstUserViewStyle}>
         <View style={styles.eventImageViewStyle}>
-          <Image source={firstUserImage} style={styles.imageStyle} resizeMode={'cover'} />
+          <Image source={firstUserImage ? { uri: firstUserImage } : title?.toLowerCase() === 'soccer' ? images.teamPlaceholder : images.profilePlaceHolder} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
         <Text style={[styles.textStyle, { marginLeft: 8 }]} numberOfLines={2}>{firstText}</Text>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 16, fontFamily: fonts.RBold, color: colors.themeColor }}>{firstTeamPoint}</Text>
+        <Text style={{ fontSize: 16, fontFamily: fonts.RRegular, color: colors.googleColor }}>{firstTeamPoint}</Text>
         <Text style={{ marginHorizontal: 5 }}>:</Text>
         <Text style={{ fontSize: 16, fontFamily: fonts.RRegular, color: colors.googleColor }}>{secondTeamPoint}</Text>
       </View>
       <View style={styles.firstUserViewStyle}>
         <Text style={[styles.textStyle, { textAlign: 'right', marginRight: 8 }]} numberOfLines={2}>{secondText}</Text>
         <View style={styles.eventImageViewStyle}>
-          <Image source={secondUserImage} style={styles.imageStyle} resizeMode={'cover'} />
+          <Image source={secondUserImage ? { uri: secondUserImage } : title?.toLowerCase() === 'soccer' ? images.teamPlaceholder : images.profilePlaceHolder} style={styles.imageStyle} resizeMode={'cover'} />
         </View>
       </View>
     </View>
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
   firstUserViewStyle: {
     flexDirection: 'row',
     alignItems: 'center',
+
   },
   eventImageViewStyle: {
     height: 35,

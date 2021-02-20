@@ -51,6 +51,7 @@ export default function RecentMatchItems({
             secondText={secondTeamText}
             firstTeamPoint={firstTeamPoint}
             secondTeamPoint={secondTeamPoint}
+            title = {title}
           />
         </View>
       </View>
