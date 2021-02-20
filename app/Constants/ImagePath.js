@@ -252,6 +252,8 @@ const images = {
   tennisSingleHeaderIcon: require('../assets/images/tennisSingleHeaderIcon.png'),
   orangeCheckBox: require('../assets/images/orangeCheckBox.png'),
   radioSelectYellow: require('../assets/images/radioSelectYellow.png'),
+  referePH: require('../assets/images/referee_placeholder.png'),
+  scorekeeperPH: require('../assets/images/scorekeeper_placeholder.png'),
 };
 
 export default images;

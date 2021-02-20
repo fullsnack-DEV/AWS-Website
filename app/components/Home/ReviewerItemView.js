@@ -1,10 +1,7 @@
+/* eslint-disable consistent-return */
 import React, { useRef, useState, useEffect } from 'react';
 import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  Text,
+StyleSheet, View, Image, TouchableOpacity, Text, Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -15,6 +12,7 @@ import FastImage from 'react-native-fast-image';
 
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
+import moment from 'moment';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -38,12 +36,49 @@ function ReviewerItemView({
     attachedImages = reviewObj.attachments;
   }
   useEffect(() => {
-    console.log('Feed data::=>', item);
-    setReviewObj(JSON.parse(item?.object)?.refereeReview || JSON.parse(item?.object)?.scorekeeperReview);
+    console.log('Item data::=>', item);
+    console.log(
+      'refereeReview data::=>',
+      JSON.parse(item?.object)?.refereeReview || JSON.parse(item?.object)?.scorekeeperReview,
+    );
+    setReviewObj(
+      JSON.parse(item?.object)?.refereeReview
+        || JSON.parse(item?.object)?.scorekeeperReview,
+    );
   }, [item]);
 
+  const getTeamData = () => {
+    const obj = {};
+    if (reviewObj?.member === 'home') {
+      obj.name = item?.home_team?.data?.full_name;
+      obj.image = item?.home_team?.data?.full_image ?? null;
+      return obj;
+    }
+    if (reviewObj?.member === 'away') {
+      obj.name = item?.away_team?.data?.full_name;
+      obj.image = item?.away_team?.data?.full_image ?? null;
+      return obj;
+    }
+    if (reviewObj?.member === 'referee') {
+      obj.name = 'Referee';
+      obj.image = images.referePH;
+      return obj;
+    }
+    if (reviewObj?.member === 'scorekeeper') {
+      obj.name = 'Scorekeeper';
+      obj.image = images.scorekeeperPH;
+      return obj;
+    }
+    if (reviewObj?.member === 'both') {
+      obj.home_image = item?.home_team?.data?.full_image ?? null;
+      obj.away_image = item?.away_team?.data?.full_image ?? null;
+      return obj;
+    }
+  };
   return (
-    <TouchableOpacity onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, false)}>
+    <TouchableOpacity
+      onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, false)
+      }>
       <View style={styles.containerStyle}>
         <View style={styles.mainContainer}>
           <TouchableWithoutFeedback onPress={onImageProfilePress}>
@@ -67,25 +102,49 @@ function ReviewerItemView({
                 alignItems: 'center',
                 marginTop: 3,
               }}>
-              <Text style={styles.activeTimeAgoTxt}>{item.created_date}</Text>
-              <View style={styles.eventImageViewStyle}>
-                <Image
+              <Text style={styles.activeTimeAgoTxt}>{moment(reviewObj?.created_at * 1000).format('MMM DD')}</Text>
+
+              {reviewObj?.member !== 'both' ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.eventImageViewStyle}>
+                  <Image
                   source={
-                    item?.actor?.data?.full_image
-                      ? item?.actor?.data?.full_image
-                      : images.usaImage
+                    (reviewObj?.member
+                      === 'home' && (getTeamData()?.image ? { uri: getTeamData()?.image } : images.teamPlaceholder))
+                    || (reviewObj?.member
+                      === 'away' && (getTeamData()?.image ? { uri: getTeamData()?.image } : images.teamPlaceholder))
+                    || (reviewObj?.member
+                      === 'referee' && getTeamData()?.image)
+                    || (reviewObj?.member
+                      === 'scorekeeper' && getTeamData()?.image)
                   }
                   style={styles.imageStyle}
                   resizeMode={'contain'}
                 />
-              </View>
-              <Text
+                </View>
+                <Text
                 style={[
                   styles.activeTimeAgoTxt,
                   { fontSize: 12, fontFamily: fonts.RMedium },
                 ]}>
-                {'Newyork City FC'}
-              </Text>
+                  {getTeamData()?.name}
+                </Text>
+              </View> : <View>
+                <View style={styles.eventImageViewStyle}>
+                  <Image
+                  source={getTeamData()?.home_image ? { uri: getTeamData()?.home_image } : images.teamPlaceholder}
+                  style={styles.imageStyle}
+                  resizeMode={'contain'}
+                />
+                </View>
+                <View style={styles.eventImageViewStyle}>
+                  <Image
+                  source={getTeamData()?.away_image ? { uri: getTeamData()?.away_image } : images.teamPlaceholder}
+                  style={styles.imageStyle}
+                  resizeMode={'contain'}
+                />
+                </View>
+              </View>}
+
             </View>
           </View>
           <TouchableOpacity
@@ -221,37 +280,37 @@ function ReviewerItemView({
                   <View style={styles.threePlusImageView}>
                     <View>
                       <View
-                      style={{
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                      }}>
-                        <FastImage
-                        source={images.videoPlayBtn}
-                        tintColor={'white'}
-                        resizeMode={'contain'}
                         style={{
-                          height: 30,
-                          width: 30,
-                        }}
-                      />
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          zIndex: 1,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'absolute',
+                        }}>
+                        <FastImage
+                          source={images.videoPlayBtn}
+                          tintColor={'white'}
+                          resizeMode={'contain'}
+                          style={{
+                            height: 30,
+                            width: 30,
+                          }}
+                        />
                       </View>
                       <Video
-                      ref={videoPlayerRef}
-                      paused={false}
-                      muted={true}
-                      source={{ uri: attachedImages[2].url }}
-                      style={styles.uploadedImage}
-                      resizeMode={'cover'}
-                      onLoad={() => {
-                        videoPlayerRef.current.seek(0);
-                      }}
-                    />
+                        ref={videoPlayerRef}
+                        paused={false}
+                        muted={true}
+                        source={{ uri: attachedImages[2].url }}
+                        style={styles.uploadedImage}
+                        resizeMode={'cover'}
+                        onLoad={() => {
+                          videoPlayerRef.current.seek(0);
+                        }}
+                      />
                     </View>
                     {attachedImages.length > 3 && (
                       <Text style={styles.plusCountTextStyle}>
@@ -277,13 +336,14 @@ function ReviewerItemView({
                 style={{
                   flexDirection: 'row',
                 }}>
-
                 <Image
-                    style={[styles.commentImage, { top: 2 }]}
-                    source={images.commentImage}
-                    resizeMode={'contain'}
-                  />
-                <Text style={styles.commentlengthStyle}>{item?.reaction_counts?.comment ?? 0}</Text>
+                  style={[styles.commentImage, { top: 2 }]}
+                  source={images.commentImage}
+                  resizeMode={'contain'}
+                />
+                <Text style={styles.commentlengthStyle}>
+                  {item?.reaction_counts?.comment ?? 0}
+                </Text>
               </View>
 
               <View
@@ -293,12 +353,11 @@ function ReviewerItemView({
                   justifyContent: 'center',
                   marginLeft: 10,
                 }}>
-
                 <Image
-                    style={styles.commentImage}
-                    source={images.shareImage}
-                    resizeMode={'contain'}
-                  />
+                  style={styles.commentImage}
+                  source={images.shareImage}
+                  resizeMode={'contain'}
+                />
 
                 <Text style={styles.commentlengthStyle}>0</Text>
               </View>
@@ -311,26 +370,25 @@ function ReviewerItemView({
                 justifyContent: 'flex-end',
                 alignItems: 'center',
               }}>
-              <Text
-                style={styles.commentlengthStyle}>
+              <Text style={styles.commentlengthStyle}>
                 {item?.reaction_counts?.clap ?? 0}
               </Text>
               <Image
-                    style={styles.commentImage}
-                    source={images.unlikeImage}
-                    resizeMode={'contain'}
-                  />
+                style={styles.commentImage}
+                source={images.unlikeImage}
+                resizeMode={'contain'}
+              />
             </View>
           </View>
           <ActionSheet
             ref={actionSheet}
-            title={'News Feed Post'}
-            options={['Edit Post', 'Delete Post', 'Cancel']}
-            cancelButtonIndex={2}
-            destructiveButtonIndex={1}
+
+            options={['Report', 'Cancel']}
+            cancelButtonIndex={1}
+            // destructiveButtonIndex={1}
             onPress={(index) => {
               if (index === 0) {
-                // navigation.navigate('EditPostScreen', { data: item });
+                Alert.alert('Report pressed')
               } else if (index === 1) {
                 // onDeletePost();
               }
@@ -350,7 +408,8 @@ function ReviewerItemView({
       {totalData?.length > 2 && indexNumber === 2 && (
         <TouchableOpacity
           style={styles.maxReviewTouchStyle}
-          onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, true)}>
+          onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, true)
+          }>
           <Text style={styles.maxCountTextStyle}>
             {totalData?.length > 2 && indexNumber === 2
               ? `+${totalData?.length - 2} `
@@ -448,7 +507,7 @@ const styles = StyleSheet.create({
     height: wp(28),
     width: wp(28),
     borderRadius: wp(3),
-    resizeMode: 'center',
+    resizeMode: 'cover',
     marginRight: 5,
     // backgroundColor: 'red',
   },
@@ -474,6 +533,7 @@ const styles = StyleSheet.create({
   imageStyle: {
     width: 15,
     height: 15,
+    borderRadius: 30,
   },
   maxReviewImageView: {
     position: 'absolute',
@@ -512,7 +572,6 @@ const styles = StyleSheet.create({
     height: wp('28%'),
     marginVertical: '1%',
     width: wp('28%'),
-
   },
 });
 

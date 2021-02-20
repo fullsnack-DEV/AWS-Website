@@ -442,7 +442,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                           padding: 15,
                         }} /> */}
 
-                    {reviewsData?.comment !== '' ? (
+                    {reviewsData?.comment?.length > 0 ? (
                       <NewsFeedDescription
                           descriptions={reviewsData.comment}
                           containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
