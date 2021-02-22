@@ -171,6 +171,7 @@ import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAc
 import ReviewScorekeeperList from '../components/game/soccer/home/review/reviewForScorekeeper/ReviewScorekeeperList';
 import ScorekeeperReviewScreen from '../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperReviewScreen';
 import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPlayerSuccess';
+import AccountScreen from '../screens/account/AccountScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -184,7 +185,23 @@ const HomeNavigator = () => (
         gestureEnabled: false,
         headerBackTitleVisible: false,
       }}>
-
+    <Stack.Screen
+        name="AccountScreen"
+        component={AccountScreen}
+        options={{
+          title: 'Account',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
     <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}

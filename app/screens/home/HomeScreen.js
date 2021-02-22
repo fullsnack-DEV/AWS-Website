@@ -1168,9 +1168,6 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const refereesInModal = (refereeInObject) => {
-    console.log('refereeInObject', refereeInObject)
-    // navigation.navigate('RegisterReferee');
-
     if (refereeInObject) {
       const entity = authContext.entity;
       let languagesListName = [];
@@ -2166,13 +2163,7 @@ const HomeScreen = ({ navigation, route }) => {
                 <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
               </TouchableOpacity>)
           }
-          rightComponent={(currentUserData?.user_id || currentUserData?.group_id) === authContext?.entity?.uid && (<TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
-              }}
-              onPress={() => navigation.openDrawer()}>
-            <Image source={images.menu} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
-          </TouchableOpacity>)
+          rightComponent={(currentUserData?.user_id || currentUserData?.group_id) === authContext?.entity?.uid && (<View></View>)
           }
       />
   )
