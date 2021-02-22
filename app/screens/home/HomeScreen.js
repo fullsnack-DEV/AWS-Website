@@ -2319,7 +2319,7 @@ const renderNewsFeed = useCallback(({ item }) => {
           profileObject={currentUserData}
       />
   )
-}, [])
+}, [authContext.entity.uid, currentUserData, navigation, onLikePress])
 
 const renderScorekeeperFeed = useCallback(({ item }) => {
   console.log('Profile Object::=>', currentUserData);
@@ -2350,7 +2350,7 @@ const renderScorekeeperFeed = useCallback(({ item }) => {
           profileObject={currentUserData}
       />
   )
-}, [])
+}, [authContext.entity.uid, currentUserData, navigation, onLikePress])
 
 const feedScreenHeader = useMemo(() => (
   <View>
@@ -3231,7 +3231,7 @@ const feedScreenHeader = useMemo(() => (
                 mainContainerStyle={styles.headerMainContainerStyle}
                 centerComponent={
                   <View style={styles.headerCenterViewStyle}>
-                    <Image source={images.refereesInImage} style={styles.refereesImageStyle} resizeMode={'contain'} />
+                    <Image source={images.myScoreKeeping} style={styles.refereesImageStyle} resizeMode={'contain'} />
                     <Text style={styles.playInTextStyle}>{`Scorekeeper in ${sportName || ''}`}</Text>
                   </View>
                 }

@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
     width: 40,
-    borderRadius: 20,
+    borderRadius: 80,
   },
   profileView: {
     backgroundColor: colors.whiteColor,

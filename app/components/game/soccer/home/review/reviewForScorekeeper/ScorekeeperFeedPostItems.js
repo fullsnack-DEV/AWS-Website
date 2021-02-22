@@ -63,8 +63,7 @@ function ScorekeeperFeedPostItems({
   const [commentData, setCommentData] = useState([]);
   const [commentTxt, setCommentText] = useState('');
   useEffect(() => {
-    const entity = authContext.entity;
-    console.log('entity', entity);
+    console.log('entity data::=>', profileObject);
     const params = {
       activity_id: item.id,
       reaction_type: 'comment',

@@ -27,9 +27,9 @@ function WriteReviewComment({ data }) {
       <View style={ styles.userNameView }>
         <View style={ styles.userCommentTextStyle }>
           <Text style={ styles.userNameTxt }>
-            {userName}{' '}
-            <Text style={ styles.commentTextStyle }>{commentText}</Text>
-          </Text>
+            {userName}{' '}</Text>
+          <Text style={ styles.commentTextStyle }>{commentText}</Text>
+
         </View>
 
       </View>
