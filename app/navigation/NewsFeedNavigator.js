@@ -16,7 +16,6 @@ import EntitySearchScreen from '../screens/EntitySearchScreen';
 import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
-import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
@@ -232,22 +231,7 @@ const NewsFeedNavigator = () => (
             headerShown: false,
           } }
       />
-    <Stack.Screen
-          name="PaymentMethodsScreen"
-          component={ PaymentMethodsScreen }
-          options={ {
-            title: 'Payment Methods',
-            headerTintColor: colors.blackColor,
-            headerTitleStyle: {
-              fontWeight: '500',
-            },
-            headerStyle: {
-              backgroundColor: colors.whiteColor,
-              borderBottomColor: colors.grayColor,
-              borderBottomWidth: 0.3,
-            },
-          } }
-      />
+
     <Stack.Screen
           name="GroupMembersScreen"
           component={ GroupMembersScreen }

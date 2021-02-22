@@ -4,7 +4,7 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import AccountScreen from '../screens/account/AccountScreen';
+import HomeNavigator from './HomeNavigator';
 
 const Stack = createStackNavigator();
 
@@ -16,12 +16,12 @@ const AccountNavigator = () => (
       // headerTitle: true,
       headerBackTitleVisible: false,
     }}>
-    <Stack.Screen
+    {/* <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
       options={{ headerShown: false }}
-    />
-
+    /> */}
+    <Stack.Screen name="Account" component={ HomeNavigator } options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

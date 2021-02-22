@@ -11,10 +11,13 @@ import images from '../Constants/ImagePath'
 import ReservationNavigator from './ReservationNavigator';
 import MessageNavigator from './MessageNavigator';
 import NotificationNavigator from './NotificationNavigator';
-import AccountDrawerNavigator from './AccountDrawerNavigator';
+// import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
 import { getUnreadCount } from '../api/Notificaitons';
+import AccountNavigator from './AccountNavigator';
+// import HomeNavigator from './HomeNavigator';
+// import AccountScreen from '../screens/account/AccountScreen';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
 const Tab = createBottomTabNavigator();
@@ -257,7 +260,7 @@ function AppNavigator({ navigation }) {
       {role === 'team' && (
         <Tab.Screen
           name="Account"
-          component={ AccountDrawerNavigator }
+          component={ AccountNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => {
@@ -279,7 +282,7 @@ function AppNavigator({ navigation }) {
       {role === 'user' && (
         <Tab.Screen
           name="Account"
-          component={ AccountDrawerNavigator }
+          component={ AccountNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (
@@ -294,7 +297,7 @@ function AppNavigator({ navigation }) {
       {role === 'club' && (
         <Tab.Screen
           name="Account"
-          component={ AccountDrawerNavigator }
+          component={ AccountNavigator }
           options={ ({ route }) => ({
             tabBarVisible: getTabBarVisibility(route),
             tabBarIcon: ({ focused }) => (

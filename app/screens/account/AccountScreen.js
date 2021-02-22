@@ -20,7 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 import RNRestart from 'react-native-restart';
 // import ActionSheet from 'react-native-actionsheet';
-import { useIsDrawerOpen } from '@react-navigation/drawer';
+// import { useIsDrawerOpen } from '@react-navigation/drawer';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -118,6 +118,8 @@ export default function AccountScreen({ navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: 'Account',
+      headerShown: true,
     });
   }, [navigation]);
 
@@ -135,11 +137,12 @@ export default function AccountScreen({ navigation }) {
       });
     }
     getData()
-  }, [authContext.entity, isFocused, navigation, useIsDrawerOpen()]);
+  }, [authContext.entity, isFocused, navigation]);
 
   const getParentClub = (item) => {
     setloading(true)
     getGroupDetails(item.group_id, authContext).then((response) => {
+      console.log('Parent group detail::', response.payload.club);
       if (response.payload.club !== undefined) {
         setParentGroup(response.payload.club);
       } else {
@@ -369,7 +372,7 @@ export default function AccountScreen({ navigation }) {
   };
 
   const handleOptions = async (options) => {
-    navigation.closeDrawer();
+    // navigation.closeDrawer();
     if (options === 'Register as a referee') {
       navigation.navigate('RegisterReferee');
     } else if (options === 'Register as a scorekeeper') {
@@ -386,10 +389,10 @@ export default function AccountScreen({ navigation }) {
     } else if (options === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
     } else if (options === 'Payment Method') {
-      navigation.navigate('Home', {
+      navigation.navigate('Account', {
         screen: 'PaymentMethodsScreen',
         params: {
-            comeFrom: 'HomeScreen',
+            comeFrom: 'AccountScreen',
         },
       })
     } else if (options === 'Payout Method') {
@@ -402,7 +405,7 @@ export default function AccountScreen({ navigation }) {
       style={styles.listContainer}
       onPress={() => {
         onSwitchProfile({ item, index });
-        navigation.closeDrawer();
+        // navigation.closeDrawer();
       }}>
       <View>
         {item.entity_type === 'player'
@@ -461,7 +464,7 @@ export default function AccountScreen({ navigation }) {
 
   let placeHolder, badge, background = images.teamSqure
   if (authContext.entity.role === 'club') {
-    placeHolder = images.team_ph
+    placeHolder = images.club_ph
     badge = 'C'
     background = images.clubSqure
   } else if (authContext.entity.role === 'team') {
@@ -497,45 +500,64 @@ export default function AccountScreen({ navigation }) {
                  image={parentGroup.thumbnail && parentGroup.thumbnail }/>
             </View>
           </View>) : <View></View>}
-          <View>
-            <TouchableOpacity onPress={() => navigation.closeDrawer()} >
+          {/* <View>
+            <TouchableOpacity onPress={() => {
+              // navigation.closeDrawer()
+            }} >
               <Image source={images.menuClose} style={styles.closeMenu}/>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
         {authContext.entity.role === 'user' && (
           <View style={styles.profileView}>
-            <Image
+            <TouchableOpacity onPress={() => {
+               navigation.navigate('HomeScreen', {
+                uid: authContext.entity.uid,
+                role: 'user',
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              })
+            }}>
+              <Image
                 source={authContext?.entity?.obj?.thumbnail || '' ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
                 style={[styles.profileImg, { marginTop: 20 }]}
               />
-            <Text style={styles.nameText}>{authContext?.entity?.auth?.user?.full_name || ''}</Text>
+              <Text style={styles.nameText} numberOfLines={1}>{authContext?.entity?.auth?.user?.full_name || ''}</Text>
+            </TouchableOpacity>
             <Text style={styles.locationText}>
               {authContext?.entity?.obj?.city || ''}, {authContext?.entity?.obj?.state_abbr || ''}
             </Text>
           </View>
         )}
         {(authContext.entity.role === 'team' || authContext.entity.role === 'club') && (<View style={styles.profileView}>
-          <Image
-                source={authContext?.entity?.obj?.thumbnail || '' ? { uri: authContext?.entity?.obj?.thumbnail || '' } : placeHolder}
+          <TouchableOpacity onPress={() => {
+                navigation.navigate('HomeScreen', {
+                  uid: authContext.entity.uid,
+                  role: authContext.entity.role,
+                  backButtonVisible: true,
+                  menuBtnVisible: false,
+                })
+          }}>
+            <Image
+                source={authContext?.entity?.obj?.thumbnail ? { uri: authContext?.entity?.obj?.thumbnail } : placeHolder}
                 style={styles.profileImgGroup}
               />
-          <View
+            <View
               style={{
                 flexDirection: 'row',
                 alignSelf: 'center',
                 paddingLeft: 30,
               }}>
-            <Text style={styles.nameText}>{authContext.entity.obj.group_name}</Text>
-            <View style={styles.identityView}>
-              <ImageBackground
+              <Text style={styles.nameText} numberOfLines={1}>{authContext.entity.obj.group_name}</Text>
+              <View style={styles.identityView}>
+                <ImageBackground
                   source={background}
                   style={styles.badgeCounter}
                 />
-              <Text style={styles.badgeCounter}>{badge}</Text>
+                <Text style={styles.badgeCounter}>{badge}</Text>
+              </View>
             </View>
-          </View>
-
+          </TouchableOpacity>
           <Text style={styles.locationText}>
             {authContext.entity.obj.city}, {authContext.entity.obj.state_abbr}
           </Text>
@@ -639,7 +661,7 @@ export default function AccountScreen({ navigation }) {
                             <TouchableWithoutFeedback
                                   style={styles.listContainer}
                                   onPress={() => {
-                                    navigation.navigate('Home', {
+                                    navigation.navigate('Account', {
                                       screen: 'HomeScreen',
                                       params: {
                                         fromAccountScreen: true,
@@ -989,6 +1011,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 20,
     marginTop: 5,
+    marginLeft: 15,
+    marginRight: 15,
   },
   nextArrow: {
     alignSelf: 'center',
@@ -1044,13 +1068,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteColor,
   },
-  closeMenu: {
-    height: 14,
-    width: 14,
-    resizeMode: 'cover',
-    alignSelf: 'center',
-    marginRight: 20,
-  },
+  // closeMenu: {
+  //   height: 14,
+  //   width: 14,
+  //   resizeMode: 'cover',
+  //   alignSelf: 'center',
+  //   marginRight: 20,
+  // },
   profileImgGroup: {
     height: 50,
     width: 50,
