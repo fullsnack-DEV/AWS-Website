@@ -33,8 +33,14 @@ const HomeFeed = ({
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const authContext = useContext(AuthContext)
     const [postData, setPostData] = useState([]);
+    // const [isMoreLoading, setIsMoreLoading] = useState(false);
+    const [isNextDataLoading, setIsNextDataLoading] = useState(true);
+    const [footerLoading, setFooterLoading] = useState(false);
 
     useEffect(() => {
+        // setIsMoreLoading(false);
+        setIsNextDataLoading(true);
+        setFooterLoading(false)
         const params = { uid: userID };
         setLoading(true);
         getUserPosts(params, authContext).then((res) => {
@@ -152,7 +158,9 @@ const HomeFeed = ({
 
     const createPostAfterUpload = useCallback((dataParams) => {
         createPost(dataParams, authContext)
-            .then(() => {
+            .then(() => getUserPosts({ uid: userID }, authContext))
+            .then((response) => {
+                setPostData([...response.payload.results]);
                 setProgressBar(false);
                 setDoneUploadCount(0);
                 setTotalUploadCount(0);
@@ -197,6 +205,29 @@ const HomeFeed = ({
             })
         }
     }, [authContext, cancelRequest])
+
+    const onEndReached = () => {
+        // setIsMoreLoading(true);
+        // setFooterLoading(true);
+        // const id_lt = postData?.[postData.length - 1]?.id;
+        // if (id_lt && isMoreLoading && isNextDataLoading) {
+        //     getNewsFeedNextList(id_lt, authContext).then((response) => {
+        //         if (response) {
+        //             if (response.payload.next === '') {
+        //                 setIsNextDataLoading(false);
+        //             }
+        //             setIsMoreLoading(false);
+        //             setFooterLoading(false)
+        //             setPostData([...postData, ...response.payload.results]);
+        //         }
+        //     })
+        //         .catch(() => {
+        //             setFooterLoading(false)
+        //         })
+        // }
+        console.log('on End Reached Called1')
+    }
+
     return (
       <View style={{ flex: 1 }}>
         {useMemo(() => (isAdmin
@@ -216,12 +247,15 @@ const HomeFeed = ({
         <ActivityLoader visible={fullScreenLoading}/>
         <TCInnerLoader visible={loading}/>
         <NewsFeedList
+            scrollEnabled={false}
             onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
             onDeletePost={onDeletePost}
             navigation={navigation}
-            postData={postData?.slice(0, 5)}
+            postData={postData}
             onEditPressDone={editPostDoneCall}
             onLikePress={onLikePress}
+            onEndReached={onEndReached}
+            footerLoading={footerLoading && isNextDataLoading}
         />
       </View>
     )

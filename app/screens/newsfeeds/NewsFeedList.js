@@ -50,7 +50,7 @@ const NewsFeedList = ({
     }
   }, [])
 
-  const renderNewsFeed = useCallback(({ item }) => {
+  const renderNewsFeed = ({ item }) => {
     const onDeleteButtonPress = () => onDeletePost(item)
     const onProfileButtonPress = () => onProfilePress(item)
     const onLikeButtonPress = () => onLikePress(item)
@@ -66,7 +66,7 @@ const NewsFeedList = ({
             onDeletePost={onDeleteButtonPress}
         />
     )
-  }, [postData, userID, onProfilePress])
+  }
 
   const newsFeedListItemSeperator = () => (
     <View
@@ -95,6 +95,7 @@ const NewsFeedList = ({
   }
 
   const newsFeedKeyExtractor = (item) => `feed1${item?.id?.toString()}`
+  console.log('NEWS FEED CALL')
 
   return (
     <View onStartShouldSetResponderCapture={onStartShouldSetResponderCapture} style={{ flex: 1 }}>

@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+ useEffect, memo, useRef, useState,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -31,7 +33,7 @@ import TagView from './TagView';
 import CustomVideoPlayer from '../CustomVideoPlayer';
 import TCZoomableImage from '../TCZoomableImage';
 
-export default function MultiImagePostView({
+function MultiImagePostView({
   backBtnPress,
   attachedImages,
   item,
@@ -466,3 +468,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default memo(MultiImagePostView);

@@ -27,7 +27,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb1669086246580363</string>
+				<string>fb462439657892341</string>
 			</array>
 		</dict>
 		<dict>
@@ -44,7 +44,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
-	<string>1669086246580363</string>
+	<string>462439657892341</string>
 	<key>FacebookDisplayName</key>
 	<string>Towns Cup</string>
 	<key>LSApplicationQueriesSchemes</key>

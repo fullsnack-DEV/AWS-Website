@@ -10,7 +10,9 @@ import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
-const tagRegex = /\B@\w+/gmi
+const tagRegex = /@\b_\.{(.*?)}\._\b/gmi;
+const tagPrefix = '@_.';
+const tagSuffix = '._';
 function NewsFeedDescription({
   descriptions,
   character,
@@ -45,27 +47,26 @@ function NewsFeedDescription({
   const toggleNumberOfLines = () => setReadMore(!readMore);
 
   function renderText(matchingString) {
-    const pattern = tagRegex;
-    const match = matchingString.match(pattern);
-    let color = colors.black;
-    if (taggedData?.includes(match?.[0])) color = colors.greeColor;
-    return <Text style={{ ...styles.username, color }}>{match?.[0]}</Text>
+    const match = matchingString.match(tagRegex);
+    let removedPrefixSuffix = match?.[0]?.replace(tagPrefix, '')
+    removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
+    const jsonData = JSON.parse(removedPrefixSuffix);
+    return <Text style={{ ...styles.username, color: colors.greeColor }}>@{_.startCase(jsonData?.entity_name?.toLowerCase()) ?? ''}</Text>;
   }
   const renderURLText = (matchingString) => {
-    const pattern = urlRegex;
-    const match = matchingString.match(pattern);
+    const match = matchingString.match(urlRegex);
     const color = colors.navyBlue;
     return <Text style={{ color }}>{match?.[0]}</Text>
   }
-  function handleNamePress(name) {
-    const entityIndex = taggedData?.findIndex((item) => item === name);
-    const fetchedEntity = tagData?.[entityIndex];
-    const entity_text = ['player', 'user']?.includes(fetchedEntity?.entity_type) ? 'user_id' : 'group_id'
-    if (fetchedEntity?.[entity_text]) {
-      if (fetchedEntity[entity_text] !== authContext?.entity?.uid) {
+  function handleNamePress(data) {
+    let removedPrefixSuffix = data?.replace(tagPrefix, '')
+    removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
+    const jsonData = JSON.parse(removedPrefixSuffix);
+    if (jsonData?.entity_id) {
+      if (jsonData?.entity_id !== authContext?.entity?.uid) {
         navigation.push('HomeScreen', {
-          uid: fetchedEntity[entity_text],
-          role: ['user', 'player']?.includes(fetchedEntity.entity_type) ? 'user' : fetchedEntity.entity_type,
+          uid: jsonData?.entity_id,
+          role: jsonData?.entity_type,
           backButtonVisible: true,
           menuBtnVisible: false,
         })
@@ -76,10 +77,8 @@ function NewsFeedDescription({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       {descriptions?.length > 0 && (
-        <Hyperlink
-        // linkStyle={{ color: colors.skyBlue }}
-        >
-          <Text style={[styles.descText, descText]}>
+        <Hyperlink>
+          <Text style={[styles.descText, descText]} numberOfLines={0}>
             <ParsedText
               style={[styles.text, descriptionTxt]}
               parse={
@@ -94,7 +93,7 @@ function NewsFeedDescription({
             </ParsedText>
             {descriptions?.length > character && !readMore ? '... ' : ' '}
             {descriptions?.length > character && (
-              <Text onPress={ () => toggleNumberOfLines() } style={[styles.descText, descText]}>
+              <Text onPress={toggleNumberOfLines} style={[styles.descText, descText]}>
                 {readMore ? 'less' : 'more'}
               </Text>
             )}
