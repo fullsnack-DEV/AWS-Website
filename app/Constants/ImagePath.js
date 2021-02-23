@@ -254,6 +254,12 @@ const images = {
   radioSelectYellow: require('../assets/images/radioSelectYellow.png'),
   referePH: require('../assets/images/referee_placeholder.png'),
   scorekeeperPH: require('../assets/images/scorekeeper_placeholder.png'),
+  notificationBell: require('../assets/images/notification_bell.png'),
+  tabFeed: require('../assets/images/tab_feed.png'),
+
+  teamPatch: require('../assets/images/team_patch.png'),
+  clubPatch: require('../assets/images/club_patch.png'),
+  leaguePatch: require('../assets/images/league_patch.png'),
 };
 
 export default images;

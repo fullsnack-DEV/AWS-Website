@@ -252,6 +252,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   navigation.navigate('ChooseDateTimeScreen', {
                     otherTeam: route.params.groupObj,
                     body: bodyParams,
+                    team: { home_team: entity.obj, away_team: route?.params?.groupObj },
                   })
                 }}
                 style={styles.containerStyle}>

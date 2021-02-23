@@ -10,12 +10,13 @@ import colors from '../Constants/Colors'
 import images from '../Constants/ImagePath'
 import ReservationNavigator from './ReservationNavigator';
 import MessageNavigator from './MessageNavigator';
-import NotificationNavigator from './NotificationNavigator';
+// import NotificationNavigator from './NotificationNavigator';
 // import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
 import { getUnreadCount } from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
+// import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import AccountScreen from '../screens/account/AccountScreen';
 
@@ -187,7 +188,7 @@ function AppNavigator({ navigation }) {
       } }
       >
       <Tab.Screen
-        name="Home"
+        name="Local Home"
         component={ NewsFeedNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
@@ -203,26 +204,8 @@ function AppNavigator({ navigation }) {
         }) }
       />
       <Tab.Screen
-        name="Reservation"
-        component={ ReservationNavigator }
-        options={ ({ route }) => ({
-          tabBarVisible: getTabBarVisibility(route),
-          tabBarIcon: ({ focused }) => {
-            if (focused) onTabPress();
-            return (
-              <Image
-                      source={
-                          focused ? images.tab_reservation_selected : images.tab_reservation
-                      }
-                      style={ styles.tabImg }
-                  />
-            )
-          },
-        }) }
-      />
-      <Tab.Screen
-        name="Notification"
-        component={ NotificationNavigator }
+        name="Feed"
+        component={ NewsFeedNavigator }
         options={ ({ route }) => ({
           ...(unreadNotificationCount > 0 && { tabBarBadge: unreadNotificationCount }),
           tabBarVisible: getTabBarVisibility(route),
@@ -231,7 +214,7 @@ function AppNavigator({ navigation }) {
             return (
               <Image
                       source={
-                          focused ? images.tab_notification_selected : images.tab_notification
+                          focused ? images.tabFeed : images.tabFeed
                       }
                       style={ focused ? styles.selectedTabImg : styles.tabImg }
                   />
@@ -252,6 +235,24 @@ function AppNavigator({ navigation }) {
               source={ focused ? images.tab_message_selected : images.tab_message }
               style={ focused ? styles.selectedTabImg : styles.tabImg }
             />
+            )
+          },
+        }) }
+      />
+      <Tab.Screen
+        name="Schedule"
+        component={ ReservationNavigator }
+        options={ ({ route }) => ({
+          tabBarVisible: getTabBarVisibility(route),
+          tabBarIcon: ({ focused }) => {
+            if (focused) onTabPress();
+            return (
+              <Image
+                      source={
+                          focused ? images.tab_reservation_selected : images.tab_reservation
+                      }
+                      style={ styles.tabImg }
+                  />
             )
           },
         }) }
