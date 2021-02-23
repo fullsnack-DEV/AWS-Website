@@ -70,6 +70,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    console.log('Choose date time body::=>', route?.params?.team);
     getSlots();
   }, [isFocused]);
   // useLayoutEffect(() => {}, [selectedDate]);
@@ -81,19 +82,29 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   };
   const getSlots = () => {
     setloading(true);
-    console.log('Other team Object:', route?.params?.otherTeam);
-    blockedSlots(
-      route?.params?.otherTeam?.entity_type === 'player' ? 'users' : 'groups',
-      route?.params?.otherTeam?.group_id || route?.params?.otherTeam?.user_id,
+    console.log('Other team Object:', route?.params?.team);
+    const promises = [blockedSlots(
+      route?.params?.team?.home_team?.entity_type === 'player' ? 'users' : 'groups',
+      route?.params?.team?.home_team?.group_id || route?.params?.team?.home_team?.user_id,
       authContext,
-    )
-      .then((response) => {
+    ), blockedSlots(
+      route?.params?.team?.away_team?.entity_type === 'player' ? 'users' : 'groups',
+      route?.params?.team?.away_team?.group_id || route?.params?.team?.away_team?.user_id,
+      authContext,
+    )]
+    Promise.all(promises).then((response) => {
         setloading(false);
-        setSlots(response.payload);
-        console.log('BOOKED SLOT::', JSON.stringify(response.payload));
+        console.log('RES SLOT::', response);
+        console.log('RES1 SLOT::', response[0].payload);
+        console.log('RES2 SLOT::', response[1].payload);
+
+        const bookSlots = [...response[0].payload, ...response[1].payload]
+        setSlots(bookSlots);
+        console.log('BOOKED SLOT::', bookSlots);
         const markedDates = {};
+
         // eslint-disable-next-line array-callback-return
-        (response?.payload || []).map((e) => {
+        (bookSlots || []).map((e) => {
           const original_date = moment(new Date(e.start_datetime * 1000)).format('yyyy-MM-DD');
           if (e.allDay === true) {
             markedDates[original_date] = {

@@ -1,5 +1,6 @@
+/* eslint-disable array-callback-return */
 import React, {
-  useEffect, useState, useContext, useLayoutEffect,
+useEffect, useState, useContext, useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -12,26 +13,30 @@ import {
   Alert,
   StyleSheet,
   TouchableOpacity,
-
+  Dimensions,
 } from 'react-native';
 import _ from 'lodash';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import RNRestart from 'react-native-restart';
 // import ActionSheet from 'react-native-actionsheet';
 // import { useIsDrawerOpen } from '@react-navigation/drawer';
+
+import MarqueeText from 'react-native-marquee';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
-import colors from '../../Constants/Colors'
-import fonts from '../../Constants/Fonts'
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
 
-import { getGroupDetails, getJoinedGroups, getTeamsOfClub } from '../../api/Groups';
+import {
+  getGroupDetails,
+  getJoinedGroups,
+  getTeamsOfClub,
+} from '../../api/Groups';
 
 import { getUnreadCount } from '../../api/Notificaitons';
 
@@ -40,7 +45,10 @@ import * as Utility from '../../utils/index';
 import images from '../../Constants/ImagePath';
 import TCNavigationHeader from '../../components/TCNavigationHeader';
 import {
-  QB_ACCOUNT_TYPE, QBconnectAndSubscribe, QBlogin, QBLogout,
+  QB_ACCOUNT_TYPE,
+  QBconnectAndSubscribe,
+  QBlogin,
+  QBLogout,
 } from '../../utils/QuickBlox';
 import strings from '../../Constants/String';
 
@@ -50,6 +58,7 @@ export default function AccountScreen({ navigation }) {
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState(null);
   const [groupList, setGroupList] = useState([]);
+  const [notificationCounter, setNotificationCounter] = useState(0);
   const [team, setTeam] = useState([]);
   const [club, setClub] = useState([]);
   // for set/get teams
@@ -98,7 +107,6 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
-
   ];
   const clubMenu = [
     { key: 'My Schedule' },
@@ -120,36 +128,66 @@ export default function AccountScreen({ navigation }) {
     navigation.setOptions({
       title: 'Account',
       headerShown: true,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('NotificationsListScreen');
+          }}
+          hitSlop={{
+            top: 15,
+            bottom: 15,
+            left: 15,
+            right: 15,
+          }}>
+          <ImageBackground
+            source={notificationCounter > 0 ? images.notificationBell : images.tab_notification}
+            style={styles.headerRightImg}
+          >
+            {notificationCounter > 0 && <View
+            style={notificationCounter > 9 ? styles.eclipseBadge : styles.roundBadge}>
+              <Text
+              style={styles.notificationCounterStyle}>
+                {notificationCounter > 9 ? '9+' : notificationCounter}
+              </Text>
+            </View>}
+          </ImageBackground>
+        </TouchableOpacity>
+      ),
     });
-  }, [navigation]);
+  }, [navigation, notificationCounter]);
 
   useEffect(() => {
     const getData = async () => {
-      const entity = authContext.entity
-      const promises = [getOwnGroupList(entity), getTeamsList(entity)]
+      const entity = authContext.entity;
+      console.log(
+        'LoggedIn entity ::=>',
+        authContext?.entity?.auth?.user?.full_name?.length,
+      );
+      const promises = [getOwnGroupList(entity), getTeamsList(entity)];
 
       if (entity.role !== 'club') {
-        promises.push(getClubList(entity))
+        promises.push(getClubList(entity));
       }
 
       Promise.all(promises).then(() => {
         setloading(false);
       });
-    }
-    getData()
+    };
+    getData();
   }, [authContext.entity, isFocused, navigation]);
 
   const getParentClub = (item) => {
-    setloading(true)
-    getGroupDetails(item.group_id, authContext).then((response) => {
-      console.log('Parent group detail::', response.payload.club);
-      if (response.payload.club !== undefined) {
-        setParentGroup(response.payload.club);
-      } else {
-        setParentGroup(null);
-      }
-      setloading(false)
-    })
+    setloading(true);
+    getGroupDetails(item.group_id, authContext)
+      .then((response) => {
+        console.log('Parent group detail::', response.payload.club);
+        if (response.payload.club !== undefined) {
+          setParentGroup(response.payload.club);
+        } else {
+          setParentGroup(null);
+        }
+        setloading(false);
+      })
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -158,21 +196,31 @@ export default function AccountScreen({ navigation }) {
   };
 
   const getOwnGroupList = async (currentEntity) => {
-    getUnreadCount(authContext).then((response) => {
-      const { teams } = response.payload;
-      const { clubs } = response.payload;
-      setTeam(teams);
-      setClub(clubs);
-      if (currentEntity.role === 'user') {
-        setGroupList([...clubs, ...teams]);
-      } else if (currentEntity.role === 'team') {
-        const updatedTeam = teams.filter((item) => item.group_id !== authContext.entity.uid);
-        setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
-      } else if (authContext.entity.role === 'club') {
-        const updatedClub = clubs.filter((item) => item.group_id !== authContext.entity.uid);
-        setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
-      }
-    })
+    getUnreadCount(authContext)
+      .then((response) => {
+        const { teams } = response.payload;
+        const { clubs } = response.payload;
+        setTeam(teams);
+        setClub(clubs);
+        let count = 0;
+        ([...clubs, ...teams] || []).map((e) => {
+          count += e.unread
+        })
+        setNotificationCounter(count)
+        if (currentEntity.role === 'user') {
+          setGroupList([...clubs, ...teams]);
+        } else if (currentEntity.role === 'team') {
+          const updatedTeam = teams.filter(
+            (item) => item.group_id !== authContext.entity.uid,
+          );
+          setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
+        } else if (authContext.entity.role === 'club') {
+          const updatedClub = clubs.filter(
+            (item) => item.group_id !== authContext.entity.uid,
+          );
+          setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
+        }
+      })
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
@@ -182,60 +230,71 @@ export default function AccountScreen({ navigation }) {
 
   const getTeamsList = async (currentEntity) => {
     if (currentEntity.role === 'club') {
-      getTeamsOfClub(authContext.entity.uid, authContext).then((response) => {
-        setTeamList(response.payload);
-      }).catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+      getTeamsOfClub(authContext.entity.uid, authContext)
+        .then((response) => {
+          setTeamList(response.payload);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     } else {
-      getJoinedGroups(authContext.entity.uid, authContext).then((response) => {
-        setTeamList(response.payload.teams);
-      }).catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+      getJoinedGroups(authContext.entity.uid, authContext)
+        .then((response) => {
+          setTeamList(response.payload.teams);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
     }
   };
 
   const getClubList = async () => {
-    getJoinedGroups(authContext.entity.uid, authContext).then((response) => {
-      setClubList(response.payload.clubs);
-    }).catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+    getJoinedGroups(authContext.entity.uid, authContext)
+      .then((response) => {
+        setClubList(response.payload.clubs);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   const onSwitchProfile = async ({ item }) => {
-    setloading(true)
-    switchProfile(item).then((currentEntity) => {
-      setloading(true);
-      switchQBAccount(item, currentEntity)
-    }).catch((e) => {
-      setloading(false)
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    })
-  }
+    setloading(true);
+    switchProfile(item)
+      .then((currentEntity) => {
+        setloading(true);
+        switchQBAccount(item, currentEntity);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const switchProfile = async (item) => {
-    let currentEntity = authContext.entity
+    let currentEntity = authContext.entity;
 
     if (item.entity_type === 'player') {
       if (currentEntity.obj.entity_type === 'team') {
-        team.push(currentEntity.obj)
+        team.push(currentEntity.obj);
       } else if (currentEntity.obj.entity_type === 'club') {
-        club.push(currentEntity.obj)
+        club.push(currentEntity.obj);
       }
       setGroupList([...club, ...team]);
       currentEntity = {
-        ...currentEntity, uid: item.user_id, role: 'user', obj: item,
-      }
+        ...currentEntity,
+        uid: item.user_id,
+        role: 'user',
+        obj: item,
+      };
       setParentGroup(null);
     } else {
       if (item.entity_type === 'team') {
@@ -246,11 +305,14 @@ export default function AccountScreen({ navigation }) {
         } else if (currentEntity.obj.entity_type === 'team') {
           team.splice(i, 1, currentEntity.obj);
         } else if (currentEntity.obj.entity_type === 'club') {
-          club.push(currentEntity.obj)
+          club.push(currentEntity.obj);
         }
         currentEntity = {
-          ...currentEntity, uid: item.group_id, role: 'team', obj: item,
-        }
+          ...currentEntity,
+          uid: item.group_id,
+          role: 'team',
+          obj: item,
+        };
         getParentClub(item);
       } else if (item.entity_type === 'club') {
         const i = club.indexOf(item);
@@ -258,86 +320,98 @@ export default function AccountScreen({ navigation }) {
           club.splice(i, 1);
         } else if (currentEntity.obj.entity_type === 'team') {
           club.splice(i, 1);
-          team.push(currentEntity.obj)
+          team.push(currentEntity.obj);
         } else if (currentEntity.obj.entity_type === 'club') {
           club.splice(i, 1, currentEntity.obj);
         }
         currentEntity = {
-          ...currentEntity, uid: item.group_id, role: 'club', obj: item,
-        }
-        setParentGroup(null)
-        setGroup(item)
+          ...currentEntity,
+          uid: item.group_id,
+          role: 'club',
+          obj: item,
+        };
+        setParentGroup(null);
+        setGroup(item);
       }
       setGroupList([authContext.entity.auth.user, ...club, ...team]);
     }
-    authContext.setEntity({ ...currentEntity })
-    Utility.setStorage('authContextEntity', { ...currentEntity })
-    return currentEntity
+    authContext.setEntity({ ...currentEntity });
+    Utility.setStorage('authContextEntity', { ...currentEntity });
+    return currentEntity;
   };
 
   const switchQBAccount = async (accountData, entity) => {
-    let currentEntity = entity
-    authContext.setEntity({ ...currentEntity })
-    Utility.setStorage('authContextEntity', { ...currentEntity })
-    const entityType = accountData?.entity_type
-    const uid = entityType === 'player' ? 'user_id' : 'group_id'
-    QBLogout().then(() => {
-      const {
-        USER, CLUB, LEAGUE, TEAM,
-      } = QB_ACCOUNT_TYPE;
-      let accountType = USER;
-      if (entityType === 'club') accountType = CLUB;
-      else if (entityType === 'team') accountType = TEAM;
-      else if (entityType === 'league') accountType = LEAGUE;
-      QBlogin(
-        accountData[uid],
-        {
-          ...accountData,
-          full_name: accountData.group_name,
-        },
-        accountType,
-      ).then(async (res) => {
-        currentEntity = { ...currentEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
-        authContext.setEntity({ ...currentEntity })
-        Utility.setStorage('authContextEntity', { ...currentEntity })
-        QBconnectAndSubscribe(currentEntity).then((qbRes) => {
-          setloading(false)
-          if (qbRes?.error) {
-            console.log('Towns Cup', qbRes?.error)
-          }
-        }).catch(() => {
-          setloading(false)
-        })
-      }).catch(() => {
-        setloading(false)
+    let currentEntity = entity;
+    authContext.setEntity({ ...currentEntity });
+    Utility.setStorage('authContextEntity', { ...currentEntity });
+    const entityType = accountData?.entity_type;
+    const uid = entityType === 'player' ? 'user_id' : 'group_id';
+    QBLogout()
+      .then(() => {
+        const {
+USER, CLUB, LEAGUE, TEAM,
+} = QB_ACCOUNT_TYPE;
+        let accountType = USER;
+        if (entityType === 'club') accountType = CLUB;
+        else if (entityType === 'team') accountType = TEAM;
+        else if (entityType === 'league') accountType = LEAGUE;
+        QBlogin(
+          accountData[uid],
+          {
+            ...accountData,
+            full_name: accountData.group_name,
+          },
+          accountType,
+        )
+          .then(async (res) => {
+            currentEntity = {
+              ...currentEntity,
+              QB: { ...res.user, connected: true, token: res?.session?.token },
+            };
+            authContext.setEntity({ ...currentEntity });
+            Utility.setStorage('authContextEntity', { ...currentEntity });
+            QBconnectAndSubscribe(currentEntity)
+              .then((qbRes) => {
+                setloading(false);
+                if (qbRes?.error) {
+                  console.log('Towns Cup', qbRes?.error);
+                }
+              })
+              .catch(() => {
+                setloading(false);
+              });
+          })
+          .catch(() => {
+            setloading(false);
+          });
       })
-    }).catch(() => {
-      setloading(false)
-    })
-  }
+      .catch(() => {
+        setloading(false);
+      });
+  };
 
   const handleLogOut = async () => {
     Alert.alert(
       'Towns Cup',
       'Are you sure want to logout?',
-      [{
-        text: 'OK',
-        onPress: async () => {
-          setloading(true);
-          QBLogout();
-          await firebase.auth().signOut();
-          await Utility.clearStorage();
-          setloading(false);
-          setTimeout(() => {
-            RNRestart.Restart();
-          }, 2000)
+      [
+        {
+          text: 'OK',
+          onPress: async () => {
+            setloading(true);
+            QBLogout();
+            await firebase.auth().signOut();
+            await Utility.clearStorage();
+            setloading(false);
+            setTimeout(() => {
+              RNRestart.Restart();
+            }, 2000);
+          },
         },
-      },
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
       ],
       { cancelable: false },
     );
@@ -357,7 +431,7 @@ export default function AccountScreen({ navigation }) {
     } else if (section === 'Currency') {
       navigation.navigate('CurrencySettingScreen');
     } else if (section === 'Setting & Privacy') {
-      const entity = authContext.entity
+      const entity = authContext.entity;
       if (entity.role === 'user') {
         navigation.navigate('UserSettingPrivacyScreen');
       } else {
@@ -366,7 +440,7 @@ export default function AccountScreen({ navigation }) {
         });
       }
     } else if (section === 'Members') {
-      const entity = authContext.entity
+      const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
     }
   };
@@ -380,7 +454,7 @@ export default function AccountScreen({ navigation }) {
     } else if (options === 'Add a sport') {
       navigation.navigate('RegisterPlayer');
     } else if (options === 'Create a Team') {
-      const entity = authContext.entity
+      const entity = authContext.entity;
       if (entity.role === 'user') {
         navigation.navigate('CreateTeamForm1');
       } else {
@@ -392,9 +466,9 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('Account', {
         screen: 'PaymentMethodsScreen',
         params: {
-            comeFrom: 'AccountScreen',
+          comeFrom: 'AccountScreen',
         },
-      })
+      });
     } else if (options === 'Payout Method') {
       navigation.navigate('PayoutMethodScreen');
     }
@@ -408,35 +482,48 @@ export default function AccountScreen({ navigation }) {
         // navigation.closeDrawer();
       }}>
       <View>
-        {item.entity_type === 'player'
-          && <View style={styles.imageContainer}>
+        {item.entity_type === 'player' && (
+          <View style={styles.imageContainer}>
             <Image
-                source={item.thumbnail ? { uri: item.thumbnail } : images.profilePlaceHolder}
-                style={styles.playerImg}
-              />
+              source={
+                item.thumbnail
+                  ? { uri: item.thumbnail }
+                  : images.profilePlaceHolder
+              }
+              style={styles.playerImg}
+            />
           </View>
-          }
-        {item.entity_type === 'club'
-          && <View style={styles.placeholderView}>
+        )}
+        {item.entity_type === 'club' && (
+          <View style={styles.placeholderView}>
             <Image
-                source={ item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder}
-                style={styles.entityImg}
-              />
-            {item.thumbnail ? null : <Text style={styles.oneCharacterText}>
-              {item.group_name.charAt(0).toUpperCase()}
-            </Text>}
-          </View>
-          }
-        {item.entity_type === 'team'
-          && <View style={styles.placeholderView}>
-            <Image
-              source={ item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
+              source={
+                item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder
+              }
               style={styles.entityImg}
             />
-            {item.thumbnail ? null : <Text style={styles.oneCharacterText}>
-              {item.group_name.charAt(0).toUpperCase()}
-            </Text>}
-          </View>}
+            {item.thumbnail ? null : (
+              <Text style={styles.oneCharacterText}>
+                {item.group_name.charAt(0).toUpperCase()}
+              </Text>
+            )}
+          </View>
+        )}
+        {item.entity_type === 'team' && (
+          <View style={styles.placeholderView}>
+            <Image
+              source={
+                item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder
+              }
+              style={styles.entityImg}
+            />
+            {item.thumbnail ? null : (
+              <Text style={styles.oneCharacterText}>
+                {item.group_name.charAt(0).toUpperCase()}
+              </Text>
+            )}
+          </View>
+        )}
 
         {item.unread > 0 && (
           <View style={styles.badgeView}>
@@ -462,44 +549,47 @@ export default function AccountScreen({ navigation }) {
     </TouchableWithoutFeedback>
   );
 
-  let placeHolder, badge, background = images.teamSqure
+  let placeHolder = images.teamSqure;
   if (authContext.entity.role === 'club') {
-    placeHolder = images.club_ph
-    badge = 'C'
-    background = images.clubSqure
+    placeHolder = images.club_ph;
   } else if (authContext.entity.role === 'team') {
-    placeHolder = images.team_ph
-    badge = 'T'
-    background = images.teamSqure
+    placeHolder = images.team_ph;
   } else {
-    placeHolder = images.profilePlaceHolder
+    placeHolder = images.profilePlaceHolder;
   }
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <ScrollView style={styles.mainContainer}>
-        <View style={{
-          flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, alignItems: 'center',
-        }}>
-          {parentGroup ? (<View
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          {parentGroup ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image source={images.clubLable} style={styles.clubLableView} />
+              <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center',
+                  marginLeft: 10,
+                  // backgroundColor: 'red',
                 }}>
-            <Image source={images.clubLable} style={styles.clubLableView} />
-            <View
-                  style={{
-                    flexDirection: 'row',
-                    marginLeft: 10,
-                    // backgroundColor: 'red',
-                  }}>
-              <TCNavigationHeader
-                 name={parentGroup.group_name}
-                 groupType={'club'}
-                 image={parentGroup.thumbnail && parentGroup.thumbnail }/>
+                <TCNavigationHeader
+                  name={parentGroup.group_name}
+                  groupType={'club'}
+                  image={parentGroup.thumbnail && parentGroup.thumbnail}
+                />
+              </View>
             </View>
-          </View>) : <View></View>}
+          ) : (
+            <View></View>
+          )}
           {/* <View>
             <TouchableOpacity onPress={() => {
               // navigation.closeDrawer()
@@ -510,58 +600,164 @@ export default function AccountScreen({ navigation }) {
         </View>
         {authContext.entity.role === 'user' && (
           <View style={styles.profileView}>
-            <TouchableOpacity onPress={() => {
-               navigation.navigate('HomeScreen', {
-                uid: authContext.entity.uid,
-                role: 'user',
-                backButtonVisible: true,
-                menuBtnVisible: false,
-              })
-            }}>
-              <Image
-                source={authContext?.entity?.obj?.thumbnail || '' ? { uri: authContext.entity.obj.thumbnail } : placeHolder}
-                style={[styles.profileImg, { marginTop: 20 }]}
-              />
-              <Text style={styles.nameText} numberOfLines={1}>{authContext?.entity?.auth?.user?.full_name || ''}</Text>
-            </TouchableOpacity>
-            <Text style={styles.locationText}>
-              {authContext?.entity?.obj?.city || ''}, {authContext?.entity?.obj?.state_abbr || ''}
-            </Text>
+            <ImageBackground
+              source={
+                authContext?.entity?.obj?.background_thumbnail
+                  ? { uri: authContext?.entity?.obj?.background_thumbnail }
+                  : images.ImageBackground
+              }
+              style={styles.profileView}
+              blurRadius={10}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('HomeScreen', {
+                    uid: authContext.entity.uid,
+                    role: 'user',
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                  });
+                }}
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 25,
+                  marginRight: 25,
+                }}>
+                <Image
+                  source={
+                    authContext?.entity?.obj?.thumbnail || ''
+                      ? { uri: authContext.entity.obj.thumbnail }
+                      : placeHolder
+                  }
+                  style={styles.profileImg}
+                />
+                <View style={{ marginLeft: 15, width: 300 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginRight: 10,
+                    }}>
+                    <MarqueeText
+                      style={[styles.nameText, { alignSelf: 'flex-start' }]}
+                      duration={3000}
+                      marqueeOnStart
+                      loop={true}
+                      // marqueeDelay={0}
+                      // marqueeResetDelay={1000}
+                    >
+                      {authContext?.entity?.auth?.user?.full_name || ''}
+                    </MarqueeText>
+
+                    <Image
+                      source={images.arrowGraterthan}
+                      style={{
+                        height: 12,
+                        width: 12,
+                        resizeMode: 'cover',
+                        tintColor: colors.whiteColor,
+                      }}
+                    />
+                  </View>
+                  <Text
+                    style={[styles.locationText, { alignSelf: 'flex-start' }]}>
+                    {authContext?.entity?.obj?.city || ''},{' '}
+                    {authContext?.entity?.obj?.state_abbr || ''}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </ImageBackground>
           </View>
         )}
-        {(authContext.entity.role === 'team' || authContext.entity.role === 'club') && (<View style={styles.profileView}>
-          <TouchableOpacity onPress={() => {
-                navigation.navigate('HomeScreen', {
-                  uid: authContext.entity.uid,
-                  role: authContext.entity.role,
-                  backButtonVisible: true,
-                  menuBtnVisible: false,
-                })
-          }}>
-            <Image
-                source={authContext?.entity?.obj?.thumbnail ? { uri: authContext?.entity?.obj?.thumbnail } : placeHolder}
-                style={styles.profileImgGroup}
-              />
-            <View
-              style={{
-                flexDirection: 'row',
-                alignSelf: 'center',
-                paddingLeft: 30,
-              }}>
-              <Text style={styles.nameText} numberOfLines={1}>{authContext.entity.obj.group_name}</Text>
-              <View style={styles.identityView}>
-                <ImageBackground
-                  source={background}
-                  style={styles.badgeCounter}
+        {(authContext.entity.role === 'team'
+          || authContext.entity.role === 'club') && (
+            <View style={styles.profileView}>
+              <ImageBackground
+              source={
+                authContext?.entity?.obj?.background_thumbnail
+                  ? { uri: authContext?.entity?.obj?.background_thumbnail }
+                  : images.ImageBackground
+              }
+              style={styles.profileView}
+              blurRadius={10}>
+                <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('HomeScreen', {
+                    uid: authContext.entity.uid,
+                    role: authContext.entity.role,
+                    backButtonVisible: true,
+                    menuBtnVisible: false,
+                  });
+                }}
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 25,
+                  marginRight: 25,
+                  alignContent: 'center',
+                }}>
+                  <Image
+                  source={
+                    authContext?.entity?.obj?.thumbnail
+                      ? { uri: authContext?.entity?.obj?.thumbnail }
+                      : placeHolder
+                  }
+                  style={styles.profileImg}
                 />
-                <Text style={styles.badgeCounter}>{badge}</Text>
-              </View>
+                  <View
+                  style={{
+                    marginLeft: 15,
+                    width: Dimensions.get('window').width / 1.6,
+                  }}>
+                    <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginRight: 10,
+                    }}>
+                      <MarqueeText
+                      style={[styles.nameText, { alignSelf: 'flex-start' }]}
+                      duration={3000}
+                      marqueeOnStart
+                      loop={true}
+                      // marqueeDelay={0}
+                      // marqueeResetDelay={1000}
+                    >
+                        {authContext.entity.obj.group_name || ''}
+                      </MarqueeText>
+
+                      <Image
+                      source={
+                        authContext.entity.role === 'team'
+                          ? images.teamPatch
+                          : images.clubPatch
+                      }
+                      style={{
+                        height: 15,
+                        width: 15,
+                        marginLeft: 10,
+                        resizeMode: 'cover',
+                      }}
+                    />
+                      <Image
+                      source={images.arrowGraterthan}
+                      style={{
+                        height: 12,
+                        width: 12,
+                        marginLeft: 10,
+                        resizeMode: 'cover',
+                        tintColor: colors.whiteColor,
+                      }}
+                    />
+                    </View>
+                    <Text
+                    style={[styles.locationText, { alignSelf: 'flex-start' }]}>
+                      {authContext.entity.obj.city},{' '}
+                      {authContext.entity.obj.state_abbr}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </ImageBackground>
             </View>
-          </TouchableOpacity>
-          <Text style={styles.locationText}>
-            {authContext.entity.obj.city}, {authContext.entity.obj.state_abbr}
-          </Text>
-        </View>)}
+        )}
 
         <View style={styles.separatorLine}></View>
 
@@ -573,217 +769,247 @@ export default function AccountScreen({ navigation }) {
           }
           headerKey={'key'}
           memberKey="member"
-          renderRow={(rowItem, rowId, sectionId) => {
-            console.log('---')
-            console.log('rowid', rowId);
-            console.log('rowitem', rowItem);
-            console.log('sectionId', sectionId);
-            console.log('---')
-            return (
-              <>
-                {authContext.entity.role === 'user' && sectionId === 1 && (
-                  <FlatList
-                        data={authContext?.user?.registered_sports}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                          <View
-                                  style={styles.listContainer}
-                                  onPress={() => {
-                                    // navigation.closeDrawer();
-                                    // alert('Game Pressed');
-                                  }}
-                              >
-                            <View style={styles.entityTextContainer}>
-                              <Image
-                                      source={images.mySports}
-                                      style={styles.smallProfileImg}
-                                  />
-                              <Text style={styles.entityName}>{item.sport_name}</Text>
-                            </View>
-                          </View>
-                        )}
-                        scrollEnabled={false}
-                    />
-                )}
-                {authContext.entity.role === 'user' && sectionId === 2 && (
-                  <FlatList
-                        data={authContext?.entity?.auth?.user?.referee_data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                          <View
-                                style={styles.listContainer}
-                                onPress={() => {
-                                  // navigation.closeDrawer();
-                                  // alert('Referee Pressed');
-                                }}
-                            >
-                            <View style={styles.entityTextContainer}>
-                              <Image
-                                    source={images.myRefereeing}
-                                    style={styles.smallProfileImg}
-                                />
-                              <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
-                            </View>
-                          </View>
-                        )}
-                        scrollEnabled={false}
-                    />
-                )}
-                {authContext.entity.role === 'user' && sectionId === 3 && (
-                  <FlatList
-                        data={authContext?.entity?.auth?.user?.scorekeeper_data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                          <View
-                                style={styles.listContainer}
-                                onPress={() => {
-                                  // navigation.closeDrawer();
-                                  // alert('Referee Pressed');
-                                }}
-                            >
-                            <View style={styles.entityTextContainer}>
-                              <Image
-                                    source={images.myRefereeing}
-                                    style={styles.smallProfileImg}
-                                />
-                              <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
-                            </View>
-                          </View>
-                        )}
-                        scrollEnabled={false}
-                    />
-                )}
-                {authContext.entity.role === 'user' && (sectionId === 4 || sectionId === 5) && (
-                  <FlatList
-                          data={sectionId === 4 ? teamList : clubList}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => (
-                            <TouchableWithoutFeedback
-                                  style={styles.listContainer}
-                                  onPress={() => {
-                                    navigation.navigate('Account', {
-                                      screen: 'HomeScreen',
-                                      params: {
-                                        fromAccountScreen: true,
-                                        navigateToScreen: 'HomeScreen',
-                                        homeNavigateParams: {
-                                          uid: item.group_id,
-                                          backButtonVisible: true,
-                                          menuBtnVisible: false,
-                                          role: item.entity_type,
-                                        },
-                                      },
-                                    })
-                                  }}
-                              >
-                              <View style={styles.entityTextContainer}>
-                                {item.entity_type === 'team' && (<Image
-                                      source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
-                                      style={styles.smallProfileImg}
-                                  />)}
-                                {item.entity_type === 'club' && (<Image
-                                      source={item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder}
-                                      style={styles.smallProfileImg}
-                                  />)}
-                                <Text style={styles.entityName}>{item.group_name}</Text>
-                                <Text style={styles.teamSportView}> {item.sport}</Text>
-                              </View>
-                            </TouchableWithoutFeedback>
-                          )}
-                          scrollEnabled={false}
-                      />
-                )}
-                {authContext.entity.role === 'club' && sectionId === 2 && (
-                  <FlatList
-                          data={teamList}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => (
-                            <TouchableWithoutFeedback
-                                  style={styles.listContainer}
-                                  onPress={() => {
-                                    console.log('Pressed Team..', rowItem.rowId.sectionId);
-                                  }}>
-                              <View style={styles.entityTextContainer}>
-
-                                <Image
-                                      source={item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder}
-                                      style={styles.smallProfileImg}
-                                  />
-
-                                <Text style={styles.entityName}>{item.group_name}</Text>
-                                <Text style={item.entity_type === 'team' ? styles.teamSportView : styles.clubSportView}> {item.sport}</Text>
-
-                              </View>
-                            </TouchableWithoutFeedback>
-                          )}
-                          // ItemSeparatorComponent={() => (
-                          //   <View style={styles.separatorLine}></View>
-                          // )}
-                          scrollEnabled={false}
-                      />
-                )}
-
-                <View style={styles.halfSeparatorLine} />
-
-                <TouchableWithoutFeedback
+          renderRow={(rowItem, rowId, sectionId) => (
+            <>
+              {authContext.entity.role === 'user' && sectionId === 1 && (
+                <FlatList
+                  data={authContext?.user?.registered_sports}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <View
                       style={styles.listContainer}
                       onPress={() => {
-                        handleOptions(rowItem.opetions);
+                        // navigation.closeDrawer();
+                        // alert('Game Pressed');
                       }}>
-                  {rowItem.opetions === 'Add a sport' && (
-                    <Image source={images.addSport} style={styles.subMenuItem} />
-                  )}
-                  {rowItem.opetions === 'Register as a referee' && (
-                    <Image
-                            source={images.registerReferee}
-                            style={styles.subMenuItem}
+                      <View style={styles.entityTextContainer}>
+                        <Image
+                          source={images.mySports}
+                          style={styles.smallProfileImg}
                         />
+                        <Text style={styles.entityName}>{item.sport_name}</Text>
+                      </View>
+                    </View>
                   )}
-                  {rowItem.opetions === 'Register as a scorekeeper' && (
-                    <Image
-                            source={images.registerReferee}
-                            style={styles.subMenuItem}
+                  scrollEnabled={false}
+                />
+              )}
+              {authContext.entity.role === 'user' && sectionId === 2 && (
+                <FlatList
+                  data={authContext?.entity?.auth?.user?.referee_data}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <View
+                      style={styles.listContainer}
+                      onPress={() => {
+                        // navigation.closeDrawer();
+                        // alert('Referee Pressed');
+                      }}>
+                      <View style={styles.entityTextContainer}>
+                        <Image
+                          source={images.myRefereeing}
+                          style={styles.smallProfileImg}
                         />
+                        <Text style={styles.entityName}>
+                          {_.startCase(item?.sport_name)}
+                        </Text>
+                      </View>
+                    </View>
                   )}
-                  {rowItem.opetions === 'Create a Team' && (
-                    <Image source={images.createTeam} style={styles.subMenuItem} />
-                  )}
-                  {rowItem.opetions === 'Create a Club' && (
-                    <Image source={images.createClub} style={styles.subMenuItem} />
-                  )}
-                  {rowItem.opetions === 'Create a League' && (
-                    <Image
-                            source={images.createLeague}
-                            style={styles.subMenuItem}
+                  scrollEnabled={false}
+                />
+              )}
+              {authContext.entity.role === 'user' && sectionId === 3 && (
+                <FlatList
+                  data={authContext?.entity?.auth?.user?.scorekeeper_data}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <View
+                      style={styles.listContainer}
+                      onPress={() => {
+                        // navigation.closeDrawer();
+                        // alert('Referee Pressed');
+                      }}>
+                      <View style={styles.entityTextContainer}>
+                        <Image
+                          source={images.myRefereeing}
+                          style={styles.smallProfileImg}
                         />
+                        <Text style={styles.entityName}>
+                          {_.startCase(item?.sport_name)}
+                        </Text>
+                      </View>
+                    </View>
                   )}
-                  {rowItem.opetions === 'Payment Method' && (
-                    <Image
-                            source={images.Payment_method}
-                            style={styles.subMenuItem}
+                  scrollEnabled={false}
+                />
+              )}
+              {authContext.entity.role === 'user'
+                && (sectionId === 4 || sectionId === 5) && (
+                  <FlatList
+                    data={sectionId === 4 ? teamList : clubList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
+                      <TouchableWithoutFeedback
+                        style={styles.listContainer}
+                        onPress={() => {
+                          navigation.navigate('Account', {
+                            screen: 'HomeScreen',
+                            params: {
+                              fromAccountScreen: true,
+                              navigateToScreen: 'HomeScreen',
+                              homeNavigateParams: {
+                                uid: item.group_id,
+                                backButtonVisible: true,
+                                menuBtnVisible: false,
+                                role: item.entity_type,
+                              },
+                            },
+                          });
+                        }}>
+                        <View style={styles.entityTextContainer}>
+                          {item.entity_type === 'team' && (
+                            <Image
+                              source={
+                                item.thumbnail
+                                  ? { uri: item.thumbnail }
+                                  : images.teamPlaceholder
+                              }
+                              style={styles.smallProfileImg}
+                            />
+                          )}
+                          {item.entity_type === 'club' && (
+                            <Image
+                              source={
+                                item.thumbnail
+                                  ? { uri: item.thumbnail }
+                                  : images.clubPlaceholder
+                              }
+                              style={styles.smallProfileImg}
+                            />
+                          )}
+                          <Text style={styles.entityName}>
+                            {item.group_name}
+                          </Text>
+                          <Text style={styles.teamSportView}>
+                            {' '}
+                            {item.sport}
+                          </Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    )}
+                    scrollEnabled={false}
+                  />
+                )}
+              {authContext.entity.role === 'club' && sectionId === 2 && (
+                <FlatList
+                  data={teamList}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <TouchableWithoutFeedback
+                      style={styles.listContainer}
+                      onPress={() => {
+                        console.log('Pressed Team..', rowItem.rowId.sectionId);
+                      }}>
+                      <View style={styles.entityTextContainer}>
+                        <Image
+                          source={
+                            item.thumbnail
+                              ? { uri: item.thumbnail }
+                              : images.teamPlaceholder
+                          }
+                          style={styles.smallProfileImg}
                         />
-                  )}
 
-                  {rowItem.opetions === 'Payout Method' && (
-                    <Image
-                            source={images.Payout_method}
-                            style={styles.subMenuItem}
-                        />
+                        <Text style={styles.entityName}>{item.group_name}</Text>
+                        <Text
+                          style={
+                            item.entity_type === 'team'
+                              ? styles.teamSportView
+                              : styles.clubSportView
+                          }>
+                          {' '}
+                          {item.sport}
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
                   )}
-                  {rowItem.opetions === 'Invoicing' && (
-                    <Image source={images.Invoicing} style={styles.subMenuItem} />
-                  )}
-                  {rowItem.opetions === 'Transactions' && (
-                    <Image source={images.Transations} style={styles.subMenuItem} />
-                  )}
+                  // ItemSeparatorComponent={() => (
+                  //   <View style={styles.separatorLine}></View>
+                  // )}
+                  scrollEnabled={false}
+                />
+              )}
 
-                  <Text style={styles.listItems}>{rowItem.opetions}</Text>
-                  <Image source={images.nextArrow} style={styles.nextArrow} />
-                </TouchableWithoutFeedback>
-                <View style={styles.halfSeparatorLine} />
-              </>
-            )
-          }}
+              <View style={styles.halfSeparatorLine} />
+
+              <TouchableWithoutFeedback
+                style={styles.listContainer}
+                onPress={() => {
+                  handleOptions(rowItem.opetions);
+                }}>
+                {rowItem.opetions === 'Add a sport' && (
+                  <Image source={images.addSport} style={styles.subMenuItem} />
+                )}
+                {rowItem.opetions === 'Register as a referee' && (
+                  <Image
+                    source={images.registerReferee}
+                    style={styles.subMenuItem}
+                  />
+                )}
+                {rowItem.opetions === 'Register as a scorekeeper' && (
+                  <Image
+                    source={images.registerReferee}
+                    style={styles.subMenuItem}
+                  />
+                )}
+                {rowItem.opetions === 'Create a Team' && (
+                  <Image
+                    source={images.createTeam}
+                    style={styles.subMenuItem}
+                  />
+                )}
+                {rowItem.opetions === 'Create a Club' && (
+                  <Image
+                    source={images.createClub}
+                    style={styles.subMenuItem}
+                  />
+                )}
+                {rowItem.opetions === 'Create a League' && (
+                  <Image
+                    source={images.createLeague}
+                    style={styles.subMenuItem}
+                  />
+                )}
+                {rowItem.opetions === 'Payment Method' && (
+                  <Image
+                    source={images.Payment_method}
+                    style={styles.subMenuItem}
+                  />
+                )}
+
+                {rowItem.opetions === 'Payout Method' && (
+                  <Image
+                    source={images.Payout_method}
+                    style={styles.subMenuItem}
+                  />
+                )}
+                {rowItem.opetions === 'Invoicing' && (
+                  <Image source={images.Invoicing} style={styles.subMenuItem} />
+                )}
+                {rowItem.opetions === 'Transactions' && (
+                  <Image
+                    source={images.Transations}
+                    style={styles.subMenuItem}
+                  />
+                )}
+
+                <Text style={styles.listItems}>{rowItem.opetions}</Text>
+                <Image source={images.nextArrow} style={styles.nextArrow} />
+              </TouchableWithoutFeedback>
+              <View style={styles.halfSeparatorLine} />
+            </>
+          )}
           renderSectionHeaderX={(section) => (
             <>
               <TouchableWithoutFeedback
@@ -813,13 +1039,22 @@ export default function AccountScreen({ navigation }) {
                   <Image source={images.myLeagues} style={styles.menuItem} />
                 )}
                 {section === 'Payment & Payout' && (
-                  <Image source={images.paymentPayout} style={styles.menuItem} />
+                  <Image
+                    source={images.paymentPayout}
+                    style={styles.menuItem}
+                  />
                 )}
                 {section === 'Currency' && (
-                  <Image source={images.paymentPayout} style={styles.menuItem} />
+                  <Image
+                    source={images.paymentPayout}
+                    style={styles.menuItem}
+                  />
                 )}
                 {section === 'Setting & Privacy' && (
-                  <Image source={images.SettingPrivacy} style={styles.menuItem} />
+                  <Image
+                    source={images.SettingPrivacy}
+                    style={styles.menuItem}
+                  />
                 )}
                 {section === 'Members' && (
                   <Image source={images.Members} style={styles.menuItem} />
@@ -849,7 +1084,7 @@ export default function AccountScreen({ navigation }) {
         <FlatList
           data={groupList}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={renderSwitchProfile }
+          renderItem={renderSwitchProfile}
           // ItemSeparatorComponent={() => (
           //   <View style={styles.separatorLine}></View>
           // )}
@@ -869,7 +1104,6 @@ export default function AccountScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-
   badgeCounter: {
     alignSelf: 'center',
     color: colors.whiteColor,
@@ -903,7 +1137,6 @@ const styles = StyleSheet.create({
   },
 
   clubSportView: {
-
     color: colors.greeColor,
     fontFamily: fonts.RRegular,
     fontSize: 12,
@@ -927,13 +1160,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   entityName: {
-
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
   },
   entityNameText: {
-
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
@@ -955,21 +1186,10 @@ const styles = StyleSheet.create({
     marginRight: 20,
     width: wp('82%'),
   },
-
-  identityView: {
-    // backgroundColor: colors.lightBlueColor,
-    height: 16,
-    width: 16,
-    borderRadius: 3,
-    marginLeft: 10,
-    marginTop: 10,
-    alignSelf: 'center',
-  },
   imageContainer: {
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-
   },
   listContainer: {
     flex: 1,
@@ -986,8 +1206,8 @@ const styles = StyleSheet.create({
   },
   locationText: {
     alignSelf: 'center',
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    color: colors.whiteColor,
+    fontFamily: fonts.RMedium,
     fontSize: 14,
   },
 
@@ -998,7 +1218,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   menuItem: {
-
     alignSelf: 'center',
     height: 25,
     marginLeft: 20,
@@ -1007,12 +1226,10 @@ const styles = StyleSheet.create({
   },
   nameText: {
     alignSelf: 'center',
-    color: colors.lightBlackColor,
+    color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 20,
-    marginTop: 5,
-    marginLeft: 15,
-    marginRight: 15,
+    marginRight: 10,
   },
   nextArrow: {
     alignSelf: 'center',
@@ -1075,18 +1292,12 @@ const styles = StyleSheet.create({
   //   alignSelf: 'center',
   //   marginRight: 20,
   // },
-  profileImgGroup: {
-    height: 50,
-    width: 50,
-    resizeMode: 'cover',
-    // backgroundColor: colors.themeColor,
-    marginTop: 20,
-    alignSelf: 'center',
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: colors.whiteColor,
+
+  profileView: {
+    height: 100,
+    justifyContent: 'center',
+    backgroundColor: colors.grayBackgroundColor,
   },
-  profileView: { height: 150 },
   separatorLine: {
     alignSelf: 'center',
     backgroundColor: colors.lightgrayColor,
@@ -1094,7 +1305,6 @@ const styles = StyleSheet.create({
     width: wp('90%'),
   },
   separatorView: {
-
     alignSelf: 'center',
     backgroundColor: colors.lightgrayColor,
     height: 10,
@@ -1134,7 +1344,6 @@ const styles = StyleSheet.create({
     width: 30,
   },
   teamSportView: {
-
     color: colors.themeColor,
     fontFamily: fonts.RRegular,
     fontSize: 12,
@@ -1143,5 +1352,32 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: 'center',
   },
-
+  headerRightImg: {
+    height: 30,
+    marginRight: 20,
+    resizeMode: 'cover',
+    width: 30,
+  },
+  roundBadge: {
+    backgroundColor: 'red',
+    height: 16,
+    width: 16,
+    borderRadius: 8,
+    left: 15,
+    bottom: 2,
+  },
+  eclipseBadge: {
+    backgroundColor: 'red',
+    height: 16,
+    width: 22,
+    borderRadius: 8,
+    left: 15,
+    bottom: 2,
+  },
+  notificationCounterStyle: {
+    fontSize: 11,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+    alignSelf: 'center',
+  },
 });
