@@ -248,9 +248,9 @@ export const escapeRegExp = (str) => {
   return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
 };
 
-export const getSearchData = (data, field = [], searchString) => {
+export const getSearchData = (data = [], field = [], searchString) => {
   const searchData = [];
-  const searchStr = escapeRegExp(searchString)
+  const searchStr = escapeRegExp(searchString).replace(' ', '')
   if (searchStr !== '') {
     data.map((item) => {
       let isSearch = false;
@@ -259,6 +259,7 @@ export const getSearchData = (data, field = [], searchString) => {
             && item?.[key]
               ?.toLowerCase()
               ?.toString()
+              ?.replace(' ', '')
               ?.match(searchStr?.toLowerCase()?.toString())) {
           isSearch = true;
         }

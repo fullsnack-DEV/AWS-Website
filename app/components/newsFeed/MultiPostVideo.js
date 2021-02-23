@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, memo, useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
@@ -189,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MultiPostVideo;
+export default memo(MultiPostVideo);
