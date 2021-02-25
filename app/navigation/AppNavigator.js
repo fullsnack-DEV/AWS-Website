@@ -14,7 +14,7 @@ import MessageNavigator from './MessageNavigator';
 // import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
-import { getUnreadCount } from '../api/Notificaitons';
+// import { getUnreadCount } from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
@@ -108,7 +108,7 @@ function AppNavigator({ navigation }) {
   const authContext = useContext(AuthContext)
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  // const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
     changeRole();
     QBeventListeners();
@@ -142,19 +142,19 @@ function AppNavigator({ navigation }) {
         });
     }
   }
-  const getUnReadNotificationHandler = () => {
-    getUnreadCount(authContext).then((response) => {
-      if (response.status === true) {
-        const { teams } = response.payload;
-        const { clubs } = response.payload;
-        const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-        const entity_type = authContext?.entity?.role === 'user' ? 'user_id' : 'group_id';
-        const entityId = authContext?.entity?.role === 'user' ? authContext?.entity?.obj?.user_id : authContext?.entity?.obj?.group_id;
-        const data = groups.filter((item) => item?.[entity_type] === entityId)
-        setUnreadNotificationCount(data?.[0]?.unread ?? 0);
-      }
-    });
-  }
+  // const getUnReadNotificationHandler = () => {
+  //   getUnreadCount(authContext).then((response) => {
+  //     if (response.status === true) {
+  //       const { teams } = response.payload;
+  //       const { clubs } = response.payload;
+  //       const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+  //       const entity_type = authContext?.entity?.role === 'user' ? 'user_id' : 'group_id';
+  //       const entityId = authContext?.entity?.role === 'user' ? authContext?.entity?.obj?.user_id : authContext?.entity?.obj?.group_id;
+  //       const data = groups.filter((item) => item?.[entity_type] === entityId)
+  //       setUnreadNotificationCount(data?.[0]?.unread ?? 0);
+  //     }
+  //   });
+  // }
   const changeRole = async () => {
     setRole(authContext.entity.role);
   };
@@ -164,7 +164,7 @@ function AppNavigator({ navigation }) {
     if (count === MAX_COUNT_FOR_BOTTOM_TAB) {
       count = 0;
       getUnReadMessageHandler();
-      getUnReadNotificationHandler()
+      // getUnReadNotificationHandler()
     }
   }
   return (
@@ -207,14 +207,13 @@ function AppNavigator({ navigation }) {
         name="Feed"
         component={ NewsFeedNavigator }
         options={ ({ route }) => ({
-          ...(unreadNotificationCount > 0 && { tabBarBadge: unreadNotificationCount }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
             if (focused) onTabPress();
             return (
               <Image
                       source={
-                          focused ? images.tabFeed : images.tabFeed
+                          focused ? images.tabSelectedFeed : images.tabFeed
                       }
                       style={ focused ? styles.selectedTabImg : styles.tabImg }
                   />
@@ -257,7 +256,6 @@ function AppNavigator({ navigation }) {
           },
         }) }
       />
-
       {role === 'team' && (
         <Tab.Screen
           name="Account"

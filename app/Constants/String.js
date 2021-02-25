@@ -563,5 +563,6 @@ const strings = {
   whatsGoingText: 'What\'s going on?',
   writeText: 'Please write some text or select any image.',
   cannotCancelReservationAfterGameStartText: 'Reservation cannot be cancel after game game has beed started.',
+cannotChooseDatetime: 'This datetime is overlapping with blocked datetime.',
 };
 export default strings;

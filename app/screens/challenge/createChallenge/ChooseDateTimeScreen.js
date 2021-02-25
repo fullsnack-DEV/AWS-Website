@@ -1,7 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, {
-  useEffect, useState, useContext,
-} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -44,7 +42,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
   const getNearDateTime = (date) => {
     const start = moment(date);
     const nearTime = 30 - (start.minute() % 30);
-    const dateTime = moment(start).add(nearTime, 'm').toDate()
+    const dateTime = moment(start).add(nearTime, 'm').toDate();
     return dateTime;
   };
   const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -77,35 +75,44 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
   const getDateFormat = (dateValue) => {
     moment.locale('en');
-    const dateString = moment(new Date(dateValue)).format('MMM DD, yy    hh:mm A')
+    const dateString = moment(new Date(dateValue)).format(
+      'MMM DD, yy    hh:mm A',
+    );
     return dateString;
   };
   const getSlots = () => {
     setloading(true);
     console.log('Other team Object:', route?.params?.team);
-    const promises = [blockedSlots(
-      route?.params?.team?.home_team?.entity_type === 'player' ? 'users' : 'groups',
-      route?.params?.team?.home_team?.group_id || route?.params?.team?.home_team?.user_id,
-      authContext,
-    ), blockedSlots(
-      route?.params?.team?.away_team?.entity_type === 'player' ? 'users' : 'groups',
-      route?.params?.team?.away_team?.group_id || route?.params?.team?.away_team?.user_id,
-      authContext,
-    )]
-    Promise.all(promises).then((response) => {
+    const promises = [
+      blockedSlots(
+        route?.params?.team?.home_team?.entity_type === 'player'
+          ? 'users'
+          : 'groups',
+        route?.params?.team?.home_team?.group_id
+          || route?.params?.team?.home_team?.user_id,
+        authContext,
+      ),
+      blockedSlots(
+        route?.params?.team?.away_team?.entity_type === 'player'
+          ? 'users'
+          : 'groups',
+        route?.params?.team?.away_team?.group_id
+          || route?.params?.team?.away_team?.user_id,
+        authContext,
+      ),
+    ];
+    Promise.all(promises)
+      .then((response) => {
         setloading(false);
-        console.log('RES SLOT::', response);
-        console.log('RES1 SLOT::', response[0].payload);
-        console.log('RES2 SLOT::', response[1].payload);
-
-        const bookSlots = [...response[0].payload, ...response[1].payload]
+        const bookSlots = [...response[0].payload, ...response[1].payload];
         setSlots(bookSlots);
-        console.log('BOOKED SLOT::', bookSlots);
         const markedDates = {};
 
         // eslint-disable-next-line array-callback-return
         (bookSlots || []).map((e) => {
-          const original_date = moment(new Date(e.start_datetime * 1000)).format('yyyy-MM-DD');
+          const original_date = moment(
+            new Date(e.start_datetime * 1000),
+          ).format('yyyy-MM-DD');
           if (e.allDay === true) {
             markedDates[original_date] = {
               disabled: true,
@@ -123,7 +130,9 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             };
           } else {
             markedDates[original_date] = {
-              marked: true, dotColor: colors.themeColor, activeOpacity: 1,
+              marked: true,
+              dotColor: colors.themeColor,
+              activeOpacity: 1,
             };
           }
 
@@ -135,8 +144,11 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
           // }}
           console.log('BLOCKED::', markedDates);
         });
-        markedDates[moment(new Date(fromDate).getTime()).format('yyyy-MM-DD')] = {
-          selected: true, selectedColor: colors.themeColor,
+        markedDates[
+          moment(new Date(fromDate).getTime()).format('yyyy-MM-DD')
+        ] = {
+          selected: true,
+          selectedColor: colors.themeColor,
         };
         setMarked(markedDates);
         console.log('Marked dates::', JSON.stringify(markedDates));
@@ -169,7 +181,18 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
     console.log('MARKED DATES::', JSON.stringify(markedDates));
   };
-
+  function doesOverlap(date1, date2) {
+    return date1.some(
+      (e) => (new Date(e.start_datetime).getTime()
+          > new Date(date2.start_datetime / 1000).getTime()
+          && new Date(e.start_datetime).getTime()
+            < new Date(date2.end_datetime / 1000).getTime())
+        || (new Date(date2.start_datetime / 1000).getTime()
+          > new Date(e.start_datetime).getTime()
+          && new Date(date2.start_datetime / 1000).getTime()
+            < new Date(e.end_datetime).getTime()),
+    );
+  }
   const handleDonePress = (date) => {
     if (new Date(fromDate).getTime() === new Date(toDate).getTime()) {
       const todayDate = new Date(
@@ -216,19 +239,27 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
 
     setShow(!show);
     if (datePickerFor === 'from') {
-      const setdate = new Date(date).setDate(new Date(selectedDate).getDate())
-      const setmonth = new Date(setdate).setMonth(new Date(selectedDate).getMonth())
-      const setsecond = new Date(new Date(setmonth).setSeconds(new Date(selectedDate).getSeconds()))
+      const setdate = new Date(date).setDate(new Date(selectedDate).getDate());
+      const setmonth = new Date(setdate).setMonth(
+        new Date(selectedDate).getMonth(),
+      );
+      const setsecond = new Date(
+        new Date(setmonth).setSeconds(new Date(selectedDate).getSeconds()),
+      );
       setfromDate(setsecond);
       console.log('From date:', setsecond);
       console.log(`from:->${new Date(fromDate)}to:->${new Date(toDate)}`);
       if (new Date(setsecond).getTime() > new Date(toDate).getTime()) {
-        setToDate(moment(setsecond).add(30, 'm').toDate())
+        setToDate(moment(setsecond).add(30, 'm').toDate());
       }
     } else {
-      const setdate = new Date(date).setDate(new Date(selectedDate).getDate())
-      const setmonth = new Date(setdate).setMonth(new Date(selectedDate).getMonth())
-      const setsecond = new Date(new Date(setmonth).setSeconds(new Date(selectedDate).getSeconds()))
+      const setdate = new Date(date).setDate(new Date(selectedDate).getDate());
+      const setmonth = new Date(setdate).setMonth(
+        new Date(selectedDate).getMonth(),
+      );
+      const setsecond = new Date(
+        new Date(setmonth).setSeconds(new Date(selectedDate).getSeconds()),
+      );
       setToDate(setsecond);
     }
     setShow(false);
@@ -287,10 +318,16 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             hideExtraDays={true}
             onDayPress={(day) => {
               const dt = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
-              const dt1 = new Date(new Date(day.dateString).setHours(0, 0, 0, 0)).getTime();
-              const todayDate = new Date(dt).getTime() / 1000
-              const selectDate = new Date(dt1).getTime() / 1000
-              console.log(`Today::${new Date(todayDate * 1000)}Selected::${new Date(selectDate * 1000)}`);
+              const dt1 = new Date(
+                new Date(day.dateString).setHours(0, 0, 0, 0),
+              ).getTime();
+              const todayDate = new Date(dt).getTime() / 1000;
+              const selectDate = new Date(dt1).getTime() / 1000;
+              console.log(
+                `Today::${new Date(todayDate * 1000)}Selected::${new Date(
+                  selectDate * 1000,
+                )}`,
+              );
               if (todayDate > selectDate) {
                 Alert.alert(strings.chooseFutureDate);
               } else {
@@ -361,7 +398,6 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
                 {new Date(selectedDate).getDate()}{' '}
                 {monthNames[new Date(selectedDate).getMonth()]}
               </Text>
-
               <FlatList
                 data={blockedSlot}
                 renderItem={({ item }) => (
@@ -438,11 +474,16 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             onHide={handleCancelPress}
             minutesGap={30}
             minimumDate={
-              datePickerFor === 'to' ? moment(new Date(fromDate)).add(30, 'm').toDate() : getNearDateTime(new Date())
+              datePickerFor === 'to'
+                ? moment(new Date(fromDate)).add(30, 'm').toDate()
+                : getNearDateTime(new Date())
             }
-            maximumDate={
-             getNearDateTime(new Date(selectedDate)).setHours(23, 59, 59, 999)
-            }
+            maximumDate={getNearDateTime(new Date(selectedDate)).setHours(
+              23,
+              59,
+              59,
+              999,
+            )}
             mode={'time'}
           />
 
@@ -456,10 +497,19 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
           if (fromDate < new Date().getTime() / 1000) {
             Alert.alert(strings.chooseFutureDate);
           } else if (toDate > fromDate) {
-            navigation.navigate('CreateChallengeForm1', {
-              from: new Date(fromDate).getTime() / 1000,
-              to: new Date(toDate).getTime() / 1000,
-            });
+            if (
+              doesOverlap(blockedSlot, {
+                start_datetime: fromDate,
+                end_datetime: toDate,
+              })
+            ) {
+              Alert.alert(strings.cannotChooseDatetime);
+            } else {
+              navigation.navigate('CreateChallengeForm1', {
+                from: new Date(fromDate).getTime() / 1000,
+                to: new Date(toDate).getTime() / 1000,
+              });
+            }
           } else {
             Alert.alert(strings.chooseCorrectDate);
           }

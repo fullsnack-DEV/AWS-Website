@@ -539,7 +539,7 @@ const HomeScreen = ({ navigation, route }) => {
   if (currentUserData && currentUserData.thumbnail) {
     userThumbnail = currentUserData.thumbnail;
   }
-  const allGalleryRenderItem = (item, index) => {
+  const allGalleryRenderItem = ({ item, index }) => {
     if (index === 0) {
       return (
         <AddPhotoItem
@@ -589,7 +589,7 @@ const HomeScreen = ({ navigation, route }) => {
     return <View />
   }
 
-  const fromMeRenderItem = (item, index) => {
+  const fromMeRenderItem = ({ item, index }) => {
     if (index === 0) {
       return (
         <AddPhotoItem
@@ -640,7 +640,7 @@ const HomeScreen = ({ navigation, route }) => {
     return <View />
   }
 
-  const taggedRenderItem = (item, index) => {
+  const taggedRenderItem = ({ item, index }) => {
     if (index === 0) {
       return (
         <AddPhotoItem
@@ -1952,7 +1952,7 @@ const HomeScreen = ({ navigation, route }) => {
         {indexCounter === 0 && <FlatList
                     data={['0', ...allData]}
                     bounces={false}
-                    renderItem={({ item, index }) => allGalleryRenderItem(item, index)}
+                    renderItem={allGalleryRenderItem}
                     numColumns={3}
                     style={{ marginHorizontal: 1.5 }}
                     keyExtractor={(item, index) => index}
@@ -1960,7 +1960,7 @@ const HomeScreen = ({ navigation, route }) => {
         {indexCounter === 1 && <FlatList
                     data={['0', ...fromMeData]}
                     bounces={false}
-                    renderItem={({ item, index }) => fromMeRenderItem(item, index)}
+                    renderItem={fromMeRenderItem}
                     numColumns={3}
                     style={{ marginHorizontal: 1.5 }}
                     keyExtractor={(item, index) => index}
@@ -1968,7 +1968,7 @@ const HomeScreen = ({ navigation, route }) => {
         {indexCounter === 2 && <FlatList
                     data={['0', ...taggedData]}
                     bounces={false}
-                    renderItem={({ item, index }) => taggedRenderItem(item, index)}
+                    renderItem={taggedRenderItem}
                     numColumns={3}
                     style={{ marginHorizontal: 1.5 }}
                     keyExtractor={(item, index) => index}
