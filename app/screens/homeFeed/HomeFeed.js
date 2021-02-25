@@ -1,5 +1,5 @@
 import React, {
-    memo, useCallback, useContext, useEffect, useMemo, useState,
+    memo, useCallback, useContext, useEffect, useState,
 } from 'react';
 import { Alert, View, StyleSheet } from 'react-native';
 import {
@@ -14,9 +14,11 @@ import { getGallery } from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
-import TCInnerLoader from '../../components/TCInnerLoader';
+import useRenderCount from '../../hooks/useRenderCount';
 
 const HomeFeed = ({
+  onFeedScroll,
+  refs,
   userID,
   setProgressBar,
   setDoneUploadCount,
@@ -27,30 +29,28 @@ const HomeFeed = ({
   cancelRequest,
   currentUserData,
   isAdmin,
-  onStartShouldSetResponderCapture,
+  homeFeedHeaderComponent,
+  currentTab,
 }) => {
-    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        console.log('CT : ', currentTab);
+    }, [currentTab]);
+    useRenderCount('Home Feed')
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const authContext = useContext(AuthContext)
     const [postData, setPostData] = useState([]);
-    // const [isMoreLoading, setIsMoreLoading] = useState(false);
+    const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
     const [footerLoading, setFooterLoading] = useState(false);
 
     useEffect(() => {
-        // setIsMoreLoading(false);
-        setIsNextDataLoading(true);
-        setFooterLoading(false)
         const params = { uid: userID };
-        setLoading(true);
         getUserPosts(params, authContext).then((res) => {
-            console.log('res?.payload?.results::=>', res?.payload?.results);
             setPostData([...res?.payload?.results])
-            setLoading(false);
-        }).catch(() => {
-            setLoading(false);
+        }).catch((e) => {
+            console.log(e)
         })
-    }, [userID])
+    }, [authContext, userID])
 
     const updatePostAfterUpload = useCallback((dataParams) => {
         updatePost(dataParams, authContext)
@@ -69,7 +69,7 @@ const HomeFeed = ({
             });
     }, [authContext, userID])
 
-    const editPostDoneCall = (data, postDesc, selectEditItem, tagData) => {
+    const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
         let attachmentsData = [];
         const alreadyUrlDone = [];
         const createUrlData = [];
@@ -118,9 +118,9 @@ const HomeFeed = ({
                 console.log(error);
             })
         }
-    }
+    }, [authContext, cancelRequest, progressStatus, setProgressBar, setTotalUploadCount, updatePostAfterUpload])
 
-    const onDeletePost = (item) => {
+    const onDeletePost = useCallback((item) => {
         setFullScreenLoading(true);
         const params = {
             activity_id: item.id,
@@ -139,7 +139,7 @@ const HomeFeed = ({
                 setFullScreenLoading(false);
                 Alert.alert('', e.messages)
             });
-    }
+    }, [authContext, userID])
 
     const onLikePress = useCallback((item) => {
         const bodyParams = {
@@ -169,13 +169,12 @@ const HomeFeed = ({
                 });
             })
             .catch((error) => {
-                setLoading(false)
                 console.log('error coming', error)
                 setTimeout(() => {
                     Alert.alert(strings.alertmessagetitle, error.message)
                 }, 10)
             })
-    }, [authContext, userID])
+    }, [authContext, setDoneUploadCount, setGalleryData, setProgressBar, setTotalUploadCount, userID])
 
     const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
         if (postDesc.trim().length > 0 && data?.length === 0) {
@@ -204,59 +203,66 @@ const HomeFeed = ({
                 createPostAfterUpload(dataParams)
             })
         }
-    }, [authContext, cancelRequest])
+    }, [authContext, cancelRequest, createPostAfterUpload, progressStatus, setProgressBar, setTotalUploadCount])
 
-    const onEndReached = () => {
-        // setIsMoreLoading(true);
-        // setFooterLoading(true);
-        // const id_lt = postData?.[postData.length - 1]?.id;
-        // if (id_lt && isMoreLoading && isNextDataLoading) {
-        //     getNewsFeedNextList(id_lt, authContext).then((response) => {
-        //         if (response) {
-        //             if (response.payload.next === '') {
-        //                 setIsNextDataLoading(false);
-        //             }
-        //             setIsMoreLoading(false);
-        //             setFooterLoading(false)
-        //             setPostData([...postData, ...response.payload.results]);
-        //         }
-        //     })
-        //         .catch(() => {
-        //             setFooterLoading(false)
-        //         })
-        // }
-        console.log('on End Reached Called1')
-    }
+    const onEndReached = useCallback(() => {
+        const id_lt = postData?.[postData.length - 1]?.id;
+        if (!isMoreLoading && id_lt && isNextDataLoading) {
+            setIsMoreLoading(true);
+            setFooterLoading(true);
+            getUserPosts({ last_activity_id: id_lt }, authContext).then((response) => {
+                if (response) {
+                    if (response.payload.next === '') {
+                        setIsNextDataLoading(false);
+                    }
+                    setIsMoreLoading(false);
+                    setFooterLoading(false)
+                    setPostData([...postData, ...response.payload.results]);
+                }
+            })
+            .catch(() => {
+                setFooterLoading(false)
+                setIsMoreLoading(false);
+            })
+        }
+    }, [authContext, isMoreLoading, isNextDataLoading, postData])
 
+    const StickyHeaderComponent = () => (isAdmin && currentTab === 0) && (
+      <View>
+        <WritePost
+                navigation={navigation}
+                postDataItem={currentUserData}
+                onWritePostPress={() => {
+                    navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone, selectedImageList: [] })
+                }}
+            />
+        <View style={styles.sepratorView} />
+      </View>
+    )
+
+    const ListHeaderComponent = useCallback(() => (
+      <>
+        {homeFeedHeaderComponent()}
+        {StickyHeaderComponent()}
+      </>
+    ), [homeFeedHeaderComponent, StickyHeaderComponent])
     return (
       <View style={{ flex: 1 }}>
-        {useMemo(() => (isAdmin
-          && <View>
-            <WritePost
-                  navigation={navigation}
-                  postDataItem={currentUserData}
-                  onWritePostPress={() => {
-                      navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone, selectedImageList: [] })
-                  }}
-              />
-            <View style={styles.sepratorView} />
-          </View>
-          ), [currentUserData, navigation, isAdmin])}
-
         <View style={styles.sepratorView} />
         <ActivityLoader visible={fullScreenLoading}/>
-        <TCInnerLoader visible={loading}/>
         <NewsFeedList
-            scrollEnabled={false}
-            onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
-            onDeletePost={onDeletePost}
-            navigation={navigation}
-            postData={postData}
-            onEditPressDone={editPostDoneCall}
-            onLikePress={onLikePress}
-            onEndReached={onEndReached}
-            footerLoading={footerLoading && isNextDataLoading}
-        />
+                  onFeedScroll={onFeedScroll}
+                  refs={refs}
+                  ListHeaderComponent={ListHeaderComponent}
+                  scrollEnabled={true}
+                  onDeletePost={onDeletePost}
+                  navigation={navigation}
+                  postData={currentTab === 0 ? postData : []}
+                  onEditPressDone={editPostDoneCall}
+                  onLikePress={onLikePress}
+                  onEndReached={onEndReached}
+                  footerLoading={footerLoading && isNextDataLoading}
+              />
       </View>
     )
 }

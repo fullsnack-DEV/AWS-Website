@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   StyleSheet, View, Image, Text, TouchableOpacity,
 } from 'react-native';
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WritePost;
+export default memo(WritePost);

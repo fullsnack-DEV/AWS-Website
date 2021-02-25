@@ -54,10 +54,3 @@ export const getUserPosts = async (params, authContext) => makeAPIRequest({
   params,
   authContext,
 });
-
-export const getUserPostsNextList = async (params, authContext) => makeAPIRequest({
-  method: 'get',
-  url: `${Config.BASE_URL}/posts`,
-  params,
-  authContext,
-})

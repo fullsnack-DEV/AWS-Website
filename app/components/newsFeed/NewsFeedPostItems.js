@@ -103,7 +103,7 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [item])
+  }, [caller_id, item, onImageProfilePress, onLikePress])
 
   const listSpace = () => <View style={{ width: wp('2%') }} />
 
@@ -219,6 +219,8 @@ const NewsFeedPostItems = ({
                 maxToRenderPerBatch={5}
               data={attachedImages}
               horizontal={true}
+              legacyImplementation={true}
+              windowSize={5}
               bounces={false}
               showsHorizontalScrollIndicator={false}
               ListHeaderComponent={listSpace}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   View, Text, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
@@ -6,24 +6,22 @@ import {
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 
-export default function UserInfoAddRole({
+const UserInfoAddRole = ({
   title,
   thumbURL,
   onPress,
-}) {
-  return (
-    <TouchableOpacity onPress={ onPress }>
-      <View style={styles.containerStyle}>
-        <Image source={thumbURL} style={styles.imageStyle}/>
-        <View style={{ marginLeft: 10, marginRight: 12 }}>
-          <Text style={styles.titleStyle}>
-            {title}
-          </Text>
-        </View>
+}) => (
+  <TouchableOpacity onPress={ onPress }>
+    <View style={styles.containerStyle}>
+      <Image source={thumbURL} style={styles.imageStyle}/>
+      <View style={{ marginLeft: 10, marginRight: 12 }}>
+        <Text style={styles.titleStyle}>
+          {title}
+        </Text>
       </View>
-    </TouchableOpacity>
-  );
-}
+    </View>
+  </TouchableOpacity>
+  )
 
 const styles = StyleSheet.create({
   containerStyle: {
@@ -51,3 +49,5 @@ const styles = StyleSheet.create({
   },
   titleStyle: { fontFamily: fonts.RMedium, fontSize: 16 },
 })
+
+export default memo(UserInfoAddRole)

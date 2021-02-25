@@ -1,5 +1,7 @@
 /* eslint-disable consistent-return */
-import React, { useEffect } from 'react';
+import React, {
+ memo, useCallback, useEffect, useMemo,
+} from 'react';
 import {
   View, StyleSheet, FlatList,
 } from 'react-native';
@@ -17,36 +19,25 @@ import UserInfoAddRole from './UserInfoAddRole';
 import UserInfoScorekeeperInItem from './UserInfoScorekeeperInItem';
 import EntityStatus from '../../../Constants/GeneralConstants';
 
-export default function UserHomeTopSection({
+const UserHomeTopSection = ({
   userDetails, isAdmin, loggedInEntity, onAction, onRefereesInPress, onScorekeeperInPress, onPlayInPress, onAddRolePress,
-}) {
+}) => {
   useEffect(() => {
-    console.log('UserDetail::=>', userDetails);
     isSectionEnable()
   }, [])
 
-  const isSectionEnable = () => {
+  const isSectionEnable = useCallback(() => {
     const gameLength = userDetails?.games?.length ?? 0
     const refereeLength = userDetails?.referee_data?.length ?? 0
     const scorekeeperLength = userDetails?.scorekeeper_data?.length ?? 0
     const totalLength = gameLength + refereeLength + scorekeeperLength
 
-    console.log('userDetails?.games length ::=> ', userDetails?.games);
-    console.log('gameLength length ::=> ', gameLength);
-    console.log('refereeLength length ::=> ', refereeLength);
-    console.log('scorekeeperLength length ::=> ', scorekeeperLength);
-
-    console.log('Total length ::=> ', totalLength);
-    if (totalLength > 5) {
-      return true
-    }
-
+    if (totalLength > 5) return true
     return false
-  }
+  }, [userDetails?.games, userDetails?.referee_data, userDetails?.scorekeeper_data]);
 
-  const oneLineSection = () => {
+  const oneLineSection = useMemo(() => {
     let games = []
-    console.log('Game data:=>', userDetails?.games);
     if (userDetails?.games) {
       games = userDetails?.games?.map((obj) => {
         const o = { ...obj };
@@ -66,23 +57,23 @@ export default function UserHomeTopSection({
       return o;
     }) ?? []
     return [...games, ...referee, ...scorekeeper, { sport_name: strings.addrole, item_type: EntityStatus.addNew }]
-  }
+  }, [userDetails?.games, userDetails?.referee_data, userDetails?.scorekeeper_data])
 
-  const renderPlayIn = ({ item }) => {
+  const renderPlayIn = useCallback(({ item }) => {
     if (item.item_type) {
       return renderAddPlayInRole({ item })
     }
+
     return (<UserInfoPlaysInItem
         title={item.sport_name}
         totalGames={item.totalGames}
         thumbURL={item.thumbnail ? { uri: item.thumbnail } : undefined}
         onPlayInPress={() => {
-          if (onPlayInPress) {
-            onPlayInPress(item)
-          }
+          if (onPlayInPress) onPlayInPress(item)
         }}/>)
-  }
-  const renderRefereesIn = ({ item }) => {
+  }, [onPlayInPress]);
+
+  const renderRefereesIn = useCallback(({ item }) => {
     if (item.item_type) {
       return renderAddRefereeRole({ item })
     }
@@ -91,13 +82,12 @@ export default function UserHomeTopSection({
         title={item.sport_name}
         thumbURL={images.gameGoal}
         onRefereesInPress={() => {
-          if (onRefereesInPress) {
-            onRefereesInPress(item)
-          }
+          if (onRefereesInPress) onRefereesInPress(item)
         }}
       />)
-  }
-  const renderScorekeeperIn = ({ item }) => {
+  }, [onRefereesInPress])
+
+  const renderScorekeeperIn = useCallback(({ item }) => {
     if (item.item_type) {
       return renderAddScorekeeperRole({ item })
     }
@@ -106,46 +96,42 @@ export default function UserHomeTopSection({
         title={item.sport_name}
         thumbURL={images.myScoreKeeping}
         onRefereesInPress={() => {
-          if (onScorekeeperInPress) {
-            onScorekeeperInPress(item)
-          }
+          if (onScorekeeperInPress) onScorekeeperInPress(item)
         }}
       />)
-  }
-  const renderAddRole = () => {
+  }, [onScorekeeperInPress])
+
+  const renderAddRole = useCallback(() => {
     if (isAdmin) {
       return (
         <UserInfoAddRole
       title={strings.addrole}
       thumbURL={images.addRole}
       onPress={() => {
-        if (onAddRolePress) {
-          onAddRolePress();
-        }
+        if (onAddRolePress) onAddRolePress();
       }}
     />
       )
     }
     return null;
-  };
+  }, [isAdmin, onAddRolePress]);
 
-  const renderAddRefereeRole = ({ item }) => {
+  const renderAddRefereeRole = useCallback(({ item }) => {
     if (isAdmin) {
       return (
         <UserInfoAddRole
               title={item.sport_name}
               thumbURL={images.addRole}
               onPress={() => {
-                if (onRefereesInPress) {
-                  onRefereesInPress()
-                }
+                if (onRefereesInPress) onRefereesInPress()
               }}
           />
       );
     }
     return null;
-  }
-  const renderAddScorekeeperRole = ({ item }) => {
+  }, [isAdmin, onRefereesInPress])
+
+  const renderAddScorekeeperRole = useCallback(({ item }) => {
     if (isAdmin) {
       return (
         <UserInfoAddRole
@@ -160,8 +146,9 @@ export default function UserHomeTopSection({
       );
     }
     return null;
-  }
-  const renderAddPlayInRole = ({ item }) => {
+  }, [isAdmin, onScorekeeperInPress])
+
+  const renderAddPlayInRole = useCallback(({ item }) => {
     if (isAdmin) {
       return (
         <UserInfoAddRole
@@ -176,9 +163,9 @@ export default function UserHomeTopSection({
       );
     }
     return null;
-  }
+  }, [isAdmin, onPlayInPress])
 
-  const renderUserRole = ({ item }) => {
+  const renderUserRole = useCallback(({ item }) => {
     if (item?.item_type === EntityStatus.addNew) {
       return renderAddRole()
     }
@@ -192,7 +179,7 @@ export default function UserHomeTopSection({
     if (item?.type === EntityStatus.scorekeeperin) {
       return renderScorekeeperIn({ item })
     }
-  }
+  }, [])
 
   // check member status
   let isMember = false;
@@ -209,18 +196,20 @@ export default function UserHomeTopSection({
       isMember = true
     }
   }
-  console.log('oneLineSection', oneLineSection());
-  console.log('isSectionEnable', isSectionEnable());
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
+
       {isAdmin && <TCProfileButton
       title={strings.editprofiletitle}
       style={styles.editButtonStyle}
       textStyle={styles.buttonTextStyle}
       onPressProfile = {() => { onAction('edit') }}
       showArrow={false}/>}
+
       {!isAdmin && <View style={styles.otherUserStyle}>
+
         {loggedInEntity.role === 'user' && <View style={styles.messageButtonStyle}>
+
           {(userDetails && userDetails.is_following) && <TCProfileButton
           title={strings.following}
           style={styles.firstButtonStyle}
@@ -229,6 +218,7 @@ export default function UserHomeTopSection({
           textStyle={styles.buttonTextStyle}
           onPressProfile = {() => { onAction('unfollow') } }
           /> }
+
           {(userDetails && !userDetails.is_following) && <TCGradientButton
           outerContainerStyle={styles.firstButtonOuterStyle}
           style={styles.firstButtonStyle}
@@ -236,14 +226,15 @@ export default function UserHomeTopSection({
           title={strings.follow}
           onPress = {() => { onAction('follow') }}/> }
         </View>}
+
         {loggedInEntity.role !== 'user' && <View style={styles.messageButtonStyle}>
           {isMember && <TCProfileButton
           title={strings.member}
           style={styles.firstButtonStyle}
           rightImage = {images.check}
           imageStyle = {styles.checkMarkStyle}
-          textStyle={styles.buttonTextStyle}
-          onPressProfile = {() => {}}/> }
+          textStyle={styles.buttonTextStyle}/> }
+
           {!isMember && <TCGradientButton
           outerContainerStyle={styles.firstButtonOuterStyle}
           style={styles.firstButtonStyle}
@@ -277,6 +268,7 @@ export default function UserHomeTopSection({
           />
           </View>
         </View>}
+
         {userDetails?.referee_data && userDetails?.referee_data?.length > 0 && <View>
           <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
             <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.refereesin}/>
@@ -290,6 +282,7 @@ export default function UserHomeTopSection({
           />
           </View>
         </View>}
+
         {userDetails?.scorekeeper_data && userDetails?.scorekeeper_data?.length > 0 && <View>
           <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
             <TCEditHeader containerStyle={{ marginHorizontal: 10 }} title= {strings.scorekeeperIn}/>
@@ -306,7 +299,7 @@ export default function UserHomeTopSection({
       </View> : <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
         <FlatList
             style={{ marginTop: 10, marginBottom: 0 }}
-            data={oneLineSection()}
+            data={oneLineSection}
             horizontal
             renderItem={renderUserRole}
             keyExtractor={(item, index) => index.toString()}
@@ -375,3 +368,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 })
+
+export default memo(UserHomeTopSection);

@@ -16,7 +16,11 @@ import * as Utility from './app/utils';
 import strings from './app/Constants/String';
 
 console.disableYellowBox = true
-
+// if (__DEV__) {
+//     console.log = () => {}
+//     console.warn = () => {}
+//     console.error = () => {}
+// }
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
   useEffect(() => {
