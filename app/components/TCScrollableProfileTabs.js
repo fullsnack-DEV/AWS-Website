@@ -8,12 +8,11 @@ import ScrollableTabView, {
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
-export default function TCScrollableProfileTabs({
-  onChangeTab, currentTab, renderTabContain = () => {}, bounces = true, tabItem, customStyle,
-}) {
-  return (
-    <ScrollView style={customStyle} nestedScrollEnabled={false} bounces={bounces}>
-      <ScrollableTabView
+const TCScrollableProfileTabs = ({
+  onChangeTab, currentTab = 0, renderTabContain = () => {}, bounces = true, tabItem, customStyle,
+}) => (
+  <ScrollView style={customStyle} nestedScrollEnabled={false} bounces={bounces}>
+    <ScrollableTabView
           locked={true}
         onChangeTab={onChangeTab}
         style={{ marginTop: 5 }}
@@ -26,12 +25,12 @@ export default function TCScrollableProfileTabs({
         tabBarUnderlineStyle={{ backgroundColor: colors.themeColor }}
         initialPage={0}
         renderTabBar={() => <ScrollableTabBar />}>
-        {tabItem.map((item, key) => (<View key={key} tabLabel={item}/>))}
-      </ScrollableTabView>
+      {tabItem.map((item, key) => (<View key={key} tabLabel={item}/>))}
+    </ScrollableTabView>
 
-      <ScrollView style={{ flex: 1 }}>
-        {renderTabContain(currentTab)}
-      </ScrollView>
+    <ScrollView style={{ flex: 1 }}>
+      {renderTabContain(currentTab)}
     </ScrollView>
-  );
-}
+  </ScrollView>
+  )
+export default TCScrollableProfileTabs;

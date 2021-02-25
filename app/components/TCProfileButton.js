@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   StyleSheet, Text, TouchableWithoutFeedback, View, Image,
 } from 'react-native';
@@ -7,26 +7,22 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
-export default function TCProfileButton({
+const TCProfileButton = ({
   title = 'Profile',
   showArrow = true,
-  onPressProfile,
+  onPressProfile = () => {},
   style,
   rightImage = images.arrowGraterthan,
   imageStyle,
   textStyle,
-}) {
-  return (
-
-    <TouchableWithoutFeedback onPress={onPressProfile}>
-      <View style={[styles.buttonView, style]}>
-        <Text style={[styles.textStyle, textStyle]}>{title}</Text>
-        {showArrow && <Image source={ rightImage } style={ [styles.arrowImage, imageStyle] } />}
-      </View>
-    </TouchableWithoutFeedback>
-  );
-}
-
+}) => (
+  <TouchableWithoutFeedback onPress={onPressProfile}>
+    <View style={[styles.buttonView, style]}>
+      <Text style={[styles.textStyle, textStyle]}>{title}</Text>
+      {showArrow && <Image source={ rightImage } style={ [styles.arrowImage, imageStyle] } />}
+    </View>
+  </TouchableWithoutFeedback>
+  )
 const styles = StyleSheet.create({
 
   buttonView: {
@@ -59,3 +55,5 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+
+export default memo(TCProfileButton);

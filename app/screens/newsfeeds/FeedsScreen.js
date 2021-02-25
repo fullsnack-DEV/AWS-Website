@@ -1,5 +1,5 @@
 import React, {
-  useEffect, memo, useState, useLayoutEffect, useContext, useMemo, useCallback,
+  useEffect, memo, useState, useLayoutEffect, useContext, useCallback,
 } from 'react';
 import {
   StyleSheet, View, Image, Alert, TouchableOpacity,
@@ -109,7 +109,7 @@ const FeedsScreen = ({ navigation }) => {
         createPostAfterUpload(dataParams)
       })
     }
-  }, [authContext, createPostAfterUpload])
+  }, [authContext])
 
   const updatePostAfterUpload = (dataParams) => {
     updatePost(dataParams, authContext)
@@ -124,7 +124,7 @@ const FeedsScreen = ({ navigation }) => {
         Alert.alert('', e.messages)
       });
   }
-  const editPostDoneCall = (data, postDesc, selectEditItem, tagData) => {
+  const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
     let attachmentsData = [];
     const alreadyUrlDone = [];
     const createUrlData = [];
@@ -173,7 +173,7 @@ const FeedsScreen = ({ navigation }) => {
         console.log(error);
       })
     }
-  }
+  }, [])
 
   const onCancelImageUpload = useCallback(() => {
     if (cancelApiRequest) {
@@ -184,7 +184,7 @@ const FeedsScreen = ({ navigation }) => {
     setTotalUploadCount(0);
   }, [cancelApiRequest])
 
-  const onDeletePost = (item) => {
+  const onDeletePost = useCallback((item) => {
     setloading(true);
     const params = {
       activity_id: item.id,
@@ -202,9 +202,9 @@ const FeedsScreen = ({ navigation }) => {
         .catch(() => {
           setloading(false);
         });
-  }
+  }, [])
 
-  const onRefreshPress = () => {
+  const onRefreshPress = useCallback(() => {
     setIsMoreLoading(false);
     setIsNextDataLoading(true);
     setFooterLoading(false)
@@ -218,9 +218,9 @@ const FeedsScreen = ({ navigation }) => {
           Alert.alert('', e.messages)
           setPullRefresh(false);
         });
-  }
+  }, [])
 
-  const feedScreenHeader = useMemo(() => (
+  const feedScreenHeader = useCallback(() => (
     <View>
       <WritePost
               navigation={navigation}
@@ -235,9 +235,9 @@ const FeedsScreen = ({ navigation }) => {
           />
       <View style={styles.sepratorView} />
     </View>
-    ), [callthis, currentUserDetail, navigation])
+    ), [callthis, currentUserDetail])
 
-  const onLikePress = (item) => {
+  const onLikePress = useCallback((item) => {
     const bodyParams = {
       reaction_type: 'clap',
       activity_id: item.id,
@@ -250,9 +250,9 @@ const FeedsScreen = ({ navigation }) => {
         .catch((e) => {
           Alert.alert('', e.messages)
         });
-  }
+  }, []);
 
-  const onEndReached = () => {
+  const onEndReached = useCallback(() => {
     setIsMoreLoading(true);
     setFooterLoading(true);
     const id_lt = postData?.[postData.length - 1]?.id;
@@ -271,7 +271,7 @@ const FeedsScreen = ({ navigation }) => {
             setFooterLoading(false)
           })
     }
-  }
+  }, [isMoreLoading, isNextDataLoading, postData])
 
   const onImageProgressCancelPress = useCallback(() => {
     Alert.alert(
@@ -288,7 +288,7 @@ const FeedsScreen = ({ navigation }) => {
     );
   }, [onCancelImageUpload])
 
-  const renderImageProgress = useMemo(() => (
+  const renderImageProgress = useCallback(() => (
     <>
       {progressBar && <ImageProgress
               numberOfUploaded={doneUploadCount}

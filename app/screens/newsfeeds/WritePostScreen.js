@@ -214,6 +214,7 @@ export default function WritePostScreen({ navigation, route }) {
           <TouchableOpacity
             style={styles.doneViewStyle}
             onPress={() => {
+              setloading(true);
               if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
                 Alert.alert('Please write some text or select any image.');
               } else {
@@ -236,6 +237,7 @@ export default function WritePostScreen({ navigation, route }) {
                   if (!searchText.includes(item)) tagData.splice(index, 1);
                   return null;
                 })
+                setloading(false);
                 navigation.goBack();
                 onPressDone(selectImage, searchText, tagData);
               }

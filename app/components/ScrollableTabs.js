@@ -1,5 +1,7 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import {
+ ScrollView, Text, TouchableOpacity,
+} from 'react-native';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
@@ -8,19 +10,16 @@ const ScrollableTabs = ({
   tabs = [],
   onTabPress = () => {},
 }) => (
-  <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-              alignItems: 'center',
-            }}
-        >
+  <ScrollView
+      bounces={false}
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}>
     {tabs?.map((item, index) => (
       <TouchableOpacity
                     onPress={() => onTabPress(index)}
                     key={item}
                     style={{
-                      flex: 1,
+                      width: 120,
                       justifyContent: 'center',
                       alignItems: 'center',
                       borderBottomWidth: 3,
@@ -36,6 +35,6 @@ const ScrollableTabs = ({
           >{item}</Text>
       </TouchableOpacity>
     ))}
-  </View>
+  </ScrollView>
 )
 export default ScrollableTabs;

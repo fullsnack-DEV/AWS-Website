@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,7 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
-function TCGradientButton({
+const TCGradientButton = ({
   title,
   onPress,
   style,
@@ -21,18 +21,16 @@ function TCGradientButton({
   endGradientColor = colors.yellowColor,
   outerContainerStyle,
   ...props
-}) {
-  return (
-    <TouchableOpacity onPress={ onPress } style={ [styles.outerContainerStyle, outerContainerStyle, props] }>
-      <LinearGradient
+}) => (
+  <TouchableOpacity onPress={ onPress } style={ [styles.outerContainerStyle, outerContainerStyle, props] }>
+    <LinearGradient
        colors={[startGradientColor, endGradientColor]}
        style={[styles.containerStyle, style]}>
-        <Text style={ [styles.buttonText, textStyle] }>{title}</Text>
-        {rightIcon && <Image style={[styles.rightIconStyle, rightIconStyle]} source={rightIcon} />}
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-}
+      <Text style={ [styles.buttonText, textStyle] }>{title}</Text>
+      {rightIcon && <Image style={[styles.rightIconStyle, rightIconStyle]} source={rightIcon} />}
+    </LinearGradient>
+  </TouchableOpacity>
+  )
 
 const styles = StyleSheet.create({
   outerContainerStyle: {
@@ -55,4 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TCGradientButton;
+export default memo(TCGradientButton);

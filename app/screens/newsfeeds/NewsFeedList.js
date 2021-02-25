@@ -13,6 +13,8 @@ import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
 
 const NewsFeedList = ({
+  onFeedScroll,
+  refs,
   navigation,
   postData,
   onEndReached = () => {},
@@ -50,7 +52,7 @@ const NewsFeedList = ({
     }
   }, [])
 
-  const renderNewsFeed = ({ item }) => {
+  const renderNewsFeed = useCallback(({ item }) => {
     const onDeleteButtonPress = () => onDeletePost(item)
     const onProfileButtonPress = () => onProfilePress(item)
     const onLikeButtonPress = () => onLikePress(item)
@@ -66,46 +68,52 @@ const NewsFeedList = ({
             onDeletePost={onDeleteButtonPress}
         />
     )
-  }
+  }, [pullRefresh, navigation, userID, onEditPressDone, onDeletePost, onProfilePress, onLikePress])
 
-  const newsFeedListItemSeperator = () => (
+  const newsFeedListItemSeperator = useCallback(() => (
     <View
-          style={{
-            marginTop: 10,
-            height: 8,
-            backgroundColor: colors.whiteGradientColor,
-          }}
-      />
-  )
+            style={{
+              marginTop: 10,
+              height: 8,
+              backgroundColor: colors.whiteGradientColor,
+            }}
+        />
+    ), [])
 
-  const newsFeedListFooterComponent = () => (
+  const newsFeedListFooterComponent = useCallback(() => (
       !footerLoading ? <View
           style={{
             height: hp(10),
           }}
       /> : <ActivityIndicator size={'small'} color={ colors.blackColor } style={{ alignSelf: 'center', marginBottom: hp(10) }} />
-  )
+  ), [footerLoading])
 
-  const newsFeedOnRefresh = () => {
-    const entity = authContext.entity
-    if (entity) {
-      setUserID(entity.uid || entity.auth.user_id);
+  const newsFeedOnRefresh = useCallback(() => {
+    if (onRefreshPress) {
+      const entity = authContext.entity
+      if (entity) {
+        setUserID(entity.uid || entity.auth.user_id);
+      }
+      onRefreshPress();
     }
-    onRefreshPress();
-  }
+  }, [authContext.entity, onRefreshPress])
 
-  const newsFeedKeyExtractor = (item) => `feed1${item?.id?.toString()}`
-  console.log('NEWS FEED CALL')
+  const newsFeedKeyExtractor = useCallback((item) => `feed1${item?.id?.toString()}`, [])
 
   return (
     <View onStartShouldSetResponderCapture={onStartShouldSetResponderCapture} style={{ flex: 1 }}>
       <FlatList
+        onScroll={onFeedScroll}
+        ref={refs}
         style={{ flex: 1 }}
+        scrollEventThrottle={16}
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
         bounces={true}
         data={postData ?? []}
+        legacyImplementation={true}
+        windowSize={10}
         ItemSeparatorComponent={newsFeedListItemSeperator}
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={scrollEnabled}

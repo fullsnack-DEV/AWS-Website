@@ -28,7 +28,7 @@ const TCSlider = ({
           borderRadius: 5,
           backgroundColor: trackColor,
         }}/>),
-  []);
+  [trackColor]);
 
   const renderRailSelected = useCallback(() => (
     <LinearGradient

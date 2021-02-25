@@ -5,7 +5,17 @@ import React, {
 import FastImage from 'react-native-fast-image';
 import {
   Image,
-  StyleSheet, Text, TouchableOpacity, View, Alert, FlatList, ScrollView, SafeAreaView, Dimensions, Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+  FlatList,
+  ScrollView,
+  SafeAreaView,
+  Dimensions,
+    Animated,
+  ImageBackground,
 
 } from 'react-native';
 import {
@@ -14,11 +24,9 @@ import {
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import moment from 'moment';
-import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
@@ -103,6 +111,7 @@ import TCGradientDivider from '../../components/TCThinGradientDivider';
 import HomeFeed from '../homeFeed/HomeFeed';
 import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
 import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
+import ScrollableTabs from '../../components/ScrollableTabs';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
@@ -142,13 +151,14 @@ const HomeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   // const viewRef = useRef();
+  const mainFlatListRef = useRef();
+  const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [isUserHome, setIsUserHome] = useState(false)
   const [isClubHome, setIsClubHome] = useState(false)
   const [isTeamHome, setIsTeamHome] = useState(false)
   const [playsInModalVisible, setPlaysInModalVisible] = useState(false)
   const [refereesInModalVisible, setRefereesInModalVisible] = useState(false)
   const [scorekeeperInModalVisible, setScorekeeperInModalVisible] = useState(false)
-  const mainFlatListFromTop = new Animated.Value(0);
   const [reviewDetailModalVisible, setReviewDetailModalVisible] = useState(false)
   const [feedDataIndex, setFeedDataIndex] = useState(0);
   const [feedDetailIndex, setFeedDetailIndex] = useState(0);
@@ -189,7 +199,6 @@ const HomeScreen = ({ navigation, route }) => {
   const [scorekeeperRecentMatch, setScorekeeperRecentMatch] = useState([]);
 
   const [scorekeeperUpcomingMatch, setScorekeeperUpcomingMatch] = useState([]);
-
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [eventData, setEventData] = useState(null);
   const [timeTable, setTimeTable] = useState([]);
@@ -494,8 +503,6 @@ const HomeScreen = ({ navigation, route }) => {
       })
     }
   }
-
-  const scrollToTop = useRef();
 
   const allData = [];
   const fromMeData = [];
@@ -1039,9 +1046,8 @@ const HomeScreen = ({ navigation, route }) => {
 
   let language_string = '';
 
-  const scorekeeperInModal = (scorekeeperInObject) => {
+  const scorekeeperInModal = useCallback((scorekeeperInObject) => {
     console.log('ScorekeeperInObject', scorekeeperInObject)
-    // navigation.navigate('RegisterReferee');
 
     if (scorekeeperInObject) {
       const entity = authContext.entity;
@@ -1116,9 +1122,9 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate('RegisterScorekeeper');
     }
-  };
+  }, [authContext, route?.params, currentUserData, scorekeeperInModalVisible]);
 
-  const refereesInModal = (refereeInObject) => {
+  const refereesInModal = useCallback((refereeInObject) => {
     if (refereeInObject) {
       const entity = authContext.entity;
       let languagesListName = [];
@@ -1191,11 +1197,12 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate('RegisterReferee');
     }
-  };
+  }, [authContext, route?.params, currentUserData, refereesInModalVisible]);
 
-  const onAddRolePress = () => {
+  const onAddRolePress = useCallback(() => {
     addRoleActionSheet.current.show()
-  };
+  }, [addRoleActionSheet])
+
   const refereeFound = (data) => (data?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id)
   const findCancelButtonIndex = (data) => {
     if (data?.game && refereeFound(data)) {
@@ -1233,7 +1240,7 @@ const HomeScreen = ({ navigation, route }) => {
       setloading(false);
     });
   }
-  const playInModel = (playInObject) => {
+  const playInModel = useCallback((playInObject) => {
     if (playInObject) {
       setPlaysInModalVisible(!playsInModalVisible);
       setSportName(playInObject?.sport_name);
@@ -1241,7 +1248,7 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate('RegisterPlayer');
     }
-  };
+  }, [playsInModalVisible]);
 
   const reviewerDetailModal = () => {
     setReviewerDetailModalVisible(!reviewerDetailModalVisible);
@@ -1251,7 +1258,7 @@ const HomeScreen = ({ navigation, route }) => {
     setIsRefereeModal(!isRefereeModal);
   };
 
-  const onConnectionButtonPress = (tab) => {
+  const onConnectionButtonPress = useCallback((tab) => {
     let entity_type = authContext?.entity?.role;
     let user_id = authContext?.entity?.uid;
     if (route?.params?.role) entity_type = route?.params?.role;
@@ -1261,7 +1268,8 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate('GroupMembersScreen', { groupID: user_id });
     }
-  }
+  }, [route?.params?.uid])
+
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
 
   const onCancelImageUpload = () => {
@@ -1670,27 +1678,12 @@ const HomeScreen = ({ navigation, route }) => {
       data={item}
       onPressButton = {() => {
         setIsRefereeModal(false);
-        console.log('choose Referee:', item);
         goToRefereReservationDetail(item)
       }}
   />
 
   const renderHomeMainTabContain = (tabKey = currentTab) => (
     <View style={{ flex: 1 }}>
-      {tabKey === 0 && (
-        <HomeFeed
-                currentUserData={currentUserData}
-                isAdmin={isAdmin}
-                navigation={navigation}
-                cancelRequest={cancelRequest}
-                progressStatus={progressStatus}
-                setDoneUploadCount={setDoneUploadCount}
-                setGalleryData={setGalleryData}
-                setProgressBar={setProgressBar}
-                setTotalUploadCount={setTotalUploadCount}
-                userID={route?.params?.uid ?? authContext.entity?.uid}
-            />
-        )}
       {tabKey === 1 && (<View style={{ flex: 1 }} >
         {isUserHome && <UserInfo
                 navigation={navigation}
@@ -1782,7 +1775,7 @@ const HomeScreen = ({ navigation, route }) => {
               />}
         </View>}
 
-        <Modal
+        {isRefereeModal && <Modal
                 isVisible={isRefereeModal}
                 backdropColor="black"
                 style={{ margin: 0, justifyContent: 'flex-end' }}
@@ -1812,7 +1805,8 @@ const HomeScreen = ({ navigation, route }) => {
                     keyExtractor={(item, index) => index.toString()}
                 />
           </SafeAreaView>
-        </Modal>
+        </Modal>}
+
         <ActionSheet
                 ref={eventEditDeleteAction}
                 options={actionSheetOpetions()}
@@ -2002,21 +1996,17 @@ const HomeScreen = ({ navigation, route }) => {
       </View>)
           }
     </View>
-    )
+    );
+  const handleMainRefOnScroll = Animated.event([
+    { nativeEvent: { contentOffset: { y: mainFlatListFromTop } } },
+  ])
 
-  const handleMainRefOnScroll = ({ nativeEvent }) => {
-    mainFlatListFromTop.setValue(nativeEvent?.contentOffset?.y ?? 0);
-    if (isCloseToBottom(nativeEvent)) {
-      console.log('REACHED')
-    }
-  }
-
-  const renderFixedHeader = () => (
-    <Header
-          safeAreaStyle={{ position: 'absolute', zIndex: 100 }}
-          leftComponent={
-            (route && route.params && route.params.backButtonVisible) && (
-              <TouchableOpacity
+  const renderTopFixedButtons = () => (
+    <View style={{
+ position: 'absolute', zIndex: 5, top: 30, justifyContent: 'flex-start', paddingLeft: 15, alignItems: 'center',
+    }}>
+      {(route && route.params && route.params.backButtonVisible) && (
+        <TouchableOpacity
                     style={{
                       backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
                     }}
@@ -2028,39 +2018,25 @@ const HomeScreen = ({ navigation, route }) => {
                         navigation.goBack()
                       }
                     }}>
-                <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
-              </TouchableOpacity>)
-          }
-          rightComponent={(currentUserData?.user_id || currentUserData?.group_id) === authContext?.entity?.uid && (<View></View>)
-          }
-      />
-  )
-
-  const renderStickyHeader = () => (
-    <View>
-      {bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} /> : <View style={styles.bgImageStyle} />}
-      <Header
-            safeAreaStyle={{ position: 'absolute' }}
-            centerComponent={
-              <Text style={styles.userTextStyle}>{fullName}</Text>
-            }
-        />
+          <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
+        </TouchableOpacity>)}
     </View>
+
   )
 
-  const renderBackground = () => (
+  const renderBackground = useCallback(() => (
       bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
-  )
+  ), [bgImage])
 
-  const renderMainHeaderComponent = () => (
-    <>
-      <BackgroundProfile
+      const renderMainHeaderComponent = () => (
+        <View style={{ zIndex: 1 }}>
+          <BackgroundProfile
           imageSize={82}
           currentUserData={currentUserData}
           onConnectionButtonPress={onConnectionButtonPress}
       />
-      <View style={{ flex: 1 }}>
-        {isUserHome && <UserHomeTopSection userDetails={currentUserData}
+          <View style={{ flex: 1 }}>
+            {isUserHome && <UserHomeTopSection userDetails={currentUserData}
                                            isAdmin={isAdmin}
                                            loggedInEntity={authContext.entity}
                                            onAddRolePress={onAddRolePress}
@@ -2068,31 +2044,28 @@ const HomeScreen = ({ navigation, route }) => {
                                            onScorekeeperInPress={scorekeeperInModal}
                                            onPlayInPress={playInModel}
                                            onAction={onUserAction}/>}
-        {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
+            {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
                                            isAdmin={isAdmin}
                                            loggedInEntity={authContext.entity}
                                            onAction={onClubAction}/>}
-        {isTeamHome && <TeamHomeTopSection teamDetails={currentUserData}
+            {isTeamHome && <TeamHomeTopSection teamDetails={currentUserData}
                                            isAdmin={isAdmin}
                                            loggedInEntity={authContext.entity}
                                            onAction={onTeamAction}/>}
-        <View style={styles.sepratorStyle}/>
-      </View>
+            <View style={styles.sepratorStyle}/>
+          </View>
 
-    </>
+        </View>
     )
-
-  const renderMainFlatList = () => (
+  const renderMainFlatList = useMemo(() => (
     <View style={{ flex: 1 }}>
-      {renderMainHeaderComponent()}
-      <TCScrollableProfileTabs
-        tabItem={isTeamHome ? ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
-        onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
-        currentTab={currentTab}
-       />
-      {renderHomeMainTabContain()}
+      <ScrollableTabs
+              tabs={isTeamHome ? ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review'] : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']}
+              currentTab={currentTab}
+              onTabPress={setCurrentTab}
+          />
     </View>
-  )
+    ), [isTeamHome, currentTab])
 
 const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
 console.log('Feed Data::=>', feed);
@@ -2232,7 +2205,34 @@ const feedScreenHeader = useMemo(() => (
   </View>
   ), [reviewGameData])
 
-  const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }, paddingToBottom = 20) => layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  const MainHeaderComponent = () => {
+    console.log('RENDER HEADER')
+    return (
+      <>
+        {renderBackground()}
+        {renderMainHeaderComponent()}
+        {renderMainFlatList}
+        {renderHomeMainTabContain()}
+      </>
+    )
+  }
+
+  const FixedHeader = () => (
+    <Animated.View style={{
+      position: 'absolute',
+      zIndex: 1,
+      top: 0,
+      opacity: mainFlatListFromTop.interpolate({
+        inputRange: [0, 200],
+        outputRange: [0, 1],
+        extrapolate: 'clamp',
+      }),
+    }}>
+      <ImageBackground source={{ uri: bgImage }} resizeMode={'cover'} blurRadius={10} style={styles.stickyImageStyle} >
+        <Text style={styles.userTextStyle}>{fullName}</Text>
+      </ImageBackground>
+    </Animated.View>
+    )
 
   return (
     <View style={ styles.mainContainer }>
@@ -2275,36 +2275,58 @@ const feedScreenHeader = useMemo(() => (
       <ActivityLoader visible={loading} />
 
       <View style={{ flex: 1 }}>
-        <ParallaxScrollView
-          style={{ flex: 1 }}
-          nestedScrollEnabled={true}
-          scrollEventThrottle={16}
-          scrollEnabled={true}
-          onScroll={handleMainRefOnScroll}
-          ref={scrollToTop}
-          backgroundColor="white"
-          contentBackgroundColor="white"
-          parallaxHeaderHeight={200}
-          stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
-          fadeOutForeground={true}
-          renderFixedHeader={renderFixedHeader}
-          renderStickyHeader={renderStickyHeader}
-          renderBackground={renderBackground}>
-          {renderMainFlatList()}
-        </ParallaxScrollView>
+        {/* <ParallaxScrollView */}
+        {/*  style={{ flex: 1 }} */}
+        {/*  nestedScrollEnabled={true} */}
+        {/*  scrollEventThrottle={16} */}
+        {/*  scrollEnabled={true} */}
+        {/*  onScroll={handleMainRefOnScroll} */}
+        {/*  ref={scrollToTop} */}
+        {/*  backgroundColor="white" */}
+        {/*  contentBackgroundColor="white" */}
+        {/*  parallaxHeaderHeight={200} */}
+        {/*  stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50} */}
+        {/*  fadeOutForeground={true} */}
+        {/*  renderFixedHeader={renderFixedHeader} */}
+        {/*  renderStickyHeader={renderStickyHeader} */}
+        {/*  renderBackground={renderBackground}> */}
+        {/*  {renderMainFlatList()} */}
+        {/* </ParallaxScrollView> */}
+
+        {renderTopFixedButtons()}
+        <FixedHeader/>
+        <HomeFeed
+              onFeedScroll={handleMainRefOnScroll}
+              refs={mainFlatListRef}
+              homeFeedHeaderComponent={MainHeaderComponent}
+              currentTab={currentTab}
+                  currentUserData={currentUserData}
+                  isAdmin={isAdmin}
+                  navigation={navigation}
+                  cancelRequest={cancelRequest}
+                  progressStatus={progressStatus}
+                  setDoneUploadCount={setDoneUploadCount}
+                  setGalleryData={setGalleryData}
+                  setProgressBar={setProgressBar}
+                  setTotalUploadCount={setTotalUploadCount}
+                  userID={route?.params?.uid ?? authContext.entity?.uid}
+              />
+
       </View>
-      <PlayInModule
-          openPlayInModal={() => setPlaysInModalVisible(true)}
-          onModalClose={() => setPlaysInModalVisible(false)}
-          navigation={navigation}
-          visible={playsInModalVisible}
-          userData={currentUserData}
-          playInObject={currentPlayInObject}
-          isAdmin={isAdmin}
-      />
+      {playsInModalVisible && (
+        <PlayInModule
+            visible={playsInModalVisible}
+            openPlayInModal={() => setPlaysInModalVisible(true)}
+            onModalClose={() => setPlaysInModalVisible(false)}
+            navigation={navigation}
+            userData={currentUserData}
+            playInObject={currentPlayInObject}
+            isAdmin={isAdmin}
+          />
+      )}
 
       {/* Referee In Modal */}
-      <Modal
+      {refereesInModalVisible && <Modal
           isVisible={refereesInModalVisible}
           backdropColor="black"
           style={{
@@ -2365,7 +2387,7 @@ const feedScreenHeader = useMemo(() => (
         </View>
 
         {/* Review Detail View */}
-        <Modal
+        {reviewDetailModalVisible && <Modal
             isVisible={reviewDetailModalVisible}
             backdropColor="black"
             style={{
@@ -2431,9 +2453,10 @@ const feedScreenHeader = useMemo(() => (
           // onDeletePost={onDeleteButtonPress}
       /> */}
           </SafeAreaView>
-        </Modal>
+        </Modal>}
+
         {/* Review Detail View */}
-        <Modal
+        {refereeInfoModalVisible && <Modal
             isVisible={refereeInfoModalVisible}
             backdropColor="black"
             style={{
@@ -2506,9 +2529,9 @@ const feedScreenHeader = useMemo(() => (
                 }}
             />
           </SafeAreaView>
-        </Modal>
+        </Modal>}
 
-        <Modal
+        {refereeMatchModalVisible && <Modal
             isVisible={refereeMatchModalVisible}
             backdropColor="black"
             style={{
@@ -2573,9 +2596,9 @@ const feedScreenHeader = useMemo(() => (
                 }}
             />}
           </SafeAreaView>
-        </Modal>
+        </Modal>}
 
-        <Modal
+        {reviewsModalVisible && <Modal
             isVisible={reviewsModalVisible}
             backdropColor="black"
             style={{
@@ -2623,7 +2646,7 @@ const feedScreenHeader = useMemo(() => (
             />
           </SafeAreaView>
 
-          <Modal
+          {reviewerDetailModalVisible && <Modal
               isVisible={reviewerDetailModalVisible}
               backdropColor="black"
               style={{
@@ -2684,12 +2707,14 @@ const feedScreenHeader = useMemo(() => (
                 />
               </ScrollView>
             </SafeAreaView>
-          </Modal>
-        </Modal>
-      </Modal>
+          </Modal>}
+
+        </Modal>}
+
+      </Modal>}
 
       {/* Scorekeeper model */}
-      <Modal
+      {scorekeeperInModalVisible && <Modal
           isVisible={scorekeeperInModalVisible}
           backdropColor="black"
           style={{
@@ -2747,7 +2772,7 @@ const feedScreenHeader = useMemo(() => (
           </SafeAreaView>
         </View>
         {/* Review Detail View */}
-        <Modal
+        {reviewDetailModalVisible && <Modal
             isVisible={reviewDetailModalVisible}
             backdropColor="black"
             style={{
@@ -2813,9 +2838,10 @@ const feedScreenHeader = useMemo(() => (
           // onDeletePost={onDeleteButtonPress}
       /> */}
           </SafeAreaView>
-        </Modal>
+        </Modal>}
+
         {/* Review Detail View */}
-        <Modal
+        {scorekeeperInfoModalVisible && <Modal
             isVisible={scorekeeperInfoModalVisible}
             backdropColor="black"
             style={{
@@ -2888,9 +2914,9 @@ const feedScreenHeader = useMemo(() => (
                 }}
             />
           </SafeAreaView>
-        </Modal>
+        </Modal>}
 
-        <Modal
+        {scorekeeperMatchModalVisible && <Modal
             isVisible={scorekeeperMatchModalVisible}
             backdropColor="black"
             style={{
@@ -2955,9 +2981,9 @@ const feedScreenHeader = useMemo(() => (
                 }}
             />}
           </SafeAreaView>
-        </Modal>
+        </Modal>}
 
-        <Modal
+        {reviewsModalVisible && <Modal
             isVisible={reviewsModalVisible}
             backdropColor="black"
             style={{
@@ -3005,7 +3031,7 @@ const feedScreenHeader = useMemo(() => (
             />
           </SafeAreaView>
 
-          <Modal
+          {reviewerDetailModalVisible && <Modal
               isVisible={reviewerDetailModalVisible}
               backdropColor="black"
               style={{
@@ -3066,9 +3092,9 @@ const feedScreenHeader = useMemo(() => (
                 />
               </ScrollView>
             </SafeAreaView>
-          </Modal>
-        </Modal>
-      </Modal>
+          </Modal>}
+        </Modal>}
+      </Modal>}
 
       {!createEventModal && currentTab === 3 && <CreateEventButton
         source={images.plus}
@@ -3274,8 +3300,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.writePostSepratorColor,
   },
   stickyImageStyle: {
+    backgroundColor: colors.darkGrayTrashColor,
     width: wp('100%'),
     height: 90,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerCenterStyle: {
     fontSize: 16,
