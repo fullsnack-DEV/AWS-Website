@@ -94,7 +94,7 @@ const images = {
   tab_notification_selected: require('../assets/images/tab_notification_selected.png'),
 
   tab_message: require('../assets/images/tab_messages.png'),
-  tab_message_selected: require('../assets/images/tab_messages_selected.png'),
+  tab_message_selected: require('../assets/images/tab_selected_messages.png'),
 
   tab_account_selected: require('../assets/images/tab_account_selected.png'),
 
@@ -256,6 +256,7 @@ const images = {
   scorekeeperPH: require('../assets/images/scorekeeper_placeholder.png'),
   notificationBell: require('../assets/images/notification_bell.png'),
   tabFeed: require('../assets/images/tab_feed.png'),
+tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   teamPatch: require('../assets/images/team_patch.png'),
   clubPatch: require('../assets/images/club_patch.png'),

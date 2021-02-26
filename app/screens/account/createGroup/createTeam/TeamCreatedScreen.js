@@ -16,7 +16,7 @@ export default function TeamCreatedScreen({ navigation, route }) {
     <View style={ styles.mainContainer }>
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
-      <TouchableOpacity onPress={ () => navigation.navigate('HomeScreen') }>
+      <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
         <Image
           source={ images.backArrow }
           style={ {

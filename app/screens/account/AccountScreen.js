@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, {
-useEffect, useState, useContext, useLayoutEffect,
+useEffect, useState, useContext, useLayoutEffect, useRef,
 } from 'react';
 import {
   View,
@@ -20,7 +20,6 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import RNRestart from 'react-native-restart';
 // import ActionSheet from 'react-native-actionsheet';
 // import { useIsDrawerOpen } from '@react-navigation/drawer';
-
 import MarqueeText from 'react-native-marquee';
 import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
@@ -53,6 +52,7 @@ import {
 import strings from '../../Constants/String';
 
 export default function AccountScreen({ navigation }) {
+ const scrollRef = useRef()
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [group, setGroup] = useState({});
@@ -478,6 +478,7 @@ USER, CLUB, LEAGUE, TEAM,
     <TouchableWithoutFeedback
       style={styles.listContainer}
       onPress={() => {
+        scrollRef.current.scrollTo({ x: 0, y: 0 });
         onSwitchProfile({ item, index });
         // navigation.closeDrawer();
       }}>
@@ -560,7 +561,7 @@ USER, CLUB, LEAGUE, TEAM,
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <ScrollView style={styles.mainContainer}>
+      <ScrollView style={styles.mainContainer} ref={scrollRef}>
         <View
           style={{
             flexDirection: 'row',
@@ -630,7 +631,7 @@ USER, CLUB, LEAGUE, TEAM,
                   }
                   style={styles.profileImg}
                 />
-                <View style={{ marginLeft: 15, width: 300 }}>
+                <View style={{ marginLeft: 15, width: Dimensions.get('window').width / 1.6 }}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -638,7 +639,7 @@ USER, CLUB, LEAGUE, TEAM,
                       marginRight: 10,
                     }}>
                     <MarqueeText
-                      style={[styles.nameText, { alignSelf: 'flex-start' }]}
+                      style={authContext?.entity?.obj?.background_thumbnail ? [styles.nameText, { alignSelf: 'flex-start' }] : [styles.nameText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}
                       duration={3000}
                       marqueeOnStart
                       loop={true}
@@ -654,12 +655,12 @@ USER, CLUB, LEAGUE, TEAM,
                         height: 12,
                         width: 12,
                         resizeMode: 'cover',
-                        tintColor: colors.whiteColor,
+                        tintColor: authContext?.entity?.obj?.background_thumbnail ? colors.whiteColor : colors.lightBlackColor,
                       }}
                     />
                   </View>
                   <Text
-                    style={[styles.locationText, { alignSelf: 'flex-start' }]}>
+                    style={authContext?.entity?.obj?.background_thumbnail ? [styles.locationText, { alignSelf: 'flex-start' }] : [styles.locationText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}>
                     {authContext?.entity?.obj?.city || ''},{' '}
                     {authContext?.entity?.obj?.state_abbr || ''}
                   </Text>
@@ -714,7 +715,7 @@ USER, CLUB, LEAGUE, TEAM,
                       marginRight: 10,
                     }}>
                       <MarqueeText
-                      style={[styles.nameText, { alignSelf: 'flex-start' }]}
+                      style={authContext?.entity?.obj?.background_thumbnail ? [styles.nameText, { alignSelf: 'flex-start' }] : [styles.nameText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}
                       duration={3000}
                       marqueeOnStart
                       loop={true}
@@ -744,12 +745,12 @@ USER, CLUB, LEAGUE, TEAM,
                         width: 12,
                         marginLeft: 10,
                         resizeMode: 'cover',
-                        tintColor: colors.whiteColor,
+                        tintColor: authContext?.entity?.obj?.background_thumbnail ? colors.whiteColor : colors.lightBlackColor,
                       }}
                     />
                     </View>
                     <Text
-                    style={[styles.locationText, { alignSelf: 'flex-start' }]}>
+                    style={authContext?.entity?.obj?.background_thumbnail ? [styles.locationText, { alignSelf: 'flex-start' }] : [styles.locationText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}>
                       {authContext.entity.obj.city},{' '}
                       {authContext.entity.obj.state_abbr}
                     </Text>
