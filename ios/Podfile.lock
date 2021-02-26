@@ -367,6 +367,8 @@ PODS:
     - React
   - react-native-geolocation (2.0.2):
     - React
+  - react-native-image-resizer (1.4.3):
+    - React-Core
   - react-native-image-sequence (0.7.0):
     - React
   - react-native-maps (0.27.1):
@@ -566,6 +568,7 @@ DEPENDENCIES:
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
+  - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-image-sequence (from `../node_modules/react-native-image-sequence`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -694,6 +697,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fbsdk"
   react-native-geolocation:
     :path: "../node_modules/@react-native-community/geolocation"
+  react-native-image-resizer:
+    :path: "../node_modules/react-native-image-resizer"
   react-native-image-sequence:
     :path: "../node_modules/react-native-image-sequence"
   react-native-maps:
@@ -835,6 +840,7 @@ SPEC CHECKSUMS:
   react-native-date-picker: 7f35e3562bfd46232f6f87dc4f4c30c5cd06aa4a
   react-native-fbsdk: 00c15d138bba6d4efa628670886fc58cec858c19
   react-native-geolocation: cbd9d6bd06bac411eed2671810f454d4908484a8
+  react-native-image-resizer: 2e41d4bcfc5ac4f4f8583688b835f68460ff9161
   react-native-image-sequence: b4cc7ce0ee9eeec7574b005e06059b3f7f818d96
   react-native-maps: f4b89da81626ad7f151a8bfcb79733295d31ce5c
   react-native-netinfo: 52cf0ee8342548a485e28f4b09e56b477567244d
