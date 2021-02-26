@@ -59,7 +59,7 @@ const UserHomeTopSection = ({
     return [...games, ...referee, ...scorekeeper, { sport_name: strings.addrole, item_type: EntityStatus.addNew }]
   }, [userDetails?.games, userDetails?.referee_data, userDetails?.scorekeeper_data])
 
-  const renderPlayIn = useCallback(({ item }) => {
+  const renderPlayIn = ({ item }) => {
     if (item.item_type) {
       return renderAddPlayInRole({ item })
     }
@@ -71,7 +71,7 @@ const UserHomeTopSection = ({
         onPlayInPress={() => {
           if (onPlayInPress) onPlayInPress(item)
         }}/>)
-  }, [onPlayInPress]);
+  };
 
   const renderRefereesIn = useCallback(({ item }) => {
     if (item.item_type) {
@@ -196,16 +196,35 @@ const UserHomeTopSection = ({
       isMember = true
     }
   }
+
+  const renderPlayInGames = useMemo(() => userDetails?.games?.length > 0 && (
+    <View>
+      <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
+        <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
+        <FlatList
+                style={{ marginTop: 10, marginBottom: 0 }}
+                data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: EntityStatus.addNew }]}
+                horizontal
+                renderItem={renderPlayIn}
+                keyExtractor={(item, index) => index.toString()}
+                showsHorizontalScrollIndicator={false}
+            />
+      </View>
+    </View>
+    ), [userDetails.games])
+
+  const renderEditProfileButton = useMemo(() => (
+    <TCProfileButton
+            title={strings.editprofiletitle}
+            style={styles.editButtonStyle}
+            textStyle={styles.buttonTextStyle}
+            onPressProfile = {() => onAction('edit')}
+            showArrow={false}/>
+    ), []);
+
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
-
-      {isAdmin && <TCProfileButton
-      title={strings.editprofiletitle}
-      style={styles.editButtonStyle}
-      textStyle={styles.buttonTextStyle}
-      onPressProfile = {() => { onAction('edit') }}
-      showArrow={false}/>}
-
+      {isAdmin && renderEditProfileButton}
       {!isAdmin && <View style={styles.otherUserStyle}>
 
         {loggedInEntity.role === 'user' && <View style={styles.messageButtonStyle}>
@@ -255,19 +274,7 @@ const UserHomeTopSection = ({
 
       {/* Play in section */}
       { isSectionEnable() ? <View>
-        {userDetails?.games && userDetails?.games?.length > 0 && <View>
-          <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>
-            <TCEditHeader containerStyle={{ marginHorizontal: 15 }} title= {strings.playin}/>
-            <FlatList
-            style={{ marginTop: 10, marginBottom: 0 }}
-            data={[...userDetails.games, { sport_name: strings.addPlaying, item_type: EntityStatus.addNew }]}
-            horizontal
-            renderItem={renderPlayIn}
-            keyExtractor={(item, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
-          />
-          </View>
-        </View>}
+        {renderPlayInGames}
 
         {userDetails?.referee_data && userDetails?.referee_data?.length > 0 && <View>
           <View style={[styles.sectionStyle, { marginHorizontal: 0 }]}>

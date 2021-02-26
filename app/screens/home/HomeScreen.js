@@ -1565,7 +1565,8 @@ const HomeScreen = ({ navigation, route }) => {
       })}
       </Text>
     </View>
-)
+  )
+
   const renderMainCalender = (item) => {
     if (item.length > 0) {
       return (
@@ -1682,326 +1683,344 @@ const HomeScreen = ({ navigation, route }) => {
       }}
   />
 
-  const renderHomeMainTabContain = (tabKey = currentTab) => (
+  const renderMainInfoTab = useMemo(() => (
+    <View style={{ flex: 1 }} >
+      {isUserHome && <UserInfo
+            navigation={navigation}
+            userDetails={currentUserData}
+            isAdmin={isAdmin}
+            onGroupListPress={onGroupListPress}
+            onGroupPress={onTeamPress}
+            onRefereesInPress={refereesInModal}
+            onPlayInPress={playInModel}
+        />}
+      {(isClubHome || isTeamHome) && <GroupInfo
+            navigation={navigation}
+            groupDetails={currentUserData}
+            isAdmin={isAdmin}
+            onGroupListPress={onGroupListPress}
+            onGroupPress={onTeamPress}
+            onMemberPress={onMemberPress}
+        />}
+    </View>
+  ), [currentUserData, isAdmin, isClubHome, isTeamHome, isUserHome, navigation, onGroupListPress, onTeamPress, playInModel, refereesInModal])
+
+  const renderMainScoreboardTab = useMemo(() => (
     <View style={{ flex: 1 }}>
-      {tabKey === 1 && (<View style={{ flex: 1 }} >
-        {isUserHome && <UserInfo
-                navigation={navigation}
-                userDetails={currentUserData}
-                isAdmin={isAdmin}
-                onGroupListPress={onGroupListPress}
-                onGroupPress={onTeamPress}
-                onRefereesInPress={refereesInModal}
-                onPlayInPress={playInModel}
-            />}
-        {(isClubHome || isTeamHome) && <GroupInfo
-                navigation={navigation}
-                groupDetails={currentUserData}
-                isAdmin={isAdmin}
-                onGroupListPress={onGroupListPress}
-                onGroupPress={onTeamPress}
-                onMemberPress={onMemberPress}
-            />}
-      </View>)}
-      {tabKey === 2 && (<View style={{ flex: 1 }}>
-        <TCSearchBox
-                onChangeText={onScoreboardSearchTextChange}
-                marginTop={20}
-                marginBottom={5}
-                alignSelf={'center'}
-                width={wp('94%')}
-                borderRadius={0}
-                backgroundColor={colors.grayBackgroundColor}
-                height={40}
-                shadowOpacity={0}
-            />
-        <ScoreboardSportsScreen
-                sportsData={scoreboardSearchText.length > 0 ? filterScoreboardGameData : scoreboardGameData}
-                navigation={navigation}
-                onItemPress={() => {
-                  setRefereeMatchModalVisible(false);
-                  setRefereesInModalVisible(false);
-                }}
-            />
-      </View>)}
-      {tabKey === 3 && (<View style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-          <ScheduleTabView
-                  firstTabTitle={'Events'}
-                  secondTabTitle={'Calender'}
-                  indexCounter={scheduleIndexCounter}
-                  onFirstTabPress={() => setScheduleIndexCounter(0)}
-                  onSecondTabPress={() => setScheduleIndexCounter(1)}
-              />
-        </View>
-        {!eventData && <TCInnerLoader visible={true}/>}
-        {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
-          <EventScheduleScreen
-                  eventData={eventData}
-                  navigation={navigation}
-                  profileID={route?.params?.uid || authContext.entity.uid}
-                  screenUserId={route?.params?.uid}
-                  onThreeDotPress={(item) => setSelectedEventItem(item)}
-                  onItemPress={onSchedultEventItemPress}
-                  entity={authContext.entity}
-              />
-        </View>}
+      <TCSearchBox
+            onChangeText={onScoreboardSearchTextChange}
+            marginTop={20}
+            marginBottom={5}
+            alignSelf={'center'}
+            width={wp('94%')}
+            borderRadius={0}
+            backgroundColor={colors.grayBackgroundColor}
+            height={40}
+            shadowOpacity={0}
+        />
+      <ScoreboardSportsScreen
+            sportsData={scoreboardSearchText.length > 0 ? filterScoreboardGameData : scoreboardGameData}
+            navigation={navigation}
+            onItemPress={() => {
+              setRefereeMatchModalVisible(false);
+              setRefereesInModalVisible(false);
+            }}
+        />
+    </View>
+  ), [filterScoreboardGameData, navigation, onScoreboardSearchTextChange, scoreboardGameData, scoreboardSearchText.length])
 
-        {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
-          <View style={styles.shceduleCalenderView}>
-            <BackForwardView textValue={moment(selectionDate).format('MMMM YYYY')} />
-            <View>
-              <TwoTabView
-                      firstTabTitle={'Events'}
-                      secondTabTitle={'Timetable'}
-                      indexCounter={calenderInnerIndexCounter}
-                      onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
-                      onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
-                  />
-            </View>
-          </View>
-
-          {calenderInnerIndexCounter === 0 && <EventAgendaSection
-                  items={{ [selectionDate.toString()]: [filterEventData] }}
-                  selected={selectionDate}
-                  onDayPress={onCalenderDayPress}
-                  renderItem={renderMainCalender}
-              />}
-
-          {calenderInnerIndexCounter === 1 && <EventAgendaSection
-                  items={{ [timeTableSelectionDate.toString()]: [filterTimeTable] }}
-                  onDayPress={onInnerCalenderDayPress}
-                  renderItem={renderInnerCalender}
-              />}
-        </View>}
-
-        {isRefereeModal && <Modal
-                isVisible={isRefereeModal}
-                backdropColor="black"
-                style={{ margin: 0, justifyContent: 'flex-end' }}
-                hasBackdrop
-                onBackdropPress={() => setIsRefereeModal(false)}
-                backdropOpacity={0}
-            >
-          <SafeAreaView style={styles.modalMainViewStyle}>
-            <Header
-                    mainContainerStyle={styles.refereeHeaderMainStyle}
-                    leftComponent={
-                      <TouchableOpacity onPress={() => setIsRefereeModal(false)}>
-                        <Image source={images.cancelImage} style={[styles.cancelImageStyle, { tintColor: colors.blackColor }]} resizeMode={'contain'} />
-                      </TouchableOpacity>
-                    }
-                    centerComponent={
-                      <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
-                    }
-                />
-            <View style={styles.refereeSepratorStyle} />
-            <FlatList
-                    data={refereeReservData}
-                    bounces={false}
-                    showsHorizontalScrollIndicator={false}
-                    ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
-                    renderItem={renderRefereeReservation}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-          </SafeAreaView>
-        </Modal>}
-
-        <ActionSheet
-                ref={eventEditDeleteAction}
-                options={actionSheetOpetions()}
-                cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
-                destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
-                onPress={(index) => {
-                  if (index === 0) {
-                    if (index === 0 && selectedEventItem.game) {
-                      console.log('selected Event Item:', selectedEventItem);
-                      if (refereeFound(selectedEventItem)) {
-                        goToRefereReservationDetail(selectedEventItem)
-                      } else {
-                        console.log('Selected Event Item::', selectedEventItem);
-                        goToChallengeDetail(selectedEventItem.game)
-                      }
-                    } else {
-                      navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
-                    }
-                  }
-                  if (index === 1) {
-                    if (index === 1 && selectedEventItem.game) {
-                      if (refereeFound(selectedEventItem)) {
-                        Alert.alert(
-                            'Towns Cup',
-                            'Change Event color feature is pending',
-                            [{
-                              text: 'OK',
-                              onPress: async () => {},
-                            },
-                            ],
-                            { cancelable: false },
-                        );
-                      } else {
-                        setloading(true);
-
-                        const params = {
-                          caller_id: selectedEventItem.owner_id,
-                        };
-                        getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
-                          console.log('Res :-', res);
-
-                          const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
-                          setRefereeReserveData(myReferee);
-                          if (res.payload.length > 0) {
-                            refereeReservModal();
-                            setloading(false);
-                          } else {
-                            setloading(false);
-                            setTimeout(() => {
-                              Alert.alert(
-                                  'Towns Cup',
-                                  'No referees invited or booked by you for this game',
-                                  [{
-                                    text: 'OK',
-                                    onPress: async () => {},
-                                  },
-                                  ],
-                                  { cancelable: false },
-                              );
-                            }, 0);
-                          }
-                        }).catch((error) => {
-                          console.log('Error :-', error);
-                        });
-                      }
-                    } else {
-                      Alert.alert(
-                          'Do you want to delete this event ?',
-                          '',
-                          [{
-                            text: 'Delete',
-                            style: 'destructive',
-                            onPress: async () => {
-                              setloading(true);
-                              const entity = authContext.entity
-                              const uid = entity.uid || entity.auth.user_id;
-                              const entityRole = entity.role === 'user' ? 'users' : 'groups';
-                              deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
-                                  .then(() => getEvents(entityRole, uid, authContext))
-                                  .then((response) => {
-                                    setloading(false);
-                                    setEventData(response.payload);
-                                    setTimeTable(response.payload);
-                                  })
-                                  .catch((e) => {
-                                    setloading(false);
-                                    Alert.alert('', e.messages)
-                                  });
-                            },
-                          },
-                            {
-                              text: 'Cancel',
-                              style: 'cancel',
-                            },
-
-                          ],
-                          { cancelable: false },
-                      );
-                    }
-                  }
-                  if (index === 2) {
-                    if (index === 2 && selectedEventItem.game) {
-                      if (refereeFound(selectedEventItem)) {
-                        console.log('Pressed cancel button.');
-                      } else {
-                        Alert.alert(
-                            'Towns Cup',
-                            'Change Event color feature is pending',
-                            [{
-                              text: 'OK',
-                              onPress: async () => {},
-                            },
-                            ],
-                            { cancelable: false },
-                        );
-                      }
-                    }
-                  }
-                  setSelectedEventItem(null);
-                }}
-            />
-        <CreateEventBtnModal
-                visible={createEventModal}
-                onCancelPress={() => setCreateEventModal(false)}
-                onCreateEventPress={() => {
-                  setCreateEventModal(false)
-                  navigation.navigate('CreateEventScreen', { comeName: 'ScheduleScreen' })
-                }}
-                onChallengePress={() => {
-                  setCreateEventModal(false)
-                  navigation.navigate('EditChallengeAvailability')
-                }}
-            />
-      </View>)}
-      {tabKey === 4 && (<View>
-        <TabView
-                    indexCounter={indexCounter}
-                    onFirstTabPress={() => setIndexCounter(0)}
-                    onSecondTabPress={() => setIndexCounter(1)}
-                    onThirdTabPress={() => setIndexCounter(2)}
-                />
-        <View style={styles.sepratorLineStyle} />
-        {indexCounter === 0 && <FlatList
-                    data={['0', ...allData]}
-                    bounces={false}
-                    renderItem={allGalleryRenderItem}
-                    numColumns={3}
-                    style={{ marginHorizontal: 1.5 }}
-                    keyExtractor={(item, index) => index}
-                />}
-        {indexCounter === 1 && <FlatList
-                    data={['0', ...fromMeData]}
-                    bounces={false}
-                    renderItem={fromMeRenderItem}
-                    numColumns={3}
-                    style={{ marginHorizontal: 1.5 }}
-                    keyExtractor={(item, index) => index}
-                />}
-        {indexCounter === 2 && <FlatList
-                    data={['0', ...taggedData]}
-                    bounces={false}
-                    renderItem={taggedRenderItem}
-                    numColumns={3}
-                    style={{ marginHorizontal: 1.5 }}
-                    keyExtractor={(item, index) => index}
-                />}
+  const renderMainScheduleTab = useMemo(() => (
+    <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+        <ScheduleTabView
+              firstTabTitle={'Events'}
+              secondTabTitle={'Calender'}
+              indexCounter={scheduleIndexCounter}
+              onFirstTabPress={() => setScheduleIndexCounter(0)}
+              onSecondTabPress={() => setScheduleIndexCounter(1)}
+          />
       </View>
-          )}
-      {tabKey === 5 && isTeamHome && (<View>
+      {!eventData && <TCInnerLoader visible={true}/>}
+      {eventData && scheduleIndexCounter === 0 && <View style={{ flex: 1 }}>
+        <EventScheduleScreen
+              eventData={eventData}
+              navigation={navigation}
+              profileID={route?.params?.uid || authContext.entity.uid}
+              screenUserId={route?.params?.uid}
+              onThreeDotPress={(item) => setSelectedEventItem(item)}
+              onItemPress={onSchedultEventItemPress}
+              entity={authContext.entity}
+          />
+      </View>}
 
-        <ReviewSection
-                isTeamReviewSection={true}
-                reviewsData={averageTeamReview}
-                reviewsFeed={teamReviewData}
-                onFeedPress={() => alert(5)}
-                onReadMorePress={() => {
-                  reviewerDetailModal();
-                }}
+      {eventData && scheduleIndexCounter === 1 && <View style={{ flex: 1 }}>
+        <View style={styles.shceduleCalenderView}>
+          <BackForwardView textValue={moment(selectionDate).format('MMMM YYYY')} />
+          <View>
+            <TwoTabView
+                  firstTabTitle={'Events'}
+                  secondTabTitle={'Timetable'}
+                  indexCounter={calenderInnerIndexCounter}
+                  onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
+                  onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
+              />
+          </View>
+        </View>
+
+        {calenderInnerIndexCounter === 0 && <EventAgendaSection
+              items={{ [selectionDate.toString()]: [filterEventData] }}
+              selected={selectionDate}
+              onDayPress={onCalenderDayPress}
+              renderItem={renderMainCalender}
+          />}
+
+        {calenderInnerIndexCounter === 1 && <EventAgendaSection
+              items={{ [timeTableSelectionDate.toString()]: [filterTimeTable] }}
+              onDayPress={onInnerCalenderDayPress}
+              renderItem={renderInnerCalender}
+          />}
+      </View>}
+
+      {isRefereeModal && <Modal
+            isVisible={isRefereeModal}
+            backdropColor="black"
+            style={{ margin: 0, justifyContent: 'flex-end' }}
+            hasBackdrop
+            onBackdropPress={() => setIsRefereeModal(false)}
+            backdropOpacity={0}
+        >
+        <SafeAreaView style={styles.modalMainViewStyle}>
+          <Header
+                mainContainerStyle={styles.refereeHeaderMainStyle}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setIsRefereeModal(false)}>
+                    <Image source={images.cancelImage} style={[styles.cancelImageStyle, { tintColor: colors.blackColor }]} resizeMode={'contain'} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <Text style={styles.headerCenterStyle}>{'Choose a referee'}</Text>
+                }
             />
-        {/* <TeamHomeReview
+          <View style={styles.refereeSepratorStyle} />
+          <FlatList
+                data={refereeReservData}
+                bounces={false}
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View style={[styles.refereeSepratorStyle, { marginHorizontal: 15 }]} />}
+                renderItem={renderRefereeReservation}
+                keyExtractor={(item, index) => index.toString()}
+            />
+        </SafeAreaView>
+      </Modal>}
+
+      <ActionSheet
+            ref={eventEditDeleteAction}
+            options={actionSheetOpetions()}
+            cancelButtonIndex={findCancelButtonIndex(selectedEventItem)}
+            destructiveButtonIndex={selectedEventItem !== null && !selectedEventItem.game && 1}
+            onPress={(index) => {
+              if (index === 0) {
+                if (index === 0 && selectedEventItem.game) {
+                  console.log('selected Event Item:', selectedEventItem);
+                  if (refereeFound(selectedEventItem)) {
+                    goToRefereReservationDetail(selectedEventItem)
+                  } else {
+                    console.log('Selected Event Item::', selectedEventItem);
+                    goToChallengeDetail(selectedEventItem.game)
+                  }
+                } else {
+                  navigation.navigate('EditEventScreen', { data: selectedEventItem, gameData: selectedEventItem });
+                }
+              }
+              if (index === 1) {
+                if (index === 1 && selectedEventItem.game) {
+                  if (refereeFound(selectedEventItem)) {
+                    Alert.alert(
+                        'Towns Cup',
+                        'Change Event color feature is pending',
+                        [{
+                          text: 'OK',
+                          onPress: async () => {},
+                        },
+                        ],
+                        { cancelable: false },
+                    );
+                  } else {
+                    setloading(true);
+
+                    const params = {
+                      caller_id: selectedEventItem.owner_id,
+                    };
+                    getRefereeReservationDetails(selectedEventItem.game_id, params, authContext).then((res) => {
+                      console.log('Res :-', res);
+
+                      const myReferee = (res?.payload || []).filter((e) => e.initiated_by === authContext.entity.uid)
+                      setRefereeReserveData(myReferee);
+                      if (res.payload.length > 0) {
+                        refereeReservModal();
+                        setloading(false);
+                      } else {
+                        setloading(false);
+                        setTimeout(() => {
+                          Alert.alert(
+                              'Towns Cup',
+                              'No referees invited or booked by you for this game',
+                              [{
+                                text: 'OK',
+                                onPress: async () => {},
+                              },
+                              ],
+                              { cancelable: false },
+                          );
+                        }, 0);
+                      }
+                    }).catch((error) => {
+                      console.log('Error :-', error);
+                    });
+                  }
+                } else {
+                  Alert.alert(
+                      'Do you want to delete this event ?',
+                      '',
+                      [{
+                        text: 'Delete',
+                        style: 'destructive',
+                        onPress: async () => {
+                          setloading(true);
+                          const entity = authContext.entity
+                          const uid = entity.uid || entity.auth.user_id;
+                          const entityRole = entity.role === 'user' ? 'users' : 'groups';
+                          deleteEvent(entityRole, uid, selectedEventItem.cal_id, authContext)
+                              .then(() => getEvents(entityRole, uid, authContext))
+                              .then((response) => {
+                                setloading(false);
+                                setEventData(response.payload);
+                                setTimeTable(response.payload);
+                              })
+                              .catch((e) => {
+                                setloading(false);
+                                Alert.alert('', e.messages)
+                              });
+                        },
+                      },
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
+                        },
+
+                      ],
+                      { cancelable: false },
+                  );
+                }
+              }
+              if (index === 2) {
+                if (index === 2 && selectedEventItem.game) {
+                  if (refereeFound(selectedEventItem)) {
+                    console.log('Pressed cancel button.');
+                  } else {
+                    Alert.alert(
+                        'Towns Cup',
+                        'Change Event color feature is pending',
+                        [{
+                          text: 'OK',
+                          onPress: async () => {},
+                        },
+                        ],
+                        { cancelable: false },
+                    );
+                  }
+                }
+              }
+              setSelectedEventItem(null);
+            }}
+        />
+      <CreateEventBtnModal
+            visible={createEventModal}
+            onCancelPress={() => setCreateEventModal(false)}
+            onCreateEventPress={() => {
+              setCreateEventModal(false)
+              navigation.navigate('CreateEventScreen', { comeName: 'ScheduleScreen' })
+            }}
+            onChallengePress={() => {
+              setCreateEventModal(false)
+              navigation.navigate('EditChallengeAvailability')
+            }}
+        />
+    </View>
+  ), [actionSheetOpetions, authContext, calenderInnerIndexCounter, createEventModal, eventData, filterEventData, filterTimeTable, findCancelButtonIndex, goToChallengeDetail, goToRefereReservationDetail, isRefereeModal, navigation, onCalenderDayPress, onInnerCalenderDayPress, onSchedultEventItemPress, refereeFound, refereeReservData, refereeReservModal, renderInnerCalender, renderMainCalender, renderRefereeReservation, route?.params?.uid, scheduleIndexCounter, selectedEventItem, selectionDate, timeTableSelectionDate])
+
+  const renderMainGalleryTab = useMemo(() => (
+    <View>
+      <TabView
+            indexCounter={indexCounter}
+            onFirstTabPress={() => setIndexCounter(0)}
+            onSecondTabPress={() => setIndexCounter(1)}
+            onThirdTabPress={() => setIndexCounter(2)}
+        />
+      <View style={styles.sepratorLineStyle} />
+      {indexCounter === 0 && <FlatList
+            data={['0', ...allData]}
+            bounces={false}
+            renderItem={allGalleryRenderItem}
+            numColumns={3}
+            style={{ marginHorizontal: 1.5 }}
+            keyExtractor={(item, index) => index}
+        />}
+      {indexCounter === 1 && <FlatList
+            data={['0', ...fromMeData]}
+            bounces={false}
+            renderItem={fromMeRenderItem}
+            numColumns={3}
+            style={{ marginHorizontal: 1.5 }}
+            keyExtractor={(item, index) => index}
+        />}
+      {indexCounter === 2 && <FlatList
+            data={['0', ...taggedData]}
+            bounces={false}
+            renderItem={taggedRenderItem}
+            numColumns={3}
+            style={{ marginHorizontal: 1.5 }}
+            keyExtractor={(item, index) => index}
+        />}
+    </View>
+  ), [allData, allGalleryRenderItem, fromMeData, fromMeRenderItem, indexCounter, taggedData, taggedRenderItem])
+
+  const renderHomeMainReviewTab = useMemo(() => (
+    <View>
+      <ReviewSection
+            isTeamReviewSection={true}
+            reviewsData={averageTeamReview}
+            reviewsFeed={teamReviewData}
+            onFeedPress={() => alert(5)}
+            onReadMorePress={() => {
+              reviewerDetailModal();
+            }}
+        />
+      {/* <TeamHomeReview
                   navigation={navigation}
                   teamID={route?.params?.uid || authContext.entity.uid}
                   getSoccerTeamReview={getTeamReviewById}
                   isAdmin={isAdmin}
                   // gameData={gameData}
                   /> */}
-      </View>)
-          }
     </View>
-    );
+  ), [averageTeamReview, reviewerDetailModal, teamReviewData])
+
+  const renderHomeMainTabContain = useMemo(() => (
+    <View style={{ flex: 1 }}>
+      {currentTab === 1 && renderMainInfoTab}
+      {currentTab === 2 && renderMainScoreboardTab}
+      {currentTab === 3 && renderMainScheduleTab}
+      {currentTab === 4 && renderMainGalleryTab}
+      {currentTab === 5 && isTeamHome && renderHomeMainReviewTab}
+    </View>
+    ), [currentTab, isTeamHome, renderHomeMainReviewTab, renderMainGalleryTab, renderMainInfoTab, renderMainScheduleTab, renderMainScoreboardTab]);
+
   const handleMainRefOnScroll = Animated.event([
     { nativeEvent: { contentOffset: { y: mainFlatListFromTop } } },
   ])
 
-  const renderTopFixedButtons = () => (
+  const renderTopFixedButtons = useMemo(() => (
     <View style={{
  position: 'absolute', zIndex: 5, top: 30, justifyContent: 'flex-start', paddingLeft: 15, alignItems: 'center',
     }}>
@@ -2022,41 +2041,58 @@ const HomeScreen = ({ navigation, route }) => {
         </TouchableOpacity>)}
     </View>
 
-  )
+  ), [route.params])
 
-  const renderBackground = useCallback(() => (
-      bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
-  ), [bgImage])
+  const renderBackground = useMemo(() => (
+        bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
+    ), [bgImage])
 
-      const renderMainHeaderComponent = () => (
+  const renderHeaderBackgroundProfile = useMemo(() => (
+    <BackgroundProfile
+            imageSize={82}
+            currentUserData={currentUserData}
+            onConnectionButtonPress={onConnectionButtonPress}
+        />
+    ), [currentUserData]);
+
+  const renderHeaderUserHomeTopSection = useMemo(() => (
+    <UserHomeTopSection
+            userDetails={currentUserData}
+            isAdmin={isAdmin}
+            loggedInEntity={authContext.entity}
+            onAddRolePress={onAddRolePress}
+            onRefereesInPress={refereesInModal}
+            onScorekeeperInPress={scorekeeperInModal}
+            onPlayInPress={playInModel}
+            onAction={onUserAction}/>
+    ), [authContext.entity, isUserHome, currentUserData, isAdmin]);
+
+  const renderHeaderClubHomeTopSection = useMemo(() => (
+    <ClubHomeTopSection clubDetails={currentUserData}
+         isAdmin={isAdmin}
+         loggedInEntity={authContext.entity}
+         onAction={onClubAction}/>
+ ), [authContext.entity, currentUserData, isAdmin, onClubAction]);
+
+  const renderHeaderTeamHomeTopSection = useMemo(() => (
+    <TeamHomeTopSection teamDetails={currentUserData}
+        isAdmin={isAdmin}
+        loggedInEntity={authContext.entity}
+        onAction={onTeamAction}/>
+  ), [authContext.entity, currentUserData, isAdmin, isTeamHome, onTeamAction]);
+
+      const renderMainHeaderComponent = useMemo(() => (
         <View style={{ zIndex: 1 }}>
-          <BackgroundProfile
-          imageSize={82}
-          currentUserData={currentUserData}
-          onConnectionButtonPress={onConnectionButtonPress}
-      />
+          {renderHeaderBackgroundProfile}
           <View style={{ flex: 1 }}>
-            {isUserHome && <UserHomeTopSection userDetails={currentUserData}
-                                           isAdmin={isAdmin}
-                                           loggedInEntity={authContext.entity}
-                                           onAddRolePress={onAddRolePress}
-                                           onRefereesInPress={refereesInModal}
-                                           onScorekeeperInPress={scorekeeperInModal}
-                                           onPlayInPress={playInModel}
-                                           onAction={onUserAction}/>}
-            {isClubHome && <ClubHomeTopSection clubDetails={currentUserData}
-                                           isAdmin={isAdmin}
-                                           loggedInEntity={authContext.entity}
-                                           onAction={onClubAction}/>}
-            {isTeamHome && <TeamHomeTopSection teamDetails={currentUserData}
-                                           isAdmin={isAdmin}
-                                           loggedInEntity={authContext.entity}
-                                           onAction={onTeamAction}/>}
+            {isUserHome && renderHeaderUserHomeTopSection}
+            {isTeamHome && renderHeaderTeamHomeTopSection}
+            {isClubHome && renderHeaderClubHomeTopSection}
             <View style={styles.sepratorStyle}/>
           </View>
-
         </View>
-    )
+    ), [isUserHome, isTeamHome, isClubHome])
+
   const renderMainFlatList = useMemo(() => (
     <View style={{ flex: 1 }}>
       <ScrollableTabs
@@ -2068,14 +2104,14 @@ const HomeScreen = ({ navigation, route }) => {
     ), [isTeamHome, currentTab])
 
 const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
-console.log('Feed Data::=>', feed);
-console.log('Feed Data index::=>', index);
-console.log('Orange feed ??::=>', orangeFeedPress);
-setReviewGameData(gameData)
-setFeedDataIndex(index)
-setFeedDetailIndex(detailIndex)
-setOrangeFeed(orangeFeedPress)
-setReviewDetailModalVisible(true)
+  console.log('Feed Data::=>', feed);
+  console.log('Feed Data index::=>', index);
+  console.log('Orange feed ??::=>', orangeFeedPress);
+  setReviewGameData(gameData)
+  setFeedDataIndex(index)
+  setFeedDetailIndex(detailIndex)
+  setOrangeFeed(orangeFeedPress)
+  setReviewDetailModalVisible(true)
 }
 
 const onScorekeeperFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
@@ -2205,19 +2241,16 @@ const feedScreenHeader = useMemo(() => (
   </View>
   ), [reviewGameData])
 
-  const MainHeaderComponent = () => {
-    console.log('RENDER HEADER')
-    return (
-      <>
-        {renderBackground()}
-        {renderMainHeaderComponent()}
-        {renderMainFlatList}
-        {renderHomeMainTabContain()}
-      </>
+  const MainHeaderComponent = () => (
+    <>
+      {renderBackground}
+      {renderMainHeaderComponent}
+      {renderMainFlatList}
+      {renderHomeMainTabContain}
+    </>
     )
-  }
 
-  const FixedHeader = () => (
+  const fixedHeader = useMemo(() => (
     <Animated.View style={{
       position: 'absolute',
       zIndex: 1,
@@ -2232,7 +2265,7 @@ const feedScreenHeader = useMemo(() => (
         <Text style={styles.userTextStyle}>{fullName}</Text>
       </ImageBackground>
     </Animated.View>
-    )
+    ), [bgImage, fullName, mainFlatListFromTop])
 
   return (
     <View style={ styles.mainContainer }>
@@ -2293,8 +2326,8 @@ const feedScreenHeader = useMemo(() => (
         {/*  {renderMainFlatList()} */}
         {/* </ParallaxScrollView> */}
 
-        {renderTopFixedButtons()}
-        <FixedHeader/>
+        {renderTopFixedButtons}
+        {fixedHeader}
         <HomeFeed
               onFeedScroll={handleMainRefOnScroll}
               refs={mainFlatListRef}
@@ -2313,7 +2346,7 @@ const feedScreenHeader = useMemo(() => (
               />
 
       </View>
-      {playsInModalVisible && (
+      {useMemo(() => playsInModalVisible && (
         <PlayInModule
             visible={playsInModalVisible}
             openPlayInModal={() => setPlaysInModalVisible(true)}
@@ -2323,7 +2356,7 @@ const feedScreenHeader = useMemo(() => (
             playInObject={currentPlayInObject}
             isAdmin={isAdmin}
           />
-      )}
+      ), [currentPlayInObject, currentUserData, isAdmin, navigation, playsInModalVisible])}
 
       {/* Referee In Modal */}
       {refereesInModalVisible && <Modal
