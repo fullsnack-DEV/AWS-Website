@@ -1,5 +1,5 @@
 import React, {
-    memo, useCallback, useContext, useEffect, useState,
+    memo, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { Alert, View, StyleSheet } from 'react-native';
 import {
@@ -14,7 +14,6 @@ import { getGallery } from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
-import useRenderCount from '../../hooks/useRenderCount';
 
 const HomeFeed = ({
   onFeedScroll,
@@ -32,14 +31,10 @@ const HomeFeed = ({
   homeFeedHeaderComponent,
   currentTab,
 }) => {
-    useEffect(() => {
-        console.log('CT : ', currentTab);
-    }, [currentTab]);
-    useRenderCount('Home Feed')
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const authContext = useContext(AuthContext)
+    const [totalUserPostCount, setTotalUserPostCount] = useState(0);
     const [postData, setPostData] = useState([]);
-    const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
     const [footerLoading, setFooterLoading] = useState(false);
 
@@ -52,11 +47,19 @@ const HomeFeed = ({
         })
     }, [authContext, userID])
 
+    useEffect(() => {
+        if (postData?.length > 0 && totalUserPostCount > 0) {
+            if (postData?.length === totalUserPostCount && isNextDataLoading) setIsNextDataLoading(false);
+            else if (!isNextDataLoading) setIsNextDataLoading(true);
+        }
+    }, [postData]);
+
     const updatePostAfterUpload = useCallback((dataParams) => {
         updatePost(dataParams, authContext)
             .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
                 setProgressBar(false);
+                setTotalUserPostCount(response?.payload?.total_count)
                 setPostData([...response.payload.results])
                 setDoneUploadCount(0);
                 setTotalUploadCount(0);
@@ -133,6 +136,7 @@ const HomeFeed = ({
             .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
                 setFullScreenLoading(false);
+                setTotalUserPostCount(response?.payload?.total_count)
                 setPostData([...response.payload.results]);
             })
             .catch((e) => {
@@ -149,6 +153,7 @@ const HomeFeed = ({
         createReaction(bodyParams, authContext)
             .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
+                setTotalUserPostCount(response?.payload?.total_count)
                 setPostData([...response.payload.results]);
             })
             .catch((e) => {
@@ -160,6 +165,7 @@ const HomeFeed = ({
         createPost(dataParams, authContext)
             .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
+                setTotalUserPostCount(response?.payload?.total_count)
                 setPostData([...response.payload.results]);
                 setProgressBar(false);
                 setDoneUploadCount(0);
@@ -206,46 +212,41 @@ const HomeFeed = ({
     }, [authContext, cancelRequest, createPostAfterUpload, progressStatus, setProgressBar, setTotalUploadCount])
 
     const onEndReached = useCallback(() => {
+        setFooterLoading(true);
         const id_lt = postData?.[postData.length - 1]?.id;
-        if (!isMoreLoading && id_lt && isNextDataLoading) {
-            setIsMoreLoading(true);
-            setFooterLoading(true);
+        if (id_lt && isNextDataLoading) {
             getUserPosts({ last_activity_id: id_lt }, authContext).then((response) => {
                 if (response) {
-                    if (response.payload.next === '') {
-                        setIsNextDataLoading(false);
-                    }
-                    setIsMoreLoading(false);
                     setFooterLoading(false)
+                    setTotalUserPostCount(response?.payload?.total_count)
                     setPostData([...postData, ...response.payload.results]);
                 }
             })
             .catch(() => {
                 setFooterLoading(false)
-                setIsMoreLoading(false);
             })
         }
-    }, [authContext, isMoreLoading, isNextDataLoading, postData])
+    }, [authContext, isNextDataLoading, postData])
 
-    const StickyHeaderComponent = () => (isAdmin && currentTab === 0) && (
+    const StickyHeaderComponent = useMemo(() => (
       <View>
         <WritePost
-                navigation={navigation}
-                postDataItem={currentUserData}
-                onWritePostPress={() => {
-                    navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone, selectedImageList: [] })
-                }}
-            />
+                    navigation={navigation}
+                    postDataItem={currentUserData}
+                    onWritePostPress={() => {
+                        navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone, selectedImageList: [] })
+                    }}
+                />
         <View style={styles.sepratorView} />
       </View>
-    )
+        ), [currentUserData])
 
-    const ListHeaderComponent = useCallback(() => (
+    const ListHeaderComponent = () => (
       <>
         {homeFeedHeaderComponent()}
-        {StickyHeaderComponent()}
+        {(isAdmin && currentTab === 0) ? StickyHeaderComponent : null}
       </>
-    ), [homeFeedHeaderComponent, StickyHeaderComponent])
+    )
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.sepratorView} />

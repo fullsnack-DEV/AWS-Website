@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   View, Text, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
@@ -6,28 +6,26 @@ import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import strings from '../../../Constants/String'
 
-export default function UserInfoPlaysInItem({
+const UserInfoPlaysInItem = ({
   title,
   totalGames,
   thumbURL,
   onPlayInPress,
-}) {
-  return (
-    <TouchableOpacity onPress={ onPlayInPress }>
-      <View style={styles.containerStyle}>
-        <Image source={thumbURL} style={styles.imageStyle}/>
-        <View style={{ marginLeft: 10, marginRight: 12 }}>
-          <Text style={styles.titleStyle}>
-            {title}
-          </Text>
-          <Text style={styles.subTitleStyle}>
-            {`${totalGames} ${strings.totalGames}` }
-          </Text>
-        </View>
+}) => (
+  <TouchableOpacity onPress={ onPlayInPress }>
+    <View style={styles.containerStyle}>
+      <Image source={thumbURL} style={styles.imageStyle}/>
+      <View style={{ marginLeft: 10, marginRight: 12 }}>
+        <Text style={styles.titleStyle}>
+          {title}
+        </Text>
+        <Text style={styles.subTitleStyle}>
+          {`${totalGames} ${strings.totalGames}` }
+        </Text>
       </View>
-    </TouchableOpacity>
-  );
-}
+    </View>
+  </TouchableOpacity>
+  )
 
 const styles = StyleSheet.create({
   containerStyle: {
@@ -56,3 +54,5 @@ const styles = StyleSheet.create({
   titleStyle: { fontFamily: fonts.RMedium, fontSize: 16 },
   subTitleStyle: { fontFamily: fonts.RLight, fontSize: 12 },
 })
+
+export default memo(UserInfoPlaysInItem);

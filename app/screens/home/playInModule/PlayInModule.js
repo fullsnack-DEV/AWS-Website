@@ -4,7 +4,9 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext, memo, useEffect, useState, useMemo,
+} from 'react';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../../Constants/Colors';
@@ -51,9 +53,7 @@ const PlayInModule = ({
   }, [userData]);
 
   useEffect(() => {
-    console.log(playInObject);
     if (playInObject?.sport_name) setSportName(playInObject?.sport_name);
-    console.log(playInObject?.sport_type);
     if (playInObject?.sport_type !== 'single') {
       TAB_ITEMS = ['Info', 'Scoreboard', 'Stats'];
       setSinglePlayerGame(false);
@@ -84,48 +84,73 @@ const PlayInModule = ({
       Alert.alert(strings.alertmessagetitle, error.message)
     })
   })
-  const renderTabs = () => {
-    if (currentTab === 0) {
-      return (
-        <PlayInInfoView
-            openPlayInModal={openPlayInModal}
-            onSave={onSave}
-            sportName={playInObject?.sport_name}
-            closePlayInModal={onClose}
-            currentUserData={currentUserData}
-            isAdmin={isAdmin}
-            navigation={navigation}
+
+  const renderHeader = useMemo(() => (
+    <>
+      <Header
+            safeAreaStyle={{ marginTop: 10 }}
+            mainContainerStyle={styles.headerMainContainerStyle}
+            centerComponent={
+              <View style={styles.headerCenterViewStyle}>
+                <FastImage source={mainTitle?.titleIcon} style={styles.soccerImageStyle} resizeMode={'contain'} />
+                <Text style={styles.playInTextStyle}>{mainTitle?.title ?? ''}</Text>
+              </View>
+            }
+            rightComponent={
+              <TouchableOpacity onPress={onClose}>
+                <FastImage source={images.cancelWhite} tintColor={colors.lightBlackColor} style={styles.cancelImageStyle} resizeMode={'contain'} />
+              </TouchableOpacity>
+            }
         />
-      )
-    } if (currentTab === 1) {
-      return (
-        <PlayInScoreboardView
-            openPlayInModal={openPlayInModal}
-            closePlayInModal={onClose}
-            navigation={navigation}
-            sportName={playInObject?.sport_name}
-        />
-      )
-    } if (currentTab === 2) {
-      return (
-        <PlayInStatsView
-            currentUserData={currentUserData}
-            playInObject={playInObject}
-            sportName={playInObject?.sport_name}
-        />
-      )
-    }
-    if (currentTab === 3) {
-      return (
-        <PlayInReviewsView
-              currentUserData={currentUserData}
-              playInObject={playInObject}
-              sportName={playInObject?.sport_name}
-          />
-      )
-    }
+      <TCGradientDivider width={'100%'} height={3}/>
+    </>
+  ), [mainTitle?.title, mainTitle?.titleIcon, onClose])
+
+  const renderPlayInInfoTab = useMemo(() => (
+    <PlayInInfoView
+          openPlayInModal={openPlayInModal}
+          onSave={onSave}
+          sportName={playInObject?.sport_name}
+          closePlayInModal={onClose}
+          currentUserData={currentUserData}
+          isAdmin={isAdmin}
+          navigation={navigation}
+      />
+  ), [currentUserData, isAdmin, onClose, onSave, openPlayInModal, playInObject?.sport_name]);
+
+  const renderScoreboardTab = useMemo(() => (
+    <PlayInScoreboardView
+          openPlayInModal={openPlayInModal}
+          closePlayInModal={onClose}
+          navigation={navigation}
+          sportName={playInObject?.sport_name}
+      />
+  ), [onClose, openPlayInModal, playInObject?.sport_name])
+
+  const renderStatsViewTab = useMemo(() => (
+    <PlayInStatsView
+          currentUserData={currentUserData}
+          playInObject={playInObject}
+          sportName={playInObject?.sport_name}
+      />
+  ), [currentUserData, playInObject])
+
+  const renderReviewTab = useMemo(() => (
+    <PlayInReviewsView
+          currentUserData={currentUserData}
+          playInObject={playInObject}
+          sportName={playInObject?.sport_name}
+      />
+  ), [currentUserData, playInObject])
+
+  const renderTabs = useMemo(() => {
+    if (currentTab === 0) return renderPlayInInfoTab;
+    if (currentTab === 1) return renderScoreboardTab;
+    if (currentTab === 2) return renderStatsViewTab
+    if (currentTab === 3) return renderReviewTab;
     return null;
-  }
+  }, [currentTab, renderPlayInInfoTab, renderReviewTab, renderScoreboardTab, renderStatsViewTab])
+
   return (
     <Modal
             isVisible={visible}
@@ -139,22 +164,7 @@ const PlayInModule = ({
         >
       <View style={styles.modalContainerViewStyle}>
         <SafeAreaView style={{ flex: 1 }}>
-          <Header
-                        safeAreaStyle={{ marginTop: 10 }}
-                        mainContainerStyle={styles.headerMainContainerStyle}
-                        centerComponent={
-                          <View style={styles.headerCenterViewStyle}>
-                            <FastImage source={mainTitle?.titleIcon} style={styles.soccerImageStyle} resizeMode={'contain'} />
-                            <Text style={styles.playInTextStyle}>{mainTitle?.title ?? ''}</Text>
-                          </View>
-                        }
-                        rightComponent={
-                          <TouchableOpacity onPress={onClose}>
-                            <FastImage source={images.cancelWhite} tintColor={colors.lightBlackColor} style={styles.cancelImageStyle} resizeMode={'contain'} />
-                          </TouchableOpacity>
-                        }
-                    />
-          <TCGradientDivider width={'100%'} height={3}/>
+          {renderHeader}
 
           {/* Challenge Button */}
           {currentTab === 0 && authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
@@ -187,7 +197,7 @@ const PlayInModule = ({
           )}
 
           {/* Profile View Section */}
-          <PlayInProfileViewSection
+          {useMemo(() => <PlayInProfileViewSection
               onSettingPress={() => {}}
               onMessageButtonPress={() => {
                 const navigateToMessage = (userId) => {
@@ -208,16 +218,19 @@ const PlayInModule = ({
             profileImage={currentUserData?.thumbnail ? { uri: currentUserData?.thumbnail } : images.profilePlaceHolder}
             userName={currentUserData?.full_name ?? ''}
             cityName={currentUserData?.city ?? ''}
-          />
+          />, [currentUserData, isAdmin, onClose])}
 
           {/* Tabs */}
-          <ScrollableTabs
-              tabs={TAB_ITEMS}
-              currentTab={currentTab}
-              onTabPress={(item) => setCurrentTab(item)}
-          />
-          <ScrollView>
-            {renderTabs()}
+          {useMemo(() => (
+            <ScrollableTabs
+                  tabs={TAB_ITEMS}
+                  currentTab={currentTab}
+                  onTabPress={(item) => setCurrentTab(item)}
+              />
+          ), [currentTab, TAB_ITEMS])}
+
+          <ScrollView pagingEnabled={true}>
+            {renderTabs}
           </ScrollView>
 
         </SafeAreaView>
@@ -287,4 +300,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PlayInModule;
+export default memo(PlayInModule);

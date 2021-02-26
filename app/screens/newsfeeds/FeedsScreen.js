@@ -1,5 +1,5 @@
 import React, {
-  useEffect, memo, useState, useLayoutEffect, useContext, useCallback,
+  useEffect, memo, useState, useLayoutEffect, useContext, useCallback, useMemo,
 } from 'react';
 import {
   StyleSheet, View, Image, Alert, TouchableOpacity,
@@ -288,16 +288,14 @@ const FeedsScreen = ({ navigation }) => {
     );
   }, [onCancelImageUpload])
 
-  const renderImageProgress = useCallback(() => (
-    <>
-      {progressBar && <ImageProgress
+  const renderImageProgress = useMemo(() => (
+    <ImageProgress
               numberOfUploaded={doneUploadCount}
               totalUpload={totalUploadCount}
               onCancelPress={onImageProgressCancelPress}
               postDataItem={currentUserDetail}
-          />}
-    </>
-    ), [progressBar, totalUploadCount, doneUploadCount, currentUserDetail, onImageProgressCancelPress])
+          />
+    ), [totalUploadCount, doneUploadCount, currentUserDetail])
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -314,7 +312,7 @@ const FeedsScreen = ({ navigation }) => {
         onLikePress={onLikePress}
         onEndReached={onEndReached}
        />
-      {renderImageProgress}
+      {progressBar && renderImageProgress}
     </View>
   );
 }
