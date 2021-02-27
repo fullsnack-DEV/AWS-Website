@@ -25,7 +25,7 @@ import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import EventMonthlySelection from '../../../components/Schedule/EventMonthlySelection';
-import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
+// import EventSearchLocation from '../../../components/Schedule/EventSearchLocation';
 import EventTextInputItem from '../../../components/Schedule/EventTextInputItem';
 import EventTimeSelectItem from '../../../components/Schedule/EventTimeSelectItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
@@ -40,6 +40,7 @@ import { getLocationNameWithLatLong } from '../../../api/External';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import * as Utility from '../../../utils/index';
 import TCKeyboardView from '../../../components/TCKeyboardView';
+import TCTouchableLabel from '../../../components/TCTouchableLabel';
 
 const getNearDateTime = (date) => {
   const start = moment(date);
@@ -57,7 +58,7 @@ export default function CreateEventScreen({ navigation, route }) {
   const [eventStartDateTime, setEventStartdateTime] = useState(getNearDateTime(new Date()));
   const [eventEndDateTime, setEventEnddateTime] = useState(moment(eventStartDateTime).add(5, 'm').toDate());
   const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
-  const [searchLocation, setSearchLocation] = useState(strings.searchHereText);
+  const [searchLocation, setSearchLocation] = useState();
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
@@ -228,25 +229,39 @@ export default function CreateEventScreen({ navigation, route }) {
               Alert.alert('Towns Cup', 'Please Select Event End Date and Time.');
             } else if (eventEndDateTime === '') {
               Alert.alert('Towns Cup', 'Please Select Event End Date and Time.');
-            } else if (searchLocation === strings.searchHereText) {
-              Alert.alert('Towns Cup', 'Please Select Event Location.');
             } else {
               setloading(true);
-              const data = [{
-                title: eventTitle,
-                descriptions: eventDescription,
-                color: singleSelectEventColor,
-                allDay: toggle,
-                start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
-                end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
+              let data;
+              if (searchLocation) {
+                 data = [{
+                  title: eventTitle,
+                  descriptions: eventDescription,
+                  color: singleSelectEventColor,
+                  allDay: toggle,
+                  start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
+                  end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
 
-                is_recurring: selectWeekMonth !== 'Does not repeat',
-                location: searchLocation,
-                latitude: locationDetail.lat,
-                longitude: locationDetail.lng,
-                isBlocked: is_Blocked,
-                owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
-              }]
+                  is_recurring: selectWeekMonth !== 'Does not repeat',
+                  location: searchLocation,
+                  latitude: locationDetail.lat,
+                  longitude: locationDetail.lng,
+                  isBlocked: is_Blocked,
+                  owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
+                }]
+              } else {
+                 data = [{
+                  title: eventTitle,
+                  descriptions: eventDescription,
+                  color: singleSelectEventColor,
+                  allDay: toggle,
+                  start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
+                  end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
+
+                  is_recurring: selectWeekMonth !== 'Does not repeat',
+                  isBlocked: is_Blocked,
+                  owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
+                }]
+              }
 
               let rule = '';
               if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly') {
@@ -407,14 +422,17 @@ export default function CreateEventScreen({ navigation, route }) {
           <EventItemRender
             title={strings.place}
           >
-            <EventSearchLocation
-              onLocationPress={() => {
-                navigation.navigate('SearchLocationScreen', {
-                  comeFrom: 'CreateEventScreen',
-                })
-                navigation.setParams({ comeName: null });
-              }}
-              locationText={searchLocation}
+            <TCTouchableLabel
+            placeholder={strings.searchHereText}
+            title={searchLocation}
+            showNextArrow={true}
+            onPress={() => {
+              navigation.navigate('SearchLocationScreen', {
+                comeFrom: 'CreateEventScreen',
+              })
+              navigation.setParams({ comeName: null });
+            }}
+            style={{ width: '98%', alignSelf: 'center' }}
             />
             <EventMapView
               region={{
