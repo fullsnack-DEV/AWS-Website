@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -26,7 +26,7 @@ const TCHorizontalMessageOverview = (
   },
 ) => {
   // eslint-disable-next-line no-restricted-globals
-  const getDateAndMonth = (date) => ((!isNaN(date)) ? moment(date).format('DD MMM') : '');
+  const getDateAndMonth = useMemo(() => ((!isNaN(lastMessageDate)) ? moment(lastMessageDate).format('DD MMM') : ''), [lastMessageDate]);
 
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
@@ -48,7 +48,7 @@ const TCHorizontalMessageOverview = (
           </View>
         </View>
         <View style={styles.rightDateAndMessageCounterContainer}>
-          <Text style={styles.lastMessageDate}>{getDateAndMonth(lastMessageDate)}</Text>
+          <Text style={styles.lastMessageDate}>{getDateAndMonth}</Text>
           {numberOfUnreadMessages > 0 && <TCBadge value={numberOfUnreadMessages} align={'flex-end'}/>}
         </View>
       </View>
@@ -111,4 +111,4 @@ const styles = StyleSheet.create({
     color: colors.grayColor,
   },
 })
-export default TCHorizontalMessageOverview;
+export default memo(TCHorizontalMessageOverview);

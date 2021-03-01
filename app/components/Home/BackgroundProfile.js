@@ -18,7 +18,7 @@ import * as Utility from '../../utils';
 const BackgroundProfile = ({
   currentUserData,
   onConnectionButtonPress,
-  imageSize,
+  imageSize = 82,
 }) => {
   const [entityData, setEntityData] = useState(null)
   useEffect(() => {

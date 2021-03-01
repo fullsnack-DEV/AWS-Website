@@ -188,14 +188,14 @@ const EditPlaysInModal = ({
                   containerStyle={{ marginTop: 15 }}
               >
             <EventTextInput
-                      value={userData.height}
+                      value={userData?.height}
                       placeholder={'Enter Height'}
                       onChangeText={(text) => {
                         setUserData({ ...userData, height: text });
                       }}
                       displayLastTitle={true}
                       keyboardType={'numeric'}
-                      valueEndTitle={userData.height.trim().length > 0 ? ' cm' : ''}
+                      valueEndTitle={userData?.height?.trim().length > 0 ? ' cm' : ''}
                   />
           </EventItemRender>
 
@@ -212,7 +212,7 @@ const EditPlaysInModal = ({
                       }}
                       displayLastTitle={true}
                       keyboardType={'numeric'}
-                      valueEndTitle={userData?.weight.trim().length > 0 ? ' kg' : ''}
+                      valueEndTitle={userData?.weight?.trim().length > 0 ? ' kg' : ''}
                   />
           </EventItemRender>
 

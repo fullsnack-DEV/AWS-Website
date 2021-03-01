@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp } from '../utils';
 import fonts from '../Constants/Fonts';
@@ -29,4 +29,4 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
   },
 })
-export default TCBadge;
+export default memo(TCBadge);

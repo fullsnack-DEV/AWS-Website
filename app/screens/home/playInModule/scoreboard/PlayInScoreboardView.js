@@ -1,5 +1,7 @@
 import { View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+ memo, useContext, useEffect, useState,
+} from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ScheduleTabView from '../../../../components/Home/ScheduleTabView';
 import ScoreboardSportsScreen from '../../ScoreboardSportsScreen';
@@ -46,7 +48,7 @@ const PlayInScoreboardView = ({
     }).catch(() => {
       setLoading(false);
     });
-  }, []);
+  }, [authContext, sportName]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -80,4 +82,4 @@ const PlayInScoreboardView = ({
   )
 }
 
-export default PlayInScoreboardView;
+export default memo(PlayInScoreboardView);

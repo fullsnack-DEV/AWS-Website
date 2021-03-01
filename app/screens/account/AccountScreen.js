@@ -403,9 +403,7 @@ USER, CLUB, LEAGUE, TEAM,
             await firebase.auth().signOut();
             await Utility.clearStorage();
             setloading(false);
-            setTimeout(() => {
-              RNRestart.Restart();
-            }, 2000);
+            RNRestart.Restart();
           },
         },
         {

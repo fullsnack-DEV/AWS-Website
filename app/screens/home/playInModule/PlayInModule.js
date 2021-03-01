@@ -5,7 +5,7 @@ import {
 import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React, {
-  useContext, memo, useEffect, useState, useMemo,
+  useContext, memo, useEffect, useState, useMemo, useCallback,
 } from 'react';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,7 +15,6 @@ import Header from '../../../components/Home/Header';
 import PlayInProfileViewSection from './PlayInProfileViewSection';
 import fonts from '../../../Constants/Fonts';
 import PlayInInfoView from './info/PlayInInfoView';
-import ScrollableTabs from '../../../components/ScrollableTabs';
 import PlayInScoreboardView from './scoreboard/PlayInScoreboardView';
 import PlayInStatsView from './stats/PlayInStatsView';
 import { patchPlayer } from '../../../api/Users';
@@ -25,6 +24,7 @@ import * as Utility from '../../../utils';
 import { getQBAccountType, QBcreateUser } from '../../../utils/QuickBlox';
 import TCGradientDivider from '../../../components/TCThinGradientDivider';
 import PlayInReviewsView from './stats/PlayInReviewsView';
+import TCScrollableTabs from '../../../components/TCScrollableTabs';
 
 let TAB_ITEMS = []
 const PlayInModule = ({
@@ -107,7 +107,8 @@ const PlayInModule = ({
   ), [mainTitle?.title, mainTitle?.titleIcon, onClose])
 
   const renderPlayInInfoTab = useMemo(() => (
-    <PlayInInfoView
+    <ScrollView style={{ flex: 1 }}>
+      <PlayInInfoView
           openPlayInModal={openPlayInModal}
           onSave={onSave}
           sportName={playInObject?.sport_name}
@@ -116,7 +117,8 @@ const PlayInModule = ({
           isAdmin={isAdmin}
           navigation={navigation}
       />
-  ), [currentUserData, isAdmin, onClose, onSave, openPlayInModal, playInObject?.sport_name]);
+    </ScrollView>
+  ), [currentUserData, isAdmin, navigation, onClose, onSave, openPlayInModal, playInObject?.sport_name]);
 
   const renderScoreboardTab = useMemo(() => (
     <PlayInScoreboardView
@@ -125,14 +127,16 @@ const PlayInModule = ({
           navigation={navigation}
           sportName={playInObject?.sport_name}
       />
-  ), [onClose, openPlayInModal, playInObject?.sport_name])
+  ), [navigation, onClose, openPlayInModal, playInObject?.sport_name])
 
   const renderStatsViewTab = useMemo(() => (
-    <PlayInStatsView
+    <ScrollView style={{ flex: 1 }}>
+      <PlayInStatsView
           currentUserData={currentUserData}
           playInObject={playInObject}
           sportName={playInObject?.sport_name}
       />
+    </ScrollView>
   ), [currentUserData, playInObject])
 
   const renderReviewTab = useMemo(() => (
@@ -143,13 +147,14 @@ const PlayInModule = ({
       />
   ), [currentUserData, playInObject])
 
-  const renderTabs = useMemo(() => {
-    if (currentTab === 0) return renderPlayInInfoTab;
-    if (currentTab === 1) return renderScoreboardTab;
-    if (currentTab === 2) return renderStatsViewTab
-    if (currentTab === 3) return renderReviewTab;
-    return null;
-  }, [currentTab, renderPlayInInfoTab, renderReviewTab, renderScoreboardTab, renderStatsViewTab])
+  const renderTabs = useCallback((item, index) => (
+    <View tabLabel={item} style={{ flex: 1 }}>
+      {index === 0 ? renderPlayInInfoTab : null}
+      {index === 1 ? renderScoreboardTab : null}
+      {index === 2 ? renderStatsViewTab : null}
+      {index === 3 ? renderReviewTab : null}
+    </View>
+    ), [renderPlayInInfoTab, renderReviewTab, renderScoreboardTab, renderStatsViewTab])
 
   return (
     <Modal
@@ -222,16 +227,19 @@ const PlayInModule = ({
 
           {/* Tabs */}
           {useMemo(() => (
-            <ScrollableTabs
-                  tabs={TAB_ITEMS}
-                  currentTab={currentTab}
-                  onTabPress={(item) => setCurrentTab(item)}
-              />
-          ), [currentTab, TAB_ITEMS])}
+            <TCScrollableTabs
+                locked={false}
+                onChangeTab={(ChangeTab) => {
+                  setCurrentTab(ChangeTab.i)
+                }}
+              >
+              {TAB_ITEMS?.map(renderTabs)}
+            </TCScrollableTabs>
+          ), [])}
 
-          <ScrollView pagingEnabled={true}>
-            {renderTabs}
-          </ScrollView>
+          {/* <ScrollView pagingEnabled={true}> */}
+          {/*  {renderTabs} */}
+          {/* </ScrollView> */}
 
         </SafeAreaView>
       </View>
