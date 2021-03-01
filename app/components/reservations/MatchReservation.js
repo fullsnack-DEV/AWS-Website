@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { memo, useContext } from 'react';
 import {
   View, Text, StyleSheet,
 } from 'react-native';
@@ -16,13 +16,12 @@ import ReservationStatus from '../../Constants/ReservationStatus';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
-export default function MatchReservation({ data, onPressButon, onPressGameCard }) {
+function MatchReservation({ data, onPressButon = () => {}, onPressGameCard = () => {} }) {
   const authContext = useContext(AuthContext)
-  useEffect(() => {
 
-  }, [data]);
   const isPendingButtonOrDetailButton = () => {
     if (data.game) {
+      console.log('Game Data::::=>', JSON.stringify(data.game));
       if (data.status === RefereeReservationStatus.offered) {
         if (data.expiry_datetime < new Date().getTime() / 1000) {
           return false
@@ -136,3 +135,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
   },
 })
+
+export default memo(MatchReservation)

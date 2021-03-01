@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab-view';
 
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
-export default function TCScrollableTabs({ children, initialPage, onChangeTab }) {
+ function TCScrollableTabs({ children, initialPage, onChangeTab }) {
   return (
 
     <ScrollableTabView
@@ -28,3 +28,4 @@ export default function TCScrollableTabs({ children, initialPage, onChangeTab })
 
   );
 }
+export default memo(TCScrollableTabs)

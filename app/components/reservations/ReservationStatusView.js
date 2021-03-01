@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import React, { useContext, useEffect } from 'react';
+import React, { memo, useContext, useEffect } from 'react';
 import {
   StyleSheet, View, Text, TouchableOpacity,
 } from 'react-native';
@@ -14,7 +14,7 @@ import ReservationStatus from '../../Constants/ReservationStatus';
 import strings from '../../Constants/String';
 
 let entity = {};
-export default function ReservationStatusView({ data }) {
+ function ReservationStatusView({ data }) {
   const authContext = useContext(AuthContext);
   useEffect(() => {
     entity = authContext.entity;
@@ -290,3 +290,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
+export default memo(ReservationStatusView)
