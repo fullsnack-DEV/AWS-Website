@@ -113,7 +113,6 @@ const NewsFeedList = ({
         initialNumToRender={5}
         bounces={true}
         data={postData ?? []}
-        windowSize={10}
         ItemSeparatorComponent={newsFeedListItemSeperator}
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={scrollEnabled}
