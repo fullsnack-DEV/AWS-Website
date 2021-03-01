@@ -15,18 +15,18 @@ const base64ToArrayBuffer = (base64) => {
   // return Buffer.from(binaryString)
 };
 
+// Image compression and resize constants
 const T_LANDSCAPE_IMAGE_HEIGHT = 400;
 const T_PORTRAIT_IMAGE_WIDTH = 400;
+const T_COMPRESSION_RATE = 60; // 0 to 100
 
-const O_LANDSCAPE_IMAGE_HEIGHT = 400;
-const O_PORTRAIT_IMAGE_WIDTH = 400;
+const O_LANDSCAPE_IMAGE_HEIGHT = 1200;
+const O_PORTRAIT_IMAGE_WIDTH = 1200;
+const O_COMPRESSION_RATE = 72; // 0 to 100
+
 export const uploadImageOnPreSignedUrls = async ({
   url, uri, type, cancelToken,
 }) => {
- console.log('URL::=>', url);
- console.log('URI::=>', uri);
- console.log('Type::=>', type);
-
    const base64 = await fs.readFile(uri, 'base64');
    const imgBuffer = base64ToArrayBuffer(base64);
 
@@ -51,7 +51,6 @@ export const uploadImageOnPreSignedUrls = async ({
 };
 
 const thumbnailImageSize = (imageData) => {
-  console.log(`imageData width  ::${imageData.width} imageData height  ::${imageData.height}`);
   const img = {};
   if (imageData.height < imageData.width) {
     if (imageData.height > T_LANDSCAPE_IMAGE_HEIGHT) {
@@ -73,11 +72,8 @@ const thumbnailImageSize = (imageData) => {
     }
     console.log(`image width  ::${img.width} image height  ::${img.height}`);
       return img
-
-  // const heightRatio = imageData.height > 400 ?
 }
 const originalImageSize = (imageData) => {
-  console.log(`imageData width  ::${imageData.width} imageData height  ::${imageData.height}`);
   const img = {};
   if (imageData.height < imageData.width) {
     if (imageData.height > O_LANDSCAPE_IMAGE_HEIGHT) {
@@ -113,9 +109,8 @@ const uploadImage = async (data, authContext, cancelToken) => {
   if (image?.mime?.split('/')?.[0] === 'image') {
    const thumbImgData = thumbnailImageSize(image)
    const originalImgData = originalImageSize(image)
-
-     resThumb = await ImageResizer.createResizedImage(image.path, thumbImgData.width, thumbImgData.height, 'JPEG', 60, 0, null)
-     resOriginal = await ImageResizer.createResizedImage(image.path, originalImgData.width, originalImgData.height, 'JPEG', 72, 0, null)
+     resThumb = await ImageResizer.createResizedImage(image.path, thumbImgData.width, thumbImgData.height, 'JPEG', T_COMPRESSION_RATE, 0, null)
+     resOriginal = await ImageResizer.createResizedImage(image.path, originalImgData.width, originalImgData.height, 'JPEG', O_COMPRESSION_RATE, 0, null)
   }
 
   return getImagePreSignedURL({
@@ -139,13 +134,12 @@ const uploadImage = async (data, authContext, cancelToken) => {
         cancelToken,
       }),
     ]).then(([fullImage, thumbnail]) => {
-      console.log('FI: ', fullImage);
-      console.log('TH: ', thumbnail);
+      const originalImgData = originalImageSize(image)
       return ({
         fullImage,
         thumbnail,
-        height: image.height,
-        width: image.width,
+        height: originalImgData.height,
+        width: originalImgData.width,
         type: image?.mime?.split('/')?.[0],
       })
     })

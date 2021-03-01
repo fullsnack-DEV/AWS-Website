@@ -136,7 +136,7 @@ function MultiImagePostView({
                   zIndex: 100,
             }}>
               <TCZoomableImage
-                      source={{ uri: multiAttachItem.thumbnail }}
+                      source={{ uri: multiAttachItem.url }}
                       style={[styles.uploadedImage, {
                           width: isLandScape ? landscapeImgWidth : portraitImgWidth,
                           height: isLandScape ? wp(100) : hp(100),
