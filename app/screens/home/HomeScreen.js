@@ -2104,9 +2104,6 @@ const HomeScreen = ({ navigation, route }) => {
     ), [isTeamHome, currentTab])
 
 const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
-  console.log('Feed Data::=>', feed);
-  console.log('Feed Data index::=>', index);
-  console.log('Orange feed ??::=>', orangeFeedPress);
   setReviewGameData(gameData)
   setFeedDataIndex(index)
   setFeedDetailIndex(detailIndex)
@@ -2115,10 +2112,6 @@ const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
 }
 
 const onScorekeeperFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
-  console.log('onScorekeeperFeedPress Data::=>', gameData);
-  console.log('Feed Data::=>', feed);
-  console.log('Feed Data index::=>', index);
-  console.log('Orange feed ??::=>', orangeFeedPress);
   setReviewGameData(gameData)
   setFeedDataIndex(index)
   setFeedDetailIndex(detailIndex)

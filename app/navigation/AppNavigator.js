@@ -16,6 +16,7 @@ import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
 // import { getUnreadCount } from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
+import LocalHomeNavigator from './LocalHomeNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import AccountScreen from '../screens/account/AccountScreen';
@@ -189,7 +190,7 @@ function AppNavigator({ navigation }) {
       >
       <Tab.Screen
         name="Local Home"
-        component={ NewsFeedNavigator }
+        component={ LocalHomeNavigator }
         options={ ({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {

@@ -564,5 +564,9 @@ const strings = {
   writeText: 'Please write some text or select any image.',
   cannotCancelReservationAfterGameStartText: 'Reservation cannot be cancel after game game has beed started.',
 cannotChooseDatetime: 'This datetime is overlapping with blocked datetime.',
+recentMatchesTitle: 'Recent Matches',
+upcomingMatchesTitle: 'Upcoming Matches',
+lookingForTitle: 'Looking for a challenger',
+shortsTitle: 'Shorts',
 };
 export default strings;

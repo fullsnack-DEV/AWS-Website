@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import React, { useEffect, useContext } from 'react';
+import React, { memo, useEffect, useContext } from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
@@ -11,7 +11,7 @@ import AuthContext from '../../auth/context'
 import strings from '../../Constants/String';
 
 let entity = {};
-export default function ChallengerInOutView({ data }) {
+function ChallengerInOutView({ data }) {
   const authContext = useContext(AuthContext)
   useEffect(() => {
     entity = authContext.entity
@@ -166,3 +166,5 @@ const styles = StyleSheet.create({
 
   },
 });
+
+export default memo(ChallengerInOutView)

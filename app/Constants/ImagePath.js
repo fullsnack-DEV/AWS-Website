@@ -261,6 +261,13 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   teamPatch: require('../assets/images/team_patch.png'),
   clubPatch: require('../assets/images/club_patch.png'),
   leaguePatch: require('../assets/images/league_patch.png'),
+
+  townsCupIcon: require('../assets/images/tc_icon.png'),
+  home_search: require('../assets/images/ic_search.png'),
+  home_gps: require('../assets/images/ic_gps.png'),
+
+  home_setting: require('../assets/images/ic_setting.png'),
+
 };
 
 export default images;

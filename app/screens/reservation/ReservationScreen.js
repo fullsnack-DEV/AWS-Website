@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+ useEffect, useState, useContext, useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,7 +8,6 @@ import {
   FlatList,
 } from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import { getReservationList } from '../../api/Reservations';
 import MatchReservation from '../../components/reservations/MatchReservation';
@@ -15,24 +16,22 @@ import strings from '../../Constants/String';
 import TCScrollableTabs from '../../components/TCScrollableTabs';
 import AuthContext from '../../auth/context'
 import * as RefereeUtils from '../referee/RefereeUtility';
+import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../challenge/ChallengeUtility';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 
 export default function ReservationScreen({ navigation }) {
-  const isFocused = useIsFocused();
   const [loading, setloading] = useState(true);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
   const authContext = useContext(AuthContext)
 
   useEffect(() => {
-    if (isFocused) {
       setloading(true);
       getReservationListByCaller();
-    }
-  }, [isFocused]);
+  }, []);
 
-  const getReservationListByCaller = async () => {
+  const getReservationListByCaller = () => {
     getReservationList(authContext.entity.uid, authContext).then((response) => {
       setloading(false);
       const upcomingData = [];
@@ -55,33 +54,62 @@ export default function ReservationScreen({ navigation }) {
       }, 10);
     });
   };
-  const goToReservationDetail = (data) => {
+
+  const goToReservationDetail = useCallback((data) => {
     if (data?.responsible_to_secure_venue) {
       setloading(true);
       Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
         setloading(false);
-        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-        console.log('Screen name of challenge:', obj.screenName);
         navigation.navigate(obj.screenName, {
           challengeObj: obj.challengeObj || obj.challengeObj[0],
         });
         setloading(false);
       });
     } else if (data?.scorekeeper) {
-      console.log('Screen name of Reservation:');
+      setloading(true);
+      ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+        setloading(false);
+        navigation.navigate(obj.screenName, {
+          reservationObj: obj.reservationObj || obj.reservationObj[0],
+        });
+        setloading(false);
+      });
     } else {
       setloading(true);
       RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
         setloading(false);
-        console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-        console.log('Screen name of Reservation:', obj.screenName);
         navigation.navigate(obj.screenName, {
           reservationObj: obj.reservationObj || obj.reservationObj[0],
         });
         setloading(false);
       });
     }
-  }
+  }, [authContext, navigation])
+
+  const matchReservationView = useCallback(
+    ({ item }) => (
+      <MatchReservation
+              data={item}
+              onPressGameCard={() => {
+                const gameHome = getGameHomeScreen(item.sport);
+                if (item?.game?.game_id || item?.game_id) {
+                  navigation.navigate(gameHome, {
+                    gameId: item?.game?.game_id || item?.game_id,
+                  });
+                }
+              }}
+              onPressButon={() => {
+                goToReservationDetail(item)
+              }}
+         />
+      ),
+    [navigation, goToReservationDetail],
+  )
+
+const keyExtractor = useCallback(
+  (item, index) => index.toString(),
+  [],
+)
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -90,25 +118,9 @@ export default function ReservationScreen({ navigation }) {
         <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0 && loading === false
           ? <TCNoDataView title={strings.noReservationFountText}/>
           : <FlatList
-                    data={upcoming }
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item }) => (
-                      <MatchReservation
-                            data={item}
-                            onPressGameCard={() => {
-                              const gameHome = getGameHomeScreen(item.sport);
-                              if (item?.game?.game_id || item?.game_id) {
-                                navigation.navigate(gameHome, {
-                                  gameId: item?.game?.game_id || item?.game_id,
-                                });
-                              }
-                            }}
-                            onPressButon={() => {
-                              console.log('Selected Item::', item);
-                              goToReservationDetail(item)
-                            }}
-                       />
-                    )}
+                    data={upcoming}
+                    keyExtractor={keyExtractor}
+                    renderItem={matchReservationView}
                 />
                 }</View>
         <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 && loading === false ? (
@@ -116,16 +128,8 @@ export default function ReservationScreen({ navigation }) {
         ) : (
           <FlatList
                       data={past}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item }) => (
-                        <MatchReservation
-                            data={item}
-                            onPressButon={() => {
-                              console.log('Selected Item::', item);
-                              goToReservationDetail(item)
-                            }}
-                          />
-                      )}
+                      keyExtractor={keyExtractor}
+                      renderItem={matchReservationView}
                    />
         )}</View>
       </TCScrollableTabs>

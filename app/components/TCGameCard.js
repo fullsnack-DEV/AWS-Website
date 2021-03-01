@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Image,
 } from 'react-native';
@@ -11,7 +11,7 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 import ReservationStatus from '../Constants/ReservationStatus';
 
-export default function GameCard({ data, onPress }) {
+ function GameCard({ data, onPress, cardWidth = '86%' }) {
   const months = [
     'Jan',
     'Feb',
@@ -40,7 +40,7 @@ export default function GameCard({ data, onPress }) {
 
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={styles.backgroundView}>
+      <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
         colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
           style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
@@ -268,3 +268,5 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
 });
+
+export default memo(GameCard)
