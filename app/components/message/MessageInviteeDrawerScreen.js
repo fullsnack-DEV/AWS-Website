@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useCallback, useMemo,
+} from 'react';
 import {
   View,
   Text,
@@ -21,6 +23,7 @@ const MessageInviteeDrawerScreen = ({
 }) => {
   const authContext = useContext(AuthContext)
   const [myUserId, setMyUserId] = useState(null);
+
   useEffect(() => {
     const getUser = async () => {
       setMyUserId(authContext.entity.QB.id);
@@ -28,7 +31,7 @@ const MessageInviteeDrawerScreen = ({
     getUser();
   }, []);
 
-  const inviteButton = () => (
+  const inviteButton = useMemo(() => dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
     <View>
       {dialog?.userId === myUserId && (
         <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.replace('MessageInviteScreen', {
@@ -41,8 +44,9 @@ const MessageInviteeDrawerScreen = ({
         </TouchableOpacity>
       )}
     </View>
-  )
-  const onParticipantsPress = (userData) => {
+  ), [dialog, myUserId, navigation, participants])
+
+  const onParticipantsPress = useCallback((userData) => {
     const uid = userData?.entity_type === 'player' ? userData?.user_id : userData?.group_id;
     if (uid && userData?.entity_type) {
       navigation.closeDrawer();
@@ -53,9 +57,9 @@ const MessageInviteeDrawerScreen = ({
         menuBtnVisible: false,
       })
     }
-  }
+  }, [navigation])
 
-  const renderRow = ({ item }) => {
+  const renderRow = useCallback(({ item }) => {
     const customData = JSON.parse(item?.customData);
     const fullImage = customData?.full_image ?? '';
     const finalImage = fullImage ? { uri: fullImage } : images.profilePlaceHolder;
@@ -64,7 +68,8 @@ const MessageInviteeDrawerScreen = ({
         <Image style={styles.inviteImage} source={finalImage}/>
         <Text style={styles.rowText}>{customData?.full_name}</Text>
       </TouchableOpacity>)
-  }
+  }, [onParticipantsPress])
+
   const leaveRoom = () => {
     const okPress = () => {
       QBleaveDialog(dialog?.id).then(() => {
@@ -93,7 +98,6 @@ const MessageInviteeDrawerScreen = ({
   if (dialog?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
     fullName = dialog?.name.slice(2, dialog?.name?.length)
   }
-  console.log(dialog);
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.viewContainer}>
@@ -106,7 +110,7 @@ const MessageInviteeDrawerScreen = ({
           </Text>
           <View style={styles.separator}/>
           <Text style={styles.titleLabel}>Participants</Text>
-          {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && inviteButton()}
+          {inviteButton}
           <FlatList
                 data={participants[0]}
                 renderItem={renderRow}

@@ -305,18 +305,12 @@ const HomeScreen = ({ navigation, route }) => {
   }, [route?.params])
 
   useEffect(() => {
+    if (isFocused) {
       const loginEntity = authContext.entity
-      let uid = loginEntity.uid
-      let role = loginEntity.role
+      const uid = route?.params?.uid ?? loginEntity.uid
+      const role = route?.params?.role ?? loginEntity.role
       let admin = false
-      if (route.params && route.params.uid && route.params.role) {
-        uid = route.params.uid;
-        role = route.params.role;
-        if (loginEntity.uid === uid) {
-          admin = true
-          setIsAdmin(true)
-        }
-      } else {
+      if (loginEntity.uid === uid) {
         admin = true
         setIsAdmin(true)
       }
@@ -327,7 +321,8 @@ const HomeScreen = ({ navigation, route }) => {
         }, 10)
         setloading(false);
       });
-  }, [authContext?.entity]);
+    }
+  }, [isFocused, authContext.entity, route.params]);
 
   useEffect(() => {
     if (isTeamHome) {
@@ -354,7 +349,7 @@ const HomeScreen = ({ navigation, route }) => {
       })
           .catch((error) => Alert.alert(strings.alertmessagetitle, error.message))
     }
-  }, [isTeamHome])
+  }, [authContext, isTeamHome, route?.params?.uid])
 
   const getUserData = async (uid, admin) => {
     setloading(true);
@@ -2020,23 +2015,25 @@ const HomeScreen = ({ navigation, route }) => {
     { nativeEvent: { contentOffset: { y: mainFlatListFromTop } } },
   ])
 
+  const onBackPress = () => {
+    if (route?.params?.sourceScreen) {
+      navigation.popToTop()
+    } else {
+      if (route.params?.onBackPress) route.params.onBackPress();
+      navigation.goBack()
+    }
+  }
+
   const renderTopFixedButtons = useMemo(() => (
     <View style={{
  position: 'absolute', zIndex: 5, top: 30, justifyContent: 'flex-start', paddingLeft: 15, alignItems: 'center',
     }}>
       {(route && route.params && route.params.backButtonVisible) && (
         <TouchableOpacity
-                    style={{
-                      backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
-                    }}
-                    onPress={() => {
-                      if (route?.params?.sourceScreen) {
-                        navigation.popToTop()
-                      } else {
-                        if (route.params?.onBackPress) route.params.onBackPress();
-                        navigation.goBack()
-                      }
-                    }}>
+          style={{
+ backgroundColor: 'rgba(0,0,0,0.4)', height: 30, width: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 25,
+          }}
+          onPress={onBackPress}>
           <Image source={images.backArrow} style={{ height: 15, width: 15, tintColor: colors.whiteColor }} />
         </TouchableOpacity>)}
     </View>
@@ -2049,13 +2046,12 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderHeaderBackgroundProfile = useMemo(() => (
     <BackgroundProfile
-            imageSize={82}
             currentUserData={currentUserData}
             onConnectionButtonPress={onConnectionButtonPress}
         />
-    ), [currentUserData]);
+    ), [currentUserData, onConnectionButtonPress]);
 
-  const renderHeaderUserHomeTopSection = useMemo(() => (
+  const renderHeaderUserHomeTopSection = useMemo(() => isUserHome && (
     <UserHomeTopSection
             userDetails={currentUserData}
             isAdmin={isAdmin}
@@ -2065,33 +2061,33 @@ const HomeScreen = ({ navigation, route }) => {
             onScorekeeperInPress={scorekeeperInModal}
             onPlayInPress={playInModel}
             onAction={onUserAction}/>
-    ), [authContext.entity, isUserHome, currentUserData, isAdmin]);
+    ), [isUserHome, authContext.entity, isUserHome, currentUserData, isAdmin]);
 
-  const renderHeaderClubHomeTopSection = useMemo(() => (
+  const renderHeaderClubHomeTopSection = useMemo(() => isClubHome && (
     <ClubHomeTopSection clubDetails={currentUserData}
          isAdmin={isAdmin}
          loggedInEntity={authContext.entity}
          onAction={onClubAction}/>
  ), [authContext.entity, currentUserData, isAdmin, onClubAction]);
 
-  const renderHeaderTeamHomeTopSection = useMemo(() => (
+  const renderHeaderTeamHomeTopSection = useMemo(() => isTeamHome && (
     <TeamHomeTopSection teamDetails={currentUserData}
         isAdmin={isAdmin}
         loggedInEntity={authContext.entity}
         onAction={onTeamAction}/>
-  ), [authContext.entity, currentUserData, isAdmin, isTeamHome, onTeamAction]);
+  ), [isClubHome, authContext.entity, currentUserData, isAdmin, isTeamHome, onTeamAction]);
 
       const renderMainHeaderComponent = useMemo(() => (
         <View style={{ zIndex: 1 }}>
           {renderHeaderBackgroundProfile}
           <View style={{ flex: 1 }}>
-            {isUserHome && renderHeaderUserHomeTopSection}
-            {isTeamHome && renderHeaderTeamHomeTopSection}
-            {isClubHome && renderHeaderClubHomeTopSection}
+            {renderHeaderUserHomeTopSection}
+            {renderHeaderTeamHomeTopSection}
+            {renderHeaderClubHomeTopSection}
             <View style={styles.sepratorStyle}/>
           </View>
         </View>
-    ), [isUserHome, isTeamHome, isClubHome])
+    ), [renderHeaderUserHomeTopSection])
 
   const renderMainFlatList = useMemo(() => (
     <View style={{ flex: 1 }}>
@@ -2260,6 +2256,28 @@ const feedScreenHeader = useMemo(() => (
     </Animated.View>
     ), [bgImage, fullName, mainFlatListFromTop])
 
+  const renderChallengeButton = useMemo(() => (!loading && isTeamHome && authContext.entity.role === 'team')
+  && <View style={ styles.challengeButtonStyle }>
+    {authContext.entity.obj.group_id !== currentUserData.group_id
+    && <View styles={[styles.outerContainerStyle, { height: 50 }]}>
+      <TouchableOpacity onPress={ onChallengePress }>
+        <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            colors={[colors.greenGradientStart, colors.greenGradientEnd]}
+            style={[styles.containerStyle, { justifyContent: currentUserData.game_fee ? 'space-between' : 'center' }]}>
+          {currentUserData?.game_fee
+              ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee} ${currentUserData.currency_type}`}</Text>
+                <Text style={styles.buttonTextSmall}> {strings.perHourText}</Text>
+              </View> : null}
+          <Text style={ [styles.buttonText, { marginRight: currentUserData.game_fee ? 26 : 0 }] }>{strings.challenge.toUpperCase()}</Text>
+        </LinearGradient>
+      </TouchableOpacity></View>}
+  </View>, [authContext.entity.obj.group_id, authContext.entity.role, currentUserData.currency_type, currentUserData.game_fee, currentUserData.group_id, isTeamHome, loading, onChallengePress])
+
+  const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), [])
+
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -2279,46 +2297,10 @@ const feedScreenHeader = useMemo(() => (
           }
         }}
       />
-      {(!loading && isTeamHome && authContext.entity.role === 'team')
-      && <View style={ styles.challengeButtonStyle }>
-        {authContext.entity.obj.group_id !== currentUserData.group_id
-        && <View styles={[styles.outerContainerStyle, { height: 50 }]}>
-          <TouchableOpacity onPress={ onChallengePress }>
-            <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-          style={[styles.containerStyle, { justifyContent: currentUserData.game_fee ? 'space-between' : 'center' }]}>
-              {currentUserData?.game_fee
-                ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee} ${currentUserData.currency_type}`}</Text>
-                  <Text style={styles.buttonTextSmall}> {strings.perHourText}</Text>
-                </View> : null}
-              <Text style={ [styles.buttonText, { marginRight: currentUserData.game_fee ? 26 : 0 }] }>{strings.challenge.toUpperCase()}</Text>
-            </LinearGradient>
-          </TouchableOpacity></View>}
-      </View>}
+      {renderChallengeButton}
       <ActivityLoader visible={loading} />
 
       <View style={{ flex: 1 }}>
-        {/* <ParallaxScrollView */}
-        {/*  style={{ flex: 1 }} */}
-        {/*  nestedScrollEnabled={true} */}
-        {/*  scrollEventThrottle={16} */}
-        {/*  scrollEnabled={true} */}
-        {/*  onScroll={handleMainRefOnScroll} */}
-        {/*  ref={scrollToTop} */}
-        {/*  backgroundColor="white" */}
-        {/*  contentBackgroundColor="white" */}
-        {/*  parallaxHeaderHeight={200} */}
-        {/*  stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50} */}
-        {/*  fadeOutForeground={true} */}
-        {/*  renderFixedHeader={renderFixedHeader} */}
-        {/*  renderStickyHeader={renderStickyHeader} */}
-        {/*  renderBackground={renderBackground}> */}
-        {/*  {renderMainFlatList()} */}
-        {/* </ParallaxScrollView> */}
-
         {renderTopFixedButtons}
         {fixedHeader}
         <HomeFeed
@@ -2326,30 +2308,30 @@ const feedScreenHeader = useMemo(() => (
               refs={mainFlatListRef}
               homeFeedHeaderComponent={MainHeaderComponent}
               currentTab={currentTab}
-                  currentUserData={currentUserData}
-                  isAdmin={isAdmin}
-                  navigation={navigation}
-                  cancelRequest={cancelRequest}
-                  progressStatus={progressStatus}
-                  setDoneUploadCount={setDoneUploadCount}
-                  setGalleryData={setGalleryData}
-                  setProgressBar={setProgressBar}
-                  setTotalUploadCount={setTotalUploadCount}
-                  userID={route?.params?.uid ?? authContext.entity?.uid}
-              />
+              currentUserData={currentUserData}
+              isAdmin={isAdmin}
+              navigation={navigation}
+              cancelRequest={cancelRequest}
+              progressStatus={progressStatus}
+              setDoneUploadCount={setDoneUploadCount}
+              setGalleryData={setGalleryData}
+              setProgressBar={setProgressBar}
+              setTotalUploadCount={setTotalUploadCount}
+              userID={route?.params?.uid ?? authContext.entity?.uid}
+          />
 
       </View>
       {useMemo(() => playsInModalVisible && (
         <PlayInModule
             visible={playsInModalVisible}
-            openPlayInModal={() => setPlaysInModalVisible(true)}
+            openPlayInModal={openPlayInModal}
             onModalClose={() => setPlaysInModalVisible(false)}
             navigation={navigation}
             userData={currentUserData}
             playInObject={currentPlayInObject}
             isAdmin={isAdmin}
           />
-      ), [currentPlayInObject, currentUserData, isAdmin, navigation, playsInModalVisible])}
+      ), [currentPlayInObject, currentUserData, isAdmin, navigation, openPlayInModal, playsInModalVisible])}
 
       {/* Referee In Modal */}
       {refereesInModalVisible && <Modal

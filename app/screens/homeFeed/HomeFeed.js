@@ -56,11 +56,12 @@ const HomeFeed = ({
 
     const updatePostAfterUpload = useCallback((dataParams) => {
         updatePost(dataParams, authContext)
-            .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
                 setProgressBar(false);
-                setTotalUserPostCount(response?.payload?.total_count)
-                setPostData([...response.payload.results])
+                const pData = [...postData];
+                const pDataIndex = postData?.findIndex((item) => item?.id === dataParams?.activity_id)
+                pData[pDataIndex] = response?.payload;
+                setPostData([...pData]);
                 setDoneUploadCount(0);
                 setTotalUploadCount(0);
                 getGallery(userID, authContext).then((res) => {
@@ -70,7 +71,7 @@ const HomeFeed = ({
             .catch((e) => {
                 Alert.alert('', e.messages)
             });
-    }, [authContext, userID])
+    }, [authContext, postData, userID])
 
     const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
         let attachmentsData = [];
@@ -133,17 +134,18 @@ const HomeFeed = ({
             params.entity_id = authContext?.entity?.uid;
         }
         deletePost(params, authContext)
-            .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
                 setFullScreenLoading(false);
-                setTotalUserPostCount(response?.payload?.total_count)
-                setPostData([...response.payload.results]);
+                if (response.status) {
+                    const pData = postData.filter((postItem) => postItem?.id !== params?.activity_id)
+                    setPostData([...pData]);
+                }
             })
             .catch((e) => {
                 setFullScreenLoading(false);
                 Alert.alert('', e.messages)
             });
-    }, [authContext, userID])
+    }, [authContext, postData])
 
     const onLikePress = useCallback((item) => {
         const bodyParams = {
@@ -151,15 +153,16 @@ const HomeFeed = ({
             activity_id: item.id,
         };
         createReaction(bodyParams, authContext)
-            .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
-                setTotalUserPostCount(response?.payload?.total_count)
-                setPostData([...response.payload.results]);
+                const pData = [...postData];
+                const pDataIndex = postData?.findIndex((postItem) => postItem?.id === bodyParams?.activity_id)
+                pData[pDataIndex] = response?.payload;
+                setPostData([...pData]);
             })
             .catch((e) => {
                 Alert.alert('', e.messages)
             });
-    }, [authContext, userID])
+    }, [authContext, postData])
 
     const createPostAfterUpload = useCallback((dataParams) => {
         createPost(dataParams, authContext)
@@ -241,12 +244,13 @@ const HomeFeed = ({
       </View>
         ), [currentUserData])
 
-    const ListHeaderComponent = () => (
+    const ListHeaderComponent = useMemo(() => (
       <>
         {homeFeedHeaderComponent()}
         {(isAdmin && currentTab === 0) ? StickyHeaderComponent : null}
       </>
-    )
+    ), [StickyHeaderComponent, currentTab, homeFeedHeaderComponent, isAdmin])
+
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.sepratorView} />

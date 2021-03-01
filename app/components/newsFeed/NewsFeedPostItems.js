@@ -61,7 +61,7 @@ const NewsFeedPostItems = ({
       setLike(false);
     }
     setShowThreeDot((item?.ownerId || item?.foreign_id) === caller_id);
-  }, [item]);
+  }, [caller_id, item]);
   const actionSheet = useRef();
   const shareActionSheet = useRef();
 
@@ -72,11 +72,12 @@ const NewsFeedPostItems = ({
 
   let attachedImages = [];
   let descriptions = '';
-  if (item?.object) {
-    if (JSON.parse(item?.object)?.attachments !== undefined && JSON.parse(item?.object)?.attachments?.length > 0) {
-      attachedImages = JSON.parse(item?.object)?.attachments;
+  const myItem = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object;
+  if (myItem) {
+    if (myItem?.attachments !== undefined && myItem?.attachments?.length > 0) {
+      attachedImages = myItem?.attachments;
     }
-    descriptions = JSON.parse(item?.object).text;
+    descriptions = myItem?.text;
   }
 
   const renderSinglePostItems = useCallback(({ item: attachItem }) => {
@@ -251,7 +252,7 @@ const NewsFeedPostItems = ({
         <NewsFeedDescription
             descriptions={descriptions}
             character={attachedImages?.length > 0 ? 140 : 480}
-            tagData={JSON.parse(item?.object)?.taggedData ?? []}
+            tagData={myItem?.taggedData ?? []}
             navigation={navigation}
         />
 

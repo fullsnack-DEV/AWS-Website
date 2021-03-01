@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback, useContext, useEffect, useMemo, useState,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -13,7 +15,7 @@ import QB from 'quickblox-react-native-sdk';
 import { useIsFocused } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash'
-import ActivityLoader from '../../components/loader/ActivityLoader';
+// import ActivityLoader from '../../components/loader/ActivityLoader';
 import TCHorizontalMessageOverview from '../../components/TCHorizontalMessageOverview';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -27,6 +29,7 @@ import {
 } from '../../utils/QuickBlox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
 import AuthContext from '../../auth/context';
+import MessageMainScreenShimmer from '../../components/shimmer/commonComponents/message/MessageMainScreenShimmer';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
@@ -45,12 +48,22 @@ const MessageMainScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    connectAndSubscribe();
-    QbMessageEmitter.addListener(
-      QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-      newDialogHandler,
-    )
+    if (isFocused) {
+      connectAndSubscribe();
+      QbMessageEmitter.addListener(
+          QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+          newDialogHandler,
+      )
+    }
+
     return () => {
+      setSavedDialogsData({
+        append: {},
+        dialogs: [],
+        limit: 30,
+        skip: 0,
+        total: 0,
+      });
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE);
     }
   }, [navigation, isFocused])
@@ -110,47 +123,56 @@ const MessageMainScreen = ({ navigation }) => {
       .catch(() => setLoading(false));
   }, [searchText])
 
-  const renderAllMessages = () => (
+  const renderSingleEntityChat = useCallback(({ item }) => {
+    let fullName = item.name;
+    if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
+      const firstTwoChar = item.name.slice(0, 2);
+      if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
+        fullName = item?.name?.slice(2, item?.name?.length)
+      }
+    }
+
+    return (<TCHorizontalMessageOverview
+        dialogType={item?.type}
+        onPress={() => onDialogPress(item)}
+        title={fullName}
+        subTitle={item?.lastMessage}
+        numberOfMembers={item?.occupantsIds}
+        lastMessageDate={new Date(item?.lastMessageDateSent)}
+        numberOfUnreadMessages={item?.unreadMessagesCount}
+    />)
+  }, [onDialogPress])
+
+  const onEndReached = useCallback(() => {
+    if (!endReachedCalled) {
+      setEndReachedCalled(true);
+    }
+  }, [endReachedCalled])
+
+  const chatKeyExtractor = useCallback((item, index) => index.toString(), [])
+
+  const onMomentumScrollBegin = useCallback(() => setEndReachedCalled(false), [])
+
+  const LiseEmptyComponent = useMemo(() => (
+    <Text style={{
+        fontFamily: fonts.RLight, marginTop: 15, fontSize: 16, color: colors.lightBlackColor,
+    }}>No Messages Found</Text>
+  ), [])
+  const renderAllMessages = useMemo(() => (
     <FlatList
-        ListEmptyComponent={<Text style={{
-          fontFamily: fonts.RLight, marginTop: 15, fontSize: 16, color: colors.lightBlackColor,
-        }}>No Messages Found</Text>}
-        refreshing={loading}
-        data={savedDialogsData.dialogs ?? []}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => {
-          let fullName = item.name;
-          if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
-            const firstTwoChar = item.name.slice(0, 2);
-            if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
-              fullName = item.name.slice(2, item.name.length)
-            }
-          }
+            ListEmptyComponent={LiseEmptyComponent}
+            refreshing={loading}
+            data={savedDialogsData.dialogs ?? []}
+            keyExtractor={chatKeyExtractor}
+            renderItem={renderSingleEntityChat}
+            onEndReachedThreshold={0.2}
+            onMomentumScrollBegin={onMomentumScrollBegin}
+            onEndReached={onEndReached}
+        />
+    ), [LiseEmptyComponent, chatKeyExtractor, loading, onEndReached, onMomentumScrollBegin, savedDialogsData.dialogs])
 
-          return (<TCHorizontalMessageOverview
-              dialogType={item.type}
-              onPress={() => onDialogPress(item)}
-              title={fullName}
-              subTitle={item.lastMessage}
-              numberOfMembers={item.occupantsIds}
-              lastMessageDate={new Date(item.lastMessageDateSent)}
-              numberOfUnreadMessages={item.unreadMessagesCount}
-          />)
-        }
-        }
-        onEndReachedThreshold={0.2}
-        onMomentumScrollBegin={() => setEndReachedCalled(false)}
-        onEndReached={() => {
-          if (!endReachedCalled) {
-            setEndReachedCalled(true);
-          }
-        }}
-    />
-  )
-
-  return (
-    <SafeAreaView style={ styles.mainContainer }>
-      <Header
+  const renderHeader = useMemo(() => (
+    <Header
             leftComponent={
               <TouchableOpacity onPress={() => navigation.goBack() }>
                 <FastImage source={images.backArrow} resizeMode={'contain'} style={styles.backImageStyle} />
@@ -165,11 +187,19 @@ const MessageMainScreen = ({ navigation }) => {
               </TouchableOpacity>
             }
         />
+    ), [navigation])
+
+  return (
+    <SafeAreaView style={ styles.mainContainer }>
+      {renderHeader}
       <View style={styles.separateLine}/>
-      <ActivityLoader visible={loading} />
-      <TCSearchBox onChangeText={(text) => setSearchText(text)}/>
+      {/* <ActivityLoader visible={loading} /> */}
+      <TCSearchBox onChangeText={setSearchText}/>
       <View style={ styles.sperateLine } />
-      {renderAllMessages()}
+      {loading
+          ? <MessageMainScreenShimmer/>
+          : renderAllMessages
+      }
     </SafeAreaView>
   );
 }

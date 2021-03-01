@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+ useState, useEffect, useMemo, useCallback,
+} from 'react';
 import {
   Alert,
   FlatList,
@@ -29,7 +31,22 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
       setGroupName(route?.params?.dialog?.name)
     }
   }, [])
-  const renderSelectedContactList = ({ item }) => {
+
+  const toggleSelection = useCallback((isChecked, user) => {
+    const data = selectedInvitees;
+    if (isChecked) {
+      const uIndex = data.findIndex(({ id }) => user.id === id);
+      if (uIndex !== -1) data.splice(uIndex, 1);
+    } else {
+      data.push(user);
+    }
+    setSelectedInvitees([...data]);
+    if (data.length === 0) {
+      navigation.replace('MessageInviteScreen')
+    }
+  }, [navigation, selectedInvitees]);
+
+  const renderSelectedContactList = useCallback(({ item }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
     const fullName = _.get(customData, ['full_name'], '')
     const fullImage = _.get(customData, ['full_image'], '');
@@ -63,22 +80,9 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
         </Text>
       </View>
     );
-  };
+  }, [toggleSelection]);
 
-  const toggleSelection = (isChecked, user) => {
-    const data = selectedInvitees;
-    if (isChecked) {
-      const uIndex = data.findIndex(({ id }) => user.id === id);
-      if (uIndex !== -1) data.splice(uIndex, 1);
-    } else {
-      data.push(user);
-    }
-    setSelectedInvitees([...data]);
-    if (data.length === 0) {
-      navigation.replace('MessageInviteScreen')
-    }
-  };
-  const onDonePress = () => {
+  const onDonePress = useCallback(() => {
     if (groupName !== '') {
       const occupantsIds = [];
 
@@ -115,25 +119,47 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
     } else {
       Alert.alert('Enter Chatroom Name')
     }
-  }
+  }, [groupName, navigation, route?.params?.dialog, route?.params?.participants, selectedInvitees])
+
+  const renderHeader = useMemo(() => (
+    <Header
+          leftComponent={
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={styles.eventTitleTextStyle}>New Group</Text>
+          }
+          rightComponent={
+            <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
+              <Text style={styles.eventTextStyle}>Done</Text>
+            </TouchableOpacity>
+          }
+      />
+  ), [navigation, onDonePress])
+
+  const renderParticipants = useMemo(() => (
+    <View style={styles.participantsContainer}>
+      <Text style={styles.participantsText}>Participants</Text>
+      {selectedInvitees.length > 0 && (
+        <View style={styles.selectedInviteesMainView}>
+          <FlatList
+                  style={{ flex: 1, alignSelf: 'center' }}
+                  contentContainerStyle={{ alignSelf: selectedInvitees.length >= 4 ? 'center' : 'flex-start' }}
+                  numColumns={5}
+                  showsHorizontalScrollIndicator={false}
+                  data={selectedInvitees || []}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={renderSelectedContactList}
+              />
+        </View>
+        )}
+    </View>
+  ), [selectedInvitees])
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTitleTextStyle}>New Group</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-            <Text style={styles.eventTextStyle}>Done</Text>
-          </TouchableOpacity>
-        }
-      />
-
+      {renderHeader}
       <View style={styles.separateLine}/>
       <View style={styles.avatarContainer}>
         <TouchableOpacity>
@@ -153,22 +179,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
           <TCInputBox placeHolderText={'New Group'} value={groupName} onChangeText={setGroupName}/>
         </View>
       </View>
-      <View style={styles.participantsContainer}>
-        <Text style={styles.participantsText}>Participants</Text>
-        {selectedInvitees.length > 0 && (
-          <View style={styles.selectedInviteesMainView}>
-            <FlatList
-              style={{ flex: 1, alignSelf: 'center' }}
-              contentContainerStyle={{ alignSelf: selectedInvitees.length >= 4 ? 'center' : 'flex-start' }}
-              numColumns={5}
-              showsHorizontalScrollIndicator={false}
-              data={selectedInvitees || []}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderSelectedContactList}
-            />
-          </View>
-        )}
-      </View>
+      {renderParticipants}
     </SafeAreaView>
   )
 };

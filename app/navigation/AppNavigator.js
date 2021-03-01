@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+    useEffect, useState, useContext, useCallback, useRef, useMemo,
+} from 'react';
 import {
     Image, Platform, StyleSheet, NativeEventEmitter, StatusBar,
 } from 'react-native';
@@ -105,44 +107,50 @@ const getTabBarVisibility = (route) => {
 };
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
-function AppNavigator({ navigation }) {
+const AppNavigator = ({ navigation }) => {
   const authContext = useContext(AuthContext)
+  const count = useRef(0);
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
   // const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
-    changeRole();
     QBeventListeners();
   }, [navigation]);
+
+  useEffect(() => {
+      changeRole();
+  }, [authContext.entity.role])
 
   useEffect(() => {
     StatusBar.setBarStyle('dark-content')
     StatusBar.setBackgroundColor('white')
   }, []);
 
-  const getQBToken = async () => authContext.entity?.QB?.token ?? null
+  const getQBToken = useMemo(async () => authContext.entity?.QB?.token ?? null, [authContext.entity?.QB?.token])
 
-  const QBeventListeners = () => {
+    const getUnReadMessageHandler = useCallback(async () => {
+        const token = await getQBToken();
+        if (token) {
+            fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
+                .then((response) => response.json())
+                .then((jsonData) => {
+                    setUnreadCount(jsonData?.total ?? 0)
+                })
+                .catch(() => {
+                    setUnreadCount(0)
+                });
+        }
+    }, [getQBToken])
+
+    const QBeventListeners = useCallback(() => {
     QbMessageEmitter.addListener(
       QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
       getUnReadMessageHandler,
     )
 
     getUnReadMessageHandler()
-  }
-  const getUnReadMessageHandler = async () => {
-    const token = await getQBToken();
-    if (token) {
-      fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
-        .then((response) => response.json())
-        .then((jsonData) => {
-          setUnreadCount(jsonData?.total ?? 0)
-        })
-        .catch(() => {
-          setUnreadCount(0)
-        });
-    }
-  }
+  }, [getUnReadMessageHandler])
+
   // const getUnReadNotificationHandler = () => {
   //   getUnreadCount(authContext).then((response) => {
   //     if (response.status === true) {
@@ -156,21 +164,21 @@ function AppNavigator({ navigation }) {
   //     }
   //   });
   // }
-  const changeRole = async () => {
+  const changeRole = useCallback(async () => {
     setRole(authContext.entity.role);
-  };
-  let count = 0;
-  const onTabPress = () => {
-    count += 1;
-    if (count === MAX_COUNT_FOR_BOTTOM_TAB) {
-      count = 0;
+  }, [authContext.entity.role]);
+
+  const onTabPress = useCallback(() => {
+    count.current += 1;
+    if (count.current === MAX_COUNT_FOR_BOTTOM_TAB) {
+        count.current = 0;
       getUnReadMessageHandler();
       // getUnReadNotificationHandler()
     }
-  }
+  }, []);
+
   return (
     <Tab.Navigator
-        backBehavior={'history'}
       tabBarOptions={ {
         activeTintColor: colors.themeColor,
         inactiveTintColor: colors.grayColor,
@@ -347,4 +355,5 @@ const styles = StyleSheet.create({
     width: 40,
   },
 });
+
 export default AppNavigator;

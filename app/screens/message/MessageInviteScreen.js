@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+  useState, useEffect, useContext, useMemo, useCallback,
+} from 'react';
 import {
   Alert,
   FlatList,
@@ -111,7 +113,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
     setLeaguesData([...leagueData]);
     setLoading(false);
   }
-  const Item = ({
+  const Item = useCallback(({
     item, onPress, style, isChecked,
   }) => {
     const customData = item?.customData ? JSON.parse(item.customData) : {};
@@ -148,9 +150,19 @@ const MessageInviteScreen = ({ navigation, route }) => {
           </View>
         </LinearGradient>
       </TouchableOpacity>)
-  }
+  }, [])
 
-  const renderSelectedContactList = ({ item }) => {
+  const toggleSelection = useCallback((isChecked, user) => {
+    if (isChecked) {
+      const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
+      if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+    } else {
+      selectedInvitees.push(user);
+    }
+    setSelectedInvitees([...selectedInvitees]);
+  }, [selectedInvitees]);
+
+  const renderSelectedContactList = useCallback(({ item }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
     const fullName = _.get(customData, ['full_name'], '')
@@ -188,26 +200,10 @@ const MessageInviteScreen = ({ navigation, route }) => {
         </View>
       </View>
     );
-  };
+  }, [toggleSelection]);
 
-  const toggleSelection = (isChecked, user) => {
-    const data = selectedInvitees;
-    if (isChecked) {
-      const uIndex = data.findIndex(({ id }) => user.id === id);
-      if (uIndex !== -1) data.splice(uIndex, 1);
-    } else {
-      data.push(user);
-    }
-    setSelectedInvitees([...data]);
-  };
-
-  const renderItem = ({ item }) => {
-    const isChecked = selectedInvitees.some((val) => {
-      if (val.id === item.id) {
-        return true;
-      }
-      return false
-    })
+  const renderItem = useCallback(({ item }) => {
+    const isChecked = selectedInvitees.some((val) => val.id === item.id)
     return (
       <Item
         item={item}
@@ -215,31 +211,37 @@ const MessageInviteScreen = ({ navigation, route }) => {
         isChecked={isChecked}
       />
     );
-  };
-  const renderSingleTab = (data) => (
+  }, [selectedInvitees, toggleSelection]);
+
+  const ListEmptyComponent = useMemo(() => (
+    <Text style={{ textAlign: 'center', marginTop: hp(2), color: colors.userPostTimeColor }}>No Records Found</Text>
+  ), [])
+
+  const renderSingleTab = useCallback((data) => (
     <View style={{ margin: wp(3) }}>
       <FlatList
-          ListEmptyComponent={
-            <Text style={{
-              textAlign: 'center',
-              marginTop: hp(2),
-              color: colors.userPostTimeColor,
-            }}>No Records Found</Text>}
+          removeClippedSubviews={true}
+          legacyImplementation={true}
+          maxToRenderPerBatch={10}
+          initialNumToRender={5}
+          ListEmptyComponent={ListEmptyComponent}
           data={data}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
     </View>
-  )
-  const renderTabContain = (tabKey, tabIndex) => {
+  ), [ListEmptyComponent, renderItem])
+
+  const renderTabContain = useCallback((tabKey, tabIndex) => {
     const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
     return (
       <View tabLabel={tabKey} style={{ flex: 1 }}>
         {renderSingleTab(searchText === '' ? dataTabList[tabIndex] : searchData)}
       </View>
     )
-  }
-  const handlePress = () => {
+  }, [clubsData, inviteeData, leaguesData, peopleData, renderSingleTab, searchData, searchText, teamsData])
+
+  const handlePress = useCallback(() => {
     if (route?.params?.dialog) {
       navigation.replace('MessageNewGroupScreen', {
         selectedInviteesData: selectedInvitees,
@@ -270,58 +272,64 @@ const MessageInviteScreen = ({ navigation, route }) => {
         Alert.alert('Select Members')
       }
     }
-  }
-  return (
-    <SafeAreaView style={styles.mainContainer}>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTitleTextStyle}>Invite</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={handlePress}>
-            <Text style={{ ...styles.eventTextStyle, fontSize: 14 }}>
-              {
-                selectedInvitees
-                && (selectedInvitees.length > 1 || route?.params?.dialog)
-                  ? 'Next'
-                  : 'Create'}
-            </Text>
-          </TouchableOpacity>
-        }
+  }, [navigation, route?.params?.dialog, route?.params?.participants, selectedInvitees])
+
+  const renderHeader = useMemo(() => (
+    <Header
+          leftComponent={
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <FastImage resizeMode={'contain'} source={images.backArrow} style={styles.backImageStyle}/>
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={styles.eventTitleTextStyle}>Invite</Text>
+          }
+          rightComponent={
+            <TouchableOpacity style={{ padding: 2 }} onPress={handlePress}>
+              <Text style={{ ...styles.eventTextStyle, fontSize: 14 }}>
+                {
+                  selectedInvitees
+                  && (selectedInvitees.length > 1 || route?.params?.dialog)
+                      ? 'Next'
+                      : 'Create'}
+              </Text>
+            </TouchableOpacity>
+          }
       />
-      <View style={ styles.separateLine } />
-      <ActivityLoader visible={loading}/>
-      {selectedInvitees.length > 0 && (
-        <View style={styles.selectedInviteesMainView}>
-          <FlatList
+  ), [handlePress, navigation, route?.params?.dialog, selectedInvitees])
+
+  const renderSelectedInvitees = useMemo(() => selectedInvitees.length > 0 && (
+    <View style={styles.selectedInviteesMainView}>
+      <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={selectedInvitees || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderSelectedContactList}
             extraData={selectedInvitees}
-          />
-        </View>
-      )}
-      <TCSearchBox style={{ marginHorizontal: 15 }}
-        value={searchText}
-        onChangeText={(text) => setSearchText(text)}/>
-      <View style={styles.sperateLine}/>
-      <TCScrollableTabs
-            onChangeTab={(ChangeTab) => {
-              setCurrentTab(ChangeTab.i)
-              setSearchText('')
-            }}
+        />
+    </View>
+  ), [selectedInvitees])
+
+  const renderTabs = useMemo(() => (
+    <TCScrollableTabs
+          onChangeTab={(ChangeTab) => {
+            setCurrentTab(ChangeTab.i)
+            setSearchText('')
+          }}
       >
-        {TAB_ITEMS?.map((item, index) => (
-          renderTabContain(item, index)
-        ))}
-      </TCScrollableTabs>
+      {TAB_ITEMS?.map(renderTabContain)}
+    </TCScrollableTabs>
+  ), [TAB_ITEMS, renderTabContain])
+  return (
+    <SafeAreaView style={styles.mainContainer}>
+      {renderHeader}
+      <View style={ styles.separateLine } />
+      <ActivityLoader visible={loading}/>
+      {renderSelectedInvitees}
+      <TCSearchBox style={{ marginHorizontal: 15 }} value={searchText} onChangeText={setSearchText}/>
+      <View style={styles.sperateLine}/>
+      {renderTabs}
     </SafeAreaView>
   )
 };

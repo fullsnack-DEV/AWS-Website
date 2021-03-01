@@ -50,11 +50,10 @@ const NewsFeedList = ({
         })
       }
     }
-  }, [])
+  }, [authContext?.entity?.uid, navigation])
 
   const renderNewsFeed = useCallback(({ item }) => {
     const onDeleteButtonPress = () => onDeletePost(item)
-    const onProfileButtonPress = () => onProfilePress(item)
     const onLikeButtonPress = () => onLikePress(item)
     return (
       <NewsFeedPostItems
@@ -63,7 +62,7 @@ const NewsFeedList = ({
             navigation={navigation}
             caller_id={userID}
             onEditPressDone={onEditPressDone}
-            onImageProfilePress={onProfileButtonPress}
+            onImageProfilePress={() => onProfilePress(item)}
             onLikePress={onLikeButtonPress}
             onDeletePost={onDeleteButtonPress}
         />

@@ -109,21 +109,23 @@ const FeedsScreen = ({ navigation }) => {
         createPostAfterUpload(dataParams)
       })
     }
-  }, [authContext])
+  }, [authContext, createPostAfterUpload])
 
-  const updatePostAfterUpload = (dataParams) => {
+  const updatePostAfterUpload = useCallback((dataParams) => {
     updatePost(dataParams, authContext)
-      .then(() => getNewsFeed(authContext))
       .then((response) => {
+        const pData = [...postData];
+        const pDataIndex = postData?.findIndex((item) => item?.id === dataParams?.activity_id)
+        pData[pDataIndex] = response?.payload;
+        setPostData([...pData]);
         setProgressBar(false);
-        setPostData([...response.payload.results])
         setDoneUploadCount(0);
         setTotalUploadCount(0);
       })
       .catch((e) => {
         Alert.alert('', e.messages)
       });
-  }
+  }, [authContext, postData])
   const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
     let attachmentsData = [];
     const alreadyUrlDone = [];
@@ -173,7 +175,7 @@ const FeedsScreen = ({ navigation }) => {
         console.log(error);
       })
     }
-  }, [])
+  }, [authContext, updatePostAfterUpload])
 
   const onCancelImageUpload = useCallback(() => {
     if (cancelApiRequest) {
@@ -194,15 +196,17 @@ const FeedsScreen = ({ navigation }) => {
       params.entity_id = authContext?.entity?.uid;
     }
     deletePost(params, authContext)
-        .then(() => getNewsFeed(authContext))
         .then((response) => {
+          if (response.status) {
+            const pData = postData.filter((postItem) => postItem?.id !== params?.activity_id)
+            setPostData([...pData]);
+          }
           setloading(false);
-          setPostData([...response.payload.results]);
         })
         .catch(() => {
           setloading(false);
         });
-  }, [])
+  }, [authContext, postData])
 
   const onRefreshPress = useCallback(() => {
     setIsMoreLoading(false);
@@ -243,14 +247,16 @@ const FeedsScreen = ({ navigation }) => {
       activity_id: item.id,
     };
     createReaction(bodyParams, authContext)
-        .then(() => getNewsFeed(authContext))
         .then((response) => {
-          setPostData([...response.payload.results]);
+          const pData = [...postData];
+          const pDataIndex = postData?.findIndex((postItem) => postItem?.id === bodyParams?.activity_id)
+          pData[pDataIndex] = response?.payload;
+          setPostData([...pData]);
         })
         .catch((e) => {
           Alert.alert('', e.messages)
         });
-  }, []);
+  }, [authContext, postData]);
 
   const onEndReached = useCallback(() => {
     setIsMoreLoading(true);
@@ -295,7 +301,7 @@ const FeedsScreen = ({ navigation }) => {
               onCancelPress={onImageProgressCancelPress}
               postDataItem={currentUserDetail}
           />
-    ), [totalUploadCount, doneUploadCount, currentUserDetail])
+    ), [doneUploadCount, totalUploadCount, onImageProgressCancelPress, currentUserDetail])
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />

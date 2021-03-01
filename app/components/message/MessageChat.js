@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useRef, useState, useContext,
+  useEffect, useRef, useState, useContext, useMemo, useCallback,
 } from 'react';
 import {
   View,
@@ -188,7 +188,7 @@ const MessageChat = ({
     }
   }
 
-  const getMessages = async (onRefreshCalled = false) => {
+  const getMessages = useCallback(async (onRefreshCalled = false) => {
     try {
       const response = await QBgetMessages(dialogData?.dialogId, savedMessagesData.length);
       if (onRefreshCalled) {
@@ -203,9 +203,9 @@ const MessageChat = ({
     } finally {
       setLoading(false);
     }
-  }
+  }, [dialogData?.dialogId, savedMessagesData])
 
-  const renderMessages = ({ item, index }) => {
+  const renderMessages = useCallback(({ item, index }) => {
     const getDateTime = (compareFormat, outputFormat) => {
       const preveiousDate = index > 0 && savedMessagesData[index - 1].dateSent;
       const currentDate = item.dateSent;
@@ -286,9 +286,9 @@ const MessageChat = ({
         </View>
       </View>
     )
-  }
+  }, [headingTitle, myUserId, occupantsData, savedMessagesData])
 
-  const sendMessage = () => {
+  const sendMessage = useCallback(() => {
     if (!uploadedFile && messageBody.trim() === '') {
       Alert.alert('Enter Message')
       return false;
@@ -301,9 +301,9 @@ const MessageChat = ({
       onInputBoxFocus()
     })
     return true;
-  }
+  }, [dialogData?.dialogId, messageBody, uploadedFile])
 
-  const uploadImage = () => {
+  const uploadImage = useCallback(() => {
     ImagePicker.openPicker({
       width: 400,
       height: 400,
@@ -327,66 +327,67 @@ const MessageChat = ({
         });
       }
     })
-  }
+  }, [])
 
-  const onInputBoxFocus = () => {
+  const onInputBoxFocus = useCallback(() => {
     if (scrollRef && scrollRef.current) scrollRef.current.scrollToEnd({ animated: false });
-  }
-  // let headingMainTitle = headingTitle;
-  // if (dialogData?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-  //   const firstTwoChar = headingTitle.slice(0, 2);
-  //   if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
-  //     headingMainTitle = headingTitle.slice(2, headingTitle.length)
-  //   }
-  // }
-  return (
-    <SafeAreaView style={ styles.mainContainer }>
-      <ActivityLoader visible={loading} />
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack() }>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTextStyle}>{headingTitle}</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={() => {
-            navigation.openDrawer()
-            navigation.setParams({ participants: [occupantsData] })
-          }}>
-            <Image source={images.threeDotIcon} style={styles.rightImageStyle} />
-          </TouchableOpacity>
-        }
+  }, [])
+
+  const renderHeader = useMemo(() => (
+    <Header
+          leftComponent={
+            <TouchableOpacity onPress={() => navigation.goBack() }>
+              <Image source={images.backArrow} style={styles.backImageStyle} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={styles.eventTextStyle}>{headingTitle}</Text>
+          }
+          rightComponent={
+            <TouchableOpacity style={{ padding: 2 }} onPress={() => {
+              navigation.openDrawer()
+              navigation.setParams({ participants: [occupantsData] })
+            }}>
+              <Image source={images.threeDotIcon} style={styles.rightImageStyle} />
+            </TouchableOpacity>
+          }
       />
-      <View style={ styles.sperateLine } />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : null}>
-        <FlatList
-            // onContentSizeChange={() => scrollRef && scrollRef.current && scrollRef.current.scrollToEnd()}
+  ), [headingTitle, navigation, occupantsData])
+
+  const onRefresh = useCallback(async () => {
+    await getMessages(true)
+  }, [getMessages])
+
+  const ListEmptyComponent = useMemo(() => (
+    <Text style={styles.noMessagesText}>No Messages</Text>
+  ), [])
+
+  const messageList = useMemo(() => (
+    <FlatList
             ref={scrollRef}
             extraData={savedMessagesData}
             style={styles.messageViewContainer}
             contentContainerStyle={styles.messageContentView}
             data={savedMessagesData}
             renderItem={renderMessages}
-            ListEmptyComponent={() => <Text style={styles.noMessagesText}>No Messages</Text>}
-            onRefresh={async () => {
-              await getMessages(true)
-            }}
+            ListEmptyComponent={ListEmptyComponent}
+            onRefresh={onRefresh}
             refreshing={loading}
         />
-        <View style={{
-          ...styles.bottomTextUpperContainer,
-          height: selectedImage ? hp(18) : hp(8),
-          borderTopWidth: selectedImage ? 1 : 0,
-          borderTopColor: selectedImage ? colors.userPostTimeColor : '',
-        }}>
-          {selectedImage && (
-            <View style={styles.selectedImageContainer}>
-              {selectedImage?.mime?.includes('image') ? (
-                <FastImage
-                    resizeMode={'cover'}
+    ), [ListEmptyComponent, loading, onRefresh, renderMessages, savedMessagesData])
+
+  const renderBottomChatTools = useMemo(() => (
+    <View style={{
+        ...styles.bottomTextUpperContainer,
+        height: selectedImage ? hp(18) : hp(8),
+        borderTopWidth: selectedImage ? 1 : 0,
+        borderTopColor: selectedImage ? colors.userPostTimeColor : '',
+    }}>
+      {selectedImage && (
+        <View style={styles.selectedImageContainer}>
+          {selectedImage?.mime?.includes('image') ? (
+            <FastImage
+                      resizeMode={'cover'}
                       source={{ uri: selectedImage?.path }}
                       style={{
                         borderRadius: 5,
@@ -398,90 +399,98 @@ const MessageChat = ({
               ) : (
                 <View>
                   <View style={{
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      zIndex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'absolute',
                   }}>
                     <FastImage
-                        source={images.videoPlayBtn}
-                        tintColor={'white'}
-                        resizeMode={'contain'}
-                        style={{
-                          height: 20,
-                          width: 20,
-                        }}/>
+                          source={images.videoPlayBtn}
+                          tintColor={'white'}
+                          resizeMode={'contain'}
+                          style={{
+                            height: 20,
+                            width: 20,
+                          }}/>
                   </View>
                   <Video
-                      ref={videoPlayerRef}
-                      paused={true}
-                      muted={true}
-                      source={{ uri: selectedImage?.path }}
-                      style={{
-                        borderRadius: 5,
-                        height: 50,
-                        width: 50,
-                        marginVertical: hp(2),
-                      }}
-                      resizeMode={'cover'}
-                      onLoad={() => {
-                        videoPlayerRef.current.seek(0);
-                      }}
-                   />
+                        ref={videoPlayerRef}
+                        paused={true}
+                        muted={true}
+                        source={{ uri: selectedImage?.path }}
+                        style={{
+                          borderRadius: 5,
+                          height: 50,
+                          width: 50,
+                          marginVertical: hp(2),
+                        }}
+                        resizeMode={'cover'}
+                        onLoad={() => {
+                          videoPlayerRef.current.seek(0);
+                        }}
+                    />
                 </View>
               )}
 
-              <TouchableOpacity onPress={() => {
+          <TouchableOpacity onPress={() => {
                 setSelectedImage(null);
                 setUploadImageInProgress(false);
                 setUploadedFile(null);
-              }}>
-                <FastImage
-                  source={ images.cancelImage }
-                  style={{ height: 20, width: 20 }}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-          <View style={styles.bottomTextInputContainer}>
-            <TouchableOpacity onPress={uploadImage}>
-              <Image source={images.messageCamera} style={{
-                ...styles.sideButton,
-                marginHorizontal: wp(3),
-                height: 25,
-                width: 23,
-              }}/>
-            </TouchableOpacity>
-            <TCInputBox
-            onFocus={onInputBoxFocus}
-            value={messageBody}
-            placeHolderText={'Type a message'}
-            onChangeText={(text) => setMessageBody(text)}
-            style={{ flex: 1 }}
-          />
-            {uploadImageInProgress ? (
-              <FastImage
-                    source={ images.imageUploadingGIF }
-                    style={styles.imageUploadingLoader}
+          }}>
+            <FastImage
+                    source={ images.cancelImage }
+                    style={{ height: 20, width: 20 }}
                     resizeMode={'contain'}
                 />
-            ) : (
-              <TouchableOpacity onPress={sendMessage}>
-                <GradiantContainer style={styles.sendButtonContainer}>
-                  <Image source={images.sendButton} style={styles.sendButton} />
-                </GradiantContainer>
-              </TouchableOpacity>
-            )
-
-          }
-
-          </View>
+          </TouchableOpacity>
         </View>
+        )}
+      <View style={styles.bottomTextInputContainer}>
+        <TouchableOpacity onPress={uploadImage}>
+          <Image source={images.messageCamera} style={{
+              ...styles.sideButton,
+              marginHorizontal: wp(3),
+              height: 25,
+              width: 23,
+          }}/>
+        </TouchableOpacity>
+        <TCInputBox
+              onFocus={onInputBoxFocus}
+              value={messageBody}
+              placeHolderText={'Type a message'}
+              onChangeText={setMessageBody}
+              style={{ flex: 1 }}
+          />
+        {uploadImageInProgress ? (
+          <FastImage
+                  source={ images.imageUploadingGIF }
+                  style={styles.imageUploadingLoader}
+                  resizeMode={'contain'}
+              />
+          ) : (
+            <TouchableOpacity onPress={sendMessage}>
+              <GradiantContainer style={styles.sendButtonContainer}>
+                <Image source={images.sendButton} style={styles.sendButton} />
+              </GradiantContainer>
+            </TouchableOpacity>
+          )}
+
+      </View>
+    </View>
+  ), [messageBody, onInputBoxFocus, selectedImage, sendMessage, uploadImageInProgress])
+
+  return (
+    <SafeAreaView style={ styles.mainContainer }>
+      <ActivityLoader visible={loading} />
+      {renderHeader}
+      <View style={ styles.sperateLine } />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+        {messageList}
+        {renderBottomChatTools}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

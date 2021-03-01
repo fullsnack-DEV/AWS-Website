@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+ useCallback, useContext, useEffect, useState,
+} from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import WritePost from '../../../newsFeed/WritePost';
@@ -104,9 +106,11 @@ const GameFeed = ({
 
   const updatePostAfterUpload = (dataParams) => {
     updatePost(dataParams, authContext)
-      .then(() => getGameFeedData())
       .then((response) => {
-        setGameFeedData([...response.payload.results])
+        const pData = [...gameFeedData];
+        const pDataIndex = gameFeedData?.findIndex((item) => item?.id === dataParams?.activity_id)
+        pData[pDataIndex] = response?.payload;
+        setGameFeedData([...pData]);
         setProgressBar(false);
         setDoneUploadCount(0);
         setTotalUploadCount(0);
@@ -167,7 +171,7 @@ const GameFeed = ({
     }
   }
 
-  const onDeletePost = (item) => {
+  const onDeletePost = useCallback((item) => {
     setLoading(true);
     const params = {
       activity_id: item.id,
@@ -179,31 +183,35 @@ const GameFeed = ({
       }
 
     deletePost(params, authContext)
-        .then(() => getGameFeedData())
         .then((response) => {
-          setGameFeedData([...response.payload.results]);
+          if (response.status) {
+            const gData = gameFeedData.filter((postItem) => postItem?.id !== params?.activity_id)
+            setGameFeedData([...gData]);
+          }
           setLoading(false);
         })
         .catch(() => {
           setLoading(false);
         });
-  }
+  }, [authContext, gameFeedData])
 
-  const onLikePress = (item) => {
+  const onLikePress = useCallback((item) => {
     const bodyParams = {
       reaction_type: 'clap',
       activity_id: item.id,
     };
     createReaction(bodyParams, authContext)
-        .then(() => getGameFeedData())
         .then((response) => {
-          setGameFeedData([...response.payload.results]);
+          const pData = [...gameFeedData];
+          const pDataIndex = gameFeedData?.findIndex((postItem) => postItem?.id === bodyParams?.activity_id)
+          pData[pDataIndex] = response?.payload;
+          setGameFeedData([...pData]);
         })
         .catch((e) => {
           console.log(e);
           Alert.alert('', e.messages)
         });
-  }
+  }, [authContext, gameFeedData])
 
   return (
     <View style={{ backgroundColor: colors.whiteColor }}>

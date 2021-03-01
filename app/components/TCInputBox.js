@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   StyleSheet,
   View,
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TCInputBox;
+export default memo(TCInputBox);
