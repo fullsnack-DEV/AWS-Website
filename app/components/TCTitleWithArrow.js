@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+ TouchableOpacity,
 View, StyleSheet, Text, Image,
 } from 'react-native';
 
@@ -15,19 +16,22 @@ function TCTitleWithArrow({
   style,
   required = false,
   showArrow = false,
+  onPress,
   ...otherProps
 }) {
   return (
-    <View style={[styles.viewContainer, viewStyle]}>
-      <Text style={[styles.labelText, style]} {...otherProps}>
-        {title}
-        {required && <Text style={styles.mendatory}> {strings.star} </Text>}
-        {isNew && <Text style={styles.newText}> {strings.newText} </Text>}
-      </Text>
-      {showArrow && (
-        <Image source={images.nextArrow} style={styles.arrowStyle} />
+    <TouchableOpacity onPress={onPress}>
+      <View style={[styles.viewContainer, viewStyle]}>
+        <Text style={[styles.labelText, style]} {...otherProps}>
+          {title}
+          {required && <Text style={styles.mendatory}> {strings.star} </Text>}
+          {isNew && <Text style={styles.newText}> {strings.newText} </Text>}
+        </Text>
+        {showArrow && (
+          <Image source={images.nextArrow} style={styles.arrowStyle} />
       )}
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 

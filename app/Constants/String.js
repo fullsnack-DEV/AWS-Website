@@ -568,5 +568,9 @@ recentMatchesTitle: 'Recent Matches',
 upcomingMatchesTitle: 'Upcoming Matches',
 lookingForTitle: 'Looking for a challenger',
 shortsTitle: 'Shorts',
+hiringPlayerTitle: 'Hiring players',
+lookingForTeamTitle: 'Looking for a team',
+refereesTitle: 'Referees',
+scorekeeperTitle: 'Scorekeepers',
 };
 export default strings;
