@@ -129,7 +129,7 @@ const AppNavigator = ({ navigation }) => {
   const getQBToken = useMemo(async () => authContext.entity?.QB?.token ?? null, [authContext.entity?.QB?.token])
 
     const getUnReadMessageHandler = useCallback(async () => {
-        const token = await getQBToken();
+        const token = await getQBToken;
         if (token) {
             fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
                 .then((response) => response.json())

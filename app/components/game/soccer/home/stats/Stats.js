@@ -1,4 +1,6 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, {
+ Fragment, useState, useEffect, useCallback,
+} from 'react';
 import {
   View, StyleSheet, FlatList, Text,
 } from 'react-native';
@@ -46,7 +48,7 @@ const Stats = ({
     }
   }, [isFocused])
 
-  const getSectionData = (sectionName, statsData) => {
+  const getSectionData = useCallback((sectionName, statsData) => {
     const teamName = selectedTeamTab === 0 ? 'home_team' : 'away_team'
     let data;
     if (sectionName === 'Goal') {
@@ -62,8 +64,19 @@ const Stats = ({
     }
     data = data && data.map((obj) => ({ ...obj, type: sectionName, ...SECTION_IMAGE_AND_COLOR[sectionName] }))
     return data;
-  }
-  const renderSections = ({ item }) => {
+  }, [selectedTeamTab])
+
+  const renderSingleSection = useCallback(({ item }) => (
+    <TCGameUserStats
+          name={item?.by ? item?.by?.full_name ?? `${item?.by?.first_name ?? ''} ${item?.by?.last_name ?? ''}` : 'No Specific Player'}
+          profilePic={item?.full_image ? { uri: item?.full_image } : images.profilePlaceHolder}
+          count={item?.count}
+          rightIconImage={item?.rightIconImage}
+          countTextColor={item?.countColor}
+      />
+  ), []);
+
+  const renderSections = useCallback(({ item }) => {
     let SectionData;
     let renderSection = renderSingleSection;
     const stats = gameStatsData?.stats?.gameStats ?? null;
@@ -93,7 +106,7 @@ const Stats = ({
         )}
       </View>
     )
-  }
+  }, [gameData, gameStatsData?.games, gameStatsData?.stats?.gameStats, gameStatsData?.stats?.rivarly, getSectionData, renderSingleSection])
 
   const renderPreviousGame = ({ item }) => (
     <View style={{ marginVertical: 5 }}>
@@ -101,15 +114,7 @@ const Stats = ({
     </View>
 
   )
-  const renderSingleSection = ({ item }) => (
-    <TCGameUserStats
-            name={item?.by ? item?.by?.full_name ?? `${item?.by?.first_name ?? ''} ${item?.by?.last_name ?? ''}` : 'No Specific Player'}
-            profilePic={item?.full_image ? { uri: item?.full_image } : images.profilePlaceHolder}
-            count={item?.count}
-            rightIconImage={item?.rightIconImage}
-            countTextColor={item?.countColor}
-        />
-  )
+
   return (
     <View style={{ ...styles.mainContainer, backgroundColor: loading ? colors.whiteColor : colors.grayBackgroundColor }}>
 

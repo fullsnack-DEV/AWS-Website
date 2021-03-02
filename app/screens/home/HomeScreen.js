@@ -305,8 +305,7 @@ const HomeScreen = ({ navigation, route }) => {
   }, [route?.params])
 
   useEffect(() => {
-    if (isFocused) {
-      const loginEntity = authContext.entity
+         const loginEntity = authContext.entity
       const uid = route?.params?.uid ?? loginEntity.uid
       const role = route?.params?.role ?? loginEntity.role
       let admin = false
@@ -321,8 +320,7 @@ const HomeScreen = ({ navigation, route }) => {
         }, 10)
         setloading(false);
       });
-    }
-  }, [isFocused, authContext.entity, route.params]);
+  }, [authContext.entity, route.params]);
 
   useEffect(() => {
     if (isTeamHome) {
@@ -1198,8 +1196,9 @@ const HomeScreen = ({ navigation, route }) => {
     addRoleActionSheet.current.show()
   }, [addRoleActionSheet])
 
-  const refereeFound = (data) => (data?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id)
-  const findCancelButtonIndex = (data) => {
+  const refereeFound = useCallback((data) => (data?.game?.referees || []).some((e) => authContext.entity.uid === e.referee_id), [authContext.entity.uid])
+
+  const findCancelButtonIndex = useCallback((data) => {
     if (data?.game && refereeFound(data)) {
       return 2
     }
@@ -1207,34 +1206,32 @@ const HomeScreen = ({ navigation, route }) => {
       return 3
     }
     return 2
-  }
-  const goToChallengeDetail = (data) => {
+  }, [refereeFound]);
+
+  const goToChallengeDetail = useCallback((data) => {
     if (data?.responsible_to_secure_venue) {
       setloading(true);
       Utils.getChallengeDetail(data?.challenge_id, authContext).then((obj) => {
         setloading(false);
-        console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-        console.log('Screen name of challenge:', obj.screenName);
         navigation.navigate(obj.screenName, {
           challengeObj: obj.challengeObj || obj.challengeObj[0],
         });
         setloading(false);
       });
     }
-  }
-  const goToRefereReservationDetail = (data) => {
+  }, [authContext, navigation]);
+
+  const goToRefereReservationDetail = useCallback((data) => {
     setloading(true);
-    console.log('data?.reservation_id:', data);
     RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
-      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-      console.log('Screen name of Reservation:', obj.screenName);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
       });
       setloading(false);
     });
-  }
+  }, [authContext, navigation])
+
   const playInModel = useCallback((playInObject) => {
     if (playInObject) {
       setPlaysInModalVisible(!playsInModalVisible);
@@ -1243,15 +1240,15 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate('RegisterPlayer');
     }
-  }, [playsInModalVisible]);
+  }, [navigation, playsInModalVisible]);
 
-  const reviewerDetailModal = () => {
+  const reviewerDetailModal = useCallback(() => {
     setReviewerDetailModalVisible(!reviewerDetailModalVisible);
-  };
+  }, [reviewerDetailModalVisible]);
 
-  const refereeReservModal = () => {
+  const refereeReservModal = useCallback(() => {
     setIsRefereeModal(!isRefereeModal);
-  };
+  }, [isRefereeModal]);
 
   const onConnectionButtonPress = useCallback((tab) => {
     let entity_type = authContext?.entity?.role;
@@ -1263,24 +1260,24 @@ const HomeScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate('GroupMembersScreen', { groupID: user_id });
     }
-  }, [route?.params?.uid])
+  }, [authContext?.entity?.role, authContext?.entity?.uid, navigation, route?.params?.role, route?.params?.uid])
 
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
 
-  const onCancelImageUpload = () => {
+  const onCancelImageUpload = useCallback(() => {
     if (cancelApiRequest) {
       cancelApiRequest.cancel('Cancel Image Uploading');
     }
     setProgressBar(false);
     setDoneUploadCount(0);
     setTotalUploadCount(0);
-  }
+  }, [cancelApiRequest])
 
-  const cancelRequest = (axiosTokenSource) => {
+  const cancelRequest = useCallback((axiosTokenSource) => {
     setCancelApiRequest({ ...axiosTokenSource });
-  }
+  }, [])
 
-  const actionSheetOpetions = () => {
+  const actionSheetOpetions = useCallback(() => {
     if (selectedEventItem !== null && selectedEventItem.game) {
       if (refereeFound(selectedEventItem)) {
         return ['Referee Reservation Details', 'Change Events Color', 'Cancel']
@@ -1288,7 +1285,8 @@ const HomeScreen = ({ navigation, route }) => {
       return ['Game Reservation Details', 'Referee Reservation Details', 'Change Events Color', 'Cancel']
     }
     return ['Edit', 'Delete', 'Cancel']
-  }
+  }, [refereeFound, selectedEventItem])
+
   const renderRefereesTabContainer = (tabKey) => (
     <View style={{ flex: 1 }}>
 
@@ -1383,6 +1381,7 @@ const HomeScreen = ({ navigation, route }) => {
 
     </View>
   )
+
   const renderScorekeeperTabContainer = (tabKey) => (
     <View style={{ flex: 1 }}>
 
@@ -1476,7 +1475,7 @@ const HomeScreen = ({ navigation, route }) => {
     </View>
   )
 
-  const onScoreboardSearchTextChange = (text) => {
+  const onScoreboardSearchTextChange = useCallback((text) => {
     setScoreboardSearchText(text);
     const result = scoreboardGameData.filter(
         (x) => (
@@ -1484,9 +1483,9 @@ const HomeScreen = ({ navigation, route }) => {
             || (x.sport && x.sport.toLowerCase().includes(text.toLowerCase()))),
     );
     setFilterScoreboardGameData(result);
-  }
+  }, [scoreboardGameData])
 
-  const onSchedultEventItemPress = async (item) => {
+  const onSchedultEventItemPress = useCallback(async (item) => {
     const entity = authContext.entity;
     if (item?.game_id) {
       if (item?.game?.sport) {
@@ -1502,9 +1501,9 @@ const HomeScreen = ({ navigation, route }) => {
         console.log('Error :-', e);
       })
     }
-  }
+  }, [authContext, navigation])
 
-  const onCalenderDayPress = (day) => {
+  const onCalenderDayPress = useCallback((day) => {
     setEventSelectDate(day.dateString);
     const date = moment(day.dateString).format('YYYY-MM-DD');
     const data = [];
@@ -1518,9 +1517,9 @@ const HomeScreen = ({ navigation, route }) => {
     });
     setFilterEventData(data);
     return null;
-  }
+  }, [eventData]);
 
-  const renderChildCalender = ({ item: itemValue }) => {
+  const renderChildCalender = useCallback(({ item: itemValue }) => {
     const entity = authContext.entity
     return (itemValue.cal_type === 'event' && <EventInCalender
         onPress={async () => {
@@ -1545,9 +1544,9 @@ const HomeScreen = ({ navigation, route }) => {
         data={itemValue}
         entity={authContext.entity}
     />)
-  }
+  }, [authContext, navigation]);
 
-  const renderCalenderHeaderComponent = () => (
+  const renderCalenderHeaderComponent = useMemo(() => (
     <View style={{ flexDirection: 'row' }}>
       <Text style={styles.filterHeaderText}>{moment(selectionDate).format('ddd, DD MMM')}</Text>
       <Text style={styles.headerTodayText}>
@@ -1560,9 +1559,10 @@ const HomeScreen = ({ navigation, route }) => {
       })}
       </Text>
     </View>
-  )
+  ), [selectionDate])
 
-  const renderMainCalender = (item) => {
+  const calenderKeyExtractor = useCallback((itemValueKey, index) => index.toString(), []);
+  const renderMainCalender = useCallback((item) => {
     if (item.length > 0) {
       return (
         <FlatList
@@ -1571,14 +1571,14 @@ const HomeScreen = ({ navigation, route }) => {
               ListHeaderComponent={renderCalenderHeaderComponent}
               bounces={false}
               style={{ flex: 1 }}
-              keyExtractor={(itemValueKey, index) => index.toString()}
+              keyExtractor={calenderKeyExtractor}
           />
       );
     }
     return <Text style={styles.dataNotFoundText}>Data Not Found!</Text>;
-  }
+  }, [calenderKeyExtractor, renderCalenderHeaderComponent, renderChildCalender])
 
-  const onInnerCalenderDayPress = (day) => {
+  const onInnerCalenderDayPress = useCallback((day) => {
     setTimeTableSelectDate(day.dateString);
     const date = moment(day.dateString).format('YYYY-MM-DD');
     const dataItem = [];
@@ -1598,9 +1598,9 @@ const HomeScreen = ({ navigation, route }) => {
     });
     setFilterTimeTable(dataItem);
     return null;
-  }
+  }, [timeTable]);
 
-  const renderInnerCalender = (item) => <View>
+  const renderInnerCalender = useCallback((item) => <View>
     <EventCalendar
         eventTapped={(event) => { console.log('Event ::--', event) }}
         events={item}
@@ -1668,15 +1668,15 @@ const HomeScreen = ({ navigation, route }) => {
         style={ { marginVertical: wp('4%') } }
         keyExtractor={(itemValue, index) => index.toString() }
     />}
-  </View>
+  </View>, [timeTableSelectionDate])
 
-  const renderRefereeReservation = ({ item }) => <RefereeReservationItem
+  const renderRefereeReservation = useCallback(({ item }) => <RefereeReservationItem
       data={item}
       onPressButton = {() => {
         setIsRefereeModal(false);
         goToRefereReservationDetail(item)
       }}
-  />
+  />, [goToRefereReservationDetail])
 
   const renderMainInfoTab = useMemo(() => (
     <View style={{ flex: 1 }} >
@@ -2015,14 +2015,14 @@ const HomeScreen = ({ navigation, route }) => {
     { nativeEvent: { contentOffset: { y: mainFlatListFromTop } } },
   ])
 
-  const onBackPress = () => {
+  const onBackPress = useCallback(() => {
     if (route?.params?.sourceScreen) {
       navigation.popToTop()
     } else {
       if (route.params?.onBackPress) route.params.onBackPress();
       navigation.goBack()
     }
-  }
+  }, [navigation, route.params])
 
   const renderTopFixedButtons = useMemo(() => (
     <View style={{
@@ -2038,7 +2038,7 @@ const HomeScreen = ({ navigation, route }) => {
         </TouchableOpacity>)}
     </View>
 
-  ), [route.params])
+  ), [onBackPress, route])
 
   const renderBackground = useMemo(() => (
         bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
@@ -2061,21 +2061,21 @@ const HomeScreen = ({ navigation, route }) => {
             onScorekeeperInPress={scorekeeperInModal}
             onPlayInPress={playInModel}
             onAction={onUserAction}/>
-    ), [isUserHome, authContext.entity, isUserHome, currentUserData, isAdmin]);
+    ), [isUserHome, currentUserData, isAdmin, authContext.entity, onAddRolePress, refereesInModal, scorekeeperInModal, playInModel, onUserAction]);
 
   const renderHeaderClubHomeTopSection = useMemo(() => isClubHome && (
     <ClubHomeTopSection clubDetails={currentUserData}
          isAdmin={isAdmin}
          loggedInEntity={authContext.entity}
          onAction={onClubAction}/>
- ), [authContext.entity, currentUserData, isAdmin, onClubAction]);
+ ), [authContext.entity, currentUserData, isAdmin, isClubHome, onClubAction]);
 
   const renderHeaderTeamHomeTopSection = useMemo(() => isTeamHome && (
     <TeamHomeTopSection teamDetails={currentUserData}
         isAdmin={isAdmin}
         loggedInEntity={authContext.entity}
         onAction={onTeamAction}/>
-  ), [isClubHome, authContext.entity, currentUserData, isAdmin, isTeamHome, onTeamAction]);
+  ), [isTeamHome, authContext.entity, currentUserData, isAdmin, onTeamAction]);
 
       const renderMainHeaderComponent = useMemo(() => (
         <View style={{ zIndex: 1 }}>
@@ -2087,7 +2087,7 @@ const HomeScreen = ({ navigation, route }) => {
             <View style={styles.sepratorStyle}/>
           </View>
         </View>
-    ), [renderHeaderUserHomeTopSection])
+    ), [renderHeaderBackgroundProfile, renderHeaderClubHomeTopSection, renderHeaderTeamHomeTopSection, renderHeaderUserHomeTopSection])
 
   const renderMainFlatList = useMemo(() => (
     <View style={{ flex: 1 }}>
@@ -2099,23 +2099,23 @@ const HomeScreen = ({ navigation, route }) => {
     </View>
     ), [isTeamHome, currentTab])
 
-const onFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
+const onFeedPress = useCallback((feed, index, gameData, detailIndex, orangeFeedPress) => {
   setReviewGameData(gameData)
   setFeedDataIndex(index)
   setFeedDetailIndex(detailIndex)
   setOrangeFeed(orangeFeedPress)
   setReviewDetailModalVisible(true)
-}
+}, []);
 
-const onScorekeeperFeedPress = (feed, index, gameData, detailIndex, orangeFeedPress) => {
+const onScorekeeperFeedPress = useCallback((feed, index, gameData, detailIndex, orangeFeedPress) => {
   setReviewGameData(gameData)
   setFeedDataIndex(index)
   setFeedDetailIndex(detailIndex)
   setOrangeFeed(orangeFeedPress)
   setReviewDetailModalVisible(true)
-  }
+  }, [])
 
-const onLikePress = (item) => {
+const onLikePress = useCallback((item) => {
   const bodyParams = {
     reaction_type: 'clap',
     activity_id: item.id,
@@ -2127,8 +2127,9 @@ const onLikePress = (item) => {
       .catch((e) => {
         Alert.alert('', e.messages)
       });
-}
-const newsFeedListItemSeperator = () => (
+}, [authContext])
+
+const newsFeedListItemSeperator = useMemo(() => (
   <View
         style={{
           marginTop: 10,
@@ -2136,7 +2137,8 @@ const newsFeedListItemSeperator = () => (
           backgroundColor: colors.whiteGradientColor,
         }}
     />
-)
+), [])
+
 // const onProfilePress = useCallback((item) => {
 //   if (item?.actor?.id) {
 //     if (item?.actor?.id !== authContext?.entity?.uid) {
@@ -2278,6 +2280,30 @@ const feedScreenHeader = useMemo(() => (
 
   const openPlayInModal = useCallback(() => setPlaysInModalVisible(true), [])
 
+  const onPlayInModalClose = useCallback(() => setPlaysInModalVisible(false), [])
+
+  const onImageCancelAlertPress = useCallback(() => {
+    Alert.alert(
+        'Cancel Upload?',
+        'If you cancel your upload now, your post will not be saved.',
+        [{
+          text: 'Go back',
+        },
+          {
+            text: 'Cancel upload',
+            onPress: onCancelImageUpload,
+          },
+        ],
+    );
+  }, [onCancelImageUpload])
+
+  const renderImageProgress = useMemo(() => progressBar && <ImageProgress
+      numberOfUploaded={doneUploadCount}
+      totalUpload={totalUploadCount}
+      onCancelPress={onImageCancelAlertPress}
+      postDataItem={currentUserData}
+  />, [currentUserData, doneUploadCount, onImageCancelAlertPress, progressBar, totalUploadCount])
+
   return (
     <View style={ styles.mainContainer }>
       <ActionSheet
@@ -2325,13 +2351,13 @@ const feedScreenHeader = useMemo(() => (
         <PlayInModule
             visible={playsInModalVisible}
             openPlayInModal={openPlayInModal}
-            onModalClose={() => setPlaysInModalVisible(false)}
+            onModalClose={onPlayInModalClose}
             navigation={navigation}
             userData={currentUserData}
             playInObject={currentPlayInObject}
             isAdmin={isAdmin}
           />
-      ), [currentPlayInObject, currentUserData, isAdmin, navigation, openPlayInModal, playsInModalVisible])}
+      ), [currentPlayInObject, currentUserData, isAdmin, navigation, onPlayInModalClose, openPlayInModal, playsInModalVisible])}
 
       {/* Referee In Modal */}
       {refereesInModalVisible && <Modal
@@ -3108,25 +3134,9 @@ const feedScreenHeader = useMemo(() => (
         source={images.plus}
         onPress={() => setCreateEventModal(true) }
       />}
-      {progressBar && <ImageProgress
-        numberOfUploaded={doneUploadCount}
-        totalUpload={totalUploadCount}
-        onCancelPress={() => {
-          Alert.alert(
-            'Cancel Upload?',
-            'If you cancel your upload now, your post will not be saved.',
-            [{
-              text: 'Go back',
-            },
-            {
-              text: 'Cancel upload',
-              onPress: onCancelImageUpload,
-            },
-            ],
-          );
-        }}
-        postDataItem={currentUserData}
-      />}
+
+      {renderImageProgress}
+
     </View>
   );
 }

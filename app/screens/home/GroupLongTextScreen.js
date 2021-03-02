@@ -55,7 +55,7 @@ export default function GroupLongTextScreen({ navigation, route }) {
       if (response && response.status === true) {
         const entity = authContext.entity
         entity.obj = response.payload;
-        authContext.setEtity({ ...entity })
+        authContext.setEntity({ ...entity })
         navigation.goBack();
       } else {
         setTimeout(() => {

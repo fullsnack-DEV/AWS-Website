@@ -1,4 +1,6 @@
-import React, { useRef, memo, useState } from 'react';
+import React, {
+ useRef, memo, useState, useCallback,
+} from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
@@ -38,27 +40,37 @@ function VideoPost({
     height = wp('96%')
   }
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
+  const toggleModal = useCallback(() => {
+    setModalVisible((isVisible) => !isVisible);
+  }, []);
+
+  const onVideoLoad = useCallback(() => {
+      videoPlayerRef.current.seek(0)
+      setVideoLoad(true);
+  }, [])
+
+  const onPressPlayPause = useCallback(() => {
+    setPlay((val) => !val)
+  }, [])
+
+  const onPressMuteUnmute = useCallback(() => {
+    setMute((val) => !val);
+  }, [])
+
+  const onModalClose = useCallback(() => setModalVisible(false), [])
+  const onModalOpen = useCallback(() => setModalVisible(true), [])
+
+  const onImageProfileClick = useCallback(() => {
+    setModalVisible(false)
+    onImageProfilePress()
+  }, [onImageProfilePress])
 
   return (
-    <View
-      style={[
-        styles.singleImageDisplayStyle,
-        {
-          height,
-        },
-      ]}>
+    <View style={{ ...styles.singleImageDisplayStyle, height }}>
       <View
-        style={[
-          styles.singleImageDisplayStyle,
-          {
-            borderWidth: 1,
-            borderColor: colors.lightgrayColor,
-            height,
-          },
-        ]}>
+        style={{
+ ...styles.singleImageDisplayStyle, borderWidth: 1, borderColor: colors.lightgrayColor, height,
+        }}>
         <FastImage
           style={styles.loadimageStyle}
           source={images.imageLoadingGIF}
@@ -66,57 +78,41 @@ function VideoPost({
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
-      <Modal
+      {isModalVisible && <Modal
         isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
         supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
         <SinglePostVideoView
-          openPostModal={() => setModalVisible(true)}
+          openPostModal={onModalOpen}
           item={item}
           data={data}
           caller_id={caller_id}
           navigation={navigation}
-          backBtnPress={() => setModalVisible(false)}
+          backBtnPress={onModalClose}
           uploadVideoURL={uploadVideoURL && uploadVideoURL}
-          onImageProfilePress={() => {
-            setModalVisible(false)
-            onImageProfilePress()
-          }}
+          onImageProfilePress={onImageProfileClick}
           onLikePress={onLikePress}
         />
-      </Modal>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          toggleModal();
-        }}>
+      </Modal>}
+
+      <TouchableWithoutFeedback onPress={toggleModal}>
         <Video
             ref={videoPlayerRef}
             paused={!play}
             muted={!mute}
             source={{ uri: data.url }}
-            style={[
-              styles.singleImageDisplayStyle,
-              {
-                height,
-                position: 'absolute',
-              },
-            ]}
+            style={{ ...styles.singleImageDisplayStyle, height, position: 'absolute' }}
             resizeMode={'cover'}
-            onLoad={() => {
-              videoPlayerRef.current.seek(0)
-              setVideoLoad(true);
-            }}
+            onLoad={onVideoLoad}
         />
       </TouchableWithoutFeedback>
       {videoLoad && (
         <>
           <TouchableHighlight
                 style={styles.pauseMuteStyle}
-              onPress={() => {
-                setMute(!mute);
-              }}>
+              onPress={onPressMuteUnmute}>
             <FastImage
                 resizeMode={'contain'}
                 tintColor={'white'}
@@ -126,9 +122,7 @@ function VideoPost({
           </TouchableHighlight>
           <TouchableHighlight
                 style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}
-                onPress={() => {
-                  setPlay(!play);
-                }}>
+                onPress={onPressPlayPause}>
             <FastImage
                 resizeMode={'contain'}
                 tintColor={'white'}

@@ -26,7 +26,6 @@ const Stats = ({
 
   useEffect(() => {
     if (isFocused) {
-      console.log('Game Data::', gameData);
       if (gameData?.game_id) {
         setLoading(true);
         getGameStatsData(gameData?.game_id).then((res) => {

@@ -1,8 +1,8 @@
 import React, {
- useCallback, useContext, useEffect, useState,
+  forwardRef,
+  useCallback, useContext, useEffect, useImperativeHandle, useMemo, useState,
 } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import WritePost from '../../../newsFeed/WritePost';
 import colors from '../../../../Constants/Colors';
 import NewsFeedList from '../../../../screens/newsfeeds/NewsFeedList';
@@ -15,28 +15,38 @@ import {
 import ActivityLoader from '../../../loader/ActivityLoader';
 
 const GameFeed = ({
+  gameFeedRefs,
   gameData,
   navigation,
   currentUserData,
   getGameFeedData,
   createGamePostData,
   setUploadImageProgressData,
+  getGameNextFeedData,
 }) => {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
   const [gameFeedData, setGameFeedData] = useState([]);
   const [progressBar, setProgressBar] = useState(false);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isNextDataLoading, setIsNextDataLoading] = useState(true);
+  const [footerLoading, setFooterLoading] = useState(false);
+
   useEffect(() => {
-    if (isFocused && gameData) {
+    if (gameData) {
       getGameFeedData().then((res) => {
         setGameFeedData([...res?.payload?.results])
       })
     }
-  }, [isFocused, gameData]);
+  }, [gameData]);
+
+  useImperativeHandle(gameFeedRefs, () => ({
+    onEndReached() {
+      onEndFeedReached();
+    },
+  }))
 
   useEffect(() => {
     if (progressBar) {
@@ -57,7 +67,7 @@ const GameFeed = ({
     setCancelApiRequest(cancelAxiosToken);
   }
 
-  const createPostAfterUpload = (dataParams) => {
+  const createPostAfterUpload = useCallback((dataParams) => {
     createGamePostData({ ...dataParams, game_id: gameData?.game_id })
       .then(() => getGameFeedData())
       .then((response) => {
@@ -74,8 +84,9 @@ const GameFeed = ({
           Alert.alert(strings.alertmessagetitle, error.message)
         }, 10)
       })
-  }
-  const onPressDone = (data, postDesc, tagsOfEntity) => {
+  }, [createGamePostData, gameData?.game_id, getGameFeedData])
+
+  const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
@@ -102,9 +113,28 @@ const GameFeed = ({
         createPostAfterUpload(dataParams)
       })
     }
-  }
+  }, [authContext, createPostAfterUpload])
 
-  const updatePostAfterUpload = (dataParams) => {
+  const onEndFeedReached = useCallback(() => {
+    setFooterLoading(true);
+    const id_lt = gameFeedData?.[gameFeedData.length - 1]?.id;
+    if (id_lt && isNextDataLoading) {
+      getGameNextFeedData(id_lt).then((response) => {
+        if (response) {
+          if (response.payload.next === '') {
+            setIsNextDataLoading(false);
+          }
+          setFooterLoading(false)
+          setGameFeedData([...gameFeedData, ...response.payload.results]);
+        }
+      })
+          .catch(() => {
+            setFooterLoading(false)
+          })
+    }
+  }, [authContext, isNextDataLoading, gameFeedData])
+
+  const updatePostAfterUpload = useCallback((dataParams) => {
     updatePost(dataParams, authContext)
       .then((response) => {
         const pData = [...gameFeedData];
@@ -118,9 +148,9 @@ const GameFeed = ({
       .catch((e) => {
         Alert.alert('', e.messages)
       });
-  }
+  }, [authContext, gameFeedData])
 
-  const editPostDoneCall = (data, postDesc, selectEditItem, tagData) => {
+  const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
     let attachmentsData = [];
     const alreadyUrlDone = [];
     const createUrlData = [];
@@ -169,7 +199,7 @@ const GameFeed = ({
         console.log(error);
       })
     }
-  }
+  }, [authContext, updatePostAfterUpload])
 
   const onDeletePost = useCallback((item) => {
     setLoading(true);
@@ -201,35 +231,35 @@ const GameFeed = ({
       activity_id: item.id,
     };
     createReaction(bodyParams, authContext)
-        .then((response) => {
-          const pData = [...gameFeedData];
-          const pDataIndex = gameFeedData?.findIndex((postItem) => postItem?.id === bodyParams?.activity_id)
-          pData[pDataIndex] = response?.payload;
-          setGameFeedData([...pData]);
-        })
         .catch((e) => {
-          console.log(e);
           Alert.alert('', e.messages)
         });
-  }, [authContext, gameFeedData])
+  }, [authContext])
+
+  const renderWritePostView = useMemo(() => (
+    <WritePost
+          navigation={navigation}
+          postDataItem={currentUserData}
+          onWritePostPress={() => {
+            navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone, selectedImageList: [] })
+          }}
+      />
+  ), [currentUserData, navigation, onPressDone])
 
   return (
     <View style={{ backgroundColor: colors.whiteColor }}>
       <ActivityLoader visible={loading}/>
-      <WritePost
-            navigation={navigation}
-            postDataItem={currentUserData}
-            onWritePostPress={() => {
-              navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone, selectedImageList: [] })
-            }}
-        />
+      {renderWritePostView}
       <View style={styles.sepratorView} />
       <NewsFeedList
+          refs={gameFeedRefs}
           onDeletePost={onDeletePost}
           navigation={navigation}
           postData={gameFeedData}
           onEditPressDone={editPostDoneCall}
           onLikePress={onLikePress}
+          scrollEnabled={false}
+          footerLoading={footerLoading && isNextDataLoading}
       />
 
     </View>
@@ -243,4 +273,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default GameFeed;
+export default forwardRef(GameFeed);

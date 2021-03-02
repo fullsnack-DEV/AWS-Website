@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+ useCallback, useContext, useEffect, useState,
+} from 'react';
 import {
   Alert, FlatList, View,
 } from 'react-native';
@@ -35,9 +37,10 @@ const Gallery = ({
     })
   }, [])
 
-  const progressStatus = (completed, total) => {
+  const progressStatus = useCallback((completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }
+  }, [])
+
   useEffect(() => {
     if (progressBar) {
       setUploadImageProgressData({
@@ -49,7 +52,8 @@ const Gallery = ({
       setUploadImageProgressData(null);
     }
   }, [progressBar, doneUploadCount, totalUploadCount, postData])
-  const callthis = (data, postDesc) => {
+
+  const callthis = useCallback((data, postDesc) => {
     if (data) {
       setTotalUploadCount(data.length || 1);
       setProgressBar(true);
@@ -81,26 +85,25 @@ const Gallery = ({
           })
       })
     }
-  }
+  }, [authContext, gameData?.game_id, getGalleryData, progressStatus])
 
-  const allGalleryRenderItem = (item, index) => {
+  const onAddPhotoPress = useCallback(() => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      multiple: true,
+      maxFiles: 10,
+    }).then((pickImages) => {
+      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
+    });
+  }, [callthis, navigation, postData])
+
+  const allGalleryRenderItem = useCallback(({ item, index }) => {
     if (index === 0) {
       return (
-        <AddPhotoItem
-            onAddPhotoPress={() => {
-              ImagePicker.openPicker({
-                width: 300,
-                height: 400,
-                multiple: true,
-                maxFiles: 10,
-              }).then((pickImages) => {
-                navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
-              });
-            }}
-        />
+        <AddPhotoItem onAddPhotoPress={onAddPhotoPress} />
       );
     }
-    console.log(item);
     if (item.attachments.length > 0) {
       if (item.attachments[0].type === 'image') {
         return item.attachments.length === 1
@@ -115,17 +118,19 @@ const Gallery = ({
       }
     }
     return <View />
-  }
+  }, [onAddPhotoPress])
+
+  const galleryKeyExtractor = useCallback((item, index) => index, [])
   return (
     <View style={{ flex: 1 }}>
       <ActivityLoader visible={loading} />
       <FlatList
           data={['0', ...allData]}
           bounces={false}
-          renderItem={({ item, index }) => allGalleryRenderItem(item, index)}
+          renderItem={allGalleryRenderItem}
           numColumns={3}
           style={{ marginHorizont: 1.5 }}
-          keyExtractor={(item, index) => index}
+          keyExtractor={galleryKeyExtractor}
       />
     </View>
   )

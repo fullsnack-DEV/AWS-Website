@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useCallback, useMemo, useRef,
+} from 'react';
 import {
   View,
   StyleSheet,
   Alert,
 
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/soccer/home/summary/Summary';
 import Stats from '../../../components/game/soccer/home/stats/Stats';
-// import Review from '../../../components/game/soccer/home/review/Review';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import {
   approveDisapproveGameRecords,
@@ -25,20 +25,19 @@ import {
   getGameScorekeeperReservation,
   getGameStats,
   getSportsList,
-  getAllLineUp,
+  getAllLineUp, getGameNextFeed,
 } from '../../../api/Games';
 import AuthContext from '../../../auth/context';
 import { followUser, unfollowUser } from '../../../api/Users';
 
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
-// import Review from '../../../components/game/soccer/home/review/Review';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery']
 const SoccerHome = ({ navigation, route }) => {
+  const gameFeedFlatListRef = useRef(null);
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId);
-  console.log(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -50,18 +49,16 @@ const SoccerHome = ({ navigation, route }) => {
   const [userId, setUserId] = useState(null);
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
 
-  const isFocused = useIsFocused();
   useEffect(() => {
-    if (isFocused) {
       getGameDetails();
-    }
-  }, [navigation, isFocused]);
+  }, []);
 
-  const getGameDetails = () => {
+  const getSoccerGameData = useCallback((gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext), [authContext, soccerGameId]);
+
+  const getGameDetails = useCallback(() => {
     setLoading(true);
     getSoccerGameData(soccerGameId)
       .then(async (res) => {
-        console.log('SOCCER GAME DATA::=>', res.payload);
         if (res.status) {
           const entity = authContext.entity;
           setUserRole(entity?.role);
@@ -86,7 +83,6 @@ const SoccerHome = ({ navigation, route }) => {
           setIsAdmin(checkIsAdmin);
           setIsRefereeAdmin(checkIsRefereeAdmin);
           setIsScorekeeperAdmin(checkIsScorekeeperAdmin);
-          console.log('DD', res.payload);
           setGameData(res.payload);
         }
       })
@@ -94,28 +90,27 @@ const SoccerHome = ({ navigation, route }) => {
         console.log(error);
       })
       .finally(() => setLoading(false));
-  };
+  }, [authContext.entity, getSoccerGameData, soccerGameId]);
 
-  const getGameLineUp = (gameId = soccerGameId) => getAllLineUp(gameId, authContext);
-  const getSoccerGameData = (gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext);
-  const followSoccerUser = (params, userID) => followUser(params, userID, authContext);
-  const unFollowSoccerUser = (params, userID) => unfollowUser(params, userID, authContext);
-  const getSoccerGameMatchRecords = (gameId) => getGameMatchRecords(gameId, authContext);
-  const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext);
-  const getSoccerGameStats = (gameId) => getGameStats(gameId, authContext);
-  const getSoccerGameReview = (gameId) => getGameReviews(gameId, authContext);
-  const getSoccerGalleryData = (gameId) => getGameGallery(gameId, authContext);
-  const getGameSportsList = () => getSportsList(authContext);
-  const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext);
-  const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext);
-  const getGameFeedData = () => getGameFeed(gameData?.game_id, authContext);
-  const createGamePostData = (params) => createGamePost(params, authContext);
+  const getGameLineUp = useCallback((gameId = soccerGameId) => getAllLineUp(gameId, authContext), [authContext, soccerGameId]);
+  const followSoccerUser = useCallback((params, userID) => followUser(params, userID, authContext), [authContext]);
+  const unFollowSoccerUser = useCallback((params, userID) => unfollowUser(params, userID, authContext), [authContext]);
+  const getSoccerGameMatchRecords = useCallback((gameId) => getGameMatchRecords(gameId, authContext), [authContext]);
+  const approveDisapproveGameScore = useCallback((gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext), [authContext]);
+  const getSoccerGameStats = useCallback((gameId) => getGameStats(gameId, authContext), [authContext]);
+  const getSoccerGameReview = useCallback((gameId) => getGameReviews(gameId, authContext), [authContext]);
+  const getSoccerGalleryData = useCallback((gameId) => getGameGallery(gameId, authContext), [authContext]);
+  const getGameSportsList = useCallback(() => getSportsList(authContext), [authContext]);
+  const getRefereeReservation = useCallback((gameId) => getGameRefereeReservation(gameId, authContext), [authContext]);
+  const getScorekeeperReservation = useCallback((gameId) => getGameScorekeeperReservation(gameId, authContext), [authContext]);
+  const getGameFeedData = useCallback(() => getGameFeed(gameData?.game_id, authContext), [authContext, gameData?.game_id]);
+  const getGameNextFeedData = useCallback((last_id) => getGameNextFeed(gameData?.game_id, last_id, authContext), [authContext, gameData?.game_id]);
+  const createGamePostData = useCallback((params) => createGamePost(params, authContext), [authContext]);
 
-  const renderTabContain = (tabKey) => (
-    <View style={{ flex: 1 }}>
-      {/* Summary */}
-      {tabKey === 0 && (
-        <Summary
+  const renderSummaryTab = useMemo(() => (
+    <Summary
+          getGameNextFeedData={getGameNextFeedData}
+          gameFeedFlatListRef={gameFeedFlatListRef}
           setUploadImageProgressData={setUploadImageProgressData}
           createGamePostData={createGamePostData}
           getGameFeedData={getGameFeedData}
@@ -138,93 +133,98 @@ const SoccerHome = ({ navigation, route }) => {
           userId={userId}
           getGameLineUp={getGameLineUp}
 
-        />
-      )}
+      />
+  ), [approveDisapproveGameScore, createGamePostData, followSoccerUser, gameData, getGameFeedData, getGameLineUp, getGameNextFeedData, getGameSportsList, getRefereeReservation, getScorekeeperReservation, getSoccerGameData, getSoccerGameMatchRecords, getSoccerGameReview, getSoccerGameStats, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation, unFollowSoccerUser, userId, userRole])
 
-      {/* Line Up */}
-      {tabKey === 1 && <LineUp navigation={navigation} gameData={gameData} />}
+  const renderLineUpTab = useMemo(() => (
+    <LineUp navigation={navigation} gameData={gameData} />
+  ), [gameData, navigation])
 
-      {/* Stats */}
-      {tabKey === 2 && (
-        <Stats
+  const renderStatsTab = useMemo(() => (
+    <Stats
           homeTeamName={gameData?.home_team?.group_name}
           awayTeamName={gameData?.away_team?.group_name}
           getGameStatsData={getSoccerGameStats}
           gameData={gameData}
-        />
-      )}
+      />
+  ), [gameData, getSoccerGameStats])
 
-      {/* Review */}
-      {/* {tabKey === 3 && (
-        <Review
-          navigation={navigation}
-          getSoccerGameReview={getSoccerGameReview}
-          isAdmin={isAdmin}
-          gameData={gameData}
-        />
-      )} */}
-
-      {/* Gallery */}
-      {tabKey === 3 && (
-        <Gallery
-          setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)
-          }
+  const renderGalleryTab = useMemo(() => (
+    <Gallery
+          setUploadImageProgressData={setUploadImageProgressData}
           gameData={gameData}
           getGalleryData={getSoccerGalleryData}
           navigation={navigation}
-        />
-      )}
+      />
+  ), [gameData, getSoccerGalleryData, navigation])
+
+  const renderTabContain = useCallback((tabKey) => (
+    <View style={{ flex: 1 }}>
+      {tabKey === 0 && renderSummaryTab}
+      {tabKey === 1 && renderLineUpTab}
+      {tabKey === 2 && renderStatsTab}
+      {tabKey === 3 && renderGalleryTab}
     </View>
-  );
-  const onCancelImageUpload = () => {
+  ), [renderGalleryTab, renderLineUpTab, renderStatsTab, renderSummaryTab]);
+
+  const onCancelImageUpload = useCallback(() => {
     if (uploadImageProgressData?.cancelRequest) {
       uploadImageProgressData.cancelRequest.cancel('Cancel Image Uploading');
     }
     setUploadImageProgressData(null);
-  };
+  }, [uploadImageProgressData?.cancelRequest]);
+
+  const onImageAlertCancel = useCallback(() => {
+      Alert.alert(
+          'Cancel Upload?',
+          'If you cancel your upload now, your post will not be saved.',
+          [
+            {
+              text: 'Go back',
+            },
+            {
+              text: 'Cancel upload',
+              onPress: onCancelImageUpload,
+            },
+          ],
+      );
+  }, [onCancelImageUpload]);
+
+  const renderImageProgress = useMemo(() => (
+      uploadImageProgressData && (
+        <ImageProgress
+              numberOfUploaded={uploadImageProgressData?.doneUploadCount}
+              totalUpload={uploadImageProgressData?.totalUploadCount}
+              onCancelPress={onImageAlertCancel}
+              postDataItem={uploadImageProgressData?.postData?.[0] ?? {}}
+          />
+      )
+  ), [onImageAlertCancel, uploadImageProgressData])
+
+  const onEndReached = () => {
+    if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()
+  }
+  const renderTopHeaderWithTabContain = useMemo(() => (
+    <TopBackgroundHeader
+          onEndReached={onEndReached}
+          onBackPress={route?.params?.onBackPress}
+          isAdmin={isAdmin}
+          navigation={navigation}
+          gameData={gameData}>
+      <TCScrollableProfileTabs
+            tabItem={TAB_ITEMS}
+            onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
+            currentTab={currentTab}
+            renderTabContain={renderTabContain}
+        />
+    </TopBackgroundHeader>
+  ), [currentTab, gameData, isAdmin, navigation, renderTabContain, route?.params?.onBackPress])
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <TopBackgroundHeader
-          onBackPress={route?.params?.onBackPress}
-        isAdmin={isAdmin}
-        navigation={navigation}
-        gameData={gameData}>
-        <TCScrollableProfileTabs
-          tabItem={TAB_ITEMS}
-          onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
-          currentTab={currentTab}
-          renderTabContain={renderTabContain}
-        />
-      </TopBackgroundHeader>
-      {uploadImageProgressData && (
-        <ImageProgress
-          numberOfUploaded={uploadImageProgressData?.doneUploadCount}
-          totalUpload={uploadImageProgressData?.totalUploadCount}
-          onCancelPress={() => {
-            Alert.alert(
-              'Cancel Upload?',
-              'If you cancel your upload now, your post will not be saved.',
-              [
-                {
-                  text: 'Go back',
-                },
-                {
-                  text: 'Cancel upload',
-                  onPress: onCancelImageUpload,
-                },
-              ],
-            );
-          }}
-          postDataItem={
-            uploadImageProgressData?.postData
-              ? uploadImageProgressData?.postData[0]
-              : {}
-          }
-        />
-      )}
-
+      {renderTopHeaderWithTabContain}
+      {renderImageProgress}
     </View>
   );
 };
