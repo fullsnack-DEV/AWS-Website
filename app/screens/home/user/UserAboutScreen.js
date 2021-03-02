@@ -55,7 +55,7 @@ export default function UserAboutScreen({ navigation, route }) {
         const entity = authContext.entity
         entity.obj = response.payload;
         entity.auth.user = response.payload;
-        authContext.setEtity({ ...entity })
+        authContext.setEntity({ ...entity })
         navigation.goBack();
       } else {
         setTimeout(() => {

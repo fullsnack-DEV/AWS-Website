@@ -1,5 +1,5 @@
 import React, {
-  useEffect, memo, useState, useContext, useCallback,
+  useEffect, memo, useState, useContext, useCallback, useMemo,
 } from 'react';
 import {
   View, ActivityIndicator, FlatList,
@@ -79,7 +79,7 @@ const NewsFeedList = ({
         />
     ), [])
 
-  const newsFeedListFooterComponent = useCallback(() => (
+  const newsFeedListFooterComponent = useMemo(() => (
       !footerLoading ? <View
           style={{
             height: hp(10),
@@ -100,7 +100,9 @@ const NewsFeedList = ({
   const newsFeedKeyExtractor = useCallback((item) => `feed1${item?.id?.toString()}`, [])
 
   return (
-    <View onStartShouldSetResponderCapture={onStartShouldSetResponderCapture} style={{ flex: 1 }}>
+    <View
+        onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
+        style={{ flex: 1 }}>
       <FlatList
         onScroll={onFeedScroll}
         ref={refs}

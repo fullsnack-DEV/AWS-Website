@@ -110,7 +110,6 @@ export default function TennisRecording({ navigation, route }) {
     console.log(entity);
     if (route && route.params && route.params.gameDetail) {
       getGameDetail(route.params.gameDetail.game_id, true);
-      console.log('GAME DATA:', JSON.stringify(route.params.gameDetail));
       setloading(false);
 
       // setGameObj(route?.params?.gameDetail)

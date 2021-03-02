@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext, useMemo, useRef, useState,
 } from 'react';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
@@ -24,13 +25,32 @@ import {
 import strings from '../../../../Constants/String';
 
 const bgImage = images.soccerBackground;
+
+const updating = false;
+let lastDistance = null;
+
 const TopBackgroundHeader = ({
-  gameData, navigation, children, isAdmin, onBackPress,
+  gameData, navigation, children, isAdmin, onBackPress, onEndReached,
 }) => {
   const threeDotActionSheet = useRef();
   const [headerTitleShown, setHeaderTitleShown] = useState(true);
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
+
+  const onReachedEnd = ({ nativeEvent: e }) => {
+    const offset = e?.contentOffset?.y;
+    const height = e?.layoutMeasurement?.height;
+    const total = offset + height;
+    const theEnd = e?.contentSize.height;
+    const distance = theEnd - total;
+    if (distance < lastDistance) {
+      if (!updating && (total >= theEnd)) {
+        if (onEndReached) onEndReached();
+      }
+    }
+    lastDistance = distance;
+  }
+
   const renderForeground = () => (
     <LinearGradient
       colors={ ['transparent', 'rgba(0,0,0,0.4)'] }
@@ -134,102 +154,118 @@ const TopBackgroundHeader = ({
     navigation.goBack();
     if (onBackPress) onBackPress();
   }
-  return (
-    <View style={{ flex: 1 }}>
-      <ActivityLoader visible={loading}/>
+
+  const renderBackground = useCallback(() => (
+    <FastImage
+          source={bgImage}
+          resizeMode={'cover'}
+          style={styles.topBackgroundImage} />
+  ), [bgImage])
+
+  const renderStickyHeader = useCallback(() => (
+    <View style={{ backgroundColor: colors.blackColor }}>
+      <FastImage
+            source={bgImage}
+            resizeMode={'cover'}
+            blurRadius={1.5}
+            style={styles.stickyImageStyle} />
       <Header
-          barStyle={'light-content'}
+            barStyle={'light-content'}
             safeAreaStyle={{ position: 'absolute' }}
-            leftComponent={
-              <TouchableOpacity onPress={handleGoBack}>
-                <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
-              </TouchableOpacity>
-            }
             centerComponent={
-              <View style={styles.headerCenterStyle}>
-                {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
+              <View style={styles.closeHeaderCenterStyle}>
+                <View style={{
+                  ...styles.teamLogoContainer,
+                  height: 25,
+                  width: 25,
+                }}>
+                  <FastImage
+                      resizeMode={'cover'}
+                      source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.teamPlaceholder }
+                      style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
+                  />
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal ?? 0, 1)}
+                  <Text style={styles.topCloseHeaderText}>:</Text>
+                  {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal ?? 0, 2)}
+                </View>
+                <View style={{
+                  ...styles.teamLogoContainer, height: 25, width: 25, marginRight: wp(2),
+                }}>
+                  <FastImage
+                      resizeMode={'cover'}
+                      source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.teamPlaceholder }
+                      style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
+                  />
+                </View>
               </View>
             }
         />
+    </View>
+  ), [gameData?.away_team?.thumbnail, gameData?.away_team_goal, gameData?.home_team?.thumbnail, gameData?.home_team_goal])
+
+  const renderFixedHeader = useCallback(() => (
+    <Header
+          barStyle={'light-content'}
+          safeAreaStyle={{ position: 'absolute' }}
+          leftComponent={
+            <TouchableOpacity onPress={handleGoBack}>
+              <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <View style={styles.headerCenterStyle}>
+              {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
+            </View>
+          }
+          rightComponent={isAdmin
+          && <TouchableOpacity onPress={onThreeDorPress}>
+            <Image source={images.threeDotIcon} style={{
+              height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
+            }} />
+          </TouchableOpacity>
+          }
+      />
+  ), [handleGoBack, headerTitleShown, isAdmin])
+
+  const onScroll = useCallback((e) => (onEndReached ? onReachedEnd(e) : null), [onEndReached, onReachedEnd])
+
+  const renderTopHeader = useMemo(() => (
+    <Header
+          barStyle={'light-content'}
+          safeAreaStyle={{ position: 'absolute' }}
+          leftComponent={
+            <TouchableOpacity onPress={handleGoBack}>
+              <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <View style={styles.headerCenterStyle}>
+              {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
+            </View>
+          }
+      />
+  ), [handleGoBack, headerTitleShown])
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ActivityLoader visible={loading}/>
+      {renderTopHeader}
       <ParallaxScrollView
+          onScroll={onScroll}
+          bounces={false}
+          scrollEventThrottle={400}
             backgroundColor="transparent"
             contentBackgroundColor="white"
             parallaxHeaderHeight={200}
             stickyHeaderHeight={Platform.OS === 'ios' ? 90 : 50}
             fadeOutForeground={false}
             onChangeHeaderVisibility={(isShown) => isShown !== headerTitleShown && setHeaderTitleShown(isShown)}
-            renderFixedHeader={() => (
-              <Header
-                  barStyle={'light-content'}
-                safeAreaStyle={{ position: 'absolute' }}
-                leftComponent={
-                  <TouchableOpacity onPress={handleGoBack}>
-                    <Image source={images.backArrow} style={{ height: 22, width: 16, tintColor: colors.whiteColor }} />
-                  </TouchableOpacity>
-                }
-                centerComponent={
-                  <View style={styles.headerCenterStyle}>
-                    {headerTitleShown && <Text style={styles.headerCenterTextStyle}>Match</Text>}
-                  </View>
-                }
-                rightComponent={isAdmin
-                  && <TouchableOpacity onPress={onThreeDorPress}>
-                    <Image source={images.threeDotIcon} style={{
-                      height: 22, width: 16, tintColor: colors.whiteColor, resizeMode: 'contain',
-                    }} />
-                  </TouchableOpacity>
-                }
-              />
-            )}
-            renderStickyHeader={() => (
-              <View style={{ backgroundColor: colors.blackColor }}>
-                <FastImage
-                    source={bgImage}
-                    resizeMode={'cover'}
-                    blurRadius={1.5}
-                    style={styles.stickyImageStyle} />
-                <Header
-                    barStyle={'light-content'}
-                        safeAreaStyle={{ position: 'absolute' }}
-                        centerComponent={
-                          <View style={styles.closeHeaderCenterStyle}>
-                            <View style={{
-                              ...styles.teamLogoContainer,
-                              height: 25,
-                              width: 25,
-                            }}>
-                              <FastImage
-                                  resizeMode={'cover'}
-                                  source={gameData?.home_team?.thumbnail ? { uri: gameData?.home_team?.thumbnail } : images.teamPlaceholder }
-                                  style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
-                              />
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                              {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal ?? 0, 1)}
-                              <Text style={styles.topCloseHeaderText}>:</Text>
-                              {getScoreText(gameData?.home_team_goal, gameData?.away_team_goal ?? 0, 2)}
-                            </View>
-                            <View style={{
-                              ...styles.teamLogoContainer, height: 25, width: 25, marginRight: wp(2),
-                            }}>
-                              <FastImage
-                                  resizeMode={'cover'}
-                                  source={gameData?.away_team?.thumbnail ? { uri: gameData?.away_team?.thumbnail } : images.teamPlaceholder }
-                                  style={{ height: 17.5, width: 17.5, borderRadius: 50 }}
-                              />
-                            </View>
-                          </View>
-                        }
-                    />
-              </View>
-            )}
+            renderFixedHeader={renderFixedHeader}
+            renderStickyHeader={renderStickyHeader}
             renderForeground={renderForeground}
-            renderBackground={() => (
-              <FastImage
-                  source={bgImage}
-                  resizeMode={'cover'}
-                  style={styles.topBackgroundImage} />
-            )}
+            renderBackground={renderBackground}
         >
         {useMemo(() => {
           let destructiveButtonIndex = null;
@@ -290,7 +326,6 @@ const TopBackgroundHeader = ({
               />
           )
         }, [gameData])}
-
         {children}
       </ParallaxScrollView>
     </View>

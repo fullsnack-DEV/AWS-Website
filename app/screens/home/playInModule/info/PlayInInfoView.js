@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import React from 'react';
+import React, { memo } from 'react';
 import TCThickDivider from '../../../../components/TCThickDivider';
 import PlaysInBio from './bio/PlaysInBio';
 import PlaysInClubs from './clubs/PlaysInClubs';
@@ -98,4 +98,4 @@ const PlayInInfoView = ({
   </View>
 )
 
-export default PlayInInfoView;
+export default memo(PlayInInfoView);

@@ -42,12 +42,14 @@ const PlayInModule = ({
   const authContext = useContext(AuthContext);
   const [currentUserData, setCurrentUserData] = useState();
   const [currentTab, setCurrentTab] = useState(0);
-  const onClose = () => {
+
+  const onClose = useCallback(() => {
     setTimeout(() => {
       setCurrentTab(0);
     }, 1000);
     setTimeout(() => onModalClose(), 0);
-  }
+  }, [onModalClose])
+
   useEffect(() => {
     if (userData) setCurrentUserData(userData);
   }, [userData]);
@@ -69,7 +71,7 @@ const PlayInModule = ({
       }
     }
   }, [sportName, singlePlayerGame])
-  const onSave = (params) => new Promise((resolve, reject) => {
+  const onSave = useCallback((params) => new Promise((resolve, reject) => {
     patchPlayer(params, authContext).then(async (res) => {
       const entity = authContext.entity
       entity.auth.user = res.payload;
@@ -83,7 +85,7 @@ const PlayInModule = ({
       reject(error);
       Alert.alert(strings.alertmessagetitle, error.message)
     })
-  })
+  }), [authContext])
 
   const renderHeader = useMemo(() => (
     <>
@@ -156,6 +158,50 @@ const PlayInModule = ({
     </View>
     ), [renderPlayInInfoTab, renderReviewTab, renderScoreboardTab, renderStatsViewTab])
 
+  const renderChallengeButton = useMemo(() => currentTab === 0 && authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
+    <TouchableOpacity
+              onPress={() => {
+                if (authContext?.user?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
+                  onClose();
+                  setTimeout(() => {
+                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName, game_fee: playInObject?.fee ?? 0 } })
+                  }, 500)
+                } else {
+                  Alert.alert('Towns Cup', 'Both Player have a different sports')
+                }
+              }}
+              style={styles.challengeButtonContainer}>
+      <LinearGradient
+                colors={[colors.themeColor, '#FF3B00']}
+                style={styles.challengeLinearContainer}>
+        <View style={{
+                width: '100%', paddingHorizontal: 25, flexDirection: 'row', justifyContent: 'space-between',
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={styles.challengeTextStyle}>{`$${playInObject?.fee ?? 0}`}</Text>
+            <Text style={{ ...styles.challengeTextStyle, fontSize: 13, fontFamily: fonts.RRegular }}> (per hours)</Text>
+          </View>
+          <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+      ), [authContext?.entity?.role, authContext?.entity?.uid, authContext?.user?.registered_sports, currentTab, currentUserData, navigation, onClose, playInObject?.fee, sportName])
+
+  const onMessageButtonPress = useCallback(() => {
+    const navigateToMessage = (userId) => {
+      navigation.push('MessageChat', {
+        screen: 'MessageChatRoom',
+        params: { userId },
+      })
+    }
+    const accountType = getQBAccountType(currentUserData?.entity_type);
+    const entityId = ['user', 'player']?.includes(currentUserData?.entity_type) ? currentUserData?.user_id : currentUserData?.group_id
+    QBcreateUser(entityId, currentUserData, accountType)
+        .finally(() => {
+          onClose();
+          navigateToMessage(entityId);
+        })
+  }, [currentUserData, navigation, onClose])
   return (
     <Modal
             isVisible={visible}
@@ -172,58 +218,17 @@ const PlayInModule = ({
           {renderHeader}
 
           {/* Challenge Button */}
-          {currentTab === 0 && authContext?.entity?.uid !== currentUserData?.user_id && ['player', 'user']?.includes(authContext?.entity?.role) && (
-            <TouchableOpacity
-              onPress={() => {
-                if (authContext?.user?.registered_sports?.some((item) => item?.sport_name?.toLowerCase() === sportName.toLowerCase())) {
-                  onClose();
-                  setTimeout(() => {
-                    navigation.navigate('CreateChallengeForm1', { groupObj: { ...currentUserData, sport: sportName, game_fee: playInObject?.fee ?? 0 } })
-                  }, 500)
-                } else {
-                  Alert.alert('Towns Cup', 'Both Player have a different sports')
-                }
-              }}
-              style={styles.challengeButtonContainer}>
-              <LinearGradient
-                colors={[colors.themeColor, '#FF3B00']}
-                style={styles.challengeLinearContainer}>
-                <View style={{
-                  width: '100%', paddingHorizontal: 25, flexDirection: 'row', justifyContent: 'space-between',
-                }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={styles.challengeTextStyle}>{`$${playInObject?.fee ?? 0}`}</Text>
-                    <Text style={{ ...styles.challengeTextStyle, fontSize: 13, fontFamily: fonts.RRegular }}> (per hours)</Text>
-                  </View>
-                  <Text style={styles.challengeTextStyle}>CHALLENGE</Text>
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          )}
+          {renderChallengeButton}
 
           {/* Profile View Section */}
           {useMemo(() => <PlayInProfileViewSection
               onSettingPress={() => {}}
-              onMessageButtonPress={() => {
-                const navigateToMessage = (userId) => {
-                  navigation.push('MessageChat', {
-                    screen: 'MessageChatRoom',
-                    params: { userId },
-                  })
-                }
-                const accountType = getQBAccountType(currentUserData?.entity_type);
-                const entityId = ['user', 'player']?.includes(currentUserData?.entity_type) ? currentUserData?.user_id : currentUserData?.group_id
-                QBcreateUser(entityId, currentUserData, accountType)
-                  .finally(() => {
-                    onClose();
-                    navigateToMessage(entityId);
-                  })
-              }}
-            isAdmin={isAdmin}
-            profileImage={currentUserData?.thumbnail ? { uri: currentUserData?.thumbnail } : images.profilePlaceHolder}
-            userName={currentUserData?.full_name ?? ''}
-            cityName={currentUserData?.city ?? ''}
-          />, [currentUserData, isAdmin, onClose])}
+              onMessageButtonPress={onMessageButtonPress}
+              isAdmin={isAdmin}
+              profileImage={currentUserData?.thumbnail ? { uri: currentUserData?.thumbnail } : images.profilePlaceHolder}
+              userName={currentUserData?.full_name ?? ''}
+              cityName={currentUserData?.city ?? ''}
+          />, [currentUserData?.city, currentUserData?.full_name, currentUserData?.thumbnail, isAdmin, onMessageButtonPress])}
 
           {/* Tabs */}
           {useMemo(() => (
@@ -235,11 +240,7 @@ const PlayInModule = ({
               >
               {TAB_ITEMS?.map(renderTabs)}
             </TCScrollableTabs>
-          ), [])}
-
-          {/* <ScrollView pagingEnabled={true}> */}
-          {/*  {renderTabs} */}
-          {/* </ScrollView> */}
+          ), [renderTabs])}
 
         </SafeAreaView>
       </View>

@@ -152,7 +152,6 @@ console.log('ITEM::=>', item);
   const handleBookReferee = () => {
     navigation.navigate('BookReferee', { gameData })
   }
-  console.log('Game Data::=>', gameData);
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <ActivityLoader visible={loading} />

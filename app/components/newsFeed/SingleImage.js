@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback,
 } from 'react-native';
@@ -33,10 +33,17 @@ function SingleImage({
     height = wp('96%')
   }
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
+  const toggleModal = useCallback(() => {
+    setModalVisible((isOpen) => !isOpen);
+  }, []);
 
+  const onModalClose = useCallback(() => setModalVisible(false), [])
+  const onModalOpen = useCallback(() => setModalVisible(true), [])
+
+    const onImageProfileClick = useCallback(() => {
+        setModalVisible(false)
+        onImageProfilePress()
+    }, [onImageProfilePress])
   return (
     <View
       style={ [
@@ -57,43 +64,32 @@ function SingleImage({
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
       </View>
-      <Modal
+      {isModalVisible && <Modal
         isVisible={isModalVisible}
         backdropColor="black"
         style={{ margin: 0 }}
         supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
         <SinglePostPortraitView
-            openPostModal ={() => setModalVisible(true)}
+          openPostModal ={onModalOpen}
           data={data}
           item={item}
           uploadImageURL={uploadImageURL && uploadImageURL}
-          backBtnPress={() => setModalVisible(false)}
+          backBtnPress={onModalClose}
           caller_id={caller_id}
           navigation={navigation}
-          onImageProfilePress={() => {
-            setModalVisible(false)
-            onImageProfilePress()
-          }}
+          onImageProfilePress={onImageProfileClick}
           onLikePress={onLikePress}
         />
-      </Modal>
+      </Modal>}
       <TouchableWithoutFeedback onPress={() => {
         if (uploadImageURL) {
           toggleModal();
         }
       }}>
         <FastImage
-          style={ [
-            styles.uploadedImage,
-            {
-              height,
-              position: 'absolute',
-            },
-          ] }
-          source={ {
-            uri: uploadImageURL,
-          } }
+          style={{ ...styles.uploadedImage, height, position: 'absolute' }}
+          source={{ uri: uploadImageURL }}
           resizeMode={ FastImage.resizeMode.cover }
         />
       </TouchableWithoutFeedback>

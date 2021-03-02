@@ -247,16 +247,10 @@ const FeedsScreen = ({ navigation }) => {
       activity_id: item.id,
     };
     createReaction(bodyParams, authContext)
-        .then((response) => {
-          const pData = [...postData];
-          const pDataIndex = postData?.findIndex((postItem) => postItem?.id === bodyParams?.activity_id)
-          pData[pDataIndex] = response?.payload;
-          setPostData([...pData]);
-        })
         .catch((e) => {
           Alert.alert('', e.messages)
         });
-  }, [authContext, postData]);
+  }, [authContext]);
 
   const onEndReached = useCallback(() => {
     setIsMoreLoading(true);

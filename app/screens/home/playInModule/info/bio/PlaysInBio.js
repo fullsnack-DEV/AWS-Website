@@ -26,6 +26,7 @@ const PlaysInBio = ({
       setRegisterSport(sportData ? { ...sportData } : null);
     }
   }, [currentUserData]);
+
   return (
     <View>
       <EditEventItem

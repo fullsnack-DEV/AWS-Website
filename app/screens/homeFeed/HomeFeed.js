@@ -33,8 +33,8 @@ const HomeFeed = ({
 }) => {
     const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const authContext = useContext(AuthContext)
-    const [totalUserPostCount, setTotalUserPostCount] = useState(0);
     const [postData, setPostData] = useState([]);
+    const [totalUserPostCount, setTotalUserPostCount] = useState(0);
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
     const [footerLoading, setFooterLoading] = useState(false);
 
@@ -42,6 +42,7 @@ const HomeFeed = ({
         const params = { uid: userID };
         getUserPosts(params, authContext).then((res) => {
             setPostData([...res?.payload?.results])
+            setTotalUserPostCount(res?.payload?.total_count)
         }).catch((e) => {
             console.log(e)
         })
@@ -52,7 +53,7 @@ const HomeFeed = ({
             if (postData?.length === totalUserPostCount && isNextDataLoading) setIsNextDataLoading(false);
             else if (!isNextDataLoading) setIsNextDataLoading(true);
         }
-    }, [postData]);
+    }, [postData, totalUserPostCount]);
 
     const updatePostAfterUpload = useCallback((dataParams) => {
         updatePost(dataParams, authContext)
@@ -153,16 +154,10 @@ const HomeFeed = ({
             activity_id: item.id,
         };
         createReaction(bodyParams, authContext)
-            .then((response) => {
-                const pData = [...postData];
-                const pDataIndex = postData?.findIndex((postItem) => postItem?.id === bodyParams?.activity_id)
-                pData[pDataIndex] = response?.payload;
-                setPostData([...pData]);
-            })
             .catch((e) => {
                 Alert.alert('', e.messages)
             });
-    }, [authContext, postData])
+    }, [authContext])
 
     const createPostAfterUpload = useCallback((dataParams) => {
         createPost(dataParams, authContext)
@@ -183,7 +178,7 @@ const HomeFeed = ({
                     Alert.alert(strings.alertmessagetitle, error.message)
                 }, 10)
             })
-    }, [authContext, setDoneUploadCount, setGalleryData, setProgressBar, setTotalUploadCount, userID])
+    }, [authContext, userID])
 
     const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
         if (postDesc.trim().length > 0 && data?.length === 0) {
@@ -212,7 +207,7 @@ const HomeFeed = ({
                 createPostAfterUpload(dataParams)
             })
         }
-    }, [authContext, cancelRequest, createPostAfterUpload, progressStatus, setProgressBar, setTotalUploadCount])
+    }, [authContext, cancelRequest, createPostAfterUpload, progressStatus])
 
     const onEndReached = useCallback(() => {
         setFooterLoading(true);
@@ -242,7 +237,7 @@ const HomeFeed = ({
                 />
         <View style={styles.sepratorView} />
       </View>
-        ), [currentUserData])
+        ), [currentUserData, navigation, onPressDone])
 
     const ListHeaderComponent = useMemo(() => (
       <>
@@ -256,18 +251,18 @@ const HomeFeed = ({
         <View style={styles.sepratorView} />
         <ActivityLoader visible={fullScreenLoading}/>
         <NewsFeedList
-                  onFeedScroll={onFeedScroll}
-                  refs={refs}
-                  ListHeaderComponent={ListHeaderComponent}
-                  scrollEnabled={true}
-                  onDeletePost={onDeletePost}
-                  navigation={navigation}
-                  postData={currentTab === 0 ? postData : []}
-                  onEditPressDone={editPostDoneCall}
-                  onLikePress={onLikePress}
-                  onEndReached={onEndReached}
-                  footerLoading={footerLoading && isNextDataLoading}
-              />
+              onFeedScroll={onFeedScroll}
+              refs={refs}
+              ListHeaderComponent={ListHeaderComponent}
+              scrollEnabled={true}
+              onDeletePost={onDeletePost}
+              navigation={navigation}
+              postData={currentTab === 0 ? postData : []}
+              onEditPressDone={editPostDoneCall}
+              onLikePress={onLikePress}
+              onEndReached={onEndReached}
+              footerLoading={footerLoading && isNextDataLoading}
+          />
       </View>
     )
 }

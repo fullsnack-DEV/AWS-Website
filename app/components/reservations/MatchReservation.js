@@ -21,7 +21,6 @@ function MatchReservation({ data, onPressButon = () => {}, onPressGameCard = () 
 
   const isPendingButtonOrDetailButton = () => {
     if (data.game) {
-      console.log('Game Data::::=>', JSON.stringify(data.game));
       if (data.status === RefereeReservationStatus.offered) {
         if (data.expiry_datetime < new Date().getTime() / 1000) {
           return false

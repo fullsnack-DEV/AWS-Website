@@ -1,5 +1,5 @@
 import React, {
- useCallback, memo, useEffect, useRef, useState,
+  useCallback, memo, useEffect, useRef, useState, useMemo,
 } from 'react';
 import {
   StyleSheet,
@@ -44,7 +44,9 @@ const NewsFeedPostItems = ({
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [showThreeDot, setShowThreeDot] = useState(false);
-
+  const [myItem, setMyItem] = useState();
+  const [attachedImages, setAttachedImages] = useState([]);
+  const [descriptions, setDescriptions] = useState('');
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -61,24 +63,17 @@ const NewsFeedPostItems = ({
       setLike(false);
     }
     setShowThreeDot((item?.ownerId || item?.foreign_id) === caller_id);
+    const dummyItem = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object;
+    setMyItem({ ...dummyItem });
+    if (dummyItem) {
+      if (dummyItem?.attachments !== undefined && dummyItem?.attachments?.length > 0) {
+        setAttachedImages([...dummyItem?.attachments]);
+      }
+      setDescriptions(dummyItem?.text)
+    }
   }, [caller_id, item]);
   const actionSheet = useRef();
   const shareActionSheet = useRef();
-
-  let userImage = '';
-  if (item?.actor && item?.actor?.data) {
-    userImage = item?.actor?.data?.full_image;
-  }
-
-  let attachedImages = [];
-  let descriptions = '';
-  const myItem = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object;
-  if (myItem) {
-    if (myItem?.attachments !== undefined && myItem?.attachments?.length > 0) {
-      attachedImages = myItem?.attachments;
-    }
-    descriptions = myItem?.text;
-  }
 
   const renderSinglePostItems = useCallback(({ item: attachItem }) => {
     if (attachItem?.type === 'image') {
@@ -104,9 +99,9 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [caller_id, item, onImageProfilePress, onLikePress])
+  }, [caller_id, item, navigation, onImageProfilePress, onLikePress])
 
-  const listSpace = () => <View style={{ width: wp('2%') }} />
+  const listSpace = useMemo(() => <View style={{ width: wp('2%') }} />, [])
 
   const renderMultiplePostItems = useCallback(({ item: multiAttachItem, index }) => {
     if (multiAttachItem?.type === 'image') {
@@ -142,21 +137,18 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [item])
+  }, [attachedImages, caller_id, item, navigation, onImageProfilePress, onLikePress])
 
-  const newsFeedItemsKeyExtractor = (keyItem, index) => `innerFeed${ index?.id?.toString()}`
+  const newsFeedItemsKeyExtractor = useCallback((keyItem, index) => `innerFeed${ index?.id?.toString()}`, [])
 
-  const onNewsFeedLikePress = () => {
-    setLike(!like);
-    if (like) {
-      setLikeCount(likeCount - 1);
-    } else {
-      setLikeCount(likeCount + 1);
-    }
+  const onNewsFeedLikePress = useCallback(() => {
+    if (like) setLikeCount((likeCnt) => likeCnt - 1);
+    else setLikeCount((likeCnt) => likeCnt + 1);
+    setLike((isLIKE) => !isLIKE);
     onLikePress()
-  }
+  }, [like, onLikePress]);
 
-  const onActionSheetItemPress = (index) => {
+  const onActionSheetItemPress = useCallback((index) => {
     if (index === 0) {
       navigation.navigate('EditPostScreen', {
         data: item,
@@ -165,9 +157,9 @@ const NewsFeedPostItems = ({
     } else if (index === 1) {
       onDeletePost();
     }
-  }
+  }, [item, navigation, onDeletePost, onEditPressDone])
 
-  const onShareActionSheetItemPress = (index) => {
+  const onShareActionSheetItemPress = useCallback((index) => {
     if (index === 0) {
       const options = {
         message: descriptions,
@@ -182,7 +174,7 @@ const NewsFeedPostItems = ({
     } else if (index === 1) {
       Clipboard.setString(descriptions);
     }
-  }
+  }, [descriptions])
 
   return (
     <View style={{ flex: 1 }}>
@@ -190,7 +182,7 @@ const NewsFeedPostItems = ({
         <TouchableWithoutFeedback onPress={onImageProfilePress}>
           <Image
             style={styles.background}
-            source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
+            source={!item?.actor?.data?.full_image ? images.profilePlaceHolder : { uri: item?.actor?.data?.full_image }}
             resizeMode={'cover'}
           />
         </TouchableWithoutFeedback>
@@ -200,6 +192,7 @@ const NewsFeedPostItems = ({
             {commentPostTimeCalculate(item?.time)}
           </Text>
         </View>
+
         {showThreeDot && <TouchableOpacity
           style={styles.dotImageTouchStyle}
           onPress={() => {
@@ -256,7 +249,7 @@ const NewsFeedPostItems = ({
             navigation={navigation}
         />
 
-        <View style={{ marginTop: 10, marginLeft: 10 }}></View>
+        <View style={{ marginTop: 10, marginLeft: 10 }}/>
         <View style={styles.commentShareLikeView}>
           <View
             style={{
@@ -316,17 +309,16 @@ const NewsFeedPostItems = ({
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-            {item?.reaction_counts?.clap !== undefined && (
-              <Text
-                style={[
-                  styles.commentlengthStyle,
-                  {
-                    color: like === true ? '#FF8A01' : colors.reactionCountColor,
-                  },
-                ]}>
-                {likeCount === 0 ? '' : likeCount}
-              </Text>
-            )}
+
+            <Text
+              style={[
+                styles.commentlengthStyle,
+                {
+                  color: like === true ? '#FF8A01' : colors.reactionCountColor,
+                },
+              ]}>
+              {likeCount <= 0 ? '' : likeCount}
+            </Text>
             <TouchableOpacity
               onPress={onNewsFeedLikePress}
               style={styles.imageTouchStyle}>
@@ -352,7 +344,6 @@ const NewsFeedPostItems = ({
           title={'News Feed Post'}
           options={['Share', 'Copy Link', 'More Options', 'Cancel']}
           cancelButtonIndex={3}
-          // destructiveButtonIndex={1}
           onPress={onShareActionSheetItemPress}
         />
       </View>
