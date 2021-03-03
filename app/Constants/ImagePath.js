@@ -267,6 +267,10 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   home_gps: require('../assets/images/ic_gps.png'),
 
   home_setting: require('../assets/images/ic_setting.png'),
+  orangeStar: require('../assets/images/ic_star.png'),
+
+  homeSetting: require('../assets/images/ic_home_setting.png'),
+  arrowDown: require('../assets/images/arrow_down.png'),
 
 };
 
