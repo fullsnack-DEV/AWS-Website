@@ -42,7 +42,7 @@ const Scorekeepers = ({
   const goToScorekeeperReservationDetail = (data) => {
     console.log('Reservation data:', JSON.stringify(data));
     setloading(true);
-    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
       console.log('Screen name of Reservation:', obj.screenName);
