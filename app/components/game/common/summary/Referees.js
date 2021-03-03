@@ -58,7 +58,7 @@ const Referees = ({
   const goToRefereReservationDetail = (data) => {
     console.log('Reservation data:', JSON.stringify(data));
     setloading(true);
-    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    RefereeUtils.getRefereeReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
       console.log('Screen name of Reservation:', obj.screenName);

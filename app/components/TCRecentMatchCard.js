@@ -1,17 +1,21 @@
 import React, { memo } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, Image,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
-import colors from '../Constants/Colors'
-import fonts from '../Constants/Fonts'
+import colors from '../Constants/Colors';
+import fonts from '../Constants/Fonts';
 import ReservationStatus from '../Constants/ReservationStatus';
 
- function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
+function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
   const months = [
     'Jan',
     'Feb',
@@ -38,12 +42,45 @@ import ReservationStatus from '../Constants/ReservationStatus';
     return time;
   };
 
+  // const renderMediaList = useCallback(
+  //   () => (
+  //     <Image
+  //       source={images.soccerBackground}
+  //       style={{
+  //         height: 66,
+  //         width: 66,
+  //         resizeMode: 'cover',
+  //         borderRadius: 10,
+  //       }}
+  //     />
+  //   ),
+  //   [],
+  // );
+
+  // const keyExtractor = useCallback((item, index) => index.toString(), []);
+  // const renderSeparator = () => (
+  //   <View
+  //     style={{
+  //       height: 50,
+  //       width: 10,
+  //     }}
+  //   />
+  // );
   return (
     <TouchableOpacity onPress={onPress}>
+
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
-        colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
-          style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
+          colors={
+            data?.status === ReservationStatus.cancelled
+              ? [colors.startGrayGrdient, colors.endGrayGradient]
+              : [colors.yellowColor, colors.assistTextColor]
+          }
+          style={
+            data?.status === ReservationStatus.offered
+              ? [styles.colorView, { opacity: 0.7 }]
+              : styles.colorView
+          }>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
               {months[new Date(data.start_datetime * 1000).getMonth()]}
@@ -140,7 +177,22 @@ import ReservationStatus from '../Constants/ReservationStatus';
               </View>
             )}
           </View>
-
+          {/* <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              backgroundColor: 'red',
+              marginTop: 15,
+            }}>
+            <FlatList
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              data={['', '', '', '', '']}
+              keyExtractor={keyExtractor}
+              renderItem={renderMediaList}
+              ItemSeparatorComponent={renderSeparator}
+            />
+          </View> */}
         </View>
       </View>
     </TouchableOpacity>
@@ -154,7 +206,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 5,
     flexDirection: 'row',
-    height: 183,
+    height: 102,
+    // 183
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
@@ -168,7 +221,8 @@ const styles = StyleSheet.create({
   colorView: {
     borderBottomLeftRadius: 8,
     borderTopLeftRadius: 8,
-    height: 183,
+    height: 102,
+    // 183
     width: 42,
   },
   dateMonthText: {
@@ -268,4 +322,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(TCRecentMatchCard)
+export default memo(TCRecentMatchCard);
