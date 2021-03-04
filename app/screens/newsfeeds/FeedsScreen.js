@@ -2,8 +2,9 @@ import React, {
   useEffect, memo, useState, useLayoutEffect, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  StyleSheet, View, Image, Alert, TouchableOpacity,
+  StyleSheet, View, Image, Alert, Text, TouchableOpacity,
 } from 'react-native';
+import crashlytics from '@react-native-firebase/crashlytics';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -33,6 +34,7 @@ const FeedsScreen = ({ navigation }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
   useEffect(() => {
+    crashlytics().log('App mounted.');
     setloading(true);
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
@@ -298,6 +300,7 @@ const FeedsScreen = ({ navigation }) => {
     ), [doneUploadCount, totalUploadCount, onImageProgressCancelPress, currentUserDetail])
   return (
     <View style={styles.mainContainer}>
+      <TouchableOpacity onPress={() => crashlytics().crash()}><Text>Crash</Text></TouchableOpacity>
       <ActivityLoader visible={loading} />
 
       <NewsFeedList

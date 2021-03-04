@@ -198,6 +198,9 @@ dependencies {
     //noinspection GradleDynamicVersion
     compile project(':react-native-orientation')
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation platform('com.google.firebase:firebase-bom:26.6.0')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
  implementation 'com.android.support:multidex:1.0.3'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
