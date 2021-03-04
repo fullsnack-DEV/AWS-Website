@@ -1,7 +1,9 @@
 import {
   View, StyleSheet, FlatList, Text,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {
+ useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import Dash from 'react-native-dash';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../../utils';
@@ -14,6 +16,7 @@ import TennisGameScoreLeft from '../gameRecordList/TennisGameScoreLeft';
 import TennisGameScoreRight from '../gameRecordList/TennisGameScoreRight';
 
 const MIN_MATCH_RECORD_TO_DISPLAY = 5;
+
 const MatchRecordsList = ({
   gameData,
   gameId = null,
@@ -48,7 +51,7 @@ const MatchRecordsList = ({
     loadAtOnce();
   }, [gameData, isFocused]);
 
-  const RenderDash = ({ zIndex = 0 }) => (
+  const RenderDash = useCallback(({ zIndex = 0 }) => (
     <Dash
           style={ {
             alignItems: 'center',
@@ -63,9 +66,9 @@ const MatchRecordsList = ({
           } }
           dashColor={ colors.lightgrayColor }
       />
-  )
+  ), [])
 
-  const renderGameRecords = ({ item }) => {
+  const renderGameRecords = useCallback(({ item }) => {
     const isHomeTeam = teamIds?.home_team?.group_id === item.team_id;
     const isGameState = item.verb in tennisGameStats;
 
@@ -92,24 +95,27 @@ const MatchRecordsList = ({
         {isGameState && <TennisGameState recordData={item}/>}
       </View>
     )
-  }
+  }, [gameData, teamIds?.home_team?.group_id])
 
+  const ListEmptyComponent = useMemo(() => (
+    <View>
+      <Text style={styles.notAvailableTextStyle}>
+        Not available yet
+      </Text>
+    </View>
+  ), []);
+
+  const matchRecordsKeyExtractor = useCallback((item, index) => index?.toString(), [])
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading}/>
       {!loading && (<FlatList
                 scrollEnabled={false}
-                keyExtractor={(item, index) => index?.toString()}
+                keyExtractor={matchRecordsKeyExtractor}
                 bounces={false}
                 data={matchRecords.slice(0, MIN_MATCH_RECORD_TO_DISPLAY)}
                 renderItem={renderGameRecords}
-                ListEmptyComponent={() => (
-                  <View>
-                    <Text style={styles.notAvailableTextStyle}>
-                      Not available yet
-                    </Text>
-                  </View>
-                )}/>
+                ListEmptyComponent={ListEmptyComponent}/>
       )}
       <View style={styles.seperateContainer}>
 

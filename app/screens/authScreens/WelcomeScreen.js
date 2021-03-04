@@ -1,5 +1,5 @@
 /* eslint-disable react-native/split-platform-components */
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View, Text, Image, TouchableOpacity, Alert, StyleSheet,
   StatusBar,
@@ -32,6 +32,9 @@ export default function WelcomeScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
 
+  useEffect(() => {
+    console.log('RENDER WELCOME SCREEN')
+  }, [])
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId: '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',

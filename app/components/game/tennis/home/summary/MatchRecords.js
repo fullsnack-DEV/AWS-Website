@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   Text, View, StyleSheet, TouchableOpacity,
 } from 'react-native';
@@ -55,4 +55,4 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
 })
-export default MatchRecords;
+export default memo(MatchRecords);

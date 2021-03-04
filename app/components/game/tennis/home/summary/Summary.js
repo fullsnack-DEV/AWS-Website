@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+ useContext, useEffect, useMemo, useState,
+} from 'react';
 import {
   View, StyleSheet, Text,
 } from 'react-native';
@@ -16,7 +18,7 @@ import colors from '../../../../../Constants/Colors';
 import { checkReviewExpired, getGameDateTimeInDHMformat, REVIEW_EXPIRY_DAYS } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import TCInnerLoader from '../../../../TCInnerLoader';
-import AuthContext from '../../../../../context/auth';
+import AuthContext from '../../../../../auth/context';
 import TennisScoreView from '../../TennisScoreView';
 import GameFeed from '../../../common/summary/GameFeed';
 // import GameStatus from '../../../../../Constants/GameStatus';
@@ -36,6 +38,8 @@ const Summary = ({
   setUploadImageProgressData,
   createGamePostData,
   getGameFeedData,
+  gameFeedFlatListRef,
+  getGameNextFeedData,
 }) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -59,65 +63,64 @@ const Summary = ({
       }
     }).finally(() => setLoading(false));
   }, [])
-  return (
-    <View style={styles.mainContainer}>
-      <TCInnerLoader visible={loading}/>
-      {(isAdmin || isRefereeAdmin) && (
-        <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
-          <TCGradientButton
-                  onPress={() => {
-                    navigation.navigate('TennisRecording', { gameDetail: gameData, isAdmin })
-                  }}
-                  startGradientColor={colors.yellowColor}
-                  endGradientColor={colors.themeColor}
-                  title={'RECORD MATCH'}
-                  style={{
-                    borderRadius: 5,
-                  }}
-                  outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
-              />
 
-          {/*  Leave Review Section */}
-          {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isRefereeAdmin && (
-            <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
-              <View>
-                <TCGradientButton
-                          onPress={() => {
-                            navigation.navigate('LeaveReview',
-                              {
-                                gameData,
-                                sliderAttributes,
-                                starAttributes,
-                              })
-                          }}
-                          startGradientColor={colors.yellowColor}
-                          endGradientColor={colors.themeColor}
-                          title={'LEAVE REVIEW'}
-                          style={{
-                            borderRadius: 5,
-                          }}
-                          outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
-                      />
+  const renderRecordButton = useMemo(() => (
+    <TCGradientButton
+          onPress={() => {
+            navigation.navigate('TennisRecording', { gameDetail: gameData, isAdmin })
+          }}
+          startGradientColor={colors.yellowColor}
+          endGradientColor={colors.themeColor}
+          title={'RECORD MATCH'}
+          style={{
+            borderRadius: 5,
+          }}
+          outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
+      />
+  ), [gameData, isAdmin, navigation])
 
-              </View>
-            </View>
-          )}
-          {gameData?.status === 'ended' && !isRefereeAdmin && (
-            <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
-              {!checkReviewExpired(gameData?.actual_enddatetime) ? (
-                <Text style={styles.reviewPeriod}>
-                  The review period will be expired within
-                  <Text style={{ fontFamily: fonts.RBold }}>
-                    {getGameDateTimeInDHMformat(
-                      (moment(gameData?.actual_enddatetime * 1000)
-                        .add(REVIEW_EXPIRY_DAYS, 'days')) / 1000,
-                    )}
-                  </Text>
-                </Text>
+  const renderLeaveAReviewButton = useMemo(() => (
+    <>
+      {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isRefereeAdmin && (
+        <View style={{ backgroundColor: colors.whiteColor, padding: 10 }}>
+          <View>
+            <TCGradientButton
+                    onPress={() => {
+                      navigation.navigate('LeaveReview',
+                          {
+                            gameData,
+                            sliderAttributes,
+                            starAttributes,
+                          })
+                    }}
+                    startGradientColor={colors.yellowColor}
+                    endGradientColor={colors.themeColor}
+                    title={'LEAVE REVIEW'}
+                    style={{
+                      borderRadius: 5,
+                    }}
+                    outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
+                />
+
+          </View>
+        </View>
+        )}
+      {gameData?.status === 'ended' && !isRefereeAdmin && (
+        <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, marginLeft: 10 }}>
+          {!checkReviewExpired(gameData?.actual_enddatetime) ? (
+            <Text style={styles.reviewPeriod}>
+              The review period will be expired within
+              <Text style={{ fontFamily: fonts.RBold }}>
+                {getGameDateTimeInDHMformat(
+                          (moment(gameData?.actual_enddatetime * 1000)
+                              .add(REVIEW_EXPIRY_DAYS, 'days')) / 1000,
+                      )}
+              </Text>
+            </Text>
               ) : (
                 <Text style={{
-                  ...styles.reviewPeriod,
-                  marginVertical: 10,
+                    ...styles.reviewPeriod,
+                    marginVertical: 10,
                 }}>
                   The review period is{' '}
                   <Text style={{ fontFamily: fonts.RBold }}>
@@ -126,33 +129,43 @@ const Summary = ({
                 </Text>
               )}
 
-            </View>
-          )}
         </View>
-      )}
+        )}
+    </>
+  ), [gameData, isRefereeAdmin, navigation, sliderAttributes, starAttributes])
 
-      {/* Scores */}
-      <View style={{ backgroundColor: colors.whiteColor, padding: 10, marginBottom: hp(1) }}>
-        <Text style={styles.title}>
-          Scores
-        </Text>
-        <TennisScoreView scoreDataSource={gameData} />
-      </View>
+  const renderTopButtons = useMemo(() => (isAdmin || isRefereeAdmin) && (
+    <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
+      {renderRecordButton}
+      {renderLeaveAReviewButton}
+    </View>
+  ), [isAdmin, isRefereeAdmin, renderLeaveAReviewButton, renderRecordButton])
 
-      {/* Match Records */}
-      <MatchRecords
-            isAdmin={isAdmin}
-            navigation={navigation}
-            gameId={gameData?.game_id}
-            gameData={gameData}
-            getGameMatchRecords={getGameMatchRecords}
-        />
+  const renderScoresSection = useMemo(() => (
+    <View style={{ backgroundColor: colors.whiteColor, padding: 10, marginBottom: hp(1) }}>
+      <Text style={styles.title}>
+        Scores
+      </Text>
+      <TennisScoreView scoreDataSource={gameData} />
+    </View>
+  ), [gameData])
 
-      {/* Special Rules */}
-      <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
+  const renderMatchRecordsSection = useMemo(() => (
+    <MatchRecords
+          isAdmin={isAdmin}
+          navigation={navigation}
+          gameId={gameData?.game_id}
+          gameData={gameData}
+          getGameMatchRecords={getGameMatchRecords}
+      />
+  ), [gameData, getGameMatchRecords, isAdmin, navigation])
 
-      {/* Referees */}
-      <Referees
+  const renderSpecialRulesSection = useMemo(() => (
+    <SpecialRules specialRulesData={gameData?.special_rule ?? ''} isAdmin={isAdmin}/>
+  ), [gameData?.special_rule, isAdmin])
+
+  const renderRefereesSection = useMemo(() => (
+    <Referees
           getRefereeReservation={getRefereeReservation}
           navigation={navigation}
           gameData={gameData}
@@ -160,10 +173,11 @@ const Summary = ({
           userRole={userRole}
           followUser={followTennisUser}
           unFollowUser={unFollowTennisUser}
-        />
+      />
+  ), [followTennisUser, gameData, getRefereeReservation, isAdmin, navigation, unFollowTennisUser, userRole])
 
-      {/* Scorekeepers */}
-      <Scorekeepers
+  const renderScorekeepersSection = useMemo(() => (
+    <Scorekeepers
           getScorekeeperReservation={getScorekeeperReservation}
           followUser={followTennisUser}
           unFollowUser={unFollowTennisUser}
@@ -172,9 +186,12 @@ const Summary = ({
           navigation={navigation}
           gameData={gameData}
       />
+  ), [followTennisUser, gameData, getScorekeeperReservation, isAdmin, navigation, unFollowTennisUser, userRole])
 
-      {/* Game Feed */}
-      <GameFeed
+  const renderGameFeedSection = useMemo(() => (
+    <GameFeed
+        getGameNextFeedData={getGameNextFeedData}
+        gameFeedRefs={gameFeedFlatListRef}
           setUploadImageProgressData={setUploadImageProgressData}
           createGamePostData={createGamePostData}
           gameData={gameData}
@@ -183,6 +200,18 @@ const Summary = ({
           currentUserData={authContext?.entity?.obj}
           userID={authContext?.entity?.uid}
       />
+  ), [authContext?.entity?.obj, authContext?.entity?.uid, createGamePostData, gameData, gameFeedFlatListRef, getGameFeedData, getGameNextFeedData, navigation, setUploadImageProgressData])
+
+  return (
+    <View style={styles.mainContainer}>
+      <TCInnerLoader visible={loading}/>
+      {renderTopButtons}
+      {renderScoresSection}
+      {renderMatchRecordsSection}
+      {renderSpecialRulesSection}
+      {renderRefereesSection}
+      {renderScorekeepersSection}
+      {renderGameFeedSection}
     </View>
   )
 }

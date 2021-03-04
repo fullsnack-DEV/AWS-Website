@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import {
     FlatList,
     Text,
@@ -8,7 +8,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 const TAB_WIDTH = 120
-const TAB_HEIGHT = 40
+const TAB_HEIGHT = 45
 const ScrollableTabs = ({
     currentTab = 0,
     tabs = [],
@@ -36,13 +36,15 @@ const ScrollableTabs = ({
       </TouchableOpacity>
     )
 
+    const getItemLayout = useCallback((data, index) => ({ length: TAB_WIDTH, offset: TAB_WIDTH * index, index }), [])
+    const tabKeyExtractor = useCallback((item, index) => index.toString(), [])
     return (
       <View style={{ height: TAB_HEIGHT }}>
         <FlatList
-            style={{ alignSelf: 'center', width: '100%' }}
-            keyExtractor={(item, index) => index.toString()}
-            pagingEnabled={true}
-            getItemLayout={(data, index) => ({ length: TAB_WIDTH, offset: TAB_WIDTH * index, index })}
+            style={{ alignSelf: 'center', width: '100%', flex: 1 }}
+            keyExtractor={tabKeyExtractor}
+            // pagingEnabled={true}
+            getItemLayout={getItemLayout}
             initialScrollIndex={currentTab}
             data={tabs}
             bounces={false}

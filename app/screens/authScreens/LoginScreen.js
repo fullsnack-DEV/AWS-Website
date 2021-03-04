@@ -1,4 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, {
+  useState, useContext, useMemo, useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -14,8 +16,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-// import crashlytics from '@react-native-firebase/crashlytics';
-
+import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
@@ -46,9 +47,6 @@ export default function LoginScreen({ navigation }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
 
-  useEffect(() => {
-    // crashlytics().crash()
-  }, [])
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId:
@@ -56,7 +54,7 @@ export default function LoginScreen({ navigation }) {
     offlineAccess: false,
   });
 
-  const validate = () => {
+  const validate = useCallback(() => {
     if (email === '') {
       Alert.alert('Towns Cup', 'Email cannot be blank');
       return false;
@@ -65,9 +63,26 @@ export default function LoginScreen({ navigation }) {
       return false;
     }
     return true;
-  };
+  }, [email, password]);
 
-  const onAuthStateChanged = (user) => {
+  const QBInitialLogin = useCallback((entity, response) => {
+    let qbEntity = entity;
+    QBlogin(qbEntity.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
+      QBconnectAndSubscribe(qbEntity)
+      await Utility.setStorage('authContextEntity', { ...qbEntity })
+      authContext.setEntity({ ...qbEntity })
+      setloading(false);
+    }).catch(async (error) => {
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
+      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
+      console.log('QB Login Error : ', error.message);
+      setloading(false);
+    });
+  }, [authContext])
+
+  const onAuthStateChanged = useCallback((user) => {
     if (user) {
       user.getIdTokenResult().then((idTokenResult) => {
         const token = {
@@ -91,13 +106,12 @@ export default function LoginScreen({ navigation }) {
               user: response.payload,
             },
           }
-          await authContext.setTokenData(token);
           authContext.setUser({ ...response.payload });
+          await authContext.setTokenData(token);
           await Utility.setStorage('authContextEntity', { ...entity })
           await Utility.setStorage('authContextUser', { ...response.payload })
           await Utility.setStorage('loggedInEntity', entity)
           authContext.setEntity({ ...entity })
-          await authContext.setUser(response.payload);
           QBInitialLogin(entity, response?.payload);
         }).catch((error) => {
           setloading(false);
@@ -108,9 +122,9 @@ export default function LoginScreen({ navigation }) {
         });
       });
     }
-  }
+  }, [QBInitialLogin, authContext]);
 
-  const login = async (_email, _password) => {
+  const login = useCallback(async (_email, _password) => {
     setloading(true);
     await Utility.clearStorage();
     firebase
@@ -143,28 +157,12 @@ export default function LoginScreen({ navigation }) {
         }
         if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100)
       });
-  };
+  }, [onAuthStateChanged]);
 
-  const QBInitialLogin = (entity, response) => {
-    let qbEntity = entity;
-    QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
-      QBconnectAndSubscribe(qbEntity)
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
-      setloading(false);
-    }).catch(async (error) => {
-      qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
-      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
-      console.log('QB Login Error : ', error.message);
-      setloading(false);
-    });
-  }
   // Psaaword Hide/Show function for setState
-  const hideShowPassword = () => {
-    setHidePassword(!hidePassword);
-  };
+  const hideShowPassword = useCallback(() => {
+    setHidePassword((val) => !val);
+  }, []);
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
@@ -334,90 +332,101 @@ export default function LoginScreen({ navigation }) {
     }
   }
 
+  const renderSocialMediaLoginButtons = useMemo(() => (
+    <>
+      <FacebookButton onPress={() => {
+        if (authContext.networkConnected) {
+          onFacebookButtonPress()
+        } else {
+          authContext.showNetworkAlert();
+        }
+      }} />
+      <GoogleButton onPress={() => {
+    if (authContext.networkConnected) {
+      onGoogleButtonPress();
+    } else {
+      authContext.showNetworkAlert();
+    }
+      }} />
+    </>
+  ), [authContext, onFacebookButtonPress, onGoogleButtonPress])
+
+  const renderEmailInput = useMemo(() => (
+    <View style={styles.textFieldContainerStyle}>
+      <TCTextField
+            style={styles.textFieldStyle}
+            placeholder={strings.emailPlaceHolder}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+        />
+    </View>
+  ), [email]);
+
+  const renderPasswordInput = useMemo(() => (
+    <View style={styles.passwordView}>
+      <TextInput
+            style={styles.textInput}
+            placeholder={strings.passwordPlaceHolder}
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            placeholderTextColor={colors.themeColor}
+            secureTextEntry={hidePassword}
+            keyboardType={'default'}
+        />
+      <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
+        {hidePassword ? (
+          <Image source={images.showPassword} style={styles.passwordEyes} />
+          ) : (
+            <Image source={images.hidePassword} style={styles.passwordEyes} />
+          )}
+      </TouchableWithoutFeedback>
+    </View>
+  ), [hidePassword, hideShowPassword, password]);
+
+  const onLogin = useCallback(async () => {
+    if (validate()) {
+      if (authContext.networkConnected) login(email, password);
+      else authContext.showNetworkAlert();
+    }
+  }, [authContext, email, login, password, validate])
+
+  const renderLoginAndForgotPasswordButtons = useMemo(() => (
+    <>
+      <TCButton
+            title={strings.loginCapTitle}
+            extraStyle={{ marginTop: hp('3%') }}
+            onPress={onLogin}
+        />
+      <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPasswordScreen')}>
+        <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
+      </TouchableOpacity>
+    </>
+  ), [navigation, onLogin]);
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.bgImage} />
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.orangeLayer} />
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.bgImage} />
       <TCKeyboardView>
         <Text style={styles.loginText}>{strings.loginText}</Text>
-        <FacebookButton onPress={() => {
-          if (authContext.networkConnected) {
-            onFacebookButtonPress()
-          } else {
-            authContext.showNetworkAlert();
-          }
-        }} />
-        <GoogleButton onPress={() => {
-          if (authContext.networkConnected) {
-            onGoogleButtonPress();
-          } else {
-            authContext.showNetworkAlert();
-          }
-        }} />
+        {renderSocialMediaLoginButtons}
         <Text style={styles.orText}>{strings.orText}</Text>
-        <View style={styles.textFieldContainerStyle}>
-          <TCTextField
-              style={styles.textFieldStyle}
-              placeholder={strings.emailPlaceHolder}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onChangeText={(text) => setEmail(text)}
-              value={email}
-          />
-        </View>
-        <View style={styles.passwordView}>
-          <TextInput
-              style={styles.textInput}
-              placeholder={strings.passwordPlaceHolder}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              placeholderTextColor={colors.themeColor}
-              secureTextEntry={hidePassword}
-              keyboardType={'default'}
-           />
-          <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
-            {hidePassword ? (
-              <Image source={images.showPassword} style={styles.passwordEyes} />
-            ) : (
-              <Image source={images.hidePassword} style={styles.passwordEyes} />
-            )}
-          </TouchableWithoutFeedback>
-        </View>
-
-        <TCButton
-            title={strings.loginCapTitle}
-            extraStyle={{ marginTop: hp('3%') }}
-            onPress={async () => {
-              if (validate()) {
-                if (authContext.networkConnected) {
-                  login(email, password);
-                } else {
-                  authContext.showNetworkAlert();
-                }
-              }
-            }}
-        />
-        <TouchableOpacity
-            onPress={() => navigation.navigate('ForgotPasswordScreen')}>
-          <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
-        </TouchableOpacity>
+        {renderEmailInput}
+        {renderPasswordInput}
+        {renderLoginAndForgotPasswordButtons}
         <View style={{ marginTop: 15 }}>
           <Text style={styles.bottomText}>
             <Text>By continuing you agree to Towny`s </Text>
-
             <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Terms and services..')}>Terms of Service</Text>
-
             <Text style={styles.hyperlinkText} onPress={() => alert('Terms and services..')}>Terms of Service</Text>
-
             <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Privacy policy..')}>Privacy Policy</Text>
-
             <Text style={styles.hyperlinkText} onPress={() => alert('Privacy policy..')}>Privacy Policy</Text>
-
             <Text style={styles.hyperlinkText} onPress={() => Alert.alert('cookie policy..')}>Cookie Policy.</Text>
-
             <Text style={styles.hyperlinkText} onPress={() => alert('cookie policy..')}>Cookie Policy.</Text>
-
           </Text>
         </View>
       </TCKeyboardView>

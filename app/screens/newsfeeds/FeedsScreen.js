@@ -222,7 +222,7 @@ const FeedsScreen = ({ navigation }) => {
           Alert.alert('', e.messages)
           setPullRefresh(false);
         });
-  }, [])
+  }, [authContext])
 
   const feedScreenHeader = useCallback(() => (
     <View>

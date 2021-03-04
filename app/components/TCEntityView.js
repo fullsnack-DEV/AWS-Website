@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     resizeMode: 'cover',
-    elevation: 5,
     height: 64,
     width: 64,
     borderRadius: 32,
@@ -78,7 +77,6 @@ const styles = StyleSheet.create({
   },
   starImage: {
     resizeMode: 'cover',
-    elevation: 5,
     height: 10,
     width: 10,
   },

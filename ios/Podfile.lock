@@ -379,8 +379,6 @@ PODS:
     - React
   - react-native-photo-view-ex (1.1.0):
     - React
-  - react-native-restart (0.0.20):
-    - React-Core
   - react-native-safe-area-context (3.1.9):
     - React-Core
   - react-native-slider (3.0.3):
@@ -574,7 +572,6 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation (from `../node_modules/react-native-orientation`)
   - react-native-photo-view-ex (from `../node_modules/react-native-photo-view-ex`)
-  - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-video (from `../node_modules/react-native-video`)
@@ -709,8 +706,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-orientation"
   react-native-photo-view-ex:
     :path: "../node_modules/react-native-photo-view-ex"
-  react-native-restart:
-    :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-slider:
@@ -846,7 +841,6 @@ SPEC CHECKSUMS:
   react-native-netinfo: 52cf0ee8342548a485e28f4b09e56b477567244d
   react-native-orientation: d4a97266b06ec8d45d74e626656a730ebbebbb6f
   react-native-photo-view-ex: 201dddcbe44fe531b824eae5e1b99b1f494c0588
-  react-native-restart: 6cc683e208c080581c147d0875609e64572a9443
   react-native-safe-area-context: 86612d2c9a9e94e288319262d10b5f93f0b395f5
   react-native-slider: b733e17fdd31186707146debf1f04b5d94aa1a93
   react-native-video: 1574074179ecaf6a9dd067116c8f31bf9fec15c8
