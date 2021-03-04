@@ -58,7 +58,7 @@ const Referees = ({
 
   const goToRefereReservationDetail = useCallback((data) => {
     setloading(true);
-    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    RefereeUtils.getRefereeReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
