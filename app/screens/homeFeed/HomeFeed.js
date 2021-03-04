@@ -41,8 +41,8 @@ const HomeFeed = ({
     useEffect(() => {
         const params = { uid: userID };
         getUserPosts(params, authContext).then((res) => {
-            setPostData([...res?.payload?.results])
             setTotalUserPostCount(res?.payload?.total_count)
+            setPostData([...res?.payload?.results])
         }).catch((e) => {
             console.log(e)
         })
@@ -51,7 +51,7 @@ const HomeFeed = ({
     useEffect(() => {
         if (postData?.length > 0 && totalUserPostCount > 0) {
             if (postData?.length === totalUserPostCount && isNextDataLoading) setIsNextDataLoading(false);
-            else if (!isNextDataLoading) setIsNextDataLoading(true);
+            else if (!isNextDataLoading && postData?.length <= totalUserPostCount) setIsNextDataLoading(true);
         }
     }, [postData, totalUserPostCount]);
 
@@ -140,6 +140,7 @@ const HomeFeed = ({
                 if (response.status) {
                     const pData = postData.filter((postItem) => postItem?.id !== params?.activity_id)
                     setPostData([...pData]);
+                    setTotalUserPostCount((pCnt) => pCnt - 1);
                 }
             })
             .catch((e) => {

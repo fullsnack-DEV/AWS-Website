@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, Fragment, useContext,
+  useState, useEffect, Fragment, useContext, useCallback,
 } from 'react';
 import {
   View,
@@ -165,6 +165,42 @@ export default function SoccerRecordList({ route }) {
     }, 500);
   }
 
+  const renderSoccerMatchRecords = useCallback(({ item }) => {
+      const { isAdmin } = route?.params
+      const isHomeTeam = item?.game?.home_team === item.team_id;
+      const isGameState = item.verb in soccerGameStats;
+      return (
+        <View>
+          <SwipeableRow
+                enabled={isAdmin && !item?.deleted}
+                buttons={[
+                  { key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon },
+                  { key: 'edit', fillColor: '#4D4D4D', image: images.editButton },
+                ]}
+                onPress={(key) => onSwipeRowItemPress(key, item)}
+            >
+            {!isGameState && isHomeTeam && (
+              <TCGameScoreLeft
+                      style={{ opacity: item?.deleted ? 0.5 : 1 }}
+                      gameData={gameData}
+                      recordData={item}
+                      editor={editorChecked}
+                  />
+              )}
+            {!isGameState && !isHomeTeam && (
+              <TCGameScoreRight
+                      style={{ opacity: item?.deleted ? 0.5 : 1 }}
+                      gameData={gameData}
+                      recordData={item}
+                      editor={editorChecked}
+                  />
+              )}
+            {isGameState && <TCGameState recordData={item}/>}
+          </SwipeableRow>
+        </View>
+      )
+  }, [editorChecked, gameData, onSwipeRowItemPress, route?.params])
+
   return (
     <View style={ styles.mainContainer }>
       <StatusBar barStyle={'dark-content'}/>
@@ -273,41 +309,7 @@ export default function SoccerRecordList({ route }) {
               keyExtractor={({ index }) => index}
               style={{ height: hp(30) }}
               data={matchRecords}
-              renderItem={({ item }) => {
-                const { isAdmin } = route?.params
-                const isHomeTeam = item?.game?.home_team === item.team_id;
-                const isGameState = item.verb in soccerGameStats;
-                return (
-                  <View>
-                    <SwipeableRow
-                        enabled={isAdmin && !item?.deleted}
-                        buttons={[
-                          { key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon },
-                          { key: 'edit', fillColor: '#4D4D4D', image: images.editButton },
-                        ]}
-                        onPress={(key) => onSwipeRowItemPress(key, item)}
-                    >
-                      {!isGameState && isHomeTeam && (
-                        <TCGameScoreLeft
-                            style={{ opacity: item?.deleted ? 0.5 : 1 }}
-                              gameData={gameData}
-                              recordData={item}
-                              editor={editorChecked}
-                          />
-                      )}
-                      {!isGameState && !isHomeTeam && (
-                        <TCGameScoreRight
-                            style={{ opacity: item?.deleted ? 0.5 : 1 }}
-                              gameData={gameData}
-                              recordData={item}
-                              editor={editorChecked}
-                          />
-                      )}
-                      {isGameState && <TCGameState recordData={item}/>}
-                    </SwipeableRow>
-                  </View>
-                )
-              }}
+              renderItem={renderSoccerMatchRecords}
               onRefresh={async () => { await loadAtOnce() }}
               refreshing={loading}
               ListEmptyComponent={() => (

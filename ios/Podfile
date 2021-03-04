@@ -19,6 +19,8 @@ target 'townscup_reactnative' do
 
   pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
 
+  pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
+
   target 'townscup_reactnativeTests' do
     inherit! :complete
     # Pods for testing

@@ -33,9 +33,10 @@ import { getMyGroups } from '../../api/Groups';
 import AuthContext from '../../auth/context';
 import { getSearchData } from '../../utils';
 
-const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
-const tagPrefix = '_.';
-const tagSuffix = '._';
+// const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
+const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagPrefix = '_.';
+// const tagSuffix = '._';
 export default function WritePostScreen({ navigation, route }) {
   const textInputRef = useRef();
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
@@ -70,7 +71,7 @@ export default function WritePostScreen({ navigation, route }) {
     if (route.params && route.params.selectedTagList) {
       if (route.params.selectedTagList?.length > 0) {
         route.params.selectedTagList.map((tagItem) => {
-          let joinedString = '';
+          let joinedString = '@';
           const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
           const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
 
@@ -78,13 +79,14 @@ export default function WritePostScreen({ navigation, route }) {
           jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'user' : tagItem?.entity_type;
           jsonData.entity_id = tagItem?.[entity_text];
           if (tagItem?.group_name) {
-            jsonData.entity_name = tagItem?.group_name.toLowerCase();
+            jsonData.entity_name = _.startCase(_.toLower(tagItem?.group_name));
           } else {
-            const fName = _.startCase(tagItem?.first_name?.toLowerCase());
-            const lName = _.startCase(tagItem?.last_name?.toLowerCase());
-            jsonData.entity_name = `${fName} ${lName}`;
+            const fName = _.startCase(_.toLower(tagItem?.first_name));
+            const lName = _.startCase(_.toLower(tagItem?.last_name));
+            jsonData.entity_name = `${fName}${lName}`;
           }
-          joinedString = `@${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
+          // joinedString = `@${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
+          joinedString += `${jsonData.entity_name } `;
           if (!isExist) tagsArray.push(tagItem)
           tagName = `${tagName} ${joinedString}`;
           textInputRef.current.focus();
@@ -155,14 +157,15 @@ export default function WritePostScreen({ navigation, route }) {
     jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'user' : item?.entity_type;
     jsonData.entity_id = item?.[entity_text];
     if (item?.group_name) {
-      jsonData.entity_name = item?.group_name.toLowerCase();
+      jsonData.entity_name = _.startCase(_.toLower(item?.group_name));
     } else {
-      const fName = _.startCase(item?.first_name?.toLowerCase());
-      const lName = _.startCase(item?.last_name?.toLowerCase());
+      const fName = _.startCase(_.toLower(item?.first_name));
+      const lName = _.startCase(_.toLower(item?.last_name));
       jsonData.entity_name = `${fName} ${lName}`;
     }
-    joinedString += `${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
-    const str = searchText?.replace(`${searchTag}`, joinedString);
+    // joinedString += `${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
+    joinedString += `${jsonData.entity_name } `;
+    const str = searchText?.replace(`${searchTag}`, joinedString.replace(/ /g, ''));
     setSearchText(`${str} `)
 
     const isExist = tagsOfEntity.some((tagItem) => tagItem[entity_text] === item[entity_text])
@@ -206,30 +209,32 @@ export default function WritePostScreen({ navigation, route }) {
         </View>
         <TouchableOpacity
               style={styles.doneViewStyle}
-              onPress={() => {
+              onPress={async () => {
                 setloading(true);
                 if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
                   Alert.alert('Please write some text or select any image.');
                 } else {
                   setloading(false);
                   const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-                  const nameArray = []
-                  tagsOfEntity.map((item) => {
+
+                  tagsOfEntity.map(async (item, index) => {
                     let joinedString = '@';
-                    if (item?.group_name) {
-                      joinedString += _.startCase(item?.group_name.toLowerCase())
+                    if (item?.group_id) {
+                      joinedString += _.startCase(_.toLower(item?.group_name))
                     } else {
-                      const fName = _.startCase(item?.first_name?.toLowerCase());
-                      const lName = _.startCase(item?.last_name?.toLowerCase());
+                      const fName = _.startCase(_.toLower(item?.first_name));
+                      const lName = _.startCase(_.toLower(item?.last_name));
                       joinedString += fName + lName;
                     }
-                    nameArray.push(joinedString?.replace(/ /g, ''))
+
+                    console.log(joinedString);
+                    // const checkRegex = `/(?<![\\w@])${joinedString?.replace(/ /g, '')}\\b/gmi`;
+                    // const isThere = await searchText.search(checkRegex)
+                    const isThere = searchText.includes(joinedString?.replace(/ /g, ''))
+                    if (!isThere) tagData.splice(index, 1);
                     return null;
                   })
-                  nameArray.map((item, index) => {
-                    if (!searchText.includes(item)) tagData.splice(index, 1);
-                    return null;
-                  })
+
                   setloading(false);
                   navigation.goBack();
                   onPressDone(selectImage, searchText, tagData);

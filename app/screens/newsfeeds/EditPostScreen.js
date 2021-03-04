@@ -1,5 +1,5 @@
 import React, {
-  useState, useContext, useRef, useEffect,
+  useState, useContext, useRef, useEffect, useMemo, useCallback,
 } from 'react';
 import {
   View,
@@ -36,12 +36,14 @@ import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import { getSearchData } from '../../utils';
 
+const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+
 const EditPostScreen = ({
   navigation,
   route,
 }) => {
   const { params: { data, onPressDone } } = route;
-  const textInputFocus = useRef();
+  const textInputRef = useRef();
   // const keyboardDidShowListener = null;
   // const keyboardDidHideListener = null;
   let postText = '';
@@ -61,8 +63,8 @@ const EditPostScreen = ({
   const editObject = JSON.parse(route?.params?.data?.object);
   const [tagsOfEntity, setTagsOfEntity] = useState(editObject?.taggedData || []);
   const [searchTag, setSearchTag] = useState();
-  const [isModalVisible, setModalVisible] = useState(false);
   const [searchUsers, setSearchUsers] = useState([]);
+  const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
   const [searchGroups, setSearchGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -95,44 +97,96 @@ const EditPostScreen = ({
     // }
   }, [])
 
-  const onTagPress = (item) => {
+  useEffect(() => {
+    if (searchText?.length === 0) {
+      setTagsOfEntity([])
+      setUsers([]);
+      setGroups([]);
+      setLetModalVisible(false);
+    }
+    if (searchText) {
+      if (currentTextInputIndex === 1 && searchText[currentTextInputIndex - 2] === '@' && searchText[currentTextInputIndex - 1] !== ' ') setLetModalVisible(true);
+      else if (searchText[currentTextInputIndex - 2] === '@' && searchText[currentTextInputIndex - 1] !== ' ') setLetModalVisible(true)
+
+      const lastString = searchText.substr(0, currentTextInputIndex);
+      if (lastString) setSearchTag(`@${lastString.split('@')?.reverse()?.[0]}`)
+    }
+  }, [currentTextInputIndex, searchText])
+
+  useEffect(() => {
+    if (letModalVisible) searchFilterFunction(searchTag?.replace('@', ''))
+  }, [letModalVisible, searchTag])
+
+  const onTagPress = useCallback((item) => {
     const tagsArray = [];
-    const joinedString = item?.group_name
-      ? _.startCase(item?.group_name.toLowerCase())
-      : `${_.startCase(item?.first_name?.toLowerCase())}${_.startCase(item?.last_name?.toLowerCase())}`;
-    const str = searchText.replace(new RegExp(`${searchTag}$`), joinedString.replace(/ /g, ''));
-    setSearchText(`${str} `)
+    let joinedString = '@';
     const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
+    const jsonData = { entity_type: '', entity_name: '', entity_id: '' }
+    jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'user' : item?.entity_type;
+    jsonData.entity_id = item?.[entity_text];
+    if (item?.group_name) {
+      jsonData.entity_name = _.startCase(_.toLower(item?.group_name));
+    } else {
+      const fName = _.startCase(_.toLower(item?.first_name));
+      const lName = _.startCase(_.toLower(item?.last_name));
+      jsonData.entity_name = `${fName} ${lName}`;
+    }
+    // joinedString += `${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
+    joinedString += `${jsonData.entity_name } `;
+    const str = searchText?.replace(`${searchTag}`, joinedString.replace(/ /g, ''));
+    setSearchText(`${str} `)
+
     const isExist = tagsOfEntity.some((tagItem) => tagItem[entity_text] === item[entity_text])
     if (!isExist) tagsArray.push(item)
     setTagsOfEntity([...tagsOfEntity, ...tagsArray])
-    setModalVisible(false)
-  }
+    setLetModalVisible(false)
+    textInputRef.current.focus();
+  }, [searchTag, searchText, tagsOfEntity])
 
   useEffect(() => {
     let tagName = '';
     const tagsArray = [];
-    if (route?.params?.selectedTagList?.length > 0) {
-      route.params.selectedTagList.map((tagItem) => {
-        const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
-        const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
-        if (!isExist) tagsArray.push(tagItem)
-        tagName = `${tagName} @${tagItem.title.replace(/\s/g, '')}`;
-        return null;
-      })
-      setTagsOfEntity([...tagsOfEntity, ...tagsArray])
-      setSearchText(searchText + tagName);
+    if (route?.params?.selectedTagList) {
+      if (route?.params?.selectedTagList?.length > 0) {
+        route.params.selectedTagList.map((tagItem) => {
+          let joinedString = '@';
+          const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
+          const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
+
+          const jsonData = { entity_type: '', entity_name: '', entity_id: '' }
+          jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'user' : tagItem?.entity_type;
+          jsonData.entity_id = tagItem?.[entity_text];
+          if (tagItem?.group_name) {
+            jsonData.entity_name = _.startCase(_.toLower(tagItem?.group_name));
+          } else {
+            const fName = _.startCase(_.toLower(tagItem?.first_name));
+            const lName = _.startCase(_.toLower(tagItem?.last_name));
+            jsonData.entity_name = `${fName}${lName}`;
+          }
+          // joinedString = `@${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
+          joinedString += `${jsonData.entity_name } `;
+          if (!isExist) tagsArray.push(tagItem)
+          tagName = `${tagName} ${joinedString}`;
+          textInputRef.current.focus();
+          return null;
+        })
+        setLetModalVisible(false)
+        setTagsOfEntity([...tagsOfEntity, ...tagsArray])
+        const modifiedSearch = searchText;
+        const output = [modifiedSearch.slice(0, currentTextInputIndex - 1), tagName, modifiedSearch.slice(currentTextInputIndex - 1)].join('');
+        setSearchText(output);
+      }
     }
   }, [route?.params?.selectedTagList]);
 
-  const searchFilterFunction = (text) => {
-    if (text.length > 0) {
-      const userData = getSearchData(searchUsers, ['first_name', 'last_name', 'group_name'], text);
-      const groupData = getSearchData(searchGroups, ['first_name', 'last_name', 'group_name'], text);
+  const searchFilterFunction = useCallback((text) => {
+    if (text?.length > 0) {
+      const userData = getSearchData(searchUsers, ['full_name', 'first_name', 'last_name', 'group_name'], text);
+      const groupData = getSearchData(searchGroups, ['full_name', 'first_name', 'last_name', 'group_name'], text);
       setUsers([...userData]);
       setGroups([...groupData])
     }
-  };
+  }, [searchGroups, searchUsers]);
 
   let userImage = '';
   let userName = '';
@@ -141,15 +195,53 @@ const EditPostScreen = ({
     userImage = data.actor.data.thumbnail;
   }
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
   const renderTagText = (matchingString) => {
     const pattern = /\B@\w+/g;
     const match = matchingString.match(pattern);
     return <Text style={{ ...styles.username, color: colors.greeColor }}>{match[0]}</Text>;
   }
+
+  const renderUrlPreview = useMemo(() => searchText?.length > 0 && (<UrlPreview
+          text={searchText}
+          containerStyle={styles.previewContainerStyle}
+      />
+  ), [searchText]);
+
+  const renderTagUsersAndGroups = useCallback(({ item }) => (
+    <TouchableOpacity
+          onPress={() => onTagPress(item)}
+          style={styles.userListStyle}>
+      <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
+      <Text style={styles.userTextStyle}>
+        {item?.group_name ? item?.group_name : `${item.first_name} ${item.last_name}`}
+      </Text>
+      <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}`}</Text>
+    </TouchableOpacity>
+  ), [onTagPress]);
+
+  const renderModalTagEntity = useMemo(() => (letModalVisible && [...users, ...groups]?.length > 0)
+      && (<View style={[styles.userListContainer, { marginTop: searchFieldHeight + 20 }]}>
+        <FlatList
+                showsVerticalScrollIndicator={false}
+                data={[...users, ...groups]}
+                keyboardShouldPersistTaps={'always'}
+                style={{ paddingTop: hp(1) }}
+                ListFooterComponent={() => <View style={{ height: hp(6) }} />}
+                renderItem={renderTagUsersAndGroups}
+                keyExtractor={ (item, index) => index.toString() }
+            />
+      </View>
+      ), [groups, letModalVisible, renderTagUsersAndGroups, searchFieldHeight, users])
+
+  const onKeyPress = useCallback(({ nativeEvent }) => {
+    if (nativeEvent.key === 'Backspace' && searchText[currentTextInputIndex - 1] === '@') {
+      setLetModalVisible(false);
+    }
+  }, [currentTextInputIndex, searchText])
+
+  const onSelectionChange = useCallback((e) => {
+    setCurrentTextInputIndex(e?.nativeEvent?.selection?.end)
+  }, [])
 
   return (
     <KeyboardAvoidingView
@@ -214,67 +306,29 @@ const EditPostScreen = ({
       <ScrollView
           bounces={ false }
           style={{ flex: 1 }}
-          // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
+          // onTouchEnd={() => !isKeyboardOpen && textInputRef.current.focus()}
       >
         <TextInput
-            ref={textInputFocus}
+            ref={textInputRef}
             onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)}
             placeholder="What's going on?"
             placeholderTextColor={ colors.userPostTimeColor }
-            onKeyPress={({ nativeEvent }) => {
-              if (nativeEvent.key === 'Backspace') {
-                setLetModalVisible(false);
-              } else {
-                setLetModalVisible(true);
-              }
-            }}
-            onChangeText={ (text) => {
-              setSearchText(text);
-              setSearchTag(text.split('@')?.reverse()?.[0])
-              if (text.split('@')?.reverse()?.[0] !== '' || text.split('@')?.reverse()?.[0] !== ' ') {
-                searchFilterFunction(text.split('@')?.reverse()?.[0])
-              }
-              const lastChar = text.slice(text.length - 1, text.length);
-              if (lastChar === '@' && letModalVisible) {
-                toggleModal()
-              }
-            }}
-            style={ styles.textInputField }
+            onSelectionChange={onSelectionChange}
+            onKeyPress={onKeyPress}
+            onChangeText={setSearchText}
+            style={styles.textInputField}
             multiline={ true }
             textAlignVertical={'top'}
         >
           <ParsedText
-              parse={[{ pattern: /\B@\w+/g, renderText: renderTagText }]}
+              parse={[{ pattern: tagRegex, renderText: renderTagText }]}
               childrenProps={{ allowFontScaling: false }}
           >
             {searchText}
           </ParsedText>
         </TextInput>
-        {isModalVisible && [...users, ...groups]?.length > 0
-        && <View style={[styles.userListContainer, { marginTop: searchFieldHeight + 20 }]}>
-          <FlatList
-              showsVerticalScrollIndicator={false}
-              data={[...users, ...groups]}
-              keyboardShouldPersistTaps={'always'}
-              style={{ paddingTop: hp(1) }}
-              ListFooterComponent={() => <View style={{ height: hp(6) }} />}
-              renderItem={ ({ item }) => (
-                <TouchableOpacity
-                        onPress={() => onTagPress(item)}
-                        style={styles.userListStyle}>
-                  <Image source={item?.thumbnail ? { uri: item?.thumbnail } : images.profilePlaceHolder} style={{ borderRadius: 13, height: 25, width: 25 }}/>
-                  <Text style={styles.userTextStyle}>
-                    {item?.group_name ? item?.group_name : `${item.first_name} ${item.last_name}`}
-                  </Text>
-                  <Text style={styles.locationTextStyle}>{`${item.city}, ${item.state_abbr}`}</Text>
-                </TouchableOpacity>)}
-              keyExtractor={ (item, index) => index.toString() }
-          />
-        </View>}
-        {searchText.length > 0 && <UrlPreview
-            text={searchText}
-            containerStyle={styles.previewContainerStyle}
-        />}
+        {renderUrlPreview}
+        {renderModalTagEntity}
 
         {selectImage.length > 0 && (
           <FlatList

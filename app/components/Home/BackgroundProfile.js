@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
   userTextStyle: {
     fontSize: 22,
     fontFamily: fonts.RBold,
+    textAlign: 'center',
   },
   cityTextStyle: {
     fontSize: 14,
