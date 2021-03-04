@@ -6,6 +6,11 @@ export const searchLocations = async (query) => apiCall({
   url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(regions)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
 })
 
+export const searchCityState = async (query) => apiCall({
+  method: 'get',
+  url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(cities)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
+})
+
 export const searchVenue = async (query, authContext) => makeAPIRequest({
   method: 'get',
   authContext,

@@ -18,7 +18,7 @@ export default function ClubCreatedScreen({ navigation, route }) {
     <View style={ styles.mainContainer }>
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
-      <TouchableOpacity onPress={ () => navigation.navigate('HomeScreen') }>
+      <TouchableOpacity onPress={ () => navigation.navigate('AccountScreen') }>
         <Image
           source={ images.backArrow }
           style={ styles.backArrowButton}
@@ -36,14 +36,17 @@ export default function ClubCreatedScreen({ navigation, route }) {
           navigation.push('HomeScreen', {
             uid: route.params.group_id,
             role: route.params.entity_type,
-            backButtonVisible: false,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+            sourceScreen: 'AccountScreen',
+
           });
         }}>
           <Text style={ styles.goToProfileTitle }>{strings.goToClubText}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={ styles.inviteUserButton } onPress={() => {}}>
+        {/* <TouchableOpacity style={ styles.inviteUserButton } onPress={() => {}}>
           <Text style={ styles.goToProfileTitle }>{strings.inviteUserText}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -90,18 +93,17 @@ const styles = StyleSheet.create({
   groupsImg: {
     height: 60,
     resizeMode: 'contain',
-
     width: 60,
   },
-  inviteUserButton: {
-    alignSelf: 'center',
-    borderColor: colors.whiteColor,
-    borderRadius: 40,
-    borderWidth: 1,
-    height: 50,
-    marginTop: wp('5%'),
-    width: '86%',
-  },
+  // inviteUserButton: {
+  //   alignSelf: 'center',
+  //   borderColor: colors.whiteColor,
+  //   borderRadius: 40,
+  //   borderWidth: 1,
+  //   height: 50,
+  //   marginTop: wp('5%'),
+  //   width: '86%',
+  // },
 
   mainContainer: {
     flex: 1,

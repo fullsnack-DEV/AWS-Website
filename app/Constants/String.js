@@ -572,5 +572,6 @@ hiringPlayerTitle: 'Hiring players',
 lookingForTeamTitle: 'Looking for a team',
 refereesTitle: 'Referees',
 scorekeeperTitle: 'Scorekeepers',
+searchTitle: 'Search by city, state or country',
 };
 export default strings;

@@ -182,7 +182,7 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
     console.log('MARKED DATES::', JSON.stringify(markedDates));
   };
   function doesOverlap(date1, date2) {
-    return date1.some(
+    return (date1 || []).some(
       (e) => (new Date(e.start_datetime).getTime()
           > new Date(date2.start_datetime / 1000).getTime()
           && new Date(e.start_datetime).getTime()

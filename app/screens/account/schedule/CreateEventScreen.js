@@ -238,14 +238,14 @@ export default function CreateEventScreen({ navigation, route }) {
                   descriptions: eventDescription,
                   color: singleSelectEventColor,
                   allDay: toggle,
-                  start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
-                  end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
+                  start_datetime: Number(parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0)),
+                  end_datetime: Number(parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0)),
 
                   is_recurring: selectWeekMonth !== 'Does not repeat',
                   location: searchLocation,
                   latitude: locationDetail.lat,
                   longitude: locationDetail.lng,
-                  isBlocked: is_Blocked,
+                  blocked: is_Blocked,
                   owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
                 }]
               } else {
@@ -254,11 +254,11 @@ export default function CreateEventScreen({ navigation, route }) {
                   descriptions: eventDescription,
                   color: singleSelectEventColor,
                   allDay: toggle,
-                  start_datetime: parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0),
-                  end_datetime: parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0),
+                  start_datetime: Number(parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0)),
+                  end_datetime: Number(parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0)),
 
                   is_recurring: selectWeekMonth !== 'Does not repeat',
-                  isBlocked: is_Blocked,
+                  blocked: is_Blocked,
                   owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
                 }]
               }
@@ -272,7 +272,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`
               }
               if (selectWeekMonth !== 'Does not repeat') {
-                data[0].untilDate = parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0);
+                data[0].untilDate = Number(parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0));
                 data[0].rrule = `FREQ=${rule}`;
               }
               console.log('Response :-', data);
