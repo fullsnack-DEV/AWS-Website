@@ -1,4 +1,6 @@
-import React, { useCallback, useLayoutEffect, useState } from 'react';
+import React, {
+useCallback, useLayoutEffect, useState, useContext,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +11,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Dimensions,
+  TextInput,
 } from 'react-native';
 
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -30,13 +34,17 @@ import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
 import TCEntityView from '../../components/TCEntityView';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCThinDivider from '../../components/TCThinDivider';
-import TCSearchBox from '../../components/TCSearchBox';
+import AuthContext from '../../auth/context';
+
+import { searchCityState } from '../../api/External';
 
 export default function LocalHomeScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
-  // const authContext = useContext(AuthContext);
+  const [locationSearchModal, setLocationSearchModal] = useState(false);
+  const [cityData, setCityData] = useState([]);
+  const authContext = useContext(AuthContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,7 +53,11 @@ export default function LocalHomeScreen({ navigation }) {
       ),
       headerTitle: () => (
         <View style={styles.titleHeaderView}>
-          <Text style={styles.headerTitle} onPress={() => setLocationPopup(true)}>Vancuver</Text>
+          <Text
+            style={styles.headerTitle}
+            onPress={() => setLocationPopup(true)}>
+            Vancuver
+          </Text>
           <Image source={images.home_gps} style={styles.gpsIconStyle} />
         </View>
       ),
@@ -57,6 +69,16 @@ export default function LocalHomeScreen({ navigation }) {
       ),
     });
   }, [navigation]);
+
+  const getLocationData = async (searchLocationText) => {
+    if (searchLocationText.length) {
+      searchCityState(searchLocationText, authContext).then((response) => {
+        setCityData(response.predictions);
+      });
+    } else {
+      setCityData([]);
+    }
+  };
 
   const sportsListView = useCallback(
     ({ item }) => <Text style={styles.sportName}>{item}</Text>,
@@ -125,6 +147,21 @@ export default function LocalHomeScreen({ navigation }) {
         width: 10,
       }}
     />
+  );
+  // const getTeamsData = async (item) => {
+  //   searchLocationPlaceDetail(
+  //     item.place_id,
+  //     authContext,
+  //   ).then((response) => {});
+  // };
+  const renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={() => console.log('ITEM::=>', item)}>
+      <Text style={styles.cityList}>{cityData[index]?.structured_formatting?.main_text}</Text>
+
+      <TCThinDivider />
+    </TouchableOpacity>
   );
   return (
     <View style={{ flex: 1 }}>
@@ -299,84 +336,130 @@ export default function LocalHomeScreen({ navigation }) {
           animationType="slide"
           transparent={true}
           visible={locationPopup}>
-
           <View style={styles.bottomPopupContainer}>
-            <View
-                style={styles.viewsContainer}>
+            <View style={styles.viewsContainer}>
               <Text
-              onPress={() => setLocationPopup(false)}
-                  style={styles.cancelText}>
+                onPress={() => setLocationPopup(false)}
+                style={styles.cancelText}>
                 Cancel
               </Text>
+              <Text style={styles.locationText}>Location</Text>
               <Text
-                  style={styles.locationText}>
-                Location
-              </Text>
-              <Text
-               onPress={() => setLocationPopup(false)}
-                  style={styles.doneText}>
-                Done
+                style={styles.doneText}>
+                {'    '}
               </Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
             <TouchableOpacity onPress={() => setSelectedLocationOption(0)}>
-              {selectedLocationOption === 0 ? <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                <Text
-                  style={[styles.curruentLocationText, { color: colors.whiteColor }]}>
-                  Current location
-                </Text>
-              </LinearGradient> : <View style={styles.backgroundView}>
-                <Text
-                  style={styles.curruentLocationText}>
-                  Current location
-                </Text>
-              </View>}
-
+              {selectedLocationOption === 0 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text
+                    style={[
+                      styles.curruentLocationText,
+                      { color: colors.whiteColor },
+                    ]}>
+                    Current location
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.curruentLocationText}>
+                    Current location
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectedLocationOption(1)}>
-
-              {selectedLocationOption === 1 ? <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                <Text
-                  style={[styles.myCityText, { color: colors.whiteColor }]}>
-                  My home city
-                </Text>
-              </LinearGradient> : <View style={styles.backgroundView}>
-                <Text
-                  style={styles.myCityText}>
-                  My home city
-                </Text>
-              </View>}
+              {selectedLocationOption === 1 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
+                    Home city
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.myCityText}>Home city</Text>
+                </View>
+              )}
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectedLocationOption(2)}>
-
-              {selectedLocationOption === 2 ? <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                <Text
-                  style={[styles.worldText, { color: colors.whiteColor }]}>
-                  World
-                </Text>
-              </LinearGradient> : <View style={styles.backgroundView}>
-                <Text
-                  style={styles.worldText}>
-                  World
-                </Text>
-              </View>}
+              {selectedLocationOption === 2 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text style={[styles.worldText, { color: colors.whiteColor }]}>
+                    World
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.worldText}>World</Text>
+                </View>
+              )}
             </TouchableOpacity>
-            <Text
-                style={styles.orText}>
-              Or
-            </Text>
-            <TCSearchBox
-                style={{ alignSelf: 'center' }}
-                placeholderText={'Search by city, state or country'}
-              />
-          </View>
+            <Text style={styles.orText}>Or</Text>
 
+            <TouchableOpacity
+              style={styles.sectionStyle}
+              onPress={() => {
+                setLocationPopup(false);
+                setLocationSearchModal(true);
+              }}>
+              <Text style={styles.searchText}>{strings.searchTitle}</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+        <Modal
+          backdropColor="black"
+          onBackdropPress={() => false}
+          backdropOpacity={1}
+          animationType="slide"
+          transparent={true}
+          visible={locationSearchModal}>
+          <View
+            style={[
+              styles.bottomPopupContainer,
+              { height: Dimensions.get('window').height - 60 },
+            ]}>
+            <View style={styles.viewsContainer}>
+              <Text
+                onPress={() => {
+                  setLocationSearchModal(false)
+                  setLocationPopup(true)
+                }}
+                style={styles.cancelText}>
+                Cancel
+              </Text>
+              <Text style={styles.locationText}>Location</Text>
+              <Text
+                style={styles.doneText}>
+                {'    '}
+              </Text>
+            </View>
+            <TCThinDivider width={'100%'} marginBottom={15} />
+            <TextInput
+              style={styles.sectionStyle}
+              placeholder={strings.searchTitle}
+              placeholderTextColor={colors.userPostTimeColor}
+              clearButtonMode="always"
+              onChangeText={(text) => getLocationData(text)}
+              // value={value}
+            />
+            <FlatList
+              data={cityData}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              style={{
+                marginLeft: 25,
+                marginRight: 25,
+                marginTop: 20,
+              }}
+            />
+          </View>
         </Modal>
       </ScrollView>
     </View>
@@ -505,5 +588,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
+  },
+  sectionStyle: {
+    alignItems: 'center',
+    fontSize: 15,
+    fontFamily: fonts.RRegular,
+    backgroundColor: colors.offwhite,
+    borderRadius: 25,
+    flexDirection: 'row',
+    height: 45,
+    paddingLeft: 17,
+    paddingRight: 5,
+    width: widthPercentageToDP('86%'),
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    alignSelf: 'center',
+    elevation: 2,
+  },
+  searchText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+  },
+  cityList: {
+    color: colors.lightBlackColor,
+    fontSize: 16,
+    textAlign: 'left',
+    fontFamily: fonts.RRegular,
+
+    // paddingLeft: wp('1%'),
+    width: widthPercentageToDP('70%'),
+    margin: 15,
+    textAlignVertical: 'center',
   },
 });

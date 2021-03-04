@@ -3,7 +3,7 @@ import makeAPIRequest from '../utils/Global';
 
 export const blockedSlots = async (entityType, entityID, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}${entityType}/${entityID}/slots`,
+  url: `${Config.BASE_URL}${entityType}/${entityID}/calendars`,
   authContext,
 });
 

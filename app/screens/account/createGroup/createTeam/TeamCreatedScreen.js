@@ -42,6 +42,8 @@ export default function TeamCreatedScreen({ navigation, route }) {
             uid: route.params.group_id,
             role: route.params.entity_type,
             backButtonVisible: true,
+            menuBtnVisible: false,
+            sourceScreen: 'AccountScreen',
           });
         }}>
           <Text style={ styles.goToProfileTitle }>Go to team home</Text>

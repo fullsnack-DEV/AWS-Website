@@ -582,9 +582,9 @@ export default function AccountScreen({ navigation }) {
                   // backgroundColor: 'red',
                 }}>
                 <TCNavigationHeader
-                  name={parentGroup.group_name}
+                  name={parentGroup?.group_name}
                   groupType={'club'}
-                  image={parentGroup.thumbnail && parentGroup.thumbnail}
+                  image={parentGroup?.thumbnail}
                 />
               </View>
             </View>
@@ -882,7 +882,7 @@ export default function AccountScreen({ navigation }) {
                               style={styles.smallProfileImg}
                             />
                           )}
-                          <Text style={styles.entityName}>
+                          <Text style={item.group_name.length > 26 ? [styles.entityName, { width: wp('60%') }] : styles.entityName} numberOfLines={1}>
                             {item.group_name}
                           </Text>
                           <Text style={styles.teamSportView}>
@@ -1157,6 +1157,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
+
   },
   entityNameText: {
     color: colors.lightBlackColor,
@@ -1171,7 +1172,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 40,
     marginRight: 20,
-    // backgroundColor:'red',
+    // width: wp('86%'),
+
   },
   halfSeparatorLine: {
     alignSelf: 'flex-end',
