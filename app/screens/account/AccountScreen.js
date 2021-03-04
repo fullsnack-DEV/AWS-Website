@@ -55,7 +55,7 @@ export default function AccountScreen({ navigation }) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [group, setGroup] = useState({});
-  const [parentGroup, setParentGroup] = useState(null);
+  const [parentGroup, setParentGroup] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notificationCounter, setNotificationCounter] = useState(0);
   const [team, setTeam] = useState([]);
@@ -177,13 +177,15 @@ export default function AccountScreen({ navigation }) {
 
   const getParentClub = (item) => {
     setloading(true);
+    console.log('Parent group ID::', item.group_id);
     getGroupDetails(item.group_id, authContext)
       .then((response) => {
-        console.log('Parent group detail::', response.payload.club);
-        if (response.payload.club !== undefined) {
-          setParentGroup(response.payload.club);
+        console.log('Parent group detail1::', response.payload);
+        console.log('Parent group detail2::', response.payload.club);
+        if (!response?.payload?.club) {
+          setParentGroup(response?.payload?.club);
         } else {
-          setParentGroup(null);
+          setParentGroup();
         }
         setloading(false);
       })
@@ -294,7 +296,7 @@ export default function AccountScreen({ navigation }) {
         role: 'user',
         obj: item,
       };
-      setParentGroup(null);
+      setParentGroup();
     } else {
       if (item.entity_type === 'team') {
         const i = team.indexOf(item);
@@ -329,7 +331,7 @@ export default function AccountScreen({ navigation }) {
           role: 'club',
           obj: item,
         };
-        setParentGroup(null);
+        setParentGroup();
         setGroup(item);
       }
       setGroupList([authContext.entity.auth.user, ...club, ...team]);

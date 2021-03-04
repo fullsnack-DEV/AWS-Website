@@ -41,7 +41,7 @@ const Scorekeepers = ({
 
   const goToScorekeeperReservationDetail = useCallback((data) => {
     setloading(true);
-    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
