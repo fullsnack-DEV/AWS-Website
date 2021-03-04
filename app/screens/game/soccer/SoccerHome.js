@@ -201,9 +201,10 @@ const SoccerHome = ({ navigation, route }) => {
       )
   ), [onImageAlertCancel, uploadImageProgressData])
 
-  const onEndReached = () => {
+  const onEndReached = useCallback(() => {
     if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()
-  }
+  }, [currentTab])
+
   const renderTopHeaderWithTabContain = useMemo(() => (
     <TopBackgroundHeader
           onEndReached={onEndReached}

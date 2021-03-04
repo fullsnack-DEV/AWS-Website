@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useMemo, useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -110,16 +112,50 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
     }
   }, [searchText])
 
-  const renderTabContain = () => {
-    const dataTabList = [userData, groupData]
-    return (
-      <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
-        {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
-      </View>
-    )
-  }
+  const toggleSelection = useCallback((isChecked, user) => {
+    const data = selectedUsers;
+    if (isChecked) {
+      const uIndex = data.findIndex(({ id }) => user.id === id);
+      if (uIndex !== -1) data.splice(uIndex, 1);
+    } else {
+      data.push(user);
+    }
+    setSelectedUsers([...data]);
+  }, [selectedUsers]);
 
-  const renderSingleTab = (data) => {
+  const renderItem = useCallback(({ item }) => {
+    let thumbnail = null;
+    let fullName = '';
+    let locationName = '-';
+    if (item) {
+      if (item.thumbnail) {
+        thumbnail = item.thumbnail;
+      }
+      if (item.title) {
+        fullName = item.title;
+      }
+      if (item.city && item.state_abbr) {
+        locationName = `${item.city}, ${item.state_abbr}`;
+      }
+    }
+    const isChecked = selectedUsers.some((val) => {
+      if (item.id === val.id) {
+        return true;
+      }
+      return false
+    })
+    return (
+      <TagItemView
+            source={thumbnail ? { uri: thumbnail } : images.profilePlaceHolder}
+            userName={fullName}
+            userLocation={locationName}
+            checkUncheckSource={isChecked ? images.checkWhiteLanguage : images.uncheckWhite}
+            onItemPress={() => toggleSelection(isChecked, item)}
+        />
+    );
+  }, [selectedUsers, toggleSelection]);
+
+  const renderSingleTab = useCallback((data) => {
     let filteredData = data;
     if (currentTab === 1) {
       filteredData = data?.filter((item) => item?.entity_type === currentGrpupTab)
@@ -158,110 +194,78 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
           />
       </View>
     )
-  }
+  }, [currentGrpupTab, currentTab, renderItem]);
 
-  const toggleSelection = (isChecked, user) => {
-    const data = selectedUsers;
-    if (isChecked) {
-      const uIndex = data.findIndex(({ id }) => user.id === id);
-      if (uIndex !== -1) data.splice(uIndex, 1);
-    } else {
-      data.push(user);
-    }
-    setSelectedUsers([...data]);
-  };
-
-  const renderItem = ({ item }) => {
-    let thumbnail = null;
-    let fullName = '';
-    let locationName = '-';
-    if (item) {
-      if (item.thumbnail) {
-        thumbnail = item.thumbnail;
-      }
-      if (item.title) {
-        fullName = item.title;
-      }
-      if (item.city && item.state_abbr) {
-        locationName = `${item.city}, ${item.state_abbr}`;
-      }
-    }
-    const isChecked = selectedUsers.some((val) => {
-      if (item.id === val.id) {
-        return true;
-      }
-      return false
-    })
+  const renderTabContain = useMemo(() => {
+    const dataTabList = [userData, groupData]
     return (
-      <TagItemView
-        source={thumbnail ? { uri: thumbnail } : images.profilePlaceHolder}
-        userName={fullName}
-        userLocation={locationName}
-        checkUncheckSource={isChecked ? images.checkWhiteLanguage : images.uncheckWhite}
-        onItemPress={() => toggleSelection(isChecked, item)}
+      <View style={{ flex: Platform.OS === 'ios' ? 0 : 10 }}>
+        {renderSingleTab(searchText === '' ? dataTabList[currentTab] : searchData)}
+      </View>
+    )
+  }, [currentTab, groupData, renderSingleTab, searchData, searchText, userData])
+
+  const renderHeader = useMemo(() => (
+    <Header
+          leftComponent={
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image source={images.backArrow} style={styles.backImageStyle} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={styles.eventTextStyle}>Tag</Text>
+          }
+          rightComponent={
+            <TouchableOpacity style={{ padding: 2 }} onPress={() => {
+              if (route?.params?.comeFrom) {
+                navigation.navigate(route?.params?.comeFrom, { selectedTagList: selectedUsers });
+              }
+            }}>
+              <Text style={styles.doneTextStyle}>Done</Text>
+            </TouchableOpacity>
+          }
       />
-    );
-  };
+  ), [navigation, route?.params?.comeFrom, selectedUsers])
+
+  const renderSearchBox = useMemo(() => (
+    <TCSearchBox
+          style={{ alignSelf: 'center', marginVertical: 5 }}
+          value={searchText}
+          onChangeText={(text) => {
+            setSearchText(text)
+          }}
+      />
+  ), [searchText])
+
+  const renderSelectedEntity = useMemo(() => selectedUsers.length > 0 && (
+    <SelectedTagList
+                dataSource={selectedUsers}
+                titleKey={'title'}
+                onTagCancelPress={({ item }) => {
+                  toggleSelection(true, item)
+                }}
+            />
+        ), [selectedUsers, toggleSelection]);
+
+  const onTabPress = useCallback((tab) => {
+    setCurrentTab(tab)
+    setSearchText('');
+  }, []);
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: 'white' }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
-      <Header
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image source={images.backArrow} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTextStyle}>Tag</Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={() => {
-            if (route?.params?.comeFrom) {
-              navigation.navigate(route?.params?.comeFrom, { selectedTagList: selectedUsers });
-            }
-          }}>
-            <Text style={styles.doneTextStyle}>Done</Text>
-          </TouchableOpacity>
-        }
-      />
+      {renderHeader}
       <View style={styles.sperateLine} />
-      <TCSearchBox
-        style={{ alignSelf: 'center', marginVertical: 5 }}
-        value={searchText}
-        onChangeText={(text) => {
-          setSearchText(text)
-        }}
-      />
-      {selectedUsers.length > 0 && (
-        <SelectedTagList
-        dataSource={selectedUsers}
-        titleKey={'title'}
-        onTagCancelPress={({ item }) => {
-          toggleSelection(true, item)
-        }}
-        />
-      )}
+      {renderSearchBox}
+      {renderSelectedEntity}
       <ScrollableTabs
           tabs={['People', 'Groups', 'Games']}
-          onTabPress={(tab) => {
-            setCurrentTab(tab)
-            setSearchText('');
-          }}
+          onTabPress={onTabPress}
           currentTab={currentTab}
       />
-      {renderTabContain()}
-      {/* <TCScrollableProfileTabs */}
-      {/*  tabItem={['People', 'Groups', 'Games']} */}
-      {/*  onChangeTab={(ChangeTab) => { */}
-      {/*    setCurrentTab(ChangeTab.i) */}
-      {/*    setSearchText('') */}
-      {/*  }} */}
-      {/*  customStyle={{ flex: 1 }} */}
-      {/*  currentTab={currentTab} */}
-      {/*  renderTabContain={renderTabContain} */}
-      {/* /> */}
+      {renderTabContain}
     </KeyboardAvoidingView>
   );
 }

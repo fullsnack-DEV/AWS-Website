@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+ useState, useEffect, useContext, useCallback,
+} from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
 import Hyperlink from 'react-native-hyperlink'
@@ -13,7 +15,7 @@ const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{
 const tagRegex = /@\b_\.{(.*?)}\._\b/gmi;
 const tagPrefix = '@_.';
 const tagSuffix = '._';
-function NewsFeedDescription({
+const NewsFeedDescription = ({
   descriptions,
   character,
   descriptionTxt,
@@ -21,7 +23,7 @@ function NewsFeedDescription({
   containerStyle,
   tagData = [],
   navigation,
-}) {
+}) => {
   const authContext = useContext(AuthContext);
   const [readMore, setReadMore] = useState();
   const [taggedData, setTaggedData] = useState([]);
@@ -44,21 +46,23 @@ function NewsFeedDescription({
     })
   }, [tagData]);
 
-  const toggleNumberOfLines = () => setReadMore(!readMore);
+  const toggleNumberOfLines = useCallback(() => setReadMore((val) => !val), []);
 
-  function renderText(matchingString) {
+  const renderText = useCallback((matchingString) => {
     const match = matchingString.match(tagRegex);
     let removedPrefixSuffix = match?.[0]?.replace(tagPrefix, '')
     removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
     const jsonData = JSON.parse(removedPrefixSuffix);
     return <Text style={{ ...styles.username, color: colors.greeColor }}>@{_.startCase(jsonData?.entity_name?.toLowerCase()) ?? ''}</Text>;
-  }
-  const renderURLText = (matchingString) => {
+  }, [])
+
+  const renderURLText = useCallback((matchingString) => {
     const match = matchingString.match(urlRegex);
     const color = colors.navyBlue;
     return <Text style={{ color }}>{match?.[0]}</Text>
-  }
-  function handleNamePress(data) {
+  }, [])
+
+  const handleNamePress = useCallback((data) => {
     let removedPrefixSuffix = data?.replace(tagPrefix, '')
     removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
     const jsonData = JSON.parse(removedPrefixSuffix);
@@ -72,7 +76,7 @@ function NewsFeedDescription({
         })
       }
     }
-  }
+  }, [authContext?.entity?.uid, navigation])
 
   return (
     <View style={[styles.containerStyle, containerStyle]}>

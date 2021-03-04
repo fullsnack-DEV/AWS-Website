@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useMemo, useCallback, useRef,
+} from 'react';
 import {
   View,
   StyleSheet, Alert,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -14,7 +15,7 @@ import {
   approveDisapproveGameRecords, createGamePost,
   getGameData, getGameFeed,
   getGameGallery,
-  getGameMatchRecords, getGameRefereeReservation,
+  getGameMatchRecords, getGameNextFeed, getGameRefereeReservation,
   getGameScorekeeperReservation,
   getGameStats,
   getSportsList, resetGame,
@@ -25,16 +26,11 @@ import AuthContext from '../../../auth/context'
 import strings from '../../../Constants/String';
 
 const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery']
-const gameIds = [
-  '265b7834-6bbf-40cc-8729-372f3b706331', // 0
-  '049b0c20-f9c6-473d-aab8-76b2430efa68', // 1
-  '0750bda5-942e-4de2-bb65-386aec7cf6c3', // 2
-  '13f4cde8-6a90-4236-8cdd-5ede92e94d5b', // 3
-]
-const globalGameId = gameIds[0];
+
 const TennisHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
-  const [tennisGameId] = useState(route?.params?.gameId ?? globalGameId);
+  const gameFeedFlatListRef = useRef(null);
+  const [tennisGameId] = useState(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,13 +39,14 @@ const TennisHome = ({ navigation, route }) => {
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
   const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
-  const isFocused = useIsFocused();
 
   useEffect(() => {
     getGameDetails();
-  }, [navigation, isFocused]);
+  }, [navigation]);
 
-  const getGameDetails = () => {
+  const getTennisGameData = useCallback((gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext), [authContext, tennisGameId]);
+
+  const getGameDetails = useCallback(() => {
     setLoading(true)
     getTennisGameData(tennisGameId).then(async (res) => {
       console.log('GET GAME DETAIL::', res.payload);
@@ -71,62 +68,71 @@ const TennisHome = ({ navigation, route }) => {
     }).catch((error) => {
       console.log(error);
     }).finally(() => setLoading(false));
-  }
+  }, [authContext.entity, getTennisGameData, tennisGameId])
 
-  const getSoccerGameStats = (gameId) => getGameStats(gameId, authContext)
-  const getTennisGameData = (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext);
-  const followTennisUser = (params, userID) => followUser(params, userID, authContext);
-  const unFollowTennisUser = (params, userID) => unfollowUser(params, userID, authContext);
-  const getTennisGameMatchRecords = (gameId) => getGameMatchRecords(gameId, authContext);
-  const approveDisapproveGameScore = (gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext)
-  // const getTennisGameStats = (gameId) => getGameStats(gameId, authContext)
-  const getTennisGalleryData = (gameId) => getGameGallery(gameId, authContext)
-  const getGameSportsList = () => getSportsList(authContext)
-  const getRefereeReservation = (gameId) => getGameRefereeReservation(gameId, authContext)
-  const getScorekeeperReservation = (gameId) => getGameScorekeeperReservation(gameId, authContext)
-  const getGameFeedData = () => getGameFeed(gameData?.game_id, authContext)
-  const createGamePostData = (params) => createGamePost(params, authContext)
+  const getSoccerGameStats = useCallback((gameId) => getGameStats(gameId, authContext), [authContext])
+  const followTennisUser = useCallback((params, userID) => followUser(params, userID, authContext), [authContext]);
+  const unFollowTennisUser = useCallback((params, userID) => unfollowUser(params, userID, authContext), [authContext]);
+  const getTennisGameMatchRecords = useCallback((gameId) => getGameMatchRecords(gameId, authContext), [authContext]);
+  const approveDisapproveGameScore = useCallback((gameId, teamId, type, params) => approveDisapproveGameRecords(gameId, teamId, type, params, authContext), [authContext])
+  // const getTennisGameStats = useCallback((gameId) => getGameStats(gameId, authContext),[authContext])
+  const getTennisGalleryData = useCallback((gameId) => getGameGallery(gameId, authContext), [authContext])
+  const getGameSportsList = useCallback(() => getSportsList(authContext), [authContext])
+  const getRefereeReservation = useCallback((gameId) => getGameRefereeReservation(gameId, authContext), [authContext])
+  const getScorekeeperReservation = useCallback((gameId) => getGameScorekeeperReservation(gameId, authContext), [authContext])
+  const getGameFeedData = useCallback(() => getGameFeed(gameData?.game_id, authContext), [authContext, gameData?.game_id])
+  const getGameNextFeedData = useCallback((last_id) => getGameNextFeed(gameData?.game_id, last_id, authContext), [authContext, gameData?.game_id]);
+  const createGamePostData = useCallback((params) => createGamePost(params, authContext), [authContext])
 
-  const renderTabContain = (tabKey) => (
-    <View>
-      {tabKey === 0 && (
-        <Summary
-            createGamePostData={createGamePostData}
-            getGameFeedData={getGameFeedData}
-            setUploadImageProgressData={setUploadImageProgressData}
-            getRefereeReservation={getRefereeReservation}
-            getScorekeeperReservation={getScorekeeperReservation}
-            getSportsList={getGameSportsList}
-            getGameData={getTennisGameData}
-            approveDisapproveGameScore={approveDisapproveGameScore}
-            getGameMatchRecords={getTennisGameMatchRecords}
-            followTennisUser={followTennisUser}
-            unFollowTennisUser={unFollowTennisUser}
-            navigation={navigation}
-            gameData={gameData}
-            isAdmin={isAdmin}
-            isRefereeAdmin = {isRefereeAdmin}
-            userRole={userRole}
-            userId={userId}
-        />
-      )}
-      {tabKey === 1 && <Stats
-              // homeTeamName={`${gameData?.home_team?.first_name} ${gameData?.home_team?.last_name}`}
-              // awayTeamName={`${gameData?.away_team?.first_name} ${gameData?.away_team?.last_name}`}
-              getGameStatsData={getSoccerGameStats}
-              gameData={gameData}
-          />}
+  const renderSummaryTab = useMemo(() => (
+    <Summary
+        gameFeedFlatListRef={gameFeedFlatListRef}
+        getGameNextFeedData={getGameNextFeedData}
+        createGamePostData={createGamePostData}
+          getGameFeedData={getGameFeedData}
+          setUploadImageProgressData={setUploadImageProgressData}
+          getRefereeReservation={getRefereeReservation}
+          getScorekeeperReservation={getScorekeeperReservation}
+          getSportsList={getGameSportsList}
+          getGameData={getTennisGameData}
+          approveDisapproveGameScore={approveDisapproveGameScore}
+          getGameMatchRecords={getTennisGameMatchRecords}
+          followTennisUser={followTennisUser}
+          unFollowTennisUser={unFollowTennisUser}
+          navigation={navigation}
+          gameData={gameData}
+          isAdmin={isAdmin}
+          isRefereeAdmin = {isRefereeAdmin}
+          userRole={userRole}
+          userId={userId}
+      />
+  ), [approveDisapproveGameScore, createGamePostData, followTennisUser, gameData, getGameFeedData, getGameNextFeedData, getGameSportsList, getRefereeReservation, getScorekeeperReservation, getTennisGameData, getTennisGameMatchRecords, isAdmin, isRefereeAdmin, navigation, unFollowTennisUser, userId, userRole]);
+
+  const renderStatsTab = useMemo(() => (
+    <Stats
+          getGameStatsData={getSoccerGameStats}
+          gameData={gameData}
+      />
+  ), [gameData, getSoccerGameStats]);
+
+  const renderGalleryTab = useMemo(() => (
+    <Gallery
+          setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
+          gameData={gameData}
+          getGalleryData={getTennisGalleryData}
+          navigation={navigation}/>
+  ), [gameData, getTennisGalleryData, navigation]);
+
+  const renderTabContain = useCallback((tabKey) => (
+    <View style={{ flex: 1 }}>
+      {tabKey === 0 && renderSummaryTab}
+      {tabKey === 1 && renderStatsTab}
       {tabKey === 2 && <></>}
-      {tabKey === 3 && (
-        <Gallery
-              setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
-              gameData={gameData}
-              getGalleryData={getTennisGalleryData}
-              navigation={navigation}/>
-      )}
+      {tabKey === 3 && renderGalleryTab}
     </View>
-  )
-  const resetGameDetail = () => {
+  ), [renderGalleryTab, renderStatsTab, renderSummaryTab])
+
+  const resetGameDetail = useCallback(() => {
     setLoading(true);
     resetGame(gameData?.game_id, authContext).then(() => {
       getGameDetails();
@@ -136,35 +142,67 @@ const TennisHome = ({ navigation, route }) => {
         Alert.alert(strings.alertmessagetitle, e.message);
       }, 10);
     });
-  };
+  }, [authContext, gameData?.game_id, getGameDetails]);
+
+  const onEndReached = useCallback(() => {
+    if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()
+  }, [currentTab])
+
+  const renderTopHeaderWithTabContain = useMemo(() => (
+    <TopBackgroundHeader
+        onEndReached={onEndReached}
+        onBackPress={route?.params?.onBackPress}
+          isAdmin={isAdmin}
+          resetGameDetail={resetGameDetail}
+          navigation={navigation}
+          gameData={gameData}>
+      <TCScrollableProfileTabs
+            tabItem={TAB_ITEMS}
+            onChangeTab={(ChangeTab) => {
+              setCurrentTab(ChangeTab.i)
+            }}
+            currentTab={currentTab}
+            renderTabContain={renderTabContain}
+        />
+    </TopBackgroundHeader>
+  ), [currentTab, gameData, isAdmin, navigation, onEndReached, renderTabContain, resetGameDetail, route?.params?.onBackPress])
+
+  const onCancelImageUpload = useCallback(() => {
+    if (uploadImageProgressData?.cancelRequest) {
+      uploadImageProgressData.cancelRequest.cancel('Cancel Image Uploading');
+    }
+    setUploadImageProgressData(null);
+  }, [uploadImageProgressData?.cancelRequest]);
+
+  const onImageAlertCancel = useCallback(() => {
+    Alert.alert(
+        'Cancel Upload?',
+        'If you cancel your upload now, your post will not be saved.',
+        [
+          {
+            text: 'Go back',
+          },
+          {
+            text: 'Cancel upload',
+            onPress: onCancelImageUpload,
+          },
+        ],
+    );
+  }, [onCancelImageUpload]);
+
+  const renderImageProgress = useMemo(() => uploadImageProgressData && (
+    <ImageProgress
+              numberOfUploaded={uploadImageProgressData?.doneUploadCount}
+              totalUpload={uploadImageProgressData?.totalUploadCount}
+              onCancelPress={onImageAlertCancel}
+              postDataItem={uploadImageProgressData?.postData?.[0] ?? {}}
+          />
+      ), [onImageAlertCancel, uploadImageProgressData])
 
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />
-    <TopBackgroundHeader
-        onBackPress={route?.params?.onBackPress}
-        isAdmin={isAdmin}
-        resetGameDetail={resetGameDetail}
-        navigation={navigation}
-        gameData={gameData}>
-      <TCScrollableProfileTabs
-        tabItem={TAB_ITEMS}
-        onChangeTab={(ChangeTab) => {
-          setCurrentTab(ChangeTab.i)
-        }}
-        currentTab={currentTab}
-        renderTabContain={renderTabContain}
-     />
-    </TopBackgroundHeader>
-    {uploadImageProgressData && (
-      <ImageProgress
-            numberOfUploaded={uploadImageProgressData?.doneUploadCount}
-            totalUpload={uploadImageProgressData?.totalUploadCount}
-            onCancelPress={() => {
-              console.log('Cancel Pressed!');
-            }}
-            postDataItem={uploadImageProgressData?.postData ? uploadImageProgressData?.postData[0] : {}}
-        />
-    )}
+    {renderTopHeaderWithTabContain}
+    {renderImageProgress}
   </View>
 
   )

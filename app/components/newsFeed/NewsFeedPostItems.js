@@ -176,35 +176,63 @@ const NewsFeedPostItems = ({
     }
   }, [descriptions])
 
+  const renderProfileInfo = useMemo(() => (
+    <View style={styles.mainContainer}>
+      <TouchableWithoutFeedback onPress={onImageProfilePress}>
+        <Image
+              style={styles.background}
+              source={!item?.actor?.data?.full_image ? images.profilePlaceHolder : { uri: item?.actor?.data?.full_image }}
+              resizeMode={'cover'}
+          />
+      </TouchableWithoutFeedback>
+      <View style={styles.userNameView}>
+        <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
+        <Text style={styles.activeTimeAgoTxt}>
+          {commentPostTimeCalculate(item?.time)}
+        </Text>
+      </View>
+
+      {showThreeDot && <TouchableOpacity
+            style={styles.dotImageTouchStyle}
+            onPress={() => {
+              actionSheet.current.show();
+            }}>
+        <Image
+              style={styles.dotImageStyle}
+              source={images.threeDotIcon}
+              resizeMode={'contain'}
+          />
+      </TouchableOpacity>}
+    </View>
+  ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
+
+  const renderURLPreview = useMemo(() => (descriptions?.toLowerCase()?.indexOf('http://') === 0
+          || descriptions?.toLowerCase()?.indexOf('https://') === 0) && (<RNUrlPreview
+          text={descriptions}
+          containerStyle={styles.urlPreviewContainerStyle}
+          imageProps={{ resizeMode: 'cover' }}
+          imageStyle={styles.previewImageStyle}
+      />
+  ), [descriptions]);
+
+  const renderDescription = useMemo(() => (
+    <NewsFeedDescription
+          descriptions={descriptions}
+          character={attachedImages?.length > 0 ? 140 : 480}
+          tagData={myItem?.taggedData ?? []}
+          navigation={navigation}
+      />
+  ), [attachedImages?.length, descriptions, myItem?.taggedData, navigation]);
+
+  const onWriteCommentPress = useCallback(() => {
+    navigation.navigate('WriteCommentScreen', {
+      data: item,
+    });
+  }, [item, navigation]);
+
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.mainContainer}>
-        <TouchableWithoutFeedback onPress={onImageProfilePress}>
-          <Image
-            style={styles.background}
-            source={!item?.actor?.data?.full_image ? images.profilePlaceHolder : { uri: item?.actor?.data?.full_image }}
-            resizeMode={'cover'}
-          />
-        </TouchableWithoutFeedback>
-        <View style={styles.userNameView}>
-          <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
-          <Text style={styles.activeTimeAgoTxt}>
-            {commentPostTimeCalculate(item?.time)}
-          </Text>
-        </View>
-
-        {showThreeDot && <TouchableOpacity
-          style={styles.dotImageTouchStyle}
-          onPress={() => {
-            actionSheet.current.show();
-          }}>
-          <Image
-            style={styles.dotImageStyle}
-            source={images.threeDotIcon}
-            resizeMode={'contain'}
-          />
-        </TouchableOpacity>}
-      </View>
+      {renderProfileInfo}
       <View>
         {
           attachedImages && attachedImages?.length === 1 ? (
@@ -234,20 +262,8 @@ const NewsFeedPostItems = ({
             />
           )
         }
-        {(descriptions?.toLowerCase()?.indexOf('http://') === 0
-          || descriptions?.toLowerCase()?.indexOf('https://') === 0) && <RNUrlPreview
-          text={descriptions}
-          containerStyle={styles.urlPreviewContainerStyle}
-          imageProps={{ resizeMode: 'cover' }}
-          imageStyle={styles.previewImageStyle}
-        />}
-
-        <NewsFeedDescription
-            descriptions={descriptions}
-            character={attachedImages?.length > 0 ? 140 : 480}
-            tagData={myItem?.taggedData ?? []}
-            navigation={navigation}
-        />
+        {renderURLPreview}
+        {renderDescription}
 
         <View style={{ marginTop: 10, marginLeft: 10 }}/>
         <View style={styles.commentShareLikeView}>
@@ -261,11 +277,7 @@ const NewsFeedPostItems = ({
                 flexDirection: 'row',
               }}>
               <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('WriteCommentScreen', {
-                    data: item,
-                  });
-                }}
+                onPress={onWriteCommentPress}
                 style={styles.imageTouchStyle}>
                 <Image
                   style={[styles.commentImage, { top: 2 }]}

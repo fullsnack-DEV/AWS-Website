@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Text, View, StyleSheet, Image, TouchableOpacity, Alert,
 } from 'react-native';
@@ -31,7 +31,7 @@ const TCUserFollowUnfollowList = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const onFollowPress = async () => {
+  const onFollowPress = useCallback(async () => {
     setLoading(true);
     const params = {
       entity_type: 'player',
@@ -49,9 +49,9 @@ const TCUserFollowUnfollowList = ({
         onFollowUnfollowPress(userID, false);
       }).finally(() => setLoading(false));
     }
-  };
+  }, [followUser, is_following, onFollowUnfollowPress, unFollowUser, userID]);
 
-  const renderButtons = () => {
+  const renderButtons = useMemo(() => {
     if (isShowReviewButton) {
       return (<TCGradientButton
           onPress={onReviewPress}
@@ -100,7 +100,8 @@ const TCUserFollowUnfollowList = ({
         )}
       </>
     )
-  }
+  }, [isReviewed, isShowReviewButton, is_following, loading, myUserId, onFollowPress, onReviewPress, userID, userRole])
+
   return (
     <View>
       <View style={{ alignItems: 'center', flexDirection: 'row' }}>
@@ -132,7 +133,7 @@ const TCUserFollowUnfollowList = ({
             </TouchableOpacity>
           ) : (
             <View>
-              {renderButtons()}
+              {renderButtons}
             </View>
           )}
         </View>

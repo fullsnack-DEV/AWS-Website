@@ -1,5 +1,5 @@
 import React, {
-  useState, Fragment, useEffect, useContext,
+  useState, Fragment, useEffect, useContext, useCallback,
 } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
@@ -17,7 +17,7 @@ export default function NavigationMainContainer() {
 
   const [appInitialize, setAppInitialize] = useState(false);
 
-  const resetApp = async () => {
+  const resetApp = useCallback(async () => {
     QBLogout();
     firebase.auth().signOut();
     await Utility.clearStorage();
@@ -25,7 +25,7 @@ export default function NavigationMainContainer() {
     authContext.setUser(null);
     authContext.setEntity(null)
     setAppInitialize(true);
-  }
+  }, [authContext]);
 
   const getRefereshToken = () => new Promise((resolve, reject) => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
@@ -42,7 +42,7 @@ export default function NavigationMainContainer() {
     }, reject);
   });
 
-  const checkToken = async () => {
+  const checkToken = useCallback(async () => {
     const contextEntity = await Utility.getStorage('authContextEntity');
     const authContextUser = await Utility.getStorage('authContextUser');
     const tokenData = await Utility.getStorage('tokenData');
@@ -76,7 +76,7 @@ export default function NavigationMainContainer() {
     } else {
       resetApp();
     }
-  }
+  }, [authContext, resetApp]);
 
   useEffect(() => {
     checkToken();

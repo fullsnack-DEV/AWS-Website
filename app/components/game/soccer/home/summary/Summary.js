@@ -19,7 +19,6 @@ import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
 import AuthContext from '../../../../../auth/context';
-
 import Referees from '../../../common/summary/Referees';
 import Scorekeepers from '../../../common/summary/Scorekeepers';
 import TCGradientButton from '../../../../TCGradientButton';

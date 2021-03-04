@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext, useRef,
+  useEffect, useState, useContext, useRef, useCallback, useMemo,
 } from 'react';
 import {
   Text, View, StyleSheet, FlatList,
@@ -39,32 +39,28 @@ const Scorekeepers = ({
 
   useEffect(() => { getMyUserId() }, [])
 
-  const goToScorekeeperReservationDetail = (data) => {
-    console.log('Reservation data:', JSON.stringify(data));
+  const goToScorekeeperReservationDetail = useCallback((data) => {
     setloading(true);
-    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
-      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-      console.log('Screen name of Reservation:', obj.screenName);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
       });
       setloading(false);
     }).catch(() => setloading(false));
-  }
-  const onFollowPress = (userID, status) => {
+  }, [authContext, navigation]);
+
+  const onFollowPress = useCallback((userID, status) => {
     const sKeeper = _.cloneDeep(gameData?.scorekeeper_reservations);
     const index = sKeeper.findIndex((item) => item?.scorekeeper?.user_id === userID);
     if (index > -1) sKeeper[index].scorekeeper.is_following = status
-    // setScorekeeper(sKeeper);
-  };
+  }, [gameData?.scorekeeper_reservations]);
 
-  const getMyUserId = async () => {
+  const getMyUserId = useCallback(async () => {
     setMyUserId(authContext.entity.uid);
-  }
+  }, [authContext.entity.uid])
 
-  const getScorekeeperStatusMessage = (item, type) => {
-    console.log(item?.status);
+  const getScorekeeperStatusMessage = useCallback((item, type) => {
     const status = item?.status;
     let statusData = '';
     const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
@@ -80,11 +76,11 @@ const Scorekeepers = ({
       default: statusData = { status: '' };
     }
     return statusData[type];
-  }
-  const renderScorekeepers = ({ item }) => {
+  }, [])
+
+  const renderScorekeepers = useCallback(({ item }) => {
     const entity = authContext?.entity;
     const reservationDetail = item?.reservation;
-    console.log('ITEM SCOREKEEPER::=>', item);
 
     return (
       <TCUserFollowUnfollowList
@@ -97,7 +93,6 @@ const Scorekeepers = ({
             unFollowUser={unFollowUser}
             userID={reservationDetail?.scorekeeper?.user_id}
             title={reservationDetail?.scorekeeper?.full_name}
-            // subTitle={'Assistant'}
             is_following={reservationDetail?.scorekeeper?.is_following}
             onFollowUnfollowPress={onFollowPress}
             profileImage={reservationDetail?.scorekeeper?.thumbnail}
@@ -110,11 +105,38 @@ const Scorekeepers = ({
             onReviewPress={() => onReviewPress(item)}
         />
     )
-  }
+  }, [authContext?.entity, followUser, gameData?.actual_enddatetime, gameData?.status, getScorekeeperStatusMessage, isAdmin, myUserId, onFollowPress, onReviewPress, unFollowUser, userRole])
 
-  const handleBookScorekeeper = () => {
+  const handleBookScorekeeper = useCallback(() => {
     navigation.navigate('BookScorekeeper', { gameData })
-  }
+  }, [gameData, navigation]);
+
+  const ListEmptyComponent = useMemo(() => (
+    <View>
+      <Text style={styles.notAvailableTextStyle}>
+        No booked scorekeepers
+      </Text>
+    </View>
+  ), [])
+
+  const renderBookScorekeepersButton = useMemo(() => isAdmin
+      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
+        <TCGradientButton
+              onPress={handleBookScorekeeper}
+              startGradientColor={colors.whiteColor}
+              endGradientColor={colors.whiteColor}
+              title={'BOOK SCOREKEEPERS'}
+              style={{
+                borderRadius: 5,
+                borderWidth: 1,
+                borderColor: colors.greeColor,
+                height: 28.5,
+              }}
+              textStyle={{ color: colors.greeColor, fontSize: 12 }}
+              outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
+          />
+  ), [gameData?.status, handleBookScorekeeper, isAdmin])
+
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <ActivityLoader visible={loading} />
@@ -126,30 +148,9 @@ const Scorekeepers = ({
               bounces={false}
               data={gameData?.scorekeepers}
               renderItem={renderScorekeepers}
-              ListEmptyComponent={() => (
-                <View>
-                  <Text style={styles.notAvailableTextStyle}>
-                    No booked scorekeepers
-                  </Text>
-                </View>
-              )}/>
-      {isAdmin
-          && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
-            <TCGradientButton
-                  onPress={handleBookScorekeeper}
-                  startGradientColor={colors.whiteColor}
-                  endGradientColor={colors.whiteColor}
-                  title={'BOOK SCOREKEEPERS'}
-                  style={{
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: colors.greeColor,
-                    height: 28.5,
-                  }}
-                  textStyle={{ color: colors.greeColor, fontSize: 12 }}
-                  outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
-              />
-      )}
+              ListEmptyComponent={ListEmptyComponent}/>
+
+      {renderBookScorekeepersButton}
       <ActionSheet
               ref={actionSheet}
               options={[

@@ -38,6 +38,9 @@ const GameFeed = ({
     if (gameData) {
       getGameFeedData().then((res) => {
         setGameFeedData([...res?.payload?.results])
+        if (res.payload.next === '') {
+          setIsNextDataLoading(false);
+        }
       })
     }
   }, [gameData]);

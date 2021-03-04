@@ -37,7 +37,7 @@ const TopBackgroundHeader = ({
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
 
-  const onReachedEnd = ({ nativeEvent: e }) => {
+  const onReachedEnd = useCallback(({ nativeEvent: e }) => {
     const offset = e?.contentOffset?.y;
     const height = e?.layoutMeasurement?.height;
     const total = offset + height;
@@ -49,7 +49,7 @@ const TopBackgroundHeader = ({
       }
     }
     lastDistance = distance;
-  }
+  }, [onEndReached])
 
   const renderForeground = () => (
     <LinearGradient

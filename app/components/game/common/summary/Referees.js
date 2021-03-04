@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext, useRef,
+  useEffect, useState, useContext, useRef, useCallback, useMemo,
 } from 'react';
 import {
   Text, View, StyleSheet, FlatList,
@@ -55,31 +55,30 @@ const Referees = ({
       setRefree([...cloneRefData]);
     });
   }, [gameData])
-  const goToRefereReservationDetail = (data) => {
-    console.log('Reservation data:', JSON.stringify(data));
+
+  const goToRefereReservationDetail = useCallback((data) => {
     setloading(true);
-    RefereeUtils.getRefereeReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
-      console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-      console.log('Screen name of Reservation:', obj.screenName);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
       });
       setloading(false);
     }).catch(() => setloading(false));
-  }
-  const onFollowPress = (userID, status) => {
+  }, [authContext, navigation])
+
+  const onFollowPress = useCallback((userID, status) => {
     const refre = _.cloneDeep(refree);
     const index = refre.findIndex((item) => item?.referee?.user_id === userID);
     if (index > -1) refre[index].referee.is_following = status
     setRefree(refre);
-  };
+  }, [refree]);
 
-  const getMyUserId = async () => {
+  const getMyUserId = useCallback(async () => {
     setMyUserId(authContext.entity.uid);
-  }
+  }, [authContext.entity.uid])
 
-  const getRefereeStatusMessage = (item, type) => {
+  const getRefereeStatusMessage = useCallback((item, type) => {
     console.log('Referee status::=>', item);
     const status = item?.status;
     let statusData = '';
@@ -96,11 +95,11 @@ const Referees = ({
       default: statusData = { status: '' };
     }
     return statusData[type];
-  }
-  const renderReferees = ({ item }) => {
+  }, [])
+
+  const renderReferees = useCallback(({ item }) => {
     const entity = authContext?.entity;
     const reservationDetail = item?.reservation;
-console.log('ITEM::=>', item);
     return (
       <TCUserFollowUnfollowList
               statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
@@ -124,34 +123,39 @@ console.log('ITEM::=>', item);
               userRole={userRole}
               onReviewPress={() => onReviewPress(item)}
           />
-      //     <TCUserFollowUnfollowList
-      //     statusColor={getRefereeStatusMessage(item, 'color')}
-      //     statusTitle={getRefereeStatusMessage(item, 'status')}
-      //     myUserId={myUserId}
-      //     isShowReviewButton = {gameData?.status === 'ended' && !checkReviewExpired(gameData?.actual_enddatetime) && !isAdmin}
-      //     isReviewed={!!referee?.review_id}
-      //     followUser={followUser}
-      //     unFollowUser={unFollowUser}
-      //     userID={referee?.user_id}
-      //     title={referee?.full_name}
-      //     subTitle={item?.chief_referee ? 'Chief' : 'Assistant'}
-      //     is_following={referee?.is_following}
-      //     onFollowUnfollowPress={onFollowPress}
-      //     profileImage={referee?.thumbnail}
-      //     isShowThreeDots={item?.booked_by === entity?.uid}
-      //     onThreeDotPress={() => {
-      //       selectedRefereeData = item
-      //       actionSheet.current.show()
-      //     }}
-      //     userRole={userRole}
-      //     onReviewPress={() => onReviewPress(referee)}
-      // />
     )
-  }
+  }, [authContext?.entity, followUser, gameData?.actual_enddatetime, gameData?.status, getRefereeStatusMessage, isAdmin, myUserId, onFollowPress, onReviewPress, unFollowUser, userRole])
 
-  const handleBookReferee = () => {
+  const handleBookReferee = useCallback(() => {
     navigation.navigate('BookReferee', { gameData })
-  }
+  }, [gameData, navigation])
+
+  const ListEmptyComponent = useMemo(() => (
+    <View>
+      <Text style={styles.notAvailableTextStyle}>
+        No booked referee
+      </Text>
+    </View>
+  ), [])
+
+  const renderBookRefereeButton = useMemo(() => isAdmin
+  && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
+    <TCGradientButton
+          onPress={handleBookReferee}
+          startGradientColor={colors.whiteColor}
+          endGradientColor={colors.whiteColor}
+          title={'BOOK REFEREE'}
+          style={{
+            borderRadius: 5,
+            borderWidth: 1,
+            borderColor: colors.greeColor,
+            height: 28.5,
+          }}
+          textStyle={{ color: colors.greeColor, fontSize: 12 }}
+          outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
+      />
+  ), [gameData?.status, handleBookReferee, isAdmin])
+
   return (<View style={styles.mainContainer}>
     <View style={styles.contentContainer}>
       <ActivityLoader visible={loading} />
@@ -163,30 +167,10 @@ console.log('ITEM::=>', item);
               bounces={false}
               data={gameData?.referees}
               renderItem={renderReferees}
-              ListEmptyComponent={() => (
-                <View>
-                  <Text style={styles.notAvailableTextStyle}>
-                    No booked referee
-                  </Text>
-                </View>
-              )}/>
-      {isAdmin
-      && [GameStatus.accepted, GameStatus.reset].includes(gameData?.status) && (
-        <TCGradientButton
-                  onPress={handleBookReferee}
-                  startGradientColor={colors.whiteColor}
-                  endGradientColor={colors.whiteColor}
-                  title={'BOOK REFEREE'}
-                  style={{
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: colors.greeColor,
-                    height: 28.5,
-                  }}
-                  textStyle={{ color: colors.greeColor, fontSize: 12 }}
-                  outerContainerStyle={{ marginHorizontal: 5, marginTop: 5, marginBottom: 0 }}
-              />
-      )}
+              ListEmptyComponent={ListEmptyComponent}/>
+
+      {renderBookRefereeButton}
+
       <ActionSheet
               ref={actionSheet}
               options={[
@@ -196,7 +180,6 @@ console.log('ITEM::=>', item);
               cancelButtonIndex={1}
               onPress={(index) => {
                 if (index === 0) {
-                  console.log('gameData::: button pressed::=>', gameData);
                   goToRefereReservationDetail(selectedRefereeData)
                 }
               }}

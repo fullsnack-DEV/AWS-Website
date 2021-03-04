@@ -288,6 +288,10 @@ const MessageChat = ({
     )
   }, [headingTitle, myUserId, occupantsData, savedMessagesData])
 
+  const onInputBoxFocus = useCallback(() => {
+    if (scrollRef && scrollRef.current) scrollRef.current.scrollToEnd({ animated: false });
+  }, [])
+
   const sendMessage = useCallback(() => {
     if (!uploadedFile && messageBody.trim() === '') {
       Alert.alert('Enter Message')
@@ -301,7 +305,7 @@ const MessageChat = ({
       onInputBoxFocus()
     })
     return true;
-  }, [dialogData?.dialogId, messageBody, uploadedFile])
+  }, [dialogData?.dialogId, messageBody, onInputBoxFocus, uploadedFile])
 
   const uploadImage = useCallback(() => {
     ImagePicker.openPicker({
@@ -327,10 +331,6 @@ const MessageChat = ({
         });
       }
     })
-  }, [])
-
-  const onInputBoxFocus = useCallback(() => {
-    if (scrollRef && scrollRef.current) scrollRef.current.scrollToEnd({ animated: false });
   }, [])
 
   const renderHeader = useMemo(() => (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   Text,
   View,
@@ -37,4 +37,4 @@ const styles = StyleSheet.create({
   },
 
 })
-export default SpecialRules;
+export default memo(SpecialRules);

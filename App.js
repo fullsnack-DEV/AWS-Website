@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo,
+    useState, useEffect, useMemo, useCallback,
 } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import {
@@ -34,7 +34,7 @@ export default function App() {
   }
   useEffect(() => {
     NetInfo.addEventListener((state) => {
-      console.log('Connection123 : ', state.isConnected)
+      console.log('Connection : ', state.isConnected)
       setNetworkConntected(state.isConnected);
     });
 
@@ -53,13 +53,16 @@ export default function App() {
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
   const [tokenData, setToken] = useState(null);
-  const setTokenData = async (token) => {
+
+  const setTokenData = useCallback(async (token) => {
     setToken(token);
     await Utility.setStorage('tokenData', token);
-  }
-  const updateAuth = (e) => {
+  }, []);
+
+  const updateAuth = useCallback((e) => {
     setEntity({ ...e })
-  }
+  }, []);
+
   const authValue = useMemo(
     () => ({
       role,

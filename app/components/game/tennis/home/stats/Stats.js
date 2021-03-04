@@ -29,7 +29,6 @@ const Stats = ({
       if (gameData?.game_id) {
         setLoading(true);
         getGameStatsData(gameData?.game_id).then((res) => {
-          console.log('Game stats::', res);
           setGameStatsData(res?.payload);
         })
           .catch((error) => console.log(error))

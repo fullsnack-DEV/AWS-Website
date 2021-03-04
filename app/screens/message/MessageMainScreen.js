@@ -57,13 +57,13 @@ const MessageMainScreen = ({ navigation }) => {
     }
 
     return () => {
-      setSavedDialogsData({
-        append: {},
-        dialogs: [],
-        limit: 30,
-        skip: 0,
-        total: 0,
-      });
+      // setSavedDialogsData({
+      //   append: {},
+      //   dialogs: [],
+      //   limit: 30,
+      //   skip: 0,
+      //   total: 0,
+      // });
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE);
     }
   }, [navigation, isFocused])

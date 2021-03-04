@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, {
-useEffect, useState, useContext, useLayoutEffect, useRef,
+    useEffect, useState, useContext, useLayoutEffect, useRef, useCallback,
 } from 'react';
 import {
   View,
@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import RNRestart from 'react-native-restart';
 // import ActionSheet from 'react-native-actionsheet';
 // import { useIsDrawerOpen } from '@react-navigation/drawer';
 import MarqueeText from 'react-native-marquee';
@@ -56,7 +55,7 @@ export default function AccountScreen({ navigation }) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [group, setGroup] = useState({});
-  const [parentGroup, setParentGroup] = useState();
+  const [parentGroup, setParentGroup] = useState(null);
   const [groupList, setGroupList] = useState([]);
   const [notificationCounter, setNotificationCounter] = useState(0);
   const [team, setTeam] = useState([]);
@@ -178,15 +177,13 @@ export default function AccountScreen({ navigation }) {
 
   const getParentClub = (item) => {
     setloading(true);
-    console.log('Parent group ID::', item.group_id);
     getGroupDetails(item.group_id, authContext)
       .then((response) => {
-        console.log('Parent group detail1::', response.payload);
-        console.log('Parent group detail2::', response.payload.club);
-        if (!response?.payload?.club) {
-          setParentGroup(response?.payload?.club);
+        console.log('Parent group detail::', response.payload.club);
+        if (response.payload.club !== undefined) {
+          setParentGroup(response.payload.club);
         } else {
-          setParentGroup();
+          setParentGroup(null);
         }
         setloading(false);
       })
@@ -270,7 +267,7 @@ export default function AccountScreen({ navigation }) {
     setloading(true);
     switchProfile(item)
       .then((currentEntity) => {
-        setloading(true);
+        // setloading(true);
         switchQBAccount(item, currentEntity);
       })
       .catch((e) => {
@@ -297,7 +294,7 @@ export default function AccountScreen({ navigation }) {
         role: 'user',
         obj: item,
       };
-      setParentGroup();
+      setParentGroup(null);
     } else {
       if (item.entity_type === 'team') {
         const i = team.indexOf(item);
@@ -332,7 +329,7 @@ export default function AccountScreen({ navigation }) {
           role: 'club',
           obj: item,
         };
-        setParentGroup();
+        setParentGroup(null);
         setGroup(item);
       }
       setGroupList([authContext.entity.auth.user, ...club, ...team]);
@@ -351,7 +348,7 @@ export default function AccountScreen({ navigation }) {
     QBLogout()
       .then(() => {
         const {
-USER, CLUB, LEAGUE, TEAM,
+ USER, CLUB, LEAGUE, TEAM,
 } = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
@@ -392,21 +389,22 @@ USER, CLUB, LEAGUE, TEAM,
       });
   };
 
-  const handleLogOut = async () => {
+  const onLogout = useCallback(async () => {
+      await Utility.clearStorage();
+      QBLogout();
+      firebase.auth().signOut();
+      await authContext.setUser(null);
+      await authContext.setEntity(null);
+  }, [authContext]);
+
+  const handleLogOut = useCallback(async () => {
     Alert.alert(
       'Towns Cup',
       'Are you sure want to logout?',
       [
         {
           text: 'OK',
-          onPress: async () => {
-            setloading(true);
-            QBLogout();
-            await firebase.auth().signOut();
-            await Utility.clearStorage();
-            setloading(false);
-            RNRestart.Restart();
-          },
+          onPress: onLogout,
         },
         {
           text: 'Cancel',
@@ -415,7 +413,7 @@ USER, CLUB, LEAGUE, TEAM,
       ],
       { cancelable: false },
     );
-  };
+  }, []);
 
   const handleSections = async (section) => {
     if (section === 'My Schedule') {
@@ -582,9 +580,9 @@ USER, CLUB, LEAGUE, TEAM,
                   // backgroundColor: 'red',
                 }}>
                 <TCNavigationHeader
-                  name={parentGroup?.group_name}
+                  name={parentGroup.group_name}
                   groupType={'club'}
-                  image={parentGroup?.thumbnail}
+                  image={parentGroup.thumbnail && parentGroup.thumbnail}
                 />
               </View>
             </View>
@@ -854,22 +852,12 @@ USER, CLUB, LEAGUE, TEAM,
                       <TouchableWithoutFeedback
                         style={styles.listContainer}
                         onPress={() => {
-                          // navigation.navigate('HomeScreen', {
-                          //     fromAccountScreen: true,
-                          //     navigateToScreen: 'HomeScreen',
-                          //     homeNavigateParams: {
-                          //       uid: item.group_id,
-                          //       backButtonVisible: true,
-                          //       menuBtnVisible: false,
-                          //       role: item.entity_type,
-                          //   },
-                          // });
-                          navigation.push('HomeScreen', {
-                            uid: item?.group_id,
-                            backButtonVisible: true,
-                            menuBtnVisible: false,
-                            role: item?.entity_type,
-                          })
+                          navigation.navigate('HomeScreen', {
+                                uid: group.group_id,
+                                backButtonVisible: true,
+                                menuBtnVisible: false,
+                                role: group.entity_type,
+                          });
                         }}>
                         <View style={styles.entityTextContainer}>
                           {item.entity_type === 'team' && (
@@ -1094,7 +1082,7 @@ USER, CLUB, LEAGUE, TEAM,
           // )}
           scrollEnabled={false}
         />
-        <View style={styles.separatorView}></View>
+        <View style={styles.separatorView}/>
         <TouchableWithoutFeedback
           style={styles.listContainer}
           onPress={handleLogOut}>
