@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   StyleSheet, View, Image, Text, TouchableOpacity,
 } from 'react-native';
@@ -10,58 +10,55 @@ import * as Progress from 'react-native-progress';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
+import { getHitSlop } from '../../utils';
 
-function ImageProgress({
+const ImageProgress = ({
   numberOfUploaded,
   totalUpload,
   onCancelPress,
   postDataItem,
-}) {
-  let userImage = '';
-  if (postDataItem && postDataItem.thumbnail) {
-    userImage = postDataItem.thumbnail;
-  }
-  return (
-    <View style={ styles.mainContainer }>
-      <View style={styles.viewStyle}>
-        <View style={styles.profileImageViewStyle}>
-          <Image style={ styles.profileImg } source={userImage ? { uri: userImage } : images.profilePlaceHolder} />
-        </View>
-        <View style={styles.textViewStyle}>
-          <Text style={ styles.writePostText }>
-            Uploading...
-          </Text>
-          <Text style={ styles.writePostText }>  {`${numberOfUploaded}/${totalUpload}`}</Text>
-        </View>
-        <TouchableOpacity style={styles.cancelTouchStyle} onPress={onCancelPress}>
-          <Image style={ styles.cancelImagestyle } source={images.cancelImage} />
-        </TouchableOpacity>
+}) => (
+  <View style={ styles.mainContainer }>
+    <View style={styles.viewStyle}>
+      <View style={styles.profileImageViewStyle}>
+        <Image style={ styles.profileImg } source={postDataItem?.thumbnail ? { uri: postDataItem?.thumbnail } : images.profilePlaceHolder} />
       </View>
-      <Progress.Bar
+      <View style={styles.textViewStyle}>
+        <Text style={ styles.writePostText }>
+          Uploading...
+        </Text>
+        <Text style={ styles.writePostText }>  {`${numberOfUploaded}/${totalUpload}`}</Text>
+      </View>
+      <TouchableOpacity
+            hitSlop={getHitSlop(15)}
+            style={styles.cancelTouchStyle} onPress={onCancelPress}>
+        <Image style={ styles.cancelImagestyle } source={images.cancelImage} />
+      </TouchableOpacity>
+    </View>
+    <Progress.Bar
             progress={(1 * numberOfUploaded) / totalUpload}
             width={wp('100%')}
             borderRadius={0}
             borderWidth={0}
             unfilledColor={colors.uploadUnfillColor}
             color={colors.uploadTextColor}
-            />
-    </View>
-  );
-}
+        />
+  </View>
+  )
 
 const styles = StyleSheet.create({
   mainContainer: {
-    // flexDirection: 'row',
-    height: 60,
+    height: 50,
     justifyContent: 'center',
     position: 'absolute',
-    bottom: -wp('1%'),
+    bottom: 2,
     zIndex: 999,
   },
   viewStyle: {
     flexDirection: 'row',
     paddingHorizontal: wp('4%'),
-    paddingVertical: wp('1%'),
+    height: '100%',
+    justifyContent: 'center',
     backgroundColor: colors.uploadBGColor,
     alignItems: 'center',
   },
@@ -69,7 +66,6 @@ const styles = StyleSheet.create({
     width: wp('12%'),
   },
   profileImg: {
-    // alignSelf: 'center',
     height: hp('4.5%'),
     resizeMode: 'cover',
     width: hp('4.5%'),
@@ -102,4 +98,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageProgress;
+export default memo(ImageProgress);
