@@ -36,8 +36,9 @@ import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import { getSearchData } from '../../utils';
 
-const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-
+// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+const tagRegex = /(?!\w)@\w+/gmi
 const EditPostScreen = ({
   navigation,
   route,

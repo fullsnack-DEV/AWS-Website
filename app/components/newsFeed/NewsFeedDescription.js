@@ -15,7 +15,8 @@ import AuthContext from '../../auth/context';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /@\b_\.{(.*?)}\._\b/gmi;
-const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+const tagRegex = /(?!\w)@\w+/gmi
 const tagPrefix = '@_.';
 const tagSuffix = '._';
 const NewsFeedDescription = ({
