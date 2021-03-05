@@ -273,3 +273,15 @@ export const getSearchData = (data = [], field = [], searchString) => {
 }
 
 export const round = (value, decimals) => value.toFixed(decimals)
+
+export const getHitSlop = (slopValue) => {
+  let hitSlop = {
+ top: 0, bottom: 0, right: 0, left: 0,
+}
+  if (['string', 'number']?.includes(typeof slopValue)) {
+ hitSlop = {
+ top: slopValue, bottom: slopValue, right: slopValue, left: slopValue,
+}
+} else if (typeof slopValue === 'object') hitSlop = { ...hitSlop, ...slopValue };
+  return hitSlop;
+}

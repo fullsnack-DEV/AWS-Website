@@ -2,9 +2,8 @@ import React, {
   useEffect, memo, useState, useLayoutEffect, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  StyleSheet, View, Image, Alert, Text, TouchableOpacity,
+  StyleSheet, View, Image, Alert, TouchableOpacity,
 } from 'react-native';
-import crashlytics from '@react-native-firebase/crashlytics';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -34,7 +33,6 @@ const FeedsScreen = ({ navigation }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
   useEffect(() => {
-    crashlytics().log('App mounted.');
     setloading(true);
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
@@ -53,22 +51,23 @@ const FeedsScreen = ({ navigation }) => {
     setTimeout(() => navigation.navigate('EntitySearchScreen'), 0);
   }
 
-  const topRightButton = () => (
+  const topRightButton = useMemo(() => (
     <TouchableOpacity onPress={onThreeDotPress}>
       <Image source={images.vertical3Dot} style={styles.headerRightImg} />
     </TouchableOpacity>
-      )
+  ), [onThreeDotPress])
+
   useLayoutEffect(() => {
-    navigation.setOptions({ headerRight: topRightButton });
-  }, []);
+    navigation.setOptions({ headerRight: () => topRightButton });
+  }, [navigation, topRightButton]);
 
-  const progressStatus = (completed, total) => {
+  const progressStatus = useCallback((completed, total) => {
     setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }
+  }, [])
 
-  const cancelRequest = (axiosTokenSource) => {
+  const cancelRequest = useCallback((axiosTokenSource) => {
     setCancelApiRequest({ ...axiosTokenSource });
-  }
+  }, [])
 
   const createPostAfterUpload = useCallback((dataParams) => {
     createPost(dataParams, authContext)
@@ -111,7 +110,7 @@ const FeedsScreen = ({ navigation }) => {
         createPostAfterUpload(dataParams)
       })
     }
-  }, [authContext, createPostAfterUpload])
+  }, [authContext, cancelRequest, createPostAfterUpload, progressStatus])
 
   const updatePostAfterUpload = useCallback((dataParams) => {
     updatePost(dataParams, authContext)
@@ -177,12 +176,10 @@ const FeedsScreen = ({ navigation }) => {
         console.log(error);
       })
     }
-  }, [authContext, updatePostAfterUpload])
+  }, [authContext, cancelRequest, progressStatus, updatePostAfterUpload])
 
   const onCancelImageUpload = useCallback(() => {
-    if (cancelApiRequest) {
-      cancelApiRequest.cancel('Cancel Image Uploading');
-    }
+    if (cancelApiRequest) cancelApiRequest.cancel('Cancel Image Uploading');
     setProgressBar(false);
     setDoneUploadCount(0);
     setTotalUploadCount(0);
@@ -241,7 +238,7 @@ const FeedsScreen = ({ navigation }) => {
           />
       <View style={styles.sepratorView} />
     </View>
-    ), [callthis, currentUserDetail])
+    ), [callthis, currentUserDetail, navigation])
 
   const onLikePress = useCallback((item) => {
     const bodyParams = {
@@ -273,7 +270,7 @@ const FeedsScreen = ({ navigation }) => {
             setFooterLoading(false)
           })
     }
-  }, [isMoreLoading, isNextDataLoading, postData])
+  }, [authContext, isMoreLoading, isNextDataLoading, postData])
 
   const onImageProgressCancelPress = useCallback(() => {
     Alert.alert(
@@ -300,7 +297,6 @@ const FeedsScreen = ({ navigation }) => {
     ), [doneUploadCount, totalUploadCount, onImageProgressCancelPress, currentUserDetail])
   return (
     <View style={styles.mainContainer}>
-      <TouchableOpacity onPress={() => crashlytics().crash()}><Text>Crash</Text></TouchableOpacity>
       <ActivityLoader visible={loading} />
 
       <NewsFeedList

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import React, {
-  useState, useEffect, useContext, useCallback, useMemo,
+  useState, useEffect, useContext, useCallback,
 } from 'react';
 import {
  StyleSheet, View, Text, TouchableOpacity,
@@ -108,8 +108,8 @@ const NewsFeedDescription = ({
   }
 
   const handleNamePress = useCallback((name) => {
-    const re = new RegExp(name, 'gmi');
-    const getFetchCount = getIndicesOf(name);
+    // const re = new RegExp(name, 'gmi');
+    // const getFetchCount = getIndicesOf(name);
     const entityIndex = taggedData?.findIndex((item) => item === name);
     const fetchedEntity = tagData?.[entityIndex];
     const entity_text = ['player', 'user']?.includes(fetchedEntity?.entity_type) ? 'user_id' : 'group_id'

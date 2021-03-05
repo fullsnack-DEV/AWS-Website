@@ -65,7 +65,7 @@ export default function AccountScreen({ navigation }) {
   // for set/get clubs
   const [clubList, setClubList] = useState([]);
   // For activity indigator
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
 
   // Account menu opetions
   const userMenu = [
@@ -155,28 +155,30 @@ export default function AccountScreen({ navigation }) {
     });
   }, [navigation, notificationCounter]);
 
+    const getData = () => new Promise((resolve, reject) => {
+        const entity = authContext.entity;
+        const promises = [getOwnGroupList(entity), getTeamsList(entity)];
+        if (entity.role !== 'club') promises.push(getClubList(entity));
+        Promise.all(promises)
+            .then(() => resolve(true))
+            // eslint-disable-next-line prefer-promise-reject-errors
+            .catch(() => reject('error'));
+    });
+
   useEffect(() => {
-    const getData = async () => {
-      const entity = authContext.entity;
-      console.log(
-        'LoggedIn entity ::=>',
-        authContext?.entity?.auth?.user?.full_name?.length,
-      );
-      const promises = [getOwnGroupList(entity), getTeamsList(entity)];
-
-      if (entity.role !== 'club') {
-        promises.push(getClubList(entity));
+      if (isFocused) {
+          setloading(true);
+          getData().then(() => {
+              setloading(false);
+          });
       }
+  }, [isFocused]);
 
-      Promise.all(promises).then(() => {
-        setloading(false);
-      });
-    };
-    getData();
-  }, [authContext.entity, isFocused, navigation]);
+  useEffect(() => {
+      getData();
+  }, [authContext])
 
   const getParentClub = (item) => {
-    setloading(true);
     console.log('Parent group ID::', item.group_id);
     getGroupDetails(item.group_id, authContext)
       .then((response) => {
@@ -187,10 +189,10 @@ export default function AccountScreen({ navigation }) {
         } else {
           setParentGroup();
         }
-        setloading(false);
       })
       .catch((e) => {
-        setTimeout(() => {
+          setloading(false);
+          setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
@@ -269,7 +271,6 @@ export default function AccountScreen({ navigation }) {
     setloading(true);
     switchProfile(item)
       .then((currentEntity) => {
-        // setloading(true);
         switchQBAccount(item, currentEntity);
       })
       .catch((e) => {
@@ -336,15 +337,13 @@ export default function AccountScreen({ navigation }) {
       }
       setGroupList([authContext.entity.auth.user, ...club, ...team]);
     }
-    authContext.setEntity({ ...currentEntity });
-    Utility.setStorage('authContextEntity', { ...currentEntity });
+    // authContext.setEntity({ ...currentEntity });
+    // Utility.setStorage('authContextEntity', { ...currentEntity });
     return currentEntity;
   };
 
   const switchQBAccount = async (accountData, entity) => {
     let currentEntity = entity;
-    authContext.setEntity({ ...currentEntity });
-    Utility.setStorage('authContextEntity', { ...currentEntity });
     const entityType = accountData?.entity_type;
     const uid = entityType === 'player' ? 'user_id' : 'group_id';
     QBLogout()
@@ -369,24 +368,28 @@ export default function AccountScreen({ navigation }) {
               ...currentEntity,
               QB: { ...res.user, connected: true, token: res?.session?.token },
             };
-            authContext.setEntity({ ...currentEntity });
-            Utility.setStorage('authContextEntity', { ...currentEntity });
             QBconnectAndSubscribe(currentEntity)
-              .then((qbRes) => {
+              .then(async (qbRes) => {
+                authContext.setEntity({ ...currentEntity });
+                await Utility.setStorage('authContextEntity', { ...currentEntity });
                 setloading(false);
-                if (qbRes?.error) {
-                  console.log('Towns Cup', qbRes?.error);
-                }
+                if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
               })
-              .catch(() => {
+              .catch(async () => {
+                authContext.setEntity({ ...currentEntity });
+                await Utility.setStorage('authContextEntity', { ...currentEntity });
                 setloading(false);
               });
           })
-          .catch(() => {
+          .catch(async () => {
+              authContext.setEntity({ ...currentEntity });
+              await Utility.setStorage('authContextEntity', { ...currentEntity });
             setloading(false);
           });
       })
-      .catch(() => {
+      .catch(async () => {
+          authContext.setEntity({ ...currentEntity });
+          await Utility.setStorage('authContextEntity', { ...currentEntity });
         setloading(false);
       });
   };
@@ -480,7 +483,6 @@ export default function AccountScreen({ navigation }) {
       onPress={() => {
         scrollRef.current.scrollTo({ x: 0, y: 0 });
         onSwitchProfile({ item, index });
-        // navigation.closeDrawer();
       }}>
       <View>
         {item.entity_type === 'player' && (
