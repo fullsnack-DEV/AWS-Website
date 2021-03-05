@@ -34,7 +34,8 @@ import AuthContext from '../../auth/context';
 import { getSearchData } from '../../utils';
 
 // const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
-const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+const tagRegex = /(?!\w)@\w+/gmi
 // const tagPrefix = '_.';
 // const tagSuffix = '._';
 export default function WritePostScreen({ navigation, route }) {
