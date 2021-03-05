@@ -1,22 +1,18 @@
-import React, {
-useCallback, useLayoutEffect, useState, useContext,
-} from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
   FlatList,
   Text,
   Image,
-  Modal,
   ScrollView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Platform,
-  Dimensions,
-  TextInput,
 } from 'react-native';
 
+import Modal from 'react-native-modal';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
-
 // import AuthContext from '../../auth/context';
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
@@ -34,17 +30,15 @@ import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
 import TCEntityView from '../../components/TCEntityView';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCThinDivider from '../../components/TCThinDivider';
-import AuthContext from '../../auth/context';
-
-import { searchCityState } from '../../api/External';
+// import AuthContext from '../../auth/context';
 
 export default function LocalHomeScreen({ navigation }) {
   // const [loading, setloading] = useState(false);
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
-  const [locationSearchModal, setLocationSearchModal] = useState(false);
-  const [cityData, setCityData] = useState([]);
-  const authContext = useContext(AuthContext);
+  const [selectedPlace, setSelectedPlace] = useState('Soccer');
+
+  // const authContext = useContext(AuthContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -69,20 +63,23 @@ export default function LocalHomeScreen({ navigation }) {
       ),
     });
   }, [navigation]);
-
-  const getLocationData = async (searchLocationText) => {
-    if (searchLocationText.length) {
-      searchCityState(searchLocationText, authContext).then((response) => {
-        setCityData(response.predictions);
-      });
-    } else {
-      setCityData([]);
-    }
-  };
-
+  const onSportSelect = ({ item }) => setSelectedPlace(item)
   const sportsListView = useCallback(
-    ({ item }) => <Text style={styles.sportName}>{item}</Text>,
-    [],
+    ({ item }) => (
+      <Text
+        style={
+          selectedPlace === item
+            ? [
+                styles.sportName,
+                { color: colors.themeColor, fontFamily: fonts.RBlack },
+              ]
+            : styles.sportName
+        }
+        onPress={() => onSportSelect({ item })}>
+        {item}
+      </Text>
+    ),
+    [selectedPlace],
   );
 
   const shortsListView = useCallback(() => <ShortsCard />, []);
@@ -148,21 +145,7 @@ export default function LocalHomeScreen({ navigation }) {
       }}
     />
   );
-  // const getTeamsData = async (item) => {
-  //   searchLocationPlaceDetail(
-  //     item.place_id,
-  //     authContext,
-  //   ).then((response) => {});
-  // };
-  const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => console.log('ITEM::=>', item)}>
-      <Text style={styles.cityList}>{cityData[index]?.structured_formatting?.main_text}</Text>
 
-      <TCThinDivider />
-    </TouchableOpacity>
-  );
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.sportsListView}>
@@ -330,11 +313,14 @@ export default function LocalHomeScreen({ navigation }) {
           />
         </View>
         <Modal
-          backdropColor="black"
-          onBackdropPress={() => false}
+          onBackdropPress={() => setLocationPopup(false)}
           backdropOpacity={1}
           animationType="slide"
-          transparent={true}
+          hasBackdrop
+          style={{
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
           visible={locationPopup}>
           <View style={styles.bottomPopupContainer}>
             <View style={styles.viewsContainer}>
@@ -344,13 +330,11 @@ export default function LocalHomeScreen({ navigation }) {
                 Cancel
               </Text>
               <Text style={styles.locationText}>Location</Text>
-              <Text
-                style={styles.doneText}>
-                {'    '}
-              </Text>
+              <Text style={styles.doneText}>{'    '}</Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
-            <TouchableOpacity onPress={() => setSelectedLocationOption(0)}>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedLocationOption(0)}>
               {selectedLocationOption === 0 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -370,8 +354,9 @@ export default function LocalHomeScreen({ navigation }) {
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelectedLocationOption(1)}>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedLocationOption(1)}>
               {selectedLocationOption === 1 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -385,8 +370,9 @@ export default function LocalHomeScreen({ navigation }) {
                   <Text style={styles.myCityText}>Home city</Text>
                 </View>
               )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelectedLocationOption(2)}>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedLocationOption(2)}>
               {selectedLocationOption === 2 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -400,65 +386,17 @@ export default function LocalHomeScreen({ navigation }) {
                   <Text style={styles.worldText}>World</Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
             <Text style={styles.orText}>Or</Text>
 
             <TouchableOpacity
               style={styles.sectionStyle}
               onPress={() => {
                 setLocationPopup(false);
-                setLocationSearchModal(true);
+                navigation.navigate('SearchCityScreen');
               }}>
               <Text style={styles.searchText}>{strings.searchTitle}</Text>
             </TouchableOpacity>
-          </View>
-        </Modal>
-        <Modal
-          backdropColor="black"
-          onBackdropPress={() => false}
-          backdropOpacity={1}
-          animationType="slide"
-          transparent={true}
-          visible={locationSearchModal}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              { height: Dimensions.get('window').height - 60 },
-            ]}>
-            <View style={styles.viewsContainer}>
-              <Text
-                onPress={() => {
-                  setLocationSearchModal(false)
-                  setLocationPopup(true)
-                }}
-                style={styles.cancelText}>
-                Cancel
-              </Text>
-              <Text style={styles.locationText}>Location</Text>
-              <Text
-                style={styles.doneText}>
-                {'    '}
-              </Text>
-            </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <TextInput
-              style={styles.sectionStyle}
-              placeholder={strings.searchTitle}
-              placeholderTextColor={colors.userPostTimeColor}
-              clearButtonMode="always"
-              onChangeText={(text) => getLocationData(text)}
-              // value={value}
-            />
-            <FlatList
-              data={cityData}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-              style={{
-                marginLeft: 25,
-                marginRight: 25,
-                marginTop: 20,
-              }}
-            />
           </View>
         </Modal>
       </ScrollView>
@@ -606,21 +544,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     alignSelf: 'center',
     elevation: 2,
+    marginBottom: 15,
   },
   searchText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
-  },
-  cityList: {
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-
-    // paddingLeft: wp('1%'),
-    width: widthPercentageToDP('70%'),
-    margin: 15,
-    textAlignVertical: 'center',
   },
 });

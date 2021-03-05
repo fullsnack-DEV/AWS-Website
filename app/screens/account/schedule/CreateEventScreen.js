@@ -46,6 +46,7 @@ const getNearDateTime = (date) => {
   const start = moment(date);
   const nearTime = 5 - (start.minute() % 5);
   const dateTime = moment(start).add(nearTime, 'm').toDate()
+  console.log('Start date/Time::=>', dateTime);
   return dateTime;
 };
 export default function CreateEventScreen({ navigation, route }) {
@@ -115,8 +116,9 @@ export default function CreateEventScreen({ navigation, route }) {
     const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss')
     return dt.format('dddd')
   }
-  const handleStateDatePress = (date) => {
-    setEventStartdateTime(date);
+  const handleStartDatePress = (date) => {
+    console.log('Date::=>', new Date(new Date(date).getTime()));
+    setEventStartdateTime(new Date(new Date(date).getTime()));
     setEventEnddateTime(moment(date).add(5, 'm').toDate());
     setEventUntildateTime(moment(date).add(5, 'm').toDate());
     setStartDateVisible(!startDateVisible)
@@ -463,30 +465,33 @@ export default function CreateEventScreen({ navigation, route }) {
           </EventItemRender>
 
           <DateTimePickerView
+            date={eventStartDateTime}
             visible={startDateVisible}
-            onDone={handleStateDatePress}
+            onDone={handleStartDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={new Date()}
+            minimumDate={getNearDateTime(new Date())}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
 
           />
           <DateTimePickerView
+          date={eventEndDateTime}
             visible={endDateVisible}
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventEndDateTime || new Date()}
+            minimumDate={moment(getNearDateTime(new Date())).add(5, 'm').toDate()}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
+           date={eventUntilDateTime}
             visible={untilDateVisible}
             onDone={handleUntilDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventEndDateTime || new Date()}
+            minimumDate={eventEndDateTime || moment(eventStartDateTime).add(5, 'm').toDate()}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />

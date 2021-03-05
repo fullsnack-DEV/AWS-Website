@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
+
     borderRadius: 31,
   },
   winTextStyle: {

@@ -19,7 +19,7 @@ export default function RefereesListScreen() {
 
   const renderRefereesScorekeeperListView = useCallback(
     () => (
-      <View style={[styles.separator, { flex: 1 / 4 }]}>
+      <View style={[styles.separator, { flex: 1 / 4, alignItems: 'center' }]}>
         <TCEntityView showStar={true}/>
       </View>
 

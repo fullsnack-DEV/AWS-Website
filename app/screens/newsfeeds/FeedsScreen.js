@@ -298,7 +298,6 @@ const FeedsScreen = ({ navigation }) => {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-
       <NewsFeedList
         pullRefresh={pullRefresh}
         onDeletePost={onDeletePost}
