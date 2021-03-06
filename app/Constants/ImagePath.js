@@ -271,6 +271,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   homeSetting: require('../assets/images/ic_home_setting.png'),
   arrowDown: require('../assets/images/arrow_down.png'),
+  moveIcon: require('../assets/images/ic_move.png'),
+  checkRoundOrange: require('../assets/images/check_round_orange.png'),
 
 };
 
