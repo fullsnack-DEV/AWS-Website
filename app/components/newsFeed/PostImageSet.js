@@ -1,4 +1,6 @@
-import React, { memo, useState } from 'react';
+import React, {
+ memo, useState,
+} from 'react';
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback,
 } from 'react-native';
@@ -48,6 +50,7 @@ function PostImageSet({
         supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         backdropOpacity={0}>
         <MultiImagePostView
+          currentPage={itemNumber}
           openPostModal={() => setModalVisible(true)}
           attachedImages={attachedImages}
           data={data}

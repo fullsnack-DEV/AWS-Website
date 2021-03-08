@@ -17,7 +17,7 @@ import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
-import ActivityLoader from '../../components/loader/ActivityLoader';
+// import ActivityLoader from '../../components/loader/ActivityLoader';
 import TCSearchBox from '../../components/TCSearchBox';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -25,12 +25,13 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../uti
 import { QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
 import AuthContext from '../../auth/context'
 import TCScrollableTabs from '../../components/TCScrollableTabs';
+import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 
 const MessageInviteScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
   const [currentTab, setCurrentTab] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedInvitees, setSelectedInvitees] = useState([]);
   const [inviteeData, setInviteeData] = useState([]);
   const [peopleData, setPeopleData] = useState([]);
@@ -84,7 +85,6 @@ const MessageInviteScreen = ({ navigation, route }) => {
   }
 
   const getAllTypesData = async (AllUsers) => {
-    setLoading(true);
     const entity = authContext.entity
     const myUid = entity.QB.id;
     const users = AllUsers.filter((user) => user.id !== myUid);
@@ -236,10 +236,13 @@ const MessageInviteScreen = ({ navigation, route }) => {
     const dataTabList = [inviteeData, peopleData, teamsData, clubsData, leaguesData]
     return (
       <View tabLabel={tabKey} style={{ flex: 1 }}>
-        {renderSingleTab(searchText === '' ? dataTabList[tabIndex] : searchData)}
+        {loading
+            ? <UserListShimmer/>
+            : renderSingleTab(searchText === '' ? dataTabList[tabIndex] : searchData)
+        }
       </View>
     )
-  }, [clubsData, inviteeData, leaguesData, peopleData, renderSingleTab, searchData, searchText, teamsData])
+  }, [clubsData, inviteeData, leaguesData, loading, peopleData, renderSingleTab, searchData, searchText, teamsData])
 
   const handlePress = useCallback(() => {
     if (route?.params?.dialog) {
@@ -325,7 +328,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.mainContainer}>
       {renderHeader}
       <View style={ styles.separateLine } />
-      <ActivityLoader visible={loading}/>
+      {/* <ActivityLoader visible={loading}/> */}
       {renderSelectedInvitees}
       <TCSearchBox style={{ marginHorizontal: 15 }} value={searchText} onChangeText={setSearchText}/>
       <View style={styles.sperateLine}/>
