@@ -42,7 +42,9 @@ function MultiImagePostView({
   onImageProfilePress,
   onLikePress,
   openPostModal,
+  currentPage,
 }) {
+  const carouselRef = useRef(0);
   const [topDesc, setTopDesc] = useState(false);
   const [scroll, setScroll] = useState(true);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
@@ -50,6 +52,13 @@ function MultiImagePostView({
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
+  useEffect(() => {
+      setTimeout(() => {
+          if (carouselRef && currentPage > 1) {
+              carouselRef.current.snapToItem(currentPage - 1, false)
+          }
+      }, 1000)
+  }, [currentPage, carouselRef])
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -217,6 +226,7 @@ function MultiImagePostView({
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
         <Carousel
+            ref={carouselRef}
             data={attachedImages}
             renderItem={renderMultipleImagePostView}
             contentContainerCustomStyle={{ alignSelf: 'center' }}

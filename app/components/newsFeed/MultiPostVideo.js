@@ -57,6 +57,7 @@ function MultiPostVideo({
         style={{ margin: 0 }}
         backdropOpacity={0}>
         <MultiImagePostView
+            currentPage={itemNumber}
           openPostModal={() => setModalVisible(true)}
           attachedImages={attachedImages}
           data={data}

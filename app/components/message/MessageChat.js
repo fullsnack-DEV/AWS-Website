@@ -18,7 +18,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-crop-picker';
 import moment from 'moment';
 import Video from 'react-native-video';
-import ActivityLoader from '../loader/ActivityLoader';
 import Header from '../Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -30,6 +29,8 @@ import AuthContext from '../../auth/context'
 import {
   QB_DIALOG_TYPE, QBcreateDialog, QBgetMessages, QBgetUserDetail, QBsendMessage,
 } from '../../utils/QuickBlox';
+import MessageChatShimmer from '../shimmer/message/MessageChatShimmer';
+import { ShimmerView } from '../shimmer/commonComponents/ShimmerCommonComponents';
 
 const MAX_FILE_SIZE = 104857600;
 
@@ -340,9 +341,7 @@ const MessageChat = ({
               <Image source={images.backArrow} style={styles.backImageStyle} />
             </TouchableOpacity>
           }
-          centerComponent={
-            <Text style={styles.eventTextStyle}>{headingTitle}</Text>
-          }
+          centerComponent={headingTitle ? <Text style={styles.eventTextStyle}>{headingTitle}</Text> : <ShimmerView style={{ alignSelf: 'center' }} />}
           rightComponent={
             <TouchableOpacity style={{ padding: 2 }} onPress={() => {
               navigation.openDrawer()
@@ -485,13 +484,17 @@ const MessageChat = ({
 
   return (
     <SafeAreaView style={ styles.mainContainer }>
-      <ActivityLoader visible={loading} />
+      {/* <ActivityLoader visible={loading} /> */}
       {renderHeader}
       <View style={ styles.sperateLine } />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+      {loading
+          ? <View style={{ flex: 1, backgroundColor: colors.offwhite }}>
+            <MessageChatShimmer/>
+          </View>
+      : <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : null}>
         {messageList}
         {renderBottomChatTools}
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingView>}
     </SafeAreaView>
   );
 }
