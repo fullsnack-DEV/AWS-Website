@@ -15,18 +15,17 @@ import images from '../../Constants/ImagePath';
 
 export default function ScorekeeperListScreen() {
   // const [loading, setloading] = useState(false);
-
   // const authContext = useContext(AuthContext);
 
   const renderRefereesScorekeeperListView = useCallback(
     () => (
-      <View style={[styles.separator, { flex: 1 / 4 }]}>
+      <View style={[styles.separator, { flex: 1 / 4, alignItems: 'center' }]}>
         <TCEntityView showStar={true}/>
       </View>
-
     ),
     [],
   );
+
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const renderSeparator = () => (
@@ -57,15 +56,6 @@ export default function ScorekeeperListScreen() {
           numColumns={4}
           showsHorizontalScrollIndicator={false}
           data={[
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
             '',
             '',
             '',

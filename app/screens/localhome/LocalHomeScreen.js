@@ -1,5 +1,9 @@
 import React, {
-useCallback, useLayoutEffect, useState, useContext,
+  useCallback,
+  useLayoutEffect,
+  useState,
+  useContext,
+  useEffect,
 } from 'react';
 import {
   View,
@@ -7,88 +11,162 @@ import {
   FlatList,
   Text,
   Image,
-  Modal,
   ScrollView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Platform,
-  Dimensions,
-  TextInput,
+  Alert,
 } from 'react-native';
 
-// import ActivityLoader from '../../components/loader/ActivityLoader';
+import Modal from 'react-native-modal';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 
-// import AuthContext from '../../auth/context';
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
+import AuthContext from '../../auth/context';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
+import { getSportsList } from '../../api/Games';
+
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
 import { widthPercentageToDP } from '../../utils';
 import TCChallengerCard from '../../components/TCChallengerCard';
+
 import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
 import TCEntityView from '../../components/TCEntityView';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCThinDivider from '../../components/TCThinDivider';
-import AuthContext from '../../auth/context';
+import SportsListView from '../../components/localHome/SportsListView';
+// import AuthContext from '../../auth/context';
 
-import { searchCityState } from '../../api/External';
-
+let selectedSports = [];
 export default function LocalHomeScreen({ navigation }) {
-  // const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(false);
+  const [sports, setSports] = useState([]);
+
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
-  const [locationSearchModal, setLocationSearchModal] = useState(false);
-  const [cityData, setCityData] = useState([]);
+  const [selectedSettingOption, setSelectedSettingOption] = useState();
+
+  const [selectedPlace, setSelectedPlace] = useState('Soccer');
+  const [settingPopup, setSettingPopup] = useState(false);
+
+  const [sportsPopup, setSportsPopup] = useState(false);
+  const [sportsListPopup, setSportsListPopup] = useState(false);
+  const [sportsSource, setSportsSource] = useState([
+    'Soccer',
+    'Baseball',
+    'Basketball',
+    'Tennis Single',
+    'Tennis Double',
+  ]);
+
   const authContext = useContext(AuthContext);
 
+  useEffect(() => {
+    getSportsList(authContext)
+      .then((response) => {
+        const arr = [];
+        for (const tempData of response.payload) {
+          tempData.isChecked = false;
+          arr.push(tempData);
+        }
+        setSports(arr);
+        setTimeout(() => setloading(false), 1000);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
+
+  const isIconCheckedOrNot = useCallback(
+    ({ item, index }) => {
+      sports[index].isChecked = !item.isChecked;
+      setSports([...sports]);
+      selectedSports = sports.filter((e) => e.isChecked);
+    },
+    [sports],
+  );
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <Image source={images.townsCupIcon} style={styles.townsCupIcon} />
       ),
       headerTitle: () => (
-        <View style={styles.titleHeaderView}>
-          <Text
-            style={styles.headerTitle}
-            onPress={() => setLocationPopup(true)}>
-            Vancuver
-          </Text>
+        <TouchableOpacity
+          style={styles.titleHeaderView}
+          onPress={() => setLocationPopup(true)}
+          hitSlop={{
+            top: 15,
+            bottom: 15,
+            left: 15,
+            right: 15,
+          }}>
+          <Text style={styles.headerTitle}>Vancuver</Text>
           <Image source={images.home_gps} style={styles.gpsIconStyle} />
-        </View>
+        </TouchableOpacity>
       ),
       headerRight: () => (
         <View style={styles.rightHeaderView}>
-          <Image source={images.home_search} style={styles.townsCupIcon} />
-          <Image source={images.home_setting} style={styles.townsCupIcon} />
+          <TouchableOpacity>
+            <Image source={images.home_search} style={styles.townsCupIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSettingPopup(true)}>
+            <Image source={images.home_setting} style={styles.townsCupIcon} />
+          </TouchableOpacity>
         </View>
       ),
     });
   }, [navigation]);
-
-  const getLocationData = async (searchLocationText) => {
-    if (searchLocationText.length) {
-      searchCityState(searchLocationText, authContext).then((response) => {
-        setCityData(response.predictions);
-      });
-    } else {
-      setCityData([]);
-    }
-  };
-
+  const onSportSelect = ({ item }) => setSelectedPlace(item);
   const sportsListView = useCallback(
-    ({ item }) => <Text style={styles.sportName}>{item}</Text>,
+    ({ item }) => (
+      <Text
+        style={
+          selectedPlace === item
+            ? [
+                styles.sportName,
+                { color: colors.themeColor, fontFamily: fonts.RBlack },
+              ]
+            : styles.sportName
+        }
+        onPress={() => onSportSelect({ item })}>
+        {item}
+      </Text>
+    ),
+    [selectedPlace],
+  );
+
+  const renderSportsView = useCallback(
+    ({ item, drag }) => (
+      <View style={styles.sportsBackgroundView}>
+        <View style={{ flexDirection: 'row' }}>
+          <Image source={images.gameGoal} style={styles.sportsIcon} />
+          <Text
+            style={styles.sportNameTitle}
+            onPress={() => onSportSelect({ item })}>
+            {item}
+          </Text>
+        </View>
+        <TouchableOpacity onLongPress={drag} style={{ alignSelf: 'center' }}>
+          <Image source={images.moveIcon} style={styles.moveIconStyle} />
+        </TouchableOpacity>
+      </View>
+    ),
     [],
   );
 
   const shortsListView = useCallback(() => <ShortsCard />, []);
-
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
       <View style={{ marginBottom: 15 }}>
@@ -148,23 +226,10 @@ export default function LocalHomeScreen({ navigation }) {
       }}
     />
   );
-  // const getTeamsData = async (item) => {
-  //   searchLocationPlaceDetail(
-  //     item.place_id,
-  //     authContext,
-  //   ).then((response) => {});
-  // };
-  const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => console.log('ITEM::=>', item)}>
-      <Text style={styles.cityList}>{cityData[index]?.structured_formatting?.main_text}</Text>
 
-      <TCThinDivider />
-    </TouchableOpacity>
-  );
   return (
     <View style={{ flex: 1 }}>
+      <ActivityLoader visible={loading} />
       <View style={styles.sportsListView}>
         <FlatList
           horizontal={true}
@@ -185,6 +250,7 @@ export default function LocalHomeScreen({ navigation }) {
           }}
         />
       </View>
+
       <ScrollView>
         <View>
           <TCTitleWithArrow
@@ -330,11 +396,14 @@ export default function LocalHomeScreen({ navigation }) {
           />
         </View>
         <Modal
-          backdropColor="black"
-          onBackdropPress={() => false}
+          onBackdropPress={() => setLocationPopup(false)}
           backdropOpacity={1}
           animationType="slide"
-          transparent={true}
+          hasBackdrop
+          style={{
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
           visible={locationPopup}>
           <View style={styles.bottomPopupContainer}>
             <View style={styles.viewsContainer}>
@@ -344,13 +413,11 @@ export default function LocalHomeScreen({ navigation }) {
                 Cancel
               </Text>
               <Text style={styles.locationText}>Location</Text>
-              <Text
-                style={styles.doneText}>
-                {'    '}
-              </Text>
+              <Text style={styles.doneText}>{'    '}</Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
-            <TouchableOpacity onPress={() => setSelectedLocationOption(0)}>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedLocationOption(0)}>
               {selectedLocationOption === 0 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -370,8 +437,9 @@ export default function LocalHomeScreen({ navigation }) {
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelectedLocationOption(1)}>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedLocationOption(1)}>
               {selectedLocationOption === 1 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -385,8 +453,9 @@ export default function LocalHomeScreen({ navigation }) {
                   <Text style={styles.myCityText}>Home city</Text>
                 </View>
               )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelectedLocationOption(2)}>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedLocationOption(2)}>
               {selectedLocationOption === 2 ? (
                 <LinearGradient
                   colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -400,68 +469,180 @@ export default function LocalHomeScreen({ navigation }) {
                   <Text style={styles.worldText}>World</Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
             <Text style={styles.orText}>Or</Text>
 
             <TouchableOpacity
               style={styles.sectionStyle}
               onPress={() => {
                 setLocationPopup(false);
-                setLocationSearchModal(true);
+                navigation.navigate('SearchCityScreen');
               }}>
               <Text style={styles.searchText}>{strings.searchTitle}</Text>
             </TouchableOpacity>
           </View>
         </Modal>
         <Modal
-          backdropColor="black"
-          onBackdropPress={() => false}
+          onBackdropPress={() => setSettingPopup(false)}
           backdropOpacity={1}
           animationType="slide"
-          transparent={true}
-          visible={locationSearchModal}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              { height: Dimensions.get('window').height - 60 },
-            ]}>
+          hasBackdrop
+          style={{
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
+          visible={settingPopup}>
+          <View style={styles.bottomPopupContainer}>
             <View style={styles.viewsContainer}>
               <Text
-                onPress={() => {
-                  setLocationSearchModal(false)
-                  setLocationPopup(true)
-                }}
+                onPress={() => setSettingPopup(false)}
                 style={styles.cancelText}>
                 Cancel
               </Text>
-              <Text style={styles.locationText}>Location</Text>
+              <Text style={styles.locationText}>Setting</Text>
               <Text
-                style={styles.doneText}>
-                {'    '}
+                style={styles.doneText}
+                onPress={() => {
+                  if (selectedSettingOption === 1) {
+                    setSettingPopup(false);
+                    setLocationPopup(true);
+                  } else {
+                    setSettingPopup(false);
+                    setSportsPopup(true);
+                  }
+                }}>
+                {'Done'}
               </Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
-            <TextInput
-              style={styles.sectionStyle}
-              placeholder={strings.searchTitle}
-              placeholderTextColor={colors.userPostTimeColor}
-              clearButtonMode="always"
-              onChangeText={(text) => getLocationData(text)}
-              // value={value}
-            />
-            <FlatList
-              data={cityData}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedSettingOption(0)}>
+              {selectedSettingOption === 0 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text
+                    style={[
+                      styles.curruentLocationText,
+                      { color: colors.whiteColor },
+                    ]}>
+                    Sports
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.curruentLocationText}>Sports</Text>
+                </View>
+              )}
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => setSelectedSettingOption(1)}>
+              {selectedSettingOption === 1 ? (
+                <LinearGradient
+                  colors={[colors.yellowColor, colors.orangeGradientColor]}
+                  style={styles.backgroundView}>
+                  <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
+                    Location
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.backgroundView}>
+                  <Text style={styles.myCityText}>Location</Text>
+                </View>
+              )}
+            </TouchableWithoutFeedback>
+          </View>
+        </Modal>
+        <Modal
+          onBackdropPress={() => setSportsPopup(false)}
+          backdropOpacity={1}
+          animationType="slide"
+          hasBackdrop
+          style={{
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
+          visible={sportsPopup}>
+          <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+            <View style={styles.viewsContainer}>
+              <Text
+                onPress={() => setSettingPopup(false)}
+                style={styles.cancelText}>
+                Cancel
+              </Text>
+              <Text style={styles.locationText}>Sports</Text>
+              <Text
+                style={styles.doneText}
+                onPress={() => {
+                  console.log('DONE::');
+                }}>
+                {'Done'}
+              </Text>
+            </View>
+            <TCThinDivider width={'100%'} marginBottom={15} />
+            <DraggableFlatList
+              showsHorizontalScrollIndicator={false}
+              data={sportsSource}
+              keyExtractor={keyExtractor}
+              renderItem={renderSportsView}
               style={{
-                marginLeft: 25,
-                marginRight: 25,
-                marginTop: 20,
+                width: '100%',
+                alignContent: 'center',
+                marginBottom: 15,
+                paddingVertical: 15,
               }}
+              dragHitSlop={{
+                top: 15,
+                bottom: 15,
+                left: 15,
+                right: 15,
+              }}
+
+              onDragEnd={({ data }) => setSportsSource(data)}
             />
+            <TouchableOpacity
+              style={styles.addSportsView}
+              onPress={() => {
+                setSportsPopup(false);
+                setSportsListPopup(true);
+              }}>
+              <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+        <Modal
+          onBackdropPress={() => setSportsListPopup(false)}
+          backdropOpacity={1}
+          animationType="slide"
+          hasBackdrop
+          style={{
+            flex: 1,
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
+          visible={sportsListPopup}>
+          <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+            <View style={styles.viewsContainer}>
+              <Text
+                onPress={() => setSportsListPopup(false)}
+                style={styles.cancelText}>
+                Cancel
+              </Text>
+              <Text style={styles.locationText}>Add or delete Sports </Text>
+              <Text
+                style={styles.doneText}
+                onPress={() => {
+                  console.log('DONE::', selectedSports);
+                }}>
+                {'Apply'}
+              </Text>
+            </View>
+            <TCThinDivider width={'100%'} marginBottom={15} />
+            <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
           </View>
         </Modal>
       </ScrollView>
+
     </View>
   );
 }
@@ -476,6 +657,21 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     height: 30,
     width: 30,
+  },
+  sportsIcon: {
+    resizeMode: 'cover',
+    height: 20,
+    width: 20,
+    alignSelf: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  moveIconStyle: {
+    resizeMode: 'cover',
+    height: 13,
+    width: 15,
+    alignSelf: 'center',
+    marginRight: 15,
   },
   titleHeaderView: {
     flexDirection: 'row',
@@ -495,6 +691,21 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
     margin: 15,
+  },
+  sportNameTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+    // margin: 15,
+  },
+  addSportsTitle: {
+    fontSize: 12,
+    fontFamily: fonts.RMedium,
+    color: colors.themeColor,
+    alignSelf: 'center',
+    // margin: 15,
+    paddingHorizontal: 10,
   },
   sportsListView: {
     backgroundColor: colors.whiteColor,
@@ -516,6 +727,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
+
     ...Platform.select({
       ios: {
         shadowColor: colors.googleColor,
@@ -544,6 +756,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 15,
   },
+  sportsBackgroundView: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 8,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 40,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    width: widthPercentageToDP('86%'),
+    // alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  addSportsView: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 25,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    // width: widthPercentageToDP('86%'),
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    marginBottom: 15,
+  },
   orText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
@@ -569,7 +813,7 @@ const styles = StyleSheet.create({
   doneText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
+    color: colors.themeColor,
   },
   locationText: {
     fontSize: 16,
@@ -582,12 +826,13 @@ const styles = StyleSheet.create({
     color: colors.veryLightGray,
   },
   viewsContainer: {
-    height: 50,
+    height: 60,
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: 20,
+    marginRight: 20,
+
   },
   sectionStyle: {
     alignItems: 'center',
@@ -606,21 +851,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     alignSelf: 'center',
     elevation: 2,
+    marginBottom: 15,
   },
   searchText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
-  },
-  cityList: {
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
-
-    // paddingLeft: wp('1%'),
-    width: widthPercentageToDP('70%'),
-    margin: 15,
-    textAlignVertical: 'center',
   },
 });

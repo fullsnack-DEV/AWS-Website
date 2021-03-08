@@ -23,7 +23,9 @@ function TCEntityView({ onPress, showStar = false }) {
           numberOfLines={2}>
           Kishan Makani
         </Text>
-        {showStar && <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+        {showStar && <View style={{
+ flexDirection: 'row', alignItems: 'center', marginTop: 5,
+        }}>
           <Image
             source={images.orangeStar}
             style={styles.starImage}
@@ -74,6 +76,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginTop: 5,
+    textAlign: 'center',
+
   },
   starImage: {
     resizeMode: 'cover',

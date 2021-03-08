@@ -13,6 +13,7 @@ import HiringPlayerScreen from '../screens/localhome/HiringPlayerScreen';
 import LookingTeamScreen from '../screens/localhome/LookingTeamScreen';
 import RefereesListScreen from '../screens/localhome/RefereesListScreen';
 import ScorekeeperListScreen from '../screens/localhome/ScorekeeperListScreen';
+import SearchCityScreen from '../screens/localhome/SearchCityScreen';
 
 const Stack = createStackNavigator();
 
@@ -149,6 +150,23 @@ const LocalHomeNavigator = () => (
         component={ScorekeeperListScreen}
         options={{
           title: 'Scorekeepers',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        }}
+      />
+    <Stack.Screen
+        name="SearchCityScreen"
+        component={SearchCityScreen}
+        options={{
+          title: 'Search Location',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

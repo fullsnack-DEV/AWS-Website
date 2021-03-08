@@ -1,6 +1,11 @@
 /* eslint-disable array-callback-return */
 import React, {
-    useEffect, useState, useContext, useLayoutEffect, useRef, useCallback,
+  useEffect,
+  useState,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  useCallback,
 } from 'react';
 import {
   View,
@@ -51,7 +56,7 @@ import {
 import strings from '../../Constants/String';
 
 export default function AccountScreen({ navigation }) {
- const scrollRef = useRef()
+  const scrollRef = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [group, setGroup] = useState({});
@@ -139,51 +144,34 @@ export default function AccountScreen({ navigation }) {
             right: 15,
           }}>
           <ImageBackground
-            source={notificationCounter > 0 ? images.notificationBell : images.tab_notification}
-            style={styles.headerRightImg}
-          >
-            {notificationCounter > 0 && <View
-            style={notificationCounter > 9 ? styles.eclipseBadge : styles.roundBadge}>
-              <Text
-              style={styles.notificationCounterStyle}>
-                {notificationCounter > 9 ? '9+' : notificationCounter}
-              </Text>
-            </View>}
+            source={
+              notificationCounter > 0
+                ? images.notificationBell
+                : images.tab_notification
+            }
+            style={styles.headerRightImg}>
+            {notificationCounter > 0 && (
+              <View
+                style={
+                  notificationCounter > 9
+                    ? styles.eclipseBadge
+                    : styles.roundBadge
+                }>
+                <Text style={styles.notificationCounterStyle}>
+                  {notificationCounter > 9 ? '9+' : notificationCounter}
+                </Text>
+              </View>
+            )}
           </ImageBackground>
         </TouchableOpacity>
       ),
     });
   }, [navigation, notificationCounter]);
 
-    const getData = () => new Promise((resolve, reject) => {
-        const entity = authContext.entity;
-        const promises = [getOwnGroupList(entity), getTeamsList(entity)];
-        if (entity.role !== 'club') promises.push(getClubList(entity));
-        Promise.all(promises)
-            .then(() => resolve(true))
-            // eslint-disable-next-line prefer-promise-reject-errors
-            .catch(() => reject('error'));
-    });
-
-  useEffect(() => {
-      if (isFocused) {
-          setloading(true);
-          getData().then(() => {
-              setloading(false);
-          });
-      }
-  }, [isFocused]);
-
-  useEffect(() => {
-      getData();
-  }, [authContext])
-
-  const getParentClub = (item) => {
-    console.log('Parent group ID::', item.group_id);
+  const getParentClub = useCallback((item) => {
+    setloading(true);
     getGroupDetails(item.group_id, authContext)
       .then((response) => {
-        console.log('Parent group detail1::', response.payload);
-        console.log('Parent group detail2::', response.payload.club);
         if (!response?.payload?.club) {
           setParentGroup(response?.payload?.club);
         } else {
@@ -196,9 +184,9 @@ export default function AccountScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [authContext]);
 
-  const getOwnGroupList = async (currentEntity) => {
+  const getOwnGroupList = useCallback((currentEntity) => {
     getUnreadCount(authContext)
       .then((response) => {
         const { teams } = response.payload;
@@ -207,9 +195,9 @@ export default function AccountScreen({ navigation }) {
         setClub(clubs);
         let count = 0;
         ([...clubs, ...teams] || []).map((e) => {
-          count += e.unread
-        })
-        setNotificationCounter(count)
+          count += e.unread;
+        });
+        setNotificationCounter(count);
         if (currentEntity.role === 'user') {
           setGroupList([...clubs, ...teams]);
         } else if (currentEntity.role === 'team') {
@@ -229,9 +217,9 @@ export default function AccountScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [authContext])
 
-  const getTeamsList = async (currentEntity) => {
+  const getTeamsList = useCallback((currentEntity) => {
     if (currentEntity.role === 'club') {
       getTeamsOfClub(authContext.entity.uid, authContext)
         .then((response) => {
@@ -253,9 +241,9 @@ export default function AccountScreen({ navigation }) {
           }, 10);
         });
     }
-  };
+  }, [authContext])
 
-  const getClubList = async () => {
+  const getClubList = useCallback(() => {
     getJoinedGroups(authContext.entity.uid, authContext)
       .then((response) => {
         setClubList(response.payload.clubs);
@@ -265,22 +253,24 @@ export default function AccountScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [authContext])
 
-  const onSwitchProfile = async ({ item }) => {
-    setloading(true);
-    switchProfile(item)
-      .then((currentEntity) => {
-        switchQBAccount(item, currentEntity);
-      })
-      .catch((e) => {
+  useEffect(() => {
+    const getData = async () => {
+      const entity = authContext.entity;
+      const promises = [getOwnGroupList(entity), getTeamsList(entity)];
+
+      if (entity.role !== 'club') {
+        promises.push(getClubList(entity));
+      }
+      Promise.all(promises).then(() => {
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
       });
-  };
+    };
+    getData();
+  }, [authContext.entity, getClubList, getOwnGroupList, getTeamsList, isFocused, navigation]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const switchProfile = async (item) => {
     let currentEntity = authContext.entity;
 
@@ -337,19 +327,20 @@ export default function AccountScreen({ navigation }) {
       }
       setGroupList([authContext.entity.auth.user, ...club, ...team]);
     }
-    // authContext.setEntity({ ...currentEntity });
-    // Utility.setStorage('authContextEntity', { ...currentEntity });
-    return currentEntity;
-  };
+    authContext.setEntity({ ...currentEntity });
+    Utility.setStorage('authContextEntity', { ...currentEntity });
 
-  const switchQBAccount = async (accountData, entity) => {
+    return currentEntity;
+  }
+
+  const switchQBAccount = useCallback((accountData, entity) => {
     let currentEntity = entity;
     const entityType = accountData?.entity_type;
     const uid = entityType === 'player' ? 'user_id' : 'group_id';
     QBLogout()
       .then(() => {
         const {
- USER, CLUB, LEAGUE, TEAM,
+USER, CLUB, LEAGUE, TEAM,
 } = QB_ACCOUNT_TYPE;
         let accountType = USER;
         if (entityType === 'club') accountType = CLUB;
@@ -392,14 +383,29 @@ export default function AccountScreen({ navigation }) {
           await Utility.setStorage('authContextEntity', { ...currentEntity });
         setloading(false);
       });
-  };
+  }, [authContext])
+
+  const onSwitchProfile = useCallback(({ item }) => {
+    setloading(true);
+    switchProfile(item)
+      .then((currentEntity) => {
+        // setloading(true);
+        switchQBAccount(item, currentEntity);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [switchProfile, switchQBAccount])
 
   const onLogout = useCallback(async () => {
-      await Utility.clearStorage();
-      QBLogout();
-      firebase.auth().signOut();
-      await authContext.setUser(null);
-      await authContext.setEntity(null);
+    await Utility.clearStorage();
+    QBLogout();
+    firebase.auth().signOut();
+    await authContext.setUser(null);
+    await authContext.setEntity(null);
   }, [authContext]);
 
   const handleLogOut = useCallback(async () => {
@@ -418,7 +424,7 @@ export default function AccountScreen({ navigation }) {
       ],
       { cancelable: false },
     );
-  }, []);
+  }, [onLogout]);
 
   const handleSections = async (section) => {
     if (section === 'My Schedule') {
@@ -448,7 +454,7 @@ export default function AccountScreen({ navigation }) {
     }
   };
 
-  const handleOptions = async (options) => {
+  const handleOptions = useCallback((options) => {
     // navigation.closeDrawer();
     if (options === 'Register as a referee') {
       navigation.navigate('RegisterReferee');
@@ -475,81 +481,324 @@ export default function AccountScreen({ navigation }) {
     } else if (options === 'Payout Method') {
       navigation.navigate('PayoutMethodScreen');
     }
-  };
+  }, [authContext.entity, group, navigation]);
 
-  const renderSwitchProfile = ({ item, index }) => (
-    <TouchableWithoutFeedback
-      style={styles.listContainer}
-      onPress={() => {
-        scrollRef.current.scrollTo({ x: 0, y: 0 });
-        onSwitchProfile({ item, index });
-      }}>
-      <View>
-        {item.entity_type === 'player' && (
-          <View style={styles.imageContainer}>
-            <Image
-              source={
-                item.thumbnail
-                  ? { uri: item.thumbnail }
-                  : images.profilePlaceHolder
-              }
-              style={styles.playerImg}
-            />
-          </View>
-        )}
-        {item.entity_type === 'club' && (
-          <View style={styles.placeholderView}>
-            <Image
-              source={
-                item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder
-              }
-              style={styles.entityImg}
-            />
-            {item.thumbnail ? null : (
-              <Text style={styles.oneCharacterText}>
-                {item.group_name.charAt(0).toUpperCase()}
-              </Text>
-            )}
-          </View>
-        )}
-        {item.entity_type === 'team' && (
-          <View style={styles.placeholderView}>
+  const renderSportsList = useCallback(
+    ({ item }) => (
+      <View
+        style={styles.listContainer}
+        onPress={() => {
+          // navigation.closeDrawer();
+          // alert('Game Pressed');
+        }}>
+        <View style={styles.entityTextContainer}>
+          <Image source={images.mySports} style={styles.smallProfileImg} />
+          <Text style={styles.entityName}>{item.sport_name}</Text>
+        </View>
+      </View>
+    ),
+    [],
+  );
+
+  const renderRefereesList = useCallback(
+    ({ item }) => (
+      <View
+        style={styles.listContainer}
+        onPress={() => {
+          // navigation.closeDrawer();
+          // alert('Referee Pressed');
+        }}>
+        <View style={styles.entityTextContainer}>
+          <Image source={images.myRefereeing} style={styles.smallProfileImg} />
+          <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+        </View>
+      </View>
+    ),
+    [],
+  );
+
+  const renderScorekeepersList = useCallback(
+    ({ item }) => (
+      <View
+        style={styles.listContainer}
+        onPress={() => {
+          // navigation.closeDrawer();
+          // alert('Referee Pressed');
+        }}>
+        <View style={styles.entityTextContainer}>
+          <Image source={images.myRefereeing} style={styles.smallProfileImg} />
+          <Text style={styles.entityName}>{_.startCase(item?.sport_name)}</Text>
+        </View>
+      </View>
+    ),
+    [],
+  );
+
+  const keyExtractorID = useCallback((item, index) => index.toString(), []);
+
+  const renderSwitchProfile = useCallback(
+    ({ item, index }) => (
+      <TouchableWithoutFeedback
+        style={styles.listContainer}
+        onPress={() => {
+          scrollRef.current.scrollTo({ x: 0, y: 0 });
+          onSwitchProfile({ item, index });
+          // navigation.closeDrawer();
+        }}>
+        <View>
+          {item.entity_type === 'player' && (
+            <View style={styles.imageContainer}>
+              <Image
+                source={
+                  item.thumbnail
+                    ? { uri: item.thumbnail }
+                    : images.profilePlaceHolder
+                }
+                style={styles.playerImg}
+              />
+            </View>
+          )}
+          {item.entity_type === 'club' && (
+            <View style={styles.placeholderView}>
+              <Image
+                source={
+                  item.thumbnail
+                    ? { uri: item.thumbnail }
+                    : images.clubPlaceholder
+                }
+                style={styles.entityImg}
+              />
+              {item.thumbnail ? null : (
+                <Text style={styles.oneCharacterText}>
+                  {item.group_name.charAt(0).toUpperCase()}
+                </Text>
+              )}
+            </View>
+          )}
+          {item.entity_type === 'team' && (
+            <View style={styles.placeholderView}>
+              <Image
+                source={
+                  item.thumbnail
+                    ? { uri: item.thumbnail }
+                    : images.teamPlaceholder
+                }
+                style={styles.entityImg}
+              />
+              {item.thumbnail ? null : (
+                <Text style={styles.oneCharacterText}>
+                  {item.group_name.charAt(0).toUpperCase()}
+                </Text>
+              )}
+            </View>
+          )}
+
+          {item.unread > 0 && (
+            <View style={styles.badgeView}>
+              <Text style={styles.badgeCounter}>{item.unread}</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.textContainer}>
+          {item.entity_type === 'player' && (
+            <Text style={styles.entityNameText}>{item.full_name}</Text>
+          )}
+          {item.entity_type === 'team' && (
+            <Text style={styles.entityNameText}>{item.group_name}</Text>
+          )}
+          {item.entity_type === 'club' && (
+            <Text style={styles.entityNameText}>{item.group_name}</Text>
+          )}
+          <Text style={styles.entityLocationText}>
+            {item.city},{item.state_abbr}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    ),
+    [onSwitchProfile],
+  );
+
+  const renderEntityList = useCallback(
+    ({ item }) => (
+      <TouchableWithoutFeedback
+        style={styles.listContainer}
+        onPress={() => {
+          navigation.navigate('HomeScreen', {
+            uid: group.group_id,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+            role: group.entity_type,
+          });
+        }}>
+        <View style={styles.entityTextContainer}>
+          {item.entity_type === 'team' && (
             <Image
               source={
                 item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder
               }
-              style={styles.entityImg}
+              style={styles.smallProfileImg}
             />
-            {item.thumbnail ? null : (
-              <Text style={styles.oneCharacterText}>
-                {item.group_name.charAt(0).toUpperCase()}
-              </Text>
-            )}
-          </View>
+          )}
+          {item.entity_type === 'club' && (
+            <Image
+              source={
+                item.thumbnail ? { uri: item.thumbnail } : images.clubPlaceholder
+              }
+              style={styles.smallProfileImg}
+            />
+          )}
+          <Text
+            style={
+              item.group_name.length > 26
+                ? [styles.entityName, { width: wp('60%') }]
+                : styles.entityName
+            }
+            numberOfLines={1}>
+            {item.group_name}
+          </Text>
+          <Text style={styles.teamSportView}> {item.sport}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    ),
+    [group.entity_type, group.group_id, navigation],
+  );
+
+  const renderTeamsList = useCallback(
+    ({ item }) => (
+      <TouchableWithoutFeedback
+        style={styles.listContainer}
+        onPress={() => {
+          console.log('Pressed Team..');
+        }}>
+        <View style={styles.entityTextContainer}>
+          <Image
+            source={
+              item.thumbnail ? { uri: item.thumbnail } : images.teamPlaceholder
+            }
+            style={styles.smallProfileImg}
+          />
+          <Text style={styles.entityName}>{item.group_name}</Text>
+          <Text
+            style={
+              item.entity_type === 'team'
+                ? styles.teamSportView
+                : styles.clubSportView
+            }>
+            {' '}
+            {item.sport}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    ),
+    [],
+  );
+
+  const renderMenuItems = useCallback(
+    (rowItem, rowId, sectionId) => (
+      <>
+        {authContext.entity.role === 'user' && sectionId === 1 && (
+          <FlatList
+            data={authContext?.user?.registered_sports}
+            keyExtractor={keyExtractorID}
+            renderItem={renderSportsList}
+            scrollEnabled={false}
+          />
+        )}
+        {authContext.entity.role === 'user' && sectionId === 2 && (
+          <FlatList
+            data={authContext?.entity?.auth?.user?.referee_data}
+            keyExtractor={keyExtractorID}
+            renderItem={renderRefereesList}
+            scrollEnabled={false}
+          />
+        )}
+        {authContext.entity.role === 'user' && sectionId === 3 && (
+          <FlatList
+            data={authContext?.entity?.auth?.user?.scorekeeper_data}
+            keyExtractor={keyExtractorID}
+            renderItem={renderScorekeepersList}
+            scrollEnabled={false}
+          />
+        )}
+        {authContext.entity.role === 'user'
+          && (sectionId === 4 || sectionId === 5) && (
+            <FlatList
+              data={sectionId === 4 ? teamList : clubList}
+              keyExtractor={keyExtractorID}
+              renderItem={renderEntityList}
+              scrollEnabled={false}
+            />
+          )}
+        {authContext.entity.role === 'club' && sectionId === 2 && (
+          <FlatList
+            data={teamList}
+            keyExtractor={keyExtractorID}
+            renderItem={renderTeamsList}
+            scrollEnabled={false}
+          />
         )}
 
-        {item.unread > 0 && (
-          <View style={styles.badgeView}>
-            <Text style={styles.badgeCounter}>{item.unread}</Text>
-          </View>
-        )}
-      </View>
+        <View style={styles.halfSeparatorLine} />
 
-      <View style={styles.textContainer}>
-        {item.entity_type === 'player' && (
-          <Text style={styles.entityNameText}>{item.full_name}</Text>
-        )}
-        {item.entity_type === 'team' && (
-          <Text style={styles.entityNameText}>{item.group_name}</Text>
-        )}
-        {item.entity_type === 'club' && (
-          <Text style={styles.entityNameText}>{item.group_name}</Text>
-        )}
-        <Text style={styles.entityLocationText}>
-          {item.city},{item.state_abbr}
-        </Text>
-      </View>
-    </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          style={styles.listContainer}
+          onPress={() => {
+            handleOptions(rowItem.opetions);
+          }}>
+          {rowItem.opetions === 'Add a sport' && (
+            <Image source={images.addSport} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Register as a referee' && (
+            <Image source={images.registerReferee} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Register as a scorekeeper' && (
+            <Image source={images.registerReferee} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Create a Team' && (
+            <Image source={images.createTeam} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Create a Club' && (
+            <Image source={images.createClub} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Create a League' && (
+            <Image source={images.createLeague} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Payment Method' && (
+            <Image source={images.Payment_method} style={styles.subMenuItem} />
+          )}
+
+          {rowItem.opetions === 'Payout Method' && (
+            <Image source={images.Payout_method} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Invoicing' && (
+            <Image source={images.Invoicing} style={styles.subMenuItem} />
+          )}
+          {rowItem.opetions === 'Transactions' && (
+            <Image source={images.Transations} style={styles.subMenuItem} />
+          )}
+
+          <Text style={styles.listItems}>{rowItem.opetions}</Text>
+          <Image source={images.nextArrow} style={styles.nextArrow} />
+        </TouchableWithoutFeedback>
+        <View style={styles.halfSeparatorLine} />
+      </>
+    ),
+    [
+      authContext.entity?.auth?.user?.referee_data,
+      authContext.entity?.auth?.user?.scorekeeper_data,
+      authContext.entity.role,
+      authContext?.user?.registered_sports,
+      clubList,
+      handleOptions,
+      keyExtractorID,
+      renderEntityList,
+      renderRefereesList,
+      renderScorekeepersList,
+      renderSportsList,
+      renderTeamsList,
+      teamList,
+    ],
   );
 
   let placeHolder = images.teamSqure;
@@ -633,7 +882,11 @@ export default function AccountScreen({ navigation }) {
                   }
                   style={styles.profileImg}
                 />
-                <View style={{ marginLeft: 15, width: Dimensions.get('window').width / 1.6 }}>
+                <View
+                  style={{
+                    marginLeft: 15,
+                    width: Dimensions.get('window').width / 1.6,
+                  }}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -641,7 +894,17 @@ export default function AccountScreen({ navigation }) {
                       marginRight: 10,
                     }}>
                     <MarqueeText
-                      style={authContext?.entity?.obj?.background_thumbnail ? [styles.nameText, { alignSelf: 'flex-start' }] : [styles.nameText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}
+                      style={
+                        authContext?.entity?.obj?.background_thumbnail
+                          ? [styles.nameText, { alignSelf: 'flex-start' }]
+                          : [
+                              styles.nameText,
+                              {
+                                alignSelf: 'flex-start',
+                                color: colors.lightBlackColor,
+                              },
+                      ]
+                      }
                       duration={3000}
                       marqueeOnStart
                       loop={true}
@@ -657,12 +920,25 @@ export default function AccountScreen({ navigation }) {
                         height: 12,
                         width: 12,
                         resizeMode: 'cover',
-                        tintColor: authContext?.entity?.obj?.background_thumbnail ? colors.whiteColor : colors.lightBlackColor,
+                        tintColor: authContext?.entity?.obj
+                          ?.background_thumbnail
+                          ? colors.whiteColor
+                          : colors.lightBlackColor,
                       }}
                     />
                   </View>
                   <Text
-                    style={authContext?.entity?.obj?.background_thumbnail ? [styles.locationText, { alignSelf: 'flex-start' }] : [styles.locationText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}>
+                    style={
+                      authContext?.entity?.obj?.background_thumbnail
+                        ? [styles.locationText, { alignSelf: 'flex-start' }]
+                        : [
+                            styles.locationText,
+                            {
+                              alignSelf: 'flex-start',
+                              color: colors.lightBlackColor,
+                            },
+                    ]
+                    }>
                     {authContext?.entity?.obj?.city || ''},{' '}
                     {authContext?.entity?.obj?.state_abbr || ''}
                   </Text>
@@ -717,7 +993,17 @@ export default function AccountScreen({ navigation }) {
                       marginRight: 10,
                     }}>
                       <MarqueeText
-                      style={authContext?.entity?.obj?.background_thumbnail ? [styles.nameText, { alignSelf: 'flex-start' }] : [styles.nameText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}
+                      style={
+                        authContext?.entity?.obj?.background_thumbnail
+                          ? [styles.nameText, { alignSelf: 'flex-start' }]
+                          : [
+                              styles.nameText,
+                              {
+                                alignSelf: 'flex-start',
+                                color: colors.lightBlackColor,
+                              },
+                      ]
+                      }
                       duration={3000}
                       marqueeOnStart
                       loop={true}
@@ -747,12 +1033,25 @@ export default function AccountScreen({ navigation }) {
                         width: 12,
                         marginLeft: 10,
                         resizeMode: 'cover',
-                        tintColor: authContext?.entity?.obj?.background_thumbnail ? colors.whiteColor : colors.lightBlackColor,
+                        tintColor: authContext?.entity?.obj
+                          ?.background_thumbnail
+                          ? colors.whiteColor
+                          : colors.lightBlackColor,
                       }}
                     />
                     </View>
                     <Text
-                    style={authContext?.entity?.obj?.background_thumbnail ? [styles.locationText, { alignSelf: 'flex-start' }] : [styles.locationText, { alignSelf: 'flex-start', color: colors.lightBlackColor }]}>
+                    style={
+                      authContext?.entity?.obj?.background_thumbnail
+                        ? [styles.locationText, { alignSelf: 'flex-start' }]
+                        : [
+                            styles.locationText,
+                            {
+                              alignSelf: 'flex-start',
+                              color: colors.lightBlackColor,
+                            },
+                    ]
+                    }>
                       {authContext.entity.obj.city},{' '}
                       {authContext.entity.obj.state_abbr}
                     </Text>
@@ -772,240 +1071,7 @@ export default function AccountScreen({ navigation }) {
           }
           headerKey={'key'}
           memberKey="member"
-          renderRow={(rowItem, rowId, sectionId) => (
-            <>
-              {authContext.entity.role === 'user' && sectionId === 1 && (
-                <FlatList
-                  data={authContext?.user?.registered_sports}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <View
-                      style={styles.listContainer}
-                      onPress={() => {
-                        // navigation.closeDrawer();
-                        // alert('Game Pressed');
-                      }}>
-                      <View style={styles.entityTextContainer}>
-                        <Image
-                          source={images.mySports}
-                          style={styles.smallProfileImg}
-                        />
-                        <Text style={styles.entityName}>{item.sport_name}</Text>
-                      </View>
-                    </View>
-                  )}
-                  scrollEnabled={false}
-                />
-              )}
-              {authContext.entity.role === 'user' && sectionId === 2 && (
-                <FlatList
-                  data={authContext?.entity?.auth?.user?.referee_data}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <View
-                      style={styles.listContainer}
-                      onPress={() => {
-                        // navigation.closeDrawer();
-                        // alert('Referee Pressed');
-                      }}>
-                      <View style={styles.entityTextContainer}>
-                        <Image
-                          source={images.myRefereeing}
-                          style={styles.smallProfileImg}
-                        />
-                        <Text style={styles.entityName}>
-                          {_.startCase(item?.sport_name)}
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-                  scrollEnabled={false}
-                />
-              )}
-              {authContext.entity.role === 'user' && sectionId === 3 && (
-                <FlatList
-                  data={authContext?.entity?.auth?.user?.scorekeeper_data}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <View
-                      style={styles.listContainer}
-                      onPress={() => {
-                        // navigation.closeDrawer();
-                        // alert('Referee Pressed');
-                      }}>
-                      <View style={styles.entityTextContainer}>
-                        <Image
-                          source={images.myRefereeing}
-                          style={styles.smallProfileImg}
-                        />
-                        <Text style={styles.entityName}>
-                          {_.startCase(item?.sport_name)}
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-                  scrollEnabled={false}
-                />
-              )}
-              {authContext.entity.role === 'user'
-                && (sectionId === 4 || sectionId === 5) && (
-                  <FlatList
-                    data={sectionId === 4 ? teamList : clubList}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item }) => (
-                      <TouchableWithoutFeedback
-                        style={styles.listContainer}
-                        onPress={() => {
-                          navigation.navigate('HomeScreen', {
-                                uid: group.group_id,
-                                backButtonVisible: true,
-                                menuBtnVisible: false,
-                                role: group.entity_type,
-                          });
-                        }}>
-                        <View style={styles.entityTextContainer}>
-                          {item.entity_type === 'team' && (
-                            <Image
-                              source={
-                                item.thumbnail
-                                  ? { uri: item.thumbnail }
-                                  : images.teamPlaceholder
-                              }
-                              style={styles.smallProfileImg}
-                            />
-                          )}
-                          {item.entity_type === 'club' && (
-                            <Image
-                              source={
-                                item.thumbnail
-                                  ? { uri: item.thumbnail }
-                                  : images.clubPlaceholder
-                              }
-                              style={styles.smallProfileImg}
-                            />
-                          )}
-                          <Text style={item.group_name.length > 26 ? [styles.entityName, { width: wp('60%') }] : styles.entityName} numberOfLines={1}>
-                            {item.group_name}
-                          </Text>
-                          <Text style={styles.teamSportView}>
-                            {' '}
-                            {item.sport}
-                          </Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    )}
-                    scrollEnabled={false}
-                  />
-                )}
-              {authContext.entity.role === 'club' && sectionId === 2 && (
-                <FlatList
-                  data={teamList}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableWithoutFeedback
-                      style={styles.listContainer}
-                      onPress={() => {
-                        console.log('Pressed Team..', rowItem.rowId.sectionId);
-                      }}>
-                      <View style={styles.entityTextContainer}>
-                        <Image
-                          source={
-                            item.thumbnail
-                              ? { uri: item.thumbnail }
-                              : images.teamPlaceholder
-                          }
-                          style={styles.smallProfileImg}
-                        />
-
-                        <Text style={styles.entityName}>{item.group_name}</Text>
-                        <Text
-                          style={
-                            item.entity_type === 'team'
-                              ? styles.teamSportView
-                              : styles.clubSportView
-                          }>
-                          {' '}
-                          {item.sport}
-                        </Text>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  )}
-                  // ItemSeparatorComponent={() => (
-                  //   <View style={styles.separatorLine}></View>
-                  // )}
-                  scrollEnabled={false}
-                />
-              )}
-
-              <View style={styles.halfSeparatorLine} />
-
-              <TouchableWithoutFeedback
-                style={styles.listContainer}
-                onPress={() => {
-                  handleOptions(rowItem.opetions);
-                }}>
-                {rowItem.opetions === 'Add a sport' && (
-                  <Image source={images.addSport} style={styles.subMenuItem} />
-                )}
-                {rowItem.opetions === 'Register as a referee' && (
-                  <Image
-                    source={images.registerReferee}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Register as a scorekeeper' && (
-                  <Image
-                    source={images.registerReferee}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Create a Team' && (
-                  <Image
-                    source={images.createTeam}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Create a Club' && (
-                  <Image
-                    source={images.createClub}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Create a League' && (
-                  <Image
-                    source={images.createLeague}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Payment Method' && (
-                  <Image
-                    source={images.Payment_method}
-                    style={styles.subMenuItem}
-                  />
-                )}
-
-                {rowItem.opetions === 'Payout Method' && (
-                  <Image
-                    source={images.Payout_method}
-                    style={styles.subMenuItem}
-                  />
-                )}
-                {rowItem.opetions === 'Invoicing' && (
-                  <Image source={images.Invoicing} style={styles.subMenuItem} />
-                )}
-                {rowItem.opetions === 'Transactions' && (
-                  <Image
-                    source={images.Transations}
-                    style={styles.subMenuItem}
-                  />
-                )}
-
-                <Text style={styles.listItems}>{rowItem.opetions}</Text>
-                <Image source={images.nextArrow} style={styles.nextArrow} />
-              </TouchableWithoutFeedback>
-              <View style={styles.halfSeparatorLine} />
-            </>
-          )}
+          renderRow={renderMenuItems}
           renderSectionHeaderX={(section) => (
             <>
               <TouchableWithoutFeedback
@@ -1055,7 +1121,6 @@ export default function AccountScreen({ navigation }) {
                 {section === 'Members' && (
                   <Image source={images.Members} style={styles.menuItem} />
                 )}
-
                 <Text style={styles.listItems}>{section}</Text>
                 <Image source={images.nextArrow} style={styles.nextArrow} />
               </TouchableWithoutFeedback>
@@ -1076,17 +1141,13 @@ export default function AccountScreen({ navigation }) {
             </View>
           </>
         )}
-
         <FlatList
           data={groupList}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={keyExtractorID}
           renderItem={renderSwitchProfile}
-          // ItemSeparatorComponent={() => (
-          //   <View style={styles.separatorLine}></View>
-          // )}
           scrollEnabled={false}
         />
-        <View style={styles.separatorView}/>
+        <View style={styles.separatorView} />
         <TouchableWithoutFeedback
           style={styles.listContainer}
           onPress={handleLogOut}>
@@ -1159,7 +1220,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-
   },
   entityNameText: {
     color: colors.lightBlackColor,
@@ -1175,7 +1235,6 @@ const styles = StyleSheet.create({
     marginLeft: 40,
     marginRight: 20,
     // width: wp('86%'),
-
   },
   halfSeparatorLine: {
     alignSelf: 'flex-end',
