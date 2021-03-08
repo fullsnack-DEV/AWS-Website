@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 
 import Modal from 'react-native-modal';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+// import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
@@ -59,13 +59,13 @@ export default function LocalHomeScreen({ navigation }) {
 
   const [sportsPopup, setSportsPopup] = useState(false);
   const [sportsListPopup, setSportsListPopup] = useState(false);
-  const [sportsSource, setSportsSource] = useState([
-    'Soccer',
-    'Baseball',
-    'Basketball',
-    'Tennis Single',
-    'Tennis Double',
-  ]);
+  // const [sportsSource, setSportsSource] = useState([
+  //   'Soccer',
+  //   'Baseball',
+  //   'Basketball',
+  //   'Tennis Single',
+  //   'Tennis Double',
+  // ]);
 
   const authContext = useContext(AuthContext);
 
@@ -580,9 +580,15 @@ export default function LocalHomeScreen({ navigation }) {
               </Text>
             </View>
             <TCThinDivider width={'100%'} marginBottom={15} />
-            <DraggableFlatList
+            <FlatList
               showsHorizontalScrollIndicator={false}
-              data={sportsSource}
+              data={[
+                  'Soccer',
+                  'Baseball',
+                  'Basketball',
+                  'Tennis Single',
+                  'Tennis Double',
+              ]}
               keyExtractor={keyExtractor}
               renderItem={renderSportsView}
               style={{
@@ -591,14 +597,14 @@ export default function LocalHomeScreen({ navigation }) {
                 marginBottom: 15,
                 paddingVertical: 15,
               }}
-              dragHitSlop={{
-                top: 15,
-                bottom: 15,
-                left: 15,
-                right: 15,
-              }}
+              // dragHitSlop={{
+              //   top: 15,
+              //   bottom: 15,
+              //   left: 15,
+              //   right: 15,
+              // }}
 
-              onDragEnd={({ data }) => setSportsSource(data)}
+              // onDragEnd={({ data }) => setSportsSource(data)}
             />
             <TouchableOpacity
               style={styles.addSportsView}
