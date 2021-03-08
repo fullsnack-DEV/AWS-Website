@@ -13,7 +13,7 @@ import TCNoDataView from '../../../components/TCNoDataView';
 import AuthContext from '../../../auth/context';
 import TCUserList from './TCUserList';
 import { followUser, getUserFollowerFollowing, unfollowUser } from '../../../api/Users';
-import TCInnerLoader from '../../../components/TCInnerLoader';
+import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 
 export default function UserConnections({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -51,7 +51,7 @@ export default function UserConnections({ navigation, route }) {
         ? (
           <View style={{ flex: 1 }}>
             {loading
-              ? <TCInnerLoader visible={loading}/>
+              ? <UserListShimmer/>
               : <View style={{ flex: 1 }}><TCNoDataView title={`No ${_.startCase(tab)} Found`} /></View>
               }
 

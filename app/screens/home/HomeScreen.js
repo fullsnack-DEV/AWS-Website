@@ -112,6 +112,7 @@ import HomeFeed from '../homeFeed/HomeFeed';
 import RefereeFeedPostItems from '../../components/game/soccer/home/review/reviewForReferee/RefereeFeedPostItems';
 import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
 import ScrollableTabs from '../../components/ScrollableTabs';
+import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
@@ -173,7 +174,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [isAdmin, setIsAdmin] = useState(false)
   const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
   const [indexCounter, setIndexCounter] = useState(0);
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
@@ -197,7 +198,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
 
   const [scorekeeperRecentMatch, setScorekeeperRecentMatch] = useState([]);
-
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const [scorekeeperUpcomingMatch, setScorekeeperUpcomingMatch] = useState([]);
   const [isRefereeModal, setIsRefereeModal] = useState(false);
   const [eventData, setEventData] = useState(null);
@@ -305,6 +306,7 @@ const HomeScreen = ({ navigation, route }) => {
   }, [route?.params])
 
   useEffect(() => {
+    setFirstTimeLoading(true);
          const loginEntity = authContext.entity
       const uid = route?.params?.uid ?? loginEntity.uid
       const role = route?.params?.role ?? loginEntity.role
@@ -318,7 +320,6 @@ const HomeScreen = ({ navigation, route }) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10)
-        setloading(false);
       });
   }, [authContext.entity, route.params]);
 
@@ -350,7 +351,7 @@ const HomeScreen = ({ navigation, route }) => {
   }, [authContext, isTeamHome, route?.params?.uid])
 
   const getUserData = async (uid, admin) => {
-    setloading(true);
+    // setloading(true);
     const promises = [getUserDetails(uid, authContext),
       getJoinedGroups(uid, authContext),
       getGallery(uid, authContext)]
@@ -392,13 +393,15 @@ const HomeScreen = ({ navigation, route }) => {
       setIsTeamHome(false)
       setIsUserHome(true)
       setUserID(uid);
+      setFirstTimeLoading(false);
     }).catch((errResponse) => {
       console.log('promise error', errResponse)
+      setFirstTimeLoading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, strings.defaultError);
       }, 10)
       navigation.goBack();
-    }).finally(() => setloading(false));
+    });
   }
 
   const getData = async (uid, role, admin) => {
@@ -406,7 +409,7 @@ const HomeScreen = ({ navigation, route }) => {
     const clubHome = role === 'club'
     const teamHome = role === 'team'
 
-    setloading(true);
+    // setloading(true);
     if (userHome) {
       getUserData(uid, admin)
     } else {
@@ -434,14 +437,16 @@ const HomeScreen = ({ navigation, route }) => {
         setIsTeamHome(teamHome)
         setIsUserHome(userHome)
         setUserID(uid);
+        setFirstTimeLoading(false);
       }).catch((errResponse) => {
-        setloading(false)
+        // setloading(false)
+        setFirstTimeLoading(false);
         console.log('promise error', errResponse)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.defaultError);
         }, 10)
         navigation.goBack();
-      }).finally(() => setloading(false));
+      });
     }
   };
 
@@ -2329,24 +2334,31 @@ const feedScreenHeader = useMemo(() => (
       <View style={{ flex: 1 }}>
         {renderTopFixedButtons}
         {fixedHeader}
-        <HomeFeed
-              onFeedScroll={handleMainRefOnScroll}
-              refs={mainFlatListRef}
-              homeFeedHeaderComponent={MainHeaderComponent}
-              currentTab={currentTab}
-              currentUserData={currentUserData}
-              isAdmin={isAdmin}
-              navigation={navigation}
-              cancelRequest={cancelRequest}
-              progressStatus={progressStatus}
-              setDoneUploadCount={setDoneUploadCount}
-              setGalleryData={setGalleryData}
-              setProgressBar={setProgressBar}
-              setTotalUploadCount={setTotalUploadCount}
-              userID={route?.params?.uid ?? authContext.entity?.uid}
-          />
-
+        {firstTimeLoading
+              ? (
+                // <ShimmerLoader shimmerComponents={['BackgroundProfileShimmer']}/>
+                <ProfileScreenShimmer/>
+              )
+              : (
+                <HomeFeed
+                    onFeedScroll={handleMainRefOnScroll}
+                    refs={mainFlatListRef}
+                    homeFeedHeaderComponent={MainHeaderComponent}
+                    currentTab={currentTab}
+                    currentUserData={currentUserData}
+                    isAdmin={isAdmin}
+                    navigation={navigation}
+                    cancelRequest={cancelRequest}
+                    progressStatus={progressStatus}
+                    setDoneUploadCount={setDoneUploadCount}
+                    setGalleryData={setGalleryData}
+                    setProgressBar={setProgressBar}
+                    setTotalUploadCount={setTotalUploadCount}
+                    userID={route?.params?.uid ?? authContext.entity?.uid}
+                />
+              )}
       </View>
+
       {useMemo(() => playsInModalVisible && (
         <PlayInModule
             visible={playsInModalVisible}

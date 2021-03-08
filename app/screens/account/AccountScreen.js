@@ -168,22 +168,47 @@ export default function AccountScreen({ navigation }) {
     });
   }, [navigation, notificationCounter]);
 
+  const getData = () => new Promise((resolve, reject) => {
+    const entity = authContext.entity;
+    const promises = [getOwnGroupList(entity), getTeamsList(entity)];
+    if (entity.role !== 'club') promises.push(getClubList(entity));
+    Promise.all(promises)
+        .then(() => resolve(true))
+        // eslint-disable-next-line prefer-promise-reject-errors
+        .catch(() => reject('error'));
+  });
+
+  useEffect(() => {
+    if (isFocused) {
+      setloading(true);
+      getData().then(() => {
+        setloading(false);
+      });
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    getData();
+  }, [authContext])
+
   const getParentClub = useCallback((item) => {
-    setloading(true);
+    console.log('Parent group ID::', item.group_id);
     getGroupDetails(item.group_id, authContext)
-      .then((response) => {
-        if (!response?.payload?.club) {
-          setParentGroup(response?.payload?.club);
-        } else {
-          setParentGroup();
-        }
-      })
-      .catch((e) => {
+        .then((response) => {
+          console.log('Parent group detail1::', response.payload);
+          console.log('Parent group detail2::', response.payload.club);
+          if (!response?.payload?.club) {
+            setParentGroup(response?.payload?.club);
+          } else {
+            setParentGroup();
+          }
+        })
+        .catch((e) => {
           setloading(false);
           setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
   }, [authContext]);
 
   const getOwnGroupList = useCallback((currentEntity) => {
@@ -255,23 +280,7 @@ export default function AccountScreen({ navigation }) {
       });
   }, [authContext])
 
-  useEffect(() => {
-    const getData = async () => {
-      const entity = authContext.entity;
-      const promises = [getOwnGroupList(entity), getTeamsList(entity)];
-
-      if (entity.role !== 'club') {
-        promises.push(getClubList(entity));
-      }
-      Promise.all(promises).then(() => {
-        setloading(false);
-      });
-    };
-    getData();
-  }, [authContext.entity, getClubList, getOwnGroupList, getTeamsList, isFocused, navigation]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const switchProfile = async (item) => {
+  const switchProfile = useCallback(async (item) => {
     let currentEntity = authContext.entity;
 
     if (item.entity_type === 'player') {
@@ -327,78 +336,76 @@ export default function AccountScreen({ navigation }) {
       }
       setGroupList([authContext.entity.auth.user, ...club, ...team]);
     }
-    authContext.setEntity({ ...currentEntity });
-    Utility.setStorage('authContextEntity', { ...currentEntity });
-
+    // authContext.setEntity({ ...currentEntity });
+    // Utility.setStorage('authContextEntity', { ...currentEntity });
     return currentEntity;
-  }
+  }, [authContext.entity, club, getParentClub, team]);
 
-  const switchQBAccount = useCallback((accountData, entity) => {
+  const switchQBAccount = useCallback(async (accountData, entity) => {
     let currentEntity = entity;
     const entityType = accountData?.entity_type;
     const uid = entityType === 'player' ? 'user_id' : 'group_id';
     QBLogout()
-      .then(() => {
-        const {
-USER, CLUB, LEAGUE, TEAM,
-} = QB_ACCOUNT_TYPE;
-        let accountType = USER;
-        if (entityType === 'club') accountType = CLUB;
-        else if (entityType === 'team') accountType = TEAM;
-        else if (entityType === 'league') accountType = LEAGUE;
-        QBlogin(
-          accountData[uid],
-          {
-            ...accountData,
-            full_name: accountData.group_name,
-          },
-          accountType,
-        )
-          .then(async (res) => {
-            currentEntity = {
-              ...currentEntity,
-              QB: { ...res.user, connected: true, token: res?.session?.token },
-            };
-            QBconnectAndSubscribe(currentEntity)
-              .then(async (qbRes) => {
-                authContext.setEntity({ ...currentEntity });
-                await Utility.setStorage('authContextEntity', { ...currentEntity });
-                setloading(false);
-                if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
+        .then(() => {
+          const {
+            USER, CLUB, LEAGUE, TEAM,
+          } = QB_ACCOUNT_TYPE;
+          let accountType = USER;
+          if (entityType === 'club') accountType = CLUB;
+          else if (entityType === 'team') accountType = TEAM;
+          else if (entityType === 'league') accountType = LEAGUE;
+          QBlogin(
+              accountData[uid],
+              {
+                ...accountData,
+                full_name: accountData.group_name,
+              },
+              accountType,
+          )
+              .then(async (res) => {
+                currentEntity = {
+                  ...currentEntity,
+                  QB: { ...res.user, connected: true, token: res?.session?.token },
+                };
+                QBconnectAndSubscribe(currentEntity)
+                    .then(async (qbRes) => {
+                      authContext.setEntity({ ...currentEntity });
+                      await Utility.setStorage('authContextEntity', { ...currentEntity });
+                      setloading(false);
+                      if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
+                    })
+                    .catch(async () => {
+                      authContext.setEntity({ ...currentEntity });
+                      await Utility.setStorage('authContextEntity', { ...currentEntity });
+                      setloading(false);
+                    });
               })
               .catch(async () => {
                 authContext.setEntity({ ...currentEntity });
                 await Utility.setStorage('authContextEntity', { ...currentEntity });
                 setloading(false);
               });
-          })
-          .catch(async () => {
-              authContext.setEntity({ ...currentEntity });
-              await Utility.setStorage('authContextEntity', { ...currentEntity });
-            setloading(false);
-          });
-      })
-      .catch(async () => {
+        })
+        .catch(async () => {
           authContext.setEntity({ ...currentEntity });
           await Utility.setStorage('authContextEntity', { ...currentEntity });
-        setloading(false);
-      });
-  }, [authContext])
+          setloading(false);
+        });
+  }, [authContext]);
 
-  const onSwitchProfile = useCallback(({ item }) => {
+  const onSwitchProfile = useCallback(async ({ item }) => {
     setloading(true);
     switchProfile(item)
-      .then((currentEntity) => {
-        // setloading(true);
-        switchQBAccount(item, currentEntity);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [switchProfile, switchQBAccount])
+        .then((currentEntity) => {
+          switchQBAccount(item, currentEntity);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+  }, [switchProfile, switchQBAccount]);
 
   const onLogout = useCallback(async () => {
     await Utility.clearStorage();
@@ -840,7 +847,7 @@ USER, CLUB, LEAGUE, TEAM,
               </View>
             </View>
           ) : (
-            <View></View>
+            <View/>
           )}
           {/* <View>
             <TouchableOpacity onPress={() => {
@@ -1134,9 +1141,9 @@ USER, CLUB, LEAGUE, TEAM,
             <View style={styles.separatorView}></View>
             <View style={{ flexDirection: 'row' }}>
               <Image
-                source={images.switchAccount}
-                style={styles.switchAccountIcon}
-              />
+                      source={images.switchAccount}
+                      style={styles.switchAccountIcon}
+                  />
               <Text style={styles.switchAccount}>Switch Account</Text>
             </View>
           </>

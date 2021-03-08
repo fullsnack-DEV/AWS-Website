@@ -19,21 +19,22 @@ import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import * as Utils from '../challenge/ChallengeUtility';
 import { getGameHomeScreen } from '../../utils/gameUtils';
+import ReservationMainScreenShimmer from '../../components/shimmer/schedule/ReservationMainScreenShimmer';
 
 export default function ReservationScreen({ navigation }) {
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
   const authContext = useContext(AuthContext)
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
 
   useEffect(() => {
-      setloading(true);
+      setFirstTimeLoading(true);
       getReservationListByCaller();
   }, []);
 
   const getReservationListByCaller = () => {
     getReservationList(authContext.entity.uid, authContext).then((response) => {
-      setloading(false);
       const upcomingData = [];
       const pastData = [];
       for (const temp of response.payload) {
@@ -47,8 +48,9 @@ export default function ReservationScreen({ navigation }) {
       }
       setUpcoming(upcomingData);
       setPast(pastData);
+      setFirstTimeLoading(false);
     }).catch((e) => {
-      setloading(false);
+      setFirstTimeLoading(false);
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
       }, 10);
@@ -115,23 +117,34 @@ const keyExtractor = useCallback(
       <ActivityLoader visible={loading} />
 
       <TCScrollableTabs>
-        <View tabLabel='Upcoming' style={{ flex: 1 }}>{upcoming.length === 0 && loading === false
-          ? <TCNoDataView title={strings.noReservationFountText}/>
-          : <FlatList
-                    data={upcoming}
-                    keyExtractor={keyExtractor}
-                    renderItem={matchReservationView}
-                />
-                }</View>
-        <View tabLabel='Past' style={{ flex: 1 }}>{past.length === 0 && loading === false ? (
-          <TCNoDataView title={strings.noReservationFountText}/>
-        ) : (
-          <FlatList
+        <View tabLabel='Upcoming' style={{ flex: 1 }}>
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {firstTimeLoading
+              ? (
+                <ReservationMainScreenShimmer/>
+          )
+              : (upcoming.length === 0 && loading === false)
+            ? <TCNoDataView title={strings.noReservationFountText}/>
+            : <FlatList
+            data={upcoming}
+            keyExtractor={keyExtractor}
+            renderItem={matchReservationView}
+            /> }
+        </View>
+        <View tabLabel='Past' style={{ flex: 1 }}>
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {firstTimeLoading
+              ? (
+                <ReservationMainScreenShimmer/>
+              )
+              : (past.length === 0 && loading === false) ? (
+                <TCNoDataView title={strings.noReservationFountText}/>
+          ) : <FlatList
                       data={past}
                       keyExtractor={keyExtractor}
                       renderItem={matchReservationView}
-                   />
-        )}</View>
+                   />}
+        </View>
       </TCScrollableTabs>
     </View>
 

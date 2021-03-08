@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
-import { ShimmerView } from '../ShimmerCommonComponents';
+import { ShimmerView } from '../commonComponents/ShimmerCommonComponents';
 
 const NewsFeedShimmer = () => (
   <ScrollView style={{ padding: 15, width: '100%' }}>

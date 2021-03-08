@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
-import { ShimmerView } from '../ShimmerCommonComponents';
-import colors from '../../../../Constants/Colors';
+import { ShimmerView } from '../commonComponents/ShimmerCommonComponents';
+import colors from '../../../Constants/Colors';
+import NewsFeedShimmer from '../newsFeed/NewsFeedShimmer';
 
 const ProfileScreenShimmer = () => (
   <ScrollView style={{ width: '100%' }}>
@@ -34,6 +35,8 @@ const ProfileScreenShimmer = () => (
           <View style={{ marginHorizontal: 10 }}/>
           <ShimmerView style={{ flex: 1 }}/>
         </View>
+        {/*  Edit Profile */}
+        <ShimmerView style={{ flex: 1, width: '100%' }} height={30} marginVertical={25}/>
 
         {/*    Play In */}
         {new Array(3).fill('').map((item, index) => (
@@ -49,6 +52,9 @@ const ProfileScreenShimmer = () => (
           </View>
           ))}
       </View>
+
+      {/*  Post Section */}
+      <NewsFeedShimmer/>
     </View>
   </ScrollView>
 );

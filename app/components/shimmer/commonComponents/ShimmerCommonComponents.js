@@ -25,6 +25,8 @@ export const ShimmerView = ({
   width,
   colors = ['#ebebeb', '#c5c5c5', '#ebebeb'],
   style,
+  borderRadius = 10,
+  marginVertical = 5,
 }) => (
   <ShimmerPlaceholder
     LinearGradient={LinearGradient}
@@ -32,6 +34,7 @@ export const ShimmerView = ({
     shimmerWidthPercent={0.5}
     shimmerColors={colors}
     width={width}
-    style={{ borderRadius: 10, marginVertical: 5, ...style }}
+
+    style={{ borderRadius, marginVertical, ...style }}
   />
 );
