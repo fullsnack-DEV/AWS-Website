@@ -18,10 +18,12 @@ import colors from '../../Constants/Colors'
 import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context'
+import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 
 const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
   const [postData, setPostData] = useState([]);
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const [loading, setloading] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
@@ -33,23 +35,23 @@ const FeedsScreen = ({ navigation }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
   useEffect(() => {
-    setloading(true);
+    setFirstTimeLoading(true);
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
         .then((response) => {
-          setloading(false);
+          setFirstTimeLoading(false);
           setPostData([...response.payload.results])
         })
         .catch((e) => {
-          setloading(false);
+          setFirstTimeLoading(false);
           setTimeout(() => Alert.alert('', e.message), 100)
         });
   }, [authContext, authContext.entity]);
 
-  const onThreeDotPress = () => {
+  const onThreeDotPress = useCallback(() => {
     setTimeout(() => navigation.navigate('EntitySearchScreen'), 0);
-  }
+  }, [navigation]);
 
   const topRightButton = useMemo(() => (
     <TouchableOpacity onPress={onThreeDotPress}>
@@ -298,18 +300,26 @@ const FeedsScreen = ({ navigation }) => {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <NewsFeedList
-        pullRefresh={pullRefresh}
-        onDeletePost={onDeletePost}
-        navigation={navigation}
-        postData={postData}
-        onEditPressDone={editPostDoneCall}
-        onRefreshPress={onRefreshPress}
-        footerLoading={footerLoading && isNextDataLoading}
-        ListHeaderComponent={feedScreenHeader}
-        onLikePress={onLikePress}
-        onEndReached={onEndReached}
-       />
+      {firstTimeLoading
+          ? (
+            <NewsFeedShimmer/>
+          )
+          : (
+            <NewsFeedList
+                  pullRefresh={pullRefresh}
+                  onDeletePost={onDeletePost}
+                  navigation={navigation}
+                  postData={postData}
+                  onEditPressDone={editPostDoneCall}
+                  onRefreshPress={onRefreshPress}
+                  footerLoading={footerLoading && isNextDataLoading}
+                  ListHeaderComponent={feedScreenHeader}
+                  onLikePress={onLikePress}
+                  onEndReached={onEndReached}
+              />
+          )
+      }
+
       {progressBar && renderImageProgress}
     </View>
   );

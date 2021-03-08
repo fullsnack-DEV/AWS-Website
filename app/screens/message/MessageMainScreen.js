@@ -29,7 +29,7 @@ import {
 } from '../../utils/QuickBlox';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
 import AuthContext from '../../auth/context';
-import MessageMainScreenShimmer from '../../components/shimmer/commonComponents/message/MessageMainScreenShimmer';
+import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
@@ -197,7 +197,7 @@ const MessageMainScreen = ({ navigation }) => {
       <TCSearchBox onChangeText={setSearchText}/>
       <View style={ styles.sperateLine } />
       {loading
-          ? <MessageMainScreenShimmer/>
+          ? <UserListShimmer/>
           : renderAllMessages
       }
     </SafeAreaView>
