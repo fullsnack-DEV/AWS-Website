@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext, useLayoutEffect,
+useEffect, useState, useContext, useLayoutEffect,
 } from 'react';
 import {
   StyleSheet,
@@ -24,19 +24,20 @@ import TCLabel from '../../../components/TCLabel';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCTextField from '../../../components/TCTextField';
 import EventMapView from '../../../components/Schedule/EventMapView';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import { getTimeDifForReservation } from '../../../utils/Time';
 
 let entity = {};
 let bodyParams = {};
 export default function CreateChallengeForm1({ navigation, route }) {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [venue, setVenue] = useState(0);
   const [cordinate, setCordinate] = useState({
     latitude: 0.0,
     longitude: 0.0,
   });
+
   const [teams, setteams] = useState([]);
   const [region, setRegion] = useState();
   const [secureVenue, setsecureVenue] = useState(0);
@@ -50,51 +51,76 @@ export default function CreateChallengeForm1({ navigation, route }) {
     title: null,
     address: null,
     venueType: null,
+    city: null,
+    state: null,
+    country: null,
   });
 
-  useLayoutEffect(() => {
-
-  }, [venueTitle])
+  useLayoutEffect(() => {}, [venueTitle]);
   useEffect(() => {
-    bodyParams = {}
-  }, [])
+    bodyParams = {};
+  }, []);
   useEffect(() => {
     if (isFocused) {
-      entity = authContext.entity
+      entity = authContext.entity;
       if (route && route.params && route.params.groupObj) {
-        setteams([{ ...entity.obj }, { ...route.params.groupObj }])
+        setteams([{ ...entity.obj }, { ...route.params.groupObj }]);
         console.log('Home:::-', entity.obj);
         console.log('Away:::-', route.params.groupObj);
-        setTeamData([{ ...entity.obj }, { ...route.params.groupObj }])
+        setTeamData([{ ...entity.obj }, { ...route.params.groupObj }]);
       }
-      if ((route && route.params && route.params.body) && ((route && route.params && route.params.editableAlter) || (route && route.params && route.params.editable))) {
+      if (
+        route
+        && route.params
+        && route.params.body
+        && ((route && route.params && route.params.editableAlter)
+          || (route && route.params && route.params.editable))
+      ) {
         if (route && route.params && route.params.editableAlter) {
-          setEditableAlter(true)
+          setEditableAlter(true);
         }
         bodyParams = { ...route.params.body };
         console.log('BODY::-', bodyParams);
-        setteams([{ ...route.params.body.home_team }, { ...route.params.body.away_team }])
-        setVenueTitle(route.params.body.venue.title)
-        setVenueData(route.params.body.venue)
-        getLatLongData(route.params.body.venue.address)
-        setSport(route.params.body.sport)
-        setsecureVenue(route.params.body.responsible_to_secure_venue === (entity.obj.group_name || `${entity.obj.first_name} ${entity.obj.last_name}`) ? 0 : 1)
-        setVenue((route.params.body.venue.venueType === 'HomeTeam' && 1) || (route.params.body.venue.venueType === 'AwayTeam' && 2) || (route.params.body.venue.venueType === 'other' && 0))
+        setteams([
+          { ...route.params.body.home_team },
+          { ...route.params.body.away_team },
+        ]);
+        setVenueTitle(route.params.body.venue.title);
+        setVenueData(route.params.body.venue);
+        getLatLongData(route.params.body.venue.address);
+        setSport(route.params.body.sport);
+        setsecureVenue(
+          route.params.body.responsible_to_secure_venue
+            === (entity.obj.group_name
+              || `${entity.obj.first_name} ${entity.obj.last_name}`)
+            ? 0
+            : 1,
+        );
+        setVenue(
+          (route.params.body.venue.venueType === 'HomeTeam' && 1)
+            || (route.params.body.venue.venueType === 'AwayTeam' && 2)
+            || (route.params.body.venue.venueType === 'other' && 0),
+        );
 
-        if ((route?.params?.body?.home_team?.user_id || route?.params?.body?.home_team?.group_id) === (entity.obj.user_id || entity.obj.group_id)) {
-          setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }])
+        if (
+          (route?.params?.body?.home_team?.user_id
+            || route?.params?.body?.home_team?.group_id)
+          === (entity.obj.user_id || entity.obj.group_id)
+        ) {
+          setTeamData([{ ...entity.obj }, { ...route.params.body.away_team }]);
         } else {
-          setTeamData([{ ...entity.obj }, { ...route.params.body.home_team }])
+          setTeamData([{ ...entity.obj }, { ...route.params.body.home_team }]);
         }
       }
       if (route && route.params && route.params.venueObj) {
-        getLatLongData(route.params.venueObj.description)
-        setVenue(0)
+        getLatLongData(route.params.venueObj.description);
+        setVenue(0);
+        console.log('route.params.venueObj::=>', route.params.venueObj);
         bodyParams = {
           ...bodyParams,
           venue: route.params.venueObj,
-        }
-        setVenueData(route.params.venueObj)
+        };
+        setVenueData(route.params.venueObj);
       }
 
       if (route && route.params && route.params.from) {
@@ -102,14 +128,14 @@ export default function CreateChallengeForm1({ navigation, route }) {
           ...bodyParams,
           start_datetime: new Date(route.params.from).getTime(),
           end_datetime: new Date(route.params.to).getTime(),
-
-        }
+        };
       }
     }
   }, [isFocused]);
 
   const getLatLongData = (addressDescription) => {
     getLatLong(addressDescription, authContext).then((response) => {
+      console.log('Lat/Long response::=>', response);
       setCordinate({
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,
@@ -120,6 +146,22 @@ export default function CreateChallengeForm1({ navigation, route }) {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
+
+      // const termLength = response.results[0].address_components.length;
+
+      let cityObj, stateObj, countryObj
+      // eslint-disable-next-line array-callback-return
+      response.results[0].address_components.map((e) => {
+        if (e.types.includes('administrative_area_level_2')) {
+          cityObj = e
+        }
+        if (e.types.includes('administrative_area_level_1')) {
+          stateObj = e
+        }
+        if (e.types.includes('country')) {
+          countryObj = e
+        }
+      })
       setVenueData({
         ...venueData,
         address: addressDescription,
@@ -127,6 +169,9 @@ export default function CreateChallengeForm1({ navigation, route }) {
         lat: response.results[0].geometry.location.lat,
         long: response.results[0].geometry.location.lng,
         title: venueTitle,
+        city: cityObj.long_name,
+        state: stateObj.long_name,
+        country: countryObj.long_name,
       });
     });
   };
@@ -135,22 +180,26 @@ export default function CreateChallengeForm1({ navigation, route }) {
     setteams([teams[1], teams[0]]);
   };
   const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy');
-  const time_format = (d) => moment(new Date(d)).format('hh:mm A')
+  const time_format = (d) => moment(new Date(d)).format('hh:mm A');
 
   const checkValidation = () => {
-    if ((route?.params?.body?.start_datetime === null && route?.params?.body?.end_datetime === null) || (!bodyParams?.start_datetime && !bodyParams?.end_datetime)) {
+    if (
+      (route?.params?.body?.start_datetime === null
+        && route?.params?.body?.end_datetime === null)
+      || (!bodyParams?.start_datetime && !bodyParams?.end_datetime)
+    ) {
       Alert.alert('Towns Cup', 'Please choose start and end time.');
-      return false
+      return false;
     }
     if (venueData.title === null) {
       Alert.alert('Towns Cup', 'Venue title cannot be blank');
-      return false
+      return false;
     }
     if (venueData.address === null) {
       Alert.alert('Towns Cup', 'Venue address cannot be blank');
-      return false
+      return false;
     }
-    return true
+    return true;
   };
 
   const configureParams = () => {
@@ -158,28 +207,49 @@ export default function CreateChallengeForm1({ navigation, route }) {
     //   bodyParams = { ...route.params.body }
     // }
 
-    bodyParams.home_team = teams[0]
-    bodyParams.away_team = teams[1]
-    bodyParams.hourly_game_fee = route?.params?.groupObj?.game_fee
-    bodyParams.currency_type = route?.params?.groupObj?.currency_type || 'CAD'
-    bodyParams.venue = { ...venueData, title: venueTitle || venueData.title }
-    bodyParams.sport = sport
-    bodyParams.responsible_to_secure_venue = secureVenue === 0 ? teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}` : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`
+    console.log('Venue Object:', route?.params?.venueObj);
+    console.log('Venue Data:', venueData);
+    const termLength = route?.params?.venueObj?.terms?.length;
+    bodyParams.home_team = teams[0];
+    bodyParams.away_team = teams[1];
+    bodyParams.hourly_game_fee = route?.params?.groupObj?.game_fee;
+    bodyParams.currency_type = route?.params?.groupObj?.currency_type || 'CAD';
+    bodyParams.venue = {
+      ...venueData,
+      title: venueTitle || venueData.title,
+      city:
+        route?.params?.venueObj?.terms[termLength - 3]?.value
+        || venueData?.city,
+      state:
+        route?.params?.venueObj?.terms[termLength - 2]?.value
+        || venueData?.state,
+      country:
+        route?.params?.venueObj?.terms[termLength - 1]?.value
+        || venueData?.country,
+    };
+    bodyParams.sport = sport;
+    bodyParams.responsible_to_secure_venue = secureVenue === 0
+        ? teamData[0].group_name
+          || `${teamData[0].first_name} ${teamData[0].last_name}`
+        : teamData[1].group_name
+          || `${teamData[1].first_name} ${teamData[1].last_name}`;
 
     console.log('FORM ! BODY PARAMS', bodyParams);
-    return bodyParams
-  }
+    return bodyParams;
+  };
 
   return (
     teams.length > 0 && (
       <TCKeyboardView>
-        {!editableAlter && <View style={styles.formSteps}>
-          <View style={styles.form1}></View>
-          <View style={styles.form2}></View>
-          <View style={styles.form3}></View>
-          <View style={styles.form4}></View>
-          <View style={styles.form5}></View>
-        </View>}
+        {!editableAlter && (
+          <View style={styles.formSteps}>
+            <View style={styles.form1}></View>
+            <View style={styles.form2}></View>
+            <View style={styles.form3}></View>
+            <View style={styles.form4}></View>
+            <View style={styles.form5}></View>
+          </View>
+        )}
 
         <View>
           <TCLabel title={`Match · ${sport}`} />
@@ -202,7 +272,10 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 />
               </View>
               <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>{teams[0].group_name || `${teams[0].first_name} ${teams[0].last_name}`}</Text>
+                <Text style={styles.teamNameLable}>
+                  {teams[0].group_name
+                    || `${teams[0].first_name} ${teams[0].last_name}`}
+                </Text>
                 <Text style={styles.locationLable}>
                   {teams[0].city}, {teams[0].state_abbr}
                 </Text>
@@ -228,7 +301,10 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 />
               </View>
               <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>{teams[1].group_name || `${teams[1].first_name} ${teams[1].last_name}`}</Text>
+                <Text style={styles.teamNameLable}>
+                  {teams[1].group_name
+                    || `${teams[1].first_name} ${teams[1].last_name}`}
+                </Text>
                 <Text style={styles.locationLable}>
                   {teams[1].city}, {teams[1].state_abbr}
                 </Text>
@@ -240,7 +316,6 @@ export default function CreateChallengeForm1({ navigation, route }) {
         <View>
           <TCLabel title={'Date & Time'} required={true} />
           <View style={styles.viewContainer}>
-
             {/* <TCTouchableLabel
           title={route && route.params && route.params.from ? `${route.params.from}` : 'Choose Date & Time'}
           showNextArrow={true}
@@ -252,8 +327,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   navigation.navigate('ChooseDateTimeScreen', {
                     otherTeam: route.params.groupObj,
                     body: bodyParams,
-                    team: { home_team: entity.obj, away_team: route?.params?.groupObj },
-                  })
+                    team: {
+                      home_team: entity.obj,
+                      away_team: route?.params?.groupObj,
+                    },
+                  });
                 }}
                 style={styles.containerStyle}>
                 <TextInput
@@ -262,9 +340,19 @@ export default function CreateChallengeForm1({ navigation, route }) {
                   textAlignVertical={'top'}
                   style={styles.textInput}
                   value={
-                    (bodyParams && bodyParams.start_datetime && bodyParams.end_datetime
-                      && `${getTimeDifForReservation(bodyParams.start_datetime * 1000, bodyParams.end_datetime * 1000)}\n${getDateFormat(bodyParams.start_datetime)
-                      }  ${time_format(new Date(bodyParams.start_datetime * 1000))} - ${time_format(new Date(bodyParams.end_datetime * 1000))}`)
+                    bodyParams
+                    && bodyParams.start_datetime
+                    && bodyParams.end_datetime
+                    && `${getTimeDifForReservation(
+                      bodyParams.start_datetime * 1000,
+                      bodyParams.end_datetime * 1000,
+                    )}\n${getDateFormat(
+                      bodyParams.start_datetime,
+                    )}  ${time_format(
+                      new Date(bodyParams.start_datetime * 1000),
+                    )} - ${time_format(
+                      new Date(bodyParams.end_datetime * 1000),
+                    )}`
                   }
                   editable={false}
                   pointerEvents="none"
@@ -279,7 +367,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
           <TCLabel title={'Venue'} required={true} />
           <View style={styles.viewContainer}>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`}’s home</Text>
+              <Text style={styles.radioText}>
+                {teamData[0].group_name
+                  || `${teamData[0].first_name} ${teamData[0].last_name}`}
+                ’s home
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   if (teamData[0].homefield_Address) {
@@ -297,7 +389,9 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     setVenueData({
                       ...venueData,
                       address: teamData[0].homefield_Address,
-                      title: `${teamData[0].group_name}'s Home` || `${teamData[0].first_name} ${teamData[0].last_name}'s Home`,
+                      title:
+                        `${teamData[0].group_name}'s Home`
+                        || `${teamData[0].first_name} ${teamData[0].last_name}'s Home`,
                       venueType: 'HomeTeam',
                       lat: teamData[0].homefield_address_latitude,
                       long: teamData[0].homefield_address_longitude,
@@ -319,7 +413,11 @@ export default function CreateChallengeForm1({ navigation, route }) {
               </TouchableOpacity>
             </View>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`}’s home</Text>
+              <Text style={styles.radioText}>
+                {teamData[1].group_name
+                  || `${teamData[1].first_name} ${teamData[1].last_name}`}
+                ’s home
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   if (teamData[1].homefield_Address) {
@@ -337,7 +435,9 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     setVenueData({
                       ...venueData,
                       address: teamData[1].homefield_Address,
-                      title: `${teamData[1].group_name}'s Home` || `${teamData[0].first_name} ${teamData[0].last_name}'s Home`,
+                      title:
+                        `${teamData[1].group_name}'s Home`
+                        || `${teamData[0].first_name} ${teamData[0].last_name}'s Home`,
                       venueType: 'AwayTeam',
                       lat: teamData[1].homefield_address_latitude,
                       long: teamData[1].homefield_address_longitude,
@@ -365,7 +465,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 onPress={() => {
                   setVenue(0);
                   if (route && route.params && route.params.venueObj) {
-                    getLatLongData(route.params.venueObj.description)
+                    getLatLongData(route.params.venueObj.description);
                   }
                 }}>
                 <Image
@@ -383,23 +483,21 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 placeholder={'Venue name'}
                 value={venueData.title || venueTitle}
                 onChangeText={(text) => {
-                  setVenueTitle(text)
-                  setVenueData({ ...venueData, title: text })
-                }
-                }
+                  setVenueTitle(text);
+                  setVenueData({ ...venueData, title: text });
+                }}
               />
             )}
             {venue === 0 && (
               <TCTouchableLabel
-              placeholder={'Address'}
+                placeholder={'Address'}
                 title={
                   route?.params?.venueObj?.description || venueData.address
-
                 }
                 style={{ marginTop: 10, marginBottom: 10 }}
                 onPress={() => navigation.navigate('ChooseAddressScreen', {
-                  comeFrom: 'CreateChallengeForm1',
-                })
+                    comeFrom: 'CreateChallengeForm1',
+                  })
                 }
               />
             )}
@@ -411,7 +509,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 || (venue === 2 && `${teamData[1].group_name}'s Home`)}
             </Text>
             <Text style={styles.venueAddress}>
-              {(venue === 0 && (route?.params?.venueObj?.description || venueData.address))
+              {(venue === 0
+                && (route?.params?.venueObj?.description || venueData.address))
                 || (venue === 1 && teamData[0].homefield_Address)
                 || (venue === 2 && teamData[1].homefield_Address)}
             </Text>
@@ -432,7 +531,10 @@ export default function CreateChallengeForm1({ navigation, route }) {
           </Text>
           <View style={styles.viewContainer}>
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`}</Text>
+              <Text style={styles.radioText}>
+                {teamData[0].group_name
+                  || `${teamData[0].first_name} ${teamData[0].last_name}`}
+              </Text>
               <TouchableOpacity onPress={() => setsecureVenue(0)}>
                 <Image
                   source={
@@ -446,7 +548,10 @@ export default function CreateChallengeForm1({ navigation, route }) {
             </View>
 
             <View style={styles.radioContainer}>
-              <Text style={styles.radioText}>{teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`}</Text>
+              <Text style={styles.radioText}>
+                {teamData[1].group_name
+                  || `${teamData[1].first_name} ${teamData[1].last_name}`}
+              </Text>
               <TouchableOpacity onPress={() => setsecureVenue(1)}>
                 <Image
                   source={
@@ -485,7 +590,10 @@ export default function CreateChallengeForm1({ navigation, route }) {
             console.log('Before Body params::', bodyParams);
             if (checkValidation()) {
               if (route && route.params && route.params.editable) {
-                navigation.push('CreateChallengeForm4', { teamData: teams, body: configureParams() })
+                navigation.push('CreateChallengeForm4', {
+                  teamData: teams,
+                  body: configureParams(),
+                });
               } else if (editableAlter) {
                 navigation.navigate('EditChallenge', {
                   challengeObj: {
@@ -494,11 +602,19 @@ export default function CreateChallengeForm1({ navigation, route }) {
                     away_team: teams[1],
                     venue: { ...venueData, title: venueTitle || venueData.title },
                     sport,
-                    responsible_to_secure_venue: secureVenue === 0 ? (teamData[0].group_name || `${teamData[0].first_name} ${teamData[0].last_name}`) : teamData[1].group_name || `${teamData[1].first_name} ${teamData[1].last_name}`,
+                    responsible_to_secure_venue:
+                      secureVenue === 0
+                        ? teamData[0].group_name
+                          || `${teamData[0].first_name} ${teamData[0].last_name}`
+                        : teamData[1].group_name
+                          || `${teamData[1].first_name} ${teamData[1].last_name}`,
                   },
-                })
+                });
               } else {
-                navigation.push('CreateChallengeForm2', { teamData: teams, body: configureParams() })
+                navigation.push('CreateChallengeForm2', {
+                  teamData: teams,
+                  body: configureParams(),
+                });
               }
             }
           }}
