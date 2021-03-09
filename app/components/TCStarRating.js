@@ -9,6 +9,7 @@ const TCStarRating = ({
   totalRatingCount = 5,
   rating = 0,
   starColor = STAR_COLOR.YELLOW,
+  size = 14,
 }) => {
   const getRating = () => (_.isNaN(rating) ? 0 : rating)
 
@@ -21,7 +22,7 @@ const TCStarRating = ({
         .fill()
         .map((item, index) => (
           <View key={index?.toString()}>
-            <TCStar color={STAR_COLOR.WHITE}/>
+            <TCStar color={STAR_COLOR.WHITE} size = {size}/>
           </View>
         ))}
       {/*  Rating */}
@@ -29,7 +30,7 @@ const TCStarRating = ({
         .fill()
         .map((item, index) => (
           <View key={index?.toString()}>
-            <TCStar color={starColor}/>
+            <TCStar color={starColor} size = {size}/>
           </View>
         ))}
 
@@ -39,7 +40,7 @@ const TCStarRating = ({
           .fill()
           .map((item, index) => (
             <View key={index?.toString()}>
-              <TCStar color={STAR_COLOR.WHITE}/>
+              <TCStar color={STAR_COLOR.WHITE} size = {size}/>
             </View>))}
 
     </View>

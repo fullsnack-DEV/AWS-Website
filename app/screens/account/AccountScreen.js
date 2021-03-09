@@ -1017,7 +1017,7 @@ export default function AccountScreen({ navigation }) {
                       // marqueeDelay={0}
                       // marqueeResetDelay={1000}
                     >
-                        {authContext.entity.obj.group_name || ''}
+                        {authContext?.entity?.obj?.group_name}
                       </MarqueeText>
 
                       <Image
@@ -1059,8 +1059,8 @@ export default function AccountScreen({ navigation }) {
                             },
                     ]
                     }>
-                      {authContext.entity.obj.city},{' '}
-                      {authContext.entity.obj.state_abbr}
+                      {authContext?.entity?.obj?.city},{' '}
+                      {authContext?.entity?.obj?.state_abbr}
                     </Text>
                   </View>
                 </TouchableOpacity>

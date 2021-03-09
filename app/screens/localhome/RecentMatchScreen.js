@@ -12,6 +12,10 @@ import {
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
 import Modal from 'react-native-modal';
+import moment from 'moment';
+
+import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
+
 import { gameData } from '../../utils/constant';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCTextField from '../../components/TCTextField';
@@ -27,6 +31,10 @@ export default function RecentMatchScreen() {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  const [datePickerFor, setDatePickerFor] = useState();
+  const [show, setShow] = useState(false);
+  const [fromDate, setFromDate] = useState();
+  const [toDate, setToDate] = useState();
 
   // const authContext = useContext(AuthContext);
 
@@ -40,6 +48,19 @@ export default function RecentMatchScreen() {
     ),
     [],
   );
+
+  const handleDonePress = (date) => {
+    if (datePickerFor === 'from') {
+      setFromDate(new Date(date))
+    } else {
+      setToDate(new Date(date))
+    }
+    setShow(!show)
+    console.log('Date:=', date);
+  };
+  const handleCancelPress = () => {
+    setShow(false);
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -125,7 +146,10 @@ export default function RecentMatchScreen() {
               </View>
               <View style={{ marginLeft: 15, flex: 0.8 }}>
                 <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                  <TouchableOpacity style={styles.fieldView}>
+                  <TouchableOpacity style={styles.fieldView} onPress={() => {
+                      setDatePickerFor('from');
+                      setShow(!show);
+                  }}>
                     <View
                       style={{
                         height: 35,
@@ -136,12 +160,16 @@ export default function RecentMatchScreen() {
                       </Text>
                     </View>
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}> Feb 15, 2021  1:00 am</Text>
+                      <Text style={styles.fieldValue} numberOfLines={1}>{moment(fromDate).format('MMM DD, YYYY')} {'   '}</Text>
+                      <Text style={styles.fieldValue} numberOfLines={1}>{moment(fromDate).format('h:mm a')}</Text>
                     </View>
                   </TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity style={styles.fieldView}>
+                  <TouchableOpacity style={styles.fieldView} onPress={() => {
+                    setDatePickerFor('to');
+                    setShow(!show);
+                  }}>
                     <View
                       style={{
                         height: 35,
@@ -152,7 +180,8 @@ export default function RecentMatchScreen() {
                       </Text>
                     </View>
                     <View style={{ marginRight: 15, flexDirection: 'row' }}>
-                      <Text style={styles.fieldValue} numberOfLines={1}>Feb 15, 2021  1:00 am</Text>
+                      <Text style={styles.fieldValue} numberOfLines={1}>{moment(toDate).format('MMM DD, YYYY')} {'   '}</Text>
+                      <Text style={styles.fieldValue} numberOfLines={1}>{moment(toDate).format('h:mm a')}</Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -186,6 +215,15 @@ export default function RecentMatchScreen() {
             <Text style={styles.resetTitle}>Reset</Text>
           </TouchableOpacity>
         </View>
+        <DateTimePickerView
+            date={new Date()}
+            visible={show}
+            onDone={handleDonePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            // minutesGap={30}
+            mode={'datetime'}
+          />
       </Modal>
     </View>
   );

@@ -33,6 +33,9 @@ import AlterAcceptDeclineScreen from '../screens/challenge/alterChallenge/AlterA
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
 import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
 
+import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
+import AddCardScreen from '../screens/account/payment/AddCardScreen';
+
 const Stack = createStackNavigator();
 
 const NewsFeedNavigator = () => (
@@ -445,6 +448,39 @@ const NewsFeedNavigator = () => (
               borderBottomWidth: 0.3,
             },
           } }
+      />
+    <Stack.Screen
+        name="PaymentMethodsScreen"
+        component={ PaymentMethodsScreen }
+        options={ {
+          title: 'Payment Methods',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
+      />
+
+    <Stack.Screen
+        name="AddCardScreen"
+        component={ AddCardScreen }
+        options={ {
+          title: 'Add a Card',
+          headerTintColor: colors.blackColor,
+          headerTitleStyle: {
+            fontWeight: '500',
+          },
+          headerStyle: {
+            backgroundColor: colors.whiteColor,
+            borderBottomColor: colors.grayColor,
+            borderBottomWidth: 0.3,
+          },
+        } }
       />
   </Stack.Navigator>
 );
