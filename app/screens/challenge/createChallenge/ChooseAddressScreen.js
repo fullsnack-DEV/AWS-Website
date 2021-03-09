@@ -1,14 +1,8 @@
 import React, {
-  useState, useEffect, useLayoutEffect, useContext,
+useState, useEffect, useLayoutEffect, useContext,
 } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TextInput,
-  FlatList,
-
+StyleSheet, View, Text, Image, TextInput, FlatList,
 } from 'react-native';
 
 import {
@@ -17,21 +11,21 @@ import {
 } from 'react-native-responsive-screen';
 
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import strings from '../../../Constants/String';
 import { searchVenue } from '../../../api/External';
 
 import colors from '../../../Constants/Colors';
-import fonts from '../../../Constants/Fonts'
+import fonts from '../../../Constants/Fonts';
 import TCNoDataView from '../../../components/TCNoDataView';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 
 export default function ChooseAddressScreen({ navigation, route }) {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [selectedVenue, setSelectedVenue] = useState()
+  const [selectedVenue, setSelectedVenue] = useState();
 
   useEffect(() => {
     getLocationData(searchText);
@@ -40,12 +34,16 @@ export default function ChooseAddressScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => {
-          if (selectedVenue) {
-            console.log('VENUE::', JSON.stringify(selectedVenue));
-            venueData()
-          }
-        }}>Done</Text>
+        <Text
+          style={styles.nextButtonStyle}
+          onPress={() => {
+            if (selectedVenue) {
+              console.log('VENUE::', JSON.stringify(selectedVenue));
+              venueData();
+            }
+          }}>
+          Done
+        </Text>
       ),
     });
   }, [navigation, selectedVenue, cityData]);
@@ -70,62 +68,72 @@ export default function ChooseAddressScreen({ navigation, route }) {
 
   const renderItem = ({ item, index }) => (
     <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => {
-          // eslint-disable-next-line no-param-reassign
+      style={styles.listItem}
+      onPress={() => {
+        // eslint-disable-next-line no-param-reassign
 
-          if (cityData.indexOf(item) !== -1) {
-            console.log('DATA MATCH');
+        if (cityData.indexOf(item) !== -1) {
+          console.log('DATA MATCH', item);
 
-            // eslint-disable-next-line array-callback-return
-            cityData.map((e) => {
-              if (e === item) {
-                setSelectedVenue(item)
-                e.isSelected = true
-              } else {
-                e.isSelected = false
-              }
-            });
-            setCityData([...cityData])
-          }
-          // getTeamsData(item)
-        } }>
-      <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 25 }}>
-        <Text style={ styles.cityList } numberOfLines={1}>{cityData[index].description}</Text>
-        <Image source={ cityData[index].isSelected && images.radioCheckGreenBG} style={{ height: 20, width: 20, alignSelf: 'center' }}/>
+          // eslint-disable-next-line array-callback-return
+          cityData.map((e) => {
+            if (e === item) {
+              setSelectedVenue(item);
+
+              e.isSelected = true;
+            } else {
+              e.isSelected = false;
+            }
+          });
+          setCityData([...cityData]);
+        }
+        // getTeamsData(item)
+      }}>
+      <View
+        style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 25 }}>
+        <Text style={styles.cityList} numberOfLines={1}>
+          {cityData[index].description}
+        </Text>
+        <Image
+          source={cityData[index].isSelected && images.radioCheckGreenBG}
+          style={{ height: 20, width: 20, alignSelf: 'center' }}
+        />
       </View>
     </TouchableWithoutFeedback>
   );
 
   return (
     <TCKeyboardView>
-      <View style={ styles.mainContainer }>
-        <View style={ styles.sectionStyle }>
-          <Image source={ images.searchLocation } style={ styles.searchImg } />
+      <View style={styles.mainContainer}>
+        <View style={styles.sectionStyle}>
+          <Image source={images.searchLocation} style={styles.searchImg} />
           <TextInput
-          autoCapitalize={'none'}
-          autoCompleteType={'off'}
-          textContentType={'none'}
-          autoCorrect={false}
-          style={ styles.textInput }
-          placeholder={ strings.searchHereText }
-          clearButtonMode="always"
-          placeholderTextColor={ colors.lightgrayColor }
-          onChangeText={ (text) => setSearchText(text) }
-        />
+            autoCapitalize={'none'}
+            autoCompleteType={'off'}
+            textContentType={'none'}
+            autoCorrect={false}
+            style={styles.textInput}
+            placeholder={strings.searchHereText}
+            clearButtonMode="always"
+            placeholderTextColor={colors.lightgrayColor}
+            onChangeText={(text) => setSearchText(text)}
+          />
         </View>
 
-        {cityData.length > 0 ? <FlatList
-        data={ cityData }
-        renderItem={ renderItem }
-        keyExtractor={(item, index) => index.toString()}
-      /> : <TCNoDataView title={'No Venue Found'}/>}
+        {cityData.length > 0 ? (
+          <FlatList
+            data={cityData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <TCNoDataView title={'No Venue Found'} />
+        )}
       </View>
     </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
-
   cityList: {
     color: colors.lightBlackColor,
     fontSize: wp('4%'),
@@ -134,7 +142,6 @@ const styles = StyleSheet.create({
 
     // paddingLeft: wp('1%'),
     width: wp('80%'),
-
   },
   //   listItem: {
   //     flexDirection: 'row',
