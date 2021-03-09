@@ -13,9 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../../auth/context'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AppleStyleSwipeableRow from '../../../components/notificationComponent/AppleStyleSwipeableRow';
-import {
-  paymentMethods, attachPaymentMethod, deletePaymentMethod, updateUserProfile,
-} from '../../../api/Users';
+import { paymentMethods, attachPaymentMethod, deletePaymentMethod } from '../../../api/Users';
 import strings from '../../../Constants/String'
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts';
@@ -28,7 +26,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
-  const [selectedCard, setSelectedCard] = useState();
+  const [selectedCard, setSelectedCard] = useState()
   const [cards, setCards] = useState([])
 
   useEffect(() => {
@@ -38,11 +36,11 @@ export default function PaymentMethodsScreen({ navigation, route }) {
     navigation.setOptions({
       headerRight: () => (
         <Text style={styles.nextButtonStyle} onPress={() => {
-          if (selectedCard) {
-            onCardSelected(selectedCard)
-          } else {
-            Alert.alert(strings.selectAnyCard)
-          }
+            if (selectedCard) {
+              onCardSelected(selectedCard)
+            } else {
+              Alert.alert(strings.selectAnyCard)
+            }
         } }>Done</Text>
       ),
     });
@@ -50,117 +48,95 @@ export default function PaymentMethodsScreen({ navigation, route }) {
   const getPaymentMethods = async () => {
     setloading(true)
     paymentMethods(authContext)
-      .then((response) => {
-        const selectCard = response?.payload?.filter((item) => item?.id === authContext?.entity?.obj?.source)
-        if (selectCard?.length > 0) setSelectedCard(selectCard[0]);
-        setCards([...response.payload])
-        setloading(false)
-        if (response.payload.length === 0) {
-          openNewCardScreen();
-        }
-      })
-      .catch((e) => {
-        setloading(false)
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10)
-      })
+        .then((response) => {
+          setCards([...response.payload])
+          setloading(false)
+          if (response.payload.length === 0) {
+            openNewCardScreen();
+          }
+        })
+        .catch((e) => {
+          console.log('error in payment method', e)
+          setloading(false)
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.3)
+        })
   }
 
   const onCardSelected = async (item) => {
-    const body = { source: item?.id ?? null }
-    if (body?.source) {
-    setloading(true);
-      updateUserProfile(body, authContext).then(async (response) => {
-        const currentEntity = {
-          ...authContext.entity, obj: response.payload,
-        }
-        authContext.setEntity({ ...currentEntity })
-        await Utility.setStorage('authContextEntity', { ...currentEntity })
-        if (route?.params?.comeFrom !== 'HomeScreen') {
-          navigation.navigate(route?.params?.comeFrom, {
-            paymentMethod: item,
-          });
-        } else {
-          navigation.goBack();
-        }
-        setloading(false);
-      }).catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e);
-        }, 0.7);
-      })
-    }
+    navigation.navigate(route?.params?.comeFrom, {
+      paymentMethod: item,
+    });
   }
 
   const onDeleteCard = (item) => {
     Alert.alert(strings.alertmessagetitle, `Do you want remove card ending with ${item.card.last4} from your account to ?`, [
-      {
-        text: strings.cancel,
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: strings.yes,
-        onPress: () => {
-          setloading(true)
-          deletePaymentMethod(item.id, authContext)
-            .then(() => {
-              const newCards = cards.filter((card) => card.id !== item.id)
-              setCards(newCards)
-              setloading(false)
-            })
-            .catch((e) => {
-              console.log('error in payment method onDeleteCard', e)
-              setloading(false)
-              setTimeout(() => {
-                Alert.alert(strings.alertmessagetitle, e.message);
-              }, 10)
-            })
-        },
-      },
-    ],
-    { cancelable: true })
+          {
+            text: strings.cancel,
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {
+            text: strings.yes,
+            onPress: () => {
+              setloading(true)
+              deletePaymentMethod(item.id, authContext)
+                  .then(() => {
+                    const newCards = cards.filter((card) => card.id !== item.id)
+                    setCards(newCards)
+                    setloading(false)
+                  })
+                  .catch((e) => {
+                    console.log('error in payment method onDeleteCard', e)
+                    setloading(false)
+                    setTimeout(() => {
+                      Alert.alert(strings.alertmessagetitle, e.message);
+                    }, 0.3)
+                  })
+            },
+          },
+        ],
+        { cancelable: true })
   };
 
   const renderCard = ({ item }) => (
-    <AppleStyleSwipeableRow style={{ height: 70 }} onPress={() => onDeleteCard(item)} color={colors.redDelColor} image={images.deleteIcon}>
+    <AppleStyleSwipeableRow onPress={() => onDeleteCard(item)} color={colors.redDelColor} image={images.deleteIcon}>
 
       {selectedCard && selectedCard?.id === item.id ? <LinearGradient
-          colors={ [colors.orangeEventColor, colors.assistTextColor] }
-          style={ styles.paymentCardRow }>
+            colors={ [colors.orangeEventColor, colors.assistTextColor] }
+            style={ styles.paymentCardRow }>
         <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { setSelectedCard(item) }}>
           <View style={{ flexDirection: 'column', width: '60%' }}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.whiteColor,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.whiteColor,
               }}>{Utility.capitalize(item.card.brand)}</Text>
               <Text style={{
-                marginLeft: 12,
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.whiteColor,
+                  marginLeft: 12,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.whiteColor,
               }}>{Utility.capitalize(item.card.brand) }</Text>
               <Text style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.whiteColor,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.whiteColor,
               }}>{strings.endingin}</Text>
               <Text style={{
-                fontFamily: fonts.RRegular,
-                fontSize: 16,
-                color: colors.whiteColor,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 16,
+                  color: colors.whiteColor,
               }}>{item.card.last4}</Text>
             </View>
             <View>
               <Text style={{
-                color: colors.whiteColor,
-                fontFamily: fonts.RRegular,
-                fontSize: 14,
-                marginTop: 5,
+                  color: colors.whiteColor,
+                  fontFamily: fonts.RRegular,
+                  fontSize: 14,
+                  marginTop: 5,
               }}>Expires {item.card.exp_month} / {item.card.exp_year}</Text>
 
             </View>
@@ -168,9 +144,9 @@ export default function PaymentMethodsScreen({ navigation, route }) {
           </View>
           <View style={{ width: '40%', flexDirection: 'row-reverse', alignSelf: 'center' }}>
             <Image
-            source={ images.whiteTick }
-            style={{ height: 15, width: 15, resizeMode: 'contain' }}
-          />
+                  source={ images.whiteTick }
+                  style={{ height: 15, width: 15, resizeMode: 'contain' }}
+              />
           </View>
 
         </TouchableOpacity>
@@ -180,33 +156,33 @@ export default function PaymentMethodsScreen({ navigation, route }) {
         }} onPress={() => { setSelectedCard(item) }}>
           <View style={{ flexDirection: 'row' }}>
             <Text style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 16,
-              color: colors.lightBlackColor,
+                fontFamily: fonts.RRegular,
+                fontSize: 16,
+                color: colors.lightBlackColor,
             }}>{Utility.capitalize(item.card.brand)}</Text>
             <Text style={{
-              marginLeft: 12,
-              fontFamily: fonts.RRegular,
-              fontSize: 16,
-              color: colors.lightBlackColor,
+                marginLeft: 12,
+                fontFamily: fonts.RRegular,
+                fontSize: 16,
+                color: colors.lightBlackColor,
             }}>{Utility.capitalize(item.card.brand) }</Text>
             <Text style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 16,
-              color: colors.lightBlackColor,
+                fontFamily: fonts.RRegular,
+                fontSize: 16,
+                color: colors.lightBlackColor,
             }}>{strings.endingin}</Text>
             <Text style={{
-              fontFamily: fonts.RRegular,
-              fontSize: 16,
-              color: colors.lightBlackColor,
+                fontFamily: fonts.RRegular,
+                fontSize: 16,
+                color: colors.lightBlackColor,
             }}>{item.card.last4}</Text>
           </View>
           <View style={{ flexDirection: 'column' }}>
             <Text style={{
-              color: colors.lightBlackColor,
-              fontFamily: fonts.RRegular,
-              fontSize: 14,
-              marginTop: 5,
+                color: colors.lightBlackColor,
+                fontFamily: fonts.RRegular,
+                fontSize: 14,
+                marginTop: 5,
             }}>Expires {item.card.exp_month} / {item.card.exp_year}</Text>
           </View>
         </TouchableOpacity>
@@ -222,16 +198,16 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       payment_method: paymentMethod.id,
     }
     attachPaymentMethod(params, authContext)
-      .then(() => {
-        getPaymentMethods();
-      })
-      .catch((e) => {
-        console.log('error in onSaveCard', e)
-        setloading(false)
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10)
-      })
+        .then(() => {
+          getPaymentMethods();
+        })
+        .catch((e) => {
+          console.log('error in onSaveCard', e)
+          setloading(false)
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 0.3)
+        })
   }
 
   const openNewCardScreen = () => {
@@ -252,7 +228,7 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       if (e.message !== 'Cancelled by user') {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10)
+        }, 0.3)
       }
     })
   }

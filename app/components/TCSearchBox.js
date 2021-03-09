@@ -17,12 +17,13 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
 export default function TCSearchBox({
-  onChangeText, style, value, placeholderText = strings.searchHereText, ...props
+  onChangeText, style, value, placeholderText = strings.searchHereText, editable = true, ...props
 }) {
   return (
     <View style={{ ...styles.sectionStyle, ...style } } {...props}>
       <Image source={ images.searchLocation } style={ styles.searchImg } />
       <TextInput
+          editable={editable}
           autoCapitalize={'none'}
           autoCompleteType={'off'}
           textContentType={'none'}

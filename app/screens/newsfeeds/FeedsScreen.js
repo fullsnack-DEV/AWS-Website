@@ -225,7 +225,7 @@ const FeedsScreen = ({ navigation }) => {
         });
   }, [authContext])
 
-  const feedScreenHeader = useCallback(() => (
+  const feedScreenHeader = useMemo(() => (
     <View>
       <WritePost
               navigation={navigation}
@@ -289,38 +289,38 @@ const FeedsScreen = ({ navigation }) => {
     );
   }, [onCancelImageUpload])
 
-  const renderImageProgress = useMemo(() => (
+  const renderImageProgress = useMemo(() => progressBar && (
     <ImageProgress
               numberOfUploaded={doneUploadCount}
               totalUpload={totalUploadCount}
               onCancelPress={onImageProgressCancelPress}
               postDataItem={currentUserDetail}
           />
-    ), [doneUploadCount, totalUploadCount, onImageProgressCancelPress, currentUserDetail])
+    ), [progressBar, doneUploadCount, totalUploadCount, onImageProgressCancelPress, currentUserDetail])
+
+  const renderNewsFeedList = useMemo(() => (
+    <NewsFeedList
+          pullRefresh={pullRefresh}
+          onDeletePost={onDeletePost}
+          navigation={navigation}
+          postData={postData}
+          onEditPressDone={editPostDoneCall}
+          onRefreshPress={onRefreshPress}
+          footerLoading={footerLoading && isNextDataLoading}
+          onLikePress={onLikePress}
+          onEndReached={onEndReached}
+      />
+  ), [editPostDoneCall, footerLoading, isNextDataLoading, navigation, onDeletePost, onEndReached, onLikePress, onRefreshPress, postData, pullRefresh])
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      {feedScreenHeader}
       {firstTimeLoading
-          ? (
-            <NewsFeedShimmer/>
-          )
-          : (
-            <NewsFeedList
-                  pullRefresh={pullRefresh}
-                  onDeletePost={onDeletePost}
-                  navigation={navigation}
-                  postData={postData}
-                  onEditPressDone={editPostDoneCall}
-                  onRefreshPress={onRefreshPress}
-                  footerLoading={footerLoading && isNextDataLoading}
-                  ListHeaderComponent={feedScreenHeader}
-                  onLikePress={onLikePress}
-                  onEndReached={onEndReached}
-              />
-          )
+          ? (<NewsFeedShimmer/>)
+          : (renderNewsFeedList)
       }
-
-      {progressBar && renderImageProgress}
+      {renderImageProgress}
     </View>
   );
 }

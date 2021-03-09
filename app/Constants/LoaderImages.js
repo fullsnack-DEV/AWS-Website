@@ -42,7 +42,7 @@ const adjustForTimezone = (date) => {
 }
 
 export const commentPostTimeCalculate = (commentPostTime) => {
-  const time = adjustForTimezone(new Date(commentPostTime));
+  const time = adjustForTimezone(new Date(commentPostTime.toString()));
   const minute = moment(new Date()).diff(time, 'minute');
   const hour = moment(new Date()).diff(time, 'hour');
   const day = moment(new Date()).diff(time, 'day');

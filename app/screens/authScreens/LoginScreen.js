@@ -408,6 +408,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.mainContainer}>
+
       <ActivityLoader visible={loading} />
       <FastImage resizeMode={'stretch'} style={styles.background} source={images.orangeLayer} />
       <FastImage resizeMode={'stretch'} style={styles.background} source={images.bgImage} />

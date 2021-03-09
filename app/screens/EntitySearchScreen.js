@@ -19,9 +19,9 @@ import {
 } from '../api/Users';
 
 import AuthContext from '../auth/context'
-import ActivityLoader from '../components/loader/ActivityLoader';
 import TCProfileView from '../components/TCProfileView';
 import TCThinDivider from '../components/TCThinDivider';
+import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
 
 export default function EntitySearchScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -74,20 +74,22 @@ export default function EntitySearchScreen({ navigation }) {
   }
 
   return (
-    <View>
-
-      <ActivityLoader visible={loading} />
+    <View style={{ flex: 1 }}>
 
       <View style={styles.searchBarView}>
-        <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) } />
+        <TCSearchBox editable={groups?.length > 0} onChangeText={ (text) => searchFilterFunction(text) } />
       </View>
-      <FlatList
-        data={groups}
-        renderItem={renderList}
-        onPressProfile = {() => navigation.navigate('MembersProfileScreen')}
-        keyExtractor={(item, index) => index.toString()}
-        ListFooterComponent={() => <View style={{ marginBottom: 90 }} />}
-      />
+      {loading
+          ? <UserListShimmer/>
+          : <FlatList
+              data={groups}
+              renderItem={renderList}
+              onPressProfile = {() => navigation.navigate('MembersProfileScreen')}
+              keyExtractor={(item, index) => index.toString()}
+              ListFooterComponent={() => <View style={{ marginBottom: 90 }} />}
+          />
+      }
+
     </View>
   );
 }
