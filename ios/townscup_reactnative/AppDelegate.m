@@ -1,8 +1,7 @@
 #import "AppDelegate.h"
 
 #import "Orientation.h"
-@import Firebase;
-
+#import <Firebase.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -33,7 +32,11 @@ static void InitializeFlipper(UIApplication *application) {
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
-  [FIRApp configure];
+  
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
+
   
   if (@available(iOS 13.4, *)) {
       [UIDatePicker appearance].preferredDatePickerStyle = UIDatePickerStyleWheels;

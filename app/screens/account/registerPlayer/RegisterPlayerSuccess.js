@@ -14,7 +14,7 @@ import images from '../../../Constants/ImagePath';
 
 const RegisterPlayerSuccess = ({ navigation }) => {
   useEffect(() => {
-    setTimeout(() => navigation.navigate('HomeScreen'), 2000);
+    setTimeout(() => navigation.navigate('AccountScreen'), 2000);
   }, [])
   return (
     <View style={styles.mainContainer}>

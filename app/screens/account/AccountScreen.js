@@ -192,11 +192,8 @@ export default function AccountScreen({ navigation }) {
   }, [authContext])
 
   const getParentClub = useCallback((item) => {
-    console.log('Parent group ID::', item.group_id);
     getGroupDetails(item.group_id, authContext)
         .then((response) => {
-          console.log('Parent group detail1::', response.payload);
-          console.log('Parent group detail2::', response.payload.club);
           if (!response?.payload?.club) {
             setParentGroup(response?.payload?.club);
           } else {
@@ -631,12 +628,14 @@ export default function AccountScreen({ navigation }) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
-          navigation.navigate('HomeScreen', {
-            uid: group.group_id,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-            role: group.entity_type,
-          });
+          const uid = item?.entity_type === 'player' ? item?.user_id : item?.group_id;
+          if (uid && item?.entity_type) {
+            navigation.navigate('HomeScreen', {
+              uid,
+              backButtonVisible: true,
+              role: item?.entity_type === 'player' ? 'user' : item?.entity_type,
+            })
+          }
         }}>
         <View style={styles.entityTextContainer}>
           {item.entity_type === 'team' && (

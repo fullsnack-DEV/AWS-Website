@@ -17,8 +17,8 @@ const ReservationMainScreenShimmer = () => (
                   </View>
                 </View>
                 <ShimmerView style={{ width: '75%', height: 15 }} />
-                <ShimmerView style={{ width: '100%' }} height={100} marginVertical={10}/>
-                <ShimmerView style={{ width: '100%' }} height={30} />
+                <ShimmerView style={{ width: '100%' }} height={120} marginVertical={10}/>
+                <ShimmerView style={{ width: '100%' }} height={40} />
                 <ShimmerSeperator />
               </View>
             ))}

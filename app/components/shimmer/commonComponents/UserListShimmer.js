@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { ShimmerView } from './ShimmerCommonComponents';
 
-const UserListShimmer = ({ count = 10 }) => (
+const UserListShimmer = ({ count = 15 }) => (
   <ScrollView style={{ padding: 15, flex: 1, width: '100%' }}>
     {Array(count)
                 .fill('')

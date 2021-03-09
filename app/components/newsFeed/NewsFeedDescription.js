@@ -122,7 +122,7 @@ const NewsFeedDescription = ({
         })
       }
     }
-  }, [authContext?.entity?.uid, getIndicesOf, navigation, tagData, taggedData])
+  }, [authContext?.entity?.uid, navigation, tagData, taggedData])
 
   return (
     <View style={[styles.containerStyle, containerStyle]}>

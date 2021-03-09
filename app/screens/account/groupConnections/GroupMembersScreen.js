@@ -1,5 +1,5 @@
 import React, {
-  useState, useLayoutEffect, useRef, useEffect, useContext,
+  useState, useLayoutEffect, useRef, useEffect, useContext, useCallback,
 } from 'react';
 import {
   Dimensions,
@@ -37,6 +37,7 @@ import strings from '../../../Constants/String';
 import {
   getQBAccountType, QB_DIALOG_TYPE, QBcreateDialog, QBcreateUser, QBgetUserDetail,
 } from '../../../utils/QuickBlox';
+import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 
 // FIXME -this is static source for now we will inject with api call
 const filterArray = [
@@ -94,7 +95,8 @@ export default function GroupMembersScreen({ navigation, route }) {
   const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
   // For activity indigator
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const actionSheetInvite = useRef();
   const [searchMember, setSearchMember] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -119,9 +121,10 @@ export default function GroupMembersScreen({ navigation, route }) {
         .then((response) => {
           setMembers(response.payload)
           setSearchMember(response.payload)
-          setloading(false);
+          setFirstTimeLoading(false);
         })
         .catch((e) => {
+          setFirstTimeLoading(false)
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -230,40 +233,54 @@ export default function GroupMembersScreen({ navigation, route }) {
       })
     }
   }
+
+  const onPressProfile = useCallback((item) => {
+    navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params?.groupID })
+  }, [navigation, route.params?.groupID])
+
+  const onPressMessage = useCallback((item) => {
+      const accountType = getQBAccountType(item?.entity_type);
+      QBcreateUser(item?.user_id, item, accountType).then(() => {
+        navigation.navigate('MessageChat', {
+          screen: 'MessageChatRoom',
+          params: { userId: item.user_id },
+        });
+      }).catch(() => {
+        navigation.navigate('MessageChat', {
+          screen: 'MessageChatRoom',
+          params: { userId: item.user_id },
+        });
+      })
+  }, [navigation])
+
+  const renderMembers = useCallback(({ item }) => (
+    <UserRoleView
+        data = {item}
+        onPressProfile = {() => onPressProfile(item)}
+        onPressMessage={() => onPressMessage(item)} />
+    ), [onPressMessage, onPressProfile])
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      {members && <View tabLabel='Members' style={{ flex: 1 }}>
+      <View tabLabel='Members' style={{ flex: 1 }}>
         <View style={styles.searchBarView}>
-          <TCSearchBox onChangeText={ (text) => searchFilterFunction(text) }/>
-          {/* <TouchableWithoutFeedback onPress={() => toggleModal()}>
-            <Image source={ images.filterIcon } style={ styles.filterImage } />
-          </TouchableWithoutFeedback> */}
+          <TCSearchBox
+              editable={members?.length > 0}
+              onChangeText={ (text) => searchFilterFunction(text) }
+          />
         </View>
-
-        {members.length > 0 ? <FlatList
-                  data={members}
-                  renderItem={({ item }) => <UserRoleView data = {item}
-                  onPressProfile = {() => navigation.navigate('MembersProfileScreen', { memberID: item.user_id, whoSeeID: item.group_member_detail.group_id, groupID: route.params?.groupID })}
-                  onPressMessage={() => {
-                    const accountType = getQBAccountType(item?.entity_type);
-                    QBcreateUser(item?.user_id, item, accountType).then(() => {
-                      navigation.navigate('MessageChat', {
-                        screen: 'MessageChatRoom',
-                        params: { userId: item.user_id },
-                      });
-                    }).catch(() => {
-                      navigation.navigate('MessageChat', {
-                        screen: 'MessageChatRoom',
-                        params: { userId: item.user_id },
-                      });
-                    })
-                  }}
-                  />}
-                  keyExtractor={(item, index) => index.toString()}
-                  /> : <TCNoDataView title={'No Members Found'}/>}
-      </View>}
+        {/* eslint-disable-next-line no-nested-ternary */}
+        {firstTimeLoading
+          ? <UserListShimmer/>
+          : members.length > 0 ? <FlatList
+                data={members}
+                renderItem={renderMembers}
+                keyExtractor={(item, index) => index.toString()}
+            /> : <TCNoDataView title={'No Members Found'}/>
+        }
+      </View>
       <ActionSheet
                 ref={actionSheet}
                 // title={'News Feed Post'}
@@ -303,7 +320,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                   }
                 }}
               />
-      <Modal
+      {isModalVisible && <Modal
         isVisible={isModalVisible}
         backdropColor="black"
         backdropOpacity={0}
@@ -336,7 +353,7 @@ export default function GroupMembersScreen({ navigation, route }) {
                   showsVerticalScrollIndicator={false}
                 />
         </View>
-      </Modal>
+      </Modal>}
     </View>
   );
 }
