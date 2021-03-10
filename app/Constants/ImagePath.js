@@ -273,6 +273,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
   checkRoundOrange: require('../assets/images/check_round_orange.png'),
+  addStatus: require('../assets/images/add_status.png'),
 
 };
 

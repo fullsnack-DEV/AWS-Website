@@ -31,7 +31,7 @@ import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
-import { getSportsList } from '../../api/Games';
+import { getRecentGameDetails, getSportsList } from '../../api/Games';
 
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
@@ -47,18 +47,20 @@ import SportsListView from '../../components/localHome/SportsListView';
 
 let selectedSports = [];
 export default function LocalHomeScreen({ navigation }) {
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const [sports, setSports] = useState([]);
 
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
-  const [selectedPlace, setSelectedPlace] = useState('Soccer');
+  const [selectedSport, setSelectedSport] = useState('Soccer');
   const [settingPopup, setSettingPopup] = useState(false);
 
   const [sportsPopup, setSportsPopup] = useState(false);
   const [sportsListPopup, setSportsListPopup] = useState(false);
+
+  const [recentMatch, setRecentMatch] = useState([]);
   // const [sportsSource, setSportsSource] = useState([
   //   'Soccer',
   //   'Baseball',
@@ -70,15 +72,25 @@ export default function LocalHomeScreen({ navigation }) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    getSportsList(authContext)
-      .then((response) => {
-        const arr = [];
-        for (const tempData of response.payload) {
-          tempData.isChecked = false;
-          arr.push(tempData);
+    const promises = [
+      getRecentGameDetails('Soccer', 'ended', 'surat', authContext),
+      getSportsList(authContext),
+    ];
+    Promise.all(promises)
+      .then(([res1, res2]) => {
+        setloading(false);
+        if (res2.payload) {
+          const arr = [];
+          for (const tempData of res2.payload) {
+            tempData.isChecked = false;
+            arr.push(tempData);
+          }
+          setSports(arr);
+          setTimeout(() => setloading(false), 1000);
         }
-        setSports(arr);
-        setTimeout(() => setloading(false), 1000);
+        if (res1.payload) {
+          setRecentMatch(res1.payload.results)
+        }
       })
       .catch((e) => {
         setloading(false);
@@ -87,6 +99,40 @@ export default function LocalHomeScreen({ navigation }) {
         }, 10);
       });
   }, [authContext]);
+
+  //  useEffect(() => {
+  //   setloading(true)
+  //  getRecentGameDetails('soccer', authContext)
+  //  .then((response) => {
+  //    setloading(false);
+  //    console.log('Recent games::=>', response.payload);
+  //  })
+  //  .catch((e) => {
+  //    setloading(false);
+  //    setTimeout(() => {
+  //      Alert.alert(strings.alertmessagetitle, e.message);
+  //    }, 10);
+  //  });
+  // }, [authContext]);
+
+  // useEffect(() => {
+  //   getSportsList(authContext)
+  //     .then((response) => {
+  //       const arr = [];
+  //       for (const tempData of response.payload) {
+  //         tempData.isChecked = false;
+  //         arr.push(tempData);
+  //       }
+  //       setSports(arr);
+  //       setTimeout(() => setloading(false), 1000);
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setTimeout(() => {
+  //         Alert.alert(strings.alertmessagetitle, e.message);
+  //       }, 10);
+  //     });
+  // }, [authContext]);
 
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
@@ -127,23 +173,110 @@ export default function LocalHomeScreen({ navigation }) {
       ),
     });
   }, [navigation]);
-  const onSportSelect = ({ item }) => setSelectedPlace(item);
+  const onSportSelect = ({ item }) => setSelectedSport(item);
+
+  const renderStatusView = useCallback(
+    () => (
+      <View style={{ marginRight: 15, width: 68 }}>
+        <LinearGradient
+          colors={[colors.yellowColor, colors.assistTextColor]}
+          style={styles.backgroundStatusView}>
+          <Image source={images.soccerBackground} style={styles.profileImage} />
+        </LinearGradient>
+        <Text
+          style={{
+            fontSize: 10,
+            fontFamily: fonts.RRegular,
+            color: colors.lightBlackColor,
+            textAlign: 'center',
+            marginTop: 5,
+          }}
+          numberOfLines={1}>
+          Kishan Makani
+        </Text>
+      </View>
+    ),
+    [],
+  );
+
+  const renderStatusHeader = useCallback(
+    () => (
+      <View style={{ marginRight: 15 }}>
+        <View style={styles.backgroundStatusView}>
+          <Image source={images.soccerBackground} style={styles.myShowCaseImage} />
+        </View>
+        <Text
+          style={{
+            fontSize: 10,
+            fontFamily: fonts.RRegular,
+            color: colors.lightBlackColor,
+            textAlign: 'center',
+            marginTop: 5,
+          }}
+          numberOfLines={1}>
+          My Showcase
+        </Text>
+        <Image
+          source={images.addStatus}
+          style={{
+            resizeMode: 'cover',
+            height: 30,
+            width: 30,
+            position: 'absolute',
+            bottom: 8,
+            right: -10,
+          }}
+        />
+      </View>
+      //  <View style={{marginRight: 15}}>
+      //   <LinearGradient
+      //     colors={[colors.yellowColor, colors.assistTextColor]}
+      //     style={styles.backgroundStatusView}>
+      //     <Image source={images.soccerBackground} style={styles.profileImage} />
+      //   </LinearGradient>
+      //   <Text
+      //     style={{
+      //       fontSize: 10,
+      //       fontFamily: fonts.RRegular,
+      //       color: colors.lightBlackColor,
+      //       textAlign: 'center',
+      //       marginTop: 5,
+      //     }}
+      //     numberOfLines={1}>
+      //     My Showcase
+      //   </Text>
+      //   <Image
+      //     source={images.addStatus}
+      //     style={{
+      //       resizeMode: 'cover',
+      //       height: 30,
+      //       width: 30,
+      //       position: 'absolute',
+      //       bottom: 8,
+      //       right: -10,
+      //     }}
+      //   />
+      // </View>
+    ),
+    [],
+  );
+
   const sportsListView = useCallback(
     ({ item }) => (
       <Text
         style={
-          selectedPlace === item
+          selectedSport === item.sport_name
             ? [
                 styles.sportName,
                 { color: colors.themeColor, fontFamily: fonts.RBlack },
               ]
             : styles.sportName
         }
-        onPress={() => onSportSelect({ item })}>
-        {item}
+        onPress={() => setSelectedSport(item.sport_name)}>
+        {item.sport_name}
       </Text>
     ),
-    [selectedPlace],
+    [selectedSport],
   );
 
   const renderSportsView = useCallback(
@@ -234,13 +367,7 @@ export default function LocalHomeScreen({ navigation }) {
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          data={[
-            'Soccer',
-            'Baseball',
-            'Basketball',
-            'Tennis Single',
-            'Tennis Double',
-          ]}
+          data={sports}
           keyExtractor={keyExtractor}
           renderItem={sportsListView}
           style={{
@@ -251,16 +378,40 @@ export default function LocalHomeScreen({ navigation }) {
         />
       </View>
 
+      <TCThinDivider width={'100%'} />
+
       <ScrollView>
         <View>
+          <FlatList
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        data={[
+          'Soccer',
+          'Baseball',
+          'Basketball',
+          'Tennis Single',
+          'Tennis Double',
+        ]}
+        keyExtractor={keyExtractor}
+        renderItem={renderStatusView}
+        ListHeaderComponent={renderStatusHeader}
+        style={{
+          width: '100%',
+          height: 90,
+          alignContent: 'center',
+          // backgroundColor: 'red',
+          margin: 15,
+          marginBottom: 0,
+        }}
+      />
           <TCTitleWithArrow
             title={strings.recentMatchesTitle}
             showArrow={true}
             viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('RecentMatchScreen')}
+            onPress={() => navigation.navigate('RecentMatchScreen', { gameData: recentMatch })}
           />
           <Carousel
-            data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+            data={recentMatch}
             renderItem={renderRecentMatchItems}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
@@ -583,11 +734,11 @@ export default function LocalHomeScreen({ navigation }) {
             <FlatList
               showsHorizontalScrollIndicator={false}
               data={[
-                  'Soccer',
-                  'Baseball',
-                  'Basketball',
-                  'Tennis Single',
-                  'Tennis Double',
+                'Soccer',
+                'Baseball',
+                'Basketball',
+                'Tennis Single',
+                'Tennis Double',
               ]}
               keyExtractor={keyExtractor}
               renderItem={renderSportsView}
@@ -648,7 +799,6 @@ export default function LocalHomeScreen({ navigation }) {
           </View>
         </Modal>
       </ScrollView>
-
     </View>
   );
 }
@@ -838,7 +988,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
-
   },
   sectionStyle: {
     alignItems: 'center',
@@ -863,5 +1012,46 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
+  },
+  backgroundStatusView: {
+    backgroundColor: colors.whiteColor,
+    elevation: 5,
+    height: 68,
+    width: 68,
+    borderRadius: 14,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profileImage: {
+    resizeMode: 'cover',
+    height: 62,
+    width: 62,
+    borderRadius: 14,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: 'white',
+  },
+ myShowCaseImage: {
+    resizeMode: 'cover',
+    height: 66,
+    width: 66,
+    borderRadius: 14,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: 'white',
   },
 });

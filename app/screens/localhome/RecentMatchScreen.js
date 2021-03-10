@@ -16,7 +16,6 @@ import moment from 'moment';
 
 import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
-import { gameData } from '../../utils/constant';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCTextField from '../../components/TCTextField';
 
@@ -27,7 +26,7 @@ import fonts from '../../Constants/Fonts';
 
 import TCThinDivider from '../../components/TCThinDivider';
 
-export default function RecentMatchScreen() {
+export default function RecentMatchScreen({ route }) {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
   const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
@@ -35,6 +34,7 @@ export default function RecentMatchScreen() {
   const [show, setShow] = useState(false);
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
+  const [recentMatch] = useState(route?.params?.gameData);
 
   // const authContext = useContext(AuthContext);
 
@@ -74,7 +74,7 @@ export default function RecentMatchScreen() {
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
-        data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+        data={recentMatch}
         keyExtractor={keyExtractor}
         renderItem={renderRecentMatchItems}
         style={styles.listViewStyle}
