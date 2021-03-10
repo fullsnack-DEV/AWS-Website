@@ -38,7 +38,6 @@ const TennisHome = ({ navigation, route }) => {
   const [isRefereeAdmin, setIsRefereeAdmin] = useState(false);
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
 
   useEffect(() => {
     getGameDetails();
@@ -90,7 +89,6 @@ const TennisHome = ({ navigation, route }) => {
         getGameNextFeedData={getGameNextFeedData}
         createGamePostData={createGamePostData}
           getGameFeedData={getGameFeedData}
-          setUploadImageProgressData={setUploadImageProgressData}
           getRefereeReservation={getRefereeReservation}
           getScorekeeperReservation={getScorekeeperReservation}
           getSportsList={getGameSportsList}
@@ -117,7 +115,6 @@ const TennisHome = ({ navigation, route }) => {
 
   const renderGalleryTab = useMemo(() => (
     <Gallery
-          setUploadImageProgressData={(uploadImageData) => setUploadImageProgressData(uploadImageData)}
           gameData={gameData}
           getGalleryData={getTennisGalleryData}
           navigation={navigation}/>
@@ -167,37 +164,7 @@ const TennisHome = ({ navigation, route }) => {
     </TopBackgroundHeader>
   ), [currentTab, gameData, isAdmin, navigation, onEndReached, renderTabContain, resetGameDetail, route?.params?.onBackPress])
 
-  const onCancelImageUpload = useCallback(() => {
-    if (uploadImageProgressData?.cancelRequest) {
-      uploadImageProgressData.cancelRequest.cancel('Cancel Image Uploading');
-    }
-    setUploadImageProgressData(null);
-  }, [uploadImageProgressData?.cancelRequest]);
-
-  const onImageAlertCancel = useCallback(() => {
-    Alert.alert(
-        'Cancel Upload?',
-        'If you cancel your upload now, your post will not be saved.',
-        [
-          {
-            text: 'Go back',
-          },
-          {
-            text: 'Cancel upload',
-            onPress: onCancelImageUpload,
-          },
-        ],
-    );
-  }, [onCancelImageUpload]);
-
-  const renderImageProgress = useMemo(() => uploadImageProgressData && (
-    <ImageProgress
-              numberOfUploaded={uploadImageProgressData?.doneUploadCount}
-              totalUpload={uploadImageProgressData?.totalUploadCount}
-              onCancelPress={onImageAlertCancel}
-              postDataItem={uploadImageProgressData?.postData?.[0] ?? {}}
-          />
-      ), [onImageAlertCancel, uploadImageProgressData])
+  const renderImageProgress = useMemo(() => <ImageProgress/>, [])
 
   return (<View style={styles.mainContainer}>
     <ActivityLoader visible={loading} />

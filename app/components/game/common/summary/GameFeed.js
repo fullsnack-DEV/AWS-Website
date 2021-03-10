@@ -6,13 +6,13 @@ import { View, StyleSheet, Alert } from 'react-native';
 import WritePost from '../../../newsFeed/WritePost';
 import colors from '../../../../Constants/Colors';
 import NewsFeedList from '../../../../screens/newsfeeds/NewsFeedList';
-import uploadImages from '../../../../utils/imageAction';
 import AuthContext from '../../../../auth/context';
 import strings from '../../../../Constants/String';
 import {
   createReaction, deletePost, updatePost,
 } from '../../../../api/NewsFeeds';
 import ActivityLoader from '../../../loader/ActivityLoader';
+import { ImageUploadContext } from '../../../../context/ImageUploadContext';
 
 const GameFeed = ({
   gameFeedRefs,
@@ -21,15 +21,11 @@ const GameFeed = ({
   currentUserData,
   getGameFeedData,
   createGamePostData,
-  setUploadImageProgressData,
   getGameNextFeedData,
 }) => {
   const authContext = useContext(AuthContext);
+  const imageUploadContext = useContext(ImageUploadContext)
   const [gameFeedData, setGameFeedData] = useState([]);
-  const [progressBar, setProgressBar] = useState(false);
-  const [doneUploadCount, setDoneUploadCount] = useState(0);
-  const [totalUploadCount, setTotalUploadCount] = useState(0);
-  const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [footerLoading, setFooterLoading] = useState(false);
@@ -51,43 +47,19 @@ const GameFeed = ({
     },
   }))
 
-  useEffect(() => {
-    if (progressBar) {
-      setUploadImageProgressData({
-        doneUploadCount,
-        postData: gameFeedData,
-        totalUploadCount,
-        cancelRequest: cancelApiRequest,
-      })
-    } else {
-      setUploadImageProgressData(null);
-    }
-  }, [progressBar, doneUploadCount, totalUploadCount, gameFeedData, cancelApiRequest])
-  const progressStatus = (completed, total) => {
-    setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }
-  const cancelRequest = (cancelAxiosToken) => {
-    setCancelApiRequest(cancelAxiosToken);
-  }
-
   const createPostAfterUpload = useCallback((dataParams) => {
     createGamePostData({ ...dataParams, game_id: gameData?.game_id })
-      .then(() => getGameFeedData())
       .then((response) => {
-        setGameFeedData([...response?.payload?.results])
-        setProgressBar(false);
-        setDoneUploadCount(0);
-        setTotalUploadCount(0);
+        const gFData = [...gameFeedData]
+        gFData.unshift(response.payload)
+        setGameFeedData([...gFData])
       })
       .catch((error) => {
-        setProgressBar(false);
-        setDoneUploadCount(0);
-        setTotalUploadCount(0);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message)
         }, 10)
       })
-  }, [createGamePostData, gameData?.game_id, getGameFeedData])
+  }, [createGamePostData, gameData?.game_id, gameFeedData])
 
   const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
@@ -97,26 +69,20 @@ const GameFeed = ({
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
-      setTotalUploadCount(data.length || 1);
-      setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        const dataParams = {
-          text: postDesc && postDesc,
-          attachments,
-          taggedData: tagsOfEntity ?? [],
-        };
-        createPostAfterUpload(dataParams)
-      })
+      const dataParams = {
+        text: postDesc && postDesc,
+        attachments: [],
+        taggedData: tagsOfEntity ?? [],
+      };
+      imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+      )
     }
-  }, [authContext, createPostAfterUpload])
+  }, [authContext, createPostAfterUpload, imageUploadContext])
 
   const onEndFeedReached = useCallback(() => {
     setFooterLoading(true);
@@ -135,7 +101,7 @@ const GameFeed = ({
             setFooterLoading(false)
           })
     }
-  }, [authContext, isNextDataLoading, gameFeedData])
+  }, [gameFeedData, isNextDataLoading, getGameNextFeedData])
 
   const updatePostAfterUpload = useCallback((dataParams) => {
     updatePost(dataParams, authContext)
@@ -144,9 +110,6 @@ const GameFeed = ({
         const pDataIndex = gameFeedData?.findIndex((item) => item?.id === dataParams?.activity_id)
         pData[pDataIndex] = response?.payload;
         setGameFeedData([...pData]);
-        setProgressBar(false);
-        setDoneUploadCount(0);
-        setTotalUploadCount(0);
       })
       .catch((e) => {
         Alert.alert('', e.messages)
@@ -154,7 +117,6 @@ const GameFeed = ({
   }, [authContext, gameFeedData])
 
   const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
-    let attachmentsData = [];
     const alreadyUrlDone = [];
     const createUrlData = [];
 
@@ -176,33 +138,25 @@ const GameFeed = ({
           return null;
         })
       }
+      const dataParams = {
+        activity_id: selectEditItem.id,
+        text: postDesc,
+        attachments: [...alreadyUrlDone],
+        taggedData: tagData ?? [],
+      };
       if (createUrlData?.length > 0) {
-        setTotalUploadCount(createUrlData.length || 1);
-        setProgressBar(true);
+        const imageArray = createUrlData.map((dataItem) => (dataItem))
+        imageUploadContext.uploadData(
+            authContext,
+            dataParams,
+            imageArray,
+            updatePostAfterUpload,
+        )
+      } else {
+        updatePostAfterUpload(dataParams);
       }
-
-      const imageArray = createUrlData.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        attachmentsData = [...alreadyUrlDone, ...attachments];
-        const dataParams = {
-          activity_id: selectEditItem.id,
-          text: postDesc,
-          attachments: attachmentsData,
-          taggedData: tagData ?? [],
-        };
-        updatePostAfterUpload(dataParams)
-      }).catch((error) => {
-        console.log(error);
-      })
     }
-  }, [authContext, updatePostAfterUpload])
+  }, [authContext, imageUploadContext, updatePostAfterUpload])
 
   const onDeletePost = useCallback((item) => {
     setLoading(true);

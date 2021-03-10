@@ -4,8 +4,6 @@ import React, {
 import {
   View,
   StyleSheet,
-  Alert,
-
 } from 'react-native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
@@ -47,8 +45,6 @@ const SoccerHome = ({ navigation, route }) => {
 
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [uploadImageProgressData, setUploadImageProgressData] = useState(null);
-
   useEffect(() => {
       getGameDetails();
   }, []);
@@ -111,7 +107,6 @@ const SoccerHome = ({ navigation, route }) => {
     <Summary
           getGameNextFeedData={getGameNextFeedData}
           gameFeedFlatListRef={gameFeedFlatListRef}
-          setUploadImageProgressData={setUploadImageProgressData}
           createGamePostData={createGamePostData}
           getGameFeedData={getGameFeedData}
           getRefereeReservation={getRefereeReservation}
@@ -151,7 +146,6 @@ const SoccerHome = ({ navigation, route }) => {
 
   const renderGalleryTab = useMemo(() => (
     <Gallery
-          setUploadImageProgressData={setUploadImageProgressData}
           gameData={gameData}
           getGalleryData={getSoccerGalleryData}
           navigation={navigation}
@@ -167,39 +161,7 @@ const SoccerHome = ({ navigation, route }) => {
     </View>
   ), [renderGalleryTab, renderLineUpTab, renderStatsTab, renderSummaryTab]);
 
-  const onCancelImageUpload = useCallback(() => {
-    if (uploadImageProgressData?.cancelRequest) {
-      uploadImageProgressData.cancelRequest.cancel('Cancel Image Uploading');
-    }
-    setUploadImageProgressData(null);
-  }, [uploadImageProgressData?.cancelRequest]);
-
-  const onImageAlertCancel = useCallback(() => {
-      Alert.alert(
-          'Cancel Upload?',
-          'If you cancel your upload now, your post will not be saved.',
-          [
-            {
-              text: 'Go back',
-            },
-            {
-              text: 'Cancel upload',
-              onPress: onCancelImageUpload,
-            },
-          ],
-      );
-  }, [onCancelImageUpload]);
-
-  const renderImageProgress = useMemo(() => (
-      uploadImageProgressData && (
-        <ImageProgress
-              numberOfUploaded={uploadImageProgressData?.doneUploadCount}
-              totalUpload={uploadImageProgressData?.totalUploadCount}
-              onCancelPress={onImageAlertCancel}
-              postDataItem={uploadImageProgressData?.postData?.[0] ?? {}}
-          />
-      )
-  ), [onImageAlertCancel, uploadImageProgressData])
+  const renderImageProgress = useMemo(() => <ImageProgress/>, [])
 
   const onEndReached = useCallback(() => {
     if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()

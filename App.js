@@ -14,6 +14,7 @@ import NavigationMainContainer from './NavigationMainContainer';
 import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
 import strings from './app/Constants/String';
+import { ImageUploadProvider } from './app/context/GetContexts';
 
 console.disableYellowBox = true
 // if (__DEV__) {
@@ -82,7 +83,9 @@ export default function App() {
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>
-      <NavigationMainContainer/>
+      <ImageUploadProvider>
+        <NavigationMainContainer/>
+      </ImageUploadProvider>
     </AuthContext.Provider>
   );
 }
