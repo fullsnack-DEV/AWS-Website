@@ -64,7 +64,6 @@ import SingleImageRender from '../../components/Home/SingleImageRender';
 import MultipleImageRender from '../../components/Home/MultipleImageRender';
 import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
-import uploadImages from '../../utils/imageAction';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
 import GroupInfo from '../../components/Home/GroupInfo';
@@ -113,6 +112,7 @@ import RefereeFeedPostItems from '../../components/game/soccer/home/review/revie
 import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperFeedPostItems';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
+import { ImageUploadContext } from '../../context/GetContexts';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
@@ -150,6 +150,7 @@ const history_Data = [{
 
 const HomeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
+  const imageUploadContext = useContext(ImageUploadContext);
   const isFocused = useIsFocused();
   // const viewRef = useRef();
   const mainFlatListRef = useRef();
@@ -190,10 +191,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [teamReviewData, setTeamReviewData] = useState()
   const [averageTeamReview, setAverageTeamReview] = useState()
 
-  const [totalUploadCount, setTotalUploadCount] = useState(0);
-  const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [scoreboardTabNumber, setScroboardTabNumber] = useState(0);
-  const [progressBar, setProgressBar] = useState(false);
   const [refereeRecentMatch, setRefereeRecentMatch] = useState([]);
   const [refereeUpcomingMatch, setRefereeUpcomingMatch] = useState([]);
 
@@ -438,10 +436,8 @@ const HomeScreen = ({ navigation, route }) => {
         setIsUserHome(userHome)
         setUserID(uid);
         setFirstTimeLoading(false);
-      }).catch((errResponse) => {
-        // setloading(false)
+      }).catch(() => {
         setFirstTimeLoading(false);
-        console.log('promise error', errResponse)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.defaultError);
         }, 10)
@@ -450,23 +446,15 @@ const HomeScreen = ({ navigation, route }) => {
     }
   };
 
-  const progressStatus = (completed, total) => {
-    setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }
-
   const createPostAfterUpload = (dataParams) => {
     createPost(dataParams, authContext)
       .then(() => {
-        setProgressBar(false);
-        setDoneUploadCount(0);
-        setTotalUploadCount(0);
         getGallery(userID, authContext).then((res) => {
           setGalleryData(res.payload);
         });
       })
       .catch((error) => {
         setloading(false)
-        console.log('error coming', error)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message)
         }, 10)
@@ -481,24 +469,18 @@ const HomeScreen = ({ navigation, route }) => {
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
-      setTotalUploadCount(data.length || 1);
-      setProgressBar(true);
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        const dataParams = {
-          text: postDesc && postDesc,
-          attachments,
-          taggedData: tagsOfEntity ?? [],
-        };
-        createPostAfterUpload(dataParams)
-      })
+      const dataParams = {
+        text: postDesc && postDesc,
+        attachments: [],
+        taggedData: tagsOfEntity ?? [],
+      };
+      imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+      )
     }
   }
 
@@ -1266,21 +1248,6 @@ const HomeScreen = ({ navigation, route }) => {
       navigation.navigate('GroupMembersScreen', { groupID: user_id });
     }
   }, [authContext?.entity?.role, authContext?.entity?.uid, navigation, route?.params?.role, route?.params?.uid])
-
-  const [cancelApiRequest, setCancelApiRequest] = useState(null);
-
-  const onCancelImageUpload = useCallback(() => {
-    if (cancelApiRequest) {
-      cancelApiRequest.cancel('Cancel Image Uploading');
-    }
-    setProgressBar(false);
-    setDoneUploadCount(0);
-    setTotalUploadCount(0);
-  }, [cancelApiRequest])
-
-  const cancelRequest = useCallback((axiosTokenSource) => {
-    setCancelApiRequest({ ...axiosTokenSource });
-  }, [])
 
   const actionSheetOpetions = useCallback(() => {
     if (selectedEventItem !== null && selectedEventItem.game) {
@@ -2288,27 +2255,7 @@ const feedScreenHeader = useMemo(() => (
 
   const onPlayInModalClose = useCallback(() => setPlaysInModalVisible(false), [])
 
-  const onImageCancelAlertPress = useCallback(() => {
-    Alert.alert(
-        'Cancel Upload?',
-        'If you cancel your upload now, your post will not be saved.',
-        [{
-          text: 'Go back',
-        },
-          {
-            text: 'Cancel upload',
-            onPress: onCancelImageUpload,
-          },
-        ],
-    );
-  }, [onCancelImageUpload])
-
-  const renderImageProgress = useMemo(() => progressBar && <ImageProgress
-      numberOfUploaded={doneUploadCount}
-      totalUpload={totalUploadCount}
-      onCancelPress={onImageCancelAlertPress}
-      postDataItem={currentUserData}
-  />, [currentUserData, doneUploadCount, onImageCancelAlertPress, progressBar, totalUploadCount])
+  const renderImageProgress = useMemo(() => <ImageProgress/>, [])
 
   return (
     <View style={ styles.mainContainer }>
@@ -2349,12 +2296,7 @@ const feedScreenHeader = useMemo(() => (
                     currentUserData={currentUserData}
                     isAdmin={isAdmin}
                     navigation={navigation}
-                    cancelRequest={cancelRequest}
-                    progressStatus={progressStatus}
-                    setDoneUploadCount={setDoneUploadCount}
                     setGalleryData={setGalleryData}
-                    setProgressBar={setProgressBar}
-                    setTotalUploadCount={setTotalUploadCount}
                     userID={route?.params?.uid ?? authContext.entity?.uid}
                 />
               )}

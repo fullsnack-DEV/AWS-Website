@@ -10,82 +10,63 @@ import SingleImageRender from '../../../Home/SingleImageRender';
 import MultipleImageRender from '../../../Home/MultipleImageRender';
 import SingleVideoRender from '../../../Home/SingleVideoRender';
 import MultipleVideoRender from '../../../Home/MultipleVideoRender';
-import uploadImages from '../../../../utils/imageAction';
-import { createPost, getNewsFeed } from '../../../../api/NewsFeeds';
+import { createPost } from '../../../../api/NewsFeeds';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
+import { ImageUploadContext } from '../../../../context/ImageUploadContext';
 
 const Gallery = ({
-  setUploadImageProgressData,
   navigation,
   gameData,
   getGalleryData,
 }) => {
   const authContext = useContext(AuthContext);
+  const imageUploadContext = useContext(ImageUploadContext)
   const [allData, setAllData] = useState([]);
   const [postData, setPostData] = useState([]);
-  const [totalUploadCount, setTotalUploadCount] = useState(0);
-  const [progressBar, setProgressBar] = useState(false);
-  const [doneUploadCount, setDoneUploadCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getGalleryData(gameData?.game_id).then((res) => {
-      setAllData(res.payload);
+      setAllData([...res.payload]);
     }).catch((error) => {
       console.log(error);
     })
   }, [])
 
-  const progressStatus = useCallback((completed, total) => {
-    setDoneUploadCount(completed < total ? (completed + 1) : total)
-  }, [])
-
-  useEffect(() => {
-    if (progressBar) {
-      setUploadImageProgressData({
-        doneUploadCount,
-        postData,
-        totalUploadCount,
-      })
-    } else {
-      setUploadImageProgressData(null);
-    }
-  }, [progressBar, doneUploadCount, totalUploadCount, postData])
+  const createPostAfterUpload = useCallback((dataParams) => {
+    createPost(dataParams, authContext)
+        .then((response) => {
+          const pData = [...postData]
+          pData.unshift(response?.payload);
+          setPostData([...pData])
+          getGalleryData(gameData?.game_id).then((res) => {
+            setAllData([...res?.payload]);
+          });
+        })
+        .catch((error) => {
+          setLoading(false)
+          Alert.alert(error)
+        })
+  }, [authContext, gameData?.game_id, getGalleryData, postData])
 
   const callthis = useCallback((data, postDesc) => {
     if (data) {
-      setTotalUploadCount(data.length || 1);
-      setProgressBar(true);
+      const dataParams = {
+        entity_type: 'game',
+        game_id: gameData?.game_id,
+        text: postDesc && postDesc,
+        attachments: [],
+      };
       const imageArray = data.map((dataItem) => (dataItem))
-      uploadImages(imageArray, authContext, progressStatus).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-        }))
-        const dataParams = {
-          entity_type: 'game',
-          game_id: gameData?.game_id,
-          text: postDesc && postDesc,
-          attachments,
-        };
-        createPost(dataParams, authContext)
-          .then(() => getNewsFeed(authContext))
-          .then((response) => {
-            setPostData(response?.payload?.results ?? [])
-            setProgressBar(false);
-            getGalleryData(gameData?.game_id).then((res) => {
-              setAllData(res?.payload ?? []);
-            });
-          })
-          .catch((error) => {
-            setLoading(false)
-            Alert.alert(error)
-          })
-      })
+      imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+      )
     }
-  }, [authContext, gameData?.game_id, getGalleryData, progressStatus])
+  }, [authContext, createPostAfterUpload, gameData?.game_id, imageUploadContext])
 
   const onAddPhotoPress = useCallback(() => {
     ImagePicker.openPicker({

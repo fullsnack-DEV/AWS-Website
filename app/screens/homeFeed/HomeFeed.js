@@ -9,30 +9,26 @@ import {
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import uploadImages from '../../utils/imageAction';
 import { getGallery } from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
+import { ImageUploadContext } from '../../context/ImageUploadContext';
 
 const HomeFeed = ({
   onFeedScroll,
   refs,
   userID,
-  setProgressBar,
-  setDoneUploadCount,
-  setTotalUploadCount,
   setGalleryData,
   navigation,
-  progressStatus,
-  cancelRequest,
   currentUserData,
   isAdmin,
   homeFeedHeaderComponent,
   currentTab,
 }) => {
-    const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const authContext = useContext(AuthContext)
+    const imageUploadContext = useContext(ImageUploadContext)
+    const [fullScreenLoading, setFullScreenLoading] = useState(false);
     const [postData, setPostData] = useState([]);
     const [totalUserPostCount, setTotalUserPostCount] = useState(0);
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
@@ -58,13 +54,10 @@ const HomeFeed = ({
     const updatePostAfterUpload = useCallback((dataParams) => {
         updatePost(dataParams, authContext)
             .then((response) => {
-                setProgressBar(false);
                 const pData = [...postData];
                 const pDataIndex = postData?.findIndex((item) => item?.id === dataParams?.activity_id)
                 pData[pDataIndex] = response?.payload;
                 setPostData([...pData]);
-                setDoneUploadCount(0);
-                setTotalUploadCount(0);
                 getGallery(userID, authContext).then((res) => {
                     setGalleryData(res.payload);
                 });
@@ -72,10 +65,9 @@ const HomeFeed = ({
             .catch((e) => {
                 Alert.alert('', e.messages)
             });
-    }, [authContext, postData, userID])
+    }, [authContext, postData, setGalleryData, userID])
 
     const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
-        let attachmentsData = [];
         const alreadyUrlDone = [];
         const createUrlData = [];
 
@@ -97,33 +89,25 @@ const HomeFeed = ({
                     return null;
                 })
             }
+            const dataParams = {
+                activity_id: selectEditItem.id,
+                text: postDesc,
+                taggedData: tagData ?? [],
+                attachments: [...alreadyUrlDone],
+            };
             if (createUrlData?.length > 0) {
-                setTotalUploadCount(createUrlData.length || 1);
-                setProgressBar(true);
+                const imageArray = createUrlData.map((dataItem) => (dataItem))
+                imageUploadContext.uploadData(
+                    authContext,
+                    dataParams,
+                    imageArray,
+                    updatePostAfterUpload,
+                )
+            } else {
+                updatePostAfterUpload(dataParams);
             }
-
-            const imageArray = createUrlData.map((dataItem) => (dataItem))
-            uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-                const attachments = responses.map((item) => ({
-                    type: item.type,
-                    url: item.fullImage,
-                    thumbnail: item.thumbnail,
-                    media_height: item.height,
-                    media_width: item.width,
-                }))
-                attachmentsData = [...alreadyUrlDone, ...attachments];
-                const dataParams = {
-                    activity_id: selectEditItem.id,
-                    text: postDesc,
-                    attachments: attachmentsData,
-                    taggedData: tagData ?? [],
-                };
-                updatePostAfterUpload(dataParams)
-            }).catch((error) => {
-                console.log(error);
-            })
         }
-    }, [authContext, cancelRequest, progressStatus, setProgressBar, setTotalUploadCount, updatePostAfterUpload])
+    }, [authContext, imageUploadContext, updatePostAfterUpload])
 
     const onDeletePost = useCallback((item) => {
         setFullScreenLoading(true);
@@ -162,24 +146,18 @@ const HomeFeed = ({
 
     const createPostAfterUpload = useCallback((dataParams) => {
         createPost(dataParams, authContext)
-            .then(() => getUserPosts({ uid: userID }, authContext))
             .then((response) => {
-                setTotalUserPostCount(response?.payload?.total_count)
-                setPostData([...response.payload.results]);
-                setProgressBar(false);
-                setDoneUploadCount(0);
-                setTotalUploadCount(0);
-                getGallery(userID, authContext).then((res) => {
-                    setGalleryData(res.payload);
-                });
+                setTotalUserPostCount((cnt) => cnt + 1);
+                const pData = [...postData]
+                pData.unshift(response.payload);
+                setPostData([...pData])
             })
             .catch((error) => {
-                console.log('error coming', error)
                 setTimeout(() => {
                     Alert.alert(strings.alertmessagetitle, error.message)
                 }, 10)
             })
-    }, [authContext, userID])
+    }, [authContext, postData])
 
     const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
         if (postDesc.trim().length > 0 && data?.length === 0) {
@@ -189,26 +167,20 @@ const HomeFeed = ({
             };
             createPostAfterUpload(dataParams);
         } else if (data) {
-            setTotalUploadCount(data.length || 1);
-            setProgressBar(true);
             const imageArray = data.map((dataItem) => (dataItem))
-            uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-                const attachments = responses.map((item) => ({
-                    type: item.type,
-                    url: item.fullImage,
-                    thumbnail: item.thumbnail,
-                    media_height: item.height,
-                    media_width: item.width,
-                }))
-                const dataParams = {
-                    text: postDesc && postDesc,
-                    attachments,
-                    taggedData: tagsOfEntity ?? [],
-                };
-                createPostAfterUpload(dataParams)
-            })
+            const dataParams = {
+                text: postDesc && postDesc,
+                attachments: [],
+                taggedData: tagsOfEntity ?? [],
+            };
+            imageUploadContext.uploadData(
+                authContext,
+                dataParams,
+                imageArray,
+                createPostAfterUpload,
+            )
         }
-    }, [authContext, cancelRequest, createPostAfterUpload, progressStatus])
+    }, [authContext, createPostAfterUpload, imageUploadContext])
 
     const onEndReached = useCallback(() => {
         setFooterLoading(true);

@@ -35,7 +35,6 @@ const Summary = ({
   getSportsList,
   getRefereeReservation,
   getScorekeeperReservation,
-  setUploadImageProgressData,
   createGamePostData,
   getGameFeedData,
   gameFeedFlatListRef,
@@ -192,7 +191,6 @@ const Summary = ({
     <GameFeed
         getGameNextFeedData={getGameNextFeedData}
         gameFeedRefs={gameFeedFlatListRef}
-          setUploadImageProgressData={setUploadImageProgressData}
           createGamePostData={createGamePostData}
           gameData={gameData}
           getGameFeedData={getGameFeedData}
@@ -200,7 +198,7 @@ const Summary = ({
           currentUserData={authContext?.entity?.obj}
           userID={authContext?.entity?.uid}
       />
-  ), [authContext?.entity?.obj, authContext?.entity?.uid, createGamePostData, gameData, gameFeedFlatListRef, getGameFeedData, getGameNextFeedData, navigation, setUploadImageProgressData])
+  ), [authContext?.entity?.obj, authContext?.entity?.uid, createGamePostData, gameData, gameFeedFlatListRef, getGameFeedData, getGameNextFeedData, navigation])
 
   return (
     <View style={styles.mainContainer}>

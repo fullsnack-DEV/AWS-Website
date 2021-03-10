@@ -1,63 +1,159 @@
-import React, { memo } from 'react';
+import React, {
+  memo, useCallback, useContext, useEffect, useRef, useState,
+} from 'react';
 import {
-  StyleSheet, View, Image, Text, TouchableOpacity,
+  StyleSheet, View, Image, Text, TouchableOpacity, FlatList, Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import * as Progress from 'react-native-progress';
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
-import { getHitSlop } from '../../utils';
+import { getHitSlop, toggleView } from '../../utils';
+import { ImageUploadContext } from '../../context/GetContexts';
 
-const ImageProgress = ({
-  numberOfUploaded,
-  totalUpload,
-  onCancelPress,
-  postDataItem,
-}) => (
-  <View style={ styles.mainContainer }>
-    <View style={styles.viewStyle}>
-      <View style={styles.profileImageViewStyle}>
-        <Image style={ styles.profileImg } source={postDataItem?.thumbnail ? { uri: postDataItem?.thumbnail } : images.profilePlaceHolder} />
-      </View>
-      <View style={styles.textViewStyle}>
-        <Text style={ styles.writePostText }>
-          Uploading...
-        </Text>
-        <Text style={ styles.writePostText }>  {`${numberOfUploaded}/${totalUpload}`}</Text>
-      </View>
-      <TouchableOpacity
+const SingleImageProgressBar = ({
+        totalUpload,
+        numberOfUploaded,
+        postDataItem,
+        // currentImage,
+        onCancelPress,
+  }) => (
+    <View style={ styles.mainContainer }>
+      <View style={styles.viewStyle}>
+        <View style={styles.profileImageViewStyle}>
+          <Image style={ styles.profileImg } source={postDataItem?.thumbnail ? { uri: postDataItem?.thumbnail } : images.profilePlaceHolder} />
+        </View>
+        <View style={styles.textViewStyle}>
+          <Text style={ styles.writePostText }>
+            Uploading...
+          </Text>
+          <Text style={ styles.writePostText }>  {`${numberOfUploaded}/${totalUpload}`}</Text>
+        </View>
+        <TouchableOpacity
             hitSlop={getHitSlop(15)}
             style={styles.cancelTouchStyle} onPress={onCancelPress}>
-        <Image style={ styles.cancelImagestyle } source={images.cancelImage} />
-      </TouchableOpacity>
+          <Image style={ styles.cancelImagestyle } source={images.cancelImage} />
+        </TouchableOpacity>
+      </View>
+      <Progress.Bar
+          progress={(1 * numberOfUploaded) / totalUpload}
+          width={wp('100%')}
+          borderRadius={0}
+          borderWidth={0}
+          unfilledColor={colors.uploadUnfillColor}
+          color={colors.uploadTextColor}
+      />
     </View>
-    <Progress.Bar
-            progress={(1 * numberOfUploaded) / totalUpload}
-            width={wp('100%')}
-            borderRadius={0}
-            borderWidth={0}
-            unfilledColor={colors.uploadUnfillColor}
-            color={colors.uploadTextColor}
+)
+
+const ImageProgress = () => {
+  const imageUploadContext = useContext(ImageUploadContext)
+  const flatListRef = useRef();
+  const [isOpenToggleProgressView, setIsOpenToggleProgressView] = useState(false);
+
+  // useEffect(() => {
+  //   console.log('IMAGE CONT', imageUploadContext)
+  // }, [imageUploadContext?.state?.uploadingData?.length])
+
+  const onCancelImageUpload = useCallback((item) => {
+    imageUploadContext.removeUploadingData(item?.id);
+    if (item?.cancelRequest?.cancel) item.cancelRequest.cancel('Mistake');
+  }, [imageUploadContext])
+
+  const onCancelPress = useCallback((item) => {
+    Alert.alert(
+        'Cancel Upload?',
+        'If you cancel your upload now, your post will not be saved.',
+        [{
+          text: 'Go back',
+        },
+          {
+            text: 'Cancel upload',
+            onPress: () => onCancelImageUpload(item),
+          },
+        ],
+    );
+  }, [onCancelImageUpload])
+
+  useEffect(() => {
+    if (imageUploadContext?.state?.uploadingData?.length <= 1) {
+      toggleView(() => setIsOpenToggleProgressView(false), 300);
+    }
+  }, [imageUploadContext?.state?.uploadingData?.length])
+
+  const renderSingleUploadData = useCallback(({ item }) => (
+    <SingleImageProgressBar
+            numberOfUploaded={item?.doneUploadCount ?? 2}
+            totalUpload={item?.totalUploadCount ?? 2}
+            postDataItem={['']}
+            onCancelPress={() => onCancelPress(item)}
         />
-  </View>
-  )
+    ), [onCancelPress])
+
+  const toggleProgressBar = () => {
+    toggleView(() => setIsOpenToggleProgressView(!isOpenToggleProgressView), 300)
+  }
+    return (
+      <View style={{ ...styles.mainViewContainer, maxHeight: 300, height: isOpenToggleProgressView ? 300 : 50 }}>
+        {/* Arrow */}
+        {imageUploadContext?.state?.uploadingData?.length > 1 ? (
+          <TouchableOpacity style={styles.upArrowDesign} onPress={toggleProgressBar}>
+            <FastImage
+                  source={images.dropDownArrow}
+                  style={{ height: 15, width: 15, transform: [{ rotate: isOpenToggleProgressView ? '360deg' : '180deg' }] }}
+                  resizeMode={'contain'}
+                  tintColor={colors.uploadTextColor}
+              />
+          </TouchableOpacity>
+        ) : null}
+        <FlatList
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            ref={flatListRef}
+            onContentSizeChange={() => flatListRef.current.scrollToEnd()}
+            bounces={false}
+            keyExtractor={(item) => item?.id?.toString()}
+            data={imageUploadContext?.state?.uploadingData ?? []}
+            // data={['']}
+            renderItem={renderSingleUploadData}
+        />
+      </View>
+    )
+}
 
 const styles = StyleSheet.create({
+  upArrowDesign: {
+    position: 'absolute',
+    top: -15,
+    alignSelf: 'center',
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    paddingHorizontal: 10,
+    backgroundColor: colors.uploadBGColor,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    padding: 2,
+  },
+  mainViewContainer: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    zIndex: 999,
+    backgroundColor: colors.uploadBGColor,
+  },
   mainContainer: {
     height: 50,
     justifyContent: 'center',
-    position: 'absolute',
-    bottom: 2,
-    zIndex: 999,
   },
   viewStyle: {
     flexDirection: 'row',
     paddingHorizontal: wp('4%'),
-    height: '100%',
+    height: '90%',
     justifyContent: 'center',
     backgroundColor: colors.uploadBGColor,
     alignItems: 'center',
