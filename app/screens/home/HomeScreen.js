@@ -1776,6 +1776,7 @@ const HomeScreen = ({ navigation, route }) => {
 
         {calenderInnerIndexCounter === 1 && <EventAgendaSection
               items={{ [timeTableSelectionDate.toString()]: [filterTimeTable] }}
+
               onDayPress={onInnerCalenderDayPress}
               renderItem={renderInnerCalender}
           />}
@@ -2476,9 +2477,7 @@ const feedScreenHeader = useMemo(() => (
         ListHeaderComponent={feedScreenHeader}
         scrollEnabled={true}
         initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
-        onScrollToIndexFailed={(error) => {
-          console.log('falsed to load index', error);
-        }}
+
         // ListFooterComponent={newsFeedListFooterComponent}
         showsVerticalScrollIndicator={false}
         renderItem={renderNewsFeed}
@@ -2861,9 +2860,7 @@ const feedScreenHeader = useMemo(() => (
         ListHeaderComponent={feedScreenHeader}
         scrollEnabled={true}
         initialScrollIndex={orangeFeed ? 2 : feedDetailIndex}
-        onScrollToIndexFailed={(error) => {
-          console.log('falsed to load index', error);
-        }}
+
         // ListFooterComponent={newsFeedListFooterComponent}
         showsVerticalScrollIndicator={false}
         renderItem={renderScorekeeperFeed}

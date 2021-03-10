@@ -83,6 +83,7 @@ export default function CreateChallengeForm5({ navigation, route }) {
               } else {
                 setTotalZero(false)
               }
+              console.log('Body estimate fee:=>', body);
               setEstimationFee({ ...body });
             }
 
