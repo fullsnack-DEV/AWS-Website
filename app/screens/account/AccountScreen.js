@@ -94,7 +94,7 @@ export default function AccountScreen({ navigation }) {
         { opetions: 'Transactions' },
       ],
     },
-    { key: 'Currency' },
+    // { key: 'Currency' },
     { key: 'Setting & Privacy' },
   ];
   const teamMenu = [
@@ -137,12 +137,7 @@ export default function AccountScreen({ navigation }) {
           onPress={() => {
             navigation.navigate('NotificationsListScreen');
           }}
-          hitSlop={{
-            top: 15,
-            bottom: 15,
-            left: 15,
-            right: 15,
-          }}>
+          hitSlop={Utility.getHitSlop(15)}>
           <ImageBackground
             source={
               notificationCounter > 0
@@ -441,8 +436,6 @@ export default function AccountScreen({ navigation }) {
       navigation.navigate('RegisterScorekeeper');
     } else if (section === 'Create a Club') {
       navigation.navigate('CreateClubForm1');
-    } else if (section === 'Currency') {
-      navigation.navigate('CurrencySettingScreen');
     } else if (section === 'Setting & Privacy') {
       const entity = authContext.entity;
       if (entity.role === 'user') {
@@ -1112,12 +1105,12 @@ export default function AccountScreen({ navigation }) {
                     style={styles.menuItem}
                   />
                 )}
-                {section === 'Currency' && (
+                {/* {section === 'Currency' && (
                   <Image
                     source={images.paymentPayout}
                     style={styles.menuItem}
                   />
-                )}
+                )} */}
                 {section === 'Setting & Privacy' && (
                   <Image
                     source={images.SettingPrivacy}

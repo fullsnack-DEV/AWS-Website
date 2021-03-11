@@ -575,5 +575,8 @@ scorekeeperTitle: 'Scorekeepers',
 searchTitle: 'Search by city, state or country',
 challengeeSecureText: 'The challengee secures the match place',
 challengerSecureText: 'The challenger secures the match place',
+recentMatchPlaceholderText: 'There are no recent games.\nWould you like to start your game?',
+upcomingMatchPlaceholderText: 'There is no Upcoming Match.\n Would you like to start your challenge?',
+
 };
 export default strings;

@@ -298,6 +298,9 @@ export default function EditRosterScreen({ navigation, route }) {
             setLoading(false);
             navigation.goBack();
           }
+        }).catch((error) => {
+          setLoading(false)
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10)
         });
       }
     } else if (tempNonRosterArray.length > 0) {
@@ -310,7 +313,10 @@ export default function EditRosterScreen({ navigation, route }) {
       ).then(() => {
         setLoading(false);
         navigation.goBack();
-      });
+      }).catch((error) => {
+          setLoading(false)
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10)
+        });
     } else {
       setLoading(false);
       Alert.alert('Please modify lineup first');

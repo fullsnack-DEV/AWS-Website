@@ -2,15 +2,14 @@ import React from 'react';
 import {
   StyleSheet, View, Text, Image,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
+import TCZoomableImage from '../TCZoomableImage';
 
 function MultipleImageWithLoader({
   data,
@@ -21,20 +20,22 @@ function MultipleImageWithLoader({
   return (
     <View style={ styles.uploadedImage }>
       <View style={styles.uploadedImage}>
-        <FastImage
+        <Image
           style={ styles.imageStyle }
           source={ images.imageLoadingGIF }
-          resizeMode={ FastImage.resizeMode.contain }
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
       </View>
-      <Image
+      {/* <Image
         style={ [styles.uploadedImage, { position: 'absolute' }] }
         source={ {
           uri: uploadImageURL,
         } }
-        resizeMode={ FastImage.resizeMode.cover }
-      />
+      /> */}
+      <TCZoomableImage
+                      source={{ uri: uploadImageURL }}
+                      style={ [styles.uploadedImage, { position: 'absolute' }] }
+                  />
     </View>
   );
 }
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     tintColor: colors.whiteColor,
+    resizeMode: 'contain',
   },
   loadingTextStyle: {
     color: colors.whiteColor,
@@ -57,6 +59,7 @@ const styles = StyleSheet.create({
     width: wp('98%'),
     alignSelf: 'center',
     alignItems: 'center',
+    resizeMode: 'contain',
   },
 });
 

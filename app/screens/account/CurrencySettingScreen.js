@@ -54,9 +54,6 @@ export default function CurrencySettingScreen({ navigation }) {
 
       setloading(false);
       navigation.goBack()
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, 'Currency updated sucessfully');
-      }, 10);
     }).catch((e) => {
       setloading(false);
       setTimeout(() => {

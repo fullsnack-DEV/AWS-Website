@@ -23,6 +23,7 @@ import TCThickDivider from '../../../../TCThickDivider';
 import LineUpPlayerView from './LineUpPlayerView';
 import AuthContext from '../../../../../auth/context';
 import strings from '../../../../../Constants/String';
+import { getHitSlop } from '../../../../../utils';
 
 let entity = {};
 export default function LineUp({ navigation, gameData }) {
@@ -239,12 +240,7 @@ export default function LineUp({ navigation, gameData }) {
                   || gameData.status === GameStatus.reset))) && (
                     <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('EditLineUpScreen', {
                   gameObj: gameData,
                   selectedTeam: selected === 1 ? 'home' : 'away',
@@ -342,12 +338,7 @@ export default function LineUp({ navigation, gameData }) {
                   || gameData.status === GameStatus.reset))) && (
                     <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('EditLineUpCoachScreen', {
                   gameObj: gameData,
                   selectedTeam: selected === 1 ? 'home' : 'away',

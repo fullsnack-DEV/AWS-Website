@@ -18,6 +18,7 @@ import TCInfoField from '../../../components/TCInfoField';
 import EventMapView from '../../../components/Schedule/EventMapView';
 import AuthContext from '../../../auth/context'
 import TCGameDetailRules from '../../../components/TCGameDetailRules';
+import { getHitSlop } from '../../../utils';
 
 let entity = {};
 export default function CreateChallengeForm4({ navigation, route }) {
@@ -240,9 +241,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <View style={styles.editableView}>
             <TCLabel title={'Responsibility  to Secure Venue'} />
             <TouchableOpacity style={styles.editTouchArea}
-            hitSlop={{
-              top: 15, bottom: 15, left: 15, right: 15,
-            }}
+              hitSlop={getHitSlop(15)}
             onPress={() => navigation.push('CreateChallengeForm1', { editable: true, body: bodyParams })}>
               <Image source={images.editSection} style={styles.editButton}/>
             </TouchableOpacity>
@@ -273,9 +272,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <View style={styles.editableView}>
             <TCLabel title={'Rules'} />
             <TouchableOpacity style={styles.editTouchArea}
-            hitSlop={{
-              top: 15, bottom: 15, left: 15, right: 15,
-            }}
+            hitSlop={getHitSlop(15)}
             onPress={() => navigation.push('CreateChallengeForm2', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
               <Image source={images.editSection} style={styles.editButton}/>
             </TouchableOpacity>
@@ -288,9 +285,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
         <View style={styles.editableView}>
           <TCLabel title={'Responsibility to Secure Referees'} />
           <TouchableOpacity style={styles.editTouchArea}
-          hitSlop={{
-            top: 15, bottom: 15, left: 15, right: 15,
-          }}
+          hitSlop={getHitSlop(15)}
           onPress={() => navigation.push('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
             <Image source={images.editSection} style={styles.editButton}/>
           </TouchableOpacity>
@@ -307,9 +302,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
         <View style={styles.editableView}>
           <TCLabel title={'Responsibility to Secure ScoreKeeper'} />
           <TouchableOpacity style={styles.editTouchArea}
-          hitSlop={{
-            top: 15, bottom: 15, left: 15, right: 15,
-          }}
+         hitSlop={getHitSlop(15)}
             onPress={() => navigation.push('CreateChallengeForm3', { editable: true, body: bodyParams, teamData: route.params.teamData })}>
             <Image source={images.editSection} style={styles.editButton}/>
           </TouchableOpacity>

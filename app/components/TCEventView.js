@@ -14,6 +14,7 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import EventOfItem from './Schedule/EventOfItem';
 import EventBetweenUserItem from './Schedule/EventBetweenUserItem';
+import { getHitSlop } from '../utils';
 
 export default function TCEventView({
   onPress,
@@ -25,7 +26,7 @@ export default function TCEventView({
   profileID,
   screenUserId,
 }) {
-  console.log('data.game.referees', data?.game?.referees);
+  console.log('data.game.referees', data);
   let startDate = '';
   if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
@@ -162,12 +163,7 @@ export default function TCEventView({
               {title}
             </Text>
             {moreBtnVisible && (
-              <TouchableOpacity onPress={onThreeDotPress} hitSlop={{
-                top: 15,
-                bottom: 15,
-                left: 15,
-                right: 15,
-              }}>
+              <TouchableOpacity onPress={onThreeDotPress} hitSlop={getHitSlop(15)}>
                 <Image source={images.vertical3Dot} style={styles.threedot} />
               </TouchableOpacity>
             )}
@@ -180,7 +176,7 @@ export default function TCEventView({
               'LT',
             )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
-            <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>
+            {location !== '' && <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>}
             <Text numberOfLines={1} style={{ ...styles.eventTime, flex: 1 }}>
               {location !== '' ? location : venue}
             </Text>

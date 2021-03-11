@@ -43,6 +43,7 @@ import TCGameCard from '../../../components/TCGameCard';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../../utils/gameUtils';
 import CurruentVersionView from '../../../components/challenge/CurruentVersionView';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
+import { getHitSlop } from '../../../utils';
 
 let entity = {};
 const scroll = React.createRef();
@@ -956,12 +957,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
                   {(!isPendingRequestPayment) && (
                     <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('RefereeSelectMatch')
                 }>
                       <Image source={images.editSection} style={styles.editButton} />
@@ -1100,12 +1096,7 @@ export default function AlterRefereeScreen({ navigation, route }) {
             {(!isPendingRequestPayment) && (
               <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('EditRefereeFeeScreen', {
                   editableAlter: true,
                   body: bodyParams,

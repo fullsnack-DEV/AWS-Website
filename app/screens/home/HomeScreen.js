@@ -520,6 +520,7 @@ const HomeScreen = ({ navigation, route }) => {
     userThumbnail = currentUserData.thumbnail;
   }
   const allGalleryRenderItem = ({ item, index }) => {
+    console.log('Gallery Item:=>', item);
     if (index === 0) {
       return (
         <AddPhotoItem
@@ -1574,11 +1575,12 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderInnerCalender = useCallback((item) => <View>
     <EventCalendar
+
         eventTapped={(event) => { console.log('Event ::--', event) }}
         events={item}
         width={width}
         initDate={timeTableSelectionDate}
-        scrollToFirst={true}
+         scrollToFirst={true}
         renderEvent={(event) => {
           let event_color = colors.themeColor;
           let eventTitle = 'Game';

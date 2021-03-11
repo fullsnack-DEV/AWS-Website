@@ -1045,12 +1045,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
                   {bodyParams?.scorekeeper?.user_id !== entity.uid && (
                     <TouchableOpacity
                       style={styles.editTouchArea}
-                      hitSlop={{
-                        top: 15,
-                        bottom: 15,
-                        left: 15,
-                        right: 15,
-                      }}
+                      hitSlop={Utility.getHitSlop(15)}
                       onPress={() => {
                         navigation.navigate('ScorekeeperSelectMatch', {
                           userData: bodyParams?.scorekeeper,
@@ -1185,12 +1180,7 @@ export default function EditScorekeeperReservation({ navigation, route }) {
                 && isDeclined)) && (
                   <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={Utility.getHitSlop(15)}
                 onPress={() => navigation.navigate('EditScorekeeperFeeScreen', {
                   editableAlter: true,
                   body: bodyParams,

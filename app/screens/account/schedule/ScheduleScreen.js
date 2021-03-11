@@ -55,6 +55,7 @@ import { getGameHomeScreen } from '../../../utils/gameUtils';
 import TCSearchBox from '../../../components/TCSearchBox';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
+import { getHitSlop } from '../../../utils';
 
 const { width } = Dimensions.get('window');
 
@@ -136,12 +137,7 @@ export default function ScheduleScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
-        hitSlop={{
-          top: 15,
-          bottom: 15,
-          left: 15,
-          right: 15,
-        }}
+        hitSlop={getHitSlop(15)}
           onPress={ () => { actionSheet.current.show(); } }>
           <Image source={ images.vertical3Dot } style={ styles.headerRightImg } />
         </TouchableWithoutFeedback>
