@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 import {
-  StyleSheet, View, Image, Text, TouchableOpacity,
+  StyleSheet, View, Image, Text,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -19,7 +20,7 @@ function WritePost({ postDataItem, onWritePostPress }) {
   return (
     <View style={ styles.mainContainer }>
       <Image style={ styles.profileImg } source={ userImage ? { uri: userImage } : images.profilePlaceHolder } />
-      <TouchableOpacity activeOpacity={1} style={styles.writePostView} onPress={onWritePostPress}>
+      <TouchableOpacity style={styles.writePostView} onPress={onWritePostPress}>
         <Text
           style={styles.writePostText}>
           Write a post...
@@ -34,6 +35,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 70,
     paddingHorizontal: wp('4%'),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileImg: {
     alignSelf: 'center',

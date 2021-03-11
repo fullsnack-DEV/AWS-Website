@@ -2,8 +2,9 @@ import React, {
   useEffect, memo, useState, useLayoutEffect, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  StyleSheet, View, Image, Alert, TouchableOpacity,
+  StyleSheet, View, Image, Alert,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import WritePost from '../../components/newsFeed/WritePost';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -70,7 +71,7 @@ const FeedsScreen = ({ navigation }) => {
         });
   }, [authContext])
 
-  const callthis = useCallback((data, postDesc, tagsOfEntity) => {
+  const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
@@ -194,14 +195,14 @@ const FeedsScreen = ({ navigation }) => {
               onWritePostPress={() => {
                 navigation.navigate('WritePostScreen', {
                   postData: currentUserDetail,
-                  onPressDone: callthis,
+                  onPressDone,
                   selectedImageList: [],
                 })
               }}
           />
       <View style={styles.sepratorView} />
     </View>
-    ), [callthis, currentUserDetail, navigation])
+    ), [currentUserDetail, navigation, onPressDone])
 
   const onLikePress = useCallback((item) => {
     const bodyParams = {

@@ -53,11 +53,13 @@ import {
 } from '../../utils/QuickBlox';
 import { getUserDetails } from '../../api/Users';
 import { getGroupDetails } from '../../api/Groups';
+import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
+import NotificationListTopHeaderShimmer from '../../components/shimmer/account/NotificationListTopHeaderShimmer';
 
 function NotificationsListScreen({ navigation }) {
   const actionSheet = useRef();
   const [currentTab, setCurrentTab] = useState();
-  const [groupList, setGroupList] = useState();
+  const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
   const refContainer = useRef();
   const authContext = useContext(AuthContext);
@@ -67,11 +69,11 @@ function NotificationsListScreen({ navigation }) {
   const [activeScreen, setActiveScreen] = useState(false);
   const isFocused = useIsFocused();
 
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const onDetailPress = (item) => {
     if (activeScreen) {
       const verb = item.activities[0].verb;
-      console.log(verb);
       if (
         verb.includes(NotificationType.initialChallengePaymentFail)
         || verb.includes(NotificationType.alterChallengePaymentFail)
@@ -88,8 +90,6 @@ function NotificationsListScreen({ navigation }) {
           || JSON.parse(item.activities[0].object).newChallengeObject.challenge_id;
         setloading(true);
         Utils.getChallengeDetail(a, authContext).then((obj) => {
-          console.log('Challenge Object:', JSON.stringify(obj.challengeObj));
-          console.log('Screen name of challenge:', obj.screenName);
           navigation.navigate(obj.screenName, {
             challengeObj: obj.challengeObj || obj.challengeObj[0],
           });
@@ -108,8 +108,6 @@ function NotificationsListScreen({ navigation }) {
           ?.reservation_id;
         setloading(true);
         RefereeUtils.getRefereeReservationDetail(a, authContext.entity.uid, authContext).then((obj) => {
-          console.log('Reservation Object:', obj.reservationObj);
-          console.log('Screen name of Reservation:', obj.screenName);
           navigation.navigate(obj.screenName, {
             reservationObj: obj.reservationObj || obj.reservationObj[0],
           });
@@ -128,8 +126,6 @@ function NotificationsListScreen({ navigation }) {
           ?.reservation_id;
         setloading(true);
         ScorekeeperUtils.getScorekeeperReservationDetail(a, authContext.entity.uid, authContext).then((obj) => {
-          console.log('Reservation Object:', JSON.stringify(obj.reservationObj));
-          console.log('Screen name of Reservation:', obj.screenName);
           navigation.navigate(obj.screenName, {
             reservationObj: obj.reservationObj || obj.reservationObj[0],
           });
@@ -277,7 +273,9 @@ function NotificationsListScreen({ navigation }) {
       const ids = item.activities.map((activity) => activity.id);
       deleteNotification(ids, item.type, authContext)
         .then(() => {
-          callNotificationList();
+          callNotificationList()
+          .then(() => setloading(false))
+          .catch(() => setloading(false));
         })
         .catch(() => {
           setloading(false);
@@ -293,7 +291,9 @@ function NotificationsListScreen({ navigation }) {
       setloading(true);
       acceptRequest(requestId, authContext)
         .then(() => {
-          callNotificationList();
+          callNotificationList()
+              .then(() => setloading(false))
+              .catch(() => setloading(false));
         })
         .catch((error) => {
           setloading(false);
@@ -307,10 +307,13 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const onDecline = (requestId) => {
+    setloading(true);
     if (activeScreen) {
       declineRequest(requestId, authContext)
         .then(() => {
-          callNotificationList();
+          callNotificationList()
+              .then(() => setloading(false))
+              .catch(() => setloading(false));
         })
         .catch((error) => {
           setloading(false);
@@ -429,8 +432,7 @@ function NotificationsListScreen({ navigation }) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log('F:', isFocused);
-      console.log('F:', notifAPI);
+      setFirstTimeLoading(true)
       if (notifAPI !== 1) {
         getUnreadCount(authContext).then((response) => {
           if (response.status === true) {
@@ -439,7 +441,6 @@ function NotificationsListScreen({ navigation }) {
             const groups = [authContext.entity.auth.user, ...clubs, ...teams];
             const entityId = authContext?.entity?.role === 'user' ? authContext?.entity?.obj?.user_id : authContext?.entity?.obj?.group_id;
             const tabIndex = groups.findIndex((item) => item?.group_id === entityId)
-            console.log('GROUPS:', groups);
             setGroupList(groups);
             setNotifAPI(1);
             setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
@@ -449,13 +450,14 @@ function NotificationsListScreen({ navigation }) {
       }
       if (notifAPI === 1) {
         checkActiveScreen(groupList[currentTab]);
-        callNotificationList();
+        callNotificationList()
+            .then(() => setFirstTimeLoading(false))
+            .catch(() => setFirstTimeLoading(false));
       }
     }
   }, [currentTab, isFocused]);
 
-  const callNotificationList = () => {
-    setloading(true);
+  const callNotificationList = () => new Promise((resolve, reject) => {
     setMainNotificationsList([]);
     const entity = groupList[currentTab];
     setSelectedEntity({ ...entity });
@@ -497,13 +499,14 @@ function NotificationsListScreen({ navigation }) {
         setMainNotificationsList([
           ...array.filter((item) => item.data.length !== 0),
         ]);
-        setloading(false);
+        resolve(true);
       })
       .catch((e) => {
-        setloading(false);
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject('error');
         Alert.alert(e.messages);
       });
-  };
+  });
 
   const itemSeparator = () => (
     // Item Separator
@@ -547,34 +550,42 @@ function NotificationsListScreen({ navigation }) {
   return (
     <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
       <View>
-        <FlatList
-          ref={refContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={groupList}
-          renderItem={renderGroupItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        {groupList?.length <= 0
+            ? <NotificationListTopHeaderShimmer />
+            : <FlatList
+                  ref={refContainer}
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  data={groupList}
+                  renderItem={renderGroupItem}
+                  keyExtractor={(item, index) => index.toString()}
+            />
+        }
+
         <TCThinDivider marginTop={0} width={'100%'} />
       </View>
       <ActivityLoader visible={loading} />
-      {mainNotificationsList?.length > 0 ? (
-        <SectionList
-          ItemSeparatorComponent={itemSeparator}
-          sections={mainNotificationsList}
-          keyExtractor={(item) => item.create_at}
-          renderItem={RenderSections}
-          renderSectionHeader={({ section: { section } }) => (
-            <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
-              <View style={styles.listItemSeparatorStyle} />
-              <Text style={styles.header}>{section}</Text>
-            </View>
-          )}
-          renderSectionFooter={renderSectionFooter}
-        />
-      ) : (
-        <TCNoDataView title={'No records found'} />
-      )}
+      {/* eslint-disable-next-line no-nested-ternary */}
+      {firstTimeLoading
+        ? <NotificationListShimmer />
+        : mainNotificationsList?.length > 0 ? (
+          <SectionList
+                  ItemSeparatorComponent={itemSeparator}
+                  sections={mainNotificationsList}
+                  keyExtractor={(item) => item.create_at}
+                  renderItem={RenderSections}
+                  renderSectionHeader={({ section: { section } }) => (
+                    <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
+                      <View style={styles.listItemSeparatorStyle} />
+                      <Text style={styles.header}>{section}</Text>
+                    </View>
+                  )}
+                  renderSectionFooter={renderSectionFooter}
+              />
+          ) : (
+            <TCNoDataView title={'No records found'} />
+          )
+      }
       <ActionSheet
         ref={actionSheet}
         options={['Trash', 'Cancel']}

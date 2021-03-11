@@ -41,8 +41,9 @@ const adjustForTimezone = (date) => {
   return date
 }
 
-export const commentPostTimeCalculate = (commentPostTime) => {
-  const time = adjustForTimezone(new Date(commentPostTime?.toString()));
+export const commentPostTimeCalculate = (commentPostTime, convertToTimeZone = false) => {
+  let time = commentPostTime;
+  if (convertToTimeZone) time = adjustForTimezone(new Date(commentPostTime?.toString()));
   const minute = moment(new Date()).diff(time, 'minute');
   const hour = moment(new Date()).diff(time, 'hour');
   const day = moment(new Date()).diff(time, 'day');

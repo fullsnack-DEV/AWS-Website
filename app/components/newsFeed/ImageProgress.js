@@ -1,5 +1,5 @@
 import React, {
-  memo, useCallback, useContext, useEffect, useRef, useState,
+  memo, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import {
   StyleSheet, View, Image, Text, TouchableOpacity, FlatList, Alert,
@@ -10,46 +10,89 @@ import {
 } from 'react-native-responsive-screen';
 import * as Progress from 'react-native-progress';
 import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import { getHitSlop, toggleView } from '../../utils';
 import { ImageUploadContext } from '../../context/GetContexts';
 
-const SingleImageProgressBar = ({
+const SingleImageProgressBar = memo(({
         totalUpload,
         numberOfUploaded,
-        postDataItem,
-        // currentImage,
+        imageData,
         onCancelPress,
-  }) => (
+  }) => {
+  const videoPlayerRef = useRef();
+  const renderImageVideo = useMemo(() => ((imageData?.[numberOfUploaded - 1]?.type?.split('/')[0] || imageData?.[numberOfUploaded - 1]?.mime?.split('/')[0]) === 'image'
+      ? (<FastImage
+          resizeMode={'cover'}
+          style={styles.profileImg}
+          source={imageData ? { uri: imageData?.[numberOfUploaded - 1]?.path } : images.profilePlaceHolder}/>)
+      : (
+        <View style={styles.profileImg}>
+          <View style={{
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'absolute',
+          }}>
+            <FastImage
+                  source={images.videoPlayBtn}
+                  tintColor={'white'}
+                  resizeMode={'contain'}
+                  style={{
+                    height: 10,
+                    width: 10,
+                    zIndex: 1,
+                  }}/>
+          </View>
+          <Video
+                ref={videoPlayerRef}
+                paused={true}
+                muted={true}
+                source={{ uri: imageData?.[numberOfUploaded - 1]?.path }}
+                style={styles.profileImg}
+                resizeMode={'cover'}
+                onLoad={() => { videoPlayerRef.current.seek(0) }}
+            />
+        </View>
+      )), [imageData, numberOfUploaded])
+
+  return (
     <View style={ styles.mainContainer }>
       <View style={styles.viewStyle}>
         <View style={styles.profileImageViewStyle}>
-          <Image style={ styles.profileImg } source={postDataItem?.thumbnail ? { uri: postDataItem?.thumbnail } : images.profilePlaceHolder} />
+          {renderImageVideo}
         </View>
-        <View style={styles.textViewStyle}>
+        {useMemo(() => <View style={styles.textViewStyle}>
           <Text style={ styles.writePostText }>
             Uploading...
           </Text>
           <Text style={ styles.writePostText }>  {`${numberOfUploaded}/${totalUpload}`}</Text>
-        </View>
-        <TouchableOpacity
-            hitSlop={getHitSlop(15)}
-            style={styles.cancelTouchStyle} onPress={onCancelPress}>
+        </View>, [numberOfUploaded, totalUpload])}
+
+        {useMemo(() => <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={styles.cancelTouchStyle} onPress={onCancelPress}>
           <Image style={ styles.cancelImagestyle } source={images.cancelImage} />
-        </TouchableOpacity>
+        </TouchableOpacity>, [onCancelPress])}
       </View>
       <Progress.Bar
-          progress={(1 * numberOfUploaded) / totalUpload}
-          width={wp('100%')}
-          borderRadius={0}
-          borderWidth={0}
-          unfilledColor={colors.uploadUnfillColor}
-          color={colors.uploadTextColor}
-      />
+            progress={(1 * numberOfUploaded) / totalUpload}
+            width={wp('100%')}
+            borderRadius={0}
+            borderWidth={0}
+            unfilledColor={colors.uploadUnfillColor}
+            color={colors.uploadTextColor}
+        />
     </View>
-)
+  )
+})
 
 const ImageProgress = () => {
   const imageUploadContext = useContext(ImageUploadContext)
@@ -88,20 +131,23 @@ const ImageProgress = () => {
 
   const renderSingleUploadData = useCallback(({ item }) => (
     <SingleImageProgressBar
-            numberOfUploaded={item?.doneUploadCount ?? 2}
-            totalUpload={item?.totalUploadCount ?? 2}
-            postDataItem={['']}
-            onCancelPress={() => onCancelPress(item)}
-        />
-    ), [onCancelPress])
+              numberOfUploaded={item?.doneUploadCount ?? 2}
+              totalUpload={item?.totalUploadCount ?? 2}
+              imageData={item?.dataArray}
+              onCancelPress={() => onCancelPress(item)}
+          />
+      ), [onCancelPress])
 
   const toggleProgressBar = () => {
     toggleView(() => setIsOpenToggleProgressView(!isOpenToggleProgressView), 300)
   }
+
+  const flatListKeyRef = useCallback((item) => item?.id?.toString(), []);
+  const onContentSizeChange = useCallback(() => flatListRef.current.scrollToEnd(), [])
     return (
       <View style={{ ...styles.mainViewContainer, maxHeight: 300, height: isOpenToggleProgressView ? 300 : 50 }}>
         {/* Arrow */}
-        {imageUploadContext?.state?.uploadingData?.length > 1 ? (
+        {imageUploadContext?.state?.uploadingData?.length > 1 && (
           <TouchableOpacity style={styles.upArrowDesign} onPress={toggleProgressBar}>
             <FastImage
                   source={images.dropDownArrow}
@@ -110,16 +156,16 @@ const ImageProgress = () => {
                   tintColor={colors.uploadTextColor}
               />
           </TouchableOpacity>
-        ) : null}
+         )}
         <FlatList
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             ref={flatListRef}
-            onContentSizeChange={() => flatListRef.current.scrollToEnd()}
+            onContentSizeChange={onContentSizeChange}
             bounces={false}
-            keyExtractor={(item) => item?.id?.toString()}
+            keyExtractor={flatListKeyRef}
             data={imageUploadContext?.state?.uploadingData ?? []}
-            // data={['']}
+            // data={['', '']}
             renderItem={renderSingleUploadData}
         />
       </View>
@@ -163,8 +209,8 @@ const styles = StyleSheet.create({
   },
   profileImg: {
     height: hp('4.5%'),
-    resizeMode: 'cover',
     width: hp('4.5%'),
+    borderRadius: 5,
   },
   textViewStyle: {
     width: wp('72%'),

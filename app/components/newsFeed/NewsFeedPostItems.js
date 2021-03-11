@@ -188,7 +188,7 @@ const NewsFeedPostItems = ({
       <View style={styles.userNameView}>
         <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
         <Text style={styles.activeTimeAgoTxt}>
-          {commentPostTimeCalculate(item?.time)}
+          {commentPostTimeCalculate(item?.time, true)}
         </Text>
       </View>
 

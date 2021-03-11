@@ -211,13 +211,12 @@ export default function WritePostScreen({ navigation, route }) {
         <TouchableOpacity
               style={styles.doneViewStyle}
               onPress={async () => {
-                setloading(true);
+                const uploadTimeout = selectImage?.length * 300;
                 if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
                   Alert.alert('Please write some text or select any image.');
                 } else {
-                  setloading(false);
+                  setloading(true);
                   const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-
                   tagsOfEntity.map(async (item, index) => {
                     let joinedString = '@';
                     if (item?.group_id) {
@@ -227,18 +226,15 @@ export default function WritePostScreen({ navigation, route }) {
                       const lName = _.startCase(_.toLower(item?.last_name));
                       joinedString += fName + lName;
                     }
-
-                    console.log(joinedString);
-                    // const checkRegex = `/(?<![\\w@])${joinedString?.replace(/ /g, '')}\\b/gmi`;
-                    // const isThere = await searchText.search(checkRegex)
                     const isThere = searchText.includes(joinedString?.replace(/ /g, ''))
                     if (!isThere) tagData.splice(index, 1);
                     return null;
                   })
-
-                  setloading(false);
-                  navigation.goBack();
-                  onPressDone(selectImage, searchText, tagData);
+                   onPressDone(selectImage, searchText, tagData);
+                  navigation.goBack()
+                  setTimeout(() => {
+                    setloading(false);
+                  }, uploadTimeout);
                 }
               }}
           >
@@ -324,7 +320,6 @@ export default function WritePostScreen({ navigation, route }) {
       ImagePicker.openPicker({
         width: 300,
         height: 400,
-        // cropping: true,
         multiple: true,
         maxFiles: 10,
       }).then((data) => {
