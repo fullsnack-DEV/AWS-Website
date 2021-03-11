@@ -139,7 +139,9 @@ function TCRecentMatchCard({ data, onPress, cardWidth = '86%' }) {
               </View>
             )}
 
-            <Text style={styles.vsView}>VS</Text>
+            <Text style={styles.scoreView}>{data.home_team_goal}</Text>
+            <Text style={styles.vsView}>:</Text>
+            <Text style={styles.scoreView}>{data.away_team_goal}</Text>
 
             {data.userChallenge || data.singlePlayerGame ? (
               <View style={styles.rightGameView}>
@@ -275,6 +277,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RRegular,
     color: colors.googleColor,
+  },
+  scoreView: {
+
+      fontSize: 20,
+      fontFamily: fonts.RLight,
+      color: colors.googleColor,
+
   },
 
   profileImage: {

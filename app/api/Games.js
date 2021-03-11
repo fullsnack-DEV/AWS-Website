@@ -268,6 +268,12 @@ const getScroreboardGameDetails = (userID, authContext) => makeAPIRequest({
   authContext,
 });
 
+const getRecentGameDetails = (sportName, status, location, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}games?sport=${sportName}&status=${status}&location=${location}`,
+  authContext,
+});
+
 export {
   GameRecordStatus,
   getSportsList,
@@ -312,4 +318,5 @@ export {
   addScorekeeperReview,
   patchScorekeeperReview,
   getGameNextFeed,
+  getRecentGameDetails,
 }

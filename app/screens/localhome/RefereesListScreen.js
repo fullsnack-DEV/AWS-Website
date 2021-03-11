@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -17,6 +17,7 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import { AirbnbRating } from 'react-native-ratings';
+import RNPickerSelect from 'react-native-picker-select';
 import TCEntityView from '../../components/TCEntityView';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -26,6 +27,8 @@ import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import TCTextField from '../../components/TCTextField';
 
+import strings from '../../Constants/String';
+
 export default function RefereesListScreen() {
   // const [loading, setloading] = useState(false);
   const [settingPopup, setSettingPopup] = useState(false);
@@ -34,7 +37,35 @@ export default function RefereesListScreen() {
   const [show, setShow] = useState(false);
   const [fromDate, setFromDate] = useState();
   const [toDate, setToDate] = useState();
+  const [minAge, setMinAge] = useState(0);
+  const [maxAge, setMaxAge] = useState(0);
+  const [minAgeValue, setMinAgeValue] = React.useState([]);
+  const [maxAgeValue, setMaxAgeValue] = React.useState([]);
   // const authContext = useContext(AuthContext);
+
+  useEffect(() => {
+    const minAgeArray = [];
+    let maxAgeArray = [];
+    for (let i = 1; i <= 70; i++) {
+      const dataSource = {
+        label: `${i}`,
+        value: i,
+      };
+      minAgeArray.push(dataSource);
+    }
+    for (let i = minAge; i <= 70; i++) {
+      const dataSource = {
+        label: `${i}`,
+        value: i,
+      };
+      maxAgeArray.push(dataSource);
+    }
+    setMinAgeValue(minAgeArray);
+    setMaxAgeValue(maxAgeArray);
+    if (minAge === 0 || minAge === null) {
+      setMaxAge((maxAgeArray = []));
+    }
+  }, [minAge]);
 
   const renderRefereesScorekeeperListView = useCallback(
     () => (
@@ -81,25 +112,7 @@ export default function RefereesListScreen() {
       <FlatList
         numColumns={4}
         showsHorizontalScrollIndicator={false}
-        data={[
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-        ]}
+        data={['', '', '', '', '', '', '']}
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
         renderItem={renderRefereesScorekeeperListView}
@@ -257,12 +270,29 @@ export default function RefereesListScreen() {
           </View>
           {/* Rate View */}
           <View>
-            <View style={{ flexDirection: 'row', margin: 15, marginTop: 0 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                margin: 15,
+                marginTop: 0,
+                justifyContent: 'space-between',
+              }}>
               <View style={{ flex: 0.2 }}>
                 <Text style={styles.filterTitle}>Rating</Text>
               </View>
-              <View style={{ marginLeft: 15, flex: 0.8 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10, alignItems: 'center' }}>
+              <View
+                style={{
+                  marginLeft: 15,
+                  flex: 0.6,
+                  alignSelf: 'flex-end',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginBottom: 10,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
                   <Text style={styles.minMaxTitle}>Min</Text>
                   <AirbnbRating
                     count={5}
@@ -275,7 +305,12 @@ export default function RefereesListScreen() {
                   />
                   <Text style={styles.starCount}>2.0</Text>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
                   <Text style={styles.minMaxTitle}>Max</Text>
                   <AirbnbRating
                     count={5}
@@ -290,18 +325,66 @@ export default function RefereesListScreen() {
                 </View>
               </View>
             </View>
-            <View style={{ flexDirection: 'row', margin: 15 }}>
+            <View style={{ flexDirection: 'row', margin: 15, justifyContent: 'space-between' }}>
               <View style={{ flex: 0.2 }}>
                 <Text style={styles.filterTitle}>Referee fee</Text>
               </View>
-              <View style={{ marginLeft: 15, flex: 0.8 }}>
-                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-
+              <View style={{ marginLeft: 15, flex: 0.6 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    flex: 1,
+                  }}>
+                  <RNPickerSelect
+                    placeholder={{
+                      label: strings.minPlaceholder,
+                      value: 0,
+                    }}
+                    items={minAgeValue}
+                    onValueChange={(value) => {
+                      setMinAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={minAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
+                  <RNPickerSelect
+                    placeholder={{
+                      label: strings.maxPlaceholder,
+                      value: 0,
+                    }}
+                    items={maxAgeValue}
+                    onValueChange={(value) => {
+                      setMaxAge(value);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      ...(Platform.OS === 'ios'
+                        ? styles.inputIOS
+                        : styles.inputAndroid),
+                      ...styles,
+                    }}
+                    value={maxAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
                 </View>
-                <View style={{ flexDirection: 'row' }}>
-
-                </View>
-
               </View>
             </View>
           </View>
@@ -482,5 +565,52 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     alignSelf: 'center',
     // margin: 15,
+  },
+  miniDownArrow: {
+    alignSelf: 'center',
+    height: 12,
+    resizeMode: 'contain',
+
+    right: 15,
+    tintColor: colors.grayColor,
+
+    top: 15,
+    width: 12,
+  },
+  inputIOS: {
+    height: 40,
+
+    fontSize: widthPercentageToDP('3.5%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    width: widthPercentageToDP('26%'),
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+  },
+  inputAndroid: {
+    height: 40,
+
+    fontSize: widthPercentageToDP('4%'),
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    width: widthPercentageToDP('26%'),
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+
+    elevation: 3,
   },
 });

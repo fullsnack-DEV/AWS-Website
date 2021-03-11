@@ -62,15 +62,15 @@ import ReservationStatus from '../Constants/ReservationStatus';
             </Text>
             <Text style={styles.textSaperator}> | </Text>
             <Text style={styles.addressView} numberOfLines={1}>
-              {data.venue.address}
+              {data?.venue?.address}
             </Text>
           </View>
           <View style={styles.gameVSView}>
             {data.userChallenge || data.singlePlayerGame ? (
               <View style={styles.leftGameView}>
-                {data.home_team.thumbnail ? (
+                {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data.home_team.thumbnail }}
+                    source={{ uri: data?.home_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -85,9 +85,9 @@ import ReservationStatus from '../Constants/ReservationStatus';
               </View>
             ) : (
               <View style={styles.leftGameView}>
-                {data.home_team.thumbnail ? (
+                {data?.home_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data.home_team.thumbnail }}
+                    source={{ uri: data?.home_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -97,21 +97,21 @@ import ReservationStatus from '../Constants/ReservationStatus';
                   />
                 )}
                 <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data.home_team.group_name}
+                  {data?.home_team?.group_name}
                 </Text>
               </View>
             )}
 
             <Text style={styles.vsView}>VS</Text>
 
-            {data.userChallenge || data.singlePlayerGame ? (
+            {data?.userChallenge || data?.singlePlayerGame ? (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
                   {data.away_team.full_name}
                 </Text>
-                {data.away_team.thumbnail ? (
+                {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data.away_team.thumbnail }}
+                    source={{ uri: data?.away_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (
@@ -124,11 +124,11 @@ import ReservationStatus from '../Constants/ReservationStatus';
             ) : (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data.away_team.group_name}
+                  {data?.away_team?.group_name}
                 </Text>
-                {data.away_team.thumbnail ? (
+                {data?.away_team?.thumbnail ? (
                   <Image
-                    source={{ uri: data.away_team.thumbnail }}
+                    source={{ uri: data?.away_team?.thumbnail }}
                     style={styles.profileImage}
                   />
                 ) : (

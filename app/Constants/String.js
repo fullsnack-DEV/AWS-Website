@@ -573,5 +573,7 @@ lookingForTeamTitle: 'Looking for a team',
 refereesTitle: 'Referees',
 scorekeeperTitle: 'Scorekeepers',
 searchTitle: 'Search by city, state or country',
+challengeeSecureText: 'The challengee secures the match place',
+challengerSecureText: 'The challenger secures the match place',
 };
 export default strings;

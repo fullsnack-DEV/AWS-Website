@@ -67,7 +67,7 @@ function ChallengerInOutView({ data }) {
         return { name: `${data.referee.first_name} ${data.referee.last_name}`, thumbnail: data.referee.thumbnail }
       }
 
-      if (data.game.singlePlayerGame) {
+      if (data?.game?.singlePlayerGame) {
         if (data.initiated_by === data.game.home_team.user_id) {
           return { name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`, thumbnail: data?.game?.home_team?.thumbnail }
         }
@@ -75,7 +75,7 @@ function ChallengerInOutView({ data }) {
         return { name: `${data.game.away_team.first_name} ${data.game.away_team.last_name}`, thumbnail: data?.game?.away_team?.thumbnail }
       }
 
-      if (data.initiated_by === data?.game?.home_team?.group_id) {
+      if (data?.initiated_by === data?.game?.home_team?.group_id) {
         return { name: data?.game?.home_team?.group_name, thumbnail: data?.game?.home_team?.thumbnail }
       }
 
@@ -86,7 +86,7 @@ function ChallengerInOutView({ data }) {
         return { name: `${data.scorekeeper.first_name} ${data.scorekeeper.last_name}`, thumbnail: data.scorekeeper.thumbnail }
       }
 
-      if (data.game.singlePlayerGame) {
+      if (data?.game?.singlePlayerGame) {
         if (data.initiated_by === data.game.home_team.user_id) {
           return { name: `${data.game.home_team.first_name} ${data.game.home_team.last_name}`, thumbnail: data?.game?.home_team?.thumbnail }
         }
@@ -94,7 +94,7 @@ function ChallengerInOutView({ data }) {
         return { name: `${data.game.away_team.first_name} ${data.game.away_team.last_name}`, thumbnail: data?.game?.away_team?.thumbnail }
       }
 
-      if (data.initiated_by === data?.game?.home_team?.group_id) {
+      if (data?.initiated_by === data?.game?.home_team?.group_id) {
         return { name: data?.game?.home_team?.group_name, thumbnail: data?.game?.home_team?.thumbnail }
       }
 
