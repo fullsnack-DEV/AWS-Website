@@ -6,7 +6,7 @@ const imageUploadReducer = (state, action) => {
   switch (action.type) {
     case 'createUploadingData': {
       const upData = _.cloneDeep(state.uploadingData);
-      upData.push({ id: action.payload })
+      upData.push(action.payload)
       return { uploadingData: upData }
     }
     case 'removeUploadingData': {
@@ -32,7 +32,8 @@ const removeUploadingData = (dispatch) => (id) => {
 }
 const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack) => {
   const currentImagesDataUploadID = `IMAGE_UPLOAD_${new Date().getTime()}`
-  dispatch({ type: 'createUploadingData', payload: currentImagesDataUploadID });
+  const obj = { id: currentImagesDataUploadID, dataArray: [...imageArray] }
+  dispatch({ type: 'createUploadingData', payload: obj });
   let cancelToken = {}
   const setData = (key, value) => {
     dispatch({ type: 'setUploadingData', payload: { id: currentImagesDataUploadID, key, value } })

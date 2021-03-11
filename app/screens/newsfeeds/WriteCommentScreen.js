@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+ useEffect, useState, useContext, useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -59,6 +61,7 @@ export default function WriteCommentScreen({
     userImage = currentUserDetail.thumbnail;
   }
 
+  const renderComments = useCallback(({ item }) => <WriteCommentItems data={ item } />, [])
   return (
     <KeyboardAvoidingView
       style={ { flex: 1 } }
@@ -95,7 +98,7 @@ export default function WriteCommentScreen({
       {commentData ? (
         <FlatList
           data={ commentData }
-          renderItem={ ({ item }) => <WriteCommentItems data={ item } /> }
+          renderItem={renderComments}
           keyExtractor={ (item, index) => index.toString() }
         />
       ) : (
