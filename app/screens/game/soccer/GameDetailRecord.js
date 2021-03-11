@@ -28,7 +28,7 @@ import moment from 'moment';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import { addGameRecord, resetGame, getGameRoster } from '../../../api/Games';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -40,6 +40,7 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
+import { getHitSlop } from '../../../utils';
 
 let timer, timerForTimeline;
 let lastTimeStamp;
@@ -48,7 +49,6 @@ const recordButtonList = ['Goal', 'Own Goal', 'YC', 'RC', 'In', 'Out'];
 const assistButtonList = ['Assist'];
 export default function GameDetailRecord({ navigation, route }) {
   const actionSheet = useRef();
-  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [pickerShow, setPickerShow] = useState(false);
@@ -70,18 +70,13 @@ export default function GameDetailRecord({ navigation, route }) {
     const { gameId } = route.params ?? {};
     getGameRosterDetail(gameId, true);
     return () => {};
-  }, [isFocused]);
+  }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableWithoutFeedback
         onPress={() => actionSheet.current.show()}
-        hitSlop={{
-          top: 15,
-          bottom: 15,
-          left: 15,
-          right: 15,
-        }}>
+        hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),
@@ -279,7 +274,7 @@ export default function GameDetailRecord({ navigation, route }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }
   const resetGameDetail = (gameId) => {
     setloading(true);
     resetGame(gameId, authContext)

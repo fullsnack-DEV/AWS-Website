@@ -313,7 +313,8 @@ export default function EditLineUpScreen({ navigation, route }) {
   );
 
   const saveButtonPress = () => {
-    setLoading(true);
+    console.log('This is ok');
+
     const modifiedData = roster.filter((e) => e.modified === true);
     const tempArray = [];
     // eslint-disable-next-line array-callback-return
@@ -343,6 +344,7 @@ export default function EditLineUpScreen({ navigation, route }) {
         && route.params.gameObj
         && route.params.selectedTeam
       ) {
+        setLoading(true);
         createGameLineUp(
           route.params.selectedTeam === 'home'
             ? route.params.gameObj.home_team.group_id
@@ -362,14 +364,18 @@ export default function EditLineUpScreen({ navigation, route }) {
             ).then(() => {
               setLoading(false);
               navigation.goBack();
-            });
+            })
           } else {
             setLoading(false);
             navigation.goBack();
           }
+        }).catch((error) => {
+          setLoading(false)
+          setTimeout(() => Alert.alert(strings.alertmessagetitle, `${error}`), 10)
         });
       }
     } else if (tempNonRosterArray.length > 0) {
+      setLoading(true);
       deleteGameLineUp(
         route.params.selectedTeam === 'home'
           ? route.params.gameObj.home_team.group_id
@@ -380,6 +386,9 @@ export default function EditLineUpScreen({ navigation, route }) {
       ).then(() => {
         setLoading(false);
         navigation.goBack();
+      }).catch((error) => {
+        setLoading(false)
+        setTimeout(() => Alert.alert(strings.alertmessagetitle, error), 10)
       });
     } else {
       setLoading(false);

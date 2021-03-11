@@ -74,7 +74,7 @@ function MultiImagePostView({
     } else {
       setLike(false);
     }
-  }, [item]);
+  }, [caller_id, item]);
 
   let userImage = '';
   if (item?.actor && item?.actor?.data) {

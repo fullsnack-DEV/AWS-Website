@@ -674,12 +674,7 @@ export default function EditChallenge({ navigation, route }) {
                 {!isPendingRequestPayment && (
                   <TouchableOpacity
                       style={styles.editTouchArea}
-                      hitSlop={{
-                        top: 15,
-                        bottom: 15,
-                        left: 15,
-                        right: 15,
-                      }}
+                      hitSlop={Utility.getHitSlop(15)}
                       onPress={() => navigation.navigate('CreateChallengeForm1', {
                         editableAlter: true,
                         body: bodyParams,
@@ -819,12 +814,7 @@ export default function EditChallenge({ navigation, route }) {
                 {!isPendingRequestPayment && (
                   <TouchableOpacity
                       style={styles.editTouchArea}
-                      hitSlop={{
-                        top: 15,
-                        bottom: 15,
-                        left: 15,
-                        right: 15,
-                      }}
+                      hitSlop={Utility.getHitSlop(15)}
                       onPress={() => navigation.navigate('CreateChallengeForm1', {
                         editableAlter: true,
                         body: bodyParams,
@@ -886,12 +876,7 @@ export default function EditChallenge({ navigation, route }) {
                 {!isPendingRequestPayment && (
                   <TouchableOpacity
                       style={styles.editTouchArea}
-                      hitSlop={{
-                        top: 15,
-                        bottom: 15,
-                        left: 15,
-                        right: 15,
-                      }}
+                      hitSlop={Utility.getHitSlop(15)}
                       onPress={() => navigation.navigate('CreateChallengeForm2', {
                         editableAlter: true,
                         body: bodyParams,
@@ -939,12 +924,7 @@ export default function EditChallenge({ navigation, route }) {
               {!isPendingRequestPayment && (
                 <TouchableOpacity
                     style={styles.editTouchArea}
-                    hitSlop={{
-                      top: 15,
-                      bottom: 15,
-                      left: 15,
-                      right: 15,
-                    }}
+                    hitSlop={Utility.getHitSlop(15)}
                     onPress={() => navigation.navigate('CreateChallengeForm3', {
                       editableAlter: true,
                       body: bodyParams,
@@ -986,12 +966,7 @@ export default function EditChallenge({ navigation, route }) {
               {!isPendingRequestPayment && (
                 <TouchableOpacity
                     style={styles.editTouchArea}
-                    hitSlop={{
-                      top: 15,
-                      bottom: 15,
-                      left: 15,
-                      right: 15,
-                    }}
+                    hitSlop={Utility.getHitSlop(15)}
                     onPress={() => navigation.navigate('CreateChallengeForm3', {
                       editableAlter: true,
                       body: bodyParams,
@@ -1036,12 +1011,7 @@ export default function EditChallenge({ navigation, route }) {
             {!isPendingRequestPayment && (
               <TouchableOpacity
                   style={styles.editTouchArea}
-                  hitSlop={{
-                    top: 15,
-                    bottom: 15,
-                    left: 15,
-                    right: 15,
-                  }}
+                  hitSlop={Utility.getHitSlop(15)}
                   onPress={() => navigation.navigate('EditFeeScreen', {
                     editableAlter: true,
                     body: bodyParams,

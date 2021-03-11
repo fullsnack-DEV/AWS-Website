@@ -30,7 +30,7 @@ import LinearGradient from 'react-native-linear-gradient';
 // import RNDateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
 import * as Utils from '../../challenge/ChallengeUtility';
-import { toggleView, heightPercentageToDP as hp } from '../../../utils/index'
+import { toggleView, heightPercentageToDP as hp, getHitSlop } from '../../../utils/index'
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import GameStatus from '../../../Constants/GameStatus';
 import GameVerb from '../../../Constants/GameVerb';
@@ -121,12 +121,7 @@ export default function TennisRecording({ navigation, route }) {
       headerRight: () => (
         <TouchableWithoutFeedback
           onPress={() => headerActionSheet.current.show()}
-          hitSlop={{
-            top: 15,
-            bottom: 15,
-            left: 15,
-            right: 15,
-          }}>
+          hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),

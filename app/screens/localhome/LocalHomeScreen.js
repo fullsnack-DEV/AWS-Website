@@ -35,7 +35,7 @@ import { getRecentGameDetails, getSportsList } from '../../api/Games';
 
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
-import { widthPercentageToDP } from '../../utils';
+import { getHitSlop, widthPercentageToDP } from '../../utils';
 import TCChallengerCard from '../../components/TCChallengerCard';
 
 import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
@@ -43,6 +43,7 @@ import TCEntityView from '../../components/TCEntityView';
 import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCThinDivider from '../../components/TCThinDivider';
 import SportsListView from '../../components/localHome/SportsListView';
+import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 // import AuthContext from '../../auth/context';
 
 let selectedSports = [];
@@ -61,6 +62,9 @@ export default function LocalHomeScreen({ navigation }) {
   const [sportsListPopup, setSportsListPopup] = useState(false);
 
   const [recentMatch, setRecentMatch] = useState([]);
+
+  const [upcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
+
   // const [sportsSource, setSportsSource] = useState([
   //   'Soccer',
   //   'Baseball',
@@ -100,40 +104,6 @@ export default function LocalHomeScreen({ navigation }) {
       });
   }, [authContext]);
 
-  //  useEffect(() => {
-  //   setloading(true)
-  //  getRecentGameDetails('soccer', authContext)
-  //  .then((response) => {
-  //    setloading(false);
-  //    console.log('Recent games::=>', response.payload);
-  //  })
-  //  .catch((e) => {
-  //    setloading(false);
-  //    setTimeout(() => {
-  //      Alert.alert(strings.alertmessagetitle, e.message);
-  //    }, 10);
-  //  });
-  // }, [authContext]);
-
-  // useEffect(() => {
-  //   getSportsList(authContext)
-  //     .then((response) => {
-  //       const arr = [];
-  //       for (const tempData of response.payload) {
-  //         tempData.isChecked = false;
-  //         arr.push(tempData);
-  //       }
-  //       setSports(arr);
-  //       setTimeout(() => setloading(false), 1000);
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setTimeout(() => {
-  //         Alert.alert(strings.alertmessagetitle, e.message);
-  //       }, 10);
-  //     });
-  // }, [authContext]);
-
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
       sports[index].isChecked = !item.isChecked;
@@ -151,12 +121,7 @@ export default function LocalHomeScreen({ navigation }) {
         <TouchableOpacity
           style={styles.titleHeaderView}
           onPress={() => setLocationPopup(true)}
-          hitSlop={{
-            top: 15,
-            bottom: 15,
-            left: 15,
-            right: 15,
-          }}>
+          hitSlop={getHitSlop(15)}>
           <Text style={styles.headerTitle}>Vancuver</Text>
           <Image source={images.home_gps} style={styles.gpsIconStyle} />
         </TouchableOpacity>
@@ -412,11 +377,13 @@ export default function LocalHomeScreen({ navigation }) {
           />
           <Carousel
             data={recentMatch}
+            scrollEnabled={recentMatch.length > 0}
             renderItem={renderRecentMatchItems}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
             sliderWidth={widthPercentageToDP(100)}
             itemWidth={widthPercentageToDP(94)}
+            ListEmptyComponent={() => <TCGameCardPlaceholder data={gameData} cardWidth={'94%'} placeholderText={strings.recentMatchPlaceholderText}/>}
           />
           {/* <FlatList
           horizontal={true}
@@ -441,12 +408,14 @@ export default function LocalHomeScreen({ navigation }) {
             onPress={() => navigation.navigate('UpcomingMatchScreen')}
           />
           <Carousel
-            data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+            data={upcomingMatch}
+            scrollEnabled={upcomingMatch.length > 0}
             renderItem={renderGameItems}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
             sliderWidth={widthPercentageToDP(100)}
             itemWidth={widthPercentageToDP(94)}
+            ListEmptyComponent={() => <TCGameCardPlaceholder data={gameData} cardWidth={'94%'} placeholderText={strings.upcomingMatchPlaceholderText}/>}
           />
         </View>
         <View>

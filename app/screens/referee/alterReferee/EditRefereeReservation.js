@@ -943,12 +943,7 @@ export default function EditRefereeReservation({ navigation, route }) {
                   {bodyParams?.referee?.user_id !== entity.uid && (
                     <TouchableOpacity
                   style={styles.editTouchArea}
-                  hitSlop={{
-                    top: 15,
-                    bottom: 15,
-                    left: 15,
-                    right: 15,
-                  }}
+                  hitSlop={Utility.getHitSlop(15)}
                   onPress={() => {
                     navigation.navigate('RefereeSelectMatch', {
                       userData: bodyParams?.referee,
@@ -1107,12 +1102,7 @@ export default function EditRefereeReservation({ navigation, route }) {
             {(!isPendingRequestPayment || (bodyParams.status === RefereeReservationStatus.declined && isDeclined)) && (
               <TouchableOpacity
                   style={styles.editTouchArea}
-                  hitSlop={{
-                    top: 15,
-                    bottom: 15,
-                    left: 15,
-                    right: 15,
-                  }}
+                  hitSlop={Utility.getHitSlop(15)}
                   onPress={() => navigation.navigate('EditRefereeFeeScreen', {
                     editableAlter: true,
                     body: bodyParams,

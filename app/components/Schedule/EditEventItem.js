@@ -5,6 +5,7 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import { getHitSlop } from '../../utils';
 
 function EditEventItem({
   title,
@@ -20,12 +21,7 @@ function EditEventItem({
         <Text style={styles.headerTextStyle}>{title}
           {subTitle && <Text style={styles.subHeaderText}>{subTitle}</Text>}</Text>
         {editButtonVisible && (
-          <TouchableOpacity onPress={onEditPress} hitSlop={{
-            top: 15,
-            bottom: 15,
-            left: 15,
-            right: 15,
-          }}>
+          <TouchableOpacity onPress={onEditPress} hitSlop={getHitSlop(15)}>
             <Image
             source={images.editSection}
             style={styles.editImageStyle}

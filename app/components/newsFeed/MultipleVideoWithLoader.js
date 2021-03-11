@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Text, TouchableOpacity,
+  StyleSheet, View, Text, TouchableOpacity, Image,
 } from 'react-native';
 import Video from 'react-native-video';
 import {
@@ -22,10 +22,9 @@ function MultipleVideoWithLoader({ data }) {
     <View style={styles.singleImageDisplayStyle}>
       <View
         style={styles.singleImageDisplayStyle}>
-        <FastImage
+        <Image
           style={styles.loadimageStyle}
           source={images.imageLoadingGIF}
-          resizeMode={FastImage.resizeMode.contain}
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
@@ -34,7 +33,7 @@ function MultipleVideoWithLoader({ data }) {
         muted={!mute}
         source={{ uri: data.url }}
         style={[styles.singleImageDisplayStyle, { position: 'absolute' }]}
-        resizeMode={'cover'}
+        resizeMode={'contain'}
         onLoad={() => {
           setVideoLoad(true);
         }}
@@ -82,6 +81,7 @@ const styles = StyleSheet.create({
   loadimageStyle: {
     height: 50,
     width: 50,
+    resizeMode: 'contain',
   },
   loadingTextStyle: {
     color: colors.googleColor,

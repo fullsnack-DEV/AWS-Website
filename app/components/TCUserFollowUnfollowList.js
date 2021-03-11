@@ -7,7 +7,7 @@ import images from '../Constants/ImagePath';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
 import TCGradientButton from './TCGradientButton';
-import { heightPercentageToDP as hp } from '../utils';
+import { getHitSlop, heightPercentageToDP as hp } from '../utils';
 import TCInnerLoader from './TCInnerLoader';
 
 const TCUserFollowUnfollowList = ({
@@ -123,12 +123,7 @@ const TCUserFollowUnfollowList = ({
         </View>
         <View style={{ flex: 0.25, alignItems: 'center' }}>
           {isShowThreeDots ? (
-            <TouchableOpacity onPress={onThreeDotPress} style={{ alignSelf: 'flex-end', right: 10 }} hitSlop={{
-              top: 15,
-              bottom: 15,
-              left: 15,
-              right: 15,
-            }}>
+            <TouchableOpacity onPress={onThreeDotPress} style={{ alignSelf: 'flex-end', right: 10 }} hitSlop={getHitSlop(15)}>
               <Image source={ images.vertical3Dot } style={ styles.threedot } />
             </TouchableOpacity>
           ) : (

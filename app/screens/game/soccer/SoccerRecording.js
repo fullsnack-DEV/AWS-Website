@@ -38,6 +38,7 @@ import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import strings from '../../../Constants/String';
+import { getHitSlop } from '../../../utils';
 
 let entity = {};
 let timer, timerForTimeline;
@@ -252,12 +253,7 @@ export default function SoccerRecording({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()} hitSlop={{
-          top: 15,
-          bottom: 15,
-          left: 15,
-          right: 15,
-        }}>
+        <TouchableWithoutFeedback onPress={() => actionSheet.current.show()} hitSlop={getHitSlop(15)}>
           <Image source={images.vertical3Dot} style={styles.headerRightImg} />
         </TouchableWithoutFeedback>
       ),

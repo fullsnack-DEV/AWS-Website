@@ -42,6 +42,7 @@ import TCGameCard from '../../../components/TCGameCard';
 import { getGameFromToDateDiff, getGameHomeScreen } from '../../../utils/gameUtils';
 import CurruentVersionView from '../../../components/challenge/CurruentVersionView';
 import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
+import { getHitSlop } from '../../../utils';
 
 let entity = {};
 const scroll = React.createRef();
@@ -950,12 +951,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
                   {(!isPendingRequestPayment) && (
                     <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('ScorekeeperSelectMatch')
                 }>
                       <Image source={images.editSection} style={styles.editButton} />
@@ -1050,12 +1046,7 @@ export default function AlterScorekeeperScreen({ navigation, route }) {
             {(!isPendingRequestPayment) && (
               <TouchableOpacity
                 style={styles.editTouchArea}
-                hitSlop={{
-                  top: 15,
-                  bottom: 15,
-                  left: 15,
-                  right: 15,
-                }}
+                hitSlop={getHitSlop(15)}
                 onPress={() => navigation.navigate('EditScorekeeperFeeScreen', {
                   editableAlter: true,
                   body: bodyParams,
