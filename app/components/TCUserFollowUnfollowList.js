@@ -73,16 +73,21 @@ const TCUserFollowUnfollowList = ({
         {!loading && userRole === 'user' && (<TCGradientButton
                     onPress={onFollowPress}
                     title={is_following ? 'Following' : 'Follow'}
-                    startGradientColor={is_following ? colors.yellowColor : colors.whiteColor}
-                    endGradientColor={is_following ? colors.themeColor : colors.whiteColor}
-                    textStyle={{ color: is_following ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
-                    style={{
-                      display: myUserId === userID ? 'none' : 'flex',
+                    startGradientColor={!is_following ? colors.yellowColor : colors.whiteColor}
+                    endGradientColor={!is_following ? colors.themeColor : colors.whiteColor}
+                    outerContainerStyle={{
                       borderRadius: 5,
                       height: 25,
                       width: 75,
                       borderWidth: 1,
-                      borderColor: colors.yellowColor,
+                      borderColor: is_following ? colors.yellowColor : colors.whiteColor,
+                    }}
+                    textStyle={{ color: !is_following ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
+                    style={{
+                      display: myUserId === userID ? 'none' : 'flex',
+                      borderRadius: 5,
+                      height: '100%',
+                      width: '100%',
                     }} />
         )}
         {loading && userRole === 'user' && (

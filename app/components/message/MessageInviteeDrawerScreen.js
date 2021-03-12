@@ -5,11 +5,12 @@ import {
   View,
   Text,
   SafeAreaView,
-  StyleSheet, Image, FlatList, TouchableOpacity, Alert,
+  StyleSheet, Image, FlatList, Alert,
 } from 'react-native';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
+import FastImage from 'react-native-fast-image';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp, getHitSlop } from '../../utils';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -98,6 +99,10 @@ const MessageInviteeDrawerScreen = ({
   if (dialog?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
     fullName = dialog?.name.slice(2, dialog?.name?.length)
   }
+
+  const onPressDone = ({ dialog: newDialog }) => {
+    navigation.setParams({ dialog: newDialog })
+  }
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.viewContainer}>
@@ -105,9 +110,25 @@ const MessageInviteeDrawerScreen = ({
           <Text style={styles.titleLabel}>
             {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && 'Chatroom Name'}
           </Text>
-          <Text style={[styles.title, { marginLeft: wp(3) }]}>
-            {fullName}
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={[styles.title, { marginLeft: wp(3) }]}>
+              {fullName}
+            </Text>
+            {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
+              <TouchableOpacity onPress={() => {
+                navigation.closeDrawer();
+                navigation.navigate('MessageEditGroupScreen', { dialog, onPressDone })
+              }} hitSlop={getHitSlop(15)}>
+                <FastImage
+                      resizeMode={'contain'}
+                      source={images.arrowDown}
+                      style={{
+                        ...styles.downArrow,
+                        transform: [{ rotateZ: '270deg' }],
+                      }} />
+              </TouchableOpacity>
+            )}
+          </View>
           <View style={styles.separator}/>
           <Text style={styles.titleLabel}>Participants</Text>
           {inviteButton}
@@ -141,6 +162,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  downArrow: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
+    tintColor: colors.grayColor,
   },
   title: {
     marginTop: hp(1),

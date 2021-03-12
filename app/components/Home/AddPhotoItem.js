@@ -1,10 +1,12 @@
 import React from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, Image,
+  StyleSheet, Text, Image,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -14,23 +16,26 @@ function AddPhotoItem({
   disabled,
 }) {
   return (
+
     <TouchableOpacity
         style={styles.headerImagePickerView}
         onPress={onAddPhotoPress}
-        disabled={disabled}
-    >
-      <Image
+        disabled={disabled}>
+      <LinearGradient
+          colors={[colors.yellowColor, colors.themeColor]}
+          style={styles.headerImagePickerView}>
+        <Image
         style={styles.plusImageStyle}
         source={images.plus}
       />
-      <Text style={styles.addPhotoTextStyle}>Add</Text>
+        <Text style={styles.addPhotoTextStyle}>Add Photo</Text>
+      </LinearGradient>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   headerImagePickerView: {
-    margin: 1.5,
     backgroundColor: colors.activeIndexColor,
     height: wp(32.3),
     width: wp(32.3),
