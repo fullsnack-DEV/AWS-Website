@@ -36,7 +36,6 @@ export const uploadImageOnPreSignedUrls = async ({
       timeout: 180000,
       headers: {
         'Content-Type': type,
-        // 'Content-Type': `image/${type}`,
         'Content-Length': imgBuffer.length,
       },
       data: imgBuffer,
@@ -113,27 +112,24 @@ const uploadImage = async (data, authContext, cancelToken) => {
      resOriginal = await ImageResizer.createResizedImage(image.path, originalImgData.width, originalImgData.height, 'JPEG', O_COMPRESSION_RATE, 0, null)
   }
 
-  return getImagePreSignedURL({
-    count: 2,
-  }, authContext, cancelToken).then((response) => {
+  return getImagePreSignedURL({ count: 2 }, authContext, cancelToken).then((response) => {
     const preSignedUrls = response.payload.preSignedUrls || [];
     if (preSignedUrls.length !== 2) {
       throw new Error('failed-presigned-url')
     }
-    return Promise.all([
-      uploadImageOnPreSignedUrls({
-        url: preSignedUrls[0],
-        uri: image?.mime?.split('/')?.[0] === 'image' ? resOriginal.uri : image.path,
-        type: image.mime,
-        cancelToken,
-      }),
+    const promises = [uploadImageOnPreSignedUrls({
+      url: preSignedUrls[0],
+      uri: image?.mime?.split('/')?.[0] === 'image' ? resOriginal.uri : image.path,
+      type: image.mime,
+      cancelToken,
+    }),
       uploadImageOnPreSignedUrls({
         url: preSignedUrls[1],
         uri: image?.mime?.split('/')?.[0] === 'image' ? resThumb.uri : image.path,
         type: image.mime,
         cancelToken,
-      }),
-    ]).then(([fullImage, thumbnail]) => {
+      })]
+    return Promise.all(promises).then(([fullImage, thumbnail]) => {
       const originalImgData = originalImageSize(image)
       return ({
         fullImage,
@@ -146,7 +142,7 @@ const uploadImage = async (data, authContext, cancelToken) => {
   });
 };
 
-const uploadImages = async (images, authContext, cb = () => {}, cancelRequest = () => {}) => {
+const uploadImages = (images, authContext, cb = () => {}, cancelRequest = () => {}) => new Promise((resolve) => {
   let completed = 0;
   const promises = [];
   const source = axios.CancelToken.source();
@@ -160,7 +156,7 @@ const uploadImages = async (images, authContext, cb = () => {}, cancelRequest = 
       cb(completed, images.length, image);
     });
   }
-  return Promise.all(promises);
-};
+  resolve(Promise.all(promises));
+});
 
 export default uploadImages;

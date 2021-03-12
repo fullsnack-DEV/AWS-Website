@@ -59,9 +59,7 @@ const NewsFeedDescription = ({
     const isTagName = taggedData?.includes(match?.[0])
     if (isTagName) color = colors.greeColor;
     return (
-      <TouchableOpacity onPress={() => isTagName && handleNamePress(match[0])}>
-        <Text style={{ ...styles.username, color }}>{match?.[0]}</Text>
-      </TouchableOpacity>
+      <Text onPress={() => isTagName && handleNamePress(match[0])} style={{ ...styles.username, color }}>{match?.[0]}</Text>
     )
     // let removedPrefixSuffix = match?.[0]?.replace(tagPrefix, '')
     // removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');

@@ -35,15 +35,14 @@ export const eventDefaultColorsData = [
   },
 ];
 
-const adjustForTimezone = (date) => {
-  const timeOffsetInMS = date.getTimezoneOffset() * 60000;
-  date.setTime(date.getTime() - timeOffsetInMS);
-  return date
-}
+// const adjustForTimezone = (date) => {
+//   const timeOffsetInMS = date.getTimezoneOffset() * 60000;
+//   date.setTime(date.getTime() - timeOffsetInMS);
+//   return date
+// }
 
-export const commentPostTimeCalculate = (commentPostTime, convertToTimeZone = false) => {
-  let time = commentPostTime;
-  if (convertToTimeZone) time = adjustForTimezone(new Date(commentPostTime?.toString()));
+export const commentPostTimeCalculate = (commentPostTime) => {
+  const time = new Date(commentPostTime);
   const minute = moment(new Date()).diff(time, 'minute');
   const hour = moment(new Date()).diff(time, 'hour');
   const day = moment(new Date()).diff(time, 'day');

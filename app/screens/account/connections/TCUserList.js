@@ -49,16 +49,21 @@ const TCUserList = ({
                   setFollow(!follow)
                   followUnfollowPress(!follow)
                 }}
-                title={follow ? 'Following' : 'Follow'}
-                startGradientColor={follow ? colors.yellowColor : colors.whiteColor}
-                endGradientColor={follow ? colors.themeColor : colors.whiteColor}
-                textStyle={{ color: follow ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
-                style={{
+                outerContainerStyle={{
                   borderRadius: 5,
                   height: 25,
                   width: 75,
                   borderWidth: 1,
-                  borderColor: colors.yellowColor,
+                  borderColor: follow ? colors.yellowColor : colors.whiteColor,
+                }}
+                title={follow ? 'Following' : 'Follow'}
+                startGradientColor={!follow ? colors.yellowColor : colors.whiteColor}
+                endGradientColor={!follow ? colors.themeColor : colors.whiteColor}
+                textStyle={{ color: !follow ? colors.whiteColor : colors.themeColor, fontSize: 11, fontFamily: fonts.RBold }}
+                style={{
+                  borderRadius: 0,
+                  height: '100%',
+                  width: '100%',
                 }} />}
           </View>
         </View>

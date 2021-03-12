@@ -11,6 +11,7 @@ import MessageInviteScreen from '../screens/message/MessageInviteScreen';
 import MessageNewGroupScreen from '../screens/message/MessageNewGroupScreen';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import HomeScreen from '../screens/home/HomeScreen';
+import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
 
 const Stack = createStackNavigator();
 
@@ -91,6 +92,23 @@ const MessageNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+          name="MessageEditGroupScreen"
+          component={ MessageEditGroupScreen }
+          options={{
+              title: 'Message',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerShown: false,
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
     <Stack.Screen
           name="HomeScreen"
           component={ HomeScreen }

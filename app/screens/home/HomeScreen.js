@@ -28,6 +28,7 @@ import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
+import _ from 'lodash';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -58,7 +59,6 @@ import {
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as Utils from '../challenge/ChallengeUtility';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import TabView from '../../components/Home/TabView';
 import AddPhotoItem from '../../components/Home/AddPhotoItem';
 import SingleImageRender from '../../components/Home/SingleImageRender';
 import MultipleImageRender from '../../components/Home/MultipleImageRender';
@@ -461,7 +461,7 @@ const HomeScreen = ({ navigation, route }) => {
       })
   }
 
-  const callthis = (data, postDesc, tagsOfEntity) => {
+  const callthis = useCallback((data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
@@ -482,7 +482,7 @@ const HomeScreen = ({ navigation, route }) => {
           createPostAfterUpload,
       )
     }
-  }
+  }, [authContext, createPostAfterUpload, imageUploadContext])
 
   const allData = [];
   const fromMeData = [];
@@ -519,7 +519,7 @@ const HomeScreen = ({ navigation, route }) => {
   if (currentUserData && currentUserData.thumbnail) {
     userThumbnail = currentUserData.thumbnail;
   }
-  const allGalleryRenderItem = ({ item, index }) => {
+  const allGalleryRenderItem = useCallback(({ item, index }) => {
     console.log('Gallery Item:=>', item);
     if (index === 0) {
       return (
@@ -568,9 +568,9 @@ const HomeScreen = ({ navigation, route }) => {
       }
     }
     return <View />
-  }
+  }, [callthis, navigation])
 
-  const fromMeRenderItem = ({ item, index }) => {
+  const fromMeRenderItem = useCallback(({ item, index }) => {
     if (index === 0) {
       return (
         <AddPhotoItem
@@ -619,9 +619,9 @@ const HomeScreen = ({ navigation, route }) => {
       }
     }
     return <View />
-  }
+  }, [callthis, navigation])
 
-  const taggedRenderItem = ({ item, index }) => {
+  const taggedRenderItem = useCallback(({ item, index }) => {
     if (index === 0) {
       return (
         <AddPhotoItem
@@ -670,7 +670,7 @@ const HomeScreen = ({ navigation, route }) => {
       }
     }
     return <View />
-  }
+  }, [callthis, navigation])
 
   const callFollowUser = async () => {
     currentUserData.is_following = true;
@@ -1921,13 +1921,26 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainGalleryTab = useMemo(() => (
     <View>
-      <TabView
-            indexCounter={indexCounter}
-            onFirstTabPress={() => setIndexCounter(0)}
-            onSecondTabPress={() => setIndexCounter(1)}
-            onThirdTabPress={() => setIndexCounter(2)}
-        />
-      <View style={styles.sepratorLineStyle} />
+      <View style={{
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        borderBottomColor: colors.lightgrayColor,
+        borderBottomWidth: 1,
+        marginBottom: 15,
+      }}>
+        {['All', 'From me', 'Tagged'].map((item, index) => (
+          <TouchableOpacity key={item} style={{ padding: 10 }} onPress={() => setIndexCounter(index)}>
+            <Text style={{
+                color: index === indexCounter ? colors.themeColor : colors.lightBlackColor,
+                fontFamily: index === indexCounter ? fonts.RBold : fonts.RRegular,
+            }}>
+              {_.startCase(item)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+
+      </View>
+      {/* <View style={styles.sepratorLineStyle} /> */}
       {indexCounter === 0 && <FlatList
             data={['0', ...allData]}
             bounces={false}
@@ -3109,12 +3122,12 @@ const styles = StyleSheet.create({
     width: ('100%'),
     backgroundColor: colors.grayBackgroundColor,
   },
-  sepratorLineStyle: {
-    width: wp('100%'),
-    height: 2,
-    backgroundColor: colors.disableColor,
-    marginVertical: 1,
-  },
+  // sepratorLineStyle: {
+  //   width: wp('100%'),
+  //   height: 2,
+  //   backgroundColor: colors.disableColor,
+  //   marginVertical: 1,
+  // },
   bgImageStyle: {
     backgroundColor: colors.darkGrayTrashColor,
     width: wp(100),
