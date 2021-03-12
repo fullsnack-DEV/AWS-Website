@@ -13,6 +13,7 @@ import BirthSelectItem from '../../../../../components/Home/BirthSelectItem';
 import DateTimePickerView from '../../../../../components/Schedule/DateTimePickerModal';
 import ModalLocationSearch from '../../../../../components/Home/ModalLocationSearch';
 import PlaysInEditBasicInfoPrivacySettings from '../PlaysInEditBasicInfoPrivacySettings';
+import DataSource from '../../../../../Constants/DataSource';
 
 const PlaysInBasicInfo = ({
   isAdmin,
@@ -149,10 +150,7 @@ const EditPlaysInModal = ({
             >
             <View style={{ marginTop: 8 }}>
               <TCPicker
-                        dataSource={[
-                          { label: 'Male', value: 'Male' },
-                          { label: 'Female', value: 'Female' },
-                        ]}
+                        dataSource={DataSource.Gender}
                         placeholder={'Select Gender'}
                         value={userData?.gender}
                         onValueChange={(value) => {

@@ -2,97 +2,76 @@ import React, { memo } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
-  Image,
+  ImageBackground,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import ReservationStatus from '../Constants/ReservationStatus';
-import * as Utility from '../utils';
+import TCGradientButton from './TCGradientButton';
+import TCRoundChart from './TCRoundChart';
+import useRenderCount from '../hooks/useRenderCount'
 
-function TCChallengerCard({ data, onPress, cardWidth = '86%' }) {
-  const formatAMPM = (date) => {
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    hours %= 12;
-    hours = hours || 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? `0${minutes}` : minutes;
-    const time = `${hours}:${minutes} ${ampm}`;
-    return time;
-  };
-
+const TCChallengerCard = ({ cardWidth = '86%', gameStatsData }) => {
+  useRenderCount('TCHiringPlayersCard')
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
-        <LinearGradient
-          colors={[colors.greenGradientEnd, colors.greenGradientStart]}
-          style={
-            data?.status === ReservationStatus.offered
-              ? [styles.colorView, { opacity: 0.7 }]
-              : styles.colorView
-          }>
-          <View style={styles.dateView}>
-            <Text style={styles.dateMonthText}>
-              {Utility.monthNames[new Date(data.start_datetime * 1000).getMonth()]}
-            </Text>
-            <Text style={styles.dateText}>
-              {new Date(data.start_datetime * 1000).getDate()}
-            </Text>
-          </View>
-        </LinearGradient>
-        <View style={{ borderRadius: 10, alignSelf: 'center', marginLeft: 10 }}>
-          <Image
-            source={images.soccerBackground}
-            style={{
-              height: 80,
-              width: 100,
-              resizeMode: 'cover',
-              borderRadius: 10,
-            }}
-          />
-          <Image
-            style={{
-              backgroundColor: 'black',
-              height: 35,
-              width: 35,
-              position: 'absolute',
-              bottom: -5,
-              right: -5,
-              borderRadius: 18,
-            }}
-          />
-        </View>
 
-        <View style={styles.eventText}>
+    <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+      <View style={styles.eventText}>
+        <View
+            style={{
+              width: wp('20%'),
+              height: 102,
+              // backgroundColor: 'green',
+              borderBottomLeftRadius: 8,
+              borderTopLeftRadius: 8,
+            }}>
+          <TCRoundChart gameStatsData ={gameStatsData}/>
+        </View>
+        <View style={{ width: wp('40%'), marginLeft: 10 }}>
           <View style={styles.bottomView}>
-            <Text style={styles.eventTimeLocation}>
-              {formatAMPM(new Date(data.start_datetime * 1000))} -{' '}
-              {formatAMPM(new Date(data.end_datetime * 1000))}
-            </Text>
+            <Text style={styles.levelText}>Lv.0</Text>
             <Text style={styles.textSaperator}> | </Text>
-            <Text style={styles.priceView} numberOfLines={1}>
-              $100 CAD
+            <Text style={styles.pointView} numberOfLines={1}>
+              0 points
             </Text>
           </View>
-          <Text style={styles.eventTitle} numberOfLines={2}>
-            United States women’s soccer team
+          <Text style={styles.eventTitle} numberOfLines={3}>
+            United States women’s soccer team sdafs dsfafdsa fas fdsfa fdsaf
+            fadfasf df dsfads fs
           </Text>
-          <View style={styles.gameVSView}>
-            {/* images.requestOut */}
-            <Image source={images.requestOut} style={styles.inOutImageView} />
-            <Text style={styles.requesterText}>challenger</Text>
-          </View>
         </View>
       </View>
-    </TouchableOpacity>
-  );
+      <ImageBackground
+          source={images.soccerBackground}
+          style={{
+            height: 102,
+            width: wp('32%'),
+            resizeMode: 'cover',
+            overflow: 'hidden',
+            borderBottomRightRadius: 8,
+            borderTopRightRadius: 8,
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}>
+        <TCGradientButton
+          startGradientColor = {colors.kHexColorFF8A01}
+          endGradientColor = {colors.darkThemeColor}
+            title={'$9999+ CAD'}
+            style={{
+              height: 25,
+              borderRadius: 6,
+              width: 95,
+            }}
+            onPress={() => console.log('Amount Pressed')}
+          />
+      </ImageBackground>
+    </View>
+
+  )
 }
 
 const styles = StyleSheet.create({
@@ -104,63 +83,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 102,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     width: wp('86%'),
+    borderBottomRightRadius: 8,
+    borderTopRightRadius: 8,
     // marginTop: 15,
   },
   bottomView: {
     flexDirection: 'row',
   },
-  colorView: {
-    borderBottomLeftRadius: 8,
-    borderTopLeftRadius: 8,
-    height: 102,
-    width: 42,
-  },
-  dateMonthText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontFamily: fonts.RLight,
-    fontSize: 12,
-  },
-  dateText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
-  },
-  dateView: {
-    marginTop: 15,
-  },
   eventText: {
-    flexDirection: 'column',
-    padding: 10,
-    width: wp('76%'),
+    flexDirection: 'row',
+    width: wp('60%'),
   },
-  eventTimeLocation: {
+  levelText: {
     fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.greenGradientStart,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
   },
   eventTitle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
     marginBottom: 1,
-    width: wp('50%'),
+    width: wp('25%'),
   },
 
-  gameVSView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  priceView: {
+  pointView: {
     fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.greenGradientStart,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
 
     flex: 1,
   },
@@ -169,20 +123,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     opacity: 0.4,
-  },
-  inOutImageView: {
-    alignSelf: 'center',
-    height: 30,
-    resizeMode: 'cover',
-    width: 30,
-    marginLeft: -5,
-  },
-  requesterText: {
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.greeColor,
-
-    marginLeft: 5,
   },
 });
 

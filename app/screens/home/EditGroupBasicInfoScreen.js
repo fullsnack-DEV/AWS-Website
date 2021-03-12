@@ -26,6 +26,7 @@ import TCTouchableLabel from '../../components/TCTouchableLabel';
 import TCGradientButton from '../../components/TCGradientButton'
 import ImageButton from '../../components/WritePost/ImageButton';
 import TCKeyboardView from '../../components/TCKeyboardView';
+import DataSource from '../../Constants/DataSource';
 
 export default function EditGroupBasicInfoScreen({ navigation, route }) {
   // For activity indicator
@@ -249,7 +250,7 @@ export default function EditGroupBasicInfoScreen({ navigation, route }) {
                 label: strings.selectGenderPlaceholder,
                 value: null,
               } }
-              items={ Utility.groupMemberGenderItems }
+              items={ DataSource.Gender }
               onValueChange={ (value) => {
                 setGroupData({ ...groupData, gender: value })
               } }

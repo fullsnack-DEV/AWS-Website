@@ -91,5 +91,6 @@ const colors = {
   refereeHomeDividerColor: '#D0D0D0',
   blackOpacityColor: 'rgba(0,0,0,0.5)',
   navyBlue: '#3E6FB0',
+  darkThemeColor: '#FF3B00',
 };
 export default colors;

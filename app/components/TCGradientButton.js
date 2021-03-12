@@ -2,11 +2,10 @@ import React, { memo } from 'react';
 import {
   StyleSheet,
   Text,
-  TouchableOpacity,
   Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 

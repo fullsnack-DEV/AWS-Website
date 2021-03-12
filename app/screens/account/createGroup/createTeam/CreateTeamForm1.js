@@ -28,6 +28,7 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import TCThickDivider from '../../../../components/TCThickDivider';
+import { groupMemberGenderItems } from '../../../../utils';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -283,7 +284,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                 label: strings.selectGenderPlaceholder,
                 value: '',
               }}
-              items={DataSource.Gender}
+              items={groupMemberGenderItems}
               onValueChange={(value) => {
                 setGender(value);
               }}

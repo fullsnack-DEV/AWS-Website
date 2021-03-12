@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     height: 102,
     width: '100%',
     position: 'absolute',
-    opacity: 0.85,
+    opacity: 0.9,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -5,12 +5,14 @@ import {
   FlatList,
   Image,
   TouchableWithoutFeedback,
-  TouchableOpacity,
   Platform,
   Text,
 } from 'react-native';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
 // import AuthContext from '../../auth/context';
+
+import { TouchableOpacity } from 'react-native-gesture-handler'
+
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
@@ -540,6 +542,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     alignContent: 'center',
+    marginTop: 15,
   },
   arrowStyle: {
     height: 26,

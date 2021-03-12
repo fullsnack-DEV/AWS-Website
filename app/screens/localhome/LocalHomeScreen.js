@@ -12,14 +12,15 @@ import {
   Text,
   Image,
   ScrollView,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Platform,
   Alert,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Modal from 'react-native-modal';
 // import DraggableFlatList from 'react-native-draggable-flatlist';
+import { useIsFocused } from '@react-navigation/native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
@@ -44,11 +45,15 @@ import TCRecentMatchCard from '../../components/TCRecentMatchCard';
 import TCThinDivider from '../../components/TCThinDivider';
 import SportsListView from '../../components/localHome/SportsListView';
 import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
+import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
+import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 // import AuthContext from '../../auth/context';
 
 let selectedSports = [];
 export default function LocalHomeScreen({ navigation }) {
-  const [loading, setloading] = useState(true);
+  const isFocused = useIsFocused();
+
+  const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
 
   const [locationPopup, setLocationPopup] = useState(false);
@@ -64,20 +69,18 @@ export default function LocalHomeScreen({ navigation }) {
   const [recentMatch, setRecentMatch] = useState([]);
 
   const [upcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
-
-  // const [sportsSource, setSportsSource] = useState([
-  //   'Soccer',
-  //   'Baseball',
-  //   'Basketball',
-  //   'Tennis Single',
-  //   'Tennis Double',
-  // ]);
+  const [challengerMatch] = useState([]); // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]
+  const [hiringPlayers] = useState([]);
+  const [lookingTeam] = useState([]); // ['', '', '', '', '']
+  const [referees] = useState([]); // ['', '', '', '', '']
+  const [scorekeepers] = useState([]); // ['', '', '', '', '']
 
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    setloading(true);
     const promises = [
-      getRecentGameDetails('Soccer', 'ended', 'surat', authContext),
+      getRecentGameDetails('Soccer', 'ended', 'india', authContext),
       getSportsList(authContext),
     ];
     Promise.all(promises)
@@ -93,7 +96,7 @@ export default function LocalHomeScreen({ navigation }) {
           setTimeout(() => setloading(false), 1000);
         }
         if (res1.payload) {
-          setRecentMatch(res1.payload.results)
+          setRecentMatch(res1.payload.results);
         }
       })
       .catch((e) => {
@@ -102,7 +105,7 @@ export default function LocalHomeScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext]);
+  }, [authContext, isFocused]);
 
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
@@ -115,7 +118,10 @@ export default function LocalHomeScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Image source={images.townsCupIcon} style={styles.townsCupIcon} />
+        // <Image source={images.townsCupIcon} style={styles.townsCupIcon} />
+        <TouchableOpacity onPress={() => setSettingPopup(true)}>
+          <Image source={images.home_setting} style={styles.townsCupIcon} />
+        </TouchableOpacity>
       ),
       headerTitle: () => (
         <TouchableOpacity
@@ -130,9 +136,6 @@ export default function LocalHomeScreen({ navigation }) {
         <View style={styles.rightHeaderView}>
           <TouchableOpacity>
             <Image source={images.home_search} style={styles.townsCupIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSettingPopup(true)}>
-            <Image source={images.home_setting} style={styles.townsCupIcon} />
           </TouchableOpacity>
         </View>
       ),
@@ -168,7 +171,10 @@ export default function LocalHomeScreen({ navigation }) {
     () => (
       <View style={{ marginRight: 15 }}>
         <View style={styles.backgroundStatusView}>
-          <Image source={images.soccerBackground} style={styles.myShowCaseImage} />
+          <Image
+            source={images.soccerBackground}
+            style={styles.myShowCaseImage}
+          />
         </View>
         <Text
           style={{
@@ -188,8 +194,8 @@ export default function LocalHomeScreen({ navigation }) {
             height: 30,
             width: 30,
             position: 'absolute',
-            bottom: 8,
-            right: -10,
+            bottom: 12,
+            right: -5,
           }}
         />
       </View>
@@ -348,32 +354,33 @@ export default function LocalHomeScreen({ navigation }) {
       <ScrollView>
         <View>
           <FlatList
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        data={[
-          'Soccer',
-          'Baseball',
-          'Basketball',
-          'Tennis Single',
-          'Tennis Double',
-        ]}
-        keyExtractor={keyExtractor}
-        renderItem={renderStatusView}
-        ListHeaderComponent={renderStatusHeader}
-        style={{
-          width: '100%',
-          height: 90,
-          alignContent: 'center',
-          // backgroundColor: 'red',
-          margin: 15,
-          marginBottom: 0,
-        }}
-      />
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={[
+              'Soccer',
+              'Baseball',
+              'Basketball',
+              'Tennis Single',
+              'Tennis Double',
+            ]}
+            keyExtractor={keyExtractor}
+            renderItem={renderStatusView}
+            ListHeaderComponent={renderStatusHeader}
+            style={{
+              width: '100%',
+              height: 90,
+              alignContent: 'center',
+              // backgroundColor: 'red',
+              margin: 15,
+              marginBottom: 0,
+            }}
+          />
           <TCTitleWithArrow
             title={strings.recentMatchesTitle}
             showArrow={true}
             viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('RecentMatchScreen', { gameData: recentMatch })}
+            onPress={() => navigation.navigate('RecentMatchScreen', { gameData: recentMatch })
+            }
           />
           <Carousel
             data={recentMatch}
@@ -383,7 +390,13 @@ export default function LocalHomeScreen({ navigation }) {
             inactiveSlideOpacity={1}
             sliderWidth={widthPercentageToDP(100)}
             itemWidth={widthPercentageToDP(94)}
-            ListEmptyComponent={() => <TCGameCardPlaceholder data={gameData} cardWidth={'94%'} placeholderText={strings.recentMatchPlaceholderText}/>}
+            ListEmptyComponent={() => (
+              <TCGameCardPlaceholder
+                data={gameData}
+                cardWidth={'94%'}
+                placeholderText={strings.recentMatchPlaceholderText}
+              />
+            )}
           />
           {/* <FlatList
           horizontal={true}
@@ -415,7 +428,13 @@ export default function LocalHomeScreen({ navigation }) {
             inactiveSlideOpacity={1}
             sliderWidth={widthPercentageToDP(100)}
             itemWidth={widthPercentageToDP(94)}
-            ListEmptyComponent={() => <TCGameCardPlaceholder data={gameData} cardWidth={'94%'} placeholderText={strings.upcomingMatchPlaceholderText}/>}
+            ListEmptyComponent={() => (
+              <TCGameCardPlaceholder
+                data={gameData}
+                cardWidth={'94%'}
+                placeholderText={strings.upcomingMatchPlaceholderText}
+              />
+            )}
           />
         </View>
         <View>
@@ -440,12 +459,20 @@ export default function LocalHomeScreen({ navigation }) {
             onPress={() => navigation.navigate('LookingForChallengeScreen')}
           />
           <Carousel
-            data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+            data={challengerMatch}
+            scrollEnabled={challengerMatch.length > 0}
             renderItem={renderChallengerItems}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
             sliderWidth={widthPercentageToDP(100)}
             itemWidth={widthPercentageToDP(94)}
+            ListEmptyComponent={() => (
+              <TCTeamsCardPlaceholder
+                data={gameData}
+                cardWidth={'94%'}
+                placeholderText={strings.challengerPlaceholderText}
+              />
+            )}
           />
         </View>
         <View>
@@ -456,12 +483,20 @@ export default function LocalHomeScreen({ navigation }) {
             onPress={() => navigation.navigate('HiringPlayerScreen')}
           />
           <Carousel
-            data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
+            data={hiringPlayers}
+            scrollEnabled={hiringPlayers.length > 0}
             renderItem={renderHiringPlayersItems}
             inactiveSlideScale={1}
             inactiveSlideOpacity={1}
             sliderWidth={widthPercentageToDP(100)}
             itemWidth={widthPercentageToDP(94)}
+            ListEmptyComponent={() => (
+              <TCTeamsCardPlaceholder
+                data={gameData}
+                cardWidth={'94%'}
+                placeholderText={strings.hiringPlayersPlaceholderText}
+              />
+            )}
           />
         </View>
         <View>
@@ -473,12 +508,19 @@ export default function LocalHomeScreen({ navigation }) {
           />
           <FlatList
             horizontal={true}
+            scrollEnabled={lookingTeam.length > 0}
             showsHorizontalScrollIndicator={false}
-            data={['', '', '', '', '']}
+            data={lookingTeam}
             ItemSeparatorComponent={renderSeparator}
             keyExtractor={keyExtractor}
             renderItem={renderEntityListView}
             style={{ marginLeft: 15 }}
+            ListEmptyComponent={() => (
+              <TCEntityListPlaceholder
+                cardWidth={'94%'}
+                placeholderText={strings.lookingTeamsPlaceholderText}
+              />
+            )}
           />
         </View>
         <View>
@@ -490,12 +532,19 @@ export default function LocalHomeScreen({ navigation }) {
           />
           <FlatList
             horizontal={true}
+            scrollEnabled={referees.length > 0}
             showsHorizontalScrollIndicator={false}
-            data={['', '', '', '', '']}
+            data={referees}
             ItemSeparatorComponent={renderSeparator}
             keyExtractor={keyExtractor}
             renderItem={renderRefereesScorekeeperListView}
             style={{ marginLeft: 15 }}
+            ListEmptyComponent={() => (
+              <TCEntityListPlaceholder
+                cardWidth={'94%'}
+                placeholderText={strings.refereesPlaceholderText}
+              />
+            )}
           />
         </View>
         <View>
@@ -507,12 +556,19 @@ export default function LocalHomeScreen({ navigation }) {
           />
           <FlatList
             horizontal={true}
+            scrollEnabled={scorekeepers.length > 0}
             showsHorizontalScrollIndicator={false}
-            data={['', '', '', '', '']}
+            data={scorekeepers}
             ItemSeparatorComponent={renderSeparator}
             keyExtractor={keyExtractor}
             renderItem={renderRefereesScorekeeperListView}
             style={{ marginLeft: 15 }}
+            ListEmptyComponent={() => (
+              <TCEntityListPlaceholder
+                cardWidth={'94%'}
+                placeholderText={strings.scorekeepersPlaceholderText}
+              />
+            )}
           />
         </View>
         <Modal
@@ -987,7 +1043,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 68,
     width: 68,
-    borderRadius: 14,
+    borderRadius: 34,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
@@ -999,7 +1055,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     height: 62,
     width: 62,
-    borderRadius: 14,
+    borderRadius: 31,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
@@ -1009,11 +1065,11 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: 'white',
   },
- myShowCaseImage: {
+  myShowCaseImage: {
     resizeMode: 'cover',
-    height: 66,
-    width: 66,
-    borderRadius: 14,
+    height: 68,
+    width: 68,
+    borderRadius: 34,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,

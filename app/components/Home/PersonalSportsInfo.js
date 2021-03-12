@@ -28,6 +28,7 @@ import BirthSelectItem from './BirthSelectItem';
 import DateTimePickerView from '../Schedule/DateTimePickerModal';
 import ModalLocationSearch from './ModalLocationSearch';
 import TCKeyboardView from '../TCKeyboardView';
+import DataSource from '../../Constants/DataSource';
 
 const privacy_Data = [
   {
@@ -461,10 +462,7 @@ const PersonalSportsInfo = ({
             >
                 <View style={{ marginTop: 8 }}>
                   <TCPicker
-                  dataSource={[
-                    { label: 'Male', value: 'Male' },
-                    { label: 'Female', value: 'Female' },
-                  ]}
+                  dataSource={DataSource.Gender}
                   placeholder={'Select Gender'}
                   value={info.genderText}
                   onValueChange={(value) => {
