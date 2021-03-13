@@ -6,11 +6,11 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import strings from '../../Constants/String'
 import TCProfileImage from '../TCProfileImage'
-import TCGradient from '../TCGradientButton'
+import TCGradientButton from '../TCGradientButton'
 import { parseInviteRequest } from '../../screens/notificationsScreen/PRNotificationParser';
 
 function PRNotificationInviteCell({
-  item, selectedEntity, onPress, onAccept, onDecline,
+  item, selectedEntity, onPress, onAccept, onDecline, disabled = false,
 }) {
   const [dataDictionary, setDataDictionary] = useState()
 
@@ -38,14 +38,15 @@ function PRNotificationInviteCell({
               <Text>{`${dataDictionary.text} `}</Text>
               <Text style={styles.timeStyle}>{dataDictionary.notificationTime}</Text>
             </Text>
-            <View style={styles.viewSecondStyle}>
-              <TCGradient
+            <View style={disabled ? [styles.viewSecondStyle, { opacity: 0.5 }] : styles.viewSecondStyle}>
+              <TCGradientButton
                 textStyle={styles.btnTextStyle}
                 outerContainerStyle={styles.acceptBtnStyle}
                 style={styles.acceptButtonInnerStyle}
                 title={strings.accept}
+                disabled= {disabled}
                 onPress={onAccept}/>
-              <TouchableOpacity style={styles.declineBtnStyle} onPress={onDecline}>
+              <TouchableOpacity style={styles.declineBtnStyle} onPress={onDecline} disabled={disabled}>
                 <Text style={[styles.btnTextStyle, { color: colors.lightBlackColor }]}>{strings.decline}</Text>
               </TouchableOpacity>
             </View>
