@@ -576,7 +576,12 @@ searchTitle: 'Search by city, state or country',
 challengeeSecureText: 'The challengee secures the match place',
 challengerSecureText: 'The challenger secures the match place',
 recentMatchPlaceholderText: 'There are no recent games.\nWould you like to start your game?',
-upcomingMatchPlaceholderText: 'There is no Upcoming Match.\n Would you like to start your challenge?',
+upcomingMatchPlaceholderText: 'There is no Upcoming Match.\nWould you like to start your challenge?',
+challengerPlaceholderText: 'There is no challenge.\nWould you like to start your challenge?',
+hiringPlayersPlaceholderText: 'There is no Hiring team.\nWould you like to start to hire players?',
+lookingTeamsPlaceholderText: 'There is no Player.\nWould you like to start registering players?',
+refereesPlaceholderText: 'There is no referee.\nWould you like to start registering Referees?',
+scorekeepersPlaceholderText: 'There is no Scorekeeper.\nWould you like to start registering\nScorekeeper?',
 
 };
 export default strings;

@@ -74,7 +74,7 @@ export default function AccountScreen({ navigation }) {
 
   // Account menu opetions
   const userMenu = [
-    { key: 'My Schedule' },
+    { key: 'My Reservations' },
     { key: 'My Sports', member: [{ opetions: 'Add a sport' }] },
     { key: 'My Refereeing', member: [{ opetions: 'Register as a referee' }] },
     { key: 'My Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
@@ -98,7 +98,7 @@ export default function AccountScreen({ navigation }) {
     { key: 'Setting & Privacy' },
   ];
   const teamMenu = [
-    { key: 'My Schedule' },
+    { key: 'My Reservations' },
     { key: 'Members' },
     // {key: 'My Leagues'},
     { key: 'My Clubs', member: [{ opetions: 'Create a Club' }] },
@@ -113,7 +113,7 @@ export default function AccountScreen({ navigation }) {
     },
   ];
   const clubMenu = [
-    { key: 'My Schedule' },
+    { key: 'My Reservations' },
     { key: 'Members' },
     { key: 'My Teams', member: [{ opetions: 'Create a Team' }] },
     // {key: 'My Leagues'},
@@ -426,7 +426,7 @@ export default function AccountScreen({ navigation }) {
   }, [onLogout]);
 
   const handleSections = async (section) => {
-    if (section === 'My Schedule') {
+    if (section === 'My Reservations') {
       navigation.navigate('ScheduleScreen');
     } else if (section === 'Register as a Referee') {
       navigation.navigate('RegisterReferee');
@@ -1078,7 +1078,7 @@ export default function AccountScreen({ navigation }) {
                 onPress={() => {
                   handleSections(section);
                 }}>
-                {section === 'My Schedule' && (
+                {section === 'My Reservations' && (
                   <Image source={images.mySchedule} style={styles.menuItem} />
                 )}
                 {section === 'My Sports' && (

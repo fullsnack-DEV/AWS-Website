@@ -25,7 +25,7 @@ import images from '../../../../Constants/ImagePath';
 import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
-import DataSource from '../../../../Constants/DataSource';
+import { groupMemberGenderItems } from '../../../../utils';
 
 export default function CreateClubForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -203,7 +203,7 @@ export default function CreateClubForm1({ navigation, route }) {
               label: strings.selectGenderPlaceholder,
               value: '',
             } }
-            items={ DataSource.Gender }
+            items={ groupMemberGenderItems }
             onValueChange={ (value) => {
               setGender(value);
             } }

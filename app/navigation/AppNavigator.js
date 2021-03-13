@@ -329,28 +329,24 @@ const AppNavigator = ({ navigation }) => {
 const styles = StyleSheet.create({
   selectedEntity: {
     alignSelf: 'center',
-    borderRadius: 5,
     height: 40,
     resizeMode: 'contain',
     width: 40,
   },
   selectedTabImg: {
     alignSelf: 'center',
-    borderRadius: 5,
     height: 40,
     resizeMode: 'contain',
     width: 40,
   },
   tabEntity: {
     alignSelf: 'center',
-    borderRadius: 5,
     height: 40,
     resizeMode: 'contain',
     width: 40,
   },
   tabImg: {
     alignSelf: 'center',
-    borderRadius: 5,
     height: 40,
     resizeMode: 'contain',
     width: 40,

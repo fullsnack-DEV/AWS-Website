@@ -2,23 +2,27 @@ import React, { memo } from 'react';
 import {
   View,
   Text,
-
+  TouchableOpacity,
   StyleSheet,
   ImageBackground,
 } from 'react-native';
 
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-
+import LinearGradient from 'react-native-linear-gradient';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import TCGradientButton from './TCGradientButton';
 import TCRoundChart from './TCRoundChart';
 import useRenderCount from '../hooks/useRenderCount'
+import { widthPercentageToDP } from '../utils';
 
-const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
+const TCTeamsCardPlaceholder = ({
+  cardWidth = '86%', gameStatsData, placeholderText = '',
+}) => {
   useRenderCount('TCHiringPlayersCard')
   return (
+
     <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
       <View style={styles.eventText}>
         <View
@@ -49,7 +53,7 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
           source={images.soccerBackground}
           style={{
             height: 102,
-            width: wp('32%'),
+            width: wp('33%'),
             resizeMode: 'cover',
             overflow: 'hidden',
             borderBottomRightRadius: 8,
@@ -58,15 +62,28 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
             justifyContent: 'flex-end',
           }}>
         <TCGradientButton
-            title={'Join'}
+          startGradientColor = {colors.kHexColorFF8A01}
+          endGradientColor = {colors.darkThemeColor}
+            title={'$9999+ CAD'}
             style={{
               height: 25,
               borderRadius: 6,
               width: 95,
             }}
-            onPress={() => console.log('Join Press')}
+            onPress={() => console.log('Amount Pressed')}
           />
       </ImageBackground>
+      <LinearGradient
+        colors={[colors.yellowColor, colors.assistTextColor]}
+          style={styles.overlayStyle}>
+        <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
+        <TouchableOpacity
+              style={styles.startButton}
+              onPress={() => {
+              }}>
+          <Text style={styles.startTitle}>Start</Text>
+        </TouchableOpacity>
+      </LinearGradient>
     </View>
 
   )
@@ -87,7 +104,7 @@ const styles = StyleSheet.create({
     width: wp('86%'),
     borderBottomRightRadius: 8,
     borderTopRightRadius: 8,
-    // marginTop: 15,
+    marginBottom: 10,
   },
   bottomView: {
     flexDirection: 'row',
@@ -122,6 +139,47 @@ const styles = StyleSheet.create({
     marginRight: 5,
     opacity: 0.4,
   },
+  overlayStyle: {
+    borderBottomLeftRadius: 8,
+    borderTopLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    borderTopRightRadius: 8,
+    height: 102,
+    width: '100%',
+    position: 'absolute',
+    opacity: 0.9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  placeholderTextStyle: {
+      fontSize: 16,
+      fontFamily: fonts.RMedium,
+      color: colors.whiteColor,
+      textAlign: 'center',
+  },
+  startButton: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 25,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    width: widthPercentageToDP('20%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  startTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.themeColor,
+    alignSelf: 'center',
+  },
 });
 
-export default memo(TCHiringPlayersCard);
+export default memo(TCTeamsCardPlaceholder);

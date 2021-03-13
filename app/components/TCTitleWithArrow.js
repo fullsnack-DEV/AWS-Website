@@ -1,9 +1,9 @@
 import React from 'react';
 import {
- TouchableOpacity,
 View, StyleSheet, Text, Image,
 } from 'react-native';
 
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -20,7 +20,7 @@ function TCTitleWithArrow({
   ...otherProps
 }) {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPress}>
       <View style={[styles.viewContainer, viewStyle]}>
         <Text style={[styles.labelText, style]} {...otherProps}>
           {title}
@@ -31,7 +31,7 @@ function TCTitleWithArrow({
           <Image source={images.nextArrow} style={styles.arrowStyle} />
       )}
       </View>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 }
 

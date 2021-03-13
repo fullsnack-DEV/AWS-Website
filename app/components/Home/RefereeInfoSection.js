@@ -52,6 +52,7 @@ import ModalLocationSearch from './ModalLocationSearch';
 import EditRefereeCertificate from './EditRefereeCertificate';
 import TCKeyboardView from '../TCKeyboardView';
 import TCThinDivider from '../TCThinDivider';
+import DataSource from '../../Constants/DataSource';
 
 const privacy_Data = [
   {
@@ -804,10 +805,7 @@ function RefereeInfoSection({
             >
                   <View style={{ marginTop: 8 }}>
                     <TCPicker
-                  dataSource={[
-                    { label: 'Male', value: 'Male' },
-                    { label: 'Female', value: 'Female' },
-                  ]}
+                  dataSource={DataSource.Gender}
                   placeholder={'Select Gender'}
                   value={info?.genderText ?? '-'}
                   onValueChange={(value) => {
