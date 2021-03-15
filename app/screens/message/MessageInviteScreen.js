@@ -9,20 +9,20 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
+import QB from 'quickblox-react-native-sdk';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 // import ActivityLoader from '../../components/loader/ActivityLoader';
-import TCSearchBox from '../../components/TCSearchBox';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
-import { QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
+import { getQBProfilePic, QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
 import AuthContext from '../../auth/context'
 import TCScrollableTabs from '../../components/TCScrollableTabs';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
@@ -129,50 +129,54 @@ const MessageInviteScreen = ({ navigation, route }) => {
       : placeHolderImage
     return (
       <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
-        <LinearGradient
+        <View
         colors={isChecked ? [colors.greenGradientStart, colors.greenGradientEnd] : [colors.offwhite, colors.offwhite]}
         style={[styles.listItems, { padding: 10 }]}>
           <View style={{
             flexDirection: 'row',
           }}>
-            <FastImage resizeMode={'contain'} source={finalImage} style={styles.imageContainer}/>
+            <FastImage resizeMode={'cover'} source={finalImage} style={styles.imageContainer}/>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
               <View style={{
                 flex: 3, justifyContent: 'center', marginLeft: hp(1),
               }}>
-                <Text style={{ ...styles.title, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{fullName}</Text>
-                <Text style={{ ...styles.subTitle, color: isChecked ? colors.whiteColor : colors.lightBlackColor }}>{city}</Text>
+                <Text style={{ ...styles.title, color: colors.lightBlackColor }}>{fullName}</Text>
+                <Text style={{ ...styles.subTitle, color: colors.lightBlackColor }}>{city}</Text>
               </View>
-              {isChecked ? <Image source={images.checkGreen} resizeMode={'contain'} style={ styles.checkboxImg }/>
+              {isChecked ? <Image source={images.yellowCheckBox} resizeMode={'contain'} style={ styles.checkboxImg }/>
                 : <Image source={images.whiteUncheck} resizeMode={'contain'} style={ styles.checkboxImg }/>
             }
             </View>
           </View>
-        </LinearGradient>
+        </View>
       </TouchableOpacity>)
   }, [])
 
   const toggleSelection = useCallback((isChecked, user) => {
     if (isChecked) {
-      const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
-      if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+      if (route?.params?.dialog) {
+        const fromExistingUser = route?.params?.dialog?.occupantsIds?.findIndex((item) => item === user?.id)
+        if (!route?.params?.isAdmin && fromExistingUser !== -1) {
+          Alert.alert('TownsCup', 'Group admin can remove user')
+        } else {
+          const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
+          if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+        }
+      } else {
+        const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
+        if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+      }
     } else {
       selectedInvitees.push(user);
     }
     setSelectedInvitees([...selectedInvitees]);
-  }, [selectedInvitees]);
+  }, [route?.params?.dialog, route?.params?.isAdmin, selectedInvitees]);
 
-  const renderSelectedContactList = useCallback(({ item }) => {
+  const renderSelectedContactList = useCallback(({ item, index }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
     const entityType = _.get(customData, ['entity_type'], '');
     const fullName = _.get(customData, ['full_name'], '')
-    const fullImage = _.get(customData, ['full_image'], '');
-    const placeHolderImage = entityType === 'player'
-      ? images.profilePlaceHolder
-      : images.groupUsers;
-    const finalImage = fullImage
-      ? { uri: fullImage }
-      : placeHolderImage
+    const type = entityType === 'player' ? QB.chat.DIALOG_TYPE.CHAT : QB.chat.DIALOG_TYPE.GROUP_CHAT
 
     return (
       <View style={styles.selectedContactInnerView}>
@@ -180,7 +184,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
           <View>
             <FastImage
               resizeMode={'contain'}
-              source={finalImage}
+              source={getQBProfilePic(type, index)}
               style={styles.selectedContactImage}
             />
             <TouchableOpacity
@@ -220,6 +224,8 @@ const MessageInviteScreen = ({ navigation, route }) => {
   const renderSingleTab = useCallback((data) => (
     <View style={{ margin: wp(3) }}>
       <FlatList
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           removeClippedSubviews={true}
           legacyImplementation={true}
           maxToRenderPerBatch={10}
@@ -304,15 +310,16 @@ const MessageInviteScreen = ({ navigation, route }) => {
   const renderSelectedInvitees = useMemo(() => selectedInvitees.length > 0 && (
     <View style={styles.selectedInviteesMainView}>
       <FlatList
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
             horizontal={true}
-            showsHorizontalScrollIndicator={false}
             data={selectedInvitees || []}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderSelectedContactList}
             extraData={selectedInvitees}
         />
     </View>
-  ), [selectedInvitees])
+  ), [renderSelectedContactList, selectedInvitees])
 
   const renderTabs = useMemo(() => (
     <TCScrollableTabs
@@ -324,13 +331,22 @@ const MessageInviteScreen = ({ navigation, route }) => {
       {TAB_ITEMS?.map(renderTabContain)}
     </TCScrollableTabs>
   ), [TAB_ITEMS, renderTabContain])
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       {renderHeader}
       <View style={ styles.separateLine } />
       {/* <ActivityLoader visible={loading}/> */}
       {renderSelectedInvitees}
-      <TCSearchBox style={{ marginHorizontal: 15 }} value={searchText} onChangeText={setSearchText}/>
+      <View style={{ backgroundColor: colors.grayBackgroundColor, width: '100%', padding: 15 }}>
+        <TextInput
+            autoFocus={true}
+            value={searchText}
+            onChangeText={setSearchText}
+            style={styles.textInputStyle}
+            placeholder={'Search'}
+        />
+      </View>
       <View style={styles.sperateLine}/>
       {renderTabs}
     </SafeAreaView>
@@ -343,6 +359,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
+  },
+  textInputStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    backgroundColor: colors.whiteColor,
+    padding: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
   },
   backImageStyle: {
     height: 20,
@@ -385,16 +409,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     color: 'black',
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 0,
   },
   checkboxImg: {
-    width: wp('10%'),
-
-    // paddingLeft: wp('25%'),
+    height: 22,
+    width: 22,
     resizeMode: 'contain',
     alignSelf: 'center',
   },
@@ -439,7 +457,6 @@ const styles = StyleSheet.create({
     borderColor: colors.grayColor,
     borderWidth: 0.5,
     width: wp(100),
-    marginBottom: hp(2),
   },
 });
 export default MessageInviteScreen;

@@ -4,6 +4,7 @@ import { decode as atob } from 'base-64';
 import ImageResizer from 'react-native-image-resizer';
 import getImagePreSignedURL from '../api/Media';
 
+export const MAX_UPLOAD_POST_ASSETS = 12
 const base64ToArrayBuffer = (base64) => {
   const binaryString = atob(base64);
   const len = binaryString.length;

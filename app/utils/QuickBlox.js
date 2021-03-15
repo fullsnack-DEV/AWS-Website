@@ -1,6 +1,7 @@
 import QB from 'quickblox-react-native-sdk';
 import _ from 'lodash';
 import { QB_Auth_Password } from './constant';
+import images from '../Constants/ImagePath';
 
 const MESSAGE_LIMIT = 50;
 const DIALOG_LIST_LIMIT = 1000;
@@ -50,6 +51,13 @@ const appSettings = {
 };
 
 export const QBChatConnected = async () => QB.chat.isConnected()
+
+export const getQBProfilePic = (dialogType, index) => {
+    if (index % 2 === 0) {
+      return dialogType === QB.chat.DIALOG_TYPE.CHAT ? images.yellowQBUser : images.yellowQBGroup
+    }
+    return dialogType === QB.chat.DIALOG_TYPE.CHAT ? images.greenQBUser : images.greenQBGroup
+}
 
 export const QBChatDisconnect = () => QBChatConnected().then(() => QB.chat.disconnect()).catch((e) => e);
 export const QBinit = () => {

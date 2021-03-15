@@ -1,18 +1,16 @@
 import React, {
-  useCallback, useContext, useEffect, useMemo, useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import {
   View,
   StyleSheet,
-  NativeEventEmitter,
   TouchableOpacity,
   Text,
   SafeAreaView,
-  FlatList,
+  FlatList, TextInput,
 } from 'react-native';
 
 import QB from 'quickblox-react-native-sdk';
-import { useIsFocused } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash'
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -23,19 +21,15 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {
   getQBProfilePic,
-  QB_ACCOUNT_TYPE, QBconnectAndSubscribe,
+  QB_ACCOUNT_TYPE,
   QBgetDialogs,
-  QBsetupSettings,
 } from '../../utils/QuickBlox';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
-import AuthContext from '../../auth/context';
+import { widthPercentageToDP as wp } from '../../utils';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 
-const QbMessageEmitter = new NativeEventEmitter(QB.chat)
-
-const MessageMainScreen = ({ navigation }) => {
-  const authContext = useContext(AuthContext);
+const MessageSearchScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState(null);
   const [endReachedCalled, setEndReachedCalled] = useState(false);
   const [savedDialogsData, setSavedDialogsData] = useState({
     append: {},
@@ -44,39 +38,12 @@ const MessageMainScreen = ({ navigation }) => {
     skip: 0,
     total: 0,
   });
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      connectAndSubscribe();
-      QbMessageEmitter.addListener(
-          QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-          newDialogHandler,
-      )
-    }
-
-    return () => {
-      // setSavedDialogsData({
-      //   append: {},
-      //   dialogs: [],
-      //   limit: 30,
-      //   skip: 0,
-      //   total: 0,
-      // });
-      QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE);
-    }
-  }, [navigation, isFocused])
-
-  const newDialogHandler = () => {
-    getDialogs();
-  }
-
   const getDialogs = async (request = {}, pagination = false) => {
     const savedDialog = await QBgetDialogs({
       ...request,
       filter: {
         field: QB.chat.DIALOGS_FILTER.FIELD.NAME,
-        value: '',
+        value: searchText,
         operator: QB.chat.DIALOGS_FILTER.OPERATOR.CTN,
       },
     })
@@ -95,20 +62,12 @@ const MessageMainScreen = ({ navigation }) => {
     setLoading(false);
   }
 
-  const connectAndSubscribe = async () => {
-    setLoading(true);
-    await QBconnectAndSubscribe(authContext?.entity);
-    await QBsetupSettings();
-    await getDialogs();
-    setTimeout(() => setLoading(false), 1500);
-  }
-
-  const onDialogPress = (dialog) => {
-    navigation.navigate('MessageChat', {
+  const onDialogPress = useCallback((dialog) => {
+    navigation.replace('MessageChat', {
       screen: 'MessageChatRoom',
       params: { dialog },
     });
-  }
+  }, [navigation]);
 
   useEffect(() => {
     if (endReachedCalled) {
@@ -116,6 +75,16 @@ const MessageMainScreen = ({ navigation }) => {
       getDialogs({ skip: savedDialogsData.dialogs.length }, true)
     }
   }, [endReachedCalled])
+
+  useEffect(() => {
+      if (searchText && searchText !== '') {
+        getDialogs()
+            .then(() => setLoading(false))
+            .catch(() => setLoading(false));
+      } else {
+        setSavedDialogsData([])
+      }
+  }, [searchText])
 
   const renderSingleEntityChat = useCallback(({ item, index }) => {
     let fullName = item.name;
@@ -134,7 +103,7 @@ const MessageMainScreen = ({ navigation }) => {
         subTitle={item?.lastMessage}
         numberOfMembers={item?.occupantsIds}
         lastMessageDate={new Date(item?.lastMessageDateSent)}
-        numberOfUnreadMessages={Number(item?.unreadMessagesCount) > 99 ? '+ 99' : item?.unreadMessagesCount}
+        numberOfUnreadMessages={''}
     />)
   }, [onDialogPress])
 
@@ -148,14 +117,8 @@ const MessageMainScreen = ({ navigation }) => {
 
   const onMomentumScrollBegin = useCallback(() => setEndReachedCalled(false), [])
 
-  const LiseEmptyComponent = useMemo(() => (
-    <Text style={{
-        fontFamily: fonts.RLight, marginTop: 15, fontSize: 16, color: colors.lightBlackColor,
-    }}>No Messages Found</Text>
-  ), [])
   const renderAllMessages = useMemo(() => (
     <FlatList
-            ListEmptyComponent={LiseEmptyComponent}
             refreshing={loading}
             data={savedDialogsData.dialogs ?? []}
             keyExtractor={chatKeyExtractor}
@@ -164,27 +127,20 @@ const MessageMainScreen = ({ navigation }) => {
             onMomentumScrollBegin={onMomentumScrollBegin}
             onEndReached={onEndReached}
         />
-    ), [LiseEmptyComponent, chatKeyExtractor, loading, onEndReached, onMomentumScrollBegin, renderSingleEntityChat, savedDialogsData.dialogs])
+    ), [chatKeyExtractor, loading, onEndReached, onMomentumScrollBegin, renderSingleEntityChat, savedDialogsData.dialogs])
 
   const renderHeader = useMemo(() => (
     <Header
-            leftComponent={navigation.canGoBack()
-              && <TouchableOpacity onPress={() => navigation.goBack() }>
+            leftComponent={
+              <TouchableOpacity onPress={() => navigation.goBack() }>
                 <FastImage source={images.backArrow} resizeMode={'contain'} style={styles.backImageStyle} />
               </TouchableOpacity>
             }
             centerComponent={
-              <Text style={styles.eventTextStyle}>Message</Text>
+              <Text style={styles.eventTextStyle}>Search</Text>
             }
             rightComponent={
-              <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity style={{ padding: 2 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
-                  <FastImage source={images.messageSearchButton} resizeMode={'contain'} style={styles.rightImageStyle} />
-                </TouchableOpacity>
-                <TouchableOpacity style={{ padding: 2 }} onPress={() => { navigation.navigate('MessageInviteScreen') }}>
-                  <FastImage source={images.addMessageChat} resizeMode={'contain'} style={styles.rightImageStyle} />
-                </TouchableOpacity>
-              </View>
+              <></>
             }
         />
     ), [navigation])
@@ -193,6 +149,15 @@ const MessageMainScreen = ({ navigation }) => {
     <SafeAreaView style={ styles.mainContainer }>
       {renderHeader}
       <View style={styles.separateLine}/>
+      <View style={{ backgroundColor: colors.grayBackgroundColor, width: '100%', padding: 15 }}>
+        <TextInput
+            autoFocus={true}
+            value={searchText}
+            onChangeText={setSearchText}
+            style={styles.textInputStyle}
+            placeholder={'Search'}
+        />
+      </View>
       <View style={ styles.sperateLine } />
       {loading
           ? <UserListShimmer/>
@@ -206,15 +171,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  textInputStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    backgroundColor: colors.whiteColor,
+    padding: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
   backImageStyle: {
     height: 20,
     width: 16,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
-  },
-  rightImageStyle: {
-    height: 36,
-    width: 36,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
@@ -227,8 +194,7 @@ const styles = StyleSheet.create({
     borderColor: colors.grayColor,
     borderWidth: 0.5,
     width: wp(100),
-    marginBottom: hp(2),
   },
 });
 
-export default MessageMainScreen;
+export default MessageSearchScreen;

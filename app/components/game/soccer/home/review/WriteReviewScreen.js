@@ -37,6 +37,7 @@ import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
+import { MAX_UPLOAD_POST_ASSETS } from '../../../../../utils/imageAction';
 
 export default function WriteReviewScreen({ navigation, route }) {
   const textInputFocus = useRef();
@@ -324,9 +325,8 @@ export default function WriteReviewScreen({ navigation, route }) {
                 ImagePicker.openPicker({
                   width: 300,
                   height: 400,
-                  // cropping: true,
                   multiple: true,
-                  maxFiles: 10,
+                  maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
                 }).then((data) => {
                   let allSelectData = [];
                   const secondData = [];

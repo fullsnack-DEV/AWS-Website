@@ -274,7 +274,13 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   moveIcon: require('../assets/images/ic_move.png'),
   checkRoundOrange: require('../assets/images/check_round_orange.png'),
   addStatus: require('../assets/images/add_status.png'),
-
+  addMessageChat: require('../assets/images/addMessageChat.png'),
+  greenQBGroup: require('../assets/images/greenQBGroup.png'),
+  greenQBUser: require('../assets/images/greenQBUser.png'),
+  yellowQBGroup: require('../assets/images/yellowQBGroup.png'),
+  yellowQBUser: require('../assets/images/yellowQBUser.png'),
+  messageSearchButton: require('../assets/images/messageSearchButton.png'),
+  yellowCheckBox: require('../assets/images/yellowCheckBox.png'),
 };
 
 export default images;

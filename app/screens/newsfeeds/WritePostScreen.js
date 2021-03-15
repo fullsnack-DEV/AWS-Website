@@ -32,6 +32,7 @@ import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import AuthContext from '../../auth/context';
 import { getSearchData } from '../../utils';
+import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 // const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -321,7 +322,7 @@ export default function WritePostScreen({ navigation, route }) {
         width: 300,
         height: 400,
         multiple: true,
-        maxFiles: 10,
+        maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
       }).then((data) => {
         let allSelectData = [];
         const secondData = [];
@@ -394,11 +395,12 @@ export default function WritePostScreen({ navigation, route }) {
             <Text style={ styles.onlyMeTextStyle }>Only me</Text>
           </View>
           <View style={ [styles.onlyMeViewStyle, { justifyContent: 'flex-end' }] }>
-            <ImageButton
+            {selectImage?.length < MAX_UPLOAD_POST_ASSETS
+            && <ImageButton
               source={ images.pickImage }
               imageStyle={ { width: 30, height: 30, marginHorizontal: wp('2%') } }
               onImagePress={onImagePress}
-            />
+            />}
             <ImageButton
               source={ images.tagImage }
               imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}

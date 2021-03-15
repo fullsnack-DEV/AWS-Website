@@ -13,12 +13,15 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
+import QB from 'quickblox-react-native-sdk';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
-import { QB_DIALOG_TYPE, QBcreateDialog, QBupdateDialog } from '../../utils/QuickBlox';
+import {
+ getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog, QBupdateDialog,
+} from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
 
 const MessageNewGroupScreen = ({ route, navigation }) => {
@@ -46,18 +49,18 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
     }
   }, [navigation, selectedInvitees]);
 
-  const renderSelectedContactList = useCallback(({ item }) => {
+  const renderSelectedContactList = useCallback(({ item, index }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
+    const entityType = _.get(customData, ['entity_type'], '');
     const fullName = _.get(customData, ['full_name'], '')
-    const fullImage = _.get(customData, ['full_image'], '');
-    const finalImage = fullImage ? { uri: fullImage } : images.profilePlaceHolder;
+    const type = entityType === 'player' ? QB.chat.DIALOG_TYPE.CHAT : QB.chat.DIALOG_TYPE.GROUP_CHAT
 
     return (
       <View style={styles.selectedContactInnerView}>
         <View>
           <FastImage
               resizeMode={'contain'}
-              source={finalImage}
+              source={getQBProfilePic(type, index)}
               style={styles.selectedContactImage}
             />
           <TouchableOpacity
@@ -133,7 +136,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
           }
           rightComponent={
             <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-              <Text style={styles.eventTextStyle}>Done</Text>
+              <Text style={{ ...styles.eventTextStyle, width: 100, textAlign: 'right' }}>Done</Text>
             </TouchableOpacity>
           }
       />
@@ -165,7 +168,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
         <TouchableOpacity>
           <FastImage
             resizeMode={'contain'}
-            source={images.groupUsers}
+            source={images.yellowQBGroup}
             style={styles.imageContainer}
           />
           <FastImage
@@ -222,9 +225,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   selectedContactButtonView: {
-    height: hp(2),
-    width: hp(2),
-    backgroundColor: colors.lightgrayColor,
+    height: 17,
+    width: 17,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: hp(2),
     position: 'absolute',
     top: 0,
@@ -244,11 +247,11 @@ const styles = StyleSheet.create({
     // borderWidth: 0.5,
   },
   deSelectedContactImage: {
-    width: wp(2),
-    height: wp(2),
+    width: 10,
+    height: 10,
     alignSelf: 'center',
     justifyContent: 'center',
-    // borderWidth: 0.5,
+    tintColor: colors.whiteColor,
   },
   separateLine: {
     borderColor: colors.grayColor,

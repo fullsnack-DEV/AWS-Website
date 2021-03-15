@@ -12,6 +12,7 @@ import MessageNewGroupScreen from '../screens/message/MessageNewGroupScreen';
 import MessageDrawerNavigator from './MessageDrawerNavigator';
 import HomeScreen from '../screens/home/HomeScreen';
 import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
+import MessageSearchScreen from '../screens/message/MessageSearchScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,23 @@ const MessageNavigator = () => (
     <Stack.Screen
       name="MessageMainScreen"
       component={MessageMainScreen}
+      options={{
+        title: 'Neymar JR',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="MessageSearchScreen"
+      component={MessageSearchScreen}
       options={{
         title: 'Neymar JR',
         headerTintColor: colors.blackColor,

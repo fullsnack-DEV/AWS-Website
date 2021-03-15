@@ -35,6 +35,7 @@ import images from '../../Constants/ImagePath';
 import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import { getSearchData } from '../../utils';
+import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -244,6 +245,31 @@ const EditPostScreen = ({
     setCurrentTextInputIndex(e?.nativeEvent?.selection?.end)
   }, [])
 
+  const onImagePress = useCallback(() => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      multiple: true,
+      maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
+    }).then((image) => {
+      let allSelectData = [];
+      const secondData = [];
+      if (selectImage.length > 0) {
+        image.filter((dataItem) => {
+          const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
+          if (filter_data.length === 0) {
+            secondData.push(dataItem)
+          }
+          return null;
+        })
+        allSelectData = [...selectImage, ...secondData];
+        setSelectImage(allSelectData);
+      } else {
+        setSelectImage(image);
+      }
+    });
+  }, [selectImage]);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -370,35 +396,12 @@ const EditPostScreen = ({
             <Text style={styles.onlyMeTextStyle}>Only me</Text>
           </View>
           <View style={[styles.onlyMeViewStyle, { justifyContent: 'flex-end' }]}>
-            <ImageButton
+            {selectImage?.length < MAX_UPLOAD_POST_ASSETS
+            && <ImageButton
               source={images.pickImage}
               imageStyle={{ width: 30, height: 30, marginHorizontal: wp('2%') }}
-              onImagePress={() => {
-                ImagePicker.openPicker({
-                  width: 300,
-                  height: 400,
-                  // cropping: true,
-                  multiple: true,
-                  maxFiles: 10,
-                }).then((image) => {
-                  let allSelectData = [];
-                  const secondData = [];
-                  if (selectImage.length > 0) {
-                    image.filter((dataItem) => {
-                      const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
-                      if (filter_data.length === 0) {
-                        secondData.push(dataItem)
-                      }
-                      return null;
-                    })
-                    allSelectData = [...selectImage, ...secondData];
-                    setSelectImage(allSelectData);
-                  } else {
-                    setSelectImage(image);
-                  }
-                });
-              }}
-            />
+              onImagePress={onImagePress}
+            />}
             <ImageButton
               source={images.tagImage}
               imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}

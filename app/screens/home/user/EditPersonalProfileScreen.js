@@ -151,17 +151,16 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
 
   const callUpdateUserAPI = (userProfile) => {
     updateUserProfile(userProfile, authContext).then(async (response) => {
-      setloading(false);
       if (response && response.status === true) {
-        setTimeout(() => {
-          Alert.alert('Towns Cup', 'Profile changed sucessfully');
-        }, 0.1)
         const entity = authContext.entity
         entity.obj = response.payload;
         entity.auth.user = response.payload;
         authContext.setEntity({ ...entity })
-        Utility.setStorage('authContextEntity', { ...entity })
+        await Utility.setStorage('authContextEntity', { ...entity })
+        setloading(false);
+        navigation.goBack();
       } else {
+        setloading(false);
         setTimeout(() => {
           Alert.alert('Towns Cup', 'Something went wrong');
         }, 0.1)
