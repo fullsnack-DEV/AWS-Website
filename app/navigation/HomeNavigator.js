@@ -172,6 +172,7 @@ import ReviewScorekeeperList from '../components/game/soccer/home/review/reviewF
 import ScorekeeperReviewScreen from '../components/game/soccer/home/review/reviewForScorekeeper/ScorekeeperReviewScreen';
 import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPlayerSuccess';
 import AccountScreen from '../screens/account/AccountScreen';
+import NotificationNavigator from './NotificationNavigator';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2102,6 +2103,13 @@ const HomeNavigator = () => (
               },
             }}
         />
+    <Stack.Screen
+          name="NotificationNavigator"
+          component={NotificationNavigator}
+          options={{
+            headerShown: false,
+          }}
+      />
   </Stack.Navigator>
 );
 

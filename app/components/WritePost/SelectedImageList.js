@@ -20,7 +20,7 @@ function SelectedImageList({
   return (
     <View style={styles.uploadedImage}>
       {(data?.type?.split('/')[0] || data?.mime?.split('/')[0]) === 'image' && <FastImage
-        onLoad={() => setShowExtraButtons(true)}
+         onLoadEnd={() => setShowExtraButtons(true)}
         style={styles.uploadedImage}
         source={{ uri: data.path || data.thumbnail }}
         resizeMode={FastImage.resizeMode.cover}

@@ -1,80 +1,87 @@
 import React, {
-  useEffect, useState, useLayoutEffect, useContext,
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
 } from 'react';
 import {
-  View, StyleSheet, FlatList, Alert, Text,
+  View,
+  StyleSheet,
+
+  SectionList,
+  Text,
+  Alert,
 } from 'react-native';
-import _ from 'lodash'
+
+import Moment from 'moment';
+import { useIsFocused } from '@react-navigation/native';
+import { toggleView } from '../../utils/index'
 import PRNotificationDetailMessageItem from '../../components/notificationComponent/PRNotificationDetailMessageItem';
 import NotificationItem from '../../components/notificationComponent/NotificationItem';
 import PRNotificationInviteCell from '../../components/notificationComponent/PRNotificationInviteCell';
 import NotificationType from '../../Constants/NotificationType';
-import AuthContext from '../../auth/context'
-import { getTrash, restoreNotification } from '../../api/Notificaitons';
+import {
+  getTrash,
+  restoreNotification,
+
+} from '../../api/Notificaitons';
+import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCNoDataView from '../../components/TCNoDataView';
-// import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
 
-function TrashScreen({ navigation, route }) {
-  const authContext = useContext(AuthContext)
-  const [loading, setloading] = useState(true);
-  const [mainNotificationsList, setMainNotificationsList] = useState();
-  const [selectedEntity, setSelectedEntity] = useState();
-  useLayoutEffect(() => {
-    setSelectedEntity({ ...route.selectedGroup });
+import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
 
-    navigation.setOptions({});
-  }, [navigation]);
-  const navigateFlatList = () => {};
-  useEffect(() => {
-    callTrashApi();
-  }, []);
-  const callTrashApi = () => {
-    const params = {
-      uid:
-        route.params.selectedGroup.entity_type === 'player'
-          ? route.params.selectedGroup.user_id
-          : route.params.selectedGroup.group_id,
-    };
-    getTrash(params, authContext)
-      .then((response) => {
-        const requests = response.payload.requests.map((obj) => ({ ...obj, type: 'request', createdDate: new Date(`${obj.created_at}+0000`) }))
-        const notifications = response.payload.notifications.map((obj) => ({ ...obj, type: 'notification', createdDate: new Date(`${obj.updated_at}+0000`) }))
-        let trashNotifications = [...requests, ...notifications];
-        trashNotifications = _.orderBy(trashNotifications, ['createdDate'], ['desc']);
-        setMainNotificationsList(trashNotifications);
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        Alert.alert(e.messages);
-      });
-  };
+function TrashScreen({ navigation, route }) {
+  const authContext = useContext(AuthContext);
+  const [mainNotificationsList, setMainNotificationsList] = useState();
+  const currentDate = new Date();
+  const [selectedEntity, setSelectedEntity] = useState();
+  const isFocused = useIsFocused();
+const [showNoteToast, setShowNoteToast] = useState()
+  const [loading, setloading] = useState(false);
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
+
   const onRestore = ({ item }) => {
-    setloading(true);
+    setloading(true)
     const ids = [];
     for (const temData of item.activities) {
       ids.push(temData.id);
     }
     restoreNotification(ids, item.type, authContext).then(() => {
-      callTrashApi()
+      setloading(false)
+      callNotificationList()
     })
       .catch((e) => {
-        setloading(false);
+        setloading(false)
         Alert.alert(e.messages);
       });
   };
 
+  const openToast = () => {
+    toggleView(() => setShowNoteToast(true), 500)
+    setTimeout(() => { toggleView(() => setShowNoteToast(false), 500) }, 5000)
+  }
   const isInvite = (verb) => verb.includes(NotificationType.inviteToJoinClub)
     || verb.includes(NotificationType.invitePlayerToJoinTeam)
     || verb.includes(NotificationType.invitePlayerToJoinClub)
     || verb.includes(NotificationType.inviteToConnectProfile)
     || verb.includes(NotificationType.invitePlayerToJoingame);
+
+  const openHomePage = (item) => {
+      if (item?.entityType && item?.entityId) {
+        navigation.push('HomeScreen', {
+          uid: item?.entityId,
+          backButtonVisible: true,
+          menuBtnVisible: false,
+          role: item?.entityType,
+        });
+      }
+  };
 
   const renderPendingRequestComponent = ({ item }) => (
     <AppleStyleSwipeableRow
@@ -82,33 +89,21 @@ function TrashScreen({ navigation, route }) {
       color={colors.themeColor}
       image={images.roundArrow}>
       {isInvite(item.activities[0].verb) && (
-        <PRNotificationInviteCell data={item} card={navigateFlatList} />
+        <PRNotificationInviteCell
+          item={item}
+          disabled={true}
+          selectedEntity={selectedEntity}
+          onPressFirstEntity={openHomePage}
+        />
       )}
-      {(item.activities[0].verb.includes(NotificationType.challengeOffered)
-        || item.activities[0].verb.includes(
-          NotificationType.challengeAltered,
-        )) && (<PRNotificationDetailMessageItem
-            data={item}
-            selectedEntity={selectedEntity}
-            cta1={navigateFlatList}
-            cta2={navigateFlatList}
-            card={navigateFlatList}
-          />
-      )}
-      {(item.activities[0].verb.includes(NotificationType.refereeRequest)
-        || item.activities[0].verb.includes(
-          NotificationType.changeRefereeRequest,
-        )
-        || item.activities[0].verb.includes(
-          NotificationType.scorekeeperRequest,
-        )) && (
-          <PRNotificationDetailMessageItem
-            data={item}
-            selectedEntity={selectedEntity}
-            cta1={navigateFlatList}
-            cta2={navigateFlatList}
-            card={navigateFlatList}
-          />
+
+      {!isInvite(item.activities[0].verb) && (
+        <PRNotificationDetailMessageItem
+          item={item}
+          disabled={true}
+          selectedEntity={selectedEntity}
+          onPressFirstEntity={openHomePage}
+        />
       )}
     </AppleStyleSwipeableRow>
   );
@@ -119,46 +114,155 @@ function TrashScreen({ navigation, route }) {
       color={colors.themeColor}
       image={images.roundArrow}>
       <NotificationItem
-          data={item}
-          cta1={navigateFlatList}
-          cta2={navigateFlatList}
-          card={navigateFlatList}
-        />
+        data={item}
+        onPressFirstEntity={openHomePage}
+        onPressSecondEntity={openHomePage}
+        onPressCard={() => {}}
+      />
     </AppleStyleSwipeableRow>
   );
 
-  const renderTrashItem = ({ item }) => {
-    if (item.type === 'request') {
-      return renderPendingRequestComponent({ item });
+  const RenderSections = ({ item, section }) => {
+    if (section.section === strings.pendingrequests) {
+      return renderPendingRequestComponent({ item: { ...item, type: 'request' } });
     }
-    if (item.type === 'notification') {
-      return renderNotificationComponent({ item });
+    if (
+      section.section === strings.earlier
+      || section.section === strings.today
+    ) {
+      return renderNotificationComponent({
+        item: { ...item, type: 'notification' },
+      });
     }
     return null;
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      setTimeout(() => {
+        openToast()
+      }, 1000)
+      setFirstTimeLoading(true);
+        callNotificationList()
+          .then(() => setFirstTimeLoading(false))
+          .catch(() => setFirstTimeLoading(false));
+    }
+  }, [isFocused]);
+
+  const callNotificationList = () => new Promise((resolve, reject) => {
+      const entity = route?.params?.selectedGroup;
+      setSelectedEntity(entity);
+      const params = {
+        uid: entity.entity_type === 'player' ? entity.user_id : entity.group_id,
+      };
+      getTrash(params, authContext)
+        .then(async (response) => {
+          const pendingReqNotification = response.payload.requests;
+          const todayNotifications = response.payload.notifications.filter(
+            (item) => Moment(item.created_at).format('yyyy-MM-DD')
+              === Moment(currentDate).format('yyyy-MM-DD'),
+          );
+          const erlierNotifications = response.payload.notifications.filter(
+            (item) => Moment(item.created_at).format('yyyy-MM-DD')
+              !== Moment(currentDate).format('yyyy-MM-DD'),
+          );
+          const array = [
+            {
+              data: [...pendingReqNotification],
+              section: strings.pendingrequests,
+              type: 'request',
+            },
+            {
+              data: [...todayNotifications],
+              section: strings.today,
+              type: 'notification',
+            },
+            {
+              data: [...erlierNotifications],
+              section: strings.earlier,
+              type: 'notification',
+            },
+          ];
+          setMainNotificationsList([]);
+          setMainNotificationsList([
+            ...array.filter((item) => item.data.length !== 0),
+          ]);
+          resolve(true);
+        })
+        .catch((e) => {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject('error');
+          Alert.alert(e.messages);
+        });
+    });
+
+  const itemSeparator = () => (
+    // Item Separator
+    <View style={styles.listItemSeparatorStyle} />
+  );
+
+  const renderSectionFooter = ({ section }) => {
+    if (section.section === strings.pendingrequests) {
+      return (
+        <View
+          style={[
+            styles.listItemSeparatorStyle,
+            { height: 7, backgroundColor: colors.grayBackgroundColor },
+          ]}
+        />
+      );
+    }
+    return <View style={styles.listItemSeparatorStyle} />;
+  };
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
   return (
-    <View style={styles.containerStyle}>
+    <View style={styles.rowViewStyle}>
       <ActivityLoader visible={loading} />
-      <View style={styles.trashMessageContainerStyle}>
+
+      {showNoteToast && <View style={styles.trashMessageContainerStyle}>
         <Text style={styles.trashMessageStyle}>{strings.trashmessage}</Text>
-      </View>
-      {mainNotificationsList && mainNotificationsList.length > 0 ? (
-        <FlatList
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        data={mainNotificationsList}
-        renderItem={renderTrashItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
+      </View>}
+      {/* eslint-disable-next-line no-nested-ternary */}
+      {firstTimeLoading ? (
+        <NotificationListShimmer />
+      ) : mainNotificationsList?.length > 0 ? (
+        <SectionList
+          ItemSeparatorComponent={itemSeparator}
+          sections={mainNotificationsList}
+          keyExtractor={keyExtractor}
+          renderItem={RenderSections}
+          renderSectionHeader={({ section: { section } }) => (
+            <View style={{ flex: 1, flexDirection: 'column-reverse' }}>
+              <View style={styles.listItemSeparatorStyle} />
+              <Text style={styles.header}>{section}</Text>
+            </View>
+          )}
+          renderSectionFooter={renderSectionFooter}
+        />
       ) : (
         <TCNoDataView title={'No records found'} />
       )}
+
     </View>
   );
 }
 const styles = StyleSheet.create({
-  containerStyle: {
+  rowViewStyle: {
     flex: 1,
+  },
+  header: {
+    backgroundColor: '#fff',
+    fontFamily: fonts.RRegular,
+    fontSize: 20,
+    padding: 15,
+    color: colors.lightBlackColor,
+    alignContent: 'center',
+  },
+  listItemSeparatorStyle: {
+    height: 0.5,
+    width: '100%',
+    backgroundColor: colors.linesepratorColor,
   },
   trashMessageContainerStyle: {
     paddingHorizontal: 15,

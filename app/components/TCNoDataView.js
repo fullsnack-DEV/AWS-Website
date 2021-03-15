@@ -6,9 +6,9 @@ import {
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
-export default function TCNoDataView({ title }) {
+export default function TCNoDataView({ title, style }) {
   return (
-    <View style={styles.noDataPlaceholderView}>
+    <View style={[styles.noDataPlaceholderView, { ...style }]}>
       <Text style={styles.noDataPlaceholder}>{title}</Text>
     </View>
   );

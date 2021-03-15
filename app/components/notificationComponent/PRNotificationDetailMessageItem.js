@@ -10,7 +10,7 @@ import AuthContext from '../../auth/context'
 import { parseRequest } from '../../screens/notificationsScreen/PRNotificationParser';
 
 function PRNotificationDetailMessageItem({
-  item, selectedEntity, onPress, onDetailPress, onMessagePress, onPressFirstEntity,
+  item, selectedEntity, onPress, onDetailPress, onMessagePress, onPressFirstEntity, disabled = false,
 }) {
   const authContext = useContext(AuthContext)
   const [dataDictionary, setDataDictionary] = useState()
@@ -55,11 +55,11 @@ function PRNotificationDetailMessageItem({
               <Text style={styles.respnseTimeBoldStyle}>{dataDictionary.expiryText}</Text>
               {` ${strings.left}`}
             </Text>}
-            <View style={styles.viewSecondStyle}>
-              <TouchableOpacity style={styles.detailBtnStyle} onPress={onDetailPress}>
+            <View style={disabled ? [styles.viewSecondStyle, { opacity: 0.5 }] : styles.viewSecondStyle}>
+              <TouchableOpacity style={styles.detailBtnStyle} onPress={onDetailPress} disabled={disabled}>
                 <Text style={styles.detailBtnTextStyle}>{strings.detailText}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.messageBtnStyle} onPress={() => {
+              <TouchableOpacity style={styles.messageBtnStyle} disabled={disabled} onPress={() => {
                 onMessagePress({ entityType: dataDictionary.entityType, entityId: dataDictionary.entityId })
               }}>
                 <Text style={[styles.detailBtnTextStyle, { color: colors.kHexColor45C1C0 }]}>{strings.message.toUpperCase()}</Text>
