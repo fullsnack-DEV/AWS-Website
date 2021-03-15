@@ -1,14 +1,11 @@
 import React from 'react';
 import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Image,
-} from 'react-native';
+ StyleSheet, TouchableOpacity, View, Image,
+ } from 'react-native';
 
-import colors from '../Constants/Colors'
-import images from '../Constants/ImagePath'
-import TCImage from './TCImage'
+import colors from '../Constants/Colors';
+import images from '../Constants/ImagePath';
+import TCImage from './TCImage';
 
 function TCProfileImageControl({
   onPressBGImage,
@@ -27,31 +24,44 @@ function TCProfileImageControl({
   return (
     <View style={{ flex: 1 }}>
       <View>
-        <TCImage containerStyle={[styles.bgContainerStyle]} imageStyle={[styles.bgImageStyle, bgImageStyle]}
-        source={ bgImage }
-        defaultSource={ bgImagePlaceholder }
+        <TCImage
+          containerStyle={[styles.bgContainerStyle]}
+          imageStyle={[styles.bgImageStyle, bgImageStyle]}
+          source={bgImage}
+          defaultSource={bgImagePlaceholder}
+           resizeMode={'cover'}
+
         />
-        {showEditButtons && <TouchableOpacity
-        style={styles.bgCameraButtonStyle}
-        onPress={ onPressBGImage }>
-          <Image
-            style={[styles.bgImageButtonStyle, bgImageButtonStyle]}
-            source={ buttonImage }
+        {showEditButtons && (
+          <TouchableOpacity
+            style={styles.bgCameraButtonStyle}
+            onPress={onPressBGImage}>
+            <Image
+              style={[styles.bgImageButtonStyle, bgImageButtonStyle]}
+              source={buttonImage}
             />
-        </TouchableOpacity>}
+          </TouchableOpacity>
+        )}
       </View>
-      <TCImage imageStyle={[styles.profileImageStyle, profileImageStyle,
-        { marginTop: showEditButtons ? -20 : -36 }]}
-      source={profileImage || profileImagePlaceholder}
-      defaultSource={ profileImagePlaceholder } />
-      {showEditButtons && <TouchableOpacity
-      style={styles.profileCameraButtonStyle}
-        onPress={ onPressProfileImage }>
-        <Image
-            style={ [styles.profileImageButtonStyle, profileImageButtonStyle]}
-            source={ buttonImage }
-            />
-      </TouchableOpacity>}
+      <TCImage
+        imageStyle={[
+          styles.profileImageStyle,
+          profileImageStyle,
+          { marginTop: showEditButtons ? -20 : -36 },
+        ]}
+        source={profileImage || profileImagePlaceholder}
+        defaultSource={profileImagePlaceholder}
+      />
+      {showEditButtons && (
+        <TouchableOpacity
+          style={styles.profileCameraButtonStyle}
+          onPress={onPressProfileImage}>
+          <Image
+            style={[styles.profileImageButtonStyle, profileImageButtonStyle]}
+            source={buttonImage}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

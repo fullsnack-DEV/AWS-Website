@@ -1,24 +1,40 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable consistent-return */
+/* eslint-disable no-nested-ternary */
 import React, {
-    useEffect, useState, useContext, useCallback, useRef, useMemo,
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useRef,
+  useMemo,
 } from 'react';
 import {
-    Image, Platform, StyleSheet, NativeEventEmitter, StatusBar,
+  Image,
+  StyleSheet,
+  NativeEventEmitter,
+  StatusBar,
+  View,
+  Alert,
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
 import NewsFeedNavigator from './NewsFeedNavigator';
-import colors from '../Constants/Colors'
-import images from '../Constants/ImagePath'
-import ReservationNavigator from './ReservationNavigator';
+import colors from '../Constants/Colors';
+import images from '../Constants/ImagePath';
 import MessageNavigator from './MessageNavigator';
 // import NotificationNavigator from './NotificationNavigator';
 // import AccountDrawerNavigator from './AccountDrawerNavigator';
 import { QB_UNREAD_MESSAGE_COUNT_API } from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
-// import { getUnreadCount } from '../api/Notificaitons';
+import { getUnreadCount } from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
+
+import strings from '../Constants/String';
+import ScheduleNavigator from './ScheduleNavigator';
+import fonts from '../Constants/Fonts';
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import AccountScreen from '../screens/account/AccountScreen';
@@ -29,7 +45,7 @@ const getTabBarVisibility = (route) => {
   let routeName = '';
   if (route.name === 'Account') {
     const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
-    routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name
+    routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name;
   } else {
     routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
   }
@@ -99,72 +115,86 @@ const getTabBarVisibility = (route) => {
     || routeName === 'RegisterScorekeeperForm2'
     || routeName === 'ScorekeeperRequestSent'
     || routeName === 'ScorekeeperAcceptDeclineScreen'
-
   ) {
     return false;
   }
 
   return true;
 };
-const QbMessageEmitter = new NativeEventEmitter(QB.chat)
+const QbMessageEmitter = new NativeEventEmitter(QB.chat);
 
 const AppNavigator = ({ navigation }) => {
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const count = useRef(0);
   const [role, setRole] = useState('user');
   const [unreadCount, setUnreadCount] = useState(0);
-  // const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
     QBeventListeners();
   }, [navigation]);
 
   useEffect(() => {
-      changeRole();
-  }, [authContext.entity.role])
+    changeRole();
+  }, [authContext.entity.role]);
 
   useEffect(() => {
-    StatusBar.setBarStyle('dark-content')
-    StatusBar.setBackgroundColor('white')
+    StatusBar.setBarStyle('dark-content');
+    StatusBar.setBackgroundColor('white');
+    getUnReadNotificationHandler();
   }, []);
 
-  const getQBToken = useMemo(async () => authContext.entity?.QB?.token ?? null, [authContext.entity?.QB?.token])
+  const getQBToken = useMemo(
+    async () => authContext.entity?.QB?.token ?? null,
+    [authContext.entity?.QB?.token],
+  );
 
-    const getUnReadMessageHandler = useCallback(async () => {
-        const token = await getQBToken;
-        if (token) {
-            fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
-                .then((response) => response.json())
-                .then((jsonData) => {
-                    setUnreadCount(jsonData?.total ?? 0)
-                })
-                .catch(() => {
-                    setUnreadCount(0)
-                });
-        }
-    }, [getQBToken])
+  const getUnReadMessageHandler = useCallback(async () => {
+    const token = await getQBToken;
+    if (token) {
+      fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
+        .then((response) => response.json())
+        .then((jsonData) => {
+          setUnreadCount(jsonData?.total ?? 0);
+        })
+        .catch(() => {
+          setUnreadCount(0);
+        });
+    }
+  }, [getQBToken]);
 
-    const QBeventListeners = useCallback(() => {
+  const QBeventListeners = useCallback(() => {
     QbMessageEmitter.addListener(
       QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
       getUnReadMessageHandler,
-    )
+    );
+  }, [getUnReadMessageHandler]);
 
-    getUnReadMessageHandler()
-  }, [getUnReadMessageHandler])
+  useEffect(() => {
+    getUnReadMessageHandler();
+  }, [getUnReadMessageHandler]);
 
-  // const getUnReadNotificationHandler = () => {
-  //   getUnreadCount(authContext).then((response) => {
-  //     if (response.status === true) {
-  //       const { teams } = response.payload;
-  //       const { clubs } = response.payload;
-  //       const groups = [authContext.entity.auth.user, ...clubs, ...teams];
-  //       const entity_type = authContext?.entity?.role === 'user' ? 'user_id' : 'group_id';
-  //       const entityId = authContext?.entity?.role === 'user' ? authContext?.entity?.obj?.user_id : authContext?.entity?.obj?.group_id;
-  //       const data = groups.filter((item) => item?.[entity_type] === entityId)
-  //       setUnreadNotificationCount(data?.[0]?.unread ?? 0);
-  //     }
-  //   });
-  // }
+  const getUnReadNotificationHandler = useCallback(() => {
+    getUnreadCount(authContext)
+      .then((response) => {
+        if (response.status === true) {
+          const { teams } = response.payload;
+          const { clubs } = response.payload;
+          const groups = [authContext.entity.auth.user, ...clubs, ...teams];
+          let notificationCount = 0;
+          (groups || []).map((e) => {
+            if (e.unread) {
+              notificationCount += e.unread;
+            }
+          });
+          setUnreadNotificationCount(notificationCount);
+        }
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext]);
   const changeRole = useCallback(async () => {
     setRole(authContext.entity.role);
   }, [authContext.entity.role]);
@@ -172,184 +202,272 @@ const AppNavigator = ({ navigation }) => {
   const onTabPress = useCallback(() => {
     count.current += 1;
     if (count.current === MAX_COUNT_FOR_BOTTOM_TAB) {
-        count.current = 0;
+      count.current = 0;
       getUnReadMessageHandler();
-      // getUnReadNotificationHandler()
     }
-  }, []);
+  }, [getUnReadMessageHandler]);
+
+  const renderTabIcon = useCallback(
+    ({ focused }) => {
+      if (role === 'user') {
+        if (authContext?.entity?.obj?.thumbnail) {
+          if (focused) {
+            return (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.assistTextColor]}
+                style={styles.profileTabBorder}>
+                <Image
+                  source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                  style={styles.profileTabImg}
+                />
+              </LinearGradient>
+            );
+          }
+          return (
+            <View
+              style={[
+                styles.profileTabBorder,
+                { backgroundColor: colors.whiteColor },
+              ]}>
+              <Image
+                source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                style={styles.profileTabImg}
+              />
+            </View>
+          );
+        }
+        if (focused) {
+          return (
+            <Image source={images.tab_account_selected} style={styles.tabImg} />
+          );
+        }
+        return <Image source={images.tab_account} style={styles.tabImg} />;
+      }
+      if (role === 'team') {
+        if (authContext?.entity?.obj?.thumbnail) {
+          if (focused) {
+            return (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.assistTextColor]}
+                style={styles.profileTabBorder}>
+                <Image
+                  source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                  style={styles.profileTabImg}
+                />
+              </LinearGradient>
+            );
+          }
+          return (
+            <View
+              style={[
+                styles.profileTabBorder,
+                { backgroundColor: colors.whiteColor },
+              ]}>
+              <Image
+                source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                style={styles.profileTabImg}
+              />
+            </View>
+          );
+        }
+        if (focused) {
+          return (
+            <Image
+              source={images.tab_account_group_selected}
+              style={styles.tabImg}
+            />
+          );
+        }
+        return (
+          <Image source={images.tab_account_group} style={styles.tabImg} />
+        );
+      }
+      if (role === 'club') {
+        if (authContext?.entity?.obj?.thumbnail) {
+          if (focused) {
+            return (
+              <LinearGradient
+                colors={[colors.yellowColor, colors.assistTextColor]}
+                style={styles.profileTabBorder}>
+                <Image
+                  source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                  style={styles.profileTabImg}
+                />
+              </LinearGradient>
+            );
+          }
+          return (
+            <View
+              style={[
+                styles.profileTabBorder,
+                { backgroundColor: colors.whiteColor },
+              ]}>
+              <Image
+                source={{ uri: authContext?.entity?.obj?.thumbnail }}
+                style={styles.profileTabImg}
+              />
+            </View>
+          );
+        }
+        if (focused) {
+          return (
+            <Image
+              source={images.tab_account_group_selected}
+              style={styles.tabImg}
+            />
+          );
+        }
+        return (
+          <Image source={images.tab_account_group} style={styles.tabImg} />
+        );
+      }
+    },
+    [authContext?.entity?.obj?.thumbnail, role],
+  );
 
   return (
     <Tab.Navigator
-      tabBarOptions={ {
-        activeTintColor: colors.themeColor,
-        inactiveTintColor: colors.grayColor,
+      tabBarOptions={{
+        activeTintColor: colors.tabFontColor,
+        inactiveTintColor: colors.userPostTimeColor,
         labelStyle: {
           fontSize: 11,
+          fontFamily: fonts.RRegular,
         },
         style: {
-          height: Platform.OS === 'ios' ? 85 : 55,
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.4,
           shadowRadius: 15,
           elevation: 2,
+          borderTopWidth: 5,
+           borderTopColor: 'transparent',
         },
-      } }
-      >
+      }}>
       <Tab.Screen
         name="Local Home"
-        component={ LocalHomeNavigator }
-        options={ ({ route }) => ({
+        component={LocalHomeNavigator}
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
             if (focused) onTabPress();
             return (
               <Image
-                      source={ focused ? images.tab_home_selected : images.tab_home }
-                      style={ styles.tabImg }
-                  />
-            )
+                source={focused ? images.tab_home_selected : images.tab_home}
+                style={styles.tabImg}
+              />
+            );
           },
-        }) }
+        })}
       />
       <Tab.Screen
         name="Feed"
-        component={ NewsFeedNavigator }
-        options={ ({ route }) => ({
+        component={NewsFeedNavigator}
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
             if (focused) onTabPress();
             return (
               <Image
-                      source={
-                          focused ? images.tabSelectedFeed : images.tabFeed
-                      }
-                      style={ focused ? styles.selectedTabImg : styles.tabImg }
-                  />
-            )
+                source={focused ? images.tabSelectedFeed : images.tabFeed}
+                style={focused ? styles.selectedTabImg : styles.tabImg}
+              />
+            );
           },
-        }) }
+        })}
       />
       <Tab.Screen
         name="Message"
-        component={ MessageNavigator }
-        options={ ({ route }) => ({
+        component={MessageNavigator}
+        options={({ route }) => ({
           ...(unreadCount > 0 && { tabBarBadge: unreadCount }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
             if (focused) onTabPress();
             return (
               <Image
-              source={ focused ? images.tab_message_selected : images.tab_message }
-              style={ focused ? styles.selectedTabImg : styles.tabImg }
-            />
-            )
+                source={
+                  focused ? images.tab_message_selected : images.tab_message
+                }
+                style={focused ? styles.selectedTabImg : styles.tabImg}
+              />
+            );
           },
-        }) }
+        })}
       />
       <Tab.Screen
         name="Schedule"
-        component={ ReservationNavigator }
-        options={ ({ route }) => ({
+        component={ScheduleNavigator}
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {
             if (focused) onTabPress();
             return (
               <Image
-                      source={
-                          focused ? images.tab_reservation_selected : images.tab_reservation
-                      }
-                      style={ styles.tabImg }
-                  />
-            )
-          },
-        }) }
-      />
-      {role === 'team' && (
-        <Tab.Screen
-          name="Account"
-          component={ AccountNavigator }
-          options={ ({ route }) => ({
-            tabBarVisible: getTabBarVisibility(route),
-            tabBarIcon: ({ focused }) => {
-              if (focused) onTabPress();
-              return (
-                <Image
-                        source={
-                            focused
-                              ? images.tab_account_group_selected
-                              : images.tab_account_group
-                        }
-                        style={ focused ? styles.selectedEntity : styles.tabEntity }
-                    />
-              )
-            },
-          }) }
-        />
-      )}
-      {role === 'user' && (
-        <Tab.Screen
-          name="Account"
-          component={ AccountNavigator }
-          options={ ({ route }) => ({
-            tabBarVisible: getTabBarVisibility(route),
-            tabBarIcon: ({ focused }) => (
-              <Image
-                source={ focused ? images.tab_account_selected : images.tab_account }
-                style={ styles.tabImg }
-              />
-            ),
-          }) }
-        />
-      )}
-      {role === 'club' && (
-        <Tab.Screen
-          name="Account"
-          component={ AccountNavigator }
-          options={ ({ route }) => ({
-            tabBarVisible: getTabBarVisibility(route),
-            tabBarIcon: ({ focused }) => (
-              <Image
                 source={
                   focused
-                    ? images.tab_account_group_selected
-                    : images.tab_account_group
+                    ? images.tab_reservation_selected
+                    : images.tab_reservation
                 }
-                style={ styles.tabEntity }
+                style={styles.tabImg}
               />
-            ),
-          }) }
-        />
-      )}
+            );
+          },
+        })}
+      />
+
+      <Tab.Screen
+        name="Account"
+        component={AccountNavigator}
+        options={({ route }) => ({
+          ...(unreadNotificationCount > 0 && {
+            tabBarBadge: unreadNotificationCount,
+          }),
+          tabBarVisible: getTabBarVisibility(route),
+          tabBarIcon: renderTabIcon,
+        })}
+      />
     </Tab.Navigator>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  selectedEntity: {
-    alignSelf: 'center',
-    height: 40,
-    resizeMode: 'contain',
-    width: 40,
-  },
   selectedTabImg: {
     alignSelf: 'center',
     height: 40,
     resizeMode: 'contain',
     width: 40,
+    borderRadius: 80,
   },
-  tabEntity: {
-    alignSelf: 'center',
-    height: 40,
-    resizeMode: 'contain',
-    width: 40,
-  },
+
   tabImg: {
     alignSelf: 'center',
     height: 40,
     resizeMode: 'contain',
     width: 40,
+    borderRadius: 80,
+  },
+  profileTabImg: {
+    alignSelf: 'center',
+    height: 30,
+    resizeMode: 'contain',
+    width: 30,
+    borderRadius: 100,
+  },
+  profileTabBorder: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 34,
+    resizeMode: 'contain',
+    width: 34,
+    borderRadius: 70,
+    shadowColor: colors.blackColor,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
   },
 });
 

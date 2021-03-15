@@ -467,12 +467,13 @@ export default function ChooseDateTimeScreen({ navigation, route }) {
             // minimumDate={selectedDate || new Date()}
             // maximumDate = {new Date(selectedDate).setHours(23, 59, 59, 999) || new Date().setHours(23, 59, 59, 999)}
             // mode={'datetime'}
+            title={'Pick a time'}
             date={datePickerFor === 'from' ? fromDate : toDate}
             visible={show}
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minutesGap={30}
+            // minutesGap={30}
             minimumDate={
               datePickerFor === 'to'
                 ? moment(new Date(fromDate)).add(30, 'm').toDate()

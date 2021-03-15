@@ -8,6 +8,7 @@ const colors = {
   themeColor: '#FF8A01',
   newTextColor: '#FF4E00',
   orangeColor: '#ff7f25',
+  tabFontColor: '#ff7f00',
   toggleOnColor: '#31cd44',
   blockZoneText: '#707070',
   activeIndexColor: '#ff9628',

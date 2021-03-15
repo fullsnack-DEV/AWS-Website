@@ -39,7 +39,7 @@ function GroupIconImage({
       )}
       {unreadCount > 0 && (
         <View style={styles.badgeView}>
-          <Text style={styles.badgeCounter}>{unreadCount}</Text>
+          <Text style={unreadCount > 99 ? styles.ovalBadgeView : styles.badgeCounter}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
         </View>
       )}
     </View>
@@ -95,6 +95,14 @@ const styles = StyleSheet.create({
     width: 17,
   },
   badgeView: {
+    backgroundColor: 'red',
+    borderRadius: 8,
+    height: 16,
+    position: 'absolute',
+    left: 20,
+    width: 16,
+  },
+  ovalBadgeView: {
     backgroundColor: 'red',
     borderRadius: 8,
     height: 16,
