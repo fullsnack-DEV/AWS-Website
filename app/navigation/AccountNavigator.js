@@ -22,6 +22,7 @@ const AccountNavigator = () => (
       options={{ headerShown: false }}
     /> */}
     <Stack.Screen name="Account" component={ HomeNavigator } options={{ headerShown: false }} />
+
   </Stack.Navigator>
 );
 

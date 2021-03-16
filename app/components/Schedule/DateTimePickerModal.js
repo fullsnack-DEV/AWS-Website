@@ -11,9 +11,11 @@ export default function DateTimePickerView({
   minimumDate,
   maximumDate,
   minutesGap = 1,
+  title = 'Pick a date',
 }) {
   return (
     <DateTimePickerModal
+    headerTextIOS={title}
       isVisible={visible}
       mode={mode}
       onConfirm={onDone}

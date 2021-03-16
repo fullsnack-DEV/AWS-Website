@@ -165,7 +165,7 @@ export default function AccountScreen({ navigation }) {
 
   const getData = () => new Promise((resolve, reject) => {
     const entity = authContext.entity;
-    const promises = [getOwnGroupList(entity), getTeamsList(entity)];
+    const promises = [getNotificationUnreadCount(entity), getTeamsList(entity)];
     if (entity.role !== 'club') promises.push(getClubList(entity));
     Promise.all(promises)
         .then(() => resolve(true))
@@ -203,18 +203,15 @@ export default function AccountScreen({ navigation }) {
         });
   }, [authContext]);
 
-  const getOwnGroupList = useCallback((currentEntity) => {
+  const getNotificationUnreadCount = useCallback((currentEntity) => {
     getUnreadCount(authContext)
       .then((response) => {
         const { teams } = response.payload;
         const { clubs } = response.payload;
-        setTeam(teams);
+         const switchEntityObject = [...clubs, ...teams].filter((e) => e.group_id === authContext.entity.uid)
+         setTeam(teams);
         setClub(clubs);
-        let count = 0;
-        ([...clubs, ...teams] || []).map((e) => {
-          count += e.unread;
-        });
-        setNotificationCounter(count);
+        setNotificationCounter(switchEntityObject?.[0]?.unread);
         if (currentEntity.role === 'user') {
           setGroupList([...clubs, ...teams]);
         } else if (currentEntity.role === 'team') {
@@ -427,7 +424,7 @@ export default function AccountScreen({ navigation }) {
 
   const handleSections = async (section) => {
     if (section === 'My Reservations') {
-      navigation.navigate('ScheduleScreen');
+      navigation.navigate('ReservationNavigator', { screen: 'ReservationScreen' });
     } else if (section === 'Register as a Referee') {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
@@ -916,8 +913,8 @@ export default function AccountScreen({ navigation }) {
                     <Image
                       source={images.arrowGraterthan}
                       style={{
-                        height: 12,
-                        width: 12,
+                        height: 14,
+                        width: 8,
                         resizeMode: 'cover',
                         tintColor: authContext?.entity?.obj
                           ?.background_thumbnail
@@ -1028,8 +1025,8 @@ export default function AccountScreen({ navigation }) {
                       <Image
                       source={images.arrowGraterthan}
                       style={{
-                        height: 12,
-                        width: 12,
+                        height: 14,
+                        width: 8,
                         marginLeft: 10,
                         resizeMode: 'cover',
                         tintColor: authContext?.entity?.obj
@@ -1060,8 +1057,6 @@ export default function AccountScreen({ navigation }) {
             </View>
         )}
 
-        <View style={styles.separatorLine}></View>
-
         <ExpanableList
           dataSource={
             (authContext.entity.role === 'team' && teamMenu)
@@ -1071,6 +1066,9 @@ export default function AccountScreen({ navigation }) {
           headerKey={'key'}
           memberKey="member"
           renderRow={renderMenuItems}
+          ItemSeparatorComponent={ () => (
+            <View style={ { width: wp('1%') } } />
+          ) }
           renderSectionHeaderX={(section) => (
             <>
               <TouchableWithoutFeedback

@@ -2030,7 +2030,7 @@ const HomeScreen = ({ navigation, route }) => {
   ), [onBackPress, route])
 
   const renderBackground = useMemo(() => (
-        bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'stretch'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
+        bgImage ? <FastImage source={{ uri: bgImage }} resizeMode={'cover'} style={styles.bgImageStyle} /> : <View style={styles.bgImageStyle} />
     ), [bgImage])
 
   const renderHeaderBackgroundProfile = useMemo(() => (
@@ -2253,16 +2253,15 @@ const feedScreenHeader = useMemo(() => (
     && <View styles={[styles.outerContainerStyle, { height: 50 }]}>
       <TouchableOpacity onPress={ onChallengePress }>
         <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-            style={[styles.containerStyle, { justifyContent: currentUserData.game_fee ? 'space-between' : 'center' }]}>
-          {currentUserData?.game_fee
-              ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee} ${currentUserData.currency_type}`}</Text>
-                <Text style={styles.buttonTextSmall}> {strings.perHourText}</Text>
-              </View> : null}
-          <Text style={ [styles.buttonText, { marginRight: currentUserData.game_fee ? 26 : 0 }] }>{strings.challenge.toUpperCase()}</Text>
+
+            colors={[colors.darkThemeColor, colors.themeColor]}
+            style={[styles.containerStyle, { justifyContent: 'space-between' }]}>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.buttonLeftText}>{`$${currentUserData.game_fee ?? '0'} ${currentUserData.currency_type}`}</Text>
+            <Text style={styles.buttonTextSmall}>  {strings.perHourText}</Text>
+          </View>
+          <Text style={ styles.buttonText }>{strings.challenge.toUpperCase()}</Text>
         </LinearGradient>
       </TouchableOpacity></View>}
   </View>, [authContext.entity.obj.group_id, authContext.entity.role, currentUserData.currency_type, currentUserData.game_fee, currentUserData.group_id, isTeamHome, loading, onChallengePress])
@@ -3157,7 +3156,7 @@ const styles = StyleSheet.create({
   containerStyle: {
     flexDirection: 'row',
     height: 45,
-    borderRadius: 4,
+    borderRadius: 8,
     alignItems: 'center',
   },
   buttonLeftText: {

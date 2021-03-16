@@ -123,10 +123,10 @@ export default function CreateChallengeForm3({ navigation, route }) {
     <View>
       <View style={styles.viewTitleContainer}>
         <Text style={styles.refereeCountTitle}>Scorekeeper {index + 1} </Text>
-        <Text style={styles.deleteButton} onPress={() => {
+        {index !== 0 && <Text style={styles.deleteButton} onPress={() => {
           scorekeeper.splice(index, 1)
           setScorekeeper([...scorekeeper])
-        }}>Delete</Text>
+        }}>Delete</Text> }
       </View>
 
       {route && route.params && route.params.teamData && <View style={styles.viewContainer}>
