@@ -622,7 +622,7 @@ export default function EditChallenge({ navigation, route }) {
                     source={images.teamPlaceholder}
                     style={styles.teamImage}
                   />
-                <Text style={styles.teamNameText}>
+                <Text style={styles.teamNameText} numberOfLines={1}>
                   {bodyParams.invited_by
                     === (bodyParams?.home_team?.group_id
                       ?? bodyParams?.home_team?.user_id)
@@ -650,7 +650,8 @@ export default function EditChallenge({ navigation, route }) {
                       fontFamily: fonts.RMedium,
                       fontSize: 16,
                       color: colors.lightBlackColor,
-                    }}>
+                      marginRight: 15,
+                    }} numberOfLines={1}>
                   {bodyParams.invited_by
                     === (bodyParams?.home_team?.group_id
                       ?? bodyParams?.home_team?.user_id)
@@ -1329,7 +1330,7 @@ const styles = StyleSheet.create({
   editButton: {
     height: 16,
     width: 16,
-    resizeMode: 'center',
+    resizeMode: 'cover',
     alignSelf: 'center',
   },
   editTouchArea: {

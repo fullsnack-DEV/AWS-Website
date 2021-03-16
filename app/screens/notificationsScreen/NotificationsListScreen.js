@@ -14,7 +14,6 @@ import {
   SectionList,
   Text,
   Alert,
-
 } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
@@ -73,6 +72,7 @@ function NotificationsListScreen({ navigation }) {
 
   const [loading, setloading] = useState(false);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
+
   const onDetailPress = (item) => {
     if (activeScreen) {
       const verb = item.activities[0].verb;
@@ -640,6 +640,7 @@ function NotificationsListScreen({ navigation }) {
             data={groupList}
             renderItem={renderGroupItem}
             keyExtractor={keyExtractor}
+            initialScrollIndex={currentTab}
           />
         )}
 

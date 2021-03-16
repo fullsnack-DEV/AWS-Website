@@ -29,8 +29,7 @@ function TCProfileImageControl({
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
           source={bgImage}
           defaultSource={bgImagePlaceholder}
-           resizeMode={'cover'}
-
+          // resizeMode={'contain'}
         />
         {showEditButtons && (
           <TouchableOpacity
@@ -69,12 +68,14 @@ function TCProfileImageControl({
 const styles = StyleSheet.create({
   bgContainerStyle: {
     flex: 1,
-    aspectRatio: 375 / 147,
+    width: '100%',
+    height: 200,
+    // aspectRatio: 375 / 147,
   },
   bgImageStyle: {
     flex: 1,
     backgroundColor: colors.grayBackgroundColor,
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   profileImageStyle: {
     height: 71,
