@@ -108,7 +108,7 @@ export default function ChooseLocationScreen({ navigation }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText).then((response) => {
+      searchLocations(searchLocationText, 'cities').then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       }).catch((e) => {

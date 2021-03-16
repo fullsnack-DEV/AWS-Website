@@ -119,15 +119,17 @@ const MessageMainScreen = ({ navigation }) => {
 
   const renderSingleEntityChat = useCallback(({ item, index }) => {
     let fullName = item.name;
+    let firstTwoChar = '';
     if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
-      const firstTwoChar = item.name.slice(0, 2);
+      firstTwoChar = item.name.slice(0, 2);
       if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
         fullName = item?.name?.slice(2, item?.name?.length)
       }
     }
 
     return (<TCHorizontalMessageOverview
-        profilePic={getQBProfilePic(item?.type, index)}
+        entityType={firstTwoChar}
+        profilePic={getQBProfilePic(item?.type, index, firstTwoChar)}
         dialogType={item?.type}
         onPress={() => onDialogPress(item)}
         title={fullName}
@@ -168,17 +170,18 @@ const MessageMainScreen = ({ navigation }) => {
 
   const renderHeader = useMemo(() => (
     <Header
+        mainContainerStyle={{ paddingBottom: 0 }}
             leftComponent={navigation.canGoBack()
-              && <TouchableOpacity onPress={() => navigation.goBack() }>
-                <FastImage source={images.backArrow} resizeMode={'contain'} style={styles.backImageStyle} />
-              </TouchableOpacity>
+              && <View>
+                <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
+              </View>
             }
             centerComponent={
               <Text style={styles.eventTextStyle}>Message</Text>
             }
             rightComponent={
               <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity style={{ padding: 2 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
+                <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
                   <FastImage source={images.messageSearchButton} resizeMode={'contain'} style={styles.rightImageStyle} />
                 </TouchableOpacity>
                 <TouchableOpacity style={{ padding: 2 }} onPress={() => { navigation.navigate('MessageInviteScreen') }}>
@@ -207,8 +210,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backImageStyle: {
-    height: 20,
-    width: 16,
+    height: 36,
+    width: 36,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },

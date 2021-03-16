@@ -1,9 +1,9 @@
 import makeAPIRequest from '../utils/Global';
 import apiCall from '../utils/apiCall';
 
-export const searchLocations = async (query) => apiCall({
+export const searchLocations = async (query, types = 'regions') => apiCall({
   method: 'get',
-  url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(regions)&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
+  url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?types=(${types})&key=AIzaSyCfHXf6aHFVbGZTCLl-Vte3YjyUQa-AFZ4&input=${query}`,
 })
 
 export const searchCityState = async (query) => apiCall({

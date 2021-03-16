@@ -269,6 +269,7 @@ export default function SignupScreen({ navigation }) {
                       width: 300,
                       height: 400,
                       cropping: true,
+                      cropperCircleOverlay: true,
                     }).then((pickImages) => {
                       setProfilePic(pickImages);
                     });

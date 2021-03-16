@@ -17,6 +17,7 @@ import UserInfoRefereesInItem from './UserInfoRefereesInItem';
 export default function UserInfo({
   navigation, userDetails, isAdmin, onGroupPress, onRefereesInPress, onPlayInPress, onGroupListPress,
 }) {
+    console.log('RK ', userDetails)
   const playin = userDetails.games && userDetails.games.length > 0
   const refereesIn = userDetails.referee_data && userDetails.referee_data.length > 0
 

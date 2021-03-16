@@ -1,5 +1,5 @@
 import React, {
-useState, useEffect, useLayoutEffect, useContext,
+useState, useEffect, useContext,
 } from 'react';
 import {
 StyleSheet, View, Text, Image, TextInput, FlatList,
@@ -25,28 +25,10 @@ export default function ChooseAddressScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [cityData, setCityData] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [selectedVenue, setSelectedVenue] = useState();
 
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (selectedVenue) {
-              console.log('VENUE::', JSON.stringify(selectedVenue));
-              venueData();
-            }
-          }}>
-          Done
-        </Text>
-      ),
-    });
-  }, [navigation, selectedVenue, cityData]);
 
   const getLocationData = async (searchLocationText) => {
     searchVenue(searchLocationText, authContext).then((response) => {
@@ -58,10 +40,10 @@ export default function ChooseAddressScreen({ navigation, route }) {
     });
   };
 
-  const venueData = async () => {
+  const venueData = async (selectedAddress) => {
     if (route.params.comeFrom === 'CreateChallengeForm1') {
       navigation.navigate('CreateChallengeForm1', {
-        venueObj: selectedVenue,
+        venueObj: selectedAddress,
       });
     }
   };
@@ -70,17 +52,14 @@ export default function ChooseAddressScreen({ navigation, route }) {
     <TouchableWithoutFeedback
       style={styles.listItem}
       onPress={() => {
-        // eslint-disable-next-line no-param-reassign
-
         if (cityData.indexOf(item) !== -1) {
-          console.log('DATA MATCH', item);
-
           // eslint-disable-next-line array-callback-return
           cityData.map((e) => {
             if (e === item) {
-              setSelectedVenue(item);
-
               e.isSelected = true;
+              setTimeout(() => {
+                venueData(item)
+              }, 500)
             } else {
               e.isSelected = false;
             }
@@ -186,10 +165,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: wp('4.5%'),
     paddingLeft: 10,
-  },
-  nextButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
   },
 });

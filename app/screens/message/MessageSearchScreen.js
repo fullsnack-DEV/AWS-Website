@@ -88,15 +88,17 @@ const MessageSearchScreen = ({ navigation }) => {
 
   const renderSingleEntityChat = useCallback(({ item, index }) => {
     let fullName = item.name;
+    let firstTwoChar = '';
     if (item.type === QB.chat.DIALOG_TYPE.CHAT) {
-      const firstTwoChar = item.name.slice(0, 2);
+      firstTwoChar = item.name.slice(0, 2);
       if ([QB_ACCOUNT_TYPE.USER, QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(firstTwoChar)) {
         fullName = item?.name?.slice(2, item?.name?.length)
       }
     }
 
     return (<TCHorizontalMessageOverview
-        profilePic={getQBProfilePic(item?.type, index)}
+        entityType={firstTwoChar}
+        profilePic={getQBProfilePic(item?.type, index, firstTwoChar)}
         dialogType={item?.type}
         onPress={() => onDialogPress(item)}
         title={fullName}

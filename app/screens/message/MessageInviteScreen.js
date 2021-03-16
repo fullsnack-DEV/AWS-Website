@@ -26,6 +26,7 @@ import { getQBProfilePic, QBcreateDialog, QBgetAllUsers } from '../../utils/Quic
 import AuthContext from '../../auth/context'
 import TCScrollableTabs from '../../components/TCScrollableTabs';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
+import TCGroupNameBadge from '../../components/TCGroupNameBadge';
 
 const MessageInviteScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
@@ -140,7 +141,7 @@ const MessageInviteScreen = ({ navigation, route }) => {
               <View style={{
                 flex: 3, justifyContent: 'center', marginLeft: hp(1),
               }}>
-                <Text style={{ ...styles.title, color: colors.lightBlackColor }}>{fullName}</Text>
+                <TCGroupNameBadge textStyle={{ ...styles.title, color: colors.lightBlackColor }} groupType={entityType} name={fullName}/>
                 <Text style={{ ...styles.subTitle, color: colors.lightBlackColor }}>{city}</Text>
               </View>
               {isChecked ? <Image source={images.yellowCheckBox} resizeMode={'contain'} style={ styles.checkboxImg }/>

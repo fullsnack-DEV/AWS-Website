@@ -6,21 +6,26 @@ import {
   View,
   StyleSheet, TouchableHighlight,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../utils';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import { QBgetFileURL } from '../utils/QuickBlox';
 import images from '../Constants/ImagePath';
+import MessageChatAssetModal from './message/MessageChatAssetModal';
 
 const TCMessage = ({
   body,
+  fullName,
   type = 'sender',
   messageStyle,
   attachments = [],
 }) => {
+  const [showAssetsModal, setShowAssetsModal] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
@@ -42,6 +47,7 @@ const TCMessage = ({
 
   useEffect(() => {
     attachments.map((item) => QBgetFileURL(item.id).then((fileUrl) => {
+      console.log(fileUrl);
       setFileUrls((urls) => [...urls, fileUrl])
     }))
   }, [])
@@ -81,9 +87,8 @@ const TCMessage = ({
         }}>
           {fileUrls.map((item, index) => {
             if (attachments[index]?.type === 'file') {
-              console.log(item);
               return (
-                <View>
+                <TouchableOpacity onPress={() => setShowAssetsModal(true)}>
                   <Video
                       repeat={true}
                       ref={videoPlayerRef}
@@ -134,11 +139,12 @@ const TCMessage = ({
                               />
                     </TouchableHighlight>
                   </View>
-                </View>
+                </TouchableOpacity>
               )
             }
             return (
-              <FastImage
+              <TouchableOpacity key={index} onPress={() => setShowAssetsModal(true)}>
+                <FastImage
                           source={{ uri: item }}
                           key={item}
                           resizeMode={'cover'}
@@ -153,10 +159,26 @@ const TCMessage = ({
                             height: wp(50),
                             width: wp(50),
                           }}/>
+              </TouchableOpacity>
             )
           })}
         </View>
       )}
+
+      <Modal
+            isVisible={showAssetsModal}
+            backdropColor="black"
+            style={{ margin: 0 }}
+            onBackdropPress={() => setShowAssetsModal(false)}
+            onRequestClose={() => setShowAssetsModal(false)}
+            backdropOpacity={0}>
+        <MessageChatAssetModal
+            title={fullName}
+            assetType={attachments[0]?.type === 'file' ? 'video' : 'image'}
+              assetURI={fileUrls?.[0] ?? ''}
+              backBtnPress={() => setShowAssetsModal(false)}
+          />
+      </Modal>
     </Fragment>
   )
 }

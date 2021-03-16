@@ -281,6 +281,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   yellowQBUser: require('../assets/images/yellowQBUser.png'),
   messageSearchButton: require('../assets/images/messageSearchButton.png'),
   yellowCheckBox: require('../assets/images/yellowCheckBox.png'),
+  tc_message_top_icon: require('../assets/images/tc_message_top_icon.png'),
 };
 
 export default images;

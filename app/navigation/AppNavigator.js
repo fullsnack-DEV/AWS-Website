@@ -195,6 +195,7 @@ const AppNavigator = ({ navigation }) => {
         }, 10);
       });
   }, [authContext]);
+
   const changeRole = useCallback(async () => {
     setRole(authContext.entity.role);
   }, [authContext.entity.role]);

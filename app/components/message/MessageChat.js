@@ -275,6 +275,7 @@ const MessageChat = ({
           )}
 
           <TCMessage
+            fullName={fullName}
             attachments={item.attachments}
             date={new Date(item.dateSent)}
             body={item.body}
@@ -482,7 +483,7 @@ const MessageChat = ({
 
       </View>
     </View>
-  ), [messageBody, onInputBoxFocus, selectedImage, sendMessage, uploadImageInProgress])
+  ), [messageBody, onInputBoxFocus, selectedImage, sendMessage, uploadImage, uploadImageInProgress])
 
   return (
     <SafeAreaView style={ styles.mainContainer }>
