@@ -16,6 +16,7 @@ import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context'
 import { QBleaveDialog } from '../../utils/QuickBlox';
+import TCGroupNameBadge from '../TCGroupNameBadge';
 
 const MessageInviteeDrawerScreen = ({
   navigation,
@@ -68,7 +69,7 @@ const MessageInviteeDrawerScreen = ({
     return (
       <TouchableOpacity style={styles.rowContainer} onPress={() => onParticipantsPress(customData)}>
         <Image style={styles.inviteImage} source={finalImage}/>
-        <Text style={styles.rowText}>{customData?.full_name}</Text>
+        <TCGroupNameBadge textStyle={styles.rowText} name={customData?.full_name} groupType={customData?.entity_type}/>
       </TouchableOpacity>)
   }, [onParticipantsPress])
 
@@ -97,8 +98,8 @@ const MessageInviteeDrawerScreen = ({
     );
   }
   let fullName = dialog?.name;
-  if (dialog?.dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-    fullName = dialog?.name.slice(2, dialog?.name?.length)
+  if (dialog?.type === QB.chat.DIALOG_TYPE.CHAT) {
+    fullName = dialog?.name?.slice(2, dialog?.name?.length);
   }
 
   const onPressDone = ({ dialog: newDialog }) => {

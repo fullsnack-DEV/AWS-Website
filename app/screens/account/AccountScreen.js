@@ -278,7 +278,7 @@ export default function AccountScreen({ navigation }) {
       } else if (currentEntity.obj.entity_type === 'club') {
         club.push(currentEntity.obj);
       }
-      setGroupList([...club, ...team]);
+      // setGroupList([...club, ...team]);
       currentEntity = {
         ...currentEntity,
         uid: item.user_id,
@@ -291,7 +291,6 @@ export default function AccountScreen({ navigation }) {
         const i = team.indexOf(item);
         if (currentEntity.obj.entity_type === 'player') {
           team.splice(i, 1);
-          console.log('Team List::', team);
         } else if (currentEntity.obj.entity_type === 'team') {
           team.splice(i, 1, currentEntity.obj);
         } else if (currentEntity.obj.entity_type === 'club') {

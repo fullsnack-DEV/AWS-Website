@@ -12,9 +12,12 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import TCBadge from './TCBadge';
+import TCGroupNameBadge from './TCGroupNameBadge';
+import { QB_ACCOUNT_TYPE } from '../utils/QuickBlox';
 
 const TCHorizontalMessageOverview = (
   {
+    entityType = '',
     profilePic = images.profilePlaceHolder,
     dialogType = '',
     title = '',
@@ -28,6 +31,13 @@ const TCHorizontalMessageOverview = (
   // eslint-disable-next-line no-restricted-globals
   const getDateAndMonth = useMemo(() => ((!isNaN(lastMessageDate)) ? moment(lastMessageDate).format('DD MMM') : ''), [lastMessageDate]);
 
+  const getEntityType = useMemo(() => {
+    if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return 'league';
+    if (QB_ACCOUNT_TYPE.TEAM) return 'team'
+    if (QB_ACCOUNT_TYPE.CLUB) return 'club'
+    return 'player'
+  }, [entityType])
+
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
       <View style={styles.imageMainContainer}>
@@ -36,7 +46,10 @@ const TCHorizontalMessageOverview = (
       <View style={styles.rightContainer}>
         <View style={styles.rightTitleContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.title}>{title}</Text>
+            {[QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)
+                ? <TCGroupNameBadge textStyle={styles.title} name={title} groupType={getEntityType} />
+                : <Text style={styles.title}>{title}</Text>
+            }
             <Text style={styles.numberOfMembers}>{numberOfMembers && dialogType === 2 && numberOfMembers.length}</Text>
           </View>
           <View>

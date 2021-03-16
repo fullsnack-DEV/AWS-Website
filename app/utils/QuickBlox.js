@@ -52,11 +52,16 @@ const appSettings = {
 
 export const QBChatConnected = async () => QB.chat.isConnected()
 
-export const getQBProfilePic = (dialogType, index) => {
-    if (index % 2 === 0) {
-      return dialogType === QB.chat.DIALOG_TYPE.CHAT ? images.yellowQBUser : images.yellowQBGroup
+export const getQBProfilePic = (dialogType, index, entityType) => {
+  if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+    if ([QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)) {
+      if (entityType === QB_ACCOUNT_TYPE.TEAM) return images.teamPlaceholder
+      if (entityType === QB_ACCOUNT_TYPE.CLUB) return images.clubPlaceholder
+      if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return images.leaguePlaceholder
     }
-    return dialogType === QB.chat.DIALOG_TYPE.CHAT ? images.greenQBUser : images.greenQBGroup
+    return index % 2 === 0 ? images.yellowQBUser : images.greenQBUser
+  }
+  return index % 2 === 0 ? images.yellowQBGroup : images.greenQBGroup
 }
 
 export const QBChatDisconnect = () => QBChatConnected().then(() => QB.chat.disconnect()).catch((e) => e);
@@ -125,6 +130,39 @@ export const QBcreateUser = (
     password: QB_Auth_Password,
     customData: JSON.stringify(custData),
   })
+}
+
+export const QBupdateUser = (
+    uniqueID,
+    customData,
+    userAccountType,
+) => {
+  const nameType = customData?.entity_type === 'player' ? 'full_name' : 'group_name';
+  const fullName = userAccountType + _.get(customData, [nameType], 'Full Name')
+  const pureName = _.get(customData, [nameType], 'Full Name')
+  const {
+    country = '',
+    city = '',
+    entity_type = '',
+    full_image = '',
+    full_name = '',
+    user_id = '',
+    group_id = '',
+    createdAt = '',
+    createdBy = {},
+    group_name = '',
+  } = customData;
+
+  const custData = {
+    country, city, entity_type, full_image, full_name, user_id, createdAt, createdBy, group_id, group_name,
+  }
+  custData.full_name = pureName;
+  return QB.users.update({
+ user: {
+    fullName,
+    customData: JSON.stringify(custData),
+  },
+})
 }
 
 export const QBsetupSettings = async () => {
@@ -211,6 +249,7 @@ export const QBupdateDialog = (
       addUsers,
       removeUsers,
       name,
+      photo: 'https://picsum.photos/id/320/640/1136',
     };
     return QB.chat.updateDialog(update)
   }

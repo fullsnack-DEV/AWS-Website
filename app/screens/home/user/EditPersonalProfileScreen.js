@@ -31,6 +31,7 @@ import uploadImages from '../../../utils/imageAction';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
 import * as Utility from '../../../utils';
+import { getQBAccountType, QBupdateUser } from '../../../utils/QuickBlox';
 
 export default function EditPersonalProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -155,6 +156,10 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
         const entity = authContext.entity
         entity.obj = response.payload;
         entity.auth.user = response.payload;
+        const entity_id = ['user', 'player']?.includes(response?.payload?.entity_type) ? response?.payload?.user_id : response?.payload?.group_id;
+        const accountType = getQBAccountType(response?.payload?.entity_type);
+        QBupdateUser(entity_id, response?.payload, accountType).then(() => {
+        }).catch(() => {})
         authContext.setEntity({ ...entity })
         await Utility.setStorage('authContextEntity', { ...entity })
         setloading(false);

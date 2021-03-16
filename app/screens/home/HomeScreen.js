@@ -909,7 +909,7 @@ const HomeScreen = ({ navigation, route }) => {
     });
   };
 
-  const onUserAction = (action) => {
+  const onUserAction = useCallback((action) => {
     switch (action) {
       case 'follow':
         callFollowUser();
@@ -928,9 +928,9 @@ const HomeScreen = ({ navigation, route }) => {
         break;
       default:
     }
-  }
+  }, [callFollowUser, callUnfollowUser, clubInviteUser, currentUserData, navigation, onMessageButtonPress])
 
-  const onClubAction = (action) => {
+  const onClubAction = useCallback((action) => {
     switch (action) {
       case 'follow':
         callFollowGroup();
@@ -966,9 +966,9 @@ const HomeScreen = ({ navigation, route }) => {
         break;
       default:
     }
-  }
+  }, [authContext.entity.obj.parent_group_id, authContext.entity.role, callFollowGroup, callUnfollowGroup, clubJoinTeam, clubLeaveTeam, currentUserData, navigation, onMessageButtonPress, userJoinGroup, userLeaveGroup])
 
-  const onTeamAction = (action) => {
+  const onTeamAction = useCallback((action) => {
     switch (action) {
       case 'follow':
         callFollowGroup();
@@ -996,16 +996,15 @@ const HomeScreen = ({ navigation, route }) => {
         }); break;
       default:
     }
-  }
+  }, [authContext.entity.role, callFollowGroup, callUnfollowGroup, clubInviteTeam, currentUserData, navigation, onMessageButtonPress, userJoinGroup, userLeaveGroup])
 
-  const onTeamPress = (groupObject) => {
-    console.log('groupObject', groupObject)
+  const onTeamPress = useCallback((groupObject) => {
     navigation.push('HomeScreen', {
       uid: groupObject.group_id,
       backButtonVisible: true,
       role: groupObject.entity_type,
     })
-  }
+  }, [navigation])
 
   const onMemberPress = (memberObject) => {
     console.log('memberObject', memberObject)

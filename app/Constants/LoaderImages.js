@@ -59,6 +59,8 @@ export const commentPostTimeCalculate = (commentPostTime) => {
     return `${day}d ago`;
   } if (hour >= 1 && hour < 24) {
     return `${hour}h ago`;
+  } if (minute === 0) {
+    return 'Just now';
   } if (minute < 60) {
     return `${minute} min ago`;
   }

@@ -77,7 +77,7 @@ export default function EntitySearchScreen({ navigation }) {
     <View style={{ flex: 1 }}>
 
       <View style={styles.searchBarView}>
-        <TCSearchBox editable={groups?.length > 0} onChangeText={ (text) => searchFilterFunction(text) } />
+        <TCSearchBox editable={!loading} onChangeText={ (text) => searchFilterFunction(text) } />
       </View>
       {loading
           ? <UserListShimmer/>
