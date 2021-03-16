@@ -10,7 +10,7 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
 import FastImage from 'react-native-fast-image';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp, getHitSlop } from '../../utils';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -37,13 +37,14 @@ const MessageInviteeDrawerScreen = ({
       {dialog?.userId === myUserId && (
         <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.replace('MessageInviteScreen', {
           dialog,
+          isAdmin: dialog?.userId === myUserId,
           selectedInvitees: participants?.[0],
           participants: participants?.[0],
         })}>
           <Image style={ styles.inviteImage } source={ images.plus_round_orange } />
           <Text style={[styles.rowText, { color: colors.orangeColor }]}>Invite</Text>
         </TouchableOpacity>
-      )}
+       )}
     </View>
   ), [dialog, myUserId, navigation, participants])
 
@@ -110,25 +111,27 @@ const MessageInviteeDrawerScreen = ({
           <Text style={styles.titleLabel}>
             {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && 'Chatroom Name'}
           </Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={[styles.title, { marginLeft: wp(3) }]}>
-              {fullName}
-            </Text>
-            {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
-              <TouchableOpacity onPress={() => {
-                navigation.closeDrawer();
-                navigation.navigate('MessageEditGroupScreen', { dialog, onPressDone })
-              }} hitSlop={getHitSlop(15)}>
+          <TouchableOpacity onPress={() => {
+            navigation.closeDrawer();
+            navigation.navigate('MessageEditGroupScreen', { dialog, onPressDone })
+          }} >
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={[styles.title, { marginLeft: wp(3) }]}>
+                {fullName}
+              </Text>
+              {dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
                 <FastImage
                       resizeMode={'contain'}
                       source={images.arrowDown}
                       style={{
                         ...styles.downArrow,
                         transform: [{ rotateZ: '270deg' }],
-                      }} />
-              </TouchableOpacity>
+                      }}
+                />
+
             )}
-          </View>
+            </View>
+          </TouchableOpacity>
           <View style={styles.separator}/>
           <Text style={styles.titleLabel}>Participants</Text>
           {inviteButton}
@@ -170,6 +173,7 @@ const styles = StyleSheet.create({
     tintColor: colors.grayColor,
   },
   title: {
+    width: '80%',
     marginTop: hp(1),
     fontSize: 20,
     fontFamily: fonts.RMedium,

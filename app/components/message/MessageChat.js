@@ -434,12 +434,14 @@ const MessageChat = ({
                     />
                 </View>
               )}
-
-          <TouchableOpacity onPress={() => {
+          <Text style={{ fontSize: 15, marginLeft: 15 }}>{uploadImageInProgress ? `Uploading ${selectedImage?.mime?.includes('image') ? 'an image' : 'video'}...` : `${selectedImage?.mime?.includes('image') ? 'Image' : 'Video'} uploaded`}</Text>
+          <TouchableOpacity
+              style={{ flex: 1, alignItems: 'flex-end' }}
+              onPress={() => {
                 setSelectedImage(null);
                 setUploadImageInProgress(false);
                 setUploadedFile(null);
-          }}>
+              }}>
             <FastImage
                     source={ images.cancelImage }
                     style={{ height: 20, width: 20 }}
@@ -600,7 +602,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: wp(3),
     flexDirection: 'row',
-    justifyContent: 'space-between',
     width: wp(100),
     alignItems: 'center',
   },

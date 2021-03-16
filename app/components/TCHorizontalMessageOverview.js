@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
-import QB from 'quickblox-react-native-sdk';
 import { widthPercentageToDP as wp } from '../utils';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -16,6 +15,7 @@ import TCBadge from './TCBadge';
 
 const TCHorizontalMessageOverview = (
   {
+    profilePic = images.profilePlaceHolder,
     dialogType = '',
     title = '',
     subTitle = '',
@@ -31,11 +31,7 @@ const TCHorizontalMessageOverview = (
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
       <View style={styles.imageMainContainer}>
-        {dialogType === QB.chat.DIALOG_TYPE.CHAT ? (
-          <FastImage source={images.profilePlaceHolder} style={styles.imageContainer} />
-        ) : (
-          <FastImage source={images.groupUsers} style={styles.imageContainer} />
-        )}
+        <FastImage source={profilePic} style={styles.imageContainer} />
       </View>
       <View style={styles.rightContainer}>
         <View style={styles.rightTitleContainer}>

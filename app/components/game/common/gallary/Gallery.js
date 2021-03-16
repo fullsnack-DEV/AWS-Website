@@ -14,6 +14,7 @@ import { createPost } from '../../../../api/NewsFeeds';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import AuthContext from '../../../../auth/context';
 import { ImageUploadContext } from '../../../../context/ImageUploadContext';
+import { MAX_UPLOAD_POST_ASSETS } from '../../../../utils/imageAction';
 
 const Gallery = ({
   navigation,
@@ -73,7 +74,7 @@ const Gallery = ({
       width: 300,
       height: 400,
       multiple: true,
-      maxFiles: 10,
+      maxFiles: MAX_UPLOAD_POST_ASSETS,
     }).then((pickImages) => {
       navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
     });

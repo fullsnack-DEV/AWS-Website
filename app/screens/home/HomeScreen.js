@@ -113,6 +113,7 @@ import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/r
 import ScrollableTabs from '../../components/ScrollableTabs';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
 import { ImageUploadContext } from '../../context/GetContexts';
+import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
@@ -529,7 +530,7 @@ const HomeScreen = ({ navigation, route }) => {
               width: 300,
               height: 400,
               multiple: true,
-              maxFiles: 10,
+              maxFiles: MAX_UPLOAD_POST_ASSETS,
             }).then((pickImages) => {
               navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
             });
@@ -580,7 +581,7 @@ const HomeScreen = ({ navigation, route }) => {
               height: 400,
               cropping: true,
               multiple: true,
-              maxFiles: 10,
+              maxFiles: MAX_UPLOAD_POST_ASSETS,
             }).then((pickImages) => {
               navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
             });
@@ -631,7 +632,7 @@ const HomeScreen = ({ navigation, route }) => {
               height: 400,
               cropping: true,
               multiple: true,
-              maxFiles: 10,
+              maxFiles: MAX_UPLOAD_POST_ASSETS,
             }).then((pickImages) => {
               navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
             });
