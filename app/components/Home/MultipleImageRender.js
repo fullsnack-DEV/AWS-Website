@@ -35,6 +35,7 @@ function MultipleImageRender({ data }) {
       <Modal
         isVisible={isModalVisible}
         backdropColor="black"
+        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
         style={{ margin: 0 }}
         backdropOpacity={0}>
         <MultipleImageModal
