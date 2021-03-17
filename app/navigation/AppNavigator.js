@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useRef,
   useMemo,
+
 } from 'react';
 import {
   Image,
@@ -17,6 +18,7 @@ import {
   View,
   Alert,
 } from 'react-native';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import QB from 'quickblox-react-native-sdk';
@@ -35,6 +37,8 @@ import LocalHomeNavigator from './LocalHomeNavigator';
 import strings from '../Constants/String';
 import ScheduleNavigator from './ScheduleNavigator';
 import fonts from '../Constants/Fonts';
+import { heightPercentageToDP } from '../utils';
+
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import AccountScreen from '../screens/account/AccountScreen';
@@ -140,7 +144,6 @@ const AppNavigator = ({ navigation }) => {
   useEffect(() => {
     StatusBar.setBarStyle('dark-content');
     StatusBar.setBackgroundColor('white');
-    getUnReadNotificationHandler();
   }, []);
 
   const getQBToken = useMemo(
@@ -161,17 +164,6 @@ const AppNavigator = ({ navigation }) => {
         });
     }
   }, [getQBToken]);
-
-  const QBeventListeners = useCallback(() => {
-    QbMessageEmitter.addListener(
-      QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
-      getUnReadMessageHandler,
-    );
-  }, [getUnReadMessageHandler]);
-
-  useEffect(() => {
-    getUnReadMessageHandler();
-  }, [getUnReadMessageHandler]);
 
   const getUnReadNotificationHandler = useCallback(() => {
     getUnreadCount(authContext)
@@ -199,6 +191,17 @@ const AppNavigator = ({ navigation }) => {
   const changeRole = useCallback(async () => {
     setRole(authContext.entity.role);
   }, [authContext.entity.role]);
+
+  const QBeventListeners = useCallback(() => {
+    QbMessageEmitter.addListener(
+      QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
+      getUnReadMessageHandler,
+    );
+  }, [getUnReadMessageHandler]);
+
+  useEffect(() => {
+    getUnReadNotificationHandler();
+  }, [getUnReadNotificationHandler]);
 
   const onTabPress = useCallback(() => {
     count.current += 1;
@@ -327,13 +330,17 @@ const AppNavigator = ({ navigation }) => {
   );
 
   return (
+
     <Tab.Navigator
       tabBarOptions={{
+
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
+
         labelStyle: {
           fontSize: 11,
           fontFamily: fonts.RRegular,
+marginBottom: 5,
         },
         style: {
           backgroundColor: colors.offwhite,
@@ -342,9 +349,18 @@ const AppNavigator = ({ navigation }) => {
           shadowOpacity: 0.4,
           shadowRadius: 15,
           elevation: 2,
-          borderTopWidth: 5,
-           borderTopColor: 'transparent',
+
+          // borderTopWidth: 5,
+           // borderTopColor: 'transparent',
+        height: heightPercentageToDP(10),
+
         },
+        tabStyle: {
+          // height: heightPercentageToDP(9),
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+
       }}>
       <Tab.Screen
         name="Local Home"
@@ -430,6 +446,7 @@ const AppNavigator = ({ navigation }) => {
         })}
       />
     </Tab.Navigator>
+
   );
 };
 
@@ -437,7 +454,7 @@ const styles = StyleSheet.create({
   selectedTabImg: {
     alignSelf: 'center',
     height: 40,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 40,
     borderRadius: 80,
   },
@@ -445,14 +462,14 @@ const styles = StyleSheet.create({
   tabImg: {
     alignSelf: 'center',
     height: 40,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 40,
     borderRadius: 80,
   },
   profileTabImg: {
     alignSelf: 'center',
     height: 30,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 30,
     borderRadius: 100,
   },
@@ -461,7 +478,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 34,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 34,
     borderRadius: 70,
     shadowColor: colors.blackColor,

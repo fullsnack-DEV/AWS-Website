@@ -416,12 +416,12 @@ export default function WritePostScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   backIconViewStyle: {
     justifyContent: 'center',
-    width: wp('17%'),
+    width: 30,
   },
   backImage: {
-    height: hp('2%'),
+    height: 20,
     tintColor: colors.lightBlackColor,
-    width: hp('1.5%'),
+    width: 10,
   },
   background: {
     borderRadius: hp('3%'),
@@ -441,15 +441,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: hp('1%'),
     width: wp('92%'),
+
   },
   doneTextStyle: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    fontSize: 14,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
   },
   doneViewStyle: {
-    justifyContent: 'center',
-    alignSelf: 'flex-end',
+
   },
   onlyMeTextStyle: {
     color: colors.googleColor,
@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
   writePostViewStyle: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: wp('58%'),
+
   },
   bottomSafeAreaStyle: {
     backgroundColor: colors.whiteColor,

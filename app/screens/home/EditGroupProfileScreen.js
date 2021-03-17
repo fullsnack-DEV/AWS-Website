@@ -11,7 +11,7 @@ import {
   Text,
   ScrollView,
   Alert,
-  StyleSheet, Keyboard,
+  StyleSheet, Keyboard, TouchableOpacity, Image,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -46,11 +46,18 @@ export default function EditGroupProfileScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: strings.editprofiletitle,
+      headerLeft: () => (
+        <View style={ styles.backIconViewStyle }>
+          <TouchableOpacity onPress={ () => navigation.goBack() }>
+            <Image source={ images.backArrow } style={ styles.backImage } />
+          </TouchableOpacity>
+        </View>
+      ),
       headerRight: () => (
         <Text style={ {
-          marginEnd: 16,
-          fontSize: 14,
-          fontFamily: fonts.RRegular,
+          marginRight: 15,
+          fontSize: 16,
+          fontFamily: fonts.RMedium,
           color: colors.lightBlackColor,
         } } onPress={ () => {
           onSaveButtonClicked();
@@ -343,5 +350,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+  backIconViewStyle: {
+    justifyContent: 'center',
+    width: 30,
+    marginLeft: 15,
+  },
+  backImage: {
+    height: 20,
+    tintColor: colors.lightBlackColor,
+    width: 10,
 
+  },
 });

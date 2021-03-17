@@ -366,9 +366,9 @@ const styles = StyleSheet.create({
     width: wp('17%'),
   },
   backImage: {
-    height: hp('2%'),
+    height: 20,
     tintColor: colors.lightBlackColor,
-    width: hp('1.5%'),
+    width: 10,
   },
 
   bottomImgView: {
@@ -386,8 +386,8 @@ const styles = StyleSheet.create({
   },
   doneTextStyle: {
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    fontSize: 14,
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
   },
   doneViewStyle: {
     justifyContent: 'center',
