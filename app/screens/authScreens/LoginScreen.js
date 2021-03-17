@@ -4,11 +4,9 @@ import React, {
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   Alert,
   TextInput,
-  TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
 
@@ -19,11 +17,8 @@ import {
 import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
-import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 import Config from 'react-native-config';
-import FacebookButton from '../../components/FacebookButton';
-import GoogleButton from '../../components/GoogleButton';
+import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -46,13 +41,6 @@ export default function LoginScreen({ navigation }) {
   const authContext = useContext(AuthContext);
   // For activity indigator
   const [loading, setloading] = useState(false);
-
-  // Google sign-in configuration initialization
-  GoogleSignin.configure({
-    webClientId:
-        '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
-    offlineAccess: false,
-  });
 
   const validate = useCallback(() => {
     if (email === '') {
@@ -164,198 +152,12 @@ export default function LoginScreen({ navigation }) {
     setHidePassword((val) => !val);
   }, []);
 
-  // Login With Facebook manage function
-  const onFacebookButtonPress = async () => {
-    setloading(true);
-    const result = await LoginManager.logInWithPermissions([
-      'public_profile',
-      'email',
-    ]);
-    if (result.isCancelled) {
-      setloading(false);
-      throw new Error('User cancelled the login process')
-    }
-    const data = await AccessToken.getCurrentAccessToken();
-    if (!data) {
-      setloading(false);
-      throw new Error('Something went wrong obtaining access token')
-    }
-    const facebookCredential = auth.FacebookAuthProvider.credential(
-      data.accessToken,
-    );
-    auth()
-      .signInWithCredential(facebookCredential)
-      .then(async () => {
-        const facebookOnAuthStateChanged = auth().onAuthStateChanged((user) => {
-          if (user) {
-            user.getIdTokenResult().then(async (idTokenResult) => {
-              const token = {
-                token: idTokenResult.token,
-                expirationTime: idTokenResult.expirationTime,
-              };
-
-              const userConfig = {
-                method: 'get',
-                url: `${Config.BASE_URL}/users/${user?.uid}`,
-                headers: { Authorization: `Bearer ${token?.token}` },
-              }
-              apiCall(userConfig).then(async (response) => {
-                const entity = {
-                  uid: user.uid,
-                  role: 'user',
-                  obj: response.payload,
-                  auth: {
-                    user_id: user.uid,
-                    user: response.payload,
-                  },
-                }
-                await authContext.setTokenData(token);
-                await Utility.setStorage('loggedInEntity', entity)
-                authContext.setEntity({ ...entity })
-                await authContext.setUser(response.payload);
-                QBInitialLogin(entity, response?.payload);
-              }).catch((error) => {
-                setloading(false);
-                setTimeout(() => Alert.alert(
-                  'TownsCup',
-                  error.message,
-                ), 100)
-              });
-            });
-          } else {
-            setloading(false);
-          }
-        });
-        facebookOnAuthStateChanged();
-      })
-      .catch((error) => {
-        setloading(false);
-        let message = '';
-        if (error.code === 'auth/user-not-found') {
-          message = 'Your email or password is incorrect.Please try again';
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          message = 'That email address is already in use!';
-        }
-        if (error.code === 'auth/invalid-email') {
-          message = 'That email address is invalid!';
-        }
-        if (error.code === 'auth/account-exists-with-different-credential') {
-          message = 'You are already registrated with different login method ';
-        }
-        if (error.code === 'auth/network-request-failed') {
-          message = strings.networkConnectivityErrorMessage;
-        }
-        if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
-      });
-  };
-
-  // Login With Google manage function
-  const onGoogleButtonPress = async () => {
-    try {
-      setloading(true);
-      const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      auth()
-        .signInWithCredential(googleCredential)
-        .then(async () => {
-          const googleOnAuthStateChanged = auth().onAuthStateChanged((user) => {
-            if (user) {
-              user.getIdTokenResult().then(async (idTokenResult) => {
-                const token = {
-                  token: idTokenResult.token,
-                  expirationTime: idTokenResult.expirationTime,
-                };
-
-                const userConfig = {
-                  method: 'get',
-                  url: `${Config.BASE_URL}/users/${user?.uid}`,
-                  headers: { Authorization: `Bearer ${token?.token}` },
-                }
-                apiCall(userConfig).then(async (response) => {
-                  const entity = {
-                    uid: user.uid,
-                    role: 'user',
-                    obj: response.payload,
-                    auth: {
-                      user_id: user.uid,
-                      user: response.payload,
-                    },
-                  }
-                  await authContext.setTokenData(token);
-                  await Utility.setStorage('loggedInEntity', entity)
-                  authContext.setEntity({ ...entity })
-                  authContext.setUser({ ...response.payload });
-                  await Utility.setStorage('authContextEntity', { ...entity })
-                  await Utility.setStorage('authContextUser', { ...response.payload })
-                  await authContext.setUser(response.payload);
-                  QBInitialLogin(entity, response?.payload);
-                }).catch((error) => {
-                  setloading(false);
-                  setTimeout(() => Alert.alert(
-                    'TownsCup',
-                    error.message,
-                  ), 100)
-                });
-              });
-            }
-          });
-          googleOnAuthStateChanged();
-        })
-        .catch((error) => {
-          setloading(false);
-          let message = ''
-          if (error.code === 'auth/user-not-found') {
-            message = 'Your email or password is incorrect.Please try again';
-          }
-          if (error.code === 'auth/email-already-in-use') {
-            message = 'That email address is already in use!';
-          }
-          if (error.code === 'auth/invalid-email') {
-            message = 'That email address is invalid!';
-          }
-          if (error.code === 'auth/account-exists-with-different-credential') {
-            message = 'You are already registrated with different login method ';
-          }
-          if (error.code === 'auth/network-request-failed') {
-            message = strings.networkConnectivityErrorMessage;
-          }
-          if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
-        });
-    } catch (error) {
-      let message = '';
-      setloading(false)
-      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        message = 'Play services are not available'
-      }
-      if (message !== '') setTimeout(() => Alert.alert('Towns cup', message), 100)
-    }
-  }
-
-  const renderSocialMediaLoginButtons = useMemo(() => (
-    <>
-      <FacebookButton onPress={() => {
-        if (authContext.networkConnected) {
-          onFacebookButtonPress()
-        } else {
-          authContext.showNetworkAlert();
-        }
-      }} />
-      <GoogleButton onPress={() => {
-    if (authContext.networkConnected) {
-      onGoogleButtonPress();
-    } else {
-      authContext.showNetworkAlert();
-    }
-      }} />
-    </>
-  ), [authContext, onFacebookButtonPress, onGoogleButtonPress])
-
   const renderEmailInput = useMemo(() => (
     <View style={styles.textFieldContainerStyle}>
       <TCTextField
             style={styles.textFieldStyle}
             placeholder={strings.emailPlaceHolder}
+            placeholderTextColor={colors.darkYellowColor}
             autoCapitalize="none"
             keyboardType="email-address"
             onChangeText={(text) => setEmail(text)}
@@ -375,13 +177,13 @@ export default function LoginScreen({ navigation }) {
             secureTextEntry={hidePassword}
             keyboardType={'default'}
         />
-      <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
+      <TouchableOpacity onPress={() => hideShowPassword()} style={{ alignItems: 'center', justifyContent: 'center' }}>
         {hidePassword ? (
-          <Image source={images.showPassword} style={styles.passwordEyes} />
+          <Text style={styles.passwordEyes}>SHOW</Text>
           ) : (
-            <Image source={images.hidePassword} style={styles.passwordEyes} />
+            <Text style={styles.passwordEyes}>HIDE</Text>
           )}
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </View>
   ), [hidePassword, hideShowPassword, password]);
 
@@ -393,9 +195,9 @@ export default function LoginScreen({ navigation }) {
   }, [authContext, email, login, password, validate])
 
   const renderLoginAndForgotPasswordButtons = useMemo(() => (
-    <>
+    <View style={{ marginTop: 35 }}>
       <TCButton
-            title={strings.loginCapTitle}
+            title={'LOG IN'}
             extraStyle={{ marginTop: hp('3%') }}
             onPress={onLogin}
         />
@@ -403,53 +205,33 @@ export default function LoginScreen({ navigation }) {
             onPress={() => navigation.navigate('ForgotPasswordScreen')}>
         <Text style={styles.forgotPasswordText}>{strings.forgotPassword}</Text>
       </TouchableOpacity>
-    </>
+    </View>
   ), [navigation, onLogin]);
 
   return (
-    <View style={styles.mainContainer}>
-
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.orangeLayer} />
-      <FastImage resizeMode={'stretch'} style={styles.background} source={images.bgImage} />
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
       <TCKeyboardView>
         <Text style={styles.loginText}>{strings.loginText}</Text>
-        {renderSocialMediaLoginButtons}
-        <Text style={styles.orText}>{strings.orText}</Text>
-        {renderEmailInput}
-        {renderPasswordInput}
-        {renderLoginAndForgotPasswordButtons}
-        <View style={{ marginTop: 15 }}>
-          <Text style={styles.bottomText}>
-            <Text>By continuing you agree to Towny`s </Text>
-            <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Terms and services..')}>Terms of Service</Text>
-            <Text style={styles.hyperlinkText} onPress={() => alert('Terms and services..')}>Terms of Service</Text>
-            <Text style={styles.hyperlinkText} onPress={() => Alert.alert('Privacy policy..')}>Privacy Policy</Text>
-            <Text style={styles.hyperlinkText} onPress={() => alert('Privacy policy..')}>Privacy Policy</Text>
-            <Text style={styles.hyperlinkText} onPress={() => Alert.alert('cookie policy..')}>Cookie Policy.</Text>
-            <Text style={styles.hyperlinkText} onPress={() => alert('cookie policy..')}>Cookie Policy.</Text>
-          </Text>
+        <View style={{ marginTop: 55 }}>
+          {renderEmailInput}
+          {renderPasswordInput}
         </View>
+        {renderLoginAndForgotPasswordButtons}
       </TCKeyboardView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
-  bottomText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RLight,
-    fontSize: 12,
-    textAlign: 'center',
-    width: '100%',
-  },
-
   forgotPasswordText: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
@@ -457,42 +239,27 @@ const styles = StyleSheet.create({
     marginTop: hp('3%'),
     textAlign: 'center',
   },
-  hyperlinkText: {
-    fontFamily: fonts.RLight,
-    fontSize: wp('3%'),
-    textDecorationLine: 'underline',
-  },
   loginText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
+    fontSize: 25,
     marginBottom: hp('3%'),
-    marginTop: hp('12%'),
+    marginTop: hp('11%'),
     paddingLeft: 30,
     textAlign: 'left',
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
-
-  },
-  orText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: wp('3%'),
-    marginBottom: hp('3%'),
-    marginTop: hp('3%'),
-    textAlign: 'center',
+    paddingVertical: 25,
   },
   passwordEyes: {
-    alignSelf: 'center',
-    height: 22,
-    resizeMode: 'contain',
-    width: 22,
+    fontSize: 10,
+    color: colors.darkYellowColor,
+    textDecorationLine: 'underline',
   },
   passwordView: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
     alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
     paddingVertical: 5,
     borderRadius: 5,
     color: 'black',
@@ -509,7 +276,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     paddingHorizontal: 10,
     borderRadius: 5,
-    color: colors.blackColor,
     fontFamily: fonts.RRegular,
     fontSize: 16,
     paddingLeft: 17,
@@ -520,7 +286,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   textFieldStyle: {
-    marginHorizontal: 32,
+    alignSelf: 'center',
+    width: wp('85%'),
+    backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,

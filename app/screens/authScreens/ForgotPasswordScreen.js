@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import {
-  View, Text, Image, Alert, StyleSheet,
+  View, Text, Alert, StyleSheet,
 } from 'react-native';
 
 import {
-  heightPercentageToDP as hp,
+  heightPercentageToDP as hp, widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
-
+import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
 import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import strings from '../../Constants/String';
@@ -55,20 +56,21 @@ export default function ForgotPasswordScreen({ navigation }) {
       });
   }
   return (
-
-    <View style={ styles.mainContainer }>
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
       <ActivityLoader visible={loading}/>
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
+      <FastImage resizeMode={'stretch'} style={ styles.background } source={ images.loginBg } />
       <Text style={ styles.forgotText }>{strings.forgotPassword}</Text>
       <Text style={ styles.resetText }>{strings.resetText}</Text>
       <TCTextField
-      style={{ ...styles.textFieldStyle }}
-        placeholder={ strings.enterEmailPlaceholder }
-        secureText={ false }
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={ (text) => setEmail(text) } value={ email }
+          placeholderTextColor={colors.darkYellowColor}
+          style={{ ...styles.textFieldStyle }}
+          placeholder={ strings.enterEmailPlaceholder }
+          secureText={ false }
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={ (text) => setEmail(text) } value={ email }
       />
       <View style={{ flex: 1 }}/>
 
@@ -80,7 +82,7 @@ export default function ForgotPasswordScreen({ navigation }) {
             forgotPassword(email);
           }
         } }
-extraStyle={{ marginBottom: 10 }}
+        extraStyle={{ marginBottom: 10 }}
       />
         <TCButton
               title={ strings.cancelTitle }
@@ -95,18 +97,16 @@ extraStyle={{ marginBottom: 10 }}
               } }
               />
       </View>
-
-    </View>
+    </LinearGradient>
 
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
   forgotText: {
     color: colors.whiteColor,
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingVertical: 25,
   },
   resetText: {
     color: colors.whiteColor,

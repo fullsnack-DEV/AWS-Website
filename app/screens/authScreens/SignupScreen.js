@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
-  Image,
-  StyleSheet,
+  StyleSheet, Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -14,6 +12,7 @@ import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
+import LinearGradient from 'react-native-linear-gradient';
 import { uploadImageOnPreSignedUrls } from '../../utils/imageAction';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -252,10 +251,11 @@ export default function SignupScreen({ navigation }) {
     setHidePassword(!hidePassword);
   };
   return (
-    <View style={styles.mainContainer}>
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.bgImage} />
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
       <TCKeyboardView>
         <View style={{ marginVertical: 20 }}>
           <FastImage
@@ -281,18 +281,21 @@ export default function SignupScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <TCTextField
+                placeholderTextColor={colors.darkYellowColor}
                 style={styles.textFieldStyle}
                 placeholder={strings.fnameText}
                 onChangeText={(text) => setFName(text)}
                 value={fName}
             />
         <TCTextField
+                placeholderTextColor={colors.darkYellowColor}
                 style={styles.textFieldStyle}
                 placeholder={strings.lnameText}
                 onChangeText={(text) => setLName(text)}
                 value={lName}
             />
         <TCTextField
+                placeholderTextColor={colors.darkYellowColor}
                 style={styles.textFieldStyle}
                 placeholder={strings.emailPlaceHolder}
                 autoCapitalize="none"
@@ -306,23 +309,38 @@ export default function SignupScreen({ navigation }) {
                   placeholder={strings.passwordText}
                   onChangeText={(text) => setPassword(text)}
                   value={password}
-                  placeholderTextColor={colors.userPostTimeColor}
+                  placeholderTextColor={colors.darkYellowColor}
                   secureTextEntry={hidePassword}
                   keyboardType={'default'}
               />
-          <TouchableWithoutFeedback onPress={() => hideShowPassword()}>
-            <Image source={hidePassword ? images.hidePassword : images.showPassword} style={styles.passwordEyes} />
-          </TouchableWithoutFeedback>
+          <TouchableOpacity onPress={() => hideShowPassword()} style={{ alignItems: 'center', justifyContent: 'center' }}>
+            {hidePassword ? (
+              <Text style={styles.passwordEyes}>SHOW</Text>
+            ) : (
+              <Text style={styles.passwordEyes}>HIDE</Text>
+            )}
+          </TouchableOpacity>
         </View>
 
-        <TCTextField
-                style={styles.textFieldStyle}
-                placeholder={strings.confirmPasswordText}
-                autoCapitalize="none"
-                secureText={true}
-                onChangeText={(text) => setCPassword(text)}
-                value={cPassword}
-            />
+        <View style={styles.passwordView}>
+          <TextInput
+              autoCapitalize="none"
+              style={{ ...styles.textInput, zIndex: 100 }}
+              placeholder={strings.confirmPasswordText}
+              onChangeText={setCPassword}
+              value={cPassword}
+              placeholderTextColor={colors.darkYellowColor}
+              secureTextEntry={hidePassword}
+              keyboardType={'default'}
+          />
+          <TouchableOpacity onPress={() => hideShowPassword()} style={{ alignItems: 'center', justifyContent: 'center' }}>
+            {hidePassword ? (
+              <Text style={styles.passwordEyes}>SHOW</Text>
+            ) : (
+              <Text style={styles.passwordEyes}>HIDE</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
         <TCButton
                 title={strings.signUpCapitalText}
@@ -338,7 +356,7 @@ export default function SignupScreen({ navigation }) {
                 }}
             />
       </TCKeyboardView>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -346,33 +364,31 @@ const styles = StyleSheet.create({
   background: {
     height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
     width: wp('100%'),
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
   passwordEyes: {
-    alignSelf: 'center',
-    height: 22,
-    resizeMode: 'contain',
-    width: 22,
+    fontSize: 10,
+    color: colors.darkYellowColor,
+    textDecorationLine: 'underline',
   },
   passwordView: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
     alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
+    paddingVertical: 5,
     borderRadius: 5,
+    color: 'black',
     elevation: 3,
     flexDirection: 'row',
-    height: 40,
-    marginBottom: 16,
-    marginTop: 2,
+    marginVertical: 5,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
-    width: wp('84%'),
+    width: wp('85%'),
   },
   profile: {
     alignContent: 'center',
@@ -384,28 +400,22 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   textInput: {
-    backgroundColor: colors.whiteColor,
+    paddingVertical: 0,
+    paddingHorizontal: 10,
     borderRadius: 5,
-    color: colors.blackColor,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    // height: 40,
     paddingLeft: 17,
-
     width: wp('75%'),
   },
   textFieldStyle: {
-    backgroundColor: colors.whiteColor,
-    fontFamily: fonts.RRegular,
-
-    marginBottom: 10,
-    marginLeft: 32,
-    marginRight: 32,
-
-    paddingLeft: 8,
+    marginVertical: 5,
+    alignSelf: 'center',
+    width: wp('85%'),
+    backgroundColor: 'rgba(255,255,255,0.9)',
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.5,
     shadowRadius: 4,
   },
   profileCameraButtonStyle: {

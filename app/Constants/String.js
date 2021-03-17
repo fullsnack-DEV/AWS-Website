@@ -1,16 +1,16 @@
 const strings = {
-  townsCupTitle: 'T O W N S C U P',
+  townsCupTitle: 'TOWNSCUP',
   alertmessagetitle: 'Towns Cup',
   defaultError: 'Something went wrong',
   titleBasic: 'Townscup',
-  townsCupTagLine: 'All Teams in the World.',
+  townsCupTagLine: 'All teams in the world.',
   welCome: 'Welcome',
   welcomeText: 'You\'re only a few steps away from joining Townscup.',
   fbText: 'Continue with Facebook',
   googleText: 'Continue with Google',
   signUpText: 'Signup with email',
   alreadyMember: 'Already a member yet? Log In',
-  loginText: 'Login',
+  loginText: 'Log in',
   orText: 'OR',
   emailPlaceHolder: 'Email',
   allDay: 'All day',
@@ -33,7 +33,7 @@ const strings = {
   AppearancePlaceholder: 'Appearance',
   writeNotesPlaceholder: 'Notes',
   writedownRulesPlaceholder: 'Write down the rules',
-  enterEmailPlaceholder: 'Enter your email',
+  enterEmailPlaceholder: 'Enter your email address',
   passwordPlaceHolder: 'Password',
   forgotPassword: 'Forgot Password?',
   checkEmailText: 'Please check your e-mail',
@@ -100,7 +100,7 @@ const strings = {
 
   locationText: 'Your Location',
   locationPlaceholderText: 'Search city or postal code',
-  sportText: 'Select your favourite sport event.',
+  sportText: 'Select your favourite sports.',
 
   // Add Birthday screen
   addBirthdayText: 'Add your birthday.',

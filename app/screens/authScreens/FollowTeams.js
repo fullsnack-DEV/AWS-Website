@@ -13,10 +13,10 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
 import { getUserDetails, createUser } from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
 import TCButton from '../../components/TCButton';
 import Separator from '../../components/Separator';
 import AuthContext from '../../auth/context';
@@ -130,78 +130,80 @@ export default function FollowTeams({ route }) {
   };
 
   const renderItem = ({ item, index }) => (
-    <View style={ styles.listItem }>
-      <View style={ styles.listItemContainer }>
-        <View style={{ flex: 0.2 }}>
-          {teams[index].thumbnail ? (
-            <Image
+    <View>
+      <View style={ styles.listItem }>
+        <View style={ styles.listItemContainer }>
+          <View style={{ flex: 0.2 }}>
+            {teams[index].thumbnail ? (
+              <Image
               style={ styles.teamImg }
               source={ { uri: teams[index].thumbnail } }
             />
           ) : (
             <Image style={ styles.teamImg } source={ images.team_ph } />
           )}
-        </View>
-        <View
+          </View>
+          <View
             style={ {
               flex: 0.5,
               paddingHorizontal: 10,
             } }>
-          <Text style={ styles.teamNameText }>{teams[index].group_name}</Text>
-          <Text style={ styles.cityText }>
-            {teams[index].city}, {teams[index].state_abbr},{' '}
-            {teams[index].country}
-          </Text>
-        </View>
-        <View style={{ flex: 0.3 }}>
-          <TouchableWithoutFeedback
+            <Text style={ styles.teamNameText }>{teams[index].group_name}</Text>
+            <Text style={ styles.cityText }>
+              {teams[index].city}, {teams[index].state_abbr},{' '}
+              {teams[index].country}
+            </Text>
+          </View>
+          <View style={{ flex: 0.3 }}>
+            <TouchableWithoutFeedback
             onPress={ () => {
               followUnfollowClicked({ item, index });
             } }>
-            {teams[index].follow ? (
-              <View style={ styles.followingBtn }>
-                <Text style={ styles.followingText }>Following</Text>
-              </View>
+              {teams[index].follow ? (
+                <View style={ styles.followBtn }>
+                  <Text style={ styles.followText}>Following</Text>
+                </View>
             ) : (
-              <View style={ styles.followBtn }>
-                <Text style={ styles.followText }>Follow</Text>
+              <View style={ styles.followingBtn }>
+                <Text style={ styles.followingText }>Follow</Text>
               </View>
             )}
-          </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+          </View>
         </View>
       </View>
-
       <Separator />
     </View>
   );
 
   return (
-    <View style={ styles.mainContainer }>
+    <LinearGradient
+      colors={[colors.themeColor1, colors.themeColor3]}
+      style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      <FastImage resizeMode='stretch' style={ styles.background } source={ images.orangeLayer } />
-      <FastImage resizeMode='stretch' style={ styles.background } source={ images.bgImage } />
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
 
       <Text style={ styles.sportText }>Follow sport teams.</Text>
       <FlatList
+          style={{ padding: 15 }}
         data={ teams }
         keyExtractor={(item, index) => index.toString()}
         renderItem={ renderItem }
       />
       <TCButton
-        title={ strings.applyTitle }
+        title={'CONTINUE'}
         extraStyle={ { marginBottom: hp('6.5%'), marginTop: hp('2%') } }
         onPress={ () => signUpWithTC() }
       />
-    </View>
+    </LinearGradient>
   );
 }
 const styles = StyleSheet.create({
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    width: '100%',
+    width: wp('100%'),
   },
-
   cityText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
@@ -250,12 +252,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingBottom: 20,
-    paddingTop: 20,
+    paddingVertical: 20,
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
 
   sportText: {

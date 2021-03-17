@@ -50,16 +50,14 @@ const GameFeed = ({
   const createPostAfterUpload = useCallback((dataParams) => {
     createGamePostData({ ...dataParams, game_id: gameData?.game_id })
       .then((response) => {
-        const gFData = [...gameFeedData]
-        gFData.unshift(response.payload)
-        setGameFeedData([...gFData])
+        setGameFeedData((gfData) => [response.payload, ...gfData])
       })
       .catch((error) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message)
         }, 10)
       })
-  }, [createGamePostData, gameData?.game_id, gameFeedData])
+  }, [createGamePostData, gameData?.game_id])
 
   const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {

@@ -21,6 +21,8 @@ import {
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Geolocation from '@react-native-community/geolocation';
 
+import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import { searchLocations, getLocationNameWithLatLong } from '../../api/External';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
@@ -193,9 +195,10 @@ export default function ChooseLocationScreen({ navigation }) {
   );
 
   return (
-    <View style={ styles.mainContainer }>
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
       <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
       <View style={ styles.sectionStyle }>
@@ -228,7 +231,7 @@ export default function ChooseLocationScreen({ navigation }) {
         renderItem={ renderItem }
         keyExtractor={(index) => index.toString()}
       />
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -242,10 +245,9 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
   cityList: {
     color: colors.whiteColor,
@@ -277,7 +279,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
   noDataText: {
     // alignSelf: 'center',
@@ -300,11 +302,10 @@ const styles = StyleSheet.create({
   },
   sectionStyle: {
     alignItems: 'center',
-    backgroundColor: colors.whiteColor,
+    backgroundColor: 'rgba(255,255,255,0.9)',
     borderRadius: 25,
-
     flexDirection: 'row',
-    height: 50,
+    height: 40,
     justifyContent: 'center',
     margin: wp('8%'),
     marginBottom: wp('1%'),
@@ -317,10 +318,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   textInput: {
-    color: colors.blackColor,
+    color: colors.darkYellowColor,
     flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4.5%'),
+    fontFamily: fonts.RBold,
+    fontSize: 16,
     paddingLeft: 10,
   },
 });

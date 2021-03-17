@@ -38,9 +38,7 @@ const Gallery = ({
   const createPostAfterUpload = useCallback((dataParams) => {
     createPost(dataParams, authContext)
         .then((response) => {
-          const pData = [...postData]
-          pData.unshift(response?.payload);
-          setPostData([...pData])
+          setPostData((pData) => [response.payload, ...pData])
           getGalleryData(gameData?.game_id).then((res) => {
             setAllData([...res?.payload]);
           });
@@ -49,7 +47,7 @@ const Gallery = ({
           setLoading(false)
           Alert.alert(error)
         })
-  }, [authContext, gameData?.game_id, getGalleryData, postData])
+  }, [authContext, gameData?.game_id, getGalleryData])
 
   const callthis = useCallback((data, postDesc) => {
     if (data) {

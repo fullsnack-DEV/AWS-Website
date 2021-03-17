@@ -52,8 +52,24 @@ const NewsFeedDescription = ({
 
   const toggleNumberOfLines = useCallback(() => setReadMore((val) => !val), []);
 
+  const handleNamePress = useCallback((name) => {
+    // const re = new RegExp(name, 'gmi');
+    // const getFetchCount = getIndicesOf(name);
+    const entityIndex = taggedData?.findIndex((item) => item === name);
+    const fetchedEntity = tagData?.[entityIndex];
+    const entity_text = ['player', 'user']?.includes(fetchedEntity?.entity_type) ? 'user_id' : 'group_id'
+    if (fetchedEntity?.[entity_text]) {
+      if (fetchedEntity[entity_text] !== authContext?.entity?.uid) {
+        navigation.push('HomeScreen', {
+          uid: fetchedEntity[entity_text],
+          role: ['user', 'player']?.includes(fetchedEntity.entity_type) ? 'user' : fetchedEntity.entity_type,
+          backButtonVisible: true,
+        })
+      }
+    }
+  }, [authContext?.entity?.uid, navigation, tagData, taggedData])
+
   const renderText = useCallback((matchingString) => {
-    console.log(matchingString);
     const match = matchingString.match(tagRegex);
     let color = colors.black;
     const isTagName = taggedData?.includes(match?.[0])
@@ -65,7 +81,7 @@ const NewsFeedDescription = ({
     // removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
     // const jsonData = JSON.parse(removedPrefixSuffix);
     // return <Text style={{ ...styles.username, color: colors.greeColor }}>@{_.startCase(matchingString) ?? ''}</Text>;
-  }, [taggedData])
+  }, [handleNamePress, taggedData])
 
   const renderURLText = useCallback((matchingString) => {
     const match = matchingString.match(urlRegex);
@@ -105,27 +121,10 @@ const NewsFeedDescription = ({
     return indices;
   }
 
-  const handleNamePress = useCallback((name) => {
-    // const re = new RegExp(name, 'gmi');
-    // const getFetchCount = getIndicesOf(name);
-    const entityIndex = taggedData?.findIndex((item) => item === name);
-    const fetchedEntity = tagData?.[entityIndex];
-    const entity_text = ['player', 'user']?.includes(fetchedEntity?.entity_type) ? 'user_id' : 'group_id'
-    if (fetchedEntity?.[entity_text]) {
-      if (fetchedEntity[entity_text] !== authContext?.entity?.uid) {
-        navigation.push('HomeScreen', {
-          uid: fetchedEntity[entity_text],
-          role: ['user', 'player']?.includes(fetchedEntity.entity_type) ? 'user' : fetchedEntity.entity_type,
-          backButtonVisible: true,
-        })
-      }
-    }
-  }, [authContext?.entity?.uid, navigation, tagData, taggedData])
-
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       {descriptions?.length > 0 && (
-        <Hyperlink>
+        <View>
           <Text style={[styles.descText, descText]} numberOfLines={0}>
             <ParsedText
               style={[styles.text, descriptionTxt]}
@@ -146,7 +145,7 @@ const NewsFeedDescription = ({
               </Text>
             )}
           </Text>
-        </Hyperlink>
+        </View>
       )}
     </View>
   );
