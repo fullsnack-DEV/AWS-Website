@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,17 +11,29 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
-import strings from '../../Constants/String';
-import TCButton from '../../components/TCButton';
 
+const DELAY_PAGE_TIME = 4000;
 export default function TotalTeamsScreen({ navigation, route }) {
+  useEffect(() => {
+    setTimeout(() => {
+      navigation.navigate('ChooseSportsScreen', {
+        teamData: route.params.teamData,
+        city: route.params.city,
+        state: route.params.state,
+        country: route.params.country,
+      })
+    }, DELAY_PAGE_TIME)
+  }, [])
   return (
-    <View style={ styles.mainContainer }>
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
 
       <View style={ styles.sectionStyle }>
         <Image source={ images.groupIcon } style={ styles.groupsImg } />
@@ -34,18 +46,7 @@ export default function TotalTeamsScreen({ navigation, route }) {
           <Text style={ styles.LocationText }>{route.params.city}, {route.params.state}</Text>
         </Text>
       </View>
-      <TCButton
-        title={ strings.continueCapTitle }
-        extraStyle={ { position: 'absolute', bottom: hp('7%') } }
-        onPress={ () => navigation.navigate('ChooseSportsScreen', {
-          teamData: route.params.teamData,
-          city: route.params.city,
-          state: route.params.state,
-          country: route.params.country,
-        })
-        }
-      />
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -53,21 +54,20 @@ const styles = StyleSheet.create({
   LocationText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6.5%'),
+    fontSize: 25,
     marginTop: 20,
     textAlign: 'center',
     width: wp('60%'),
   },
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
   foundText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('6.5%'),
+    fontSize: 25,
   },
   groupsImg: {
     height: 60,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
 
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
   sectionStyle: {
     flex: 1,

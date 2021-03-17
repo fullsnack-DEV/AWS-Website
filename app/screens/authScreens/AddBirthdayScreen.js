@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, Image, StyleSheet,
+  View, Text, StyleSheet,
 } from 'react-native';
 
 import {
@@ -8,6 +8,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { Tooltip } from 'react-native-elements';
+import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import TCButton from '../../components/TCButton';
 import * as Utility from '../../utils/index';
 
@@ -41,29 +43,32 @@ export default function AddBirthdayScreen({ navigation }) {
     setMinDateValue(date);
   }, [])
   return (
-    <View style={ styles.mainContainer }>
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
+      <View>
+        <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
 
-      <Text style={ styles.checkEmailText }>{strings.addBirthdayText}</Text>
-      <Text style={ styles.resetText }>{strings.notDisplayText}</Text>
+        <Text style={ styles.checkEmailText }>{strings.addBirthdayText}</Text>
+        <Text style={ styles.resetText }>{strings.notDisplayText}</Text>
 
-      <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
+        <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
                  backgroundColor={ colors.parrotColor }
                  height={ hp('30%') }
                  width={ wp('75%') }
                  overlayColor={ 'transparent' }
                  skipAndroidStatusBar= {true}>
-        <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
-      </Tooltip>
+          <Text style={ styles.whyAskingText } >{strings.whyAskingText}</Text>
+        </Tooltip>
 
-      {/* Date.parse(dateValue) */}
+        {/* Date.parse(dateValue) */}
 
-      <View style={ styles.matchFeeTxt }>
-        <Text style={ styles.dateText } onPress={showDatepicker}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+        <View style={ styles.matchFeeTxt }>
+          <Text style={ styles.dateText } onPress={showDatepicker}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+        </View>
       </View>
-
-      <TCButton
+      <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 50 }}>
+        <TCButton
             title={ strings.continueCapTitle }
             onPress={ async () => {
               const user = await Utility.getStorage('userInfo');
@@ -77,6 +82,7 @@ export default function AddBirthdayScreen({ navigation }) {
             } }
             extraStyle={ { marginTop: 50 } }
         />
+      </View>
       <DateTimePickerView
           maximumDate={minDateValue}
             visible={show}
@@ -86,15 +92,14 @@ export default function AddBirthdayScreen({ navigation }) {
             mode={'date'}
             date={dateValue}
         />
-    </View>
+    </LinearGradient>
   );
 }
 const styles = StyleSheet.create({
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
   checkEmailText: {
     color: colors.whiteColor,
@@ -112,21 +117,17 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
   matchFeeTxt: {
     height: 40,
     width: wp('90%'),
     alignSelf: 'center',
     justifyContent: 'center',
-    // alignItems:'center',
     marginTop: 30,
     fontSize: wp('3.8%'),
-
     color: 'black',
-
-    backgroundColor: colors.offwhite,
-
+    backgroundColor: 'rgba(255,255,255,0.9)',
     paddingLeft: 20,
     borderRadius: 5,
     shadowColor: colors.googleColor,
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginLeft: 20,
     marginRight: 20,

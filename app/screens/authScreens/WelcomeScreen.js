@@ -1,11 +1,12 @@
 /* eslint-disable react-native/split-platform-components */
-import React, { useState, useContext, useEffect } from 'react';
+import React, {
+  useState, useContext, useEffect, useMemo, useCallback,
+} from 'react';
 import {
-  View, Text, Image, TouchableOpacity, Alert, StyleSheet,
-  StatusBar,
-
+  View, Text, TouchableOpacity, Alert, StyleSheet,
+  StatusBar, Animated,
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -14,6 +15,7 @@ import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 import Config from 'react-native-config';
+import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../auth/context'
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
@@ -27,14 +29,33 @@ import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
+const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
 export default function WelcomeScreen({ navigation }) {
+  const fadeInOpacity = new Animated.Value(0);
+  const fadeOutOpacity = new Animated.Value(1);
+
   // For activity indigator
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
+  const [currentBackground, setCurrentBackground] = useState(1);
 
   useEffect(() => {
-    console.log('RENDER WELCOME SCREEN')
+    onLoad()
+  }, [currentBackground])
+  useEffect(() => {
+    const backgroundInterval = setInterval(changeBackground, BACKGROUND_CHANGE_INTERVAL);
+    return () => {
+      clearInterval(backgroundInterval);
+    }
   }, [])
+
+  const changeBackground = useCallback(() => {
+        setCurrentBackground((curBg) => {
+          if (curBg < 4) return curBg + 1
+          return 1
+        })
+  }, [])
+
   // Google sign-in configuration initialization
   GoogleSignin.configure({
     webClientId: '1003329053001-tmrapda76mrggdv8slroapq21icrkdb9.apps.googleusercontent.com',
@@ -56,7 +77,6 @@ export default function WelcomeScreen({ navigation }) {
     }
     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
     auth().signInWithCredential(facebookCredential).then(async (authResult) => {
-      console.log('FACEBOOK DETAIL:', authResult);
       googleFaceBookSignInSignUp(authResult, 'FACEBOOK | ')
     }).catch((error) => {
       setloading(false);
@@ -202,66 +222,100 @@ export default function WelcomeScreen({ navigation }) {
     }
   }
 
-  return (
+  const onLoad = useCallback(() => {
+    fadeInOpacity.setValue(0);
+    fadeOutOpacity.setValue(1);
+    Animated.sequence([
+      Animated.timing(fadeInOpacity, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.delay(3000),
+      Animated.timing(fadeInOpacity, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  }, [fadeInOpacity, fadeOutOpacity]);
 
-    <View style={ styles.mainContainer }>
+  const renderBackgroundImages = useMemo(() => (
+    <Animated.Image
+          style={{
+            ...styles.background,
+            opacity: fadeInOpacity,
+          }}
+          // resizeMode={'stretch'}
+          source={ images[`welcomeImage${currentBackground}`] }
+      />
+    ), [currentBackground])
+
+  return (
+    <LinearGradient
+        colors={[colors.themeColor1, colors.themeColor3]}
+        style={styles.mainContainer}>
       <StatusBar backgroundColor="white" barStyle="dark-content"/>
       <ActivityLoader visible={ loading } />
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.signUpBg1 } />
-
+      {renderBackgroundImages}
       <View style={ styles.logoContainer }>
-        <Image style={ styles.logo } source={ images.townsCupLogo } />
+        <FastImage style={ styles.logo } resizeMode={'contain'} source={ images.townsCupLogo } />
         <Text style={ styles.logoTitle }>{strings.townsCupTitle}</Text>
         <Text style={ styles.logoTagLine }>{strings.townsCupTagLine}</Text>
       </View>
 
-      <Text style={ styles.welcome }>{strings.welCome}</Text>
-      <Text style={ styles.welcomeText }>{strings.welcomeText}</Text>
-
-      <FacebookButton onPress={() => {
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+        <View style={{ marginBottom: 35 }}>
+          <FacebookButton onPress={() => {
         if (authContext.networkConnected) {
           onFacebookButtonPress();
         } else {
           authContext.showNetworkAlert();
         }
-      }}/>
-      <GoogleButton onPress={() => {
+          }}/>
+          <GoogleButton onPress={() => {
         if (authContext.networkConnected) {
           onGoogleButtonPress();
         } else {
           authContext.showNetworkAlert();
         }
-      }}/>
+          }}/>
 
-      <TouchableOpacity
-            style={ [styles.imgWithText, styles.allButton] }
+          <TouchableOpacity
+            style={styles.allButton }
             onPress={ () => {
               navigation.navigate('SignupScreen')
-            }
-            }>
-        <Image source={ images.email } style={ styles.signUpImg } />
-        <Text style={ styles.signUpText }>{strings.signUpText}</Text>
-      </TouchableOpacity>
+            }}>
+            <FastImage source={ images.email } resizeMode={'contain'} style={ styles.signUpImg } />
+            <Text style={ styles.signUpText }>{strings.signUpText}</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
+          <TouchableOpacity
             onPress={ () => navigation.navigate('LoginScreen') }
             style={ styles.alreadyView }>
-        <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
-      </TouchableOpacity>
-
-    </View>
+            <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.privacyText}>
+          By continuing or signing up you agree to Townty’s{'\n'}
+          <Text onPress={() => {}} style={{ textDecorationLine: 'underline' }}>Terms of Service.</Text> We will manage information about you{'\n'}
+          as described in our{' '}
+          <Text onPress={() => {}} style={{ textDecorationLine: 'underline' }}>Privacy Policy</Text> and{' '}
+          <Text onPress={() => {}} style={{ textDecorationLine: 'underline' }}>Cookie Policy</Text>.
+        </Text>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   allButton: {
+    marginVertical: 5,
+    flexDirection: 'row',
+    width: '90%',
+    alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 40,
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: '3%',
-    justifyContent: 'center',
     alignItems: 'center',
     padding: 12,
     shadowColor: colors.googleColor,
@@ -276,9 +330,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   alreadyView: {
+    marginVertical: 10,
     alignSelf: 'center',
-    bottom: hp('4%'),
-    position: 'absolute',
+  },
+  privacyText: {
+    textAlign: 'center',
+    fontSize: 12,
+    fontFamily: fonts.RLight,
+    color: colors.whiteColor,
+    width: '80%',
+    alignSelf: 'center',
   },
   background: {
     height: hp('100%'),
@@ -286,23 +347,20 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: wp('100%'),
   },
-  imgWithText: {
-    flexDirection: 'row',
-  },
   logo: {
     alignContent: 'center',
     height: hp(12),
+    width: wp(22),
     marginBottom: hp(4),
-    resizeMode: 'contain',
   },
   logoContainer: {
     alignItems: 'center',
     flexDirection: 'column',
-    marginTop: hp('10%'),
+    marginTop: hp('15%'),
   },
   logoTagLine: {
     color: colors.whiteColor,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: wp('4%'),
     marginTop: hp('1%'),
   },
@@ -310,40 +368,26 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
     fontSize: wp('9%'),
+    letterSpacing: 5,
   },
 
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
+    paddingVertical: 25,
   },
 
   signUpImg: {
+    flex: 0.2,
     alignSelf: 'center',
     height: 20,
-    resizeMode: 'contain',
     width: 20,
   },
   signUpText: {
     color: colors.themeColor,
+    flex: 1,
     fontFamily: fonts.RRegular,
     fontSize: 17,
-    marginLeft: 10,
-  },
-  welcome: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 25,
-    marginTop: hp('5%'),
-    paddingLeft: wp('10%'),
-    textAlign: 'left',
-  },
-  welcomeText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RLight,
-    fontSize: 18,
-    marginRight: wp('5%'),
-    marginTop: hp('1%'),
-    paddingLeft: wp('10%'),
-    textAlign: 'left',
+    textAlign: 'center',
   },
 });

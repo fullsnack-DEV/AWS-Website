@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, View, Text, Image, TouchableOpacity, Alert,
+  StyleSheet, View, Text, TouchableOpacity, Alert,
 } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import {
@@ -8,9 +8,13 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import colors from '../../Constants/Colors';
+import fonts from '../../Constants/Fonts';
 
 export default function EmailVerificationScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
@@ -32,7 +36,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
           navigation.navigate('AddBirthdayScreen');
         } else {
           setTimeout(() => {
-            Alert.alert('Email not verified yet');
+            Alert.alert('Your email hasn’t been verified yet.');
           }, 100)
         }
       })
@@ -68,19 +72,50 @@ export default function EmailVerificationScreen({ navigation, route }) {
       });
   };
 
+  const getVerificationEmailText = `We have sent an email to ${route?.params?.emailAddress ?? ''}. You need to verify your email to continue. If you have not receive the verification email, please check your spam folder or click the resend button below.`
+
+      // const auth = await firebase?.auth()?.currentUser;
   return (
-    <View style={styles.mainContainer}>
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
       <ActivityLoader visible={loading}/>
-      <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.bgImage} />
-      <View style={{ marginTop: '80%', alignSelf: 'center', width: '80%' }}>
-        <Text style={{ fontSize: 17, color: 'white' }}>
-          We have sent you have a verification link to
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
+      <View style={{ marginTop: '30%', alignSelf: 'center', width: '80%' }}>
+        <Text style={{
+            fontSize: 25,
+            fontFamily: fonts.RBold,
+            color: colors.whiteColor,
+            marginBottom: 25,
+        }}>
+          Please verify your email.
         </Text>
-        <Text style={{ fontSize: 17, color: 'white' }}>
-          Your email please verify and proceed
+        <Text style={{ fontSize: 16, color: 'white', fontFamily: fonts.RMedium }}>
+          {getVerificationEmailText}
         </Text>
+
       </View>
+      <FastImage
+          style={{
+ height: 112, width: 180, alignSelf: 'center', marginVertical: 15,
+          }}
+          resizeMode={'contain'}
+          source={images.emailSendIconBG}
+        />
+
+      <TouchableOpacity onPress={() => resend()} disabled={timer !== 0} style={{ opacity: timer > 0 ? 0.6 : 1 }}>
+        <Text style={{
+                        width: '100%',
+                        textAlign: 'center',
+                        color: colors.lightGreen,
+            textDecorationLine: 'underline',
+                        fontSize: 13,
+                        fontWeight: '700',
+        }}>
+          {timer !== 0 ? `SEND VERIFICATION EMAIL AGAIN AFTER ${timer}s` : 'SEND VERIFICATION EMAIL AGAIN'}
+        </Text>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => verifyUserEmail()}>
         <View
           style={{
@@ -95,50 +130,25 @@ export default function EmailVerificationScreen({ navigation, route }) {
             marginTop: '10%',
             height: 50,
           }}>
-          <Text style={{ fontSize: 15, color: 'blue' }}>
+          <Text style={{ fontSize: 15, fontFamily: fonts.RBold, color: colors.darkYellowColor }}>
             {' '}
-            I Verified My Email
+            I’VE VERIFIED MY EMAIL ADDRESS
           </Text>
         </View>
       </TouchableOpacity>
-      <View>
-        <TouchableOpacity onPress={() => resend()} disabled={timer !== 0} style={{ opacity: timer > 0 ? 0.6 : 1 }}>
-          <View
-            style={{
-              borderRadius: 40,
-              backgroundColor: 'white',
-              width: '80%',
-              justifyContent: 'center',
-              alignItems: 'center',
-              alignSelf: 'center',
-              marginTop: '4%',
-              height: 50,
-            }}>
-            <Text style={{
-              width: '100%',
-              textAlign: 'center',
-              color: 'orange',
-              fontSize: 15,
-              fontWeight: '700',
-            }}>
-              {timer !== 0 ? `Resend Link After ${timer}s` : 'Resend Verification Link'}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>
+
+    </LinearGradient>
   );
 }
 const styles = StyleSheet.create({
-  background: {
-    height: hp('100%'),
-    position: 'absolute',
-    resizeMode: 'stretch',
-    width: wp('100%'),
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
+    background: {
+        height: hp('100%'),
+        position: 'absolute',
+        width: wp('100%'),
+    },
+    mainContainer: {
+        flex: 1,
+        paddingTop: 25,
+    },
 
 });

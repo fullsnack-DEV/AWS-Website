@@ -148,16 +148,14 @@ const HomeFeed = ({
         createPost(dataParams, authContext)
             .then((response) => {
                 setTotalUserPostCount((cnt) => cnt + 1);
-                const pData = [...postData]
-                pData.unshift(response.payload);
-                setPostData([...pData])
+                setPostData((pData) => [response.payload, ...pData])
             })
             .catch((error) => {
                 setTimeout(() => {
                     Alert.alert(strings.alertmessagetitle, error.message)
                 }, 10)
             })
-    }, [authContext, postData])
+    }, [authContext])
 
     const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
         if (postDesc.trim().length > 0 && data?.length === 0) {

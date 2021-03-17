@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import colors from '../Constants/Colors'
 
 function Separator() {
@@ -10,14 +9,12 @@ function Separator() {
 const styles = StyleSheet.create({
   separatorLine: {
     alignItems: 'center',
-
     backgroundColor: colors.whiteColor,
     bottom: 0,
-
     height: 1,
     justifyContent: 'center',
     position: 'absolute',
-    width: wp('80%'),
+    width: '100%',
   },
 });
 

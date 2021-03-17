@@ -282,6 +282,12 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   messageSearchButton: require('../assets/images/messageSearchButton.png'),
   yellowCheckBox: require('../assets/images/yellowCheckBox.png'),
   tc_message_top_icon: require('../assets/images/tc_message_top_icon.png'),
+  welcomeImage1: require('../assets/images/welcomeImage1.png'),
+  welcomeImage2: require('../assets/images/welcomeImage2.png'),
+  welcomeImage3: require('../assets/images/welcomeImage3.png'),
+  welcomeImage4: require('../assets/images/welcomeImage4.png'),
+  loginBg: require('../assets/images/loginBg.png'),
+  emailSendIconBG: require('../assets/images/emailSendIconBG.png'),
 };
 
 export default images;

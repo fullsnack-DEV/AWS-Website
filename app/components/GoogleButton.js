@@ -16,7 +16,7 @@ function GoogleButton({ onPress }) {
   return (
     <SafeAreaView>
       <TouchableOpacity
-        style={ [styles.imgWithText, styles.allButton] }
+        style={styles.allButton}
         onPress={ onPress }>
         <Image source={ images.signUpGoogle } style={ styles.googleImg } />
         <Text style={ styles.googleText }>{strings.googleText}</Text>
@@ -27,34 +27,32 @@ function GoogleButton({ onPress }) {
 
 const styles = StyleSheet.create({
   allButton: {
+    marginVertical: 5,
+    flexDirection: 'row',
+    width: '90%',
+    alignSelf: 'center',
     backgroundColor: colors.whiteColor,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 40,
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: '3%',
+    alignItems: 'center',
+    padding: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    padding: 12,
   },
   googleImg: {
+    flex: 0.2,
     alignSelf: 'center',
     height: 20,
     resizeMode: 'contain',
     width: 20,
   },
   googleText: {
+    flex: 1,
     color: colors.googleColor,
     fontFamily: fonts.RRegular,
     fontSize: 17,
     textAlign: 'center',
-    marginLeft: 10,
-  },
-  imgWithText: {
-    flexDirection: 'row',
   },
 });
 

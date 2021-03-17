@@ -15,7 +15,7 @@ function FacebookButton({ onPress }) {
   return (
     <SafeAreaView>
       <TouchableOpacity
-        style={ [styles.imgWithText, styles.allButton] }
+        style={styles.allButton}
         onPress={ onPress }>
         <Image source={ images.signUpFb } style={ styles.fbImg } />
         <Text style={ styles.fbText }>{strings.fbText}</Text>
@@ -26,13 +26,13 @@ function FacebookButton({ onPress }) {
 
 const styles = StyleSheet.create({
   allButton: {
+    marginVertical: 5,
+    flexDirection: 'row',
+    width: '90%',
+    alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 40,
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: '3%',
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 12,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },
@@ -40,19 +40,17 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   fbImg: {
-    alignSelf: 'center',
+    flex: 0.2,
     height: 20,
     resizeMode: 'contain',
     width: 20,
   },
   fbText: {
-    color: colors.fbTextColor,
+    flex: 1,
+    color: colors.eventBlueColor,
     fontFamily: fonts.RRegular,
     fontSize: 17,
-    marginLeft: 10,
-  },
-  imgWithText: {
-    flexDirection: 'row',
+    textAlign: 'center',
   },
 });
 export default FacebookButton;

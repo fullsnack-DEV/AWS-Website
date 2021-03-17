@@ -206,8 +206,8 @@ const NewsFeedPostItems = ({
     </View>
   ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
 
-  const renderURLPreview = useMemo(() => (descriptions?.toLowerCase()?.indexOf('http://') === 0
-          || descriptions?.toLowerCase()?.indexOf('https://') === 0) && (<RNUrlPreview
+  const renderURLPreview = useMemo(() => (descriptions?.toLowerCase()?.includes('http://')
+          || descriptions?.toLowerCase()?.includes('https://')) && (<RNUrlPreview
           text={descriptions}
           containerStyle={styles.urlPreviewContainerStyle}
           imageProps={{ resizeMode: 'cover' }}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, Image, StyleSheet, TouchableOpacity,
+  View, Text, StyleSheet, TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -10,6 +10,7 @@ import {
 
 import { Tooltip } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import * as Utility from '../../utils/index';
 import TCButton from '../../components/TCButton';
@@ -31,29 +32,30 @@ export default function ChooseGenderScreen({ navigation }) {
         borderColor: colors.whiteColor,
         height: 22,
         width: 22,
-        borderWidth: isSelected ? 0 : 1,
+        borderWidth: 1,
         borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: isSelected && 'white',
       }}
       onPress={onRadioPress}>
         {isSelected && (
-          <LinearGradient
-                colors={[colors.greenGradientStart, colors.greenGradientEnd]}
-                end={{ x: 0.0, y: 0.25 }}
-                start={{ x: 1, y: 0.5 }}
-                style={{ height: 13, width: 13, borderRadius: 50 }}>
-          </LinearGradient>
+          <View
+                style={{
+                  height: 13,
+                  width: 13,
+                  borderRadius: 50,
+                  backgroundColor: colors.whiteColor,
+                }}>
+          </View>
         )}
       </TouchableOpacity>
     </View>
   )
   return (
-    <View style={ styles.mainContainer }>
-      <Image style={ styles.background } source={ images.orangeLayer } />
-      <Image style={ styles.background } source={ images.bgImage } />
-
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
       <Text style={ styles.checkEmailText }>{strings.addGenderText}</Text>
       <Text style={ styles.resetText }>{strings.notDisplayGenderText}</Text>
 
@@ -107,20 +109,19 @@ export default function ChooseGenderScreen({ navigation }) {
         } }
         extraStyle={ { bottom: hp('4%'), position: 'absolute' } }
       />
-    </View>
+    </LinearGradient>
   );
 }
 const styles = StyleSheet.create({
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
   checkEmailText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: 28,
+    fontSize: 25,
     marginLeft: 20,
     marginTop: wp('25%'),
     textAlign: 'left',
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
   radioButtonView: {
     flexDirection: 'row',
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     fontSize: 16,
     marginLeft: 20,
     marginRight: 20,

@@ -12,6 +12,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import { createUser, getUserDetails } from '../../api/Users';
 import { getSportsList } from '../../api/Games';
@@ -141,7 +142,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
         {sports[index].isChecked ? (
           <FastImage resizeMode={'contain'} source={ images.checkWhite } style={ styles.checkboxImg } />
         ) : (
-          <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+          <FastImage resizeMode={'contain'} tintColor={'white'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
         )}
       </View>
       <Separator />
@@ -150,22 +151,22 @@ export default function ChooseSportsScreen({ navigation, route }) {
   );
 
   return (
-    <>
-      <View style={ styles.mainContainer }>
-        <ActivityLoader visible={ loading } />
-        <FastImage style={ styles.background } source={ images.orangeLayer } />
-        <FastImage style={ styles.background } source={ images.bgImage } />
+    <LinearGradient
+          colors={[colors.themeColor1, colors.themeColor3]}
+          style={styles.mainContainer}>
+      <ActivityLoader visible={ loading } />
+      <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
 
-        <Text style={ styles.sportText }>{strings.sportText}</Text>
-        {/* <ActivityIndicator animating={loading} size="large" /> */}
-        <FlatList
+      <Text style={ styles.sportText }>{strings.sportText}</Text>
+      {/* <ActivityIndicator animating={loading} size="large" /> */}
+      <FlatList
           data={ sports }
           keyExtractor={(item, index) => index.toString()}
           renderItem={ renderItem }
         />
 
-        <TCButton
-          title={ strings.applyTitle }
+      <TCButton
+          title={'CONTINUE'}
           extraStyle={ { position: 'absolute', bottom: hp('7%') } }
           onPress={ () => {
             if (route.params && route.params.teamData) {
@@ -181,17 +182,15 @@ export default function ChooseSportsScreen({ navigation, route }) {
             }
           } }
         />
-      </View>
-    </>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: '100%',
+    height: hp('100%'),
     position: 'absolute',
-    resizeMode: 'stretch',
-    width: '100%',
+    width: wp('100%'),
   },
   checkbox: {
     alignSelf: 'center',
@@ -201,7 +200,6 @@ const styles = StyleSheet.create({
   unCheckboxImg: {
     width: wp('5.5%'),
     height: wp('5.5%'),
-    tintColor: colors.whiteColor,
     alignSelf: 'center',
   },
   checkboxImg: {
@@ -216,7 +214,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
+    paddingTop: 25,
   },
   sportImg: {
     width: wp('5%'),
