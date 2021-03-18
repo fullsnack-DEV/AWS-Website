@@ -13,7 +13,10 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
@@ -54,13 +57,13 @@ export default function RegisterReferee({ navigation }) {
     getSportsList(authContext).then((res) => {
       const sport = [];
       res.payload.map((item) => sport.push({
-        label: item?.sport_name,
-        value: item?.sport_name.toLowerCase(),
-      }))
+          label: item?.sport_name,
+          value: item?.sport_name.toLowerCase(),
+        }));
       setSportList([...sport]);
-    })
+    });
     getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
-      setRefereesData(res?.payload?.referee_data)
+      setRefereesData(res?.payload?.referee_data);
     });
     const language = [
       { language: 'English', id: 1 },
@@ -86,7 +89,7 @@ export default function RegisterReferee({ navigation }) {
       selectedLanguages.map((langItem, index) => {
         languageText = languageText + (index ? ', ' : '') + langItem;
         return null;
-      })
+      });
       setLanguagesName(languageText);
     }
   }, [selectedLanguages]);
@@ -104,66 +107,74 @@ export default function RegisterReferee({ navigation }) {
       <View style={{ flexDirection: 'column' }}>
         <View style={styles.addCertificateView}>
           <TextInput
-          placeholder={strings.titleOrDescriptionText}
-          style={{
-            ...styles.certificateDescription,
-            borderWidth: validationError?.certificate === index ? 1 : 0,
-            borderColor: colors.redDelColor,
-          }}
-          onChangeText={(text) => {
-            const certi = certificate;
-            certi[index] = {
-              ...certi[index],
-              title: text,
-            }
-            setCertificate([...certi])
-          }}
-          value={certificate?.[index]?.title}/>
+            placeholder={strings.titleOrDescriptionText}
+            style={{
+              ...styles.certificateDescription,
+              borderWidth: validationError?.certificate === index ? 1 : 0,
+              borderColor: colors.redDelColor,
+            }}
+            onChangeText={(text) => {
+              const certi = certificate;
+              certi[index] = {
+                ...certi[index],
+                title: text,
+              };
+              setCertificate([...certi]);
+            }}
+            value={certificate?.[index]?.title}
+          />
         </View>
         {/* eslint-disable-next-line no-mixed-operators */}
         {/* {(item?.url || item?.title) ? ( */}
-        <TouchableOpacity onPress={() => {
-          if (certificate?.length === 1) {
-            setCertificate([{}]);
-          } else if (index !== (certificate?.length - 1)) {
-            const certiUrl = certificate;
-            certiUrl.splice(index, 1);
-            setCertificate([...certiUrl]);
-          }
-        }}>
-
-        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            if (certificate?.length === 1) {
+              setCertificate([{}]);
+            } else if (index !== certificate?.length - 1) {
+              const certiUrl = certificate;
+              certiUrl.splice(index, 1);
+              setCertificate([...certiUrl]);
+            }
+          }}></TouchableOpacity>
         {/* ) : null} */}
         {!item?.url && (
-          <TouchableOpacity onPress={() => {
-            ImagePicker.openPicker({
-              width: 300,
-              height: 400,
-              cropping: true,
-              maxFiles: 10,
-            }).then((pickImages) => {
-              setImageUploadingLoader(index);
-              const certiUrl = certificate;
-              certiUrl[index] = { ...certiUrl[index], url: pickImages?.sourceURL };
-              setCertificate([...certiUrl])
-              uploadImages([pickImages], authContext).then((responses) => {
+          <TouchableOpacity
+            onPress={() => {
+              ImagePicker.openPicker({
+                width: 300,
+                height: 400,
+                cropping: true,
+                maxFiles: 10,
+              }).then((pickImages) => {
+                setImageUploadingLoader(index);
+                const certiUrl = certificate;
                 certiUrl[index] = {
                   ...certiUrl[index],
-                  url: responses?.[0].fullImage ?? '',
-                  thumbnail: responses?.[0].thumbnail ?? '',
+                  url: pickImages?.sourceURL,
                 };
-                setCertificate([...certiUrl])
-              }).catch(() => {
-                certiUrl.splice(index, 1);
                 setCertificate([...certiUrl]);
-              }).finally(() => {
-                setTimeout(() => setImageUploadingLoader(null), 1500);
-                if (certificate?.length < MAX_CERTIFICATE_UPLOAD) {
-                  addMore();
-                }
-              })
-            });
-          }} style={styles.addCertificateButton}>
+                uploadImages([pickImages], authContext)
+                  .then((responses) => {
+                    certiUrl[index] = {
+                      ...certiUrl[index],
+                      url: responses?.[0].fullImage ?? '',
+                      thumbnail: responses?.[0].thumbnail ?? '',
+                    };
+                    setCertificate([...certiUrl]);
+                  })
+                  .catch(() => {
+                    certiUrl.splice(index, 1);
+                    setCertificate([...certiUrl]);
+                  })
+                  .finally(() => {
+                    setTimeout(() => setImageUploadingLoader(null), 1500);
+                    if (certificate?.length < MAX_CERTIFICATE_UPLOAD) {
+                      addMore();
+                    }
+                  });
+              });
+            }}
+            style={styles.addCertificateButton}>
             <Text style={styles.addCertificateText} numberOfLines={1}>
               {strings.addCertificateTitle}
             </Text>
@@ -171,61 +182,70 @@ export default function RegisterReferee({ navigation }) {
         )}
       </View>
       {item?.url && (
-        <View style={{
-          padding: 15, alignSelf: 'flex-start',
-        }}>
+        <View
+          style={{
+            padding: 15,
+            alignSelf: 'flex-start',
+          }}>
           <View>
             <FastImage
-                resizeMode={FastImage.resizeMode.cover}
-                  source={{ uri: certificate?.[index]?.url }}
-                  style={{ width: 195, height: 150, borderRadius: 10 }}
-              />
+              resizeMode={FastImage.resizeMode.cover}
+              source={{ uri: certificate?.[index]?.url }}
+              style={{ width: 195, height: 150, borderRadius: 10 }}
+            />
 
-            <TouchableOpacity style={{
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              position: 'absolute',
-              height: 22,
-              width: 22,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 50,
-              right: -10,
-              top: -5,
-            }}
-                                  onPress={() => {
-                                    const certi = certificate;
-                                    delete certi[index].url;
-                                    delete certi[index].thumbnail;
-                                    setCertificate([...certi]);
-                                  }}
-                >
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                position: 'absolute',
+                height: 22,
+                width: 22,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 50,
+                right: -10,
+                top: -5,
+              }}
+              onPress={() => {
+                certificate.splice(index, 1);
+                setCertificate([...certificate]);
+              }}>
               <Image
-                      source={images.menuClose}
-                      style={{
-                        zIndex: 100, tintColor: colors.whiteColor, height: 15, width: 15,
-                      }}
-                  />
+                source={images.menuClose}
+                style={{
+                  zIndex: 100,
+                  tintColor: colors.whiteColor,
+                  height: 15,
+                  width: 15,
+                }}
+              />
             </TouchableOpacity>
 
             {index === imageUploadingLoader && (
-              <View style={{
-                alignSelf: 'center',
-                position: 'absolute',
-                height: 150,
-                width: 195,
-                borderRadius: 10,
-                backgroundColor: 'rgba(0,0,0,0.7)',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  height: 150,
+                  width: 195,
+                  borderRadius: 10,
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                }}>
                 <TCInnerLoader visible={index === imageUploadingLoader} />
-                <Text style={{
-                  fontFamily: fonts.RLight, fontSize: 20, color: colors.yellowColor, marginLeft: 5,
-                }}>Uploading...</Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.RLight,
+                    fontSize: 20,
+                    color: colors.yellowColor,
+                    marginLeft: 5,
+                  }}>
+                  Uploading...
+                </Text>
               </View>
             )}
-
           </View>
         </View>
       )}
@@ -245,22 +265,23 @@ export default function RegisterReferee({ navigation }) {
   };
   const renderLanguage = ({ item, index }) => (
     <TouchableWithoutFeedback
-        style={ styles.listItem }
-        onPress={ () => {
-          isIconCheckedOrNot({ item, index });
-        } }>
-      <View style={{
- padding: 20, alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
+      style={styles.listItem}
+      onPress={() => {
+        isIconCheckedOrNot({ item, index });
       }}>
-        <Text style={ styles.languageList }>{item.language}</Text>
-        <View style={ styles.checkbox }>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.language}</Text>
+        <View style={styles.checkbox}>
           {languages[index].isChecked ? (
-            <Image
-                source={ images.orangeCheckBox }
-                style={ styles.checkboxImg }
-              />
+            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
           ) : (
-            <Image source={ images.uncheckWhite } style={ styles.checkboxImg } />
+            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
           )}
         </View>
       </View>
@@ -269,49 +290,62 @@ export default function RegisterReferee({ navigation }) {
 
   const checkValidation = () => {
     if (!sports) {
-      setError({ sports: 'Enter Sports' })
+      setError({ sports: 'Enter Sports' });
       Alert.alert('Towns Cup', 'Sports cannot be blank');
       return false;
     }
 
-    const findCertiTitleIndex = certificate?.findIndex((item) => item?.title && (!item?.thumbnail || !item?.url))
+    const findCertiTitleIndex = certificate?.findIndex(
+      (item) => item?.title && (!item?.thumbnail || !item?.url),
+    );
     if (findCertiTitleIndex !== -1) {
-      setError({ certificate: findCertiTitleIndex })
-      Alert.alert('Towns Cup', 'Add certificate')
+      setError({ certificate: findCertiTitleIndex });
+      Alert.alert('Towns Cup', 'Add certificate');
       return false;
     }
 
-    const findIndex = certificate?.findIndex((item) => !item?.title && (item?.thumbnail || item?.url))
+    const findIndex = certificate?.findIndex(
+      (item) => !item?.title && (item?.thumbnail || item?.url),
+    );
     if (findIndex !== -1) {
-      setError({ certificate: findIndex })
-      Alert.alert('Towns Cup', 'Add title for certificate')
+      setError({ certificate: findIndex });
+      Alert.alert('Towns Cup', 'Add title for certificate');
       return false;
     }
     setError(null);
-    const isExist = refereesData?.filter((item) => item?.sport_name?.toLowerCase() === sports?.toLowerCase());
+    const isExist = refereesData?.filter(
+      (item) => item?.sport_name?.toLowerCase() === sports?.toLowerCase(),
+    );
     if (isExist?.length) {
-      Alert.alert('Towns Cup', `You are already registrated as a referee in ${sports}`);
+      Alert.alert(
+        'Towns Cup',
+        `You are already registrated as a referee in ${sports}`,
+      );
       return false;
     }
-    return true
+    return true;
   };
   const renderSports = ({ item }) => (
     <TouchableWithoutFeedback
-          style={ styles.listItem }
-          onPress={ () => setSportsSelection(item?.value) }>
-      <View style={{
-          padding: 20, alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
-      }}>
-        <Text style={ styles.languageList }>{item.value}</Text>
-        <View style={ styles.checkbox }>
+      style={styles.listItem}
+      onPress={() => setSportsSelection(item?.value)}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.value}</Text>
+        <View style={styles.checkbox}>
           {sportsSelection === item?.value ? (
             <Image
-                    source={ images.radioSelectYellow }
-                    style={ styles.checkboxImg }
-                />
-            ) : (
-              <Image source={ images.radioUnselect } style={ styles.checkboxImg } />
-            )}
+              source={images.radioSelectYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -327,32 +361,33 @@ export default function RegisterReferee({ navigation }) {
           {strings.sportsEventsTitle}
           <Text style={styles.mendatory}> {strings.star}</Text>
         </Text>
-        <TouchableOpacity onPress={ () => setVisibleSportsModal(true) }>
-          <View style={ styles.searchView }>
+        <TouchableOpacity onPress={() => setVisibleSportsModal(true)}>
+          <View style={styles.searchView}>
             <TextInput
-                style={ styles.searchTextField }
-                placeholder={ strings.selectSportPlaceholder }
-                value={sports}
-                editable={ false }
-                pointerEvents="none"/>
+              style={styles.searchTextField}
+              placeholder={strings.selectSportPlaceholder}
+              value={sports}
+              editable={false}
+              pointerEvents="none"
+            />
           </View>
         </TouchableOpacity>
         <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
           <Text style={styles.LocationText}>{strings.descriptionText}</Text>
         </View>
         <TextInput
-        style={styles.descriptionTxt}
-        onChangeText={(text) => onChangeText(text)}
-        value={description}
-        multiline
-        textAlignVertical={'top'}
-        numberOfLines={4}
-        placeholder={strings.descriptionRefereePlaceholder}
-      />
+          style={styles.descriptionTxt}
+          onChangeText={(text) => onChangeText(text)}
+          value={description}
+          multiline
+          textAlignVertical={'top'}
+          numberOfLines={4}
+          placeholder={strings.descriptionRefereePlaceholder}
+        />
 
         <Text style={styles.LocationText}>{strings.certificateTitle}</Text>
         <Text style={styles.certificateSubText}>
@@ -360,78 +395,89 @@ export default function RegisterReferee({ navigation }) {
         </Text>
 
         <FlatList
-        scrollEnabled={false}
-        data={certificate}
-        renderItem={renderItem}
-      />
-        <Text style={ styles.LocationText }>
+          scrollEnabled={false}
+          data={certificate}
+          renderItem={renderItem}
+        />
+        <Text style={styles.LocationText}>
           {strings.languageTitle}
-          <Text style={ styles.smallTxt }> {strings.opetionalText} </Text>
+          <Text style={styles.smallTxt}> {strings.opetionalText} </Text>
         </Text>
 
-        <TouchableOpacity onPress={ toggleModal }>
-          <View style={ styles.searchView }>
+        <TouchableOpacity onPress={toggleModal}>
+          <View style={styles.searchView}>
             <TextInput
-            style={ styles.searchTextField }
-            placeholder={ strings.languagePlaceholder }
-            value={languagesName}
-            editable={ false }
-            pointerEvents="none"/>
+              style={styles.searchTextField}
+              placeholder={strings.languagePlaceholder}
+              value={languagesName}
+              editable={false}
+              pointerEvents="none"
+            />
           </View>
         </TouchableOpacity>
 
         <Modal
-        isVisible={ isModalVisible }
-        backdropColor="black"
-        onBackdropPress={() => setModalVisible(false)}
-        onRequestClose={() => setModalVisible(false)}
-        backdropOpacity={ 0 }
-        style={ {
- marginLeft: 0, backgroundColor: 'rgba(0,0,0,0.5)', marginRight: 0, marginBottom: 0,
-        } }>
+          isVisible={isModalVisible}
+          backdropColor="black"
+          onBackdropPress={() => setModalVisible(false)}
+          onRequestClose={() => setModalVisible(false)}
+          backdropOpacity={0}
+          style={{
+            marginLeft: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            marginRight: 0,
+            marginBottom: 0,
+          }}>
           <View
-          style={ {
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          } }>
-            <View style={{
- flexDirection: 'row', paddingHorizontal: 15, justifyContent: 'space-between', alignItems: 'center',
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 1.3,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
             }}>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                <Image source={images.cancelImage} style={styles.closeButton}/>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}>
+                <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text
-            style={ {
-              alignSelf: 'center',
-              marginVertical: 20,
-              fontSize: 16,
-              fontFamily: fonts.RBold,
-              color: colors.lightBlackColor,
-            } }>
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
                 Languages
               </Text>
-              <TouchableOpacity onPress={() => {
-                for (const temp of languages) {
-                  if (temp.isChecked) {
-                    selectedLanguage.push(temp.language);
+              <TouchableOpacity
+                onPress={() => {
+                  for (const temp of languages) {
+                    if (temp.isChecked) {
+                      selectedLanguage.push(temp.language);
+                    }
                   }
-                }
-                setSelectedLanguages(selectedLanguage);
-                toggleModal();
-              }}>
+                  setSelectedLanguages(selectedLanguage);
+                  toggleModal();
+                }}>
                 <Text
-                  style={ {
+                  style={{
                     alignSelf: 'center',
                     marginVertical: 20,
                     fontSize: 16,
@@ -442,103 +488,116 @@ export default function RegisterReferee({ navigation }) {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={ styles.separatorLine } />
+            <View style={styles.separatorLine} />
             <FlatList
-                ItemSeparatorComponent={() => <TCThinDivider/>}
-                data={ languages }
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={ renderLanguage }
-          />
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={languages}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderLanguage}
+            />
           </View>
         </Modal>
 
         <Modal
-            isVisible={ visibleSportsModal }
-            backdropColor="black"
-            onBackdropPress={() => setVisibleSportsModal(false)}
-            onRequestClose={() => setVisibleSportsModal(false)}
-            backdropOpacity={ 0 }
-            style={ {
-              marginLeft: 0, backgroundColor: 'rgba(0,0,0,0.5)', marginRight: 0, marginBottom: 0,
-            } }>
+          isVisible={visibleSportsModal}
+          backdropColor="black"
+          onBackdropPress={() => setVisibleSportsModal(false)}
+          onRequestClose={() => setVisibleSportsModal(false)}
+          backdropOpacity={0}
+          style={{
+            marginLeft: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            marginRight: 0,
+            marginBottom: 0,
+          }}>
           <View
-              style={ {
-                width: '100%',
-                height: Dimensions.get('window').height / 1.3,
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-                elevation: 15,
-              } }>
-            <View style={{
-              flexDirection: 'row', paddingHorizontal: 15, justifyContent: 'space-between', alignItems: 'center',
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 1.3,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
             }}>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setVisibleSportsModal(false)}>
-                <Image source={images.cancelImage} style={styles.closeButton}/>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setVisibleSportsModal(false)}>
+                <Image source={images.cancelImage} style={styles.closeButton} />
               </TouchableOpacity>
               <Text
-                  style={ {
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
+                Sports
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setSports(sportsSelection);
+                  setVisibleSportsModal(false);
+                }}>
+                <Text
+                  style={{
                     alignSelf: 'center',
                     marginVertical: 20,
                     fontSize: 16,
-                    fontFamily: fonts.RBold,
-                    color: colors.lightBlackColor,
-                  } }>
-                Sports
-              </Text>
-              <TouchableOpacity onPress={() => {
-                setSports(sportsSelection);
-                setVisibleSportsModal(false);
-              }}>
-                <Text
-                    style={ {
-                      alignSelf: 'center',
-                      marginVertical: 20,
-                      fontSize: 16,
-                      fontFamily: fonts.RRegular,
-                      color: colors.themeColor,
-                    }}>
+                    fontFamily: fonts.RRegular,
+                    color: colors.themeColor,
+                  }}>
                   Apply
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={ styles.separatorLine } />
+            <View style={styles.separatorLine} />
             <FlatList
-                ItemSeparatorComponent={() => <TCThinDivider/>}
-                data={ sportList }
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={ renderSports }
+              ItemSeparatorComponent={() => <TCThinDivider />}
+              data={sportList}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderSports}
             />
           </View>
         </Modal>
         {!imageUploadingLoader && (
           <TouchableOpacity
-              onPress={() => {
-                const isValid = checkValidation();
-                if (isValid) {
-                  let bodyParams = {};
-                  const referee_data = [];
-                  bodyParams.sport_name = sports.charAt(0).toUpperCase() + sports.slice(1);
-                  bodyParams.descriptions = description;
-                  const languageList = [];
-                  if (selectedLanguages?.length) selectedLanguages.map((item) => languageList.push({ language_name: item }))
-                  bodyParams.language = languageList;
-                  bodyParams.certificates = certificate;
-                  referee_data[0] = bodyParams;
-                  bodyParams = { referee_data };
-                  navigation.navigate('RegisterRefereeForm2', { bodyParams, refereesData });
-                }
-              }}>
+            onPress={() => {
+              const isValid = checkValidation();
+              if (isValid) {
+                let bodyParams = {};
+                const referee_data = [];
+                bodyParams.sport_name = sports.charAt(0).toUpperCase() + sports.slice(1);
+                bodyParams.descriptions = description;
+                const languageList = [];
+                if (selectedLanguages?.length) { selectedLanguages.map((item) => languageList.push({ language_name: item })); }
+                bodyParams.language = languageList;
+                bodyParams.certificates = certificate;
+                referee_data[0] = bodyParams;
+                bodyParams = { referee_data };
+                navigation.navigate('RegisterRefereeForm2', {
+                  bodyParams,
+                  refereesData,
+                });
+              }
+            }}>
             <LinearGradient
-                colors={[colors.yellowColor, colors.themeColor]}
-                style={styles.nextButton}>
+              colors={[colors.yellowColor, colors.themeColor]}
+              style={styles.nextButton}>
               <Text style={styles.nextButtonText}>{strings.nextTitle}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -654,8 +713,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: wp('4%'),
   },
-  checkbox: {
-  },
+  checkbox: {},
   searchView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
@@ -724,6 +782,5 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
     alignSelf: 'center',
-
   },
 });

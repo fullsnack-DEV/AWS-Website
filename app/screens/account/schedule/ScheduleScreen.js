@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
 import React, {
   useState, useLayoutEffect, useRef, useEffect, useContext,
@@ -23,6 +24,7 @@ import {
 } from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
+import { useIsFocused } from '@react-navigation/native';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
@@ -61,6 +63,7 @@ const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation }) {
   const authContext = useContext(AuthContext)
+  const isFocused = useIsFocused();
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [timeTable, setTimeTable] = useState([]);
@@ -79,59 +82,61 @@ export default function ScheduleScreen({ navigation }) {
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
   const [searchEvents, setSearchEvents] = useState();
   useEffect(() => {
-    setloading(true);
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const date = moment(new Date()).format('YYYY-MM-DD');
-      const entity = authContext.entity
-      const entityRole = entity.role === 'user' ? 'users' : 'groups';
-      const uid = entity.uid || entity.auth.user_id;
-      const eventdata = [];
-      const timetabledata = [];
-      let eventTimeTableData = [];
-      getEvents(entityRole, uid, authContext).then((response) => {
-        getSlots(entityRole, uid, authContext).then((res) => {
-          eventTimeTableData = [...response.payload, ...res.payload];
-          console.log('Event data::', eventTimeTableData);
+    if (isFocused) {
+      setloading(true);
+      const unsubscribe = navigation.addListener('focus', async () => {
+        const date = moment(new Date()).format('YYYY-MM-DD');
+        const entity = authContext.entity
+        const entityRole = entity.role === 'user' ? 'users' : 'groups';
+        const uid = entity.uid || entity.auth.user_id;
+        const eventdata = [];
+        const timetabledata = [];
+        let eventTimeTableData = [];
+        getEvents(entityRole, uid, authContext).then((response) => {
+          getSlots(entityRole, uid, authContext).then((res) => {
+            eventTimeTableData = [...response.payload, ...res.payload];
+            console.log('Event data::', eventTimeTableData);
 
-          setEventData((eventTimeTableData || []).sort((a, b) => new Date(a.start_datetime * 1000) - new Date(b.start_datetime * 1000)));
-          setSearchEvents(eventTimeTableData)
-          setTimeTable(eventTimeTableData);
-          eventTimeTableData.filter((event_item) => {
-            const startDate = new Date(event_item.start_datetime * 1000);
-            const eventDate = moment(startDate).format('YYYY-MM-DD');
-            if (eventDate === date) {
-              eventdata.push(event_item);
-            }
-            return null;
-          });
-          setFilterEventData(eventdata);
-          eventTimeTableData.filter((timetable_item) => {
-            const timetable_date = new Date(timetable_item.start_datetime * 1000);
-            const endDate = new Date(timetable_item.end_datetime * 1000);
-            const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
-            if (timetabledate === date) {
-              const obj = {
-                ...timetable_item,
-                start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
-                end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-              };
-              timetabledata.push(obj);
-            }
-            return null;
-          })
-          setFilterTimeTable(timetabledata);
+            setEventData((eventTimeTableData || []).sort((a, b) => new Date(a.start_datetime * 1000) - new Date(b.start_datetime * 1000)));
+            setSearchEvents(eventTimeTableData)
+            setTimeTable(eventTimeTableData);
+            eventTimeTableData.filter((event_item) => {
+              const startDate = new Date(event_item.start_datetime * 1000);
+              const eventDate = moment(startDate).format('YYYY-MM-DD');
+              if (eventDate === date) {
+                eventdata.push(event_item);
+              }
+              return null;
+            });
+            setFilterEventData(eventdata);
+            eventTimeTableData.filter((timetable_item) => {
+              const timetable_date = new Date(timetable_item.start_datetime * 1000);
+              const endDate = new Date(timetable_item.end_datetime * 1000);
+              const timetabledate = moment(timetable_date).format('YYYY-MM-DD');
+              if (timetabledate === date) {
+                const obj = {
+                  ...timetable_item,
+                  start: moment(timetable_date).format('YYYY-MM-DD hh:mm:ss'),
+                  end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+                };
+                timetabledata.push(obj);
+              }
+              return null;
+            })
+            setFilterTimeTable(timetabledata);
+            setloading(false);
+          }).catch(() => setloading(false));
+        }).catch((e) => {
           setloading(false);
-        }).catch(() => setloading(false));
-      }).catch((e) => {
-        setloading(false);
-        Alert.alert('', e.messages)
-      })
-      return null;
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+          Alert.alert('', e.messages)
+        })
+        return null;
+      });
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [authContext, isFocused, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

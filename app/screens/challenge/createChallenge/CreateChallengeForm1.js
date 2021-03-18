@@ -1,5 +1,5 @@
 import React, {
-useEffect, useState, useContext, useLayoutEffect,
+useEffect, useState, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -56,7 +56,6 @@ export default function CreateChallengeForm1({ navigation, route }) {
     country: null,
   });
 
-  useLayoutEffect(() => {}, [venueTitle]);
   useEffect(() => {
     bodyParams = {};
   }, []);
@@ -195,7 +194,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
       Alert.alert('Towns Cup', 'Venue title cannot be blank');
       return false;
     }
-    if (venueData.address === null) {
+    if (venueData.address === null || venueData.address === '') {
       Alert.alert('Towns Cup', 'Venue address cannot be blank');
       return false;
     }

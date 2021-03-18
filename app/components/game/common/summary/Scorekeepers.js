@@ -5,6 +5,8 @@ import {
   Text, View, StyleSheet, FlatList,
 } from 'react-native';
 import _ from 'lodash';
+// import { useIsFocused } from '@react-navigation/native';
+
 import ActionSheet from 'react-native-actionsheet';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
@@ -30,14 +32,34 @@ const Scorekeepers = ({
   unFollowUser,
   navigation,
   onReviewPress,
+  // getScorekeeperReservation,
 }) => {
   const actionSheet = useRef();
-
+  // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [myUserId, setMyUserId] = useState(null);
+  // const [scorekeeper, setScorekeeper] = useState([])
 
-  useEffect(() => { getMyUserId() }, [])
+  useEffect(() => { setMyUserId(authContext.entity.uid); }, [authContext.entity.uid])
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     getScorekeeperReservation(gameData?.game_id).then((res) => {
+  //       const refData = res?.payload?.filter((item) => ![ScorekeeperReservationStatus.cancelled].includes(item?.status));
+  //       const cloneRefData = [];
+  //       refData.map((item) => {
+  //         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
+  //         if (item?.status === ScorekeeperReservationStatus.offered && !isExpired) {
+  //           cloneRefData.push(item);
+  //         } else if (item?.status !== ScorekeeperReservationStatus.offered) {
+  //           cloneRefData.push(item);
+  //         }
+  //         return false;
+  //       })
+  //       setScorekeeper([...cloneRefData]);
+  //     });
+  //   }
+  // }, [gameData, getScorekeeperReservation, isFocused])
 
   const goToScorekeeperReservationDetail = useCallback((data) => {
     setloading(true);
@@ -56,10 +78,6 @@ const Scorekeepers = ({
     if (index > -1) sKeeper[index].scorekeeper.is_following = status
   }, [gameData?.scorekeeper_reservations]);
 
-  const getMyUserId = useCallback(async () => {
-    setMyUserId(authContext.entity.uid);
-  }, [authContext.entity.uid])
-
   const getScorekeeperStatusMessage = useCallback((item, type) => {
     const status = item?.status;
     let statusData = '';
@@ -68,11 +86,12 @@ const Scorekeepers = ({
       case ScorekeeperReservationStatus.accepted: statusData = { status: 'Confirmed', color: colors.greeColor }; break;
       case ScorekeeperReservationStatus.restored: statusData = { status: 'Restored', color: colors.greeColor }; break;
       case ScorekeeperReservationStatus.cancelled: statusData = { status: 'Cancelled', color: colors.greeColor }; break;
-      case ScorekeeperReservationStatus.pendingpayment: statusData = { status: 'Pending', color: colors.yellowColor }; break;
+      case ScorekeeperReservationStatus.pendingpayment: statusData = { status: 'Pending payment', color: colors.yellowColor }; break;
       case ScorekeeperReservationStatus.offered:
         if (isExpired) statusData = { status: 'Expired', color: colors.userPostTimeColor };
         else statusData = { status: 'Sent', color: colors.yellowColor };
         break;
+      case ScorekeeperReservationStatus.changeRequest: statusData = { status: 'Change requested', color: colors.yellowColor }; break;
       default: statusData = { status: '' };
     }
     return statusData[type];

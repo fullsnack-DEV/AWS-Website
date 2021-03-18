@@ -634,18 +634,18 @@ export default function CreateChallengeForm4({ navigation, route }) {
               <TCThinDivider />
               <TCInfoField
                 title={'Address'}
-                value={bodyParams.venue.address}
+                value={bodyParams.venue.address || bodyParams.venue.description}
                 marginLeft={30}
                 titleStyle={{ fontSize: 16 }}
               />
               <EventMapView
                 coordinate={{
-                  latitude: bodyParams.venue.lat,
-                  longitude: bodyParams.venue.long,
+                  latitude: bodyParams?.venue?.lat ?? 0.00,
+                  longitude: bodyParams?.venue?.long ?? 0.00,
                 }}
                 region={{
-                  latitude: bodyParams.venue.lat,
-                  longitude: bodyParams.venue.long,
+                  latitude: bodyParams?.venue?.lat ?? 0.00,
+                  longitude: bodyParams?.venue?.long ?? 0.00,
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 }}

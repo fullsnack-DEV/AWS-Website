@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import ActionSheet from 'react-native-actionsheet';
+import { useIsFocused } from '@react-navigation/native';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../utils';
@@ -16,6 +17,7 @@ import * as RefereeUtils from '../../../../screens/referee/RefereeUtility';
 import ActivityLoader from '../../../loader/ActivityLoader';
 import GameStatus from '../../../../Constants/GameStatus';
 import RefereeReservationStatus from '../../../../Constants/RefereeReservationStatus';
+
 import {
   checkReviewExpired,
 } from '../../../../utils/gameUtils';
@@ -32,29 +34,31 @@ const Referees = ({
   onReviewPress,
 }) => {
   const actionSheet = useRef();
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [refree, setRefree] = useState([])
   const [myUserId, setMyUserId] = useState(null);
 
-  useEffect(() => { getMyUserId() }, [])
+  useEffect(() => { setMyUserId(authContext.entity.uid); }, [authContext.entity.uid])
   useEffect(() => {
-    getRefereeReservation(gameData?.game_id).then((res) => {
-      console.log('Referee Reservation:', res?.payload);
-      const refData = res?.payload?.filter((item) => ![RefereeReservationStatus.cancelled].includes(item?.status));
-      const cloneRefData = [];
-      refData.map((item) => {
-        const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
-        if (item?.status === RefereeReservationStatus.offered && !isExpired) {
-          cloneRefData.push(item);
-        } else if (item?.status !== RefereeReservationStatus.offered) {
-          cloneRefData.push(item);
-        }
-        return false;
-      })
-      setRefree([...cloneRefData]);
-    });
-  }, [gameData])
+    if (isFocused) {
+      getRefereeReservation(gameData?.game_id).then((res) => {
+        const refData = res?.payload?.filter((item) => ![RefereeReservationStatus.cancelled].includes(item?.status));
+        const cloneRefData = [];
+        refData.map((item) => {
+          const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
+          if (item?.status === RefereeReservationStatus.offered && !isExpired) {
+            cloneRefData.push(item);
+          } else if (item?.status !== RefereeReservationStatus.offered) {
+            cloneRefData.push(item);
+          }
+          return false;
+        })
+        setRefree([...cloneRefData]);
+      });
+    }
+  }, [gameData, getRefereeReservation, isFocused])
 
   const goToRefereReservationDetail = useCallback((data) => {
     setloading(true);
@@ -74,10 +78,6 @@ const Referees = ({
     setRefree(refre);
   }, [refree]);
 
-  const getMyUserId = useCallback(async () => {
-    setMyUserId(authContext.entity.uid);
-  }, [authContext.entity.uid])
-
   const getRefereeStatusMessage = useCallback((item, type) => {
     console.log('Referee status::=>', item);
     const status = item?.status;
@@ -87,19 +87,22 @@ const Referees = ({
       case RefereeReservationStatus.accepted: statusData = { status: 'Confirmed', color: colors.greeColor }; break;
       case RefereeReservationStatus.restored: statusData = { status: 'Restored', color: colors.greeColor }; break;
       case RefereeReservationStatus.cancelled: statusData = { status: 'Cancelled', color: colors.greeColor }; break;
-      case RefereeReservationStatus.pendingpayment: statusData = { status: 'Pending', color: colors.yellowColor }; break;
+      case RefereeReservationStatus.pendingpayment: statusData = { status: 'Pending payment', color: colors.yellowColor }; break;
       case RefereeReservationStatus.offered:
         if (isExpired) statusData = { status: 'Expired', color: colors.userPostTimeColor };
         else statusData = { status: 'Sent', color: colors.yellowColor };
         break;
+      case RefereeReservationStatus.changeRequest: statusData = { status: 'Change requested', color: colors.yellowColor }; break;
       default: statusData = { status: '' };
     }
     return statusData[type];
   }, [])
 
   const renderReferees = useCallback(({ item }) => {
+    console.log('reservationDetail = item?.reservation:=>', item);
     const entity = authContext?.entity;
     const reservationDetail = item?.reservation;
+    console.log('reservationDetail = item?.reservation:=>', reservationDetail);
     return (
       <TCUserFollowUnfollowList
               statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
@@ -168,9 +171,7 @@ const Referees = ({
               data={gameData?.referees}
               renderItem={renderReferees}
               ListEmptyComponent={ListEmptyComponent}/>
-
       {renderBookRefereeButton}
-
       <ActionSheet
               ref={actionSheet}
               options={[

@@ -339,6 +339,10 @@ export default function WritePostScreen({ navigation, route }) {
         } else {
           setSelectImage(data);
         }
+      }).catch((error) => {
+        setTimeout(() => {
+          Alert.alert('Towns Cup', error.messages);
+        }, 0.1)
       });
   }, [selectImage])
 
