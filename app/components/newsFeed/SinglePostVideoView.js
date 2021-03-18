@@ -197,7 +197,7 @@ export default function SinglePostVideoView({
               />
             </TouchableWithoutFeedback>
             <View style={styles.userNameView}>
-              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item.actor.data.full_name}</Text>
+              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
               <Text style={styles.activeTimeAgoTxt}>
                 {commentPostTimeCalculate(item.time, true)}
               </Text>

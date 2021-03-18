@@ -35,7 +35,7 @@ export default function SearchLocationScreen({ navigation, route }) {
 
   const getLocationData = async (searchLocationText) => {
     if (searchLocationText.length >= 3) {
-      searchLocations(searchLocationText, authContext).then((response) => {
+      searchLocations(searchLocationText, 'cities').then((response) => {
         setNoData(false);
         setCityData(response.predictions);
       });
@@ -114,11 +114,9 @@ export default function SearchLocationScreen({ navigation, route }) {
 
   return (
     <View style={ styles.mainContainer }>
-
       <Image style={ styles.background } source={ images.orangeLayer } />
       <Image style={ styles.background } source={ images.bgImage } />
       <Text style={ styles.LocationText }>{strings.locationText}</Text>
-
       <View style={ styles.sectionStyle }>
         <Image source={ images.searchLocation } style={ styles.searchImg } />
         <TextInput
@@ -162,7 +160,6 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
     textAlign: 'left',
     fontFamily: fonts.RRegular,
-
     // paddingLeft: wp('1%'),
     width: wp('70%'),
     margin: wp('4%'),

@@ -37,7 +37,6 @@ import LocalHomeNavigator from './LocalHomeNavigator';
 import strings from '../Constants/String';
 import ScheduleNavigator from './ScheduleNavigator';
 import fonts from '../Constants/Fonts';
-import { heightPercentageToDP } from '../utils';
 
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
@@ -333,14 +332,13 @@ const AppNavigator = ({ navigation }) => {
 
     <Tab.Navigator
       tabBarOptions={{
-
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
 
         labelStyle: {
           fontSize: 11,
           fontFamily: fonts.RRegular,
-marginBottom: 5,
+          marginTop: -2,
         },
         style: {
           backgroundColor: colors.offwhite,
@@ -352,13 +350,12 @@ marginBottom: 5,
 
           // borderTopWidth: 5,
            // borderTopColor: 'transparent',
-        height: heightPercentageToDP(10),
+        // height: heightPercentageToDP(10),
 
         },
         tabStyle: {
           // height: heightPercentageToDP(9),
-          justifyContent: 'center',
-          alignItems: 'center',
+
         },
 
       }}>
@@ -453,33 +450,33 @@ marginBottom: 5,
 const styles = StyleSheet.create({
   selectedTabImg: {
     alignSelf: 'center',
-    height: 40,
+    height: 38,
     resizeMode: 'cover',
-    width: 40,
-    borderRadius: 80,
+    width: 38,
+    // borderRadius: 80,
   },
 
   tabImg: {
     alignSelf: 'center',
-    height: 40,
+    height: 38,
     resizeMode: 'cover',
-    width: 40,
-    borderRadius: 80,
+    width: 38,
+    // borderRadius: 80,
   },
   profileTabImg: {
     alignSelf: 'center',
-    height: 30,
+    height: 26,
     resizeMode: 'cover',
-    width: 30,
+    width: 26,
     borderRadius: 100,
   },
   profileTabBorder: {
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 34,
+    height: 30,
     resizeMode: 'cover',
-    width: 34,
+    width: 30,
     borderRadius: 70,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 2 },

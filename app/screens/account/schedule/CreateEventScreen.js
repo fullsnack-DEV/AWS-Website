@@ -481,7 +481,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={moment(getNearDateTime(new Date())).add(5, 'm').toDate()}
+            minimumDate={moment(getNearDateTime(new Date(eventStartDateTime))).add(5, 'm').toDate()}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
@@ -491,7 +491,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onDone={handleUntilDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventEndDateTime || moment(eventStartDateTime).add(5, 'm').toDate()}
+            minimumDate={eventEndDateTime || moment(eventEndDateTime).add(5, 'm').toDate()}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />

@@ -78,6 +78,7 @@ export default function LocalHomeScreen({ navigation }) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+  if (isFocused) {
     setloading(true);
     const promises = [
       getRecentGameDetails('Soccer', 'ended', 'india', authContext),
@@ -105,6 +106,7 @@ export default function LocalHomeScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
+  }
   }, [authContext, isFocused]);
 
   const isIconCheckedOrNot = useCallback(
