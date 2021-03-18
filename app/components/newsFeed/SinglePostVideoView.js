@@ -51,6 +51,7 @@ export default function SinglePostVideoView({
     }
     return { width: wp('100%'), height }
   });
+  const [showParentView, setShowParentView] = useState(true);
   const [landscapeImgDimention, setLandscapeImgDimention] = useState({ width: hp('72%'), height: wp('100%') });
   const [isLandScape, setIsLandScape] = useState(false);
   const [like, setLike] = useState(false);
@@ -82,6 +83,7 @@ export default function SinglePostVideoView({
   if (item.object) {
     descriptions = JSON.parse(item.object).text;
   }
+  const toggleParentView = () => setShowParentView((val) => !val)
 
   useEffect(() => {
     Orientation.unlockAllOrientations();
@@ -120,6 +122,7 @@ export default function SinglePostVideoView({
 
   return (
     <KeyboardAvoidingView
+        onStartShouldSetResponderCapture={toggleParentView}
       style={{ flex: 1, backgroundColor: colors.blackColor }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
@@ -163,7 +166,7 @@ export default function SinglePostVideoView({
               }}
           />
         </View>
-        <View style={{ position: 'absolute' }}>
+        <View style={{ position: 'absolute', opacity: showParentView ? 1 : 0 }}>
           <Header
             mainContainerStyle={{ paddingVertical: 5, width: dimention.width }}
             leftComponent={
@@ -217,7 +220,7 @@ export default function SinglePostVideoView({
           </View>}
         </View>
 
-        <SafeAreaView style={{ position: 'absolute', bottom: 0 }}>
+        <SafeAreaView style={{ position: 'absolute', bottom: 0, opacity: showParentView ? 1 : 0 }}>
           {!topDesc && <View>
             <PostDescSection
               descriptions={descriptions}

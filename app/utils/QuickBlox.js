@@ -132,10 +132,13 @@ export const QBcreateUser = (
   })
 }
 
-export const QBupdateUser = (
+const getQBObject = async (authContext) => authContext?.entity?.QB;
+
+export const QBupdateUser = async (
     uniqueID,
     customData,
     userAccountType,
+    authContext,
 ) => {
   const nameType = customData?.entity_type === 'player' ? 'full_name' : 'group_name';
   const fullName = userAccountType + _.get(customData, [nameType], 'Full Name')
@@ -157,12 +160,24 @@ export const QBupdateUser = (
     country, city, entity_type, full_image, full_name, user_id, createdAt, createdBy, group_id, group_name,
   }
   custData.full_name = pureName;
-  return QB.users.update({
+  const qbObj = await getQBObject(authContext);
+  const url = `https://api.quickblox.com/users/${qbObj?.id}.json`;
+  const userObj = {
  user: {
-    fullName,
-    customData: JSON.stringify(custData),
-  },
-})
+      full_name: fullName,
+      custom_data: JSON.stringify(custData),
+    },
+}
+  if (qbObj?.token) {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'QB-Token': qbObj?.token,
+      },
+      body: JSON.stringify(userObj),
+  }).then((response) => response.json())
+  }
 }
 
 export const QBsetupSettings = async () => {

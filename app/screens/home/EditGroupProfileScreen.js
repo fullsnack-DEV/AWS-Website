@@ -30,6 +30,7 @@ import uploadImages from '../../utils/imageAction';
 import images from '../../Constants/ImagePath';
 import TCKeyboardView from '../../components/TCKeyboardView';
 import * as Utility from '../../utils';
+import { getQBAccountType, QBupdateUser } from '../../utils/QuickBlox';
 
 export default function EditGroupProfileScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -161,12 +162,28 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       const entity = authContext.entity
       entity.obj = response.payload;
       entity.auth.user = response.payload;
-      authContext.setEntity({ ...entity })
-      await Utility.setStorage('authContextEntity', { ...entity })
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert('Towns Cup', 'Profile changed sucessfully');
-      }, 100);
+      const entity_id = ['user', 'player']?.includes(response?.payload?.entity_type) ? response?.payload?.user_id : response?.payload?.group_id;
+      const accountType = getQBAccountType(response?.payload?.entity_type);
+      QBupdateUser(entity_id, response?.payload, accountType, authContext).then(async (responseJSON) => {
+        const qbUser = responseJSON?.user;
+        entity.QB = {
+          ...entity.QB,
+          fullName: qbUser?.full_name,
+          customData: qbUser?.custom_data,
+          lastRequestAt: qbUser?.last_request_at,
+
+        };
+        authContext.setEntity({ ...entity })
+        await Utility.setStorage('authContextEntity', { ...entity })
+        setloading(false);
+        navigation.goBack();
+      }).catch(async (error) => {
+        console.log('QB error : ', error);
+        authContext.setEntity({ ...entity })
+        await Utility.setStorage('authContextEntity', { ...entity })
+        setloading(false);
+        navigation.goBack();
+      })
     }).catch((error) => {
       setloading(false);
       setTimeout(() => {

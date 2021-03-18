@@ -38,8 +38,10 @@ const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
 const GradiantContainer = ({ style, ...props }) => (
   <LinearGradient
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 0 }}
     style={style}
-    colors={ [colors.yellowColor, colors.themeColor] }>
+    colors={ [colors.themeColor1, colors.themeColor3] }>
     {props.children}
   </LinearGradient>
 )
@@ -258,7 +260,7 @@ const MessageChat = ({
           {isReceiver && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: hp(1) }}>
               <View style={{ ...styles.avatarContainer }}>
-                <Image source={finalImage} style={{ height: wp(10), width: wp(10), borderRadius: 25 }}/>
+                <FastImage source={finalImage} style={{ height: 26, width: 26, borderRadius: 25 }}/>
               </View>
               <Text style={{
                 alignSelf: 'flex-start',
@@ -581,13 +583,18 @@ const styles = StyleSheet.create({
     paddingBottom: hp(2),
   },
   avatarContainer: {
-    width: wp(10),
-    height: wp(10),
-    padding: wp(1),
+    width: 32,
+    height: 32,
+    padding: 7,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: wp(5),
-    backgroundColor: colors.writePostSepratorColor,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 0.8,
+    elevation: 2,
   },
   noMessagesText: {
     padding: wp(5),

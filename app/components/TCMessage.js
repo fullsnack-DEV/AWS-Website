@@ -27,7 +27,6 @@ const TCMessage = ({
 }) => {
   const [showAssetsModal, setShowAssetsModal] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
-  const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const videoPlayerRef = useRef();
   const GradiantContainer = ({
@@ -55,8 +54,8 @@ const TCMessage = ({
   return (
     <Fragment>
       <GradiantContainer
-            startGradiantColor={type === 'receiver' ? colors.whiteColor : colors.yellowColor}
-            endGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor}
+            startGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor1}
+            endGradiantColor={type === 'receiver' ? colors.whiteColor : colors.themeColor3}
             style={{
               ...styles.messageContaienr,
               shadowColor: type === 'sender' ? colors.googleColor : '',
@@ -92,8 +91,8 @@ const TCMessage = ({
                   <Video
                       repeat={true}
                       ref={videoPlayerRef}
-                      paused={!play}
-                      muted={!mute}
+                      paused={true}
+                      muted={true}
                       source={{ uri: item }}
                       style={{
                         backgroundColor: 'rgba(0,0,0,0.7)',
@@ -111,22 +110,19 @@ const TCMessage = ({
                         videoPlayerRef.current.seek(0);
                       }}
                   />
-                  <View style={styles.pauseMuteStyle}>
+                  <View style={{
+                    position: 'absolute',
+                    height: '100%',
+                    width: '100%',
+                         top: 0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                  }}>
                     <TouchableHighlight
-                          activeOpacity={0.5}
-                              onPress={() => {
-                                setMute(!mute);
-                              }}>
-                      <FastImage
-                          resizeMode={'contain'}
-                          tintColor={'white'}
-                                  style={styles.imageStyle}
-                                  source={mute ? images.unmute : images.mute}
-                              />
-                    </TouchableHighlight>
-                  </View>
-                  <View style={[styles.pauseMuteStyle, { right: wp('13.5%') }]}>
-                    <TouchableHighlight
+                        style={styles.pauseMuteStyle}
                             activeOpacity={0.5}
                               onPress={() => {
                                 setPlay(!play);
@@ -185,23 +181,15 @@ const TCMessage = ({
 const styles = StyleSheet.create({
   pauseMuteStyle: {
     alignItems: 'center',
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: wp('5%'),
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: wp('10%'),
     bottom: wp('2%'),
-    height: wp('10%'),
+    height: wp('15%'),
     justifyContent: 'center',
     padding: wp('2%'),
-    position: 'absolute',
-    right: wp('2%'),
-    width: wp('10%'),
+    width: wp('15%'),
   },
   playPauseImageStyle: {
-    height: wp('4%'),
-    tintColor: '#fff',
-    width: wp('4%'),
-  },
-  imageStyle: {
     height: wp('5%'),
     tintColor: '#fff',
     width: wp('5%'),
