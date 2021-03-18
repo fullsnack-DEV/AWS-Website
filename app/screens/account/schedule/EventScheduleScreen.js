@@ -19,6 +19,7 @@ export default function EventScheduleScreen({
   screenUserId,
 }) {
   const [filterData, setFilterData] = useState(null);
+
   useEffect(() => {
     if (eventData) {
       const todayData = [];

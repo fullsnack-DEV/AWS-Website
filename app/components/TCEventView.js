@@ -176,7 +176,7 @@ export default function TCEventView({
               'LT',
             )} - `}</Text>
             <Text style={styles.eventTime}>{moment(endDate).format('LT')}</Text>
-            {location !== '' && <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>}
+            {(location !== '' || venue !== '') && <Text style={[styles.eventTime, { marginHorizontal: 5 }]}> | </Text>}
             <Text numberOfLines={1} style={{ ...styles.eventTime, flex: 1 }}>
               {location !== '' ? location : venue}
             </Text>

@@ -191,10 +191,8 @@ export default function RegisterScorekeeper({ navigation }) {
               top: -5,
             }}
                                   onPress={() => {
-                                    const certi = certificate;
-                                    delete certi[index].url;
-                                    delete certi[index].thumbnail;
-                                    setCertificate([...certi]);
+                                    certificate.splice(index, 1);
+                                    setCertificate([...certificate]);
                                   }}
                 >
               <Image

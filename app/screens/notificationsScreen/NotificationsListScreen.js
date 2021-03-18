@@ -641,6 +641,7 @@ function NotificationsListScreen({ navigation }) {
             renderItem={renderGroupItem}
             keyExtractor={keyExtractor}
             initialScrollIndex={currentTab}
+            initialNumToRender={30}
           />
         )}
 

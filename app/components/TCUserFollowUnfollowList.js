@@ -121,7 +121,7 @@ const TCUserFollowUnfollowList = ({
           <Text style={{ fontSize: 16, fontFamily: fonts.RMedium }}>{title}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text style={{ fontSize: 14, fontFamily: fonts.RRegular, color: colors.userPostTimeColor }}>
-              {`${subTitle} `}
+              {subTitle !== '' ? `${subTitle} ` : ''}
               {statusTitle !== '' && <Text style={{ color: statusColor ?? colors.userPostTimeColor, fontFamily: fonts.RBold }}>{`${statusTitle} `}</Text>}
             </Text>
           </View>
