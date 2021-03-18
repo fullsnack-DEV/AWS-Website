@@ -219,10 +219,12 @@ function MultiImagePostView({
           Clipboard.setString(descriptions);
       }
   }
-
+    const [showParentView, setShowParentView] = useState(true);
+    const toggleParentView = () => setShowParentView((val) => !val)
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.blackColor }}
+        onStartShouldSetResponder={toggleParentView}
+        style={{ flex: 1, backgroundColor: colors.blackColor }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
         <Carousel
@@ -236,7 +238,7 @@ function MultiImagePostView({
             sliderWidth={isLandScape ? hp(100) : wp(100)}
             itemWidth={isLandScape ? hp(100) : wp(100)}
         />
-        <View style={{ position: 'absolute' }}>
+        <View style={{ position: 'absolute', opacity: showParentView ? 1 : 0 }}>
           <Header
             mainContainerStyle={{ paddingVertical: 5, width: dimention.width }}
             leftComponent={
@@ -289,7 +291,7 @@ function MultiImagePostView({
           </View>}
         </View>
 
-        <SafeAreaView style={{ position: 'absolute', bottom: 0 }}>
+        <SafeAreaView style={{ position: 'absolute', bottom: 0, opacity: showParentView ? 1 : 0 }}>
           {!topDesc && <View>
             <PostDescSection
                 descriptions={descriptions}

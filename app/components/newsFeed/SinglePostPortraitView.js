@@ -41,6 +41,7 @@ export default function SinglePostPortraitView({
   openPostModal,
 }) {
   const [topDesc, setTopDesc] = useState(false);
+  const [showParentView, setShowParentView] = useState(true);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
   const [portraitImgDimention, setPortraitImgDimention] = useState(() => {
     let height = hp('50%');
@@ -92,6 +93,8 @@ export default function SinglePostPortraitView({
     threeDotBtnDisplay = false;
   }
 
+  const toggleParentView = () => setShowParentView((val) => !val)
+
   useEffect(() => {
     Orientation.unlockAllOrientations();
     Orientation.addOrientationListener(orientationChange);
@@ -133,6 +136,7 @@ export default function SinglePostPortraitView({
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
         <ImageZoom
+            onClick={toggleParentView}
             doubleClickInterval={250}
             cropWidth={Dimensions.get('window').width}
             cropHeight={Dimensions.get('window').height}
@@ -167,7 +171,7 @@ export default function SinglePostPortraitView({
             resizeMode={'stretch'}
           />
         </ImageZoom>
-        <View style={{ position: 'absolute' }}>
+        <View style={{ position: 'absolute', opacity: showParentView ? 1 : 0 }}>
           <Header
             mainContainerStyle={{ paddingVertical: 5, width: dimention.width }}
             leftComponent={
@@ -220,7 +224,7 @@ export default function SinglePostPortraitView({
           </View>}
         </View>
 
-        <SafeAreaView style={{ position: 'absolute', bottom: 0 }}>
+        <SafeAreaView style={{ position: 'absolute', bottom: 0, opacity: showParentView ? 1 : 0 }}>
           {!topDesc && <View>
             <PostDescSection
                 descriptions={descriptions}

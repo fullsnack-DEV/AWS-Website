@@ -286,8 +286,7 @@ export default function AccountScreen({ navigation }) {
         obj: item,
       };
       setParentGroup();
-    } else {
-      if (item.entity_type === 'team') {
+    } else if (item.entity_type === 'team') {
         const i = team.indexOf(item);
         if (currentEntity.obj.entity_type === 'player') {
           team.splice(i, 1);
@@ -322,8 +321,8 @@ export default function AccountScreen({ navigation }) {
         setParentGroup();
         setGroup(item);
       }
-      setGroupList([authContext.entity.auth.user, ...club, ...team]);
-    }
+      // setGroupList([authContext.entity.auth.user, ...club, ...team]);
+
     // authContext.setEntity({ ...currentEntity });
     // Utility.setStorage('authContextEntity', { ...currentEntity });
     return currentEntity;
@@ -396,9 +395,9 @@ export default function AccountScreen({ navigation }) {
   }, [switchProfile, switchQBAccount]);
 
   const onLogout = useCallback(async () => {
-    await Utility.clearStorage();
     QBLogout();
     firebase.auth().signOut();
+    await Utility.clearStorage();
     await authContext.setUser(null);
     await authContext.setEntity(null);
   }, [authContext]);
@@ -536,7 +535,6 @@ export default function AccountScreen({ navigation }) {
         onPress={() => {
           scrollRef.current.scrollTo({ x: 0, y: 0 });
           onSwitchProfile({ item, index });
-          // navigation.closeDrawer();
         }}>
         <View>
           {item.entity_type === 'player' && (

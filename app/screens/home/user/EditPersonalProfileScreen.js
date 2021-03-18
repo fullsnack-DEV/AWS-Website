@@ -158,12 +158,26 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
         entity.auth.user = response.payload;
         const entity_id = ['user', 'player']?.includes(response?.payload?.entity_type) ? response?.payload?.user_id : response?.payload?.group_id;
         const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(entity_id, response?.payload, accountType).then(() => {
-        }).catch(() => {})
-        authContext.setEntity({ ...entity })
-        await Utility.setStorage('authContextEntity', { ...entity })
-        setloading(false);
-        navigation.goBack();
+        QBupdateUser(entity_id, response?.payload, accountType, authContext).then(async (responseJSON) => {
+          const qbUser = responseJSON?.user;
+          entity.QB = {
+            ...entity.QB,
+            fullName: qbUser?.full_name,
+            customData: qbUser?.custom_data,
+            lastRequestAt: qbUser?.last_request_at,
+
+          };
+          authContext.setEntity({ ...entity })
+          await Utility.setStorage('authContextEntity', { ...entity })
+          setloading(false);
+          navigation.goBack();
+        }).catch(async (error) => {
+          console.log('QB error : ', error);
+          authContext.setEntity({ ...entity })
+          await Utility.setStorage('authContextEntity', { ...entity })
+          setloading(false);
+          navigation.goBack();
+        })
       } else {
         setloading(false);
         setTimeout(() => {
