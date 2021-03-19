@@ -61,8 +61,9 @@ const Referees = ({
   }, [gameData, getRefereeReservation, isFocused])
 
   const goToRefereReservationDetail = useCallback((data) => {
+    console.log('Selected Referee Data:=>', data);
     setloading(true);
-    RefereeUtils.getRefereeReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    RefereeUtils.getRefereeReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
@@ -99,10 +100,14 @@ const Referees = ({
   }, [])
 
   const renderReferees = useCallback(({ item }) => {
-    console.log('reservationDetail = item?.reservation:=>', item);
     const entity = authContext?.entity;
-    const reservationDetail = item?.reservation;
+    const reservationDetail = item; // item?.reservation
+
+    console.log('reservationDetail = item?.reservation Item:=>', item);
     console.log('reservationDetail = item?.reservation:=>', reservationDetail);
+    console.log('Booked By:=>', reservationDetail.initiated_by);
+    console.log('Login By:=>', entity?.uid);
+
     return (
       <TCUserFollowUnfollowList
               statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
@@ -118,7 +123,7 @@ const Referees = ({
               is_following={reservationDetail?.referee?.is_following}
               onFollowUnfollowPress={onFollowPress}
               profileImage={reservationDetail?.referee?.thumbnail}
-              isShowThreeDots={item?.booked_by === entity?.uid}
+              isShowThreeDots={item?.initiated_by === entity?.uid}
               onThreeDotPress={() => {
                 selectedRefereeData = item
                 actionSheet.current.show()
@@ -168,7 +173,7 @@ const Referees = ({
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={gameData?.referees}
+              data={refree}
               renderItem={renderReferees}
               ListEmptyComponent={ListEmptyComponent}/>
       {renderBookRefereeButton}

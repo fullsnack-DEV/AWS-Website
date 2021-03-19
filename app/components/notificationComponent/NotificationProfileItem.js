@@ -26,7 +26,7 @@ function NotificationProfileItem({ data, indexNumber, selectedIndex }) {
   }
   notificationUnreadCount = data.unread;
   return (
-    <View>
+    <View style={indexNumber === selectedIndex ? styles.selectedTab : ''}>
       <View
         style={[
           styles.container,
@@ -52,14 +52,15 @@ function NotificationProfileItem({ data, indexNumber, selectedIndex }) {
           </Text>
         </View>
       </View>
-      <View
+      {/* <View
         style={indexNumber === selectedIndex ? styles.orangeSeprator : ''}
-      />
+      /> */}
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
+
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
@@ -68,13 +69,26 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   containerActive: {
+    // backgroundColor: 'white',
     opacity: 1,
   },
-  orangeSeprator: {
-    backgroundColor: '#FF8A01',
-    width: 160,
-    height: 2,
+  // orangeSeprator: {
+  //   backgroundColor: '#FF8A01',
+  //   width: 160,
+  //   height: 2,
+  // },
+  selectedTab: {
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 3,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    paddingBottom: 3,
   },
+
   entityNameTextStyle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,

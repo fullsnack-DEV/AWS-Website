@@ -32,38 +32,36 @@ const Scorekeepers = ({
   unFollowUser,
   navigation,
   onReviewPress,
-  // getScorekeeperReservation,
+ getScorekeeperReservation,
 }) => {
   const actionSheet = useRef();
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext)
   const [loading, setloading] = useState(false);
   const [myUserId, setMyUserId] = useState(null);
-  // const [scorekeeper, setScorekeeper] = useState([])
+   const [scorekeeper, setScorekeeper] = useState([])
 
   useEffect(() => { setMyUserId(authContext.entity.uid); }, [authContext.entity.uid])
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     getScorekeeperReservation(gameData?.game_id).then((res) => {
-  //       const refData = res?.payload?.filter((item) => ![ScorekeeperReservationStatus.cancelled].includes(item?.status));
-  //       const cloneRefData = [];
-  //       refData.map((item) => {
-  //         const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
-  //         if (item?.status === ScorekeeperReservationStatus.offered && !isExpired) {
-  //           cloneRefData.push(item);
-  //         } else if (item?.status !== ScorekeeperReservationStatus.offered) {
-  //           cloneRefData.push(item);
-  //         }
-  //         return false;
-  //       })
-  //       setScorekeeper([...cloneRefData]);
-  //     });
-  //   }
-  // }, [gameData, getScorekeeperReservation, isFocused])
+  useEffect(() => {
+      getScorekeeperReservation(gameData?.game_id).then((res) => {
+        const refData = res?.payload?.filter((item) => ![ScorekeeperReservationStatus.cancelled].includes(item?.status));
+        const cloneRefData = [];
+        refData.map((item) => {
+          const isExpired = new Date(item?.expiry_datetime * 1000).getTime() < new Date().getTime()
+          if (item?.status === ScorekeeperReservationStatus.offered && !isExpired) {
+            cloneRefData.push(item);
+          } else if (item?.status !== ScorekeeperReservationStatus.offered) {
+            cloneRefData.push(item);
+          }
+          return false;
+        })
+        setScorekeeper([...cloneRefData]);
+      });
+  }, [gameData, getScorekeeperReservation])
 
   const goToScorekeeperReservationDetail = useCallback((data) => {
     setloading(true);
-    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
+    ScorekeeperUtils.getScorekeeperReservationDetail(data?.reservation_id, authContext.entity.uid, authContext).then((obj) => {
       setloading(false);
       navigation.navigate(obj.screenName, {
         reservationObj: obj.reservationObj || obj.reservationObj[0],
@@ -99,7 +97,7 @@ const Scorekeepers = ({
 
   const renderScorekeepers = useCallback(({ item }) => {
     const entity = authContext?.entity;
-    const reservationDetail = item?.reservation;
+    const reservationDetail = item;
 
     return (
       <TCUserFollowUnfollowList
@@ -165,7 +163,7 @@ const Scorekeepers = ({
       <FlatList
               keyExtractor={(item) => item?.user_id}
               bounces={false}
-              data={gameData?.scorekeepers}
+              data={scorekeeper}
               renderItem={renderScorekeepers}
               ListEmptyComponent={ListEmptyComponent}/>
 
