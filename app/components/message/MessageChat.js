@@ -27,12 +27,10 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../uti
 import TCMessage from '../TCMessage';
 import AuthContext from '../../auth/context'
 import {
-  QB_DIALOG_TYPE, QBcreateDialog, QBgetMessages, QBgetUserDetail, QBsendMessage,
+  QB_DIALOG_TYPE, QB_MAX_ASSET_SIZE_UPLOAD, QBcreateDialog, QBgetMessages, QBgetUserDetail, QBsendMessage,
 } from '../../utils/QuickBlox';
 import MessageChatShimmer from '../shimmer/message/MessageChatShimmer';
 import { ShimmerView } from '../shimmer/commonComponents/ShimmerCommonComponents';
-
-const MAX_FILE_SIZE = 104857600;
 
 const QbMessageEmitter = new NativeEventEmitter(QB.chat)
 
@@ -136,7 +134,7 @@ const MessageChat = ({
   useEffect(() => {
     if (dialogData) {
       if (!route?.params?.dialog) {
-        navigation.setParams({ dialog: dialogData });
+        navigation.setParams({ dialog: { ...dialogData, ...route?.params?.dialog } });
       }
       const getUser = async () => {
         setMyUserId(authContext.entity.QB.id);
@@ -315,12 +313,12 @@ const MessageChat = ({
     ImagePicker.openPicker({
       width: 400,
       height: 400,
-      mediaType: 'video image',
+      mediaType: 'video photo',
     }).then((image) => {
       setUploadImageInProgress(true);
       setSelectedImage(image ?? null);
       const imagePath = Platform?.OS === 'ios' ? image?.sourceURL : image?.path;
-      const validImageSize = image?.size <= MAX_FILE_SIZE;
+      const validImageSize = image?.size <= QB_MAX_ASSET_SIZE_UPLOAD;
 
       if (!validImageSize) {
         Alert.alert('file image size error')
@@ -370,7 +368,7 @@ const MessageChat = ({
             extraData={savedMessagesData}
             style={styles.messageViewContainer}
             contentContainerStyle={styles.messageContentView}
-            data={savedMessagesData}
+            data={savedMessagesData ?? []}
             renderItem={renderMessages}
             ListEmptyComponent={ListEmptyComponent}
             onRefresh={onRefresh}

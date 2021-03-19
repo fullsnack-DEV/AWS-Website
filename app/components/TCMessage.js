@@ -46,7 +46,6 @@ const TCMessage = ({
 
   useEffect(() => {
     attachments.map((item) => QBgetFileURL(item.id).then((fileUrl) => {
-      console.log(fileUrl);
       setFileUrls((urls) => [...urls, fileUrl])
     }))
   }, [])

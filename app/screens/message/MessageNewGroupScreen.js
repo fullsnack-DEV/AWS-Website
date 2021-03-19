@@ -1,5 +1,5 @@
 import React, {
- useState, useEffect, useMemo, useCallback,
+  useState, useEffect, useMemo, useCallback,
 } from 'react';
 import {
   Alert,
@@ -20,7 +20,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import {
- getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog, QBupdateDialog,
+ getQBProfilePic, QB_DIALOG_TYPE, QBcreateDialog,
 } from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
 
@@ -90,25 +90,7 @@ const MessageNewGroupScreen = ({ route, navigation }) => {
       const occupantsIds = [];
 
       selectedInvitees.filter((item) => occupantsIds.push(item.id))
-      if (route?.params?.dialog) {
-        const participantsIds = [];
-        const participants = route?.params?.participants ?? [];
-        participants.filter((item) => participantsIds.push(item.id))
-        const dialogId = route?.params?.dialog?.id;
-        const createdByUserId = route?.params?.dialog?.userId;
-
-        const removeUsers = participantsIds.filter((item) => item !== createdByUserId && !occupantsIds.includes(item));
-        const addUsers = occupantsIds.filter((item) => createdByUserId !== item && !participantsIds.includes(item));
-        QBupdateDialog(dialogId, addUsers, removeUsers, groupName).then((res) => {
-          setSelectedInvitees([]);
-          navigation.replace('MessageChat', {
-            screen: 'MessageChatRoom',
-            params: { dialog: res },
-          });
-        }).catch((error) => {
-          console.log(error);
-        })
-      } else if (occupantsIds.length > 0) {
+      if (occupantsIds.length > 0) {
         QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName).then((res) => {
           setSelectedInvitees([]);
           navigation.replace('MessageChat', {

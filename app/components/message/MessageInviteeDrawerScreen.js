@@ -33,21 +33,27 @@ const MessageInviteeDrawerScreen = ({
     getUser();
   }, []);
 
+  const onPressDone = useCallback((newDialog) => {
+    navigation.setParams({ dialog: { ...dialog, ...newDialog } })
+  }, [dialog, navigation])
+
   const inviteButton = useMemo(() => dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT && (
     <View>
-      {dialog?.userId === myUserId && (
-        <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.replace('MessageInviteScreen', {
+      <TouchableOpacity style={styles.rowContainer} onPress={() => {
+        navigation.closeDrawer();
+        navigation.navigate('MessageEditInviteeScreen', {
           dialog,
           isAdmin: dialog?.userId === myUserId,
           selectedInvitees: participants?.[0],
           participants: participants?.[0],
-        })}>
-          <Image style={ styles.inviteImage } source={ images.plus_round_orange } />
-          <Text style={[styles.rowText, { color: colors.orangeColor }]}>Invite</Text>
-        </TouchableOpacity>
-       )}
+          onPressDone,
+        })
+      }}>
+        <Image style={ styles.inviteImage } source={ images.plus_round_orange } />
+        <Text style={[styles.rowText, { color: colors.orangeColor }]}>Invite</Text>
+      </TouchableOpacity>
     </View>
-  ), [dialog, myUserId, navigation, participants])
+  ), [dialog, myUserId, navigation, onPressDone, participants])
 
   const onParticipantsPress = useCallback((userData) => {
     const uid = userData?.entity_type === 'player' ? userData?.user_id : userData?.group_id;
@@ -102,9 +108,6 @@ const MessageInviteeDrawerScreen = ({
     fullName = dialog?.name?.slice(2, dialog?.name?.length);
   }
 
-  const onPressDone = ({ dialog: newDialog }) => {
-    navigation.setParams({ dialog: newDialog })
-  }
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.viewContainer}>
