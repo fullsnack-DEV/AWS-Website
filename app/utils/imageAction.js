@@ -19,7 +19,7 @@ const base64ToArrayBuffer = (base64) => {
 // Image compression and resize constants
 const T_LANDSCAPE_IMAGE_HEIGHT = 400;
 const T_PORTRAIT_IMAGE_WIDTH = 400;
-const T_COMPRESSION_RATE = 60; // 0 to 100
+export const T_COMPRESSION_RATE = 60; // 0 to 100
 
 const O_LANDSCAPE_IMAGE_HEIGHT = 1200;
 const O_PORTRAIT_IMAGE_WIDTH = 1200;
@@ -50,7 +50,7 @@ export const uploadImageOnPreSignedUrls = async ({
   throw new Error('upoad-failed')
 };
 
-const thumbnailImageSize = (imageData) => {
+export const thumbnailImageSize = (imageData) => {
   const img = {};
   if (imageData.height < imageData.width) {
     if (imageData.height > T_LANDSCAPE_IMAGE_HEIGHT) {

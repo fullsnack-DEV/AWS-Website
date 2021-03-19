@@ -126,10 +126,11 @@ const MessageMainScreen = ({ navigation }) => {
         fullName = item?.name?.slice(2, item?.name?.length)
       }
     }
+    console.log(`${fullName} `, item)
 
     return (<TCHorizontalMessageOverview
         entityType={firstTwoChar}
-        profilePic={getQBProfilePic(item?.type, index, firstTwoChar)}
+        profilePic={getQBProfilePic(item?.type, index, firstTwoChar, item?.photo)}
         dialogType={item?.type}
         onPress={() => onDialogPress(item)}
         title={fullName}

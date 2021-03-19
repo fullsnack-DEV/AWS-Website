@@ -21,13 +21,15 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
-import { getQBProfilePic, QBcreateDialog, QBgetAllUsers } from '../../utils/QuickBlox';
+import {
+ getQBProfilePic, QBgetAllUsers, QBupdateDialogInvitees,
+} from '../../utils/QuickBlox';
 import AuthContext from '../../auth/context'
 import TCScrollableTabs from '../../components/TCScrollableTabs';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
 
-const MessageInviteScreen = ({ navigation }) => {
+const MessageEditInviteeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const TAB_ITEMS = ['All', 'People', 'Teams', 'Clubs', 'Leagues'];
   const [currentTab, setCurrentTab] = useState(0);
@@ -42,6 +44,15 @@ const MessageInviteScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
+    const setParticipants = async () => {
+      if (route?.params?.participants) {
+        const entity = authContext.entity
+        const myUid = entity.QB.id;
+        const participants = route.params.participants.filter((item) => item.id !== myUid);
+        setSelectedInvitees(participants)
+      }
+    }
+    setParticipants();
     getAllUsers();
   }, []);
 
@@ -145,13 +156,20 @@ const MessageInviteScreen = ({ navigation }) => {
 
   const toggleSelection = useCallback((isChecked, user) => {
     if (isChecked) {
-        const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
-        if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+      if (route?.params?.dialog) {
+        const fromExistingUser = route?.params?.dialog?.occupantsIds?.findIndex((item) => item === user?.id)
+        if (!route?.params?.isAdmin && fromExistingUser !== -1) {
+          Alert.alert('TownsCup', 'Group admin can remove user')
+        } else {
+          const uIndex = selectedInvitees.findIndex((item) => user?.id === item?.id);
+          if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+        }
+      }
     } else {
       selectedInvitees.push(user);
     }
     setSelectedInvitees([...selectedInvitees]);
-  }, [selectedInvitees]);
+  }, [route?.params?.dialog, route?.params?.isAdmin, selectedInvitees]);
 
   const renderSelectedContactList = useCallback(({ item, index }) => {
     const customData = item && item.customData ? JSON.parse(item.customData) : {};
@@ -232,29 +250,26 @@ const MessageInviteScreen = ({ navigation }) => {
   }, [clubsData, inviteeData, leaguesData, loading, peopleData, renderSingleTab, searchData, searchText, teamsData])
 
   const handlePress = useCallback(() => {
-      const occupantsIds = []
+    if (route?.params?.dialog) {
+      const occupantsIds = [];
       selectedInvitees.filter((item) => occupantsIds.push(item.id))
-      if (occupantsIds.length > 0) {
-        if (occupantsIds.length === 1) {
-          QBcreateDialog(occupantsIds).then((res) => {
-            setSelectedInvitees([]);
-            navigation.replace('MessageChat', {
-              screen: 'MessageChatRoom',
-              params: { dialog: res },
-            });
-          }).catch((error) => {
-            console.log(error);
-          })
-        } else {
-          setSelectedInvitees([]);
-          navigation.replace('MessageNewGroupScreen', {
-            selectedInviteesData: selectedInvitees,
-          });
-        }
-      } else {
-        Alert.alert('Select Members')
-      }
-  }, [navigation, selectedInvitees])
+      const participantsIds = [];
+      const participants = route?.params?.participants ?? [];
+      participants.filter((item) => participantsIds.push(item.id))
+      const dialogId = route?.params?.dialog?.id;
+      const myQbUserID = authContext?.entity?.QB?.id;
+
+      const removeUsers = participantsIds.filter((item) => item !== myQbUserID && !occupantsIds.includes(item));
+      const addUsers = occupantsIds.filter((item) => myQbUserID !== item && !participantsIds.includes(item));
+      QBupdateDialogInvitees(dialogId, addUsers, removeUsers).then((res) => {
+        setSelectedInvitees([]);
+        route.params.onPressDone(res);
+        navigation.goBack();
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+  }, [authContext, navigation, route?.params?.dialog, route?.params?.participants, selectedInvitees])
 
   const renderHeader = useMemo(() => (
     <Header
@@ -267,18 +282,14 @@ const MessageInviteScreen = ({ navigation }) => {
             <Text style={styles.eventTitleTextStyle}>Invite</Text>
           }
           rightComponent={
-            <TouchableOpacity style={{ padding: 2 }} onPress={handlePress}>
+            <TouchableOpacity onPress={handlePress}>
               <Text style={{ ...styles.eventTextStyle, fontSize: 14 }}>
-                {
-                  selectedInvitees
-                  && (selectedInvitees.length > 1)
-                      ? 'Next'
-                      : 'Create'}
+                Done
               </Text>
             </TouchableOpacity>
           }
       />
-  ), [handlePress, navigation, selectedInvitees])
+  ), [handlePress, navigation])
 
   const renderSelectedInvitees = useMemo(() => selectedInvitees.length > 0 && (
     <View style={styles.selectedInviteesMainView}>
@@ -353,7 +364,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   eventTextStyle: {
-    width: wp(12),
+    width: '100%',
     fontSize: 10,
     fontFamily: fonts.RRegular,
     alignSelf: 'center',
@@ -432,4 +443,4 @@ const styles = StyleSheet.create({
     width: wp(100),
   },
 });
-export default MessageInviteScreen;
+export default MessageEditInviteeScreen;

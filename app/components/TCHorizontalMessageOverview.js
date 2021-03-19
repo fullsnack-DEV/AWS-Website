@@ -30,7 +30,6 @@ const TCHorizontalMessageOverview = (
 ) => {
   // eslint-disable-next-line no-restricted-globals
   const getDateAndMonth = useMemo(() => ((!isNaN(lastMessageDate)) ? moment(lastMessageDate).format('DD MMM') : ''), [lastMessageDate]);
-
   const getEntityType = useMemo(() => {
     if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return 'league';
     if (QB_ACCOUNT_TYPE.TEAM) return 'team'
@@ -41,7 +40,7 @@ const TCHorizontalMessageOverview = (
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
       <View style={styles.imageMainContainer}>
-        <FastImage source={profilePic} style={styles.imageContainer} />
+        <FastImage source={profilePic} resizeMode={'cover'} style={styles.imageContainer} />
       </View>
       <View style={styles.rightContainer}>
         <View style={styles.rightTitleContainer}>
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 45,
     width: 45,
-    resizeMode: 'contain',
+    borderRadius: 50,
   },
   rightContainer: {
     flexDirection: 'row',
