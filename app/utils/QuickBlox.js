@@ -2,10 +2,12 @@ import QB from 'quickblox-react-native-sdk';
 import _ from 'lodash';
 import { QB_Auth_Password } from './constant';
 import images from '../Constants/ImagePath';
+import normalApiCall from './normalApiCall';
 
 const MESSAGE_LIMIT = 50;
 const DIALOG_LIST_LIMIT = 1000;
 const USERS_LIST_LIMIT = 1000;
+export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
 export const QB_UNREAD_MESSAGE_COUNT_API = 'https://api.quickblox.com/chat/Message/unread.json?token=';
 
 const MESSAGES_SORT = {
@@ -37,29 +39,22 @@ const appSettings = {
   authKey: 'bV7yDSst4mujpdV',
   authSecret: 'C2ngELuNtr5uesg',
   accountKey: 'idPrZuxa3UseWLaRFRQU',
-
-  // Kishan Account
-  // appId: '79537',
-  // authKey: 'bMFuNaWXVNJGqzY',
-  // authSecret: 'bpm8-gfaay9DWWv',
-  // accountKey: 'idPrZuxa3UseWLaRFRQU',
-  // Raj Account
-  // appId: '86953',
-  // authKey: '62JSShsNZqtNrfN',
-  // authSecret: 'KMJLjnxr3drT-AR',
-  // accountKey: '8LSpkznPxy1C9XSJcd91',
 };
 
 export const QBChatConnected = async () => QB.chat.isConnected()
 
-export const getQBProfilePic = (dialogType, index, entityType) => {
-  if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
-    if ([QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)) {
-      if (entityType === QB_ACCOUNT_TYPE.TEAM) return images.teamPlaceholder
-      if (entityType === QB_ACCOUNT_TYPE.CLUB) return images.clubPlaceholder
-      if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return images.leaguePlaceholder
+export const getQBProfilePic = (dialogType, index, entityType, originalImage) => {
+  if (!originalImage) {
+    if (dialogType === QB.chat.DIALOG_TYPE.CHAT) {
+      if ([QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)) {
+        if (entityType === QB_ACCOUNT_TYPE.TEAM) return images.teamPlaceholder
+        if (entityType === QB_ACCOUNT_TYPE.CLUB) return images.clubPlaceholder
+        if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return images.leaguePlaceholder
+      }
+      return index % 2 === 0 ? images.yellowQBUser : images.greenQBUser
     }
-    return index % 2 === 0 ? images.yellowQBUser : images.greenQBUser
+  } else {
+    return { uri: originalImage }
   }
   return index % 2 === 0 ? images.yellowQBGroup : images.greenQBGroup
 }
@@ -169,7 +164,7 @@ export const QBupdateUser = async (
     },
 }
   if (qbObj?.token) {
-    fetch(url, {
+    return fetch(url, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -178,6 +173,7 @@ export const QBupdateUser = async (
       body: JSON.stringify(userObj),
   }).then((response) => response.json())
   }
+  return false;
 }
 
 export const QBsetupSettings = async () => {
@@ -252,24 +248,84 @@ export const QBcreateDialog = (occupantsIds = [], dialogType = QB_DIALOG_TYPE.SI
     throw new Error('server-not-connected')
   })
 }
-export const QBupdateDialog = (
-  dialogId,
-  addUsers = [],
-  removeUsers = [],
-  name = '',
+export const QBupdateDialogNameAndPhoto = (
+    dialogId,
+    name = '',
+    photo = '',
+    authContext,
+) => QBChatConnected().then(async (connected) => {
+  if (connected) {
+    const update = { dialogId }
+    if (name) update.name = name
+    if (photo) update.photo = photo
+    if (!photo) {
+      return QB.chat.updateDialog(update)
+    }
+    const qbObj = await getQBObject(authContext);
+    const url = `https://api.quickblox.com/chat/Dialog/${dialogId}.json`;
+      return normalApiCall({
+        url,
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'QB-Token': qbObj?.token,
+        },
+        data: update,
+      }).then((res) => ({
+          // eslint-disable-next-line no-underscore-dangle
+          dialogId: res?._id,
+          name: res?.name,
+          occupantsIds: res?.occupants_ids,
+          dialogType: res?.type,
+        })).catch((error) => ({ status: 'error', error }))
+  }
+  throw new Error('server-not-connected')
+})
+
+export const QBupdateDialogInvitees = async (
+    dialogId,
+    addUsers = [],
+    removeUsers = [],
 ) => QBChatConnected().then((connected) => {
   if (connected) {
     const update = {
       dialogId,
       addUsers,
       removeUsers,
-      name,
-      photo: 'https://picsum.photos/id/320/640/1136',
     };
     return QB.chat.updateDialog(update)
   }
   throw new Error('server-not-connected')
 })
+
+export const QBupdateDialogInvitees2 = async (
+    dialogId,
+    addUsers = [],
+    removeUsers = [],
+    authContext,
+) => {
+  const qbObj = await getQBObject(authContext);
+  return QBChatConnected().then((connected) => {
+    if (connected) {
+      const update = {}
+      update.photo = 'https://picsum.photos/id/320/640/1136';
+      if (addUsers?.length > 0) update.push_all = { occupants_ids: addUsers };
+      if (removeUsers?.length > 0) update.pull_all = { occupants_ids: removeUsers };
+      const url = `https://api.quickblox.com/chat/Dialog/${dialogId}.json`;
+      return fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'QB-Token': qbObj?.token,
+        },
+        body: JSON.stringify(update),
+      })
+      .then((response) => response.json())
+      .catch((error) => error)
+    }
+    throw new Error('server-not-connected')
+  })
+}
 
 export const QBgetAllUsers = () => QBChatConnected().then((connected) => {
   if (connected) {
@@ -301,7 +357,7 @@ export const QBgetUserDetail = (field, fieldType, value) => QBChatConnected().th
 
 export const QBgetFileURL = (fileID) => QBChatConnected().then((connected) => {
   if (connected) {
-    return QB.content.getPrivateURL({ uid: fileID });
+    return QB.content.getPrivateURL({ uid: fileID.toString() });
   }
   throw new Error('server-not-connected');
 })
