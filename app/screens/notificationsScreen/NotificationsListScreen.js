@@ -37,7 +37,6 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCNoDataView from '../../components/TCNoDataView';
-import TCThinDivider from '../../components/TCThinDivider';
 import AppleStyleSwipeableRow from '../../components/notificationComponent/AppleStyleSwipeableRow';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import strings from '../../Constants/String';
@@ -614,6 +613,19 @@ function NotificationsListScreen({ navigation }) {
         indexNumber={index}
         selectedIndex={currentTab}
       />
+      {index !== currentTab && (
+        <View
+          style={{
+            backgroundColor: colors.grayBackgroundColor,
+            height: 2,
+            marginTop: 0,
+            shadowColor: colors.grayColor,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 3,
+          }}></View>
+      )}
     </TouchableOpacity>
   );
 
@@ -642,10 +654,9 @@ function NotificationsListScreen({ navigation }) {
             keyExtractor={keyExtractor}
             initialScrollIndex={currentTab}
             initialNumToRender={30}
+            style={{ paddingTop: 8, backgroundColor: colors.grayBackgroundColor }}
           />
         )}
-
-        <TCThinDivider marginTop={0} width={'100%'} />
       </View>
       <ActivityLoader visible={loading} />
       {/* eslint-disable-next-line no-nested-ternary */}
@@ -711,6 +722,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.linesepratorColor,
   },
+
 });
 
 export default NotificationsListScreen;
