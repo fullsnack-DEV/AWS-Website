@@ -2,10 +2,6 @@
 // @flow
 import {
   VirtualizedList,
-  View,
-  TouchableOpacity,
-  Image,
-  Text,
 } from 'react-native'
 import _ from 'lodash'
 import moment from 'moment'
@@ -62,7 +58,7 @@ export default class EventCalendar extends React.Component {
         events={item}
         width={width}
         styles={this.styles}
-        scrollToFirst={scrollToFirst}
+         scrollToFirst={scrollToFirst}
       />
     )
   }
@@ -82,20 +78,11 @@ export default class EventCalendar extends React.Component {
       width,
       virtualizedListProps,
       events,
-      formatHeader,
+
     } = this.props
     return (
-      <View style={[this.styles.container, { width }]}>
-        <View style={this.styles.header}>
-          <TouchableOpacity onPress={() => this.goToPage(this.state.index - 1)}>
-            <Image source={require('./back.png')} style={this.styles.arrow} />
-          </TouchableOpacity>
-          <Text style={this.styles.headerText}>{moment(this.props.initDate).format(formatHeader || 'DD MMMM YYYY')}</Text>
-          <TouchableOpacity onPress={() => this.goToPage(this.state.index + 1)}>
-            <Image source={require('./forward.png')} style={this.styles.arrow} />
-          </TouchableOpacity>
-        </View>
-        <VirtualizedList
+
+      <VirtualizedList
           // eslint-disable-next-line react/no-string-refs
           ref='calendar'
           windowSize={2}
@@ -118,7 +105,6 @@ export default class EventCalendar extends React.Component {
           }}
           {...virtualizedListProps}
         />
-      </View>
 
     )
   }

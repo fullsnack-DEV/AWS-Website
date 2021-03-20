@@ -487,7 +487,7 @@ function NotificationsListScreen({ navigation }) {
     refContainer.current.scrollToIndex({
       animated: true,
       index,
-      viewPosition: 0.5,
+      viewPosition: 1,
     });
   };
 
@@ -616,12 +616,12 @@ function NotificationsListScreen({ navigation }) {
       {index !== currentTab && (
         <View
           style={{
-            backgroundColor: colors.grayBackgroundColor,
+            backgroundColor: colors.grayColor,
+            opacity: 0.2,
             height: 2,
-            marginTop: 0,
             shadowColor: colors.grayColor,
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.5,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.8,
             shadowRadius: 5,
             elevation: 3,
           }}></View>
@@ -655,6 +655,15 @@ function NotificationsListScreen({ navigation }) {
             initialScrollIndex={currentTab}
             initialNumToRender={30}
             style={{ paddingTop: 8, backgroundColor: colors.grayBackgroundColor }}
+            onScrollToIndexFailed={(info) => {
+              const wait = new Promise((resolve) => setTimeout(resolve, 500));
+              wait.then(() => {
+                refContainer.current.scrollToIndex({
+                  animated: true,
+                  index: info.index,
+                });
+              });
+            }}
           />
         )}
       </View>

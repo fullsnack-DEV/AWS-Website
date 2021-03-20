@@ -86,7 +86,6 @@ export default function ScheduleScreen({ navigation }) {
   const [timeTable, setTimeTable] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [eventSelectDate, setEventSelectDate] = useState(new Date());
-  const [timetableSelectDate, setTimeTableSelectDate] = useState(new Date());
   const [filterEventData, setFilterEventData] = useState([]);
   const [filterTimeTable, setFilterTimeTable] = useState([]);
   const [calenderInnerIndexCounter, setCalenderInnerIdexCounter] = useState(0);
@@ -102,9 +101,8 @@ export default function ScheduleScreen({ navigation }) {
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
   const refContainer = useRef();
-  const [selectedEntity, setSelectedEntity] = useState(authContext.entity.obj);
+  const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(false);
-  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -183,9 +181,9 @@ const getEventsList = useCallback((selectedObj) => {
       return null;
 }, [authContext])
 
-  useEffect(() => {
-      getEventsList(selectedEntity)
-  }, [getEventsList]);
+  // useEffect(() => {
+  //     getEventsList(selectedEntity)
+  // }, [getEventsList]);
 
   useEffect(() => {
     if (selectedEventItem) {
@@ -202,9 +200,6 @@ const getEventsList = useCallback((selectedObj) => {
 
   const eventEditDeleteAction = useRef();
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
-  const timeTableSelectionDate = moment(timetableSelectDate).format(
-    'YYYY-MM-DD',
-  );
 
   const refereeReservModal = () => {
     setIsRefereeModal(!isRefereeModal);
@@ -329,6 +324,7 @@ const getEventsList = useCallback((selectedObj) => {
     await Utility.setStorage('authContextEntity', { ...currentEntity });
     return currentEntity;
   };
+
   const switchQBAccount = async (accountData, entity) => {
     let currentEntity = entity;
     const entityType = accountData?.entity_type;
@@ -413,10 +409,10 @@ const getEventsList = useCallback((selectedObj) => {
 
   const activeTab = async (index) => {
     const gList = JSON.parse(JSON.stringify(groupList));
-    gList[index].unread = 0;
-    console.log('Selected Group List:=>', gList[index]);
+    console.log('ActiveTab called..=>', gList[index]);
     setSelectedEntity(gList[index])
     setGroupList(gList);
+    setScheduleIndexCounter(0);
     checkActiveScreen(gList[index]);
     setCurrentTab(index);
     refContainer.current.scrollToIndex({
@@ -431,7 +427,6 @@ const getEventsList = useCallback((selectedObj) => {
 
   useEffect(() => {
     if (isFocused) {
-      setFirstTimeLoading(true);
       if (notifAPI !== 1) {
         getUnreadCount(authContext).then((response) => {
           if (response.status === true) {
@@ -447,16 +442,14 @@ const getEventsList = useCallback((selectedObj) => {
             setGroupList(groups);
             setNotifAPI(1);
             setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
-            activeTab(tabIndex)
             checkActiveScreen(groups[0]);
+            getEventsList(groups[tabIndex])
           }
         });
       }
       if (notifAPI === 1) {
         checkActiveScreen(groupList[currentTab]);
-        // callNotificationList()
-        //   .then(() => setFirstTimeLoading(false))
-        //   .catch(() => setFirstTimeLoading(false));
+        getEventsList(groupList[currentTab])
       }
     }
   }, [currentTab, isFocused]);
@@ -471,12 +464,12 @@ const getEventsList = useCallback((selectedObj) => {
       {index !== currentTab && (
         <View
           style={{
-            backgroundColor: colors.grayBackgroundColor,
+            backgroundColor: colors.grayColor,
+            opacity: 0.2,
             height: 2,
-            marginTop: 0,
             shadowColor: colors.grayColor,
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.5,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.8,
             shadowRadius: 5,
             elevation: 3,
           }}></View>
@@ -494,6 +487,55 @@ const getEventsList = useCallback((selectedObj) => {
     }
   };
 
+const renderCalenderEvent = ({ event }) => {
+  let event_color = colors.themeColor;
+  let eventTitle = 'Game';
+  let eventDesc = 'Game With';
+  let eventDesc2 = '';
+  if (event?.color?.length > 0) {
+    if (event?.color?.[0] !== '#') {
+      event_color = `#${event?.color}`;
+    } else {
+      event_color = event?.color;
+    }
+  }
+  if (event?.title) {
+    eventTitle = event.title;
+  }
+  if (event?.descriptions) {
+    eventDesc = event.descriptions;
+  }
+  if (event?.game?.away_team) {
+    eventDesc2 = event?.game?.away_team?.group_name;
+  }
+  return (
+    <View style={{ flex: 1 }}>
+      {event?.cal_type === 'event' && (
+        <CalendarTimeTableView
+          title={eventTitle}
+          summary={`${eventDesc} ${eventDesc2}`}
+          containerStyle={{
+            borderLeftColor: event_color,
+            width: event.width,
+          }}
+          eventTitleStyle={{ color: event_color }}
+        />
+      )}
+      {event?.cal_type === 'blocked' && (
+        <View
+          style={[
+            styles.blockedViewStyle,
+            {
+              width: event.width + 68,
+              height: event.height,
+            },
+          ]}
+        />
+      )}
+    </View>
+  );
+}
+
   return (
     <View style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}>
       <View>
@@ -510,6 +552,15 @@ const getEventsList = useCallback((selectedObj) => {
             initialScrollIndex={currentTab}
             initialNumToRender={30}
             style={{ paddingTop: 8, backgroundColor: colors.grayBackgroundColor }}
+            onScrollToIndexFailed={(info) => {
+              const wait = new Promise((resolve) => setTimeout(resolve, 500));
+              wait.then(() => {
+                refContainer.current.scrollToIndex({
+                  animated: true,
+                  index: info.index,
+                });
+              });
+            }}
           />
         )}
       </View>
@@ -560,33 +611,41 @@ const getEventsList = useCallback((selectedObj) => {
               navigation={navigation}
               profileID={authContext.entity.uid}
               onThreeDotPress={(item) => {
-                setSelectedEventItem(item);
+                if (activeScreen) {
+                  setSelectedEventItem(item);
+                } else {
+                  showSwitchProfilePopup();
+                }
               }}
               onItemPress={async (item) => {
-                const entity = authContext.entity;
-                if (item?.game_id) {
-                  if (item?.game?.sport) {
-                    const gameHome = getGameHomeScreen(item.game.sport);
-                    navigation.navigate(gameHome, {
-                      gameId: item?.game_id,
-                    });
+                if (activeScreen) {
+                  const entity = authContext.entity;
+                  if (item?.game_id) {
+                    if (item?.game?.sport) {
+                      const gameHome = getGameHomeScreen(item.game.sport);
+                      navigation.navigate(gameHome, {
+                        gameId: item?.game_id,
+                      });
+                    }
+                  } else {
+                    getEventById(
+                      entity.role === 'user' ? 'users' : 'groups',
+                      entity.uid || entity.auth.user_id,
+                      item.cal_id,
+                      authContext,
+                    )
+                      .then((response) => {
+                        navigation.navigate('EventScreen', {
+                          data: response.payload,
+                          gameData: item,
+                        });
+                      })
+                      .catch((e) => {
+                        console.log('Error :-', e);
+                      });
                   }
                 } else {
-                  getEventById(
-                    entity.role === 'user' ? 'users' : 'groups',
-                    entity.uid || entity.auth.user_id,
-                    item.cal_id,
-                    authContext,
-                  )
-                    .then((response) => {
-                      navigation.navigate('EventScreen', {
-                        data: response.payload,
-                        gameData: item,
-                      });
-                    })
-                    .catch((e) => {
-                      console.log('Error :-', e);
-                    });
+                  showSwitchProfilePopup();
                 }
               }}
               entity={authContext.entity}
@@ -594,7 +653,13 @@ const getEventsList = useCallback((selectedObj) => {
             {!createEventModal && (
               <CreateEventButton
                 source={images.plus}
-                onPress={() => setCreateEventModal(true)}
+                onPress={() => {
+                  if (activeScreen) {
+                    setCreateEventModal(true);
+                  } else {
+                    showSwitchProfilePopup();
+                  }
+                }}
               />
             )}
           </View>
@@ -602,17 +667,48 @@ const getEventsList = useCallback((selectedObj) => {
         {!loading && scheduleIndexCounter === 1 && (
           <View style={{ flex: 1 }}>
             <View style={styles.shceduleCalenderView}>
-              <BackForwardView
-                textValue={moment(selectionDate).format('MMMM YYYY')}
-              />
+
               <View>
-                <TwoTabView
-                  firstTabTitle={'Events'}
-                  secondTabTitle={'Timetable'}
-                  indexCounter={calenderInnerIndexCounter}
-                  onFirstTabPress={() => setCalenderInnerIdexCounter(0)}
-                  onSecondTabPress={() => setCalenderInnerIdexCounter(1)}
-                />
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontFamily: fonts.RBold,
+                    color: colors.themeColor,
+                  }}>
+                  {moment(selectionDate).format('MMMM YYYY')}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: fonts.RLight,
+                    color: colors.lightBlackColor,
+                  }}>
+                  Timetable
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (calenderInnerIndexCounter === 0) {
+                      setCalenderInnerIdexCounter(1);
+                    } else {
+                      setCalenderInnerIdexCounter(0);
+                    }
+                  }}>
+                  <Image
+                    source={
+                      calenderInnerIndexCounter === 1
+                        ? images.orangeCheckBox
+                        : images.uncheckWhite
+                    }
+                    style={{
+                      resizeMode: 'contain',
+                      height: 18,
+                      width: 18,
+                      marginLeft: 10,
+                    }}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
             {calenderInnerIndexCounter === 0 && (
@@ -691,19 +787,11 @@ const getEventsList = useCallback((selectedObj) => {
                         )
                         }
                         ListHeaderComponent={() => (
-                          <View style={{ flexDirection: 'row' }}>
+                          <View style={{ flexDirection: 'row', marginTop: 10 }}>
                             <Text style={styles.filterHeaderText}>
                               {moment(selectionDate).format('ddd, DD MMM')}
                             </Text>
-                            <Text style={styles.headerTodayText}>
-                              {moment(selectionDate).calendar(null, {
-                                lastWeek: '[Last] dddd',
-                                lastDay: '[Yesterday]',
-                                sameDay: '[Today]',
-                                nextDay: '[Tomorrow]',
-                                nextWeek: 'dddd',
-                              })}
-                            </Text>
+
                           </View>
                         )}
                         bounces={false}
@@ -722,10 +810,11 @@ const getEventsList = useCallback((selectedObj) => {
             {calenderInnerIndexCounter === 1 && (
               <EventAgendaSection
                 items={{
-                  [timeTableSelectionDate.toString()]: [filterTimeTable],
+                  [selectionDate.toString()]: [filterTimeTable],
                 }}
+                selected={selectionDate}
                 onDayPress={(day) => {
-                  setTimeTableSelectDate(day.dateString);
+                  setEventSelectDate(day.dateString);
                   const date = moment(day.dateString).format('YYYY-MM-DD');
                   const dataItem = [];
                   timeTable.filter((time_table_item) => {
@@ -752,63 +841,16 @@ const getEventsList = useCallback((selectedObj) => {
                   return null;
                 }}
                 renderItem={(item) => (
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <EventCalendar
                       eventTapped={(event) => {
                         console.log('Event ::--', event);
                       }}
                       events={item}
                       width={width}
-                      initDate={timeTableSelectionDate}
+                      initDate={selectionDate}
                       scrollToFirst={true}
-                      renderEvent={(event) => {
-                        let event_color = colors.themeColor;
-                        let eventTitle = 'Game';
-                        let eventDesc = 'Game With';
-                        let eventDesc2 = '';
-                        if (event.color && event.color.length > 0) {
-                          if (event.color[0] !== '#') {
-                            event_color = `#${event.color}`;
-                          } else {
-                            event_color = event.color;
-                          }
-                        }
-                        if (event && event.title) {
-                          eventTitle = event.title;
-                        }
-                        if (event && event.descriptions) {
-                          eventDesc = event.descriptions;
-                        }
-                        if (event.game && event.game.away_team) {
-                          eventDesc2 = event.game.away_team.group_name;
-                        }
-                        return (
-                          <View style={{ flex: 1 }}>
-                            {event.cal_type === 'event' && (
-                              <CalendarTimeTableView
-                                title={eventTitle}
-                                summary={`${eventDesc} ${eventDesc2}`}
-                                containerStyle={{
-                                  borderLeftColor: event_color,
-                                  width: event.width,
-                                }}
-                                eventTitleStyle={{ color: event_color }}
-                              />
-                            )}
-                            {event.cal_type === 'blocked' && (
-                              <View
-                                style={[
-                                  styles.blockedViewStyle,
-                                  {
-                                    width: event.width + 68,
-                                    height: event.height,
-                                  },
-                                ]}
-                              />
-                            )}
-                          </View>
-                        );
-                      }}
+                      renderEvent={renderCalenderEvent}
                       styles={{
                         event: styles.eventViewStyle,
                         line: { backgroundColor: colors.lightgrayColor },
@@ -1149,13 +1191,7 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     paddingTop: 0,
   },
-  headerTodayText: {
-    fontSize: 13,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
-    alignSelf: 'flex-end',
-    bottom: 6,
-  },
+
   blockedViewStyle: {
     backgroundColor: 'rgba(0,0,0,0.3)',
     position: 'absolute',
