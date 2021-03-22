@@ -1,9 +1,9 @@
 import React, {
-  useCallback,
-  useLayoutEffect,
-  useState,
-  useContext,
-  useEffect,
+    useCallback,
+    useLayoutEffect,
+    useState,
+    useContext,
+    useEffect, useMemo,
 } from 'react';
 import {
   View,
@@ -47,6 +47,7 @@ import SportsListView from '../../components/localHome/SportsListView';
 import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
+import Header from '../../components/Home/Header';
 // import AuthContext from '../../auth/context';
 
 let selectedSports = [];
@@ -333,8 +334,39 @@ export default function LocalHomeScreen({ navigation }) {
     />
   );
 
+    const renderTopHeader = useMemo(() => (
+      <>
+        <Header
+                showBackgroundColor={true}
+                leftComponent={
+                  <TouchableOpacity onPress={() => setSettingPopup(true)}>
+                    <Image source={images.home_setting} style={styles.townsCupIcon} />
+                  </TouchableOpacity>
+                }
+                centerComponent={
+                  <TouchableOpacity
+                        style={styles.titleHeaderView}
+                        onPress={() => setLocationPopup(true)}
+                        hitSlop={getHitSlop(15)}>
+                    <Text style={styles.headerTitle}>Vancuver</Text>
+                    <Image source={images.home_gps} style={styles.gpsIconStyle} />
+                  </TouchableOpacity>
+                }
+                rightComponent={
+                  <View style={styles.rightHeaderView}>
+                    <TouchableOpacity>
+                      <Image source={images.home_search} style={styles.townsCupIcon} />
+                    </TouchableOpacity>
+                  </View>
+                }
+            />
+        <View style={styles.separateLine}/>
+      </>
+    ), [])
+
   return (
     <View style={{ flex: 1 }}>
+      {renderTopHeader}
       <ActivityLoader visible={loading} />
       <View style={styles.sportsListView}>
         <FlatList
@@ -857,6 +889,8 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   titleHeaderView: {
+      alignItems: 'center',
+      justifyContent: 'center',
     flexDirection: 'row',
   },
   rightHeaderView: {

@@ -104,7 +104,7 @@ export default function ModalLocationSearch({ visible, onSelect, onClose }) {
       </View>
       {noData && (
         <Text style={ styles.noDataText }>
-          Please enter 3 characters to see cities
+          Please enter atleast 3 characters to see city
         </Text>
       )}
       <FlatList

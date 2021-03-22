@@ -1,11 +1,11 @@
 import React, {
-  useEffect, memo, useState, useLayoutEffect, useContext, useCallback, useMemo,
+  useEffect, memo, useState, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  StyleSheet, View, Image, Alert,
+  StyleSheet, View, Alert, Text,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import WritePost from '../../components/newsFeed/WritePost';
+import FastImage from 'react-native-fast-image';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
@@ -20,6 +20,9 @@ import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context'
 import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 import { ImageUploadContext } from '../../context/GetContexts';
+import Header from '../../components/Home/Header';
+import fonts from '../../Constants/Fonts';
+import { widthPercentageToDP as wp } from '../../utils';
 
 const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
@@ -48,18 +51,8 @@ const FeedsScreen = ({ navigation }) => {
   }, [authContext, authContext.entity]);
 
   const onThreeDotPress = useCallback(() => {
-    setTimeout(() => navigation.navigate('EntitySearchScreen'), 0);
+    navigation.navigate('EntitySearchScreen')
   }, [navigation]);
-
-  const topRightButton = useMemo(() => (
-    <TouchableOpacity onPress={onThreeDotPress}>
-      <Image source={images.vertical3Dot} style={styles.headerRightImg} />
-    </TouchableOpacity>
-  ), [onThreeDotPress])
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ headerRight: () => topRightButton });
-  }, [navigation, topRightButton]);
 
   const createPostAfterUpload = useCallback((dataParams) => {
     createPost(dataParams, authContext)
@@ -93,6 +86,25 @@ const FeedsScreen = ({ navigation }) => {
       )
     }
   }, [authContext, createPostAfterUpload, imageUploadContext])
+
+  const onFeedPlusPress = useCallback(() => {
+      navigation.navigate('WritePostScreen', {
+        postData: currentUserDetail,
+        onPressDone,
+        selectedImageList: [],
+      })
+  }, [currentUserDetail, navigation, onPressDone])
+
+  const topRightButton = useMemo(() => (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <TouchableOpacity style={{ padding: 2 }} onPress={onFeedPlusPress}>
+        <FastImage source={images.feedPlusIcon} resizeMode={'contain'} style={styles.rightImageStyle} />
+      </TouchableOpacity>
+      <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={onThreeDotPress}>
+        <FastImage source={images.messageSearchButton} resizeMode={'contain'} style={styles.rightImageStyle} />
+      </TouchableOpacity>
+    </View>
+  ), [onFeedPlusPress, onThreeDotPress])
 
   const updatePostAfterUpload = useCallback((dataParams) => {
     updatePost(dataParams, authContext)
@@ -187,23 +199,6 @@ const FeedsScreen = ({ navigation }) => {
         });
   }, [authContext])
 
-  const feedScreenHeader = useMemo(() => (
-    <View>
-      <WritePost
-              navigation={navigation}
-              postDataItem={currentUserDetail}
-              onWritePostPress={() => {
-                navigation.navigate('WritePostScreen', {
-                  postData: currentUserDetail,
-                  onPressDone,
-                  selectedImageList: [],
-                })
-              }}
-          />
-      <View style={styles.sepratorView} />
-    </View>
-    ), [currentUserDetail, navigation, onPressDone])
-
   const onLikePress = useCallback((item) => {
     const bodyParams = {
       reaction_type: 'clap',
@@ -254,10 +249,23 @@ const FeedsScreen = ({ navigation }) => {
       editPostDoneCall, footerLoading, isNextDataLoading, navigation,
       onDeletePost, onEndReached, onLikePress, onRefreshPress, postData, pullRefresh])
 
+  const renderTopHeader = useMemo(() => (
+    <>
+      <Header
+          showBackgroundColor={true}
+          centerComponent={
+            <Text style={styles.eventTitleTextStyle}>Newsfeed</Text>
+          }
+          rightComponent={topRightButton}
+      />
+      <View style={styles.separateLine}/>
+    </>
+  ), [topRightButton])
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {feedScreenHeader}
+      {renderTopHeader}
       {firstTimeLoading
           ? (<NewsFeedShimmer/>)
           : (renderNewsFeedList)
@@ -268,20 +276,26 @@ const FeedsScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-  headerRightImg: {
-    height: 20,
-    marginRight: 20,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-    width: 20,
-  },
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
   },
-  sepratorView: {
-    height: 8,
-    backgroundColor: colors.whiteGradientColor,
+  separateLine: {
+    borderColor: colors.grayColor,
+    borderWidth: 0.5,
+    width: wp(100),
+  },
+  eventTitleTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  rightImageStyle: {
+    height: 30,
+    width: 30,
+    tintColor: colors.blackColor,
+    resizeMode: 'contain',
   },
 });
 

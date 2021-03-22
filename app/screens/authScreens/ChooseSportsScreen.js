@@ -139,8 +139,8 @@ export default function ChooseSportsScreen({ navigation, route }) {
       <FastImage resizeMode={'contain'} source={{ uri: item?.thumbnail }} style={ styles.sportImg } />
       <Text style={ styles.sportList }>{item.sport_name}</Text>
       <View style={ styles.checkbox }>
-        {sports[index].isChecked ? (
-          <FastImage resizeMode={'contain'} source={ images.checkWhite } style={ styles.checkboxImg } />
+        {sports?.[index]?.isChecked ? (
+          <FastImage source={ images.checkWhite } style={ styles.checkboxImg } />
         ) : (
           <FastImage resizeMode={'contain'} tintColor={'white'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
         )}
@@ -193,9 +193,7 @@ const styles = StyleSheet.create({
     width: wp('100%'),
   },
   checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp('2%'),
+
   },
   unCheckboxImg: {
     width: wp('5.5%'),
@@ -209,8 +207,10 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    marginLeft: wp('10%'),
-    width: wp('80%'),
+    marginHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+
   },
   mainContainer: {
     flex: 1,

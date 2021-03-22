@@ -43,6 +43,8 @@ const styles = StyleSheet.create({
     flex: 0.2,
     height: 20,
     resizeMode: 'contain',
+    position: 'absolute',
+    left: 30,
     width: 20,
   },
   fbText: {

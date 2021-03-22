@@ -54,7 +54,7 @@ export default function AddBirthdayScreen({ navigation }) {
 
         <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.birthdatText}</Text> }
                  backgroundColor={ colors.parrotColor }
-                 height={ hp('30%') }
+                 height={ hp('50%') }
                  width={ wp('75%') }
                  overlayColor={ 'transparent' }
                  skipAndroidStatusBar= {true}>

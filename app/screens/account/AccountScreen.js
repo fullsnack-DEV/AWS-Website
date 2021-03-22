@@ -1,11 +1,10 @@
 /* eslint-disable array-callback-return */
 import React, {
-  useEffect,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useRef,
-  useCallback,
+    useEffect,
+    useState,
+    useContext,
+    useRef,
+    useCallback, useMemo,
 } from 'react';
 import {
   View,
@@ -54,6 +53,7 @@ import {
   QBLogout,
 } from '../../utils/QuickBlox';
 import strings from '../../Constants/String';
+import Header from '../../components/Home/Header';
 
 export default function AccountScreen({ navigation }) {
   const scrollRef = useRef();
@@ -128,40 +128,34 @@ export default function AccountScreen({ navigation }) {
     },
   ];
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'Account',
-      headerShown: true,
-      headerRight: () => (
-        <TouchableOpacity
+  const renderTopRightNotificationButton = useMemo(() => (
+    <TouchableOpacity
           onPress={() => {
-            navigation.navigate('NotificationsListScreen');
+              navigation.navigate('NotificationsListScreen');
           }}
           hitSlop={Utility.getHitSlop(15)}>
-          <ImageBackground
-            source={
-              notificationCounter > 0
-                ? images.notificationBell
-                : images.tab_notification
-            }
-            style={styles.headerRightImg}>
-            {notificationCounter > 0 && (
-              <View
-                style={
-                  notificationCounter > 9
-                    ? styles.eclipseBadge
-                    : styles.roundBadge
-                }>
-                <Text style={styles.notificationCounterStyle}>
-                  {notificationCounter > 9 ? '9+' : notificationCounter}
-                </Text>
-              </View>
-            )}
-          </ImageBackground>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, notificationCounter]);
+      <ImageBackground
+              source={
+                  notificationCounter > 0
+                      ? images.notificationBell
+                      : images.tab_notification
+              }
+              style={styles.headerRightImg}>
+        {notificationCounter > 0 && (
+          <View
+                      style={
+                          notificationCounter > 9
+                              ? styles.eclipseBadge
+                              : styles.roundBadge
+                      }>
+            <Text style={styles.notificationCounterStyle}>
+              {notificationCounter > 9 ? '9+' : notificationCounter}
+            </Text>
+          </View>
+              )}
+      </ImageBackground>
+    </TouchableOpacity>
+  ), [navigation, notificationCounter])
 
   const getData = () => new Promise((resolve, reject) => {
     const entity = authContext.entity;
@@ -528,18 +522,17 @@ export default function AccountScreen({ navigation }) {
 
   const keyExtractorID = useCallback((item, index) => index.toString(), []);
 
-  const renderSwitchProfile = useCallback(
-    ({ item, index }) => (
-      <TouchableWithoutFeedback
+  const renderSwitchProfile = useCallback(({ item, index }) => (
+    <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
           scrollRef.current.scrollTo({ x: 0, y: 0 });
           onSwitchProfile({ item, index });
         }}>
-        <View>
-          {item.entity_type === 'player' && (
-            <View style={styles.imageContainer}>
-              <Image
+      <View>
+        {item.entity_type === 'player' && (
+          <View style={styles.imageContainer}>
+            <Image
                 source={
                   item.thumbnail
                     ? { uri: item.thumbnail }
@@ -547,11 +540,11 @@ export default function AccountScreen({ navigation }) {
                 }
                 style={styles.playerImg}
               />
-            </View>
+          </View>
           )}
-          {item.entity_type === 'club' && (
-            <View style={styles.placeholderView}>
-              <Image
+        {item.entity_type === 'club' && (
+          <View style={styles.placeholderView}>
+            <Image
                 source={
                   item.thumbnail
                     ? { uri: item.thumbnail }
@@ -559,16 +552,16 @@ export default function AccountScreen({ navigation }) {
                 }
                 style={styles.entityImg}
               />
-              {item.thumbnail ? null : (
-                <Text style={styles.oneCharacterText}>
-                  {item.group_name.charAt(0).toUpperCase()}
-                </Text>
+            {item.thumbnail ? null : (
+              <Text style={styles.oneCharacterText}>
+                {item.group_name.charAt(0).toUpperCase()}
+              </Text>
               )}
-            </View>
+          </View>
           )}
-          {item.entity_type === 'team' && (
-            <View style={styles.placeholderView}>
-              <Image
+        {item.entity_type === 'team' && (
+          <View style={styles.placeholderView}>
+            <Image
                 source={
                   item.thumbnail
                     ? { uri: item.thumbnail }
@@ -576,39 +569,37 @@ export default function AccountScreen({ navigation }) {
                 }
                 style={styles.entityImg}
               />
-              {item.thumbnail ? null : (
-                <Text style={styles.oneCharacterText}>
-                  {item.group_name.charAt(0).toUpperCase()}
-                </Text>
+            {item.thumbnail ? null : (
+              <Text style={styles.oneCharacterText}>
+                {item.group_name.charAt(0).toUpperCase()}
+              </Text>
               )}
-            </View>
+          </View>
           )}
 
-          {item.unread > 0 && (
-            <View style={styles.badgeView}>
-              <Text style={styles.badgeCounter}>{item.unread}</Text>
-            </View>
+        {item.unread > 0 && (
+          <View style={styles.badgeView}>
+            <Text style={styles.badgeCounter}>{item.unread}</Text>
+          </View>
           )}
-        </View>
+      </View>
 
-        <View style={styles.textContainer}>
-          {item.entity_type === 'player' && (
-            <Text style={styles.entityNameText}>{item.full_name}</Text>
+      <View style={styles.textContainer}>
+        {item.entity_type === 'player' && (
+          <Text style={styles.entityNameText}>{item.full_name}</Text>
           )}
-          {item.entity_type === 'team' && (
-            <Text style={styles.entityNameText}>{item.group_name}</Text>
+        {item.entity_type === 'team' && (
+          <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
-          {item.entity_type === 'club' && (
-            <Text style={styles.entityNameText}>{item.group_name}</Text>
+        {item.entity_type === 'club' && (
+          <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
-          <Text style={styles.entityLocationText}>
-            {item.city},{item.state_abbr}
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    ),
-    [onSwitchProfile],
-  );
+        <Text style={styles.entityLocationText}>
+          {item.city},{item.state_abbr}
+        </Text>
+      </View>
+    </TouchableWithoutFeedback>
+    ), [onSwitchProfile]);
 
   const renderEntityList = useCallback(
     ({ item }) => (
@@ -802,8 +793,22 @@ export default function AccountScreen({ navigation }) {
   } else {
     placeHolder = images.profilePlaceHolder;
   }
+    const renderTopHeader = useMemo(() => (
+      <>
+        <Header
+                showBackgroundColor={true}
+                centerComponent={
+                  <Text style={styles.eventTitleTextStyle}>Account</Text>
+                }
+                rightComponent={renderTopRightNotificationButton}
+            />
+        <View style={styles.separateLine}/>
+      </>
+    ), [renderTopRightNotificationButton])
+
   return (
     <SafeAreaView style={styles.mainContainer}>
+      {renderTopHeader}
       <ActivityLoader visible={loading} />
       <ScrollView style={styles.mainContainer} ref={scrollRef}>
         <View
@@ -1430,5 +1435,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
     alignSelf: 'center',
+  },
+  eventTitleTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  separateLine: {
+    borderColor: colors.grayColor,
+    borderWidth: 0.5,
+    width: wp(100),
   },
 });

@@ -259,6 +259,7 @@ const styles = StyleSheet.create({
   },
   passwordView: {
     backgroundColor: 'rgba(255,255,255,0.9)',
+    height: 40,
     alignSelf: 'center',
     paddingVertical: 5,
     borderRadius: 5,
@@ -278,7 +279,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    paddingLeft: 17,
     width: wp('75%'),
   },
   textFieldContainerStyle: {
