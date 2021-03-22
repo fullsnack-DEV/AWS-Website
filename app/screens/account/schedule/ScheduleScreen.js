@@ -2,12 +2,12 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
 import React, {
-  useState,
-  useLayoutEffect,
-  useRef,
-  useEffect,
-  useContext,
-  useCallback,
+    useState,
+    useLayoutEffect,
+    useRef,
+    useEffect,
+    useContext,
+    useCallback, useMemo,
 } from 'react';
 import {
   StyleSheet,
@@ -535,9 +535,31 @@ const renderCalenderEvent = ({ event }) => {
     </View>
   );
 }
+const onThreeDotPress = useCallback(() => {
+    actionSheet.current.show();
+}, [])
 
+    const topRightButton = useMemo(() => (
+      <TouchableOpacity onPress={onThreeDotPress}>
+        <Image source={images.vertical3Dot} style={styles.headerRightImg} />
+      </TouchableOpacity>
+    ), [onThreeDotPress])
+
+    const renderTopHeader = useMemo(() => (
+      <>
+        <Header
+                showBackgroundColor={true}
+                centerComponent={
+                  <Text style={styles.eventTitleTextStyle}>Schedule</Text>
+                }
+                rightComponent={topRightButton}
+            />
+        <View style={styles.separateLine}/>
+      </>
+    ), [topRightButton])
   return (
     <View style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}>
+      {renderTopHeader}
       <View>
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
@@ -1255,5 +1277,16 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
     width: 15,
+  },
+  eventTitleTextStyle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+    alignSelf: 'center',
+  },
+  separateLine: {
+    borderColor: colors.grayColor,
+    borderWidth: 0.5,
+    width: wp(100),
   },
 });

@@ -72,7 +72,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
       });
   };
 
-  const getVerificationEmailText = `We have sent an email to ${route?.params?.emailAddress ?? ''}. You need to verify your email to continue. If you have not receive the verification email, please check your spam folder or click the resend button below.`
+  const getVerificationEmailText = `We have sent an email to ${route?.params?.emailAddress ?? ''}. You need to verify your email to continue. If you have not received the verification email, please check your spam folder or click the resend button below.`
 
       // const auth = await firebase?.auth()?.currentUser;
   return (
@@ -103,16 +103,16 @@ export default function EmailVerificationScreen({ navigation, route }) {
           source={images.emailSendIconBG}
         />
 
-      <TouchableOpacity onPress={() => resend()} disabled={timer !== 0} style={{ opacity: timer > 0 ? 0.6 : 1 }}>
+      <TouchableOpacity onPress={() => resend()} disabled={timer !== 0} style={{ alignItems: 'center' }}>
         <Text style={{
-                        width: '100%',
+                        width: '85%',
                         textAlign: 'center',
                         color: colors.lightGreen,
-            textDecorationLine: 'underline',
+                        textDecorationLine: 'underline',
                         fontSize: 13,
                         fontWeight: '700',
         }}>
-          {timer !== 0 ? `SEND VERIFICATION EMAIL AGAIN AFTER ${timer}s` : 'SEND VERIFICATION EMAIL AGAIN'}
+          {timer !== 0 ? `YOU CAN SEND VERIFICATION EMAIL AGAIN AFTER ${timer}s` : 'SEND VERIFICATION EMAIL AGAIN'}
         </Text>
       </TouchableOpacity>
 

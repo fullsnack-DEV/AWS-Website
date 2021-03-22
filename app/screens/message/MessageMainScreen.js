@@ -171,6 +171,7 @@ const MessageMainScreen = ({ navigation }) => {
 
   const renderHeader = useMemo(() => (
     <Header
+        showBackgroundColor={true}
         mainContainerStyle={{ paddingBottom: 0 }}
             leftComponent={navigation.canGoBack()
               && <View>

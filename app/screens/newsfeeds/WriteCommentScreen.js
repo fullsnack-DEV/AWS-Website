@@ -124,13 +124,14 @@ export default function WriteCommentScreen({
                         value={ commentTxt }
                         onChangeText={ (text) => setCommentText(text) }
                         style={ {
+                          textAlignVertical: 'center',
+                          fontSize: 14,
+                          lineHeight: 14,
                           width: wp('66%'),
                           marginHorizontal: '2%',
-                          fontSize: 14,
                           color: colors.lightBlackColor,
                           fontFamily: fonts.RRegular,
-                          padding: 0,
-                          paddingVertical: hp(1.5),
+                          paddingVertical: 0,
                           paddingLeft: 8,
                           alignSelf: 'center',
                           maxHeight: hp(20),

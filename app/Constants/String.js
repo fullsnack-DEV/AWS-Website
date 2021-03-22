@@ -104,15 +104,15 @@ const strings = {
 
   // Add Birthday screen
   addBirthdayText: 'Add your birthday.',
-  notDisplayText: 'This won’t be displayed in your public profile.',
+  notDisplayText: 'This won’t be displayed on your public profile.',
   whyAskingText: 'Why is TownsCup asking for my birthday?',
-  birthdatText: 'You must be at least 13 years old to have an TownsCup account in most countries. If accounts represent someone under the age of 13, they must clearly state in the account’s bio that the account is managed by a parent or manager. This information also helps TownsCup provide age-appropriate service to its users. Furthermore, this information is required when you join a group or sprots match which has age requirements in TownsCup community.',
+  birthdatText: 'You must be at least 13 years old to have a TownsCup account in most countries.\n\nIf account represents someone under the age of 13, the user must clearly state in the account’s bio that the account is managed by a parent or manager.\n\nThis information also helps TownsCup provide age-appropriate services to its users. Furthermore, this information is required when you join a group or sports game which has age requirements in the TownsCup Community.',
 
   // Choose gender screen
   addGenderText: 'Add your gender.',
-  notDisplayGenderText: 'This won’t be displayed in your public profile.',
+  notDisplayGenderText: 'This won’t be displayed on your public profile.',
   whyAskingGenderText: 'Why is TownsCup asking for my gender?',
-  genderText: 'This information helps TownsCup provide gender-appropriate service to its users. Furthermore, this information is also required when you join a group or sprots match which has gender requirement in TownsCup community.',
+  genderText: 'This information helps TownsCup provide gender-appropriate services to its users. Furthermore, this information is also required when you join a group or sports game which has gender-requirement in the TownsCup community.',
   maleRadioText: 'Male',
   femaleRadioText: 'Female',
   otherRadioText: 'Other',

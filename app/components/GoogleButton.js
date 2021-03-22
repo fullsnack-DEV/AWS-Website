@@ -46,6 +46,8 @@ const styles = StyleSheet.create({
     height: 20,
     resizeMode: 'contain',
     width: 20,
+    position: 'absolute',
+    left: 30,
   },
   googleText: {
     flex: 1,

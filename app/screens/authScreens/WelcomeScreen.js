@@ -382,6 +382,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 20,
     width: 20,
+    position: 'absolute',
+    left: 30,
   },
   signUpText: {
     color: colors.themeColor,
