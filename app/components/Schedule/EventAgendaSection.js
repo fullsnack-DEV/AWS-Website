@@ -4,12 +4,13 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import { Agenda } from 'react-native-calendars';
+import { Agenda, LocaleConfig } from 'react-native-calendars';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
+LocaleConfig.locales[LocaleConfig.defaultLocale].dayNamesShort = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 export default function EventAgendaSection({
   items, onDayPress, loadItemsForMonth, renderItem,
 }) {
@@ -39,6 +40,7 @@ export default function EventAgendaSection({
                 renderItem={renderItem}
                 refreshControl={null}
                 onCalendarToggled={() => {}}
+
               />
     </View>
   );

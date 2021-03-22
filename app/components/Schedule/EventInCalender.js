@@ -18,14 +18,14 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import EventBetweenUserItem from './EventBetweenUserItem';
-import EventOfItem from './EventOfItem';
+// import EventOfItem from './EventOfItem';
 
 export default function EventInCalender({
   onPress,
   data,
   onThreeDotPress,
   eventBetweenSection,
-  eventOfSection,
+  // eventOfSection,
   entity,
 }) {
   console.log('Entity :::---::::_--', entity);
@@ -85,12 +85,12 @@ export default function EventInCalender({
       awayTeamImage = data.game.away_team.thumbnail;
     }
   }
-  let refereeImage = null;
-  if (data && data.game && data.game.referees) {
-    if (data.game.referees.length > 0) {
-      refereeImage = data.game.referees[0].thumbnail;
-    }
-  }
+  // let refereeImage = null;
+  // if (data && data.game && data.game.referees) {
+  //   if (data.game.referees.length > 0) {
+  //     refereeImage = data.game.referees[0].thumbnail;
+  //   }
+  // }
 
   // let moreBtnVisible = true;
   // if (data && data.game) {
@@ -138,10 +138,10 @@ export default function EventInCalender({
             secondUserImage={awayTeamImage ? { uri: awayTeamImage } : images.team_ph}
             secondText={awayTeamName !== '' ? awayTeamName : 'Vancouver Whitecaps'}
           />}
-          {eventOfSection && <EventOfItem
+          {/* {eventOfSection && <EventOfItem
             eventOfText={'Referee'}
             countryIcon={refereeImage ? { uri: refereeImage } : images.commentReport}
-          />}
+          />} */}
         </View>
       </View>
     </TouchableWithoutFeedback>
