@@ -110,6 +110,23 @@ const MessageNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="MessageEditInviteeScreen"
+      component={ MessageEditInviteeScreen }
+      options={{
+        title: 'Message Chat',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
 
     <Stack.Screen
       name="MessageNewGroupScreen"
