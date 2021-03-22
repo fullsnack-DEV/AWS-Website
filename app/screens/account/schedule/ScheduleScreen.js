@@ -491,7 +491,6 @@ export default function ScheduleScreen({ navigation }) {
   };
 
   const renderCalenderEvent = (event) => {
-    console.log('renderCalenderEvent');
     console.log('renderCalenderEvent Event:', event);
     let event_color = colors.themeColor;
     let eventTitle = 'Game';
@@ -513,7 +512,6 @@ export default function ScheduleScreen({ navigation }) {
     if (event?.game?.away_team) {
       eventDesc2 = event?.game?.away_team?.group_name;
     }
-
     return (
       <View style={{ flex: 1 }}>
         {event?.cal_type === 'event' && (
@@ -545,7 +543,6 @@ export default function ScheduleScreen({ navigation }) {
 const onThreeDotPress = useCallback(() => {
     actionSheet.current.show();
 }, [])
-
 
     const topRightButton = useMemo(() => (
       <TouchableOpacity onPress={onThreeDotPress}>
