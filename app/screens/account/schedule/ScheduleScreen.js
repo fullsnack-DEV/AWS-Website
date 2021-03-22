@@ -118,10 +118,11 @@ export default function ScheduleScreen({ navigation }) {
     });
   }, [navigation]);
 
-const getEventsList = useCallback((selectedObj) => {
-  setloading(true);
-  const date = moment(new Date()).format('YYYY-MM-DD');
-      const entity = selectedObj // authContext.entity;
+  const getEventsList = useCallback(
+    (selectedObj) => {
+      setloading(true);
+      const date = moment(new Date()).format('YYYY-MM-DD');
+      const entity = selectedObj; // authContext.entity;
       const entityRole = entity?.entity_type === 'user' ? 'users' : 'groups';
       const uid = entity?.group_id || entity?.user_id;
       const eventdata = [];
@@ -179,7 +180,9 @@ const getEventsList = useCallback((selectedObj) => {
           Alert.alert('', e.messages);
         });
       return null;
-}, [authContext])
+    },
+    [authContext],
+  );
 
   // useEffect(() => {
   //     getEventsList(selectedEntity)
@@ -410,7 +413,7 @@ const getEventsList = useCallback((selectedObj) => {
   const activeTab = async (index) => {
     const gList = JSON.parse(JSON.stringify(groupList));
     console.log('ActiveTab called..=>', gList[index]);
-    setSelectedEntity(gList[index])
+    setSelectedEntity(gList[index]);
     setGroupList(gList);
     setScheduleIndexCounter(0);
     checkActiveScreen(gList[index]);
@@ -420,7 +423,7 @@ const getEventsList = useCallback((selectedObj) => {
       index,
       viewPosition: 1,
     });
-    getEventsList(gList[index])
+    getEventsList(gList[index]);
   };
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -443,13 +446,13 @@ const getEventsList = useCallback((selectedObj) => {
             setNotifAPI(1);
             setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
             checkActiveScreen(groups[0]);
-            getEventsList(groups[tabIndex])
+            getEventsList(groups[tabIndex]);
           }
         });
       }
       if (notifAPI === 1) {
         checkActiveScreen(groupList[currentTab]);
-        getEventsList(groupList[currentTab])
+        getEventsList(groupList[currentTab]);
       }
     }
   }, [currentTab, isFocused]);
@@ -487,57 +490,62 @@ const getEventsList = useCallback((selectedObj) => {
     }
   };
 
-const renderCalenderEvent = ({ event }) => {
-  let event_color = colors.themeColor;
-  let eventTitle = 'Game';
-  let eventDesc = 'Game With';
-  let eventDesc2 = '';
-  if (event?.color?.length > 0) {
-    if (event?.color?.[0] !== '#') {
-      event_color = `#${event?.color}`;
-    } else {
-      event_color = event?.color;
+  const renderCalenderEvent = (event) => {
+    console.log('renderCalenderEvent');
+    console.log('renderCalenderEvent Event:', event);
+    let event_color = colors.themeColor;
+    let eventTitle = 'Game';
+    let eventDesc = 'Game With';
+    let eventDesc2 = '';
+    if (event?.color?.length > 0) {
+      if (event?.color?.[0] !== '#') {
+        event_color = `#${event?.color}`;
+      } else {
+        event_color = event?.color;
+      }
     }
-  }
-  if (event?.title) {
-    eventTitle = event.title;
-  }
-  if (event?.descriptions) {
-    eventDesc = event.descriptions;
-  }
-  if (event?.game?.away_team) {
-    eventDesc2 = event?.game?.away_team?.group_name;
-  }
-  return (
-    <View style={{ flex: 1 }}>
-      {event?.cal_type === 'event' && (
-        <CalendarTimeTableView
-          title={eventTitle}
-          summary={`${eventDesc} ${eventDesc2}`}
-          containerStyle={{
-            borderLeftColor: event_color,
-            width: event.width,
-          }}
-          eventTitleStyle={{ color: event_color }}
-        />
-      )}
-      {event?.cal_type === 'blocked' && (
-        <View
-          style={[
-            styles.blockedViewStyle,
-            {
-              width: event.width + 68,
-              height: event.height,
-            },
-          ]}
-        />
-      )}
-    </View>
-  );
-}
+    if (event?.title) {
+      eventTitle = event.title;
+    }
+    if (event?.descriptions) {
+      eventDesc = event.descriptions;
+    }
+    if (event?.game?.away_team) {
+      eventDesc2 = event?.game?.away_team?.group_name;
+    }
+
+    return (
+      <View style={{ flex: 1 }}>
+        {event?.cal_type === 'event' && (
+          <CalendarTimeTableView
+            title={eventTitle}
+            summary={`${eventDesc} ${eventDesc2}`}
+            containerStyle={{
+              borderLeftColor: event_color,
+              width: event.width,
+            }}
+            eventTitleStyle={{ color: event_color }}
+          />
+        )}
+        {event?.cal_type === 'blocked' && (
+          <View
+            style={[
+              styles.blockedViewStyle,
+              {
+                width: event.width + 68,
+                height: event.height,
+              },
+            ]}
+          />
+        )}
+      </View>
+    );
+  };
 
   return (
-    <View style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}>
+    <View
+      style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
+      needsOffscreenAlphaCompositing>
       <View>
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
@@ -667,7 +675,6 @@ const renderCalenderEvent = ({ event }) => {
         {!loading && scheduleIndexCounter === 1 && (
           <View style={{ flex: 1 }}>
             <View style={styles.shceduleCalenderView}>
-
               <View>
                 <Text
                   style={{
@@ -791,7 +798,6 @@ const renderCalenderEvent = ({ event }) => {
                             <Text style={styles.filterHeaderText}>
                               {moment(selectionDate).format('ddd, DD MMM')}
                             </Text>
-
                           </View>
                         )}
                         bounces={false}
@@ -808,56 +814,48 @@ const renderCalenderEvent = ({ event }) => {
             )}
 
             {calenderInnerIndexCounter === 1 && (
-              <EventAgendaSection
-                items={{
-                  [selectionDate.toString()]: [filterTimeTable],
-                }}
-                selected={selectionDate}
-                onDayPress={(day) => {
-                  setEventSelectDate(day.dateString);
-                  const date = moment(day.dateString).format('YYYY-MM-DD');
-                  const dataItem = [];
-                  timeTable.filter((time_table_item) => {
-                    const startDate = new Date(
-                      time_table_item.start_datetime * 1000,
-                    );
-                    const endDate = new Date(
-                      time_table_item.end_datetime * 1000,
-                    );
-                    const eventDateSelect = moment(startDate).format(
-                      'YYYY-MM-DD',
-                    );
-                    if (eventDateSelect === date) {
-                      const obj = {
-                        ...time_table_item,
-                        start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
-                        end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
-                      };
-                      dataItem.push(obj);
-                    }
-                    return null;
-                  });
-                  setFilterTimeTable(dataItem);
-                  return null;
-                }}
-                renderItem={(item) => (
-                  <View style={{ flex: 1 }}>
-                    <EventCalendar
-                      eventTapped={(event) => {
-                        console.log('Event ::--', event);
-                      }}
-                      events={item}
-                      width={width}
-                      initDate={selectionDate}
-                      scrollToFirst={true}
-                      renderEvent={renderCalenderEvent}
-                      styles={{
-                        event: styles.eventViewStyle,
-                        line: { backgroundColor: colors.lightgrayColor },
-                      }}
-                    />
-                    {item.length > 0 && (
-                      <FlatList
+              <View style={{ flex: 1 }}>
+                <View style={{ flex: 0.24 }}>
+                  <EventAgendaSection
+                    items={{
+                      [selectionDate.toString()]: [filterTimeTable],
+                    }}
+                    selected={selectionDate}
+                    onDayPress={(day) => {
+                      setEventSelectDate(day.dateString);
+                      const date = moment(day.dateString).format('YYYY-MM-DD');
+                      const dataItem = [];
+                      timeTable.filter((time_table_item) => {
+                        const startDate = new Date(
+                          time_table_item.start_datetime * 1000,
+                        );
+                        const endDate = new Date(
+                          time_table_item.end_datetime * 1000,
+                        );
+                        const eventDateSelect = moment(startDate).format(
+                          'YYYY-MM-DD',
+                        );
+                        if (eventDateSelect === date) {
+                          const obj = {
+                            ...time_table_item,
+                            start: moment(startDate).format(
+                              'YYYY-MM-DD hh:mm:ss',
+                            ),
+                            end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
+                          };
+                          dataItem.push(obj);
+                        }
+                        return null;
+                      });
+                      setFilterTimeTable(dataItem);
+                      return null;
+                    }}
+
+                    renderItem={(item) => (
+                      <View style={{ backgroundColor: 'green' }}>
+
+                        {/* {item.length > 0 && (
+                          <FlatList
                         data={item}
                         scrollEnabled={false}
                         showsHorizontalScrollIndicator={false}
@@ -882,10 +880,28 @@ const renderCalenderEvent = ({ event }) => {
                         style={{ marginVertical: wp('4%') }}
                         keyExtractor={(itemValue, index) => index.toString()}
                       />
+                    )} */}
+                      </View>
                     )}
-                  </View>
-                )}
-              />
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <EventCalendar
+                    eventTapped={(event) => {
+                      console.log('Event ::--', event);
+                    }}
+                    events={filterTimeTable}
+                    width={width}
+                    initDate={selectionDate}
+                    scrollToFirst={false}
+                    renderEvent={(event) => renderCalenderEvent(event)}
+                    styles={{
+                      event: styles.eventViewStyle,
+                      line: { backgroundColor: colors.lightgrayColor },
+                    }}
+                  />
+                </View>
+              </View>
             )}
             {!createEventModal && (
               <CreateEventButton

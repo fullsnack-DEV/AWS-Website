@@ -556,9 +556,9 @@ const styles = StyleSheet.create({
     height: 40,
     width: widthPercentageToDP('86%'),
     borderRadius: 20,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
     shadowRadius: 1,
     elevation: 2,
     backgroundColor: colors.offwhite,
@@ -600,10 +600,10 @@ const styles = StyleSheet.create({
 
     ...Platform.select({
       ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
+        shadowColor: colors.grayColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
       },
       android: {
         elevation: 15,
@@ -643,9 +643,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.grayColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
     elevation: 1,
   },
   fieldTitle: {

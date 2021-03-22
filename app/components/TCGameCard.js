@@ -62,7 +62,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
             </Text>
             <Text style={styles.textSaperator}> | </Text>
             <Text style={styles.addressView} numberOfLines={1}>
-              {data?.venue?.address}
+              {data?.venue?.address ?? data?.venue?.description}
             </Text>
           </View>
           <View style={styles.gameVSView}>

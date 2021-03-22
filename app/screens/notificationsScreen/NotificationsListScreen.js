@@ -640,7 +640,7 @@ function NotificationsListScreen({ navigation }) {
   };
 
   return (
-    <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]}>
+    <View style={[styles.rowViewStyle, { opacity: activeScreen ? 1.0 : 0.5 }]} needsOffscreenAlphaCompositing>
       <View>
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
