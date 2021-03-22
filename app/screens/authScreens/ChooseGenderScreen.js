@@ -61,7 +61,7 @@ export default function ChooseGenderScreen({ navigation }) {
 
       <Tooltip popover={ <Text style={ { color: colors.themeColor, fontSize: 14 } }>{strings.genderText}</Text> }
             backgroundColor={ colors.parrotColor }
-            height={ hp('20%') }
+            height={ hp('22%') }
             width={ wp('75%') }
             overlayColor={ 'transparent' }
             skipAndroidStatusBar={true}>

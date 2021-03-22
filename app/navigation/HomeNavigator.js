@@ -188,19 +188,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
-      options={{
-        title: 'Account',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={ { headerShown: false } }
     />
 
     <Stack.Screen
@@ -397,18 +385,7 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="ScheduleScreen"
       component={ScheduleScreen}
-      options={{
-        title: 'Schedule',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="GameDetail"

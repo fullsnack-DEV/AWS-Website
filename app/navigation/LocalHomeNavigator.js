@@ -29,19 +29,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
         name="LocalHomeScreen"
         component={LocalHomeScreen}
-        options={{
-          title: 'LocalHomeScreen',
-          headerTintColor: colors.blackColor,
-          headerTitleStyle: {
-            fontWeight: '500',
-          },
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: colors.whiteColor,
-            borderBottomColor: colors.grayColor,
-            borderBottomWidth: 0.3,
-          },
-        }}
+        options={{ headerShown: false }}
       />
     <Stack.Screen
         name="RecentMatchScreen"
