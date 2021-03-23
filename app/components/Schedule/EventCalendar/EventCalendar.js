@@ -43,14 +43,15 @@ export default class EventCalendar extends React.Component {
 
   renderItem({ index, item }) {
     const {
-      width, format24h, initDate, scrollToFirst,
+      width, initDate, scrollToFirst,
     } = this.props
     const date = moment(initDate).add(index - this.props.size, 'days')
     return (
+
       <DayView
         date={date}
         index={index}
-        format24h={format24h}
+        format24h={false}
         formatHeader={this.props.formatHeader}
         headerStyle={this.props.headerStyle}
         renderEvent={this.props.renderEvent}
@@ -60,11 +61,12 @@ export default class EventCalendar extends React.Component {
         styles={this.styles}
          scrollToFirst={scrollToFirst}
       />
+
     )
   }
 
   goToPage(index) {
-    if (index <= 0 || index >= this.props.size * 2) {
+    if (index <= 0 || index >= this.props.size) {
       return
     }
     const date = moment(this.props.initDate).add(index - this.props.size, 'days')

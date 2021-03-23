@@ -645,7 +645,7 @@ function NotificationsListScreen({ navigation }) {
         {groupList?.length <= 0 ? (
           <NotificationListTopHeaderShimmer />
         ) : (
-          <FlatList
+          groupList?.length > 1 && <FlatList
             ref={refContainer}
             horizontal={true}
             showsHorizontalScrollIndicator={false}

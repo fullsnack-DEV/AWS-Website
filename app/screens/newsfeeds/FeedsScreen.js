@@ -254,7 +254,7 @@ const FeedsScreen = ({ navigation }) => {
       <Header
           showBackgroundColor={true}
           centerComponent={
-            <Text style={styles.eventTitleTextStyle}>Newsfeed</Text>
+            <Text style={styles.eventTitleTextStyle}>News Feed</Text>
           }
           rightComponent={topRightButton}
       />
