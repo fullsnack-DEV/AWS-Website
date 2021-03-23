@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   writePostView: {
     alignSelf: 'center',
-    backgroundColor: colors.redDelColor,
+    backgroundColor: colors.offwhite,
     borderRadius: 8,
     height: 28,
     marginLeft: wp('4%'),

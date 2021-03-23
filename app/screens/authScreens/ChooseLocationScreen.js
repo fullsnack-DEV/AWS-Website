@@ -84,13 +84,14 @@ export default function ChooseLocationScreen({ navigation }) {
     Geolocation.getCurrentPosition(
       (position) => {
         console.log('Lat/long to position::=>', position);
+    // const position = { coords: { latitude: 49.11637199697782, longitude: -122.7776695216056 } }
         getLocationNameWithLatLong(position.coords.latitude, position.coords.longitude, authContext).then((res) => {
           console.log('Lat/long to address::=>', res.results[0].address_components);
           let stateAbbr, city, country
           res.results[0].address_components.map((e) => {
             if (e.types.includes('administrative_area_level_1')) {
               stateAbbr = e.short_name
-            } else if (e.types.includes('administrative_area_level_2')) {
+            } else if (e.types.includes('locality')) {
               city = e.short_name
             } else if (e.types.includes('country')) {
               country = e.long_name

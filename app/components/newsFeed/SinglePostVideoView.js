@@ -255,7 +255,7 @@ export default function SinglePostVideoView({
                       backBtnPress()
                       navigation.navigate('WriteCommentScreen', {
                         data: item,
-                        onDonePress: () => openPostModal(),
+                        onDonePress: openPostModal,
                       });
                     }}
                     style={styles.imageTouchStyle}>

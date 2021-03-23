@@ -27,6 +27,7 @@ const NewsFeedList = ({
   pullRefresh = false,
   onLikePress = () => {},
   onStartShouldSetResponderCapture = () => {},
+  updateCommentCount,
 }) => {
   const [userID, setUserID] = useState('');
   const isFocused = useIsFocused();
@@ -57,6 +58,7 @@ const NewsFeedList = ({
     const onLikeButtonPress = () => onLikePress(item)
     return (
       <NewsFeedPostItems
+            updateCommentCount={updateCommentCount}
             pullRefresh={pullRefresh}
             item={item}
             navigation={navigation}

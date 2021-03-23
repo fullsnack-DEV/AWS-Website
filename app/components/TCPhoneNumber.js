@@ -38,7 +38,7 @@ export default function TCPhoneNumber({
            // disabled={ !editMode }
            useNativeAndroidPickerStyle={ false }
            // eslint-disable-next-line no-sequences
-           style={ (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), { ...styles } }
+           style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
            Icon={ () => (
              <Image
                  source={ images.dropDownArrow }

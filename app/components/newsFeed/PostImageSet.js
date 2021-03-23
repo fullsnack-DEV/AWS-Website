@@ -24,6 +24,7 @@ function PostImageSet({
   navigation,
   onImageProfilePress,
   onLikePress,
+  updateCommentCount,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const uploadImageURL = data && typeof data.thumbnail === 'string'
@@ -51,7 +52,10 @@ function PostImageSet({
         backdropOpacity={0}>
         <MultiImagePostView
           currentPage={itemNumber}
-          openPostModal={() => setModalVisible(true)}
+          openPostModal={(commentData) => {
+            updateCommentCount(commentData)
+            setModalVisible(true)
+          }}
           attachedImages={attachedImages}
           data={data}
           item={item}

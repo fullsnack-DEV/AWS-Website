@@ -13,6 +13,7 @@ const CustomVideoPlayer = ({
   containerStyle,
   isLandscape = false,
   onPlayerStatusChanged = () => {},
+  onClick = () => {},
 }) => {
   const videoPlayerRef = useRef();
   const [duration, setDuration] = useState(0);
@@ -35,6 +36,7 @@ const CustomVideoPlayer = ({
   }
 
   const onPaused = (pState) => {
+    onClick(!paused);
     setPaused(!paused);
     setPlayerState(pState);
   };
@@ -71,37 +73,38 @@ const CustomVideoPlayer = ({
   }
 
   return (
-    <View style={{ ...containerStyle }}>
+    <View
+        style={{ ...containerStyle }}>
       <Video
-          focusable={true}
-          source={{ uri: sourceURL }}
-          ref={videoPlayerRef}
-          style={{ ...styles.mediaPlayer, ...videoStyle }}
-          onEnd={onEnd}
-          onLoad={onLoad}
-          onLoadStart={onLoadStart}
-          onProgress={onProgress}
-          paused={paused}
-          resizeMode={resizeMode}
-          // onFullScreen={isFullScreen}
-          // fullscreen={isFullScreen}
-          fullscreenAutorotate={true}
-      />
+              focusable={true}
+              source={{ uri: sourceURL }}
+              ref={videoPlayerRef}
+              style={{ ...styles.mediaPlayer, ...videoStyle }}
+              onEnd={onEnd}
+              onLoad={onLoad}
+              onLoadStart={onLoadStart}
+              onProgress={onProgress}
+              paused={paused}
+              resizeMode={resizeMode}
+              // onFullScreen={isFullScreen}
+              // fullscreen={isFullScreen}
+              fullscreenAutorotate={true}
+          />
       <MediaControls
-          containerStyle={{ backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 100 }}
-          sliderStyle={{ containerStyle: { zIndex: 100, paddingBottom: isLandscape ? wp(16) : 0 } }}
-          // isFullScreen={isFullScreen}
-          duration={duration}
-          isLoading={isLoading}
-          mainColor={'rgba(0,0,0,0.5)'}
-          // onFullScreen={onFullScreen}
-          onPaused={onPaused}
-          onReplay={onReplay}
-          onSeek={onSeek}
-          onSeeking={onSeeking}
-          playerState={playerState}
-          progress={currentTime}
-      />
+              containerStyle={{ backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 100 }}
+              sliderStyle={{ containerStyle: { zIndex: 100, paddingBottom: isLandscape ? wp(16) : 0 } }}
+              // isFullScreen={isFullScreen}
+              duration={duration}
+              isLoading={isLoading}
+              mainColor={'rgba(0,0,0,0.5)'}
+              // onFullScreen={onFullScreen}
+              onPaused={onPaused}
+              onReplay={onReplay}
+              onSeek={onSeek}
+              onSeeking={onSeeking}
+              playerState={playerState}
+              progress={currentTime}
+          />
     </View>
   )
 }

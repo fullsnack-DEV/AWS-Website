@@ -22,6 +22,7 @@ function VideoPost({
   navigation,
   onImageProfilePress,
   onLikePress,
+  updateCommentCount,
 }) {
   const videoPlayerRef = useRef();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -58,7 +59,10 @@ function VideoPost({
   }, [])
 
   const onModalClose = useCallback(() => setModalVisible(false), [])
-  const onModalOpen = useCallback(() => setModalVisible(true), [])
+  const onModalOpen = useCallback((commentData) => {
+    updateCommentCount(commentData)
+    setModalVisible(true)
+  }, [updateCommentCount])
 
   const onImageProfileClick = useCallback(() => {
     setModalVisible(false)

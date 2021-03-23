@@ -230,11 +230,20 @@ const FeedsScreen = ({ navigation }) => {
           })
     }
   }, [authContext, isMoreLoading, isNextDataLoading, postData])
+  const updateCommentCount = (updatedComment) => {
+    const pData = [...postData]
+    const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id)
+    if (pIndex !== -1) {
+      pData[pIndex].reaction_counts.comment = updatedComment?.count
+      setPostData([...pData]);
+    }
+  }
 
   const renderImageProgress = useMemo(() => <ImageProgress/>, [])
 
   const renderNewsFeedList = useMemo(() => (
     <NewsFeedList
+          updateCommentCount={updateCommentCount}
           pullRefresh={pullRefresh}
           onDeletePost={onDeletePost}
           navigation={navigation}
@@ -245,9 +254,7 @@ const FeedsScreen = ({ navigation }) => {
           onLikePress={onLikePress}
           onEndReached={onEndReached}
       />
-  ), [
-      editPostDoneCall, footerLoading, isNextDataLoading, navigation,
-      onDeletePost, onEndReached, onLikePress, onRefreshPress, postData, pullRefresh])
+  ), [editPostDoneCall, footerLoading, isNextDataLoading, navigation, onDeletePost, onEndReached, onLikePress, onRefreshPress, postData, pullRefresh, updateCommentCount])
 
   const renderTopHeader = useMemo(() => (
     <>
