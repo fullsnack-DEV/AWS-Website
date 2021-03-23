@@ -8,7 +8,6 @@ import React, {
   useCallback,
   useRef,
   useMemo,
-
 } from 'react';
 import {
   Image,
@@ -17,6 +16,8 @@ import {
   StatusBar,
   View,
   Alert,
+  Dimensions,
+  Platform,
 } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -33,7 +34,6 @@ import AuthContext from '../auth/context';
 import { getUnreadCount } from '../api/Notificaitons';
 import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
-
 import strings from '../Constants/String';
 import ScheduleNavigator from './ScheduleNavigator';
 import fonts from '../Constants/Fonts';
@@ -44,6 +44,22 @@ import fonts from '../Constants/Fonts';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
 const Tab = createBottomTabNavigator();
+
+const DEFAULT_1X_HEIGHT = 30;
+const getHeight = () => {
+  if (Platform.OS === 'ios') {
+    if (Dimensions.get('window').height <= 320) {
+      return DEFAULT_1X_HEIGHT
+    }
+    if (Dimensions.get('window').height > 320 && Dimensions.get('window').height <= 828) {
+      return DEFAULT_1X_HEIGHT * 2
+    }
+    if (Dimensions.get('window').height > 828 && Dimensions.get('window').height <= 1242) {
+      return DEFAULT_1X_HEIGHT * 3
+    }
+  }
+}
+
 const getTabBarVisibility = (route) => {
   let routeName = '';
   if (route.name === 'Account') {
@@ -329,7 +345,6 @@ const AppNavigator = ({ navigation }) => {
   );
 
   return (
-
     <Tab.Navigator
       tabBarOptions={{
         activeTintColor: colors.tabFontColor,
@@ -338,7 +353,7 @@ const AppNavigator = ({ navigation }) => {
         labelStyle: {
           fontSize: 11,
           fontFamily: fonts.RRegular,
-          marginTop: -2,
+          marginBottom: 9.5,
         },
         style: {
           backgroundColor: colors.offwhite,
@@ -347,17 +362,18 @@ const AppNavigator = ({ navigation }) => {
           shadowOpacity: 0.4,
           shadowRadius: 15,
           elevation: 2,
-
+          height:
+            Platform.OS === 'android'
+              ? '7.5%'
+              : getHeight(),
           // borderTopWidth: 5,
-           // borderTopColor: 'transparent',
-        // height: heightPercentageToDP(10),
-
+          // borderTopColor: 'transparent',
+          // height: heightPercentageToDP(10),
         },
         tabStyle: {
           // height: heightPercentageToDP(9),
-
+          marginTop: 7,
         },
-
       }}>
       <Tab.Screen
         name="Local Home"
@@ -443,41 +459,40 @@ const AppNavigator = ({ navigation }) => {
         })}
       />
     </Tab.Navigator>
-
   );
 };
 
 const styles = StyleSheet.create({
   selectedTabImg: {
     alignSelf: 'center',
-    height: 38,
+    height: 30,
     resizeMode: 'cover',
-    width: 38,
+    width: 30,
     // borderRadius: 80,
   },
 
   tabImg: {
     alignSelf: 'center',
-    height: 38,
+    height: 30,
     resizeMode: 'cover',
-    width: 38,
+    width: 30,
     // borderRadius: 80,
   },
   profileTabImg: {
     alignSelf: 'center',
-    height: 26,
+    height: 20,
     resizeMode: 'cover',
-    width: 26,
-    borderRadius: 100,
+    width: 20,
+    borderRadius: 40,
   },
   profileTabBorder: {
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 30,
+    height: 22,
     resizeMode: 'cover',
-    width: 30,
-    borderRadius: 70,
+    width: 22,
+    borderRadius: 44,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,

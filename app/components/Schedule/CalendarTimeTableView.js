@@ -13,8 +13,8 @@ export default function CalendarTimeTableView({
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={styles.eventViewStyle}>
-        <Text style={[styles.eventTitleStyle, eventTitleStyle]}>{title}</Text>
-        <Text style={styles.eventSummaryStyle}>{summary}</Text>
+        <Text style={[styles.eventTitleStyle, eventTitleStyle]}>{summary}</Text>
+        <Text style={styles.eventSummaryStyle}>{title}</Text>
       </View>
     </View>
   );
