@@ -33,7 +33,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
       .then((res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          navigation.navigate('AddBirthdayScreen');
+          navigation.replace('AddBirthdayScreen');
         } else {
           setTimeout(() => {
             Alert.alert('Your email hasn’t been verified yet.');

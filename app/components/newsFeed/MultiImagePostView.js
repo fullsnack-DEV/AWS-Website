@@ -51,6 +51,7 @@ function MultiImagePostView({
   const [isLandScape, setIsLandScape] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(item?.reaction_counts?.comment ?? 0);
 
   useEffect(() => {
       setTimeout(() => {
@@ -145,6 +146,7 @@ function MultiImagePostView({
                   zIndex: 100,
             }}>
               <TCZoomableImage
+                      onClick={toggleParentView}
                       source={{ uri: multiAttachItem.url }}
                       style={[styles.uploadedImage, {
                           width: isLandScape ? landscapeImgWidth : portraitImgWidth,
@@ -171,6 +173,7 @@ function MultiImagePostView({
                       }}
                   />
               <CustomVideoPlayer
+                      onClick={toggleParentView}
                       isLandscape={isLandScape}
                       onPlayerStatusChanged={(shouldVideoScroll) => {
                           setScroll(shouldVideoScroll);
@@ -194,12 +197,16 @@ function MultiImagePostView({
       return <View />;
   }
 
+  const updateCommentCount = (dataID, commentCnt) => {
+      setCommentCount(commentCnt)
+  }
   const onBackPress = () => {
       Orientation.lockToPortrait();
       backBtnPress()
       navigation.navigate('WriteCommentScreen', {
           data: item,
-          onDonePress: () => openPostModal(),
+          onDonePress: openPostModal,
+          onSuccessSent: updateCommentCount,
       });
   }
 
@@ -220,10 +227,13 @@ function MultiImagePostView({
       }
   }
     const [showParentView, setShowParentView] = useState(true);
-    const toggleParentView = () => setShowParentView((val) => !val)
+    const toggleParentView = (checkVal) => {
+        if (checkVal !== undefined) setShowParentView(checkVal)
+        else setShowParentView((val) => !val)
+    }
+
   return (
     <KeyboardAvoidingView
-        onStartShouldSetResponder={toggleParentView}
         style={{ flex: 1, backgroundColor: colors.blackColor }}
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
@@ -330,13 +340,9 @@ function MultiImagePostView({
                     resizeMode={'cover'}
                     />
                 </TouchableOpacity>
-                {item?.reaction_counts?.comment !== undefined && (
-                  <Text style={styles.commentlengthStyle}>
-                    {item?.reaction_counts?.comment > 0
-                      ? item?.reaction_counts?.comment
-                      : ''}
-                  </Text>
-                )}
+                <Text style={styles.commentlengthStyle}>
+                  {commentCount > 0 ? commentCount : ''}
+                </Text>
               </View>
 
               <View

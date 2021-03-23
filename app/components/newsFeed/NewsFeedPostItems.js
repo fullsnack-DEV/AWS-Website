@@ -40,6 +40,7 @@ const NewsFeedPostItems = ({
   onDeletePost,
   onImageProfilePress,
   onEditPressDone,
+  updateCommentCount,
 }) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -62,7 +63,7 @@ const NewsFeedPostItems = ({
     } else {
       setLike(false);
     }
-    setShowThreeDot((item?.ownerId || item?.foreign_id) === caller_id);
+    setShowThreeDot(item?.ownerId === caller_id || item?.foreign_id === caller_id);
     const dummyItem = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object;
     setMyItem({ ...dummyItem });
     if (dummyItem) {
@@ -78,6 +79,7 @@ const NewsFeedPostItems = ({
   const renderSinglePostItems = useCallback(({ item: attachItem }) => {
     if (attachItem?.type === 'image') {
       return <SingleImage
+          updateCommentCount={updateCommentCount}
           item={item}
           data={attachItem}
           caller_id={caller_id}
@@ -89,7 +91,8 @@ const NewsFeedPostItems = ({
     if (attachItem?.type === 'video') {
       return (
         <VideoPost
-              item={item}
+            updateCommentCount={updateCommentCount}
+            item={item}
               data={attachItem}
               caller_id={caller_id}
               navigation={navigation}
@@ -107,6 +110,7 @@ const NewsFeedPostItems = ({
     if (multiAttachItem?.type === 'image') {
       return (
         <PostImageSet
+              updateCommentCount={updateCommentCount}
               activeIndex={index}
               data={multiAttachItem}
               itemNumber={index + 1}
@@ -123,7 +127,8 @@ const NewsFeedPostItems = ({
     if (multiAttachItem?.type === 'video') {
       return (
         <MultiPostVideo
-              activeIndex={index}
+            updateCommentCount={updateCommentCount}
+            activeIndex={index}
               data={multiAttachItem}
               itemNumber={index + 1}
               attachedImages={attachedImages}
@@ -206,8 +211,7 @@ const NewsFeedPostItems = ({
     </View>
   ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
 
-  const renderURLPreview = useMemo(() => (descriptions?.toLowerCase()?.includes('http://')
-          || descriptions?.toLowerCase()?.includes('https://')) && (<RNUrlPreview
+  const renderURLPreview = useMemo(() => (<RNUrlPreview
           text={descriptions}
           containerStyle={styles.urlPreviewContainerStyle}
           imageProps={{ resizeMode: 'cover' }}
@@ -227,8 +231,9 @@ const NewsFeedPostItems = ({
   const onWriteCommentPress = useCallback(() => {
     navigation.navigate('WriteCommentScreen', {
       data: item,
+      onSuccessSent: updateCommentCount,
     });
-  }, [item, navigation]);
+  }, [item, navigation, updateCommentCount]);
 
   return (
     <View style={{ flex: 1 }}>

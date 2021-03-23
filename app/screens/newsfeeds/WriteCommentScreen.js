@@ -30,7 +30,7 @@ import colors from '../../Constants/Colors';
 export default function WriteCommentScreen({
   navigation,
   route: {
-    params: { data, onDonePress },
+    params: { data, onDonePress = () => {}, onSuccessSent = () => {} },
   },
 }) {
   const [commentTxt, setCommentText] = useState('');
@@ -73,8 +73,8 @@ export default function WriteCommentScreen({
               style={{ alignItems: 'center', justifyContent: 'center' }}
               onPress={ () => {
                 navigation.goBack();
-                if (onDonePress) onDonePress();
-              } }
+                if (onDonePress) onDonePress({ count: commentData?.length ?? 0, id: data?.id });
+              }}
           >
             <Image style={styles.backButtonImage} source={images.backArrow} />
           </TouchableOpacity>
@@ -86,7 +86,7 @@ export default function WriteCommentScreen({
               style={ styles.doneTextStyle }
               onPress={ () => {
                 navigation.goBack();
-                if (onDonePress) onDonePress();
+                if (onDonePress) onDonePress({ count: commentData?.length ?? 0, id: data?.id });
               } }>
               Done
             </Text>
@@ -151,8 +151,11 @@ export default function WriteCommentScreen({
                   dataOfComment.push(response.payload);
                   setCommentData(dataOfComment);
                   setCommentText('');
+                  if (onSuccessSent) onSuccessSent({ count: dataOfComment?.length ?? 0, id: data?.id })
                 })
-                .catch((e) => Alert.alert('', e.messages));
+                .catch((e) => {
+                  console.log(e);
+                });
             }}>
               <Text style={ styles.sendTextStyle }>SEND</Text>
             </TouchableOpacity>}

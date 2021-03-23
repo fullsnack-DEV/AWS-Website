@@ -7,6 +7,7 @@ import images from '../Constants/ImagePath';
 const TCZoomableImage = ({
   source,
   style,
+  onClick = () => {},
 }) => {
   const [isLoaded, setIsLoaded] = useState(true)
 
@@ -34,6 +35,8 @@ const TCZoomableImage = ({
         }
 
       <PhotoView
+            onTap={() => onClick()}
+            onViewTap={() => onClick()}
             onLoad={() => setIsLoaded(true)}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}

@@ -80,7 +80,7 @@ const AuthNavigator = () => (
     <Stack.Screen
         name="AddBirthdayScreen"
         component={ AddBirthdayScreen }
-        options={ {} }
+        options={ { headerShown: false } }
       />
     <Stack.Screen
         name="ChooseGenderScreen"

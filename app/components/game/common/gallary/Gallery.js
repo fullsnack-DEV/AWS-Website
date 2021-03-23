@@ -24,7 +24,6 @@ const Gallery = ({
   const authContext = useContext(AuthContext);
   const imageUploadContext = useContext(ImageUploadContext)
   const [allData, setAllData] = useState([]);
-  const [postData, setPostData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,8 +36,7 @@ const Gallery = ({
 
   const createPostAfterUpload = useCallback((dataParams) => {
     createPost(dataParams, authContext)
-        .then((response) => {
-          setPostData((pData) => [response.payload, ...pData])
+        .then(() => {
           getGalleryData(gameData?.game_id).then((res) => {
             setAllData([...res?.payload]);
           });
@@ -74,9 +72,9 @@ const Gallery = ({
       multiple: true,
       maxFiles: MAX_UPLOAD_POST_ASSETS,
     }).then((pickImages) => {
-      navigation.navigate('WritePostScreen', { postData: postData ? postData[0] : {}, onPressDone: callthis, selectedImageList: pickImages })
+      navigation.navigate('WritePostScreen', { postData: authContext?.entity?.obj ?? {}, onPressDone: callthis, selectedImageList: pickImages })
     });
-  }, [callthis, navigation, postData])
+  }, [authContext?.entity?.obj, callthis, navigation])
 
   const allGalleryRenderItem = useCallback(({ item, index }) => {
     if (index === 0) {

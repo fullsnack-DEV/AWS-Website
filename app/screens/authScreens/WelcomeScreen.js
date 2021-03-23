@@ -175,7 +175,7 @@ export default function WelcomeScreen({ navigation }) {
 
             await Utility.setStorage('userInfo', userDetail);
             setloading(false);
-            navigation.navigate('AddBirthdayScreen')
+            navigation.replace('AddBirthdayScreen')
           });
         }).catch(() => setloading(false));
       }

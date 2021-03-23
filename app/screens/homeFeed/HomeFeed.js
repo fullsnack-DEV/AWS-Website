@@ -217,12 +217,22 @@ const HomeFeed = ({
       </>
     ), [StickyHeaderComponent, currentTab, homeFeedHeaderComponent, isAdmin])
 
+    const updateCommentCount = (updatedComment) => {
+        const pData = [...postData]
+        const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id)
+        if (pIndex !== -1) {
+            pData[pIndex].reaction_counts.comment = updatedComment?.count
+            setPostData([...pData]);
+        }
+    }
+
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.sepratorView} />
         <ActivityLoader visible={fullScreenLoading}/>
         <NewsFeedList
-              onFeedScroll={onFeedScroll}
+            updateCommentCount={updateCommentCount}
+            onFeedScroll={onFeedScroll}
               refs={refs}
               ListHeaderComponent={ListHeaderComponent}
               scrollEnabled={true}

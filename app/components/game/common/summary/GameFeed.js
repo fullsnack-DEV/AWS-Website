@@ -201,12 +201,22 @@ const GameFeed = ({
       />
   ), [currentUserData, navigation, onPressDone])
 
+  const updateCommentCount = (updatedComment) => {
+    const pData = [...gameFeedData]
+    const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id)
+    if (pIndex !== -1) {
+      pData[pIndex].reaction_counts.comment = updatedComment?.count
+      setGameFeedData([...pData]);
+    }
+  }
+
   return (
     <View style={{ backgroundColor: colors.whiteColor }}>
       <ActivityLoader visible={loading}/>
       {renderWritePostView}
       <View style={styles.sepratorView} />
       <NewsFeedList
+          updateCommentCount={updateCommentCount}
           refs={gameFeedRefs}
           onDeletePost={onDeletePost}
           navigation={navigation}

@@ -26,6 +26,7 @@ function MultiPostVideo({
   navigation,
   onImageProfilePress,
   onLikePress,
+  updateCommentCount,
 }) {
   const videoPlayerRef = useRef();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -58,7 +59,10 @@ function MultiPostVideo({
         backdropOpacity={0}>
         <MultiImagePostView
             currentPage={itemNumber}
-          openPostModal={() => setModalVisible(true)}
+          openPostModal={(commentData) => {
+            updateCommentCount(commentData)
+            setModalVisible(true)
+          }}
           attachedImages={attachedImages}
           data={data}
           item={item}

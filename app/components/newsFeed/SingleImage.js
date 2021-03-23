@@ -19,6 +19,7 @@ function SingleImage({
   navigation,
   onImageProfilePress,
   onLikePress,
+  updateCommentCount,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -38,7 +39,10 @@ function SingleImage({
   }, []);
 
   const onModalClose = useCallback(() => setModalVisible(false), [])
-  const onModalOpen = useCallback(() => setModalVisible(true), [])
+  const onModalOpen = useCallback((commentData) => {
+    updateCommentCount(commentData)
+    setModalVisible(true)
+  }, [updateCommentCount])
 
     const onImageProfileClick = useCallback(() => {
         setModalVisible(false)
