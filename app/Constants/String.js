@@ -8,6 +8,7 @@ const strings = {
   welcomeText: 'You\'re only a few steps away from joining Townscup.',
   fbText: 'Continue with Facebook',
   googleText: 'Continue with Google',
+  appleText: 'Continue with Apple',
   signUpText: 'Signup with email',
   alreadyMember: 'Already a member yet? Log In',
   loginText: 'Log in',

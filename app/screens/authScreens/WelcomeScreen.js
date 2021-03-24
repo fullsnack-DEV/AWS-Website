@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import {
   View, Text, TouchableOpacity, Alert, StyleSheet,
-  StatusBar, Animated,
+  StatusBar, Animated, Platform,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
@@ -14,6 +14,8 @@ import {
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+import { appleAuth, appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import { v4 as uuid } from 'uuid';
 import Config from 'react-native-config';
 import LinearGradient from 'react-native-linear-gradient';
 import AuthContext from '../../auth/context'
@@ -28,11 +30,12 @@ import strings from '../../Constants/String';
 import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
+import AppleButton from '../../components/AppleButton';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
+
 export default function WelcomeScreen({ navigation }) {
   const fadeInOpacity = new Animated.Value(0);
-  const fadeOutOpacity = new Animated.Value(1);
 
   // For activity indigator
   const [loading, setloading] = useState(false);
@@ -62,44 +65,6 @@ export default function WelcomeScreen({ navigation }) {
     offlineAccess: false,
   });
 
-  // Login With Facebook manage function
-  const onFacebookButtonPress = async () => {
-    setloading(true);
-    const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-    if (result.isCancelled) {
-      setloading(false);
-      throw new Error('User cancelled the login process');
-    }
-    const data = await AccessToken.getCurrentAccessToken();
-    if (!data) {
-      setloading(false);
-      throw new Error('Something went wrong obtaining access token');
-    }
-    const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-    auth().signInWithCredential(facebookCredential).then(async (authResult) => {
-      googleFaceBookSignInSignUp(authResult, 'FACEBOOK | ')
-    }).catch((error) => {
-      setloading(false);
-      let message = '';
-      if (error.code === 'auth/user-not-found') {
-        message = 'Your email or password is incorrect.Please try again';
-      }
-      if (error.code === 'auth/email-already-in-use') {
-        message = 'That email address is already in use!';
-      }
-      if (error.code === 'auth/invalid-email') {
-        message = 'That email address is invalid!';
-      }
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        message = 'You are already registrated with different login method ';
-      }
-      if (error.code === 'auth/network-request-failed') {
-        message = strings.networkConnectivityErrorMessage;
-      }
-      if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
-    });
-  }
-
   const QBInitialLogin = (entity, response) => {
     let qbEntity = entity
     QBlogin(qbEntity.uid, response).then(async (res) => {
@@ -123,9 +88,9 @@ export default function WelcomeScreen({ navigation }) {
     });
   }
 
-  const googleFaceBookSignInSignUp = (authResult, message) => {
+  const socialSignInSignUp = (authResult, message) => {
     console.log(message, authResult);
-    const googleFaceBookSignInSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
+    const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
       console.log('User :-', user);
       if (user) {
         user.getIdTokenResult().then(async (idTokenResult) => {
@@ -180,38 +145,58 @@ export default function WelcomeScreen({ navigation }) {
         }).catch(() => setloading(false));
       }
     });
-    googleFaceBookSignInSignUpOnAuthChanged();
+    socialSignInSignUpOnAuthChanged();
   }
 
-  // Login With Google manage function
+  const signInSignUpWithSocialCredential = async (credential, provider) => {
+    auth().signInWithCredential(credential).then(async (authResult) => {
+      socialSignInSignUp(authResult, provider);
+    }).catch((error) => {
+      setloading(false);
+      let message = ''
+      if (error.code === 'auth/user-not-found') {
+        message = 'Your email or password is incorrect.Please try again';
+      }
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'That email address is already in use!';
+      }
+      if (error.code === 'auth/invalid-email') {
+        message = 'That email address is invalid!';
+      }
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        message = 'You are already registrated with different login method ';
+      }
+      if (error.code === 'auth/network-request-failed') {
+        message = strings.networkConnectivityErrorMessage;
+      }
+      if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
+    });
+  }
+
+  // Login With Facebook manage function
+  const onFacebookButtonPress = async () => {
+    setloading(true);
+    const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+    if (result.isCancelled) {
+      setloading(false);
+      throw new Error('User cancelled the login process');
+    }
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data) {
+      setloading(false);
+      throw new Error('Something went wrong obtaining access token');
+    }
+    const facebookCredential = await auth.FacebookAuthProvider.credential(data.accessToken);
+    await signInSignUpWithSocialCredential(facebookCredential, 'FACEBOOK | ')
+  }
+
+ // Login With Google manage function
   const onGoogleButtonPress = async () => {
     try {
       setloading(true);
       const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-      auth().signInWithCredential(googleCredential).then(async (authResult) => {
-        googleFaceBookSignInSignUp(authResult, 'GOOGLE | ');
-      }).catch((error) => {
-        setloading(false);
-        let message = ''
-        if (error.code === 'auth/user-not-found') {
-          message = 'Your email or password is incorrect.Please try again';
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          message = 'That email address is already in use!';
-        }
-        if (error.code === 'auth/invalid-email') {
-          message = 'That email address is invalid!';
-        }
-        if (error.code === 'auth/account-exists-with-different-credential') {
-          message = 'You are already registrated with different login method ';
-        }
-        if (error.code === 'auth/network-request-failed') {
-          message = strings.networkConnectivityErrorMessage;
-        }
-        if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
-      });
+      const googleCredential = await auth.GoogleAuthProvider.credential(idToken);
+      await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ')
     } catch (error) {
       let message = '';
       setloading(false)
@@ -222,9 +207,57 @@ export default function WelcomeScreen({ navigation }) {
     }
   }
 
+  // Login With Apple manage function
+
+  const handleIOSAppleLogin = async () => {
+    if (!appleAuth.isSupported) {
+      alert('Apple Login not supported')
+    } else {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+      if (!appleAuthRequestResponse.identityToken) {
+        Alert.alert('Apple Sign-In failed - no identify token returned');
+      }
+
+      // Create a Firebase credential from the response
+      const { identityToken, nonce } = appleAuthRequestResponse;
+      const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
+      await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ')
+    }
+  };
+
+  const handleAndroidAppleLogin = async () => {
+    if (!appleAuthAndroid.isSupported) {
+      alert('Apple Login not supported')
+    } else {
+      // Generate secure, random values for state and nonce
+      const rawNonce = uuid();
+      const state = uuid();
+      appleAuthAndroid.configure({
+        clientId: 'com.tc.townscup',
+        redirectUri: 'https://townscup-fee6e.firebaseapp.com/__/auth/handler',
+        scope: appleAuthAndroid.Scope.ALL,
+        responseType: appleAuthAndroid.ResponseType.ALL,
+        nonce: rawNonce,
+        state,
+      });
+
+      const appleAuthRequestResponse = await appleAuthAndroid.signIn();
+      const { identityToken, nonce } = appleAuthRequestResponse;
+      const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
+      await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ')
+    }
+  };
+
+  const onAppleButtonPress = async () => {
+    if (Platform.OS === 'ios') handleIOSAppleLogin()
+    else handleAndroidAppleLogin()
+  }
+
   const onLoad = useCallback(() => {
     fadeInOpacity.setValue(0);
-    fadeOutOpacity.setValue(1);
     Animated.sequence([
       Animated.timing(fadeInOpacity, {
         toValue: 1,
@@ -238,7 +271,7 @@ export default function WelcomeScreen({ navigation }) {
         useNativeDriver: true,
       }),
     ]).start()
-  }, [fadeInOpacity, fadeOutOpacity]);
+  }, [fadeInOpacity]);
 
   const renderBackgroundImages = useMemo(() => (
     <Animated.Image
@@ -249,7 +282,7 @@ export default function WelcomeScreen({ navigation }) {
           // resizeMode={'stretch'}
           source={ images[`welcomeImage${currentBackground}`] }
       />
-    ), [currentBackground])
+    ), [currentBackground, fadeInOpacity])
 
   return (
     <LinearGradient
@@ -265,7 +298,7 @@ export default function WelcomeScreen({ navigation }) {
       </View>
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <View style={{ marginBottom: 35 }}>
+        <View style={{ marginBottom: hp(2) }}>
           <FacebookButton onPress={() => {
         if (authContext.networkConnected) {
           onFacebookButtonPress();
@@ -274,13 +307,20 @@ export default function WelcomeScreen({ navigation }) {
         }
           }}/>
           <GoogleButton onPress={() => {
-        if (authContext.networkConnected) {
-          onGoogleButtonPress();
-        } else {
-          authContext.showNetworkAlert();
-        }
+            if (authContext.networkConnected) {
+              onGoogleButtonPress();
+            } else {
+              authContext.showNetworkAlert();
+            }
           }}/>
 
+          <AppleButton onPress={() => {
+            if (authContext.networkConnected) {
+              onAppleButtonPress();
+            } else {
+              authContext.showNetworkAlert();
+            }
+          }}/>
           <TouchableOpacity
             style={styles.allButton }
             onPress={ () => {

@@ -289,6 +289,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   loginBg: require('../assets/images/loginBg.png'),
   emailSendIconBG: require('../assets/images/emailSendIconBG.png'),
   feedPlusIcon: require('../assets/images/feedPlusIcon.png'),
+  appleLogo: require('../assets/images/appleLogo.png'),
 };
 
 export default images;

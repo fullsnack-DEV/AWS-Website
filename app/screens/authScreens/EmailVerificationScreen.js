@@ -30,10 +30,14 @@ export default function EmailVerificationScreen({ navigation, route }) {
     firebase
       .auth()
       .signInWithEmailAndPassword(route.params.emailAddress, route.params.password)
-      .then((res) => {
+      .then(async (res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-          navigation.replace('AddBirthdayScreen');
+            if (!route.params?.first_name) {
+                navigation.replace('SignUpFromLoginScreen');
+            } else {
+                navigation.replace('AddBirthdayScreen');
+            }
         } else {
           setTimeout(() => {
             Alert.alert('Your email hasn’t been verified yet.');

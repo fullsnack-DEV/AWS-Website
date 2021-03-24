@@ -211,13 +211,13 @@ const NewsFeedPostItems = ({
     </View>
   ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
 
-  const renderURLPreview = useMemo(() => (<RNUrlPreview
-          text={descriptions}
-          containerStyle={styles.urlPreviewContainerStyle}
-          imageProps={{ resizeMode: 'cover' }}
-          imageStyle={styles.previewImageStyle}
-      />
-  ), [descriptions]);
+  const renderURLPreview = (text) => (<RNUrlPreview
+            text={text}
+            containerStyle={styles.urlPreviewContainerStyle}
+            imageProps={{ resizeMode: 'cover' }}
+            imageStyle={styles.previewImageStyle}
+        />
+    );
 
   const renderDescription = useMemo(() => (
     <NewsFeedDescription
@@ -267,7 +267,7 @@ const NewsFeedPostItems = ({
             />
           )
         }
-        {renderURLPreview}
+        {renderURLPreview(descriptions)}
         {renderDescription}
 
         <View style={{ marginTop: 10, marginLeft: 10 }}/>
