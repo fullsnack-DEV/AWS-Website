@@ -172,7 +172,6 @@ export default function ChooseLocationScreen({ navigation }) {
         });
       } else {
         navigation.navigate('ChooseSportsScreen', {
-
           city: item.terms?.[0]?.value,
           state: item.terms?.[1]?.value,
           country: item.terms?.[2]?.value,
