@@ -1,9 +1,11 @@
 import React, {
-    useCallback,
-    useLayoutEffect,
-    useState,
-    useContext,
-    useEffect, useMemo,
+  useCallback,
+  useLayoutEffect,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
 } from 'react';
 import {
   View,
@@ -15,6 +17,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Alert,
+
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -48,10 +51,13 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
+
 // import AuthContext from '../../auth/context';
 
 let selectedSports = [];
 export default function LocalHomeScreen({ navigation }) {
+  const refContainer = useRef();
+
   const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
@@ -79,35 +85,35 @@ export default function LocalHomeScreen({ navigation }) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-  if (isFocused) {
-    setloading(true);
-    const promises = [
-      getRecentGameDetails('Soccer', 'ended', 'india', authContext),
-      getSportsList(authContext),
-    ];
-    Promise.all(promises)
-      .then(([res1, res2]) => {
-        setloading(false);
-        if (res2.payload) {
-          const arr = [];
-          for (const tempData of res2.payload) {
-            tempData.isChecked = false;
-            arr.push(tempData);
+    if (isFocused) {
+      setloading(true);
+      const promises = [
+        getRecentGameDetails('Soccer', 'ended', 'india', authContext),
+        getSportsList(authContext),
+      ];
+      Promise.all(promises)
+        .then(([res1, res2]) => {
+          setloading(false);
+          if (res2.payload) {
+            const arr = [];
+            for (const tempData of res2.payload) {
+              tempData.isChecked = false;
+              arr.push(tempData);
+            }
+            setSports(arr);
+            setTimeout(() => setloading(false), 1000);
           }
-          setSports(arr);
-          setTimeout(() => setloading(false), 1000);
-        }
-        if (res1.payload) {
-          setRecentMatch(res1.payload.results);
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }
+          if (res1.payload) {
+            setRecentMatch(res1.payload.results);
+          }
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
   }, [authContext, isFocused]);
 
   const isIconCheckedOrNot = useCallback(
@@ -236,7 +242,7 @@ export default function LocalHomeScreen({ navigation }) {
   );
 
   const sportsListView = useCallback(
-    ({ item }) => (
+    ({ item, index }) => (
       <Text
         style={
           selectedSport === item.sport_name
@@ -246,7 +252,14 @@ export default function LocalHomeScreen({ navigation }) {
               ]
             : styles.sportName
         }
-        onPress={() => setSelectedSport(item.sport_name)}>
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5,
+          });
+          setSelectedSport(item.sport_name);
+        }}>
         {item.sport_name}
       </Text>
     ),
@@ -334,35 +347,41 @@ export default function LocalHomeScreen({ navigation }) {
     />
   );
 
-    const renderTopHeader = useMemo(() => (
+  const renderTopHeader = useMemo(
+    () => (
       <>
         <Header
-                showBackgroundColor={true}
-                leftComponent={
-                  <TouchableOpacity onPress={() => setSettingPopup(true)}>
-                    <Image source={images.home_setting} style={styles.townsCupIcon} />
-                  </TouchableOpacity>
-                }
-                centerComponent={
-                  <TouchableOpacity
-                        style={styles.titleHeaderView}
-                        onPress={() => setLocationPopup(true)}
-                        hitSlop={getHitSlop(15)}>
-                    <Text style={styles.headerTitle}>Vancuver</Text>
-                    <Image source={images.home_gps} style={styles.gpsIconStyle} />
-                  </TouchableOpacity>
-                }
-                rightComponent={
-                  <View style={styles.rightHeaderView}>
-                    <TouchableOpacity>
-                      <Image source={images.home_search} style={styles.townsCupIcon} />
-                    </TouchableOpacity>
-                  </View>
-                }
-            />
-        <View style={styles.separateLine}/>
+          showBackgroundColor={true}
+          leftComponent={
+            <TouchableOpacity onPress={() => setSettingPopup(true)}>
+              <Image source={images.home_setting} style={styles.townsCupIcon} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <TouchableOpacity
+              style={styles.titleHeaderView}
+              onPress={() => setLocationPopup(true)}
+              hitSlop={getHitSlop(15)}>
+              <Text style={styles.headerTitle}>Vancuver</Text>
+              <Image source={images.home_gps} style={styles.gpsIconStyle} />
+            </TouchableOpacity>
+          }
+          rightComponent={
+            <View style={styles.rightHeaderView}>
+              <TouchableOpacity>
+                <Image
+                  source={images.home_search}
+                  style={styles.townsCupIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          }
+        />
+        <View style={styles.separateLine} />
       </>
-    ), [])
+    ),
+    [],
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -370,11 +389,23 @@ export default function LocalHomeScreen({ navigation }) {
       <ActivityLoader visible={loading} />
       <View style={styles.sportsListView}>
         <FlatList
+          ref={refContainer}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={sports}
           keyExtractor={keyExtractor}
           renderItem={sportsListView}
+          initialScrollIndex={sports.indexOf(selectedSport)}
+          // initialNumToRender={30}
+          onScrollToIndexFailed={(info) => {
+            const wait = new Promise((resolve) => setTimeout(resolve, 500));
+            wait.then(() => {
+              refContainer.current.scrollToIndex({
+                animated: true,
+                index: info.index,
+              });
+            });
+          }}
           style={{
             width: '100%',
             height: 50,
@@ -889,8 +920,8 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   titleHeaderView: {
-      alignItems: 'center',
-      justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
   },
   rightHeaderView: {

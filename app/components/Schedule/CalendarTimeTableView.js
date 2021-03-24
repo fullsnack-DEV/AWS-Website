@@ -4,19 +4,22 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
 export default function CalendarTimeTableView({
-  containerStyle, eventTitleStyle, title, summary,
+  containerStyle, eventTitleStyle, title, summary, onPress,
 }) {
   return (
-    <View style={[styles.containerStyle, containerStyle]}>
+
+    <TouchableOpacity style={[styles.containerStyle, containerStyle]} onPress={onPress}>
       <View style={styles.eventViewStyle}>
         <Text style={[styles.eventTitleStyle, eventTitleStyle]}>{summary}</Text>
         <Text style={styles.eventSummaryStyle}>{title}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
+
   );
 }
 

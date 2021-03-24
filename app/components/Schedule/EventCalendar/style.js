@@ -1,7 +1,7 @@
 // @flow
 import { StyleSheet } from 'react-native'
 
-const calendarHeight = 2400
+const calendarHeight = 1300
 // const eventPaddingLeft = 4
 const leftMargin = 50 - 1
 

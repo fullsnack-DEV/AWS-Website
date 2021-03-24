@@ -41,6 +41,7 @@ const Stack = createStackNavigator();
 const NewsFeedNavigator = () => (
   <Stack.Navigator
       screenOptions={ {
+        gestureEnabled: false,
         headerBackTitleVisible: false,
       } }>
     <Stack.Screen

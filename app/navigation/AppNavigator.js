@@ -43,9 +43,10 @@ import fonts from '../Constants/Fonts';
 // import AccountScreen from '../screens/account/AccountScreen';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
+const DEFAULT_1X_HEIGHT = 30;
+
 const Tab = createBottomTabNavigator();
 
-const DEFAULT_1X_HEIGHT = 30;
 const getHeight = () => {
   if (Platform.OS === 'ios') {
     if (Dimensions.get('window').height <= 320) {
@@ -61,13 +62,14 @@ const getHeight = () => {
 }
 
 const getTabBarVisibility = (route) => {
-  let routeName = '';
-  if (route.name === 'Account') {
-    const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
-    routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name;
-  } else {
-    routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
-  }
+  // let routeName = '';
+  const routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
+  // if (route.name === 'Account') {
+  //   const lastIndex = route?.state?.routes?.[0]?.state?.routes?.length - 1;
+  //   routeName = route?.state?.routes?.[0]?.state?.routes?.[lastIndex]?.name;
+  // } else {
+  //   routeName = route?.state?.routes?.[route?.state?.index]?.name ?? '';
+  // }
   if (
     routeName === 'SoccerRecording'
     || routeName === 'GameDetailRecord'
@@ -346,6 +348,7 @@ const AppNavigator = ({ navigation }) => {
 
   return (
     <Tab.Navigator
+    navigation={navigation}
       tabBarOptions={{
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
@@ -392,7 +395,7 @@ const AppNavigator = ({ navigation }) => {
         })}
       />
       <Tab.Screen
-        name="Feed"
+        name="News Feed"
         component={NewsFeedNavigator}
         options={({ route }) => ({
           tabBarVisible: getTabBarVisibility(route),
@@ -449,6 +452,7 @@ const AppNavigator = ({ navigation }) => {
 
       <Tab.Screen
         name="Account"
+        navigation={navigation}
         component={AccountNavigator}
         options={({ route }) => ({
           ...(unreadNotificationCount > 0 && {
@@ -456,6 +460,7 @@ const AppNavigator = ({ navigation }) => {
           }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: renderTabIcon,
+
         })}
       />
     </Tab.Navigator>
@@ -465,34 +470,34 @@ const AppNavigator = ({ navigation }) => {
 const styles = StyleSheet.create({
   selectedTabImg: {
     alignSelf: 'center',
-    height: 30,
+    height: 38,
     resizeMode: 'cover',
-    width: 30,
+    width: 38,
     // borderRadius: 80,
   },
 
   tabImg: {
     alignSelf: 'center',
-    height: 30,
+    height: 38,
     resizeMode: 'cover',
-    width: 30,
+    width: 38,
     // borderRadius: 80,
   },
   profileTabImg: {
     alignSelf: 'center',
-    height: 20,
+    height: 28,
     resizeMode: 'cover',
-    width: 20,
+    width: 28,
     borderRadius: 40,
   },
   profileTabBorder: {
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 22,
+    height: 30,
     resizeMode: 'cover',
-    width: 22,
-    borderRadius: 44,
+    width: 30,
+    borderRadius: 60,
     shadowColor: colors.blackColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
