@@ -532,7 +532,7 @@ const HomeScreen = ({ navigation, route }) => {
               multiple: true,
               maxFiles: MAX_UPLOAD_POST_ASSETS,
             }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
+              navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -583,7 +583,7 @@ const HomeScreen = ({ navigation, route }) => {
               multiple: true,
               maxFiles: MAX_UPLOAD_POST_ASSETS,
             }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
+              navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: pickImages })
             });
           }}
         />
@@ -1222,9 +1222,9 @@ const HomeScreen = ({ navigation, route }) => {
 
   const playInModel = useCallback((playInObject) => {
     if (playInObject) {
-      setPlaysInModalVisible(!playsInModalVisible);
       setSportName(playInObject?.sport_name);
       setCurrentPlayInObject({ ...playInObject });
+      setPlaysInModalVisible(!playsInModalVisible);
     } else {
       navigation.navigate('RegisterPlayer');
     }

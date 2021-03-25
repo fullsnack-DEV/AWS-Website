@@ -202,6 +202,10 @@ const PlayInModule = ({
           navigateToMessage(entityId);
         })
   }, [currentUserData, navigation, onClose])
+
+  const onChangeTab = useCallback((ChangeTab) => {
+    setCurrentTab(ChangeTab.i)
+  }, [])
   return (
     <Modal
             isVisible={visible}
@@ -234,9 +238,7 @@ const PlayInModule = ({
           {useMemo(() => (
             <TCScrollableTabs
                 locked={false}
-                onChangeTab={(ChangeTab) => {
-                  setCurrentTab(ChangeTab.i)
-                }}
+                onChangeTab={onChangeTab}
               >
               {TAB_ITEMS?.map(renderTabs)}
             </TCScrollableTabs>

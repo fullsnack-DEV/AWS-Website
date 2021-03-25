@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, {
   useState, useEffect, useContext, useRef, useMemo, useCallback,
 } from 'react';
@@ -34,6 +35,7 @@ import AuthContext from '../../auth/context';
 import { getSearchData } from '../../utils';
 import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
+const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gmi
@@ -278,11 +280,20 @@ export default function WritePostScreen({ navigation, route }) {
       </View>
   ), [groups, letModalVisible, renderTagUsersAndGroups, searchFieldHeight, users])
 
-  const renderUrlPreview = useMemo(() => searchText?.length > 0 && (<UrlPreview
-          text={searchText}
-          containerStyle={styles.previewContainerStyle}
-      />
-  ), [searchText]);
+  const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length)
+  const renderUrlPreview = useMemo(() => {
+    if (searchText?.length > 0) {
+      let desc = searchText
+      const position = desc.search(urlRegex)
+      if (position !== -1 && desc.substring(position)?.startsWith('www')) desc = addStr(desc, position, 'http://')
+      return (<UrlPreview
+              text={desc}
+              containerStyle={styles.previewContainerStyle}
+          />
+      )
+    }
+    return null;
+  }, [searchText]);
 
   const onImageItemPress = useCallback((item) => {
     const imgs = [...selectImage];

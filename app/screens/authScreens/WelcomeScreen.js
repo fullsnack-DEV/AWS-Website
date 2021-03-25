@@ -169,7 +169,7 @@ export default function WelcomeScreen({ navigation }) {
       if (error.code === 'auth/network-request-failed') {
         message = strings.networkConnectivityErrorMessage;
       }
-      if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100);
+      if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 500);
     });
   }
 
@@ -213,6 +213,7 @@ export default function WelcomeScreen({ navigation }) {
     if (!appleAuth.isSupported) {
       alert('Apple Login not supported')
     } else {
+      setloading(true);
       const appleAuthRequestResponse = await appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],

@@ -22,21 +22,27 @@ export default function ScoreboardSportsScreen({
   onBackPress = () => {},
 }) {
   const authContext = useContext(AuthContext)
-  let filterData = [];
+  const filterData = [];
   let dataNotFound = true;
   if (sportsData) {
     const todayData = [];
     const yesterdayData = [];
     const pastData = [];
+    const futureData = [];
     sportsData.filter((item_filter) => {
       const startDate = new Date(item_filter.start_datetime * 1000);
       const dateFormat = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
-      const dateText = moment(dateFormat).calendar(null, {
-        sameDay: '[Today]',
-        lastDay: '[Yesterday]',
-        lastWeek: '[Past]',
-        sameElse: '[Past]',
-      })
+      let dateText = null;
+      if (startDate.getTime() > new Date().getTime()) {
+        dateText = 'Future'
+      } else {
+        dateText = moment(dateFormat).calendar(null, {
+          sameDay: '[Today]',
+          lastDay: '[Yesterday]',
+          lastWeek: '[Past]',
+          sameElse: '[Past]',
+        })
+      }
       if (dateText === 'Today') {
         todayData.push(item_filter);
         dataNotFound = false;
@@ -49,22 +55,17 @@ export default function ScoreboardSportsScreen({
         pastData.push(item_filter);
         dataNotFound = false;
       }
+
+      if (dateText === 'Future') {
+        futureData.push(item_filter);
+        dataNotFound = false;
+      }
       return null;
     })
-    filterData = [
-      {
-        title: 'Today',
-        data: todayData,
-      },
-      {
-        title: 'Yesterday',
-        data: yesterdayData,
-      },
-      {
-        title: 'Past',
-        data: pastData,
-      },
-    ];
+    if (pastData?.length > 0) filterData.push({ title: 'Past', data: pastData })
+    if (todayData?.length > 0) filterData.push({ title: 'Today', data: todayData })
+    if (yesterdayData?.length > 0) filterData.push({ title: 'Yesterday', data: yesterdayData })
+    if (futureData?.length > 0) filterData.push({ title: 'Future', data: futureData })
   }
 
   const onGameCardClick = (item) => {
