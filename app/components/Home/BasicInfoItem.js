@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   Text,
   View,
@@ -7,23 +7,22 @@ import {
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-export default function BasicInfoItem({
+const BasicInfoItem = ({
   title,
   value,
   titleStyle,
   valueStyle,
   fieldView,
-}) {
-  return (
-    <View style={[styles.fieldView, fieldView]}>
-      <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>{title}</Text>
-      <Text style={[styles.fieldValue, valueStyle]} numberOfLines={3} >{value}</Text>
-    </View>
+}) => (
+  <View style={{ ...styles.fieldView, ...fieldView }}>
+    <Text style={[styles.fieldTitle, titleStyle]} numberOfLines={2}>{title}</Text>
+    <Text style={[styles.fieldValue, valueStyle]} numberOfLines={3} >{value}</Text>
+  </View>
 
-  );
-}
+  )
 const styles = StyleSheet.create({
   fieldView: {
+    flex: 1,
     flexDirection: 'row',
     marginTop: 15,
     alignItems: 'center',
@@ -42,3 +41,5 @@ const styles = StyleSheet.create({
     flex: 0.75,
   },
 });
+
+export default memo(BasicInfoItem)

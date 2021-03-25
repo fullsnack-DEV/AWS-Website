@@ -48,7 +48,9 @@ const MatchRecordsList = ({
   }
 
   useEffect(() => {
-    loadAtOnce();
+      if (isFocused) {
+          loadAtOnce();
+      }
   }, [gameData, isFocused]);
 
   const RenderDash = useCallback(({ zIndex = 0 }) => (
