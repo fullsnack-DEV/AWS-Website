@@ -17,7 +17,7 @@ function EditEventItem({
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <View style={styles.titleandEditViewStyle}>
+      <View style={styles.titleAndEditViewStyle}>
         <Text style={styles.headerTextStyle}>{title}
           {subTitle && <Text style={styles.subHeaderText}>{subTitle}</Text>}</Text>
         {editButtonVisible && (
@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
   },
   headerTextStyle: {
     fontSize: 20,
-    fontFamily: fonts.RRegular,
     marginVertical: 3,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   subHeaderText: {
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  titleandEditViewStyle: {
+  titleAndEditViewStyle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

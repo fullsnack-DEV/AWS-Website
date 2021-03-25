@@ -17,7 +17,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
 
-const DELAY_PAGE_TIME = 4000;
+const DELAY_PAGE_TIME = 2000;
 export default function TotalTeamsScreen({ navigation, route }) {
   useEffect(() => {
     setTimeout(() => {

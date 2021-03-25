@@ -171,6 +171,7 @@ export default function SignupScreen({ navigation }) {
             navigation.navigate('EmailVerificationScreen', {
               emailAddress: email,
               password,
+              first_name: fName,
             });
           });
       }).catch(() => setloading(false));
@@ -196,7 +197,7 @@ export default function SignupScreen({ navigation }) {
           message = 'This email address is not registerd';
         }
         if (e.code === 'auth/email-already-in-use') {
-          message = 'That email address is already in use!';
+          message = 'That email address is already registrated! please login';
         }
         if (e.code === 'auth/invalid-email') {
           message = 'That email address is invalid!';

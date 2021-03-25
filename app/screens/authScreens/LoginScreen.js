@@ -70,6 +70,29 @@ export default function LoginScreen({ navigation }) {
     });
   }, [authContext])
 
+  const saveUserDetails = useCallback(async (user, callBack) => {
+    if (user) {
+      user.getIdTokenResult().then(async (idTokenResult) => {
+        const token = {
+          token: idTokenResult.token,
+          expirationTime: idTokenResult.expirationTime,
+        };
+        const userDetail = { email };
+        const entity = {
+          auth: { user_id: user.uid },
+          uid: user.uid,
+          role: 'user',
+        };
+        await authContext.setTokenData(token);
+        await authContext.setEntity({ ...entity })
+        await Utility.setStorage('userInfo', userDetail);
+        await Utility.setStorage('loggedInEntity', entity);
+        await setloading(false);
+        await callBack();
+      }).catch(() => setloading(false));
+    }
+  }, [authContext, email]);
+
   const onAuthStateChanged = useCallback((user) => {
     if (user) {
       user.getIdTokenResult().then((idTokenResult) => {
@@ -101,16 +124,33 @@ export default function LoginScreen({ navigation }) {
           await Utility.setStorage('loggedInEntity', entity)
           authContext.setEntity({ ...entity })
           QBInitialLogin(entity, response?.payload);
-        }).catch((error) => {
-          setloading(false);
-          setTimeout(() => Alert.alert(
-            'TownsCup',
-            error.message,
-          ), 100)
+        }).catch(async (error) => {
+          // eslint-disable-next-line no-underscore-dangle
+          if (!user?._user?.emailVerified) {
+            user.sendEmailVerification()
+            saveUserDetails(user, () => {
+              navigation.navigate('EmailVerificationScreen', {
+                emailAddress: email,
+                password,
+              });
+            })
+            // eslint-disable-next-line no-underscore-dangle
+          } else if (user?._user?.emailVerified) {
+            setloading(false);
+            saveUserDetails(user, () => {
+              navigation.navigate('SignUpFromLoginScreen')
+            })
+          } else {
+            setloading(false);
+            setTimeout(() => Alert.alert(
+                'TownsCup',
+                error.message,
+            ), 100)
+          }
         });
       });
     }
-  }, [QBInitialLogin, authContext]);
+  }, [QBInitialLogin, authContext, saveUserDetails]);
 
   const login = useCallback(async (_email, _password) => {
     setloading(true);

@@ -10,6 +10,7 @@ import {
 import { Tooltip } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
+import DatePicker from 'react-native-date-picker';
 import TCButton from '../../components/TCButton';
 import * as Utility from '../../utils/index';
 
@@ -17,7 +18,6 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
-import DateTimePickerView from '../../components/Schedule/DateTimePickerModal';
 
 export default function AddBirthdayScreen({ navigation }) {
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -25,15 +25,9 @@ export default function AddBirthdayScreen({ navigation }) {
   ];
   const [dateValue, setDateValue] = useState(new Date());
   const [minDateValue, setMinDateValue] = useState(new Date());
-  const [show, setShow] = useState(false);
 
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
-    setShow(false);
-  };
-
-  const showDatepicker = () => {
-    setShow(true);
   };
 
   useEffect(() => {
@@ -64,7 +58,18 @@ export default function AddBirthdayScreen({ navigation }) {
         {/* Date.parse(dateValue) */}
 
         <View style={ styles.matchFeeTxt }>
-          <Text style={ styles.dateText } onPress={showDatepicker}>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+          <Text style={ styles.dateText }>{monthNames[dateValue.getMonth()]} {dateValue.getDate()} , {dateValue.getFullYear()}</Text>
+        </View>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <DatePicker
+              textColor={colors.whiteColor}
+              mode={'date'}
+              maximumDate={minDateValue}
+              testID={'startsDateDateTimePicker'}
+              style={styles.dateTimePickerStyle}
+              date={dateValue}
+              onDateChange={onChange}
+          />
         </View>
       </View>
       <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 50 }}>
@@ -83,15 +88,6 @@ export default function AddBirthdayScreen({ navigation }) {
             extraStyle={ { marginTop: 50 } }
         />
       </View>
-      <DateTimePickerView
-          maximumDate={minDateValue}
-            visible={show}
-            onDone={onChange}
-            onCancel={() => setShow(false)}
-            onHide={() => setShow(false)}
-            mode={'date'}
-            date={dateValue}
-        />
     </LinearGradient>
   );
 }

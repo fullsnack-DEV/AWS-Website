@@ -24,15 +24,11 @@ export default function RecentMatchItems({
   onItemPress,
 }) {
   let startDate = '';
-  if (data && data.actual_startdatetime !== undefined) {
-    startDate = new Date(data.actual_startdatetime * 1000);
-  } else {
+  if (data && data.start_datetime) {
     startDate = new Date(data.start_datetime * 1000);
   }
   let endDate = '';
-  if (data && data.actual_enddatetime !== undefined) {
-    endDate = new Date(data.actual_enddatetime * 1000);
-  } else {
+  if (data && data.end_datetime) {
     endDate = new Date(data.end_datetime * 1000);
   }
   let eventColor = colors.themeColor;

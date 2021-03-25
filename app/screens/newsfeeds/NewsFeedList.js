@@ -2,7 +2,7 @@ import React, {
   useEffect, memo, useState, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  View, ActivityIndicator, FlatList,
+  View, ActivityIndicator, FlatList, Text,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -11,6 +11,7 @@ import { useIsFocused } from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
 import colors from '../../Constants/Colors'
 import AuthContext from '../../auth/context'
+import fonts from '../../Constants/Fonts';
 
 const NewsFeedList = ({
   onFeedScroll,
@@ -28,6 +29,7 @@ const NewsFeedList = ({
   onLikePress = () => {},
   onStartShouldSetResponderCapture = () => {},
   updateCommentCount,
+  noDataFoundText = 'No Post Found',
 }) => {
   const [userID, setUserID] = useState('');
   const isFocused = useIsFocused();
@@ -69,7 +71,7 @@ const NewsFeedList = ({
             onDeletePost={onDeleteButtonPress}
         />
     )
-  }, [pullRefresh, navigation, userID, onEditPressDone, onDeletePost, onProfilePress, onLikePress])
+  }, [updateCommentCount, pullRefresh, navigation, userID, onEditPressDone, onDeletePost, onLikePress, onProfilePress])
 
   const newsFeedListItemSeperator = useCallback(() => (
     <View
@@ -114,6 +116,9 @@ const NewsFeedList = ({
         legacyImplementation={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
+        ListEmptyComponent={<Text style={{
+ fontSize: 16, fontFamily: fonts.RLight, textAlign: 'center', padding: 15,
+        }}>{noDataFoundText}</Text>}
         bounces={true}
         data={postData ?? []}
         ItemSeparatorComponent={newsFeedListItemSeperator}

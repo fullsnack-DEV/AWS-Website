@@ -50,20 +50,10 @@ export default function UpcomingMatchScreen({
       }
       return null;
     })
-    filterData = [
-      {
-        title: 'Today',
-        data: todayData,
-      },
-      {
-        title: 'Tomorrow',
-        data: tomorrowData,
-      },
-      {
-        title: 'Future',
-        data: futureData,
-      },
-    ];
+    filterData = []
+    if (todayData?.length > 0) filterData.push({ title: 'Today', data: todayData })
+    if (tomorrowData?.length > 0) filterData.push({ title: 'Tomorrow', data: tomorrowData })
+    if (futureData?.length > 0) filterData.push({ title: 'Future', data: futureData })
   }
 
   const onGameCardClick = (item) => {

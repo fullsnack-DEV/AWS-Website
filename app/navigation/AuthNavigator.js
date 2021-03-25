@@ -19,6 +19,7 @@ import ChooseGenderScreen from '../screens/authScreens/ChooseGenderScreen';
 
 import BottomTab from '../components/BottomTab';
 import colors from '../Constants/Colors'
+import SignupFromLoginScreen from '../screens/authScreens/SignupFromLoginScreen';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,7 @@ const AuthNavigator = () => (
       />
     <Stack.Screen name="SignupScreen" component={ SignupScreen } options={ {} } />
     <Stack.Screen name="LoginScreen" component={ LoginScreen } options={ {} } />
+    <Stack.Screen name="SignUpFromLoginScreen" component={ SignupFromLoginScreen } options={ {} } />
     <Stack.Screen
         name="ChooseLocationScreen"
         component={ ChooseLocationScreen }

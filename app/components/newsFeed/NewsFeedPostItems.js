@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, {
   useCallback, memo, useEffect, useRef, useState, useMemo,
 } from 'react';
@@ -32,6 +33,7 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
+const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 const NewsFeedPostItems = ({
   navigation,
   item,
@@ -102,7 +104,7 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [caller_id, item, navigation, onImageProfilePress, onLikePress])
+  }, [caller_id, item, navigation, onImageProfilePress, onLikePress, updateCommentCount])
 
   const listSpace = useMemo(() => <View style={{ width: wp('2%') }} />, [])
 
@@ -142,7 +144,7 @@ const NewsFeedPostItems = ({
       );
     }
     return <View />;
-  }, [attachedImages, caller_id, item, navigation, onImageProfilePress, onLikePress])
+  }, [attachedImages, caller_id, item, navigation, onImageProfilePress, onLikePress, updateCommentCount])
 
   const newsFeedItemsKeyExtractor = useCallback((keyItem, index) => `innerFeed${ index?.id?.toString()}`, [])
 
@@ -211,13 +213,20 @@ const NewsFeedPostItems = ({
     </View>
   ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
 
-  const renderURLPreview = useMemo(() => (<RNUrlPreview
-          text={descriptions}
-          containerStyle={styles.urlPreviewContainerStyle}
-          imageProps={{ resizeMode: 'cover' }}
-          imageStyle={styles.previewImageStyle}
-      />
-  ), [descriptions]);
+  const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length)
+  const renderURLPreview = useMemo(() => {
+    const obj = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object
+    let desc = obj?.text.toLowerCase()
+    const position = desc.search(urlRegex)
+    if (position !== -1 && desc.substring(position)?.startsWith('www')) desc = addStr(desc, position, 'http://')
+    return (<RNUrlPreview
+            text={desc}
+            containerStyle={styles.urlPreviewContainerStyle}
+            imageProps={{ resizeMode: 'cover' }}
+            imageStyle={styles.previewImageStyle}
+        />
+    );
+  }, [item?.object])
 
   const renderDescription = useMemo(() => (
     <NewsFeedDescription

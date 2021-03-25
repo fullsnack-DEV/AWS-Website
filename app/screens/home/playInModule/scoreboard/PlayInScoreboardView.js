@@ -9,6 +9,7 @@ import UpcomingMatchScreen from '../../UpcomingMatchScreen';
 import { getGameScoreboardEvents } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import TCInnerLoader from '../../../../components/TCInnerLoader';
+import GameStatus from '../../../../Constants/GameStatus';
 
 const PlayInScoreboardView = ({
   sportName,
@@ -27,20 +28,21 @@ const PlayInScoreboardView = ({
     const params = {
       sport: sportName,
       role: 'player',
-      status: 'ended',
     };
     getGameScoreboardEvents(entity.uid || entity.auth.user_id, params, authContext).then((res) => {
-      const date = new Date();
+      const date = new Date().getTime();
       const recentMatch = [];
       const upcomingMatch = [];
-      res.payload.filter((event_item) => {
-        const eventStartDate = new Date(event_item.start_datetime * 1000)
-        if (eventStartDate > date) {
-          upcomingMatch.push(event_item);
-          setUpcomingMatchData([...upcomingMatch]);
-        } else {
+      res.payload.map((event_item) => {
+        const eventStartDate = event_item.start_datetime * 1000
+        const isFutureDate = eventStartDate > date;
+        const isGameEnded = event_item?.status === GameStatus.ended;
+        if (isGameEnded) {
           recentMatch.push(event_item);
           setRecentMatchData([...recentMatch]);
+        } else if (isFutureDate && !isGameEnded) {
+          upcomingMatch.push(event_item);
+          setUpcomingMatchData([...upcomingMatch]);
         }
         return null;
       });
