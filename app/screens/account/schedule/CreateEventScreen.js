@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
 import React, { useEffect, useState, useContext } from 'react';
@@ -19,7 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
-import AuthContext from '../../../auth/context'
+import AuthContext from '../../../auth/context';
 import Header from '../../../components/Home/Header';
 import EventColorItem from '../../../components/Schedule/EventColorItem';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -45,29 +46,44 @@ import TCTouchableLabel from '../../../components/TCTouchableLabel';
 const getNearDateTime = (date) => {
   const start = moment(date);
   const nearTime = 5 - (start.minute() % 5);
-  const dateTime = moment(start).add(nearTime, 'm').toDate()
+  const dateTime = moment(start).add(nearTime, 'm').toDate();
   console.log('Start date/Time::=>', dateTime);
   return dateTime;
 };
 export default function CreateEventScreen({ navigation, route }) {
   const isFocused = useIsFocused();
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [singleSelectEventColor, setSingleSelectEventColor] = useState(colors.orangeColor);
+  const [singleSelectEventColor, setSingleSelectEventColor] = useState(
+    colors.orangeColor,
+  );
   const [toggle, setToggle] = useState(true);
-  const [eventStartDateTime, setEventStartdateTime] = useState(getNearDateTime(new Date()));
-  const [eventEndDateTime, setEventEnddateTime] = useState(moment(eventStartDateTime).add(5, 'm').toDate());
-  const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
+  const [eventStartDateTime, setEventStartdateTime] = useState(
+    getNearDateTime(new Date()),
+  );
+  const [eventEndDateTime, setEventEnddateTime] = useState(
+    moment(eventStartDateTime).add(5, 'm').toDate(),
+  );
+  const [eventUntilDateTime, setEventUntildateTime] = useState(
+    eventEndDateTime,
+  );
   const [searchLocation, setSearchLocation] = useState();
   const [locationDetail, setLocationDetail] = useState(null);
   const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
   const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
-  const [eventColors, setEventColors] = useState([]);
+  const [eventColors, setEventColors] = useState([
+    ...Utility.importedEventData,
+    {
+      id: 5,
+      color: '0',
+      isSelected: false,
+      isNew: true,
+    },
+  ]);
   const [selectedEventColors, setSelectedEventColors] = useState([]);
-  const [counter, setcounter] = useState(0);
   const [isColorPickerModal, setIsColorPickerModal] = useState(false);
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
@@ -78,61 +94,63 @@ export default function CreateEventScreen({ navigation, route }) {
     console.log('WEEK::', countNumberOfWeekFromDay());
     const unsubscribe = navigation.addListener('focus', async () => {
       const eventColorData = await Utility.getStorage('eventColor');
-      setEventColors(eventColorData);
+
+      console.log('eventColorData:=', eventColorData);
+      // setEventColors(eventColorData);
     });
     return () => {
       unsubscribe();
     };
   }, []);
   const countNumberOfWeekFromDay = () => {
-    const date = new Date()
-    const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
-    const endDate = date
-    const givenDay = new Date().getDay()
-    let numberOfDates = 0
+    const date = new Date();
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    const endDate = date;
+    const givenDay = new Date().getDay();
+    let numberOfDates = 0;
     while (startDate < endDate) {
       if (startDate.getDay() === givenDay) {
-        numberOfDates++
+        numberOfDates++;
       }
-      startDate.setDate(startDate.getDate() + 1)
+      startDate.setDate(startDate.getDate() + 1);
     }
-    return ordinal_suffix_of(numberOfDates)
-  }
+    return ordinal_suffix_of(numberOfDates);
+  };
   const countNumberOfWeeks = () => {
-    const date = new Date()
-    const startDate = new Date(date.getFullYear(), date.getMonth(), 1)
-    const endDate = date
-    const givenDay = new Date().getDay()
-    let numberOfDates = 0
+    const date = new Date();
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    const endDate = date;
+    const givenDay = new Date().getDay();
+    let numberOfDates = 0;
     while (startDate < endDate) {
       if (startDate.getDay() === givenDay) {
-        numberOfDates++
+        numberOfDates++;
       }
-      startDate.setDate(startDate.getDate() + 1)
+      startDate.setDate(startDate.getDate() + 1);
     }
-    return numberOfDates
-  }
+    return numberOfDates;
+  };
   const getTodayDay = () => {
-    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss')
-    return dt.format('dddd')
-  }
+    const dt = moment(new Date(), 'YYYY-MM-DD HH:mm:ss');
+    return dt.format('dddd');
+  };
   const handleStartDatePress = (date) => {
     console.log('Date::=>', new Date(new Date(date).getTime()));
     setEventStartdateTime(new Date(new Date(date).getTime()));
     setEventEnddateTime(moment(date).add(5, 'm').toDate());
     setEventUntildateTime(moment(date).add(5, 'm').toDate());
-    setStartDateVisible(!startDateVisible)
-  }
+    setStartDateVisible(!startDateVisible);
+  };
   const handleCancelPress = () => {
-    setStartDateVisible(false)
-    setEndDateVisible(false)
-    setUntilDateVisible(false)
-  }
+    setStartDateVisible(false);
+    setEndDateVisible(false);
+    setUntilDateVisible(false);
+  };
 
   const handleEndDatePress = (date) => {
     let dateValue = new Date();
     if (toggle) {
-      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`
+      dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
       console.log('Date Value :-', dateValue);
       setEventEnddateTime(dateValue);
       setEventUntildateTime(dateValue);
@@ -140,13 +158,13 @@ export default function CreateEventScreen({ navigation, route }) {
       setEventEnddateTime(date);
       setEventUntildateTime(date);
     }
-    setEndDateVisible(!endDateVisible)
-  }
+    setEndDateVisible(!endDateVisible);
+  };
 
   const handleUntilDatePress = (date) => {
     setEventUntildateTime(date);
-    setUntilDateVisible(!untilDateVisible)
-  }
+    setUntilDateVisible(!untilDateVisible);
+  };
 
   const colorToggleModal = () => {
     setIsColorPickerModal(!isColorPickerModal);
@@ -162,26 +180,30 @@ export default function CreateEventScreen({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
       if (route.params.comeName) {
-        Geolocation.getCurrentPosition((position) => {
-          const latValue = position.coords.latitude;
-          const longValue = position.coords.longitude;
-          const obj = {
-            lat: latValue,
-            lng: longValue,
-          };
-          setLocationDetail(obj);
-          getLocationNameWithLatLong(latValue, longValue, authContext).then((res) => {
-            setSearchLocation(res.results[0].formatted_address);
-          })
-        },
-        (error) => {
-          console.log('Error :-', error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 10000,
-        })
+        Geolocation.getCurrentPosition(
+          (position) => {
+            const latValue = position.coords.latitude;
+            const longValue = position.coords.longitude;
+            const obj = {
+              lat: latValue,
+              lng: longValue,
+            };
+            setLocationDetail(obj);
+            getLocationNameWithLatLong(latValue, longValue, authContext).then(
+              (res) => {
+                setSearchLocation(res.results[0].formatted_address);
+              },
+            );
+          },
+          (error) => {
+            console.log('Error :-', error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 10000,
+          },
+        );
       }
     });
     return () => {
@@ -201,14 +223,86 @@ export default function CreateEventScreen({ navigation, route }) {
       return `${i}rd`;
     }
     return `${i}th`;
-  }
+  };
+
+  const onChangeColorPressed = () => {
+    setAddColorDoneButton(false);
+    colorToggleModal();
+    setSelectedEventColors([]);
+  };
+
+  const renderColorItem = ({ item }) => {
+    if (item.isNew) {
+      return (
+        <EventColorItem
+          isNew={item.color !== '0'}
+          onChangeColorPressed={onChangeColorPressed}
+          imageStyle={{ tintColor: item.color !== '0' ? colors.whiteColor : colors.lightBlackColor }}
+          onItemPress={() => {
+            if (item.color === '0') {
+              setAddColorDoneButton(false);
+              colorToggleModal();
+              setSelectedEventColors([]);
+            } else {
+              eventColors.map(async (createEventItem) => {
+                const createEventData = createEventItem;
+                if (createEventData.id === item.id) {
+                  createEventData.isSelected = true;
+                  setSingleSelectEventColor(createEventData.color);
+                } else {
+                  createEventData.isSelected = false;
+                }
+                return null;
+              });
+              Utility.setStorage('eventColor', eventColors);
+              setEventColors([...eventColors]);
+            }
+          }}
+          source={item.isNew && item.color === '0' ? images.plus : item.isSelected ? images.check : null}
+          eventColorViewStyle={{
+            backgroundColor:
+              item.color === '0' ? colors.whiteColor : item.color,
+            borderWidth: item.isSelected ? 2 : 0,
+            borderColor: colors.whiteColor,
+            marginRight: wp(3),
+          }}
+        />
+      );
+    }
+    return (
+      <EventColorItem
+        source={item.isSelected ? images.check : null}
+        imageStyle={{ tintColor: colors.whiteColor }}
+        onItemPress={() => {
+          eventColors.map(async (createEventItem) => {
+            const createEventData = createEventItem;
+            if (createEventData.id === item.id) {
+              createEventData.isSelected = true;
+              setSingleSelectEventColor(createEventData.color);
+            } else {
+              createEventData.isSelected = false;
+            }
+            return null;
+          });
+          Utility.setStorage('eventColor', eventColors);
+          setEventColors([...eventColors]);
+        }}
+        eventColorViewStyle={{
+          backgroundColor: item.color,
+          borderWidth: item.isSelected ? 2 : 0,
+          borderColor: colors.whiteColor,
+          marginRight: wp(3),
+        }}
+      />
+    );
+  };
 
   return (
     <TCKeyboardView>
       <ActivityLoader visible={loading} />
       <Header
         leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack() }>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={images.backArrow} style={styles.backImageStyle} />
           </TouchableOpacity>
         }
@@ -216,87 +310,138 @@ export default function CreateEventScreen({ navigation, route }) {
           <Text style={styles.eventTextStyle}>Create an Event</Text>
         }
         rightComponent={
-          <TouchableOpacity style={{ padding: 2 }} onPress={async () => {
-            const entity = authContext.entity
-            const uid = entity.uid || entity.auth.user_id;
-            const entityRole = entity.role === 'user' ? 'users' : 'groups';
+          <TouchableOpacity
+            style={{ padding: 2 }}
+            onPress={async () => {
+              const entity = authContext.entity;
+              const uid = entity.uid || entity.auth.user_id;
+              const entityRole = entity.role === 'user' ? 'users' : 'groups';
 
-            if (eventTitle === '') {
-              Alert.alert('Towns Cup', 'Please Enter Event Title.');
-            } else if (eventDescription === '') {
-              Alert.alert('Towns Cup', 'Please Enter Event Description.');
-            } else if (eventStartDateTime === '') {
-              Alert.alert('Towns Cup', 'Please Select Event Start Date and Time.');
-            } else if (eventEndDateTime === '') {
-              Alert.alert('Towns Cup', 'Please Select Event End Date and Time.');
-            } else if (eventEndDateTime === '') {
-              Alert.alert('Towns Cup', 'Please Select Event End Date and Time.');
-            } else {
-              setloading(true);
-              let data;
-              if (searchLocation) {
-                 data = [{
-                  title: eventTitle,
-                  descriptions: eventDescription,
-                  color: singleSelectEventColor,
-                  allDay: toggle,
-                  start_datetime: Number(parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0)),
-                  end_datetime: Number(parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0)),
-
-                  is_recurring: selectWeekMonth !== 'Does not repeat',
-                  location: searchLocation,
-                  latitude: locationDetail.lat,
-                  longitude: locationDetail.lng,
-                  blocked: is_Blocked,
-                  owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
-                }]
+              if (eventTitle === '') {
+                Alert.alert('Towns Cup', 'Please Enter Event Title.');
+              } else if (eventDescription === '') {
+                Alert.alert('Towns Cup', 'Please Enter Event Description.');
+              } else if (eventStartDateTime === '') {
+                Alert.alert(
+                  'Towns Cup',
+                  'Please Select Event Start Date and Time.',
+                );
+              } else if (eventEndDateTime === '') {
+                Alert.alert(
+                  'Towns Cup',
+                  'Please Select Event End Date and Time.',
+                );
+              } else if (eventEndDateTime === '') {
+                Alert.alert(
+                  'Towns Cup',
+                  'Please Select Event End Date and Time.',
+                );
               } else {
-                 data = [{
-                  title: eventTitle,
-                  descriptions: eventDescription,
-                  color: singleSelectEventColor,
-                  allDay: toggle,
-                  start_datetime: Number(parseFloat(new Date(eventStartDateTime).getTime() / 1000).toFixed(0)),
-                  end_datetime: Number(parseFloat(new Date(eventEndDateTime).getTime() / 1000).toFixed(0)),
+                setloading(true);
+                let data;
+                if (searchLocation) {
+                  data = [
+                    {
+                      title: eventTitle,
+                      descriptions: eventDescription,
+                      color: singleSelectEventColor,
+                      allDay: toggle,
+                      start_datetime: Number(
+                        parseFloat(
+                          new Date(eventStartDateTime).getTime() / 1000,
+                        ).toFixed(0),
+                      ),
+                      end_datetime: Number(
+                        parseFloat(
+                          new Date(eventEndDateTime).getTime() / 1000,
+                        ).toFixed(0),
+                      ),
 
-                  is_recurring: selectWeekMonth !== 'Does not repeat',
-                  blocked: is_Blocked,
-                  owner_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
-                }]
-              }
+                      is_recurring: selectWeekMonth !== 'Does not repeat',
+                      location: searchLocation,
+                      latitude: locationDetail.lat,
+                      longitude: locationDetail.lng,
+                      blocked: is_Blocked,
+                      owner_id:
+                        authContext.entity.obj.user_id
+                        || authContext.entity.obj.group_id,
+                    },
+                  ];
+                } else {
+                  data = [
+                    {
+                      title: eventTitle,
+                      descriptions: eventDescription,
+                      color: singleSelectEventColor,
+                      allDay: toggle,
+                      start_datetime: Number(
+                        parseFloat(
+                          new Date(eventStartDateTime).getTime() / 1000,
+                        ).toFixed(0),
+                      ),
+                      end_datetime: Number(
+                        parseFloat(
+                          new Date(eventEndDateTime).getTime() / 1000,
+                        ).toFixed(0),
+                      ),
 
-              let rule = '';
-              if (selectWeekMonth === 'Daily' || selectWeekMonth === 'Weekly' || selectWeekMonth === 'Yearly') {
-                rule = selectWeekMonth.toUpperCase();
-              } else if (selectWeekMonth === `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`) {
-                rule = `MONTHLY;BYDAY=${getTodayDay().substring(0, 2).toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`
-              } else if (selectWeekMonth === `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`) {
-                rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`
+                      is_recurring: selectWeekMonth !== 'Does not repeat',
+                      blocked: is_Blocked,
+                      owner_id:
+                        authContext.entity.obj.user_id
+                        || authContext.entity.obj.group_id,
+                    },
+                  ];
+                }
+
+                let rule = '';
+                if (
+                  selectWeekMonth === 'Daily'
+                  || selectWeekMonth === 'Weekly'
+                  || selectWeekMonth === 'Yearly'
+                ) {
+                  rule = selectWeekMonth.toUpperCase();
+                } else if (
+                  selectWeekMonth
+                  === `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`
+                ) {
+                  rule = `MONTHLY;BYDAY=${getTodayDay()
+                    .substring(0, 2)
+                    .toUpperCase()};BYSETPOS=${countNumberOfWeeks()}`;
+                } else if (
+                  selectWeekMonth
+                  === `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`
+                ) {
+                  rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
+                }
+                if (selectWeekMonth !== 'Does not repeat') {
+                  data[0].untilDate = Number(
+                    parseFloat(
+                      new Date(eventUntilDateTime).getTime() / 1000,
+                    ).toFixed(0),
+                  );
+                  data[0].rrule = `FREQ=${rule}`;
+                }
+                console.log('Response :-', data);
+                createEvent(entityRole, uid, data, authContext)
+                  .then(() => getEvents(entityRole, uid, authContext))
+                  .then((response) => {
+                    setloading(false);
+                    navigation.goBack();
+                    console.log('Response :-', response);
+                  })
+                  .catch((e) => {
+                    setloading(false);
+                    console.log('Error ::--', e);
+                    Alert.alert('', e.messages);
+                  });
               }
-              if (selectWeekMonth !== 'Does not repeat') {
-                data[0].untilDate = Number(parseFloat(new Date(eventUntilDateTime).getTime() / 1000).toFixed(0));
-                data[0].rrule = `FREQ=${rule}`;
-              }
-              console.log('Response :-', data);
-              createEvent(entityRole, uid, data, authContext)
-                .then(() => getEvents(entityRole, uid, authContext))
-                .then((response) => {
-                  setloading(false);
-                  navigation.goBack();
-                  console.log('Response :-', response);
-                })
-                .catch((e) => {
-                  setloading(false);
-                  console.log('Error ::--', e);
-                  Alert.alert('', e.messages)
-                });
-            }
-          }}>
+            }}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
       />
-      <View style={ styles.sperateLine } />
+      <View style={styles.sperateLine} />
       <ScrollView bounces={false}>
         <SafeAreaView>
           <EventTextInputItem
@@ -316,82 +461,49 @@ export default function CreateEventScreen({ navigation, route }) {
             multiline={true}
             value={eventDescription}
           />
-          <EventItemRender
-            title={strings.eventColorTitle}
-          >
-            <FlatList
-              data={[...eventColors, '0']}
-              numColumns={5}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ width: wp('1.5%') }} />}
-              renderItem={ ({ item, index }) => {
-                if (index === eventColors.length) {
-                  return (
-                    <EventColorItem
-                      onItemPress={() => {
-                        setAddColorDoneButton(false);
-                        colorToggleModal();
-                        setSelectedEventColors([])
-                      }}
-                      source={images.plus}
-                    />
-                  );
-                }
-                return (
-                  <EventColorItem
-                    source={item.isSelected ? images.check : null}
-                    imageStyle={{ tintColor: colors.whiteColor }}
-                    onItemPress={() => {
-                      eventColors.map(async (createEventItem) => {
-                        const createEventData = createEventItem;
-                        if (createEventData.id === item.id) {
-                          createEventData.isSelected = true;
-                          setSingleSelectEventColor(createEventData.color);
-                        } else {
-                          createEventData.isSelected = false;
-                        }
-                        return null;
-                      })
-                      Utility.setStorage('eventColor', eventColors);
-                      setEventColors([...eventColors])
-                    }}
-                    eventColorViewStyle={{
-                      backgroundColor: item.color,
-                      borderWidth: item.isSelected ? 2 : 0,
-                      borderColor: colors.whiteColor,
-                      marginRight: wp(3),
-                    }}
-                  />
-                );
-              }}
-              keyExtractor={ (item, index) => index.toString() }
-            />
-          </EventItemRender>
 
-          <EventItemRender
-            title={strings.timeTitle}
-          >
+          <EventItemRender title={strings.timeTitle}>
             <View style={styles.toggleViewStyle}>
               <Text style={styles.allDayText}>{strings.allDay}</Text>
-              <TouchableOpacity style={ styles.checkbox } onPress={() => setToggle(!toggle)}>
+              <TouchableOpacity
+                style={styles.checkbox}
+                onPress={() => setToggle(!toggle)}>
                 <Image
-                    source={ toggle ? images.checkWhiteLanguage : images.uncheckWhite}
-                    style={ styles.checkboxImg }
-                  />
+                  source={
+                    toggle ? images.checkWhiteLanguage : images.uncheckWhite
+                  }
+                  style={styles.checkboxImg}
+                />
               </TouchableOpacity>
             </View>
             <EventTimeSelectItem
               title={strings.starts}
               toggle={!toggle}
-              date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : moment(new Date()).format('ll')}
-              time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
+              date={
+                eventStartDateTime
+                  ? moment(eventStartDateTime).format('ll')
+                  : moment(new Date()).format('ll')
+              }
+              time={
+                eventStartDateTime
+                  ? moment(eventStartDateTime).format('h:mm a')
+                  : moment(new Date()).format('h:mm a')
+              }
               onDatePress={() => setStartDateVisible(!startDateVisible)}
             />
             <EventTimeSelectItem
               title={strings.ends}
               toggle={!toggle}
-              date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : moment(new Date()).format('ll')}
-              time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
+              date={
+                eventEndDateTime
+                  ? moment(eventEndDateTime).format('ll')
+                  : moment(new Date()).format('ll')
+              }
+              time={
+                eventEndDateTime
+                  ? moment(eventEndDateTime).format('h:mm a')
+                  : moment(new Date()).format('h:mm a')
+              }
               containerStyle={{ marginBottom: 8 }}
               onDatePress={() => setEndDateVisible(!endDateVisible)}
             />
@@ -401,8 +513,18 @@ export default function CreateEventScreen({ navigation, route }) {
                 { label: 'Does not repeat', value: 'Does not repeat' },
                 { label: 'Daily', value: 'Daily' },
                 { label: 'Weekly', value: 'Weekly' },
-                { label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`, value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}` },
-                { label: `Monthly on ${ordinal_suffix_of(new Date().getDate())} day`, value: `Monthly on ${ordinal_suffix_of(new Date().getDate())} day` },
+                {
+                  label: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                  value: `Monthly on ${countNumberOfWeekFromDay()} ${getTodayDay()}`,
+                },
+                {
+                  label: `Monthly on ${ordinal_suffix_of(
+                    new Date().getDate(),
+                  )} day`,
+                  value: `Monthly on ${ordinal_suffix_of(
+                    new Date().getDate(),
+                  )} day`,
+                },
                 { label: 'Yearly', value: 'Yearly' },
               ]}
               // placeholder={strings.selectTimePlaceholder}
@@ -411,30 +533,38 @@ export default function CreateEventScreen({ navigation, route }) {
                 setSelectWeekMonth(value);
               }}
             />
-            {selectWeekMonth !== 'Does not repeat' && <EventTimeSelectItem
-              title={strings.until}
-              toggle={!toggle}
-              date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : moment(new Date()).format('ll')}
-              time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
-              containerStyle={{ marginBottom: 12 }}
-              onDatePress={() => setUntilDateVisible(!untilDateVisible)}
-            />}
+            {selectWeekMonth !== 'Does not repeat' && (
+              <EventTimeSelectItem
+                title={strings.until}
+                toggle={!toggle}
+                date={
+                  eventUntilDateTime
+                    ? moment(eventUntilDateTime).format('ll')
+                    : moment(new Date()).format('ll')
+                }
+                time={
+                  eventUntilDateTime
+                    ? moment(eventUntilDateTime).format('h:mm a')
+                    : moment(new Date()).format('h:mm a')
+                }
+                containerStyle={{ marginBottom: 12 }}
+                onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+              />
+            )}
           </EventItemRender>
 
-          <EventItemRender
-            title={strings.place}
-          >
+          <EventItemRender title={strings.place}>
             <TCTouchableLabel
-            placeholder={strings.searchHereText}
-            title={searchLocation}
-            showNextArrow={true}
-            onPress={() => {
-              navigation.navigate('SearchLocationScreen', {
-                comeFrom: 'CreateEventScreen',
-              })
-              navigation.setParams({ comeName: null });
-            }}
-            style={{ width: '98%', alignSelf: 'center' }}
+              placeholder={strings.searchHereText}
+              title={searchLocation}
+              showNextArrow={true}
+              onPress={() => {
+                navigation.navigate('SearchLocationScreen', {
+                  comeFrom: 'CreateEventScreen',
+                });
+                navigation.setParams({ comeName: null });
+              }}
+              style={{ width: '98%', alignSelf: 'center' }}
             />
             <EventMapView
               region={{
@@ -452,9 +582,10 @@ export default function CreateEventScreen({ navigation, route }) {
 
           <EventItemRender
             title={strings.availableTitle}
-            containerStyle={{ marginTop: 10 }}
-          >
-            <Text style={styles.availableSubHeader}>{strings.availableSubTitle}</Text>
+            containerStyle={{ marginTop: 10 }}>
+            <Text style={styles.availableSubHeader}>
+              {strings.availableSubTitle}
+            </Text>
             <BlockAvailableTabView
               blocked={is_Blocked}
               firstTabTitle={'Block'}
@@ -463,7 +594,16 @@ export default function CreateEventScreen({ navigation, route }) {
               onSecondTabPress={() => setIsBlocked(false)}
             />
           </EventItemRender>
-
+          <EventItemRender title={strings.eventColorTitle}>
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={eventColors}
+              ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
+              renderItem={renderColorItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </EventItemRender>
           <DateTimePickerView
             date={eventStartDateTime}
             visible={startDateVisible}
@@ -473,25 +613,28 @@ export default function CreateEventScreen({ navigation, route }) {
             minimumDate={getNearDateTime(new Date())}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
-
           />
           <DateTimePickerView
-          date={eventEndDateTime}
+            date={eventEndDateTime}
             visible={endDateVisible}
             onDone={handleEndDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={moment(getNearDateTime(new Date(eventStartDateTime))).add(5, 'm').toDate()}
+            minimumDate={moment(getNearDateTime(new Date(eventStartDateTime)))
+              .add(5, 'm')
+              .toDate()}
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
           <DateTimePickerView
-           date={eventUntilDateTime}
+            date={eventUntilDateTime}
             visible={untilDateVisible}
             onDone={handleUntilDatePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            minimumDate={eventEndDateTime || moment(eventEndDateTime).add(5, 'm').toDate()}
+            minimumDate={
+              eventEndDateTime || moment(eventEndDateTime).add(5, 'm').toDate()
+            }
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}
           />
@@ -499,59 +642,27 @@ export default function CreateEventScreen({ navigation, route }) {
             isModalVisible={isColorPickerModal}
             onBackdropPress={() => setIsColorPickerModal(false)}
             cancelImageSource={images.cancelImage}
-            containerStyle={{ height: hp('75%') }}
+            containerStyle={{ height: hp('55%') }}
             onCancelImagePress={() => setIsColorPickerModal(false)}
             headerCenterText={'Add color'}
             onColorSelected={(selectColor) => {
-              setAddColorDoneButton(true);
-              const data = [...selectedEventColors];
-              const obj = {
-                id: eventColors.length + data.length,
-                color: selectColor,
-                isSelected: false,
-              };
-              if (selectedEventColors.length === 0) {
-                setcounter(counter + 1);
-                data.push(obj);
-                setSelectedEventColors(data);
-              } else {
-                const filterColor = selectedEventColors.filter((select_color_item) => selectColor === select_color_item.color);
-                if (filterColor.length === 0) {
-                  setcounter(counter + 1);
-                  data.push(obj);
-                  setSelectedEventColors(data);
-                }
-              }
+              setAddColorDoneButton(true)
+              setSelectedEventColors(selectColor)
             }}
             doneButtonDisplay={addColorDoneButton}
             onDonePress={() => {
-              const createdEventAddData = [...eventColors, ...selectedEventColors];
-              Utility.setStorage('eventColor', createdEventAddData);
-              setEventColors(createdEventAddData);
+              eventColors[5] = {
+                id: 5,
+                color: selectedEventColors,
+                isSelected: false,
+                isNew: true,
+              };
+              setEventColors([...eventColors]);
+              Utility.setStorage('eventColor', ...eventColors);
+              setEventColors([...eventColors]);
               setIsColorPickerModal(false);
             }}
-            flatListData={[...selectedEventColors, '0']}
-            renderItem={({ item, index }) => {
-              if (index === selectedEventColors.length) {
-                return (
-                  <EventColorItem
-                    source={images.plus}
-                  />
-                );
-              }
-              return (
-                <EventColorItem
-                source={item.isSelected ? images.check : null}
-                imageStyle={{ tintColor: colors.whiteColor }}
-                eventColorViewStyle={{
-                  backgroundColor: item.color,
-                  borderWidth: item.isSelected ? 2 : 0,
-                  borderColor: colors.whiteColor,
-                  marginRight: wp(3),
-                }}
-                />
-              );
-            }}
+
           />
         </SafeAreaView>
       </ScrollView>

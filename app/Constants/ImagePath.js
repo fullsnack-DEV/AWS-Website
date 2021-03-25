@@ -289,6 +289,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   loginBg: require('../assets/images/loginBg.png'),
   emailSendIconBG: require('../assets/images/emailSendIconBG.png'),
   feedPlusIcon: require('../assets/images/feedPlusIcon.png'),
+  resetColor: require('../assets/images/reset_color.png'),
+
 };
 
 export default images;
