@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import _ from 'lodash';
 import strings from '../Constants/String'
 import images from '../Constants/ImagePath';
+import colors from '../Constants/Colors';
 
 export const deviceHeight = Dimensions.get('window').height;
 export const deviceWidth = Dimensions.get('window').width;
@@ -177,6 +178,94 @@ const backgroundColors = [
   '#f9b647',
 ]
 
+export const eventDefaultColor = [
+'#FF3B00',
+'#FF7F00',
+'#FFAE01',
+'#00C168',
+'#0093FF']
+
+export const createdEventData = [
+  {
+    id: 0,
+    color: colors.redColorCard,
+    isSelected: true,
+  },
+  {
+    id: 1,
+    color: colors.orangeColorCard,
+    isSelected: false,
+  },
+  {
+    id: 2,
+    color: colors.yellowColorCard,
+    isSelected: false,
+  },
+  {
+    id: 3,
+    color: colors.greenColorCard,
+    isSelected: false,
+  },
+  {
+    id: 4,
+    color: colors.blueColorCard,
+    isSelected: false,
+  },
+];
+export const importedEventData = [
+  {
+    id: 0,
+    color: colors.redColorCard,
+    isSelected: true,
+  },
+  {
+    id: 1,
+    color: colors.orangeColorCard,
+    isSelected: false,
+  },
+  {
+    id: 2,
+    color: colors.yellowColorCard,
+    isSelected: false,
+  },
+  {
+    id: 3,
+    color: colors.greenColorCard,
+    isSelected: false,
+  },
+  {
+    id: 4,
+    color: colors.blueColorCard,
+    isSelected: false,
+  },
+];
+export const gamesEventData = [
+  {
+    id: 0,
+    color: colors.redColorCard,
+    isSelected: true,
+  },
+  {
+    id: 1,
+    color: colors.orangeColorCard,
+    isSelected: false,
+  },
+  {
+    id: 2,
+    color: colors.yellowColorCard,
+    isSelected: false,
+  },
+  {
+    id: 3,
+    color: colors.greenColorCard,
+    isSelected: false,
+  },
+  {
+    id: 4,
+    color: colors.blueColorCard,
+    isSelected: false,
+  },
+];
 // eslint-disable-next-line no-bitwise
 export const getRandomColor = () => backgroundColors[backgroundColors.length * Math.random() | 0]
 

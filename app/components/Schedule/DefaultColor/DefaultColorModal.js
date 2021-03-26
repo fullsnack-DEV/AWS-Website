@@ -3,7 +3,6 @@ import {
   StyleSheet, View, Text, TouchableOpacity, Image,
 } from 'react-native';
 import { ColorPicker } from 'react-native-color-picker';
-import { FlatList } from 'react-native-gesture-handler';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -20,8 +19,6 @@ function DefaultColorModal({
   onCancelImagePress,
   headerCenterText,
   onColorSelected,
-  flatListData,
-  renderItem,
   onDonePress,
   containerStyle,
   doneButtonDisplay,
@@ -53,21 +50,11 @@ function DefaultColorModal({
             }
           />
         <View style={styles.sepratorStyle} />
-        <View style={{ flex: 1 }}>
-          <ColorPicker
+        <ColorPicker
               onColorSelected={onColorSelected}
             //   defaultColor={colors.lightgrayColor}
               style={styles.colorPickerStyle}
             />
-          <FlatList
-              data={flatListData}
-              numColumns={5}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ width: wp('1.5%') }} />}
-              renderItem={renderItem}
-              keyExtractor={ (item, index) => index.toString() }
-            />
-        </View>
       </View>
     </Modal>
   );
@@ -75,7 +62,7 @@ function DefaultColorModal({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    height: hp('70%'),
+    height: hp('55%'),
     shadowOpacity: 0.15,
     shadowOffset: {
       height: -10,

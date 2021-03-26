@@ -95,7 +95,8 @@ export default class EventCalendar extends React.Component {
           getItem={this.getItem.bind(this)}
           keyExtractor={(item, index) => index}
           getItemLayout={this.getItemLayout.bind(this)}
-            horizontal
+           horizontal
+          showsVerticalScrollIndicator={false}
           pagingEnabled
           renderItem={this.renderItem.bind(this)}
           style={{ width }}

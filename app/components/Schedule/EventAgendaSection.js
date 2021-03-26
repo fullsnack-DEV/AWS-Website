@@ -1,63 +1,144 @@
-import React from 'react';
-import { StyleSheet, Image } from 'react-native';
-import { Agenda, LocaleConfig, calendarTheme } from 'react-native-calendars';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-LocaleConfig.locales[LocaleConfig.defaultLocale].dayNamesShort = [
-  'Su',
-  'Mo',
-  'Tu',
-  'We',
-  'Th',
-  'Fr',
-  'Sa',
-];
-export default function EventAgendaSection({ items, onDayPress, renderItem }) {
-  return (
-    <Agenda
-      items={items}
-      minDate={new Date()}
-      theme={{
-        ...calendarTheme,
-        agendaKnobColor: colors.lightgrayColor,
-        selectedDayBackgroundColor: colors.orangeColor,
-        todayTextColor: colors.orangeColor,
-        textSectionTitleColor: colors.googleColor,
-        textDayHeaderFontFamily: fonts.RBold,
-        textDayHeaderFontSize: 12,
-      }}
-      refreshing={false}
-      rowHasChanged={(r1, r2) => r1.text !== r2.text}
-      renderKnob={() => (
-        <Image
-          source={images.dropDownArrow2}
-          style={styles.imageStyle}
-          resizeMode={'contain'}
-        />
-      )}
-      renderDay={() => {}}
-      // horizontal={true}
-      scrollEnabled
-      onDayPress={onDayPress}
-      disabledByDefault={false}
-      hideKnob={false}
-      renderItem={renderItem}
-      refreshControl={null}
-      onCalendarToggled={() => {}}
-    />
-  );
-}
+ import React from 'react';
+ import {
+   SafeAreaView,
+   StyleSheet,
+   StatusBar,
+ } from 'react-native';
+ import { Calendar } from 'react-native-toggle-calendar';
+ import moment from 'moment';
+import CalendarDayComponent from './CalendarDayComponent';
+import CalendarHeaderComponent from './CalendarHeaderComponent';
 
-const styles = StyleSheet.create({
-  imageStyle: {
-    height: 20,
-    width: 20,
-  },
-  // SeapratorStyle: {
-  //   width: wp('100%'),
-  //   height: 1,
-  //   backgroundColor: colors.lightgrayColor,
-  // },
-});
+ const selectedCalendarDate = moment();
+ const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
+ const currentDate = moment();
+
+ class EventAgendaSection extends React.Component {
+   constructor(props) {
+     super(props);
+     this.state = {
+       selectedCalendarDateString: this.props.selectedCalendarDate,
+       selectedCalendarMonthString: selectedCalendarDate.format('YYYY-MM-DD'),
+       calendarHeaderData: {},
+       calendarMarkedDates: {
+         '2021-03-28': {
+           fullySoldOut: false,
+           partiallySoldOut: false,
+           fullyBlocked: false,
+           partiallyBlocked: true,
+           inventory: 14,
+           highDemand: false,
+           selected: false,
+         },
+         '2021-03-29': {
+           fullySoldOut: false,
+           partiallySoldOut: false,
+           fullyBlocked: false,
+           partiallyBlocked: true,
+           inventory: 14,
+           highDemand: true,
+           selected: false,
+         },
+         '2021-03-30': {
+           fullySoldOut: false,
+           partiallySoldOut: false,
+           fullyBlocked: false,
+           partiallyBlocked: true,
+           inventory: 14,
+           highDemand: false,
+           selected: false,
+         },
+       },
+
+       ratesInventoryDataArray: [],
+       saveButtonClicked: false,
+       calendarLoading: true,
+     };
+
+     this.onPressArrowLeft = this.onPressArrowLeft.bind(this);
+     this.onPressArrowRight = this.onPressArrowRight.bind(this);
+    //  this.onPressListView = () => this.props.onPressListView.bind(this);
+    //  this.onPressGridView = this.props.onPressGridView.bind(this);
+   }
+
+   updateSelectedCalendarMonth(selectedCalendarMonthString) {
+     this.setState({
+       selectedCalendarMonthString,
+       calendarLoading: true,
+     });
+   }
+
+   onPressArrowLeft(currentMonth, addMonthCallback) {
+     const monthStartDate = moment(currentMonth.getTime()).startOf('month');
+
+     // don't go back for past months
+     if (monthStartDate > currentDate) {
+       addMonthCallback(-1);
+       const selectedCalendarMonthString = moment(currentMonth.getTime())
+         .add(-1, 'month')
+         .format('YYYY-MM-DD');
+       this.updateSelectedCalendarMonth(selectedCalendarMonthString);
+     }
+   }
+
+   onPressArrowRight(currentMonth, addMonthCallback) {
+     addMonthCallback(1);
+     const selectedCalendarMonthString = moment(currentMonth.getTime())
+       .add(1, 'month')
+       .format('YYYY-MM-DD');
+     this.updateSelectedCalendarMonth(selectedCalendarMonthString);
+   }
+
+  //  onPressListView() {
+  //    this.setState({ horizontal: true });
+  //  }
+
+  //  onPressGridView() {
+  //    this.setState({ horizontal: false });
+  //  }
+
+   render() {
+     return (
+       <>
+         <StatusBar barStyle="dark-content" />
+         <SafeAreaView>
+           <Calendar
+             current={this.state.selectedCalendarMonthString}
+             minDate={minimumDate.format('YYYY-MM-DD')}
+             dayComponent={CalendarDayComponent}
+             calendarHeaderComponent={CalendarHeaderComponent}
+             headerData={this.state.calendarHeaderData}
+             style={styles.calendar}
+             onPressArrowLeft={this.onPressArrowLeft}
+             onPressArrowRight={this.onPressArrowRight}
+             onPressListView={this.props.onPressListView}
+             onPressGridView={this.props.onPressGridView}
+             markedDates={this.props.calendarMarkedDates}
+             horizontal={this.props.horizontal}
+             onDayPress={this.props.onDayPress}
+              showPastDatesInHorizontal={1}
+              horizontalEndReachedThreshold={100}
+              horizontalStartReachedThreshold={0}
+
+             // loading={this.state.calendarLoading}
+           />
+
+         </SafeAreaView>
+       </>
+     );
+   }
+ }
+
+ const styles = StyleSheet.create({
+
+ });
+
+ export default EventAgendaSection;

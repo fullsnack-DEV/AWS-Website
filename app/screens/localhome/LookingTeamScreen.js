@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   searchViewContainer: {
     height: 40,
-    width: widthPercentageToDP('86%'),
+    width: widthPercentageToDP('85%'),
     borderRadius: 20,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 2 },

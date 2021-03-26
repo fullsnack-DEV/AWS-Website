@@ -14,7 +14,7 @@ function Header({
   centerContainerStyle,
   rightComponent,
   rightContainerStyle,
-  mainContainerStyle,
+  // mainContainerStyle,
   statusbarColor,
   translucent,
   barStyle,
@@ -24,7 +24,7 @@ function Header({
   return (
     <SafeAreaView style={safeAreaStyle}>
       <StatusBar backgroundColor={statusbarColor || colors.offwhite} barStyle={barStyle || 'dark-content'} translucent={translucent} />
-      <View style={{ ...style.mainContainerStyle, ...mainContainerStyle, backgroundColor: showBackgroundColor ? colors.offwhite : 'transparent' }}>
+      <View style={ [style.mainContainerStyle, { backgroundColor: showBackgroundColor ? colors.offwhite : 'transparent' }]}>
         <View style={[style.leftContainerStyle, leftContainerStyle]}>{leftComponent}</View>
         <View style={[style.centerContainerStyle, centerContainerStyle]}>{centerComponent}</View>
         <View style={[style.rightContainerStyle, rightContainerStyle]}>{rightComponent}</View>
@@ -41,6 +41,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     height: 45,
+
   },
   leftContainerStyle: {
     width: wp('15%'),

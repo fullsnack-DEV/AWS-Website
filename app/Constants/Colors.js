@@ -97,5 +97,12 @@ const colors = {
   blackOpacityColor: 'rgba(0,0,0,0.5)',
   navyBlue: '#3E6FB0',
   darkThemeColor: '#FF3B00',
+
+  redColorCard: '#FF3B00',
+  orangeColorCard: '#FF7F00',
+  yellowColorCard: '#FFAE01',
+  greenColorCard: '#00C168',
+  blueColorCard: '#0093FF',
+
 };
 export default colors;
