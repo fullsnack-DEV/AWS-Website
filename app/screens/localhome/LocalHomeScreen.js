@@ -387,6 +387,7 @@ export default function LocalHomeScreen({ navigation }) {
     <View style={{ flex: 1 }}>
       {renderTopHeader}
       <ActivityLoader visible={loading} />
+      <TCThinDivider width={'100%'} />
       <View style={styles.sportsListView}>
         <FlatList
           ref={refContainer}
@@ -395,7 +396,7 @@ export default function LocalHomeScreen({ navigation }) {
           data={sports}
           keyExtractor={keyExtractor}
           renderItem={sportsListView}
-          initialScrollIndex={sports.indexOf(selectedSport)}
+           initialScrollIndex={sports.indexOf(selectedSport)}
           // initialNumToRender={30}
           onScrollToIndexFailed={(info) => {
             const wait = new Promise((resolve) => setTimeout(resolve, 500));
@@ -413,8 +414,6 @@ export default function LocalHomeScreen({ navigation }) {
           }}
         />
       </View>
-
-      <TCThinDivider width={'100%'} />
 
       <ScrollView>
         <View>
@@ -440,6 +439,7 @@ export default function LocalHomeScreen({ navigation }) {
               marginBottom: 0,
             }}
           />
+          <TCThinDivider width={'100%'} marginTop={10} />
           <TCTitleWithArrow
             title={strings.recentMatchesTitle}
             showArrow={true}
@@ -960,10 +960,10 @@ const styles = StyleSheet.create({
     shadowColor: colors.blackColor,
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 5,
     },
-    shadowRadius: 4,
-    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
     marginBottom: 5,
     elevation: 5,
   },

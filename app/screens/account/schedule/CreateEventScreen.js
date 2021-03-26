@@ -55,9 +55,7 @@ export default function CreateEventScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [singleSelectEventColor, setSingleSelectEventColor] = useState(
-    colors.orangeColor,
-  );
+  const [singleSelectEventColor, setSingleSelectEventColor] = useState();
   const [toggle, setToggle] = useState(true);
   const [eventStartDateTime, setEventStartdateTime] = useState(
     getNearDateTime(new Date()),
@@ -74,15 +72,7 @@ export default function CreateEventScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
   const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
-  const [eventColors, setEventColors] = useState([
-    ...Utility.importedEventData,
-    {
-      id: 5,
-      color: '0',
-      isSelected: false,
-      isNew: true,
-    },
-  ]);
+  const [eventColors, setEventColors] = useState();
   const [selectedEventColors, setSelectedEventColors] = useState([]);
   const [isColorPickerModal, setIsColorPickerModal] = useState(false);
   const [startDateVisible, setStartDateVisible] = useState(false);
@@ -91,17 +81,28 @@ export default function CreateEventScreen({ navigation, route }) {
   const [selectWeekMonth, setSelectWeekMonth] = useState('Does not repeat');
 
   useEffect(() => {
-    console.log('WEEK::', countNumberOfWeekFromDay());
     const unsubscribe = navigation.addListener('focus', async () => {
-      const eventColorData = await Utility.getStorage('eventColor');
+    const eventColorData = await Utility.getStorage('eventColors');
 
-      console.log('eventColorData:=', eventColorData);
+      if (eventColorData) {
+        setEventColors(eventColorData);
+      } else {
+        setEventColors([
+          ...Utility.createdEventData,
+          {
+            id: 5,
+            color: '0',
+            isSelected: false,
+            isNew: true,
+          },
+        ]);
+      }
       // setEventColors(eventColorData);
     });
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [navigation]);
   const countNumberOfWeekFromDay = () => {
     const date = new Date();
     const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -254,7 +255,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 }
                 return null;
               });
-              Utility.setStorage('eventColor', eventColors);
+
               setEventColors([...eventColors]);
             }
           }}
@@ -284,7 +285,7 @@ export default function CreateEventScreen({ navigation, route }) {
             }
             return null;
           });
-          Utility.setStorage('eventColor', eventColors);
+
           setEventColors([...eventColors]);
         }}
         eventColorViewStyle={{
@@ -658,7 +659,6 @@ export default function CreateEventScreen({ navigation, route }) {
                 isNew: true,
               };
               setEventColors([...eventColors]);
-              Utility.setStorage('eventColor', ...eventColors);
               setEventColors([...eventColors]);
               setIsColorPickerModal(false);
             }}
