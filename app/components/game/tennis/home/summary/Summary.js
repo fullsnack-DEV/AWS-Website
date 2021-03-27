@@ -49,6 +49,7 @@ const Summary = ({
     getSportsList(authContext).then((sports) => {
       const sportData = sports?.payload?.length && sports?.payload?.filter((item) => item.sport_name?.toLowerCase() === gameData?.sport?.toLowerCase())[0]
       const teamReviewProp = sportData?.team_review_properties ?? []
+      console.log('Sports Dat:=>', sportData);
       const sliderReviewProp = [];
       const starReviewProp = [];
       if (teamReviewProp?.length) {
@@ -61,7 +62,7 @@ const Summary = ({
         setStarAttributes([...starReviewProp]);
       }
     }).finally(() => setLoading(false));
-  }, [])
+  }, [authContext, gameData?.sport, getSportsList])
 
   const renderRecordButton = useMemo(() => (
     <TCGradientButton
@@ -85,7 +86,7 @@ const Summary = ({
           <View>
             <TCGradientButton
                     onPress={() => {
-                      navigation.navigate('LeaveReview',
+                      navigation.navigate('LeaveReviewTennis',
                           {
                             gameData,
                             sliderAttributes,

@@ -113,6 +113,8 @@ import EditLineUpScreen from '../screens/game/soccer/lineUp/EditLineUpScreen';
 import EditLineUpCoachScreen from '../screens/game/soccer/lineUp/EditRosterCoacheScreen';
 import EditChallengeAvailability from '../screens/account/schedule/EditChallengeAvailability';
 import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
+
 import TennisRecordList from '../screens/game/tennis/TennisRecordList';
 import EditRosterScreen from '../screens/game/soccer/EditRosterScreen';
 import EditFeeScreen from '../screens/challenge/alterChallenge/EditFeeScreen';
@@ -275,6 +277,14 @@ const ScheduleNavigator = () => (
             headerShown: false,
           }}
       />
+    <Stack.Screen
+          name="LeaveReviewTennis"
+          component={ LeaveReviewTennis }
+          options={ {
+            headerShown: false,
+          }}
+      />
+
     <Stack.Screen
       name="SoccerRecording"
       component={SoccerRecording}

@@ -470,17 +470,17 @@ const AppNavigator = ({ navigation }) => {
 const styles = StyleSheet.create({
   selectedTabImg: {
     alignSelf: 'center',
-    height: 38,
+    height: 34,
     resizeMode: 'cover',
-    width: 38,
+    width: 34,
     // borderRadius: 80,
   },
 
   tabImg: {
     alignSelf: 'center',
-    height: 38,
+    height: 34,
     resizeMode: 'cover',
-    width: 38,
+    width: 34,
     // borderRadius: 80,
   },
   profileTabImg: {

@@ -480,7 +480,16 @@ const [markingDays, setMarkingDays] = useState({})
   }, [currentTab, isFocused]);
 
   const renderGroupItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => activeTab(index)} key={index}>
+    <TouchableOpacity onPress={() => {
+      if (groupList.length === 2) {
+        if (index !== 2) {
+          activeTab(index)
+        }
+      } else {
+        activeTab(index)
+      }
+    }}
+      key={index}>
       <NotificationProfileItem
         data={item}
         indexNumber={index}
@@ -499,6 +508,7 @@ const [markingDays, setMarkingDays] = useState({})
             elevation: 3,
           }}></View>
       )}
+
     </TouchableOpacity>
   );
 
@@ -697,11 +707,12 @@ const drawMarkDay = (eData) => {
           <NotificationListTopHeaderShimmer />
         ) : (
           groupList?.length > 1 && (
+
             <FlatList
               ref={refContainer}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              data={groupList}
+              data={groupList.length === 2 ? [...groupList, {}] : groupList}
               renderItem={renderGroupItem}
               keyExtractor={keyExtractor}
               initialScrollIndex={currentTab}
@@ -720,6 +731,7 @@ const drawMarkDay = (eData) => {
                 });
               }}
             />
+
           )
         )}
       </View>

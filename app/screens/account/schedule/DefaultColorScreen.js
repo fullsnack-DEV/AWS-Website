@@ -43,10 +43,6 @@ const getStorageColors = async () => {
   const eventColorData = await Utility.getStorage('eventColors');
   const importedColorData = await Utility.getStorage('importedEventColor');
   const gamesColorData = await Utility.getStorage('gameEventColor');
-
-  console.log('eventColorData:=>', eventColorData);
-  console.log('importedColorData:=>', importedColorData);
-  console.log('gamesColorData:=>', gamesColorData);
   if (eventColorData) {
     setCreatedEventColors(eventColorData);
   } else {
@@ -96,49 +92,56 @@ const getStorageColors = async () => {
     setModalVisible(!isModalVisible);
   };
 
-  const onChangeColorPressed = () => {
+  const onChangeColorPressed = (type) => {
     setAddColorDoneButton(false);
     toggleModal();
-    // if (pressAddEventColor === 'Created Events') {
-    //   setSelectedEventColors();
-    // }
-    // if (pressAddEventColor === 'Imported Events') {
-    //   setSelectedImportedColors();
-    // }
-    // if (pressAddEventColor === 'Game Events') {
-    //   setSelectedMatchColors();
-    // }
+    if (type === 'Created Events') {
+      setPressAddEventColor('Created Events');
+    }
+    if (type === 'Imported Events') {
+      setPressAddEventColor('Imported Events');
+    }
+    if (type === 'Game Events') {
+      setPressAddEventColor('Game Events');
+    }
+    if (pressAddEventColor === 'Created Events') {
+      setSelectedEventColors();
+    }
+    if (pressAddEventColor === 'Imported Events') {
+      setSelectedImportedColors();
+    }
+    if (pressAddEventColor === 'Game Events') {
+      setSelectedMatchColors();
+    }
   };
   const renderCreatedEventsColorItem = ({ item }) => {
     if (item.isNew) {
       return (
         <EventColorItem
           isNew={item.color !== '0'}
-          onChangeColorPressed={onChangeColorPressed}
+          onChangeColorPressed={() => onChangeColorPressed('Created Events')}
           imageStyle={{
             tintColor:
               item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
           }}
           onItemPress={() => {
+            setPressAddEventColor('Created Events');
             if (item.color === '0') {
               setAddColorDoneButton(false);
               toggleModal();
               setSelectedEventColors();
-              setPressAddEventColor('Created Events');
             } else {
-              createdEventColors.map(async (createEventItem) => {
+              createdEventColors.map((createEventItem) => {
                 const createEventData = createEventItem;
                 if (createEventData.id === item.id) {
                   createEventData.isSelected = true;
-
-                  setPressAddEventColor('Created Events');
                   setSelectedEventColors(createEventData.color);
                 } else {
                   createEventData.isSelected = false;
                 }
                 return null;
               });
-              Utility.setStorage('eventColors', ...createdEventColors);
+
               setCreatedEventColors([...createdEventColors]);
             }
           }}
@@ -174,7 +177,7 @@ const getStorageColors = async () => {
             }
             return null;
           });
-          Utility.setStorage('eventColors', ...createdEventColors);
+
           setCreatedEventColors([...createdEventColors]);
         }}
         eventColorViewStyle={{
@@ -192,31 +195,29 @@ const getStorageColors = async () => {
       return (
         <EventColorItem
           isNew={item.color !== '0'}
-          onChangeColorPressed={onChangeColorPressed}
+          onChangeColorPressed={() => onChangeColorPressed('Imported Events')}
           imageStyle={{
             tintColor:
               item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
           }}
           onItemPress={() => {
+            setPressAddEventColor('Imported Events');
             if (item.color === '0') {
               setAddColorDoneButton(false);
               toggleModal();
               setSelectedImportedColors();
-              setPressAddEventColor('Imported Events');
             } else {
               importedEventColors.map(async (importedEventItem) => {
                 const importedEventData = importedEventItem;
                 if (importedEventData.id === item.id) {
                   importedEventData.isSelected = true;
-
-                  setPressAddEventColor('Imported Events');
                   setSelectedImportedColors(importedEventData.color);
                 } else {
                   importedEventData.isSelected = false;
                 }
                 return null;
               });
-              Utility.setStorage('importedEventColor', ...importedEventColors);
+
               setImportedEventColors([...importedEventColors]);
             }
           }}
@@ -252,7 +253,7 @@ const getStorageColors = async () => {
             }
             return null;
           });
-          Utility.setStorage('importedEventColor', ...importedEventColors);
+
           setImportedEventColors([...importedEventColors]);
         }}
         eventColorViewStyle={{
@@ -270,31 +271,30 @@ const getStorageColors = async () => {
       return (
         <EventColorItem
           isNew={item.color !== '0'}
-          onChangeColorPressed={onChangeColorPressed}
+          onChangeColorPressed={() => onChangeColorPressed('Game Events')}
           imageStyle={{
             tintColor:
               item.color !== '0' ? colors.whiteColor : colors.lightBlackColor,
           }}
           onItemPress={() => {
+            setPressAddEventColor('Game Events');
             if (item.color === '0') {
               setAddColorDoneButton(false);
               toggleModal();
               setSelectedMatchColors();
-              setPressAddEventColor('Game Events');
             } else {
               gamesEventColors.map(async (gamesEventItem) => {
                 const gamesEventData = gamesEventItem;
                 if (gamesEventData.id === item.id) {
                   gamesEventData.isSelected = true;
 
-                  setPressAddEventColor('Game Events');
                   setSelectedMatchColors(gamesEventData.color);
                 } else {
                   gamesEventData.isSelected = false;
                 }
                 return null;
               });
-              Utility.setStorage('gameEventColor', ...gamesEventColors);
+
               setGamesEventColor([...gamesEventColors]);
             }
           }}
@@ -331,7 +331,6 @@ const getStorageColors = async () => {
             return null;
           });
           setGamesEventColor([...gamesEventColors]);
-          Utility.setStorage('gameEventColor', ...gamesEventColors);
         }}
         eventColorViewStyle={{
           backgroundColor: item.color,
@@ -343,6 +342,12 @@ const getStorageColors = async () => {
     );
   };
 
+  const onDonePress = () => {
+    Utility.setStorage('eventColors', createdEventColors);
+    Utility.setStorage('importedEventColor', importedEventColors);
+    Utility.setStorage('gameEventColor', gamesEventColors);
+    navigation.goBack()
+  }
   return (
     <KeyboardAvoidingView
       style={styles.mainContainerStyle}
@@ -359,7 +364,7 @@ const getStorageColors = async () => {
         rightComponent={
           <TouchableOpacity
             style={{ padding: 2 }}
-            onPress={() => navigation.goBack()}>
+            onPress={onDonePress}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
@@ -404,8 +409,9 @@ const getStorageColors = async () => {
         onCancelImagePress={() => setModalVisible(false)}
         headerCenterText={'Add color'}
         onColorSelected={(selectColor) => {
+          console.log('selected color: => ', selectColor);
           setAddColorDoneButton(true);
-
+          //  setSelectedColor(selectColor);
           if (pressAddEventColor === 'Created Events') {
             setSelectedEventColors(selectColor);
           }
@@ -420,34 +426,36 @@ const getStorageColors = async () => {
         onDonePress={ () => {
           setModalVisible(false);
           if (pressAddEventColor === 'Created Events') {
-            createdEventColors[5] = {
-              id: 5,
-              color: selectedEventColors,
-              isSelected: false,
-              isNew: true,
-            };
-            setCreatedEventColors([...createdEventColors]);
-             Utility.setStorage('eventColors', ...createdEventColors);
+            const temp = [...createdEventColors]
+
+              temp[5] = {
+                id: 5,
+                color: selectedEventColors,
+                isSelected: temp[5].isSelected,
+                isNew: true,
+              };
+
+            setCreatedEventColors(temp);
           }
           if (pressAddEventColor === 'Imported Events') {
-            importedEventColors[5] = {
+            const temp = [...importedEventColors]
+            temp[5] = {
               id: 5,
               color: selectedImportedColors,
-              isSelected: false,
+              isSelected: temp[5].isSelected,
               isNew: true,
             };
-            setImportedEventColors([...importedEventColors]);
-             Utility.setStorage('importedEventColor', ...importedEventColors);
+            setImportedEventColors(temp);
           }
           if (pressAddEventColor === 'Game Events') {
-            gamesEventColors[5] = {
+            const temp = [...gamesEventColors]
+            temp[5] = {
               id: 5,
               color: selectedmatchColors,
-              isSelected: false,
+              isSelected: temp[5].isSelected,
               isNew: true,
             };
-            setGamesEventColor([...gamesEventColors]);
-             Utility.setStorage('gameEventColor', ...gamesEventColors);
+            setGamesEventColor(temp);
           }
         }}
       />

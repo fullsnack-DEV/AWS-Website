@@ -607,7 +607,15 @@ function NotificationsListScreen({ navigation }) {
   };
 
   const renderGroupItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => activeTab(index)} key={index}>
+    <TouchableOpacity onPress={() => {
+      if (groupList.length === 2) {
+        if (index !== 2) {
+          activeTab(index)
+        }
+      } else {
+        activeTab(index)
+      }
+    }} key={index}>
       <NotificationProfileItem
         data={item}
         indexNumber={index}
@@ -649,7 +657,7 @@ function NotificationsListScreen({ navigation }) {
             ref={refContainer}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={groupList}
+            data={groupList.length === 2 ? [...groupList, {}] : groupList}
             renderItem={renderGroupItem}
             keyExtractor={keyExtractor}
             initialScrollIndex={currentTab}
