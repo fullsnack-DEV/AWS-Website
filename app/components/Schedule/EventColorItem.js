@@ -1,9 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 
@@ -49,10 +46,10 @@ function EventColorItem({
 const styles = StyleSheet.create({
   eventColorViewStyle: {
     backgroundColor: colors.offwhite,
-    width: wp('12%'),
-    height: hp('3.5%'),
+    width: 30,
+    height: 30,
     marginVertical: 8,
-    borderRadius: 6,
+    borderRadius: 60,
     shadowOpacity: 0.4,
     shadowOffset: {
       height: 1,

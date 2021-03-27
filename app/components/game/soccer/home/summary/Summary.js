@@ -249,7 +249,7 @@ const Summary = ({
   };
   const showLeaveReviewButton = () => lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
 
-  const getRefereeReviewsData = (item) => {
+  const getRefereeReviewsData = useCallback((item) => {
     setLoading(true);
     getGameReview(gameData?.game_id, item?.review_id, authContext)
       .then((response) => {
@@ -267,8 +267,8 @@ const Summary = ({
         setLoading(false);
         setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
       });
-  };
-  const getScorekeeperReviewsData = (item) => {
+  }, [authContext, gameData, navigation, sliderAttributesForReferee, starAttributesForReferee]);
+  const getScorekeeperReviewsData = useCallback((item) => {
     setLoading(true);
     getGameReview(gameData?.game_id, item?.review_id, authContext)
       .then((response) => {
@@ -286,9 +286,9 @@ const Summary = ({
         setLoading(false);
         setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
       });
-  };
+  }, [authContext, gameData, navigation, sliderAttributesForScorekeeper, starAttributesForScorekeeper]);
 
-  const getGameReviewsData = (reviewID) => {
+  const getGameReviewsData = useCallback((reviewID) => {
     setLoading(true);
     getGameReview(gameData?.game_id, reviewID, authContext)
       .then((response) => {
@@ -306,7 +306,7 @@ const Summary = ({
         setLoading(false);
         setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
       });
-  };
+  }, []);
 
   const reviewOperationsActionSheetOptions = useMemo(() => (gameData?.review_id
           ? [
@@ -439,6 +439,7 @@ const Summary = ({
             followUser={followSoccerUser}
             unFollowUser={unFollowSoccerUser}
             onReviewPress={(referee) => {
+              console.log('Referee Pressed:=>', referee);
                 if (referee?.review_id) {
                     getRefereeReviewsData(referee);
                 }

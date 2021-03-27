@@ -103,6 +103,7 @@ const colors = {
   yellowColorCard: '#FFAE01',
   greenColorCard: '#00C168',
   blueColorCard: '#0093FF',
+  darkBlueColorCard: '#014FFF',
 
 };
 export default colors;

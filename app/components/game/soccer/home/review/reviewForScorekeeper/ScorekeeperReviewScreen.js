@@ -213,7 +213,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       };
       console.log('Edited Review Object::=>', teamReview);
       patchScorekeeperReview(
-        route?.params?.userData?.reservation?.scorekeeper?.user_id,
+        route?.params?.userData?.scorekeeper?.user_id,
         gameData?.game_id,
         reviewID,
         reviewObj,
@@ -232,7 +232,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       console.log('New Review Object::=>', data);
       setLoading(true);
       addScorekeeperReview(
-        route?.params?.userData?.reservation?.scorekeeper?.user_id,
+        route?.params?.userData?.scorekeeper?.user_id,
         gameData?.game_id,
         data,
         authContext,
@@ -313,8 +313,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
               {/* Title */}
               <Text style={styles.titleText}>
                 Please, rate the performance of{' '}
-                {route?.params?.userData?.reservation?.scorekeeper?.first_name}{' '}
-                {route?.params?.userData?.reservation?.scorekeeper?.last_name} and leave a review for the
+                {route?.params?.userData?.scorekeeper?.first_name}{' '}
+                {route?.params?.userData?.scorekeeper?.last_name} and leave a review for the
                 scorekeeper.
               </Text>
 
@@ -324,8 +324,8 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                 <View style={styles.imageContainer}>
                   <FastImage
                     source={
-                      route?.params?.userData?.reservation?.scorekeeper?.thumbnail
-                        ? { uri: route?.params?.userData?.reservation?.scorekeeper?.thumbnail }
+                      route?.params?.userData?.scorekeeper?.thumbnail
+                        ? { uri: route?.params?.userData?.scorekeeper?.thumbnail }
                         : images.teamPlaceholder
                     }
                     resizeMode={'contain'}
@@ -335,13 +335,13 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
 
                 {/*    Team name */}
                 <Text style={styles.teamName}>
-                  {route?.params?.userData?.reservation?.scorekeeper?.first_name}{' '}
-                  {route?.params?.userData?.reservation?.scorekeeper?.last_name}
+                  {route?.params?.userData?.scorekeeper?.first_name}{' '}
+                  {route?.params?.userData?.scorekeeper?.last_name}
                 </Text>
 
                 {/*    Country Name */}
                 <Text style={styles.countryName}>
-                  {route?.params?.userData?.reservation?.scorekeeper?.country}
+                  {route?.params?.userData?.scorekeeper?.country}
                 </Text>
               </View>
 
@@ -450,7 +450,7 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
                         fontSize: 16,
                         color: colors.grayColor,
                       }}>
-                        {`Describe what you thought and felt about ${route?.params?.userData?.reservation?.scorekeeper?.first_name} ${route?.params?.userData?.reservation?.scorekeeper?.last_name} while watching or playing the game.`}
+                        {`Describe what you thought and felt about ${route?.params?.userData?.scorekeeper?.first_name} ${route?.params?.userData?.scorekeeper?.last_name} while watching or playing the game.`}
                       </Text>)}
                   </View>
                 </Pressable>
