@@ -216,7 +216,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
       };
       console.log('Edited Review Object::=>', teamReview);
       patchRefereeReview(
-        route?.params?.userData?.reservation?.referee?.user_id,
+        route?.params?.userData?.referee?.user_id,
         gameData?.game_id,
         reviewID,
         reviewObj,
@@ -235,7 +235,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
       console.log('New Review Object::=>', data);
       setLoading(true);
       addRefereeReview(
-        route?.params?.userData?.reservation?.referee?.user_id,
+        route?.params?.userData?.referee?.user_id,
         gameData?.game_id,
         data,
         authContext,
@@ -317,8 +317,8 @@ export default function RefereeReviewScreen({ navigation, route }) {
               {/* Title */}
               <Text style={styles.titleText}>
                 Please, rate the performance of{' '}
-                {route?.params?.userData?.reservation?.referee?.first_name}{' '}
-                {route?.params?.userData?.reservation?.referee?.last_name} and leave a review for the
+                {route?.params?.userData?.referee?.first_name}{' '}
+                {route?.params?.userData?.referee?.last_name} and leave a review for the
                 referee.
               </Text>
 
@@ -328,8 +328,8 @@ export default function RefereeReviewScreen({ navigation, route }) {
                 <View style={styles.imageContainer}>
                   <FastImage
                     source={
-                      route?.params?.userData?.reservation?.referee?.thumbnail
-                        ? { uri: route?.params?.userData?.reservation?.referee?.thumbnail }
+                      route?.params?.userData?.referee?.thumbnail
+                        ? { uri: route?.params?.userData?.referee?.thumbnail }
                         : images.teamPlaceholder
                     }
                     resizeMode={'contain'}
@@ -339,13 +339,13 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
                 {/*    Team name */}
                 <Text style={styles.teamName}>
-                  {route?.params?.userData?.reservation?.referee?.first_name}{' '}
-                  {route?.params?.userData?.reservation?.referee?.last_name}
+                  {route?.params?.userData?.referee?.first_name}{' '}
+                  {route?.params?.userData?.referee?.last_name}
                 </Text>
 
                 {/*    Country Name */}
                 <Text style={styles.countryName}>
-                  {route?.params?.userData?.reservation?.referee?.country}
+                  {route?.params?.userData?.referee?.country}
                 </Text>
               </View>
 
@@ -454,7 +454,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
                         fontSize: 16,
                         color: colors.grayColor,
                       }}>
-                        {`Describe what you thought and felt about ${route?.params?.userData?.reservation?.referee?.first_name} ${route?.params?.userData?.reservation?.referee?.last_name} while watching or playing the game.`}
+                        {`Describe what you thought and felt about ${route?.params?.userData?.referee?.first_name} ${route?.params?.userData?.referee?.last_name} while watching or playing the game.`}
                       </Text>)}
                   </View>
                 </Pressable>

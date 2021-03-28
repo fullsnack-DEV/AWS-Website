@@ -35,7 +35,7 @@ import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
-import { getRecentGameDetails, getSportsList } from '../../api/Games';
+import { getSportsList, getShortsList } from '../../api/Games'; // getRecentGameDetails
 
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
@@ -67,13 +67,17 @@ export default function LocalHomeScreen({ navigation }) {
   const [selectedLocationOption, setSelectedLocationOption] = useState();
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
+const [location] = useState('india');
+
   const [selectedSport, setSelectedSport] = useState('Soccer');
   const [settingPopup, setSettingPopup] = useState(false);
 
   const [sportsPopup, setSportsPopup] = useState(false);
   const [sportsListPopup, setSportsListPopup] = useState(false);
 
-  const [recentMatch, setRecentMatch] = useState([]);
+// const [shortsList, setShortsList] = useState([]);
+
+  const [recentMatch] = useState([]);
 
   const [upcomingMatch] = useState([]); // { ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }
   const [challengerMatch] = useState([]); // [{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]
@@ -88,12 +92,20 @@ export default function LocalHomeScreen({ navigation }) {
     if (isFocused) {
       setloading(true);
       const promises = [
-        getRecentGameDetails('Soccer', 'ended', 'india', authContext),
+        // getRecentGameDetails('Soccer', 'ended', location, authContext),
         getSportsList(authContext),
+        getShortsList(location, authContext),
+
       ];
       Promise.all(promises)
-        .then(([res1, res2]) => {
+        .then(([res2, res3]) => {
+          // console.log('Recent API Response:=>', res1);
+          console.log('Sport API Response:=>', res2);
+          console.log('Shorts API Response:=>', res3);
           setloading(false);
+          // if (res1.payload) {
+          //   setRecentMatch(res1.payload.results);
+          // }
           if (res2.payload) {
             const arr = [];
             for (const tempData of res2.payload) {
@@ -103,8 +115,8 @@ export default function LocalHomeScreen({ navigation }) {
             setSports(arr);
             setTimeout(() => setloading(false), 1000);
           }
-          if (res1.payload) {
-            setRecentMatch(res1.payload.results);
+          if (res3.payload) {
+            // setShortsList(res3.payload.results);
           }
         })
         .catch((e) => {
@@ -396,8 +408,8 @@ export default function LocalHomeScreen({ navigation }) {
           data={sports}
           keyExtractor={keyExtractor}
           renderItem={sportsListView}
-           initialScrollIndex={sports.indexOf(selectedSport)}
-          // initialNumToRender={30}
+          initialScrollIndex={sports.indexOf(selectedSport)}
+          initialNumToRender={sports.length}
           onScrollToIndexFailed={(info) => {
             const wait = new Promise((resolve) => setTimeout(resolve, 500));
             wait.then(() => {
@@ -448,7 +460,7 @@ export default function LocalHomeScreen({ navigation }) {
             }
           />
           <Carousel
-            data={recentMatch}
+            data={[]}// recentMatch
             scrollEnabled={recentMatch.length > 0}
             renderItem={renderRecentMatchItems}
             inactiveSlideScale={1}

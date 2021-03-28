@@ -10,6 +10,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -39,53 +40,54 @@ export default function DefaultColorScreen({ navigation }) {
   const [pressAddEventColor, setPressAddEventColor] = useState('');
   const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
-const getStorageColors = async () => {
-  const eventColorData = await Utility.getStorage('eventColors');
-  const importedColorData = await Utility.getStorage('importedEventColor');
-  const gamesColorData = await Utility.getStorage('gameEventColor');
-  if (eventColorData) {
-    setCreatedEventColors(eventColorData);
-  } else {
-    setCreatedEventColors([
-      ...Utility.createdEventData,
-      {
-        id: 5,
-        color: '0',
-        isSelected: false,
-        isNew: true,
-      },
-    ]);
-  }
-  if (importedColorData) {
-    setImportedEventColors(importedColorData);
-  } else {
-    setImportedEventColors([
-      ...Utility.importedEventData,
-      {
-        id: 5,
-        color: '0',
-        isSelected: false,
-        isNew: true,
-      },
-    ]);
-  }
-  if (gamesColorData) {
-    setGamesEventColor(gamesColorData);
-  } else {
-    setGamesEventColor([
-      ...Utility.gamesEventData,
-      {
-        id: 5,
-        color: '0',
-        isSelected: false,
-        isNew: true,
-      },
-    ])
-  }
-}
+  const TOTAL_COLOR = 11;
+  const getStorageColors = async () => {
+    const eventColorData = await Utility.getStorage('eventColors');
+    const importedColorData = await Utility.getStorage('importedEventColor');
+    const gamesColorData = await Utility.getStorage('gameEventColor');
+    if (eventColorData) {
+      setCreatedEventColors(eventColorData);
+    } else {
+      setCreatedEventColors([
+        ...Utility.createdEventData,
+        {
+          id: TOTAL_COLOR,
+          color: '0',
+          isSelected: false,
+          isNew: true,
+        },
+      ]);
+    }
+    if (importedColorData) {
+      setImportedEventColors(importedColorData);
+    } else {
+      setImportedEventColors([
+        ...Utility.importedEventData,
+        {
+          id: TOTAL_COLOR,
+          color: '0',
+          isSelected: false,
+          isNew: true,
+        },
+      ]);
+    }
+    if (gamesColorData) {
+      setGamesEventColor(gamesColorData);
+    } else {
+      setGamesEventColor([
+        ...Utility.gamesEventData,
+        {
+          id: TOTAL_COLOR,
+          color: '0',
+          isSelected: false,
+          isNew: true,
+        },
+      ]);
+    }
+  };
 
   useEffect(() => {
-    getStorageColors()
+    getStorageColors();
   }, []);
 
   const toggleModal = () => {
@@ -346,8 +348,8 @@ const getStorageColors = async () => {
     Utility.setStorage('eventColors', createdEventColors);
     Utility.setStorage('importedEventColor', importedEventColors);
     Utility.setStorage('gameEventColor', gamesEventColors);
-    navigation.goBack()
-  }
+    navigation.goBack();
+  };
   return (
     <KeyboardAvoidingView
       style={styles.mainContainerStyle}
@@ -362,9 +364,7 @@ const getStorageColors = async () => {
           <Text style={styles.eventTextStyle}>Default Color Setting</Text>
         }
         rightComponent={
-          <TouchableOpacity
-            style={{ padding: 2 }}
-            onPress={onDonePress}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
             <Text>Done</Text>
           </TouchableOpacity>
         }
@@ -373,17 +373,18 @@ const getStorageColors = async () => {
       <SafeAreaView>
         <EventItemRender title={strings.eventCreatedTitle}>
           <FlatList
-            horizontal
+            numColumns={8}
             showsHorizontalScrollIndicator={false}
             data={createdEventColors}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
             renderItem={renderCreatedEventsColorItem}
             keyExtractor={(item, index) => index.toString()}
+
           />
         </EventItemRender>
         <EventItemRender title={strings.eventImportedTitle}>
           <FlatList
-            horizontal
+            numColumns={8}
             showsHorizontalScrollIndicator={false}
             data={importedEventColors}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
@@ -393,7 +394,7 @@ const getStorageColors = async () => {
         </EventItemRender>
         <EventItemRender title={strings.scheduleMatchTitle}>
           <FlatList
-            horizontal
+            numColumns={8}
             showsHorizontalScrollIndicator={false}
             data={gamesEventColors}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
@@ -423,36 +424,36 @@ const getStorageColors = async () => {
           }
         }}
         doneButtonDisplay={addColorDoneButton}
-        onDonePress={ () => {
+        onDonePress={() => {
           setModalVisible(false);
           if (pressAddEventColor === 'Created Events') {
-            const temp = [...createdEventColors]
+            const temp = [...createdEventColors];
 
-              temp[5] = {
-                id: 5,
-                color: selectedEventColors,
-                isSelected: temp[5].isSelected,
-                isNew: true,
-              };
+            temp[TOTAL_COLOR] = {
+              id: TOTAL_COLOR,
+              color: selectedEventColors,
+              isSelected: temp[TOTAL_COLOR].isSelected,
+              isNew: true,
+            };
 
             setCreatedEventColors(temp);
           }
           if (pressAddEventColor === 'Imported Events') {
-            const temp = [...importedEventColors]
-            temp[5] = {
-              id: 5,
+            const temp = [...importedEventColors];
+            temp[TOTAL_COLOR] = {
+              id: TOTAL_COLOR,
               color: selectedImportedColors,
-              isSelected: temp[5].isSelected,
+              isSelected: temp[TOTAL_COLOR].isSelected,
               isNew: true,
             };
             setImportedEventColors(temp);
           }
           if (pressAddEventColor === 'Game Events') {
-            const temp = [...gamesEventColors]
-            temp[5] = {
-              id: 5,
+            const temp = [...gamesEventColors];
+            temp[TOTAL_COLOR] = {
+              id: TOTAL_COLOR,
               color: selectedmatchColors,
-              isSelected: temp[5].isSelected,
+              isSelected: temp[TOTAL_COLOR].isSelected,
               isNew: true,
             };
             setGamesEventColor(temp);

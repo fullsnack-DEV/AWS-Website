@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import _ from 'lodash';
 import CreateDataContext from './CreateDataContext';
 import uploadImages from '../utils/imageAction';
@@ -47,14 +48,33 @@ const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack)
     setData('cancelRequest', cancelToken)
   }
   setData('totalUploadCount', imageArray?.length ?? 1);
+  console.log('imageArry:=>', imageArray);
   uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-    const attachments = responses.map((item) => ({
-      type: item.type,
-      url: item.fullImage,
-      thumbnail: item.thumbnail,
-      media_height: item.height,
-      media_width: item.width,
-    }))
+    console.log('Upload response:=>', responses);
+    const attachments = [];
+     responses.map((item, index) => {
+      let objAttachment = {}
+      if (item.type === 'video') {
+        objAttachment = {
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+          duration: imageArray[index].duration,
+          is_short: imageArray[index].duration < 30000,
+        }
+      } else {
+        objAttachment = {
+          type: item.type,
+          url: item.fullImage,
+          thumbnail: item.thumbnail,
+          media_height: item.height,
+          media_width: item.width,
+        }
+      }
+      attachments.push(objAttachment)
+    })
     const dParams = dataParams;
     dParams.attachments = [...dataParams?.attachments, ...attachments];
     dispatch({ type: 'removeUploadingData', payload: currentImagesDataUploadID })

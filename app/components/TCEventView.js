@@ -45,7 +45,7 @@ export default function TCEventView({
   }
   let venue = '';
   if (data && data.game && data.game.venue) {
-    venue = data.game.venue.address;
+    venue = data.game.venue.address ?? data.game.venue.description;
   }
   let description = 'Game With';
   if (data && data.descriptions) {

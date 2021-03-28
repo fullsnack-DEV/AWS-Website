@@ -102,12 +102,6 @@ const Referees = ({
   const renderReferees = useCallback(({ item }) => {
     const entity = authContext?.entity;
     const reservationDetail = item; // item?.reservation
-
-    console.log('reservationDetail = item?.reservation Item:=>', item);
-    console.log('reservationDetail = item?.reservation:=>', reservationDetail);
-    console.log('Booked By:=>', reservationDetail.initiated_by);
-    console.log('Login By:=>', entity?.uid);
-
     return (
       <TCUserFollowUnfollowList
               statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
