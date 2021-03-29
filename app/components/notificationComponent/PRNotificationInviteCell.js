@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
   acceptBtnStyle: {
     margin: 0,
-    width: '48%',
+    width: '92%',
     height: 25,
   },
   acceptButtonInnerStyle: {
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     height: 25,
     width: '100%',
     borderRadius: 5,
+
   },
   btnTextStyle: {
     fontSize: 12,

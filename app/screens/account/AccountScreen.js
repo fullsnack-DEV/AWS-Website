@@ -1,10 +1,11 @@
 /* eslint-disable array-callback-return */
 import React, {
-    useEffect,
-    useState,
-    useContext,
-    useRef,
-    useCallback, useMemo,
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -128,44 +129,50 @@ export default function AccountScreen({ navigation }) {
     },
   ];
 
-  const renderTopRightNotificationButton = useMemo(() => (
-    <TouchableOpacity
-          onPress={() => {
-              navigation.navigate('NotificationsListScreen');
-          }}
-          hitSlop={Utility.getHitSlop(15)}>
-      <ImageBackground
-              source={
-                  notificationCounter > 0
-                      ? images.notificationBell
-                      : images.tab_notification
-              }
-              style={styles.headerRightImg}>
-        {notificationCounter > 0 && (
-          <View
-                      style={
-                          notificationCounter > 9
-                              ? styles.eclipseBadge
-                              : styles.roundBadge
-                      }>
-            <Text style={styles.notificationCounterStyle}>
-              {notificationCounter > 9 ? '9+' : notificationCounter}
-            </Text>
-          </View>
-              )}
-      </ImageBackground>
-    </TouchableOpacity>
-  ), [navigation, notificationCounter])
+  const renderTopRightNotificationButton = useMemo(
+    () => (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('NotificationsListScreen');
+        }}
+        hitSlop={Utility.getHitSlop(15)}>
+        <ImageBackground
+          source={
+            notificationCounter > 0
+              ? images.notificationBell
+              : images.tab_notification
+          }
+          style={styles.headerRightImg}>
+          {notificationCounter > 0 && (
+            <View
+              style={
+                notificationCounter > 9
+                  ? styles.eclipseBadge
+                  : styles.roundBadge
+              }>
+              <Text style={styles.notificationCounterStyle}>
+                {notificationCounter > 9 ? '9+' : notificationCounter}
+              </Text>
+            </View>
+          )}
+        </ImageBackground>
+      </TouchableOpacity>
+    ),
+    [navigation, notificationCounter],
+  );
 
   const getData = () => new Promise((resolve, reject) => {
-    const entity = authContext.entity;
-    const promises = [getNotificationUnreadCount(entity), getTeamsList(entity)];
-    if (entity.role !== 'club') promises.push(getClubList(entity));
-    Promise.all(promises)
+      const entity = authContext.entity;
+      const promises = [
+        getNotificationUnreadCount(entity),
+        getTeamsList(entity),
+      ];
+      if (entity.role !== 'club') promises.push(getClubList(entity));
+      Promise.all(promises)
         .then(() => resolve(true))
         // eslint-disable-next-line prefer-promise-reject-errors
         .catch(() => reject('error'));
-  });
+    });
 
   useEffect(() => {
     if (isFocused) {
@@ -178,10 +185,11 @@ export default function AccountScreen({ navigation }) {
 
   useEffect(() => {
     getData();
-  }, [authContext])
+  }, [authContext]);
 
-  const getParentClub = useCallback((item) => {
-    getGroupDetails(item.group_id, authContext)
+  const getParentClub = useCallback(
+    (item) => {
+      getGroupDetails(item.group_id, authContext)
         .then((response) => {
           if (!response?.payload?.club) {
             setParentGroup(response?.payload?.club);
@@ -195,61 +203,71 @@ export default function AccountScreen({ navigation }) {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
-  }, [authContext]);
+    },
+    [authContext],
+  );
 
-  const getNotificationUnreadCount = useCallback((currentEntity) => {
-    getUnreadCount(authContext)
-      .then((response) => {
-        const { teams } = response.payload;
-        const { clubs } = response.payload;
-         const switchEntityObject = [...clubs, ...teams].filter((e) => e.group_id === authContext.entity.uid)
-         setTeam(teams);
-        setClub(clubs);
-        setNotificationCounter(switchEntityObject?.[0]?.unread);
-        if (currentEntity.role === 'user') {
-          setGroupList([...clubs, ...teams]);
-        } else if (currentEntity.role === 'team') {
-          const updatedTeam = teams.filter(
-            (item) => item.group_id !== authContext.entity.uid,
-          );
-          setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
-        } else if (authContext.entity.role === 'club') {
-          const updatedClub = clubs.filter(
-            (item) => item.group_id !== authContext.entity.uid,
-          );
-          setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
-        }
-      })
-      .catch((e) => {
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext])
-
-  const getTeamsList = useCallback((currentEntity) => {
-    if (currentEntity.role === 'club') {
-      getTeamsOfClub(authContext.entity.uid, authContext)
+  const getNotificationUnreadCount = useCallback(
+    (currentEntity) => {
+      getUnreadCount(authContext)
         .then((response) => {
-          setTeamList(response.payload);
+          const { teams } = response.payload;
+          const { clubs } = response.payload;
+          const switchEntityObject = [...clubs, ...teams].filter(
+            (e) => e.group_id === authContext.entity.uid,
+          );
+          setTeam(teams);
+          setClub(clubs);
+          setNotificationCounter(switchEntityObject?.[0]?.unread);
+          if (currentEntity.role === 'user') {
+            setGroupList([...clubs, ...teams]);
+          } else if (currentEntity.role === 'team') {
+            const updatedTeam = teams.filter(
+              (item) => item.group_id !== authContext.entity.uid,
+            );
+            setGroupList([currentEntity.auth.user, ...clubs, ...updatedTeam]);
+          } else if (authContext.entity.role === 'club') {
+            const updatedClub = clubs.filter(
+              (item) => item.group_id !== authContext.entity.uid,
+            );
+            setGroupList([currentEntity.auth.user, ...updatedClub, ...teams]);
+          }
         })
         .catch((e) => {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
-    } else {
-      getJoinedGroups(authContext.entity.uid, authContext)
-        .then((response) => {
-          setTeamList(response.payload.teams);
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
-  }, [authContext])
+    },
+    [authContext],
+  );
+
+  const getTeamsList = useCallback(
+    (currentEntity) => {
+      if (currentEntity.role === 'club') {
+        getTeamsOfClub(authContext.entity.uid, authContext)
+          .then((response) => {
+            setTeamList(response.payload);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      } else {
+        getJoinedGroups(authContext.entity.uid, authContext)
+          .then((response) => {
+            setTeamList(response.payload.teams);
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          });
+      }
+    },
+    [authContext],
+  );
 
   const getClubList = useCallback(() => {
     getJoinedGroups(authContext.entity.uid, authContext)
@@ -261,26 +279,27 @@ export default function AccountScreen({ navigation }) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext])
+  }, [authContext]);
 
-  const switchProfile = useCallback(async (item) => {
-    let currentEntity = authContext.entity;
+  const switchProfile = useCallback(
+    async (item) => {
+      let currentEntity = authContext.entity;
 
-    if (item.entity_type === 'player') {
-      if (currentEntity.obj.entity_type === 'team') {
-        team.push(currentEntity.obj);
-      } else if (currentEntity.obj.entity_type === 'club') {
-        club.push(currentEntity.obj);
-      }
-      // setGroupList([...club, ...team]);
-      currentEntity = {
-        ...currentEntity,
-        uid: item.user_id,
-        role: 'user',
-        obj: item,
-      };
-      setParentGroup();
-    } else if (item.entity_type === 'team') {
+      if (item.entity_type === 'player') {
+        if (currentEntity.obj.entity_type === 'team') {
+          team.push(currentEntity.obj);
+        } else if (currentEntity.obj.entity_type === 'club') {
+          club.push(currentEntity.obj);
+        }
+        // setGroupList([...club, ...team]);
+        currentEntity = {
+          ...currentEntity,
+          uid: item.user_id,
+          role: 'user',
+          obj: item,
+        };
+        setParentGroup();
+      } else if (item.entity_type === 'team') {
         const i = team.indexOf(item);
         if (currentEntity.obj.entity_type === 'player') {
           team.splice(i, 1);
@@ -317,66 +336,76 @@ export default function AccountScreen({ navigation }) {
       }
       // setGroupList([authContext.entity.auth.user, ...club, ...team]);
 
-    // authContext.setEntity({ ...currentEntity });
-    // Utility.setStorage('authContextEntity', { ...currentEntity });
-    return currentEntity;
-  }, [authContext.entity, club, getParentClub, team]);
+      // authContext.setEntity({ ...currentEntity });
+      // Utility.setStorage('authContextEntity', { ...currentEntity });
+      return currentEntity;
+    },
+    [authContext.entity, club, getParentClub, team],
+  );
 
-  const switchQBAccount = useCallback(async (accountData, entity) => {
-    let currentEntity = entity;
-    const entityType = accountData?.entity_type;
-    const uid = entityType === 'player' ? 'user_id' : 'group_id';
-    QBLogout()
+  const switchQBAccount = useCallback(
+    async (accountData, entity) => {
+      let currentEntity = entity;
+      const entityType = accountData?.entity_type;
+      const uid = entityType === 'player' ? 'user_id' : 'group_id';
+      QBLogout()
         .then(() => {
           const {
-            USER, CLUB, LEAGUE, TEAM,
-          } = QB_ACCOUNT_TYPE;
+ USER, CLUB, LEAGUE, TEAM,
+ } = QB_ACCOUNT_TYPE;
           let accountType = USER;
           if (entityType === 'club') accountType = CLUB;
           else if (entityType === 'team') accountType = TEAM;
           else if (entityType === 'league') accountType = LEAGUE;
           QBlogin(
-              accountData[uid],
-              {
-                ...accountData,
-                full_name: accountData.group_name,
-              },
-              accountType,
+            accountData[uid],
+            {
+              ...accountData,
+              full_name: accountData.group_name,
+            },
+            accountType,
           )
-              .then(async (res) => {
-                currentEntity = {
-                  ...currentEntity,
-                  QB: { ...res.user, connected: true, token: res?.session?.token },
-                };
-                QBconnectAndSubscribe(currentEntity)
-                    .then(async (qbRes) => {
-                      authContext.setEntity({ ...currentEntity });
-                      await Utility.setStorage('authContextEntity', { ...currentEntity });
-                      setloading(false);
-                      if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
-                    })
-                    .catch(async () => {
-                      authContext.setEntity({ ...currentEntity });
-                      await Utility.setStorage('authContextEntity', { ...currentEntity });
-                      setloading(false);
-                    });
-              })
-              .catch(async () => {
-                authContext.setEntity({ ...currentEntity });
-                await Utility.setStorage('authContextEntity', { ...currentEntity });
-                setloading(false);
-              });
+            .then(async (res) => {
+              currentEntity = {
+                ...currentEntity,
+                QB: { ...res.user, connected: true, token: res?.session?.token },
+              };
+              QBconnectAndSubscribe(currentEntity)
+                .then(async (qbRes) => {
+                  authContext.setEntity({ ...currentEntity });
+                  await Utility.setStorage('authContextEntity', {
+                    ...currentEntity,
+                  });
+                  setloading(false);
+                  if (qbRes?.error) console.log('Towns Cup', qbRes?.error);
+                })
+                .catch(async () => {
+                  authContext.setEntity({ ...currentEntity });
+                  await Utility.setStorage('authContextEntity', {
+                    ...currentEntity,
+                  });
+                  setloading(false);
+                });
+            })
+            .catch(async () => {
+              authContext.setEntity({ ...currentEntity });
+              await Utility.setStorage('authContextEntity', { ...currentEntity });
+              setloading(false);
+            });
         })
         .catch(async () => {
           authContext.setEntity({ ...currentEntity });
           await Utility.setStorage('authContextEntity', { ...currentEntity });
           setloading(false);
         });
-  }, [authContext]);
+    },
+    [authContext],
+  );
 
-  const onSwitchProfile = useCallback(async ({ item }) => {
-    setloading(true);
-    switchProfile(item)
+  const onSwitchProfile = useCallback(
+    async ({ item }) => {
+      setloading(true);
+      switchProfile(item)
         .then((currentEntity) => {
           switchQBAccount(item, currentEntity);
         })
@@ -386,7 +415,9 @@ export default function AccountScreen({ navigation }) {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
-  }, [switchProfile, switchQBAccount]);
+    },
+    [switchProfile, switchQBAccount],
+  );
 
   const onLogout = useCallback(async () => {
     QBLogout();
@@ -416,7 +447,9 @@ export default function AccountScreen({ navigation }) {
 
   const handleSections = async (section) => {
     if (section === 'My Reservations') {
-      navigation.navigate('ReservationNavigator', { screen: 'ReservationScreen' });
+      navigation.navigate('ReservationNavigator', {
+        screen: 'ReservationScreen',
+      });
     } else if (section === 'Register as a Referee') {
       navigation.navigate('RegisterReferee');
     } else if (section === 'Register as a personal player') {
@@ -440,34 +473,37 @@ export default function AccountScreen({ navigation }) {
     }
   };
 
-  const handleOptions = useCallback((options) => {
-    // navigation.closeDrawer();
-    if (options === 'Register as a referee') {
-      navigation.navigate('RegisterReferee');
-    } else if (options === 'Register as a scorekeeper') {
-      navigation.navigate('RegisterScorekeeper');
-    } else if (options === 'Add a sport') {
-      navigation.navigate('RegisterPlayer');
-    } else if (options === 'Create a Team') {
-      const entity = authContext.entity;
-      if (entity.role === 'user') {
-        navigation.navigate('CreateTeamForm1');
-      } else {
-        navigation.navigate('CreateTeamForm1', { clubObject: group });
+  const handleOptions = useCallback(
+    (options) => {
+      // navigation.closeDrawer();
+      if (options === 'Register as a referee') {
+        navigation.navigate('RegisterReferee');
+      } else if (options === 'Register as a scorekeeper') {
+        navigation.navigate('RegisterScorekeeper');
+      } else if (options === 'Add a sport') {
+        navigation.navigate('RegisterPlayer');
+      } else if (options === 'Create a Team') {
+        const entity = authContext.entity;
+        if (entity.role === 'user') {
+          navigation.navigate('CreateTeamForm1');
+        } else {
+          navigation.navigate('CreateTeamForm1', { clubObject: group });
+        }
+      } else if (options === 'Create a Club') {
+        navigation.navigate('CreateClubForm1');
+      } else if (options === 'Payment Method') {
+        navigation.navigate('Account', {
+          screen: 'PaymentMethodsScreen',
+          params: {
+            comeFrom: 'AccountScreen',
+          },
+        });
+      } else if (options === 'Payout Method') {
+        navigation.navigate('PayoutMethodScreen');
       }
-    } else if (options === 'Create a Club') {
-      navigation.navigate('CreateClubForm1');
-    } else if (options === 'Payment Method') {
-      navigation.navigate('Account', {
-        screen: 'PaymentMethodsScreen',
-        params: {
-          comeFrom: 'AccountScreen',
-        },
-      });
-    } else if (options === 'Payout Method') {
-      navigation.navigate('PayoutMethodScreen');
-    }
-  }, [authContext.entity, group, navigation]);
+    },
+    [authContext.entity, group, navigation],
+  );
 
   const renderSportsList = useCallback(
     ({ item }) => (
@@ -522,84 +558,100 @@ export default function AccountScreen({ navigation }) {
 
   const keyExtractorID = useCallback((item, index) => index.toString(), []);
 
-  const renderSwitchProfile = useCallback(({ item, index }) => (
-    <TouchableWithoutFeedback
+  const renderSwitchProfile = useCallback(
+    ({ item, index }) => (
+      <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
           scrollRef.current.scrollTo({ x: 0, y: 0 });
           onSwitchProfile({ item, index });
         }}>
-      <View>
-        {item.entity_type === 'player' && (
-          <View style={styles.imageContainer}>
-            <Image
+        <View>
+          {item.entity_type === 'player' && (
+            <View style={styles.imageContainer}>
+              <Image
                 source={
                   item.thumbnail
                     ? { uri: item.thumbnail }
                     : images.profilePlaceHolder
                 }
-                style={styles.playerImg}
+                style={item.thumbnail ? styles.playerProfileImg : styles.playerImg}
               />
-          </View>
+            </View>
           )}
-        {item.entity_type === 'club' && (
-          <View style={styles.placeholderView}>
-            <Image
+          {item.entity_type === 'club' && (
+            <View style={styles.placeholderView}>
+              <Image
                 source={
                   item.thumbnail
                     ? { uri: item.thumbnail }
                     : images.clubPlaceholder
                 }
-                style={styles.entityImg}
+                style={item.thumbnail ? styles.entityProfileImg : styles.entityImg}
               />
-            {item.thumbnail ? null : (
-              <Text style={styles.oneCharacterText}>
-                {item.group_name.charAt(0).toUpperCase()}
-              </Text>
+              {item.thumbnail ? null : (
+                <Text style={styles.oneCharacterText}>
+                  {item.group_name.charAt(0).toUpperCase()}
+                </Text>
               )}
-          </View>
+            </View>
           )}
-        {item.entity_type === 'team' && (
-          <View style={styles.placeholderView}>
-            <Image
+          {item.entity_type === 'team' && (
+            <View style={styles.placeholderView}>
+              <Image
                 source={
                   item.thumbnail
                     ? { uri: item.thumbnail }
                     : images.teamPlaceholder
                 }
-                style={styles.entityImg}
+                style={
+                  item.thumbnail ? styles.entityProfileImg : styles.entityImg
+                }
               />
-            {item.thumbnail ? null : (
-              <Text style={styles.oneCharacterText}>
-                {item.group_name.charAt(0).toUpperCase()}
-              </Text>
+              {item.thumbnail ? null : (
+                <Text style={styles.oneCharacterText}>
+                  {item.group_name.charAt(0).toUpperCase()}
+                </Text>
               )}
-          </View>
+            </View>
           )}
 
-        {item.unread > 0 && (
-          <View style={styles.badgeView}>
-            <Text style={styles.badgeCounter}>{item.unread}</Text>
-          </View>
+          {item.unread > 0 && (
+            <View
+              style={
+                item.thumbnail
+                  ? [styles.badgeView, { right: 10, top: 15 }]
+                  : [
+                      styles.badgeView,
+                      {
+                        right: 10,
+                        top: 10,
+                      },
+              ]
+              }>
+              <Text style={styles.badgeCounter}>{item.unread}</Text>
+            </View>
           )}
-      </View>
+        </View>
 
-      <View style={styles.textContainer}>
-        {item.entity_type === 'player' && (
-          <Text style={styles.entityNameText}>{item.full_name}</Text>
+        <View style={styles.textContainer}>
+          {item.entity_type === 'player' && (
+            <Text style={styles.entityNameText}>{item.full_name}</Text>
           )}
-        {item.entity_type === 'team' && (
-          <Text style={styles.entityNameText}>{item.group_name}</Text>
+          {item.entity_type === 'team' && (
+            <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
-        {item.entity_type === 'club' && (
-          <Text style={styles.entityNameText}>{item.group_name}</Text>
+          {item.entity_type === 'club' && (
+            <Text style={styles.entityNameText}>{item.group_name}</Text>
           )}
-        <Text style={styles.entityLocationText}>
-          {item.city},{item.state_abbr}
-        </Text>
-      </View>
-    </TouchableWithoutFeedback>
-    ), [onSwitchProfile]);
+          <Text style={styles.entityLocationText}>
+            {item.city},{item.state_abbr}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    ),
+    [onSwitchProfile],
+  );
 
   const renderEntityList = useCallback(
     ({ item }) => (
@@ -612,7 +664,7 @@ export default function AccountScreen({ navigation }) {
               uid,
               backButtonVisible: true,
               role: item?.entity_type === 'player' ? 'user' : item?.entity_type,
-            })
+            });
           }
         }}>
         <View style={styles.entityTextContainer}>
@@ -793,18 +845,21 @@ export default function AccountScreen({ navigation }) {
   } else {
     placeHolder = images.profilePlaceHolder;
   }
-    const renderTopHeader = useMemo(() => (
+  const renderTopHeader = useMemo(
+    () => (
       <>
         <Header
-                showBackgroundColor={true}
-                centerComponent={
-                  <Text style={styles.eventTitleTextStyle}>Account</Text>
-                }
-                rightComponent={renderTopRightNotificationButton}
-            />
-        <View style={styles.separateLine}/>
+          showBackgroundColor={true}
+          centerComponent={
+            <Text style={styles.eventTitleTextStyle}>Account</Text>
+          }
+          rightComponent={renderTopRightNotificationButton}
+        />
+        <View style={styles.separateLine} />
       </>
-    ), [renderTopRightNotificationButton])
+    ),
+    [renderTopRightNotificationButton],
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -838,7 +893,7 @@ export default function AccountScreen({ navigation }) {
               </View>
             </View>
           ) : (
-            <View/>
+            <View />
           )}
           {/* <View>
             <TouchableOpacity onPress={() => {
@@ -1068,9 +1123,7 @@ export default function AccountScreen({ navigation }) {
           headerKey={'key'}
           memberKey="member"
           renderRow={renderMenuItems}
-          ItemSeparatorComponent={ () => (
-            <View style={ { width: wp('1%') } } />
-          ) }
+          ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
           renderSectionHeaderX={(section) => (
             <>
               <TouchableWithoutFeedback
@@ -1133,9 +1186,9 @@ export default function AccountScreen({ navigation }) {
             <View style={styles.separatorView}></View>
             <View style={{ flexDirection: 'row' }}>
               <Image
-                      source={images.switchAccount}
-                      style={styles.switchAccountIcon}
-                  />
+                source={images.switchAccount}
+                style={styles.switchAccountIcon}
+              />
               <Text style={styles.switchAccount}>Switch Account</Text>
             </View>
           </>
@@ -1177,8 +1230,6 @@ const styles = StyleSheet.create({
     height: 20,
 
     position: 'absolute',
-    right: 10,
-    top: 10,
     width: 20,
   },
 
@@ -1208,6 +1259,17 @@ const styles = StyleSheet.create({
     margin: 15,
     resizeMode: 'cover',
     width: 50,
+  },
+  entityProfileImg: {
+    alignSelf: 'center',
+    borderColor: colors.offwhite,
+    borderRadius: 25,
+
+    borderWidth: 1,
+    height: 40,
+    margin: 15,
+    resizeMode: 'cover',
+    width: 40,
   },
   entityLocationText: {
     color: colors.lightBlackColor,
@@ -1329,6 +1391,17 @@ const styles = StyleSheet.create({
     margin: 15,
     resizeMode: 'cover',
     width: 50,
+  },
+  playerProfileImg: {
+    alignSelf: 'center',
+    borderColor: colors.offwhite,
+    borderRadius: 20,
+
+    borderWidth: 3,
+    height: 40,
+    margin: 15,
+    resizeMode: 'cover',
+    width: 40,
   },
   profileImg: {
     height: 50,

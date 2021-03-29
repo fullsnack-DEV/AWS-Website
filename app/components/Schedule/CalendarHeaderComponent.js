@@ -7,6 +7,8 @@ import moment from 'moment';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import { getHitSlop } from '../../utils';
+import TCThinDivider from '../TCThinDivider';
 
 const weekDaysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const now = moment();
@@ -36,88 +38,88 @@ class CalendarHeaderComponent extends React.PureComponent {
     return (
       <View>
         <View style={styles.header}>
-          <Text style={styles.dateText}>
-            {moment(this.props.month.getTime()).format('MMMM YYYY')}
-          </Text>
           <View
-            style={[
-              styles.iconContainer,
-              this.shouldLeftArrowBeDisabled() ? styles.disabled : {},
-            ]}>
-            <TouchableOpacity
-              onPress={this.onPressArrowLeft}
-              disabled={this.shouldLeftArrowBeDisabled()}>
-              <Image
-                style={[styles.icon, styles.leftIcon]}
-                source={images.nextArrow}
-              />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={this.onPressArrowRight}>
-            <Image style={styles.icon} source={images.nextArrow} />
-          </TouchableOpacity>
-          <View style={{ flex: 1 }} />
-          {!this.props.horizontal ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontFamily: fonts.RLight,
-                  color: colors.lightBlackColor,
-                }}>
-                Timetable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+            <View/>
+            <View style={{ flexDirection: 'row', marginLeft: 35 }}>
+              <View
+                style={[
+                  styles.iconContainer,
+                  this.shouldLeftArrowBeDisabled() ? styles.disabled : {},
+                ]}>
+                <TouchableOpacity
+                  onPress={this.onPressArrowLeft}
+                  disabled={this.shouldLeftArrowBeDisabled()}>
+                  <Image
+                    style={[styles.icon, styles.leftIcon]}
+                    source={images.nextArrow}
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.dateText}>
+                {moment(this.props.month.getTime()).format('MMMM YYYY')}
               </Text>
               <TouchableOpacity
                 style={styles.iconContainer}
-                onPress={this.props.onPressListView}>
-                {/* <Image
+                onPress={this.onPressArrowRight}>
+                <Image style={styles.icon} source={images.nextArrow} />
+              </TouchableOpacity>
+            </View>
+
+            <View>
+              {!this.props.horizontal ? (
+                <TouchableOpacity
+                  hitSlop={getHitSlop(15)}
+                  style={{ marginRight: 15 }}
+                  onPress={this.props.onPressListView}>
+                  {/* <Image
                   style={styles.icon}
                    source={images.goalsImage}
                 /> */}
-                <Image
-                  source={images.uncheckWhite}
-                  style={{
-                    resizeMode: 'contain',
-                    height: 18,
-                    width: 18,
-                    marginLeft: 10,
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-          ) : null}
-          {this.props.horizontal ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontFamily: fonts.RLight,
-                  color: colors.lightBlackColor,
-                }}>
-                Timetable
-              </Text>
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={this.props.onPressGridView}>
-                {/* <Image
+                  <Image
+                    source={images.uncheckWhite}
+                    style={{
+                      resizeMode: 'contain',
+                      height: 18,
+                      width: 18,
+
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : null}
+              {this.props.horizontal ? (
+                <TouchableOpacity
+                  hitSlop={getHitSlop(15)}
+                  style={{ marginRight: 15 }}
+                  onPress={this.props.onPressGridView}>
+                  {/* <Image
                 style={styles.icon}
                  source={images.goalsImage}
               /> */}
-                <Image
-                  source={images.orangeCheckBox}
-                  style={{
-                    resizeMode: 'contain',
-                    height: 18,
-                    width: 18,
-                    marginLeft: 10,
-                  }}
-                />
-              </TouchableOpacity>
+                  <Image
+                    source={images.orangeCheckBox}
+                    style={{
+                      resizeMode: 'contain',
+                      height: 18,
+                      width: 18,
+
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : null}
             </View>
-          ) : null}
+
+          </View>
+
+          <View style={{ flex: 1 }} />
+
         </View>
+        <TCThinDivider height={1} width={'100%'} marginBottom={10}/>
         {
           // not showing week day in case of horizontal calendar, this will be handled by day component
           this.props.horizontal ? null : (
@@ -148,8 +150,9 @@ CalendarHeaderComponent.propTypes = {
 
 const styles = StyleSheet.create({
   header: {
+
     flexDirection: 'row',
-    padding: 12,
+     paddingBottom: 12,
     backgroundColor: colors.whiteColor,
   },
   week: {
@@ -174,9 +177,9 @@ const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 8,
-    marginRight: 4,
-    marginTop: -2,
+    marginLeft: 20,
+    marginRight: 20,
+
   },
   leftIcon: {
     transform: [{ rotate: '180deg' }],

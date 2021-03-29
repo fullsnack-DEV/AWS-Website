@@ -12,6 +12,7 @@ import {
   FlatList,
   ScrollView,
   Alert,
+ Dimensions,
 } from 'react-native';
 import moment from 'moment';
 import {
@@ -597,8 +598,8 @@ export default function CreateEventScreen({ navigation, route }) {
           </EventItemRender>
           <EventItemRender title={strings.eventColorTitle}>
             <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
+              numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
+              scrollEnabled={false}
               data={eventColors}
               ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
               renderItem={renderColorItem}
