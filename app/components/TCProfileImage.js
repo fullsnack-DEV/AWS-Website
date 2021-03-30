@@ -1,10 +1,7 @@
 import React from 'react';
 import {
-  View,
-  Image,
-  StyleSheet,
-  Text,
-} from 'react-native';
+ View, Image, StyleSheet, Text,
+ } from 'react-native';
 
 import TCImage from './TCImage';
 import fonts from '../Constants/Fonts';
@@ -20,25 +17,39 @@ export default function TCProfileImage({
   entityType,
   source,
 }) {
-  let placeholder = images.profilePlaceHolder
+  let placeholder = images.profilePlaceHolder;
   if (entityType === 'club') {
-    placeholder = images.clubPlaceholderSmall
+    placeholder = images.clubPlaceholderSmall;
   } else if (entityType === 'team') {
-    placeholder = images.teamPlaceholderSmall
+    placeholder = images.teamPlaceholderSmall;
   }
   return (
     <View style={[styles.imageContainerStyle, containerStyle]}>
-      <Image style={styles.placeHolderImage}
-        source={placeholder}>
-      </Image>
-      {entityType !== 'user' && <View style={[styles.placeholderTextContainer, placeholderTextContainer]}>
-        <Text style={[styles.placeholderText, placeholderText]}>{intialChar}</Text>
-      </View>}
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: colors.thinDividerColor,
+        }}>
+        <Image style={styles.placeHolderImage} source={placeholder} />
+      </View>
+
+      {entityType !== 'user' && (
+        <View
+          style={[styles.placeholderTextContainer, placeholderTextContainer]}>
+          <Text style={[styles.placeholderText, placeholderText]}>
+            {intialChar}
+          </Text>
+        </View>
+      )}
       <TCImage
         containerStyle={[styles.mainImageStyle, mainImageStyle]}
         resizeMode={'cover'}
         imageStyle={styles.mainImageStyle}
-        source={source}/>
+        source={source}
+      />
     </View>
   );
 }
@@ -47,16 +58,12 @@ const styles = StyleSheet.create({
   imageContainerStyle: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 80,
   },
   placeHolderImage: {
-    position: 'absolute',
     width: 40,
     height: 40,
     resizeMode: 'contain',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.thinDividerColor,
   },
   placeholderTextContainer: {
     width: 40,
@@ -75,7 +82,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 80,
     alignSelf: 'center',
   },
 });

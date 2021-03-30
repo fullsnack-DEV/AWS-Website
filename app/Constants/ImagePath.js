@@ -291,6 +291,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   feedPlusIcon: require('../assets/images/feedPlusIcon.png'),
   resetColor: require('../assets/images/reset_color.png'),
   appleLogo: require('../assets/images/appleLogo.png'),
+  // timeKnob: require('../assets/images/time_knob_gray.png'),
 };
 
 export default images;

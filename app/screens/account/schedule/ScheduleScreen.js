@@ -773,10 +773,20 @@ const drawMarkDay = (eData) => {
             Calender
           </Text>
         </View>
-        <TCThinDivider width={'100%'} marginBottom={20} />
+        <TCThinDivider width={'100%'} marginBottom={12} />
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
+            <View >
+              <EventAgendaSection
+                    horizontal={monthView}
+                    onPressListView={onPressListView}
+                    onPressGridView={onPressGridView}
+                    onDayPress={onDayPress}
+                    selectedCalendarDate={selectedCalendarDateString}
+                    calendarMarkedDates={markingDays}
+                  />
+            </View>
             <EventScheduleScreen
               eventData={eventData}
               navigation={navigation}

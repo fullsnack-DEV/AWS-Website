@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 
+ Dimensions,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -373,7 +374,8 @@ export default function DefaultColorScreen({ navigation }) {
       <SafeAreaView>
         <EventItemRender title={strings.eventCreatedTitle}>
           <FlatList
-            numColumns={8}
+            numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
+            scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
             data={createdEventColors}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
@@ -384,7 +386,8 @@ export default function DefaultColorScreen({ navigation }) {
         </EventItemRender>
         <EventItemRender title={strings.eventImportedTitle}>
           <FlatList
-            numColumns={8}
+            numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
+            scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
             data={importedEventColors}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
@@ -394,7 +397,8 @@ export default function DefaultColorScreen({ navigation }) {
         </EventItemRender>
         <EventItemRender title={strings.scheduleMatchTitle}>
           <FlatList
-            numColumns={8}
+            numColumns={Dimensions.get('window').width > 360 ? 9 : 8}
+            scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
             data={gamesEventColors}
             ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
