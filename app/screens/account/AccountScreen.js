@@ -432,14 +432,14 @@ export default function AccountScreen({ navigation }) {
       'Towns Cup',
       'Are you sure want to logout?',
       [
-        {
-          text: 'OK',
-          onPress: onLogout,
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+              text: 'OK',
+              onPress: onLogout,
+          },
       ],
       { cancelable: false },
     );

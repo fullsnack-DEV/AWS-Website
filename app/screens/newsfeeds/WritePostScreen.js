@@ -351,9 +351,7 @@ export default function WritePostScreen({ navigation, route }) {
           setSelectImage(data);
         }
       }).catch((error) => {
-        setTimeout(() => {
-          Alert.alert('Towns Cup', error.messages);
-        }, 0.1)
+        console.log(error);
       });
   }, [selectImage])
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet,
 } from 'react-native';
@@ -18,13 +18,18 @@ import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
+import { updateUserProfile } from '../../api/Users';
+import AuthContext from '../../auth/context';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function AddBirthdayScreen({ navigation }) {
+  const authContext = useContext(AuthContext)
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
   const [dateValue, setDateValue] = useState(new Date());
   const [minDateValue, setMinDateValue] = useState(new Date());
+  const [loading, setLoading] = useState(false);
 
   const onChange = (selectedDate) => {
     setDateValue(selectedDate);
@@ -36,10 +41,29 @@ export default function AddBirthdayScreen({ navigation }) {
     setDateValue(date);
     setMinDateValue(date);
   }, [])
+
+  const updateProfile = async (params, callback) => {
+    setLoading(true);
+    updateUserProfile(params, authContext).then(async (userResoponse) => {
+      const userData = userResoponse?.payload;
+      const entity = { ...authContext?.entity };
+      entity.auth.user = userData;
+      entity.obj = userData;
+      await Utility.setStorage('loggedInEntity', { ...entity })
+      await Utility.setStorage('authContextEntity', { ...entity })
+      await Utility.setStorage('authContextUser', { ...userData });
+      await authContext.setUser({ ...userData });
+      await authContext.setEntity({ ...entity });
+      setLoading(false);
+      callback();
+    }).catch(() => setLoading(false))
+  }
+
   return (
     <LinearGradient
           colors={[colors.themeColor1, colors.themeColor3]}
           style={styles.mainContainer}>
+      <ActivityLoader visible={loading}/>
       <View>
         <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
 
@@ -63,10 +87,11 @@ export default function AddBirthdayScreen({ navigation }) {
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <DatePicker
               textColor={colors.whiteColor}
+              fadeToColor={'none'}
               mode={'date'}
               maximumDate={minDateValue}
               testID={'startsDateDateTimePicker'}
-              style={styles.dateTimePickerStyle}
+              style={{ marginTop: 15 }}
               date={dateValue}
               onDateChange={onChange}
           />
@@ -75,15 +100,11 @@ export default function AddBirthdayScreen({ navigation }) {
       <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 50 }}>
         <TCButton
             title={ strings.continueCapTitle }
-            onPress={ async () => {
-              const user = await Utility.getStorage('userInfo');
-              const userBirthday = {
-                ...user,
-                birthday: new Date(dateValue).getTime() / 1000,
-              }
-
-              await Utility.setStorage('userInfo', userBirthday);
-              navigation.navigate('ChooseGenderScreen');
+            onPress={() => {
+              const userParams = { birthday: new Date(dateValue).getTime() / 1000 }
+              updateProfile(userParams, () => {
+                navigation.navigate('ChooseGenderScreen');
+              });
             } }
             extraStyle={ { marginTop: 50 } }
         />

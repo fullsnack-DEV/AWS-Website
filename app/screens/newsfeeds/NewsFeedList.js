@@ -30,6 +30,7 @@ const NewsFeedList = ({
   onStartShouldSetResponderCapture = () => {},
   updateCommentCount,
   noDataFoundText = 'No Post Found',
+  showEnptyDataText = true,
 }) => {
   const [userID, setUserID] = useState('');
   const isFocused = useIsFocused();
@@ -116,7 +117,7 @@ const NewsFeedList = ({
         legacyImplementation={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
-        ListEmptyComponent={<Text style={{
+        ListEmptyComponent={showEnptyDataText && <Text style={{
  fontSize: 16, fontFamily: fonts.RLight, textAlign: 'center', padding: 15,
         }}>{noDataFoundText}</Text>}
         bounces={true}

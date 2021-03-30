@@ -52,7 +52,7 @@ function MultiImagePostView({
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(item?.reaction_counts?.comment ?? 0);
-
+  const [, setCurrentAssetIndex] = useState(0);
   useEffect(() => {
       setTimeout(() => {
           if (carouselRef && currentPage > 1) {
@@ -175,9 +175,7 @@ function MultiImagePostView({
               <CustomVideoPlayer
                       onClick={toggleParentView}
                       isLandscape={isLandScape}
-                      onPlayerStatusChanged={(shouldVideoScroll) => {
-                          setScroll(shouldVideoScroll);
-                      }}
+                      onPlayerStatusChanged={setScroll}
                       sourceURL={multiAttachItem?.url}
                       containerStyle={{
                           ...styles.singleImageDisplayStyle,
@@ -238,6 +236,9 @@ function MultiImagePostView({
       behavior={ Platform.OS === 'ios' ? 'padding' : null }>
       <View style={{ flex: 1 }}>
         <Carousel
+            onSnapToItem={setCurrentAssetIndex}
+            firstItem={0}
+            nestedScrollEnabled={false}
             ref={carouselRef}
             data={attachedImages}
             renderItem={renderMultipleImagePostView}

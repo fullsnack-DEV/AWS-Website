@@ -22,6 +22,7 @@ import AuthContext from '../auth/context'
 import TCProfileView from '../components/TCProfileView';
 import TCThinDivider from '../components/TCThinDivider';
 import UserListShimmer from '../components/shimmer/commonComponents/UserListShimmer';
+import { getSearchData } from '../utils';
 
 export default function EntitySearchScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -37,19 +38,18 @@ export default function EntitySearchScreen({ navigation }) {
     const promises = [getMyGroups(authContext), getUserList(authContext)]
     Promise.all(promises).then(([res1, res2]) => {
       list = [...res1.payload, ...res2.payload]
-      setGroups([...list])
-      setSearchMember(list)
+      const modifiedList = list.filter((item) => (['player', 'user']?.includes(item?.entity_type)
+            ? item?.user_id !== authContext?.entity?.obj?.user_id
+            : item?.group_id !== authContext?.entity?.obj?.group_id))
+      setGroups([...modifiedList])
+      setSearchMember([...modifiedList])
       setloading(false);
     })
   }, [])
 
   const searchFilterFunction = (text) => {
-    const result = searchMember.filter(
-      (x) => (
-        (x.group_name && x.group_name.toLowerCase().includes(text.toLowerCase()))
-      || (x.first_name && x.first_name.toLowerCase().includes(text.toLowerCase()))),
-    );
-    setGroups(result);
+    const result = getSearchData(searchMember, ['group_name', 'first_name', 'last_name', 'full_name'], text)
+    setGroups([...result]);
   };
 
   const onProfilePress = (item) => {

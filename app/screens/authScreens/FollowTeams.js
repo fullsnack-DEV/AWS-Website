@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -14,7 +13,7 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import { getUserDetails, createUser } from '../../api/Users';
+import { updateUserProfile } from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import TCButton from '../../components/TCButton';
@@ -23,7 +22,6 @@ import AuthContext from '../../auth/context';
 import * as Utility from '../../utils/index';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
-import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
 export default function FollowTeams({ route }) {
   const [teams, setTeams] = useState(['1']);
@@ -48,52 +46,23 @@ export default function FollowTeams({ route }) {
     setFollowData();
   }, []);
 
-  const QBInitialLogin = (response) => {
-    let qbEntity = authContext?.entity;
-    QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
-      QBconnectAndSubscribe(qbEntity)
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
+  const updateProfile = async (params, callback = () => {}) => {
+    setloading(true);
+    updateUserProfile(params, authContext).then(async (userResoponse) => {
+      const userData = userResoponse?.payload;
+      const entity = { ...authContext?.entity };
+      entity.isLoggedIn = true;
+      entity.auth.user = userData;
+      entity.obj = userData;
+      await Utility.setStorage('loggedInEntity', { ...entity })
+      await Utility.setStorage('authContextEntity', { ...entity })
+      await Utility.setStorage('authContextUser', { ...userData });
+      await authContext.setUser({ ...userData });
+      await authContext.setEntity({ ...entity });
       setloading(false);
-    }).catch(async (error) => {
-      qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
-      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
-      console.log('QB Login Error : ', error.message);
-      setloading(false);
-    });
+      callback();
+    }).catch(() => setloading(false))
   }
-
-  const signUpWithTC = async () => {
-    setloading(true)
-    let userInfo = {};
-    const user = await Utility.getStorage('userInfo');
-    userInfo = user;
-    const data = {
-      first_name: userInfo.first_name,
-      last_name: userInfo.last_name,
-      email: userInfo.email,
-      thumbnail: userInfo?.thumbnail,
-      full_image: userInfo?.full_image,
-      sports: route.params.sports,
-      city: route.params.city,
-      state_abbr: route.params.state,
-      country: route.params.country,
-      club_ids: followed,
-    };
-    createUser(data, authContext).then((response) => {
-      if (response.status === true) {
-        getUserInfo();
-      } else {
-        setloading(false)
-        Alert.alert(response.messages);
-      }
-    }).catch((error) => {
-      setloading(false)
-      setTimeout(() => Alert.alert('TownsCup', error.message), 100)
-    });
-  };
 
   const followUnfollowClicked = ({ item, index }) => {
     console.log('SELECTED:::', index);
@@ -110,23 +79,6 @@ export default function FollowTeams({ route }) {
     setFollowed(followedTeam);
 
     console.log('Followed Team:::', followedTeam);
-  };
-  const getUserInfo = async () => {
-    const entity = authContext.entity
-    console.log('USER ENTITY:', entity);
-    const response = await getUserDetails(entity.auth.user_id, authContext);
-    if (response.status) {
-      entity.obj = response.payload
-      entity.auth.user = response.payload
-      entity.role = 'user'
-      await Utility.setStorage('loggedInEntity', entity)
-      await authContext.setUser(response.payload);
-      Utility.setStorage('authContextUser', { ...response.payload })
-      QBInitialLogin(response?.payload);
-    } else {
-      setloading(false);
-      throw new Error(response);
-    }
   };
 
   const renderItem = ({ item, index }) => (
@@ -176,6 +128,9 @@ export default function FollowTeams({ route }) {
     </View>
   );
 
+  const signUpLastStep = () => {
+    updateProfile({ club_ids: followed })
+  }
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}
@@ -193,7 +148,7 @@ export default function FollowTeams({ route }) {
       <TCButton
         title={'CONTINUE'}
         extraStyle={ { marginBottom: hp('6.5%'), marginTop: hp('2%') } }
-        onPress={ () => signUpWithTC() }
+        onPress={signUpLastStep}
       />
     </LinearGradient>
   );
