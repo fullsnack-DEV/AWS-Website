@@ -32,6 +32,9 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 
 import { searchGroups } from '../../api/Groups';
+import { updateUserProfile } from '../../api/Users';
+import * as Utility from '../../utils';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function ChooseLocationScreen({ navigation }) {
   const authContext = useContext(AuthContext)
@@ -39,7 +42,8 @@ export default function ChooseLocationScreen({ navigation }) {
   const [currentLocation, setCurrentLocation] = useState();
   const [noData, setNoData] = useState(false);
   const [searchText, setSearchText] = useState('');
-  // const [locationPermissionResult, setLocationPermissionResult] = useState();
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     getLocationData(searchText);
   }, [searchText]);
@@ -126,28 +130,35 @@ export default function ChooseLocationScreen({ navigation }) {
   };
 
   const getTeamsDataByCurrentLocation = async () => {
+    setLoading(true);
     const queryParams = {
       state: currentLocation.stateAbbr,
       city: currentLocation.city,
     };
 
     searchGroups(queryParams, authContext).then((response) => {
-      if (response.payload.length > 0) {
-        navigation.navigate('TotalTeamsScreen', {
-          city: currentLocation.city,
-          state: currentLocation.stateAbbr,
-          country: currentLocation.country,
-          totalTeams: response.payload.length,
-          teamData: response.payload,
-        });
-      } else {
-        navigation.navigate('ChooseSportsScreen', {
-
-          city: currentLocation.city,
-          state: currentLocation.stateAbbr,
-          country: currentLocation.country,
-        });
+      const userData = {
+        city: currentLocation.city,
+        state_abbr: currentLocation.stateAbbr,
+        country: currentLocation.country,
       }
+      updateProfile(userData, () => {
+        if (response.payload.length > 0) {
+          navigation.navigate('TotalTeamsScreen', {
+            city: currentLocation.city,
+            state: currentLocation.stateAbbr,
+            country: currentLocation.country,
+            totalTeams: response.payload.length,
+            teamData: response.payload,
+          });
+        } else {
+          navigation.navigate('ChooseSportsScreen', {
+            city: currentLocation.city,
+            state: currentLocation.stateAbbr,
+            country: currentLocation.country,
+          });
+        }
+      })
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
@@ -155,28 +166,53 @@ export default function ChooseLocationScreen({ navigation }) {
     });
   };
 
+  const updateProfile = async (params, callback) => {
+    setLoading(true);
+    updateUserProfile(params, authContext).then(async (userResoponse) => {
+      const userData = userResoponse?.payload;
+      const entity = { ...authContext?.entity };
+      entity.auth.user = userData;
+      entity.obj = userData;
+      await Utility.setStorage('loggedInEntity', { ...entity })
+      await Utility.setStorage('authContextEntity', { ...entity })
+      await Utility.setStorage('authContextUser', { ...userData });
+      await authContext.setUser({ ...userData });
+      await authContext.setEntity({ ...entity });
+      setLoading(false);
+      callback();
+    }).catch(() => setLoading(false))
+  }
+
   const getTeamsData = async (item) => {
+    setLoading(true);
     const queryParams = {
       state: item.terms?.[1]?.value,
       city: item.terms?.[0]?.value,
     };
 
     searchGroups(queryParams, authContext).then((response) => {
-      if (response.payload.length > 0) {
-        navigation.navigate('TotalTeamsScreen', {
-          city: item.terms?.[0]?.value,
-          state: item.terms[1].value,
-          country: item.terms?.[2]?.value,
-          totalTeams: response.payload.length,
-          teamData: response.payload,
-        });
-      } else {
-        navigation.navigate('ChooseSportsScreen', {
-          city: item.terms?.[0]?.value,
-          state: item.terms?.[1]?.value,
-          country: item.terms?.[2]?.value,
-        });
+      const userData = {
+        city: item.terms?.[0]?.value,
+        state_abbr: item.terms[1].value,
+        country: item.terms?.[2]?.value,
       }
+      updateProfile(userData, () => {
+        if (response.payload.length > 0) {
+          navigation.navigate('TotalTeamsScreen', {
+            city: item.terms?.[0]?.value,
+            state: item.terms[1].value,
+            country: item.terms?.[2]?.value,
+            totalTeams: response.payload.length,
+            teamData: response.payload,
+          });
+        } else {
+          navigation.navigate('ChooseSportsScreen', {
+            city: item.terms?.[0]?.value,
+            state: item.terms?.[1]?.value,
+            country: item.terms?.[2]?.value,
+          });
+        }
+      })
     }).catch((e) => {
       setTimeout(() => {
         Alert.alert(strings.alertmessagetitle, e.message);
@@ -198,6 +234,7 @@ export default function ChooseLocationScreen({ navigation }) {
     <LinearGradient
           colors={[colors.themeColor1, colors.themeColor3]}
           style={styles.mainContainer}>
+      <ActivityLoader visible={loading}/>
       <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
       <Text style={ styles.LocationText }>{strings.locationText}</Text>
 
@@ -208,7 +245,7 @@ export default function ChooseLocationScreen({ navigation }) {
           placeholder={ strings.locationPlaceholderText }
           clearButtonMode="always"
           placeholderTextColor={ colors.themeColor }
-          onChangeText={ (text) => setSearchText(text) }
+          onChangeText={setSearchText}
         />
       </View>
       {noData && (

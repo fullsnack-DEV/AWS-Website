@@ -13,8 +13,7 @@ import {
 } from 'react-native-responsive-screen';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
-import { createUser, getUserDetails } from '../../api/Users';
+import { updateUserProfile } from '../../api/Users';
 import { getSportsList } from '../../api/Games';
 import images from '../../Constants/ImagePath';
 import strings from '../../Constants/String';
@@ -68,67 +67,22 @@ export default function ChooseSportsScreen({ navigation, route }) {
     setSelected(selectedSports);
   };
 
-  const signUpWithTC = async () => {
+  const updateProfile = async (params, callback) => {
     setloading(true);
-    const user = await Utility.getStorage('userInfo');
-    const data = {
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      birthday: user.birthday,
-      gender: user.gender,
-      thumbnail: user?.thumbnail ?? '',
-      full_image: user?.full_image ?? '',
-      sports: selected,
-      city: route.params.city,
-      state_abbr: route.params.state,
-      country: route.params.country,
-    };
-
-    createUser(data, authContext).then(() => {
-      getUserInfo();
-    }).catch((e) => {
+    updateUserProfile(params, authContext).then(async (userResoponse) => {
+      const userData = userResoponse?.payload;
+      const entity = { ...authContext?.entity };
+      entity.auth.user = userData;
+      entity.obj = userData;
+      await Utility.setStorage('loggedInEntity', { ...entity })
+      await Utility.setStorage('authContextEntity', { ...entity })
+      await Utility.setStorage('authContextUser', { ...userData });
+      await authContext.setUser({ ...userData });
+      await authContext.setEntity({ ...entity });
       setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-  };
-
-  const QBInitialLogin = (response) => {
-    let qbEntity = authContext?.entity;
-    QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
-      QBconnectAndSubscribe(qbEntity)
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
-      setloading(false);
-    }).catch(async (error) => {
-      qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
-      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
-      console.log('QB Login Error : ', error.message);
-      setloading(false);
-    });
+      callback();
+    }).catch(() => setloading(false))
   }
-
-  const getUserInfo = async () => {
-    const entity = authContext.entity
-    console.log('USER ENTITY:', entity);
-    const response = await getUserDetails(entity.auth.user_id, authContext);
-    if (response.status) {
-      entity.obj = response.payload
-      entity.auth.user = response.payload
-      entity.role = 'user'
-
-      authContext.setEntity({ ...entity })
-      await authContext.setUser(response.payload);
-      await Utility.setStorage('authContextUser', { ...response.payload })
-      QBInitialLogin(response?.payload);
-    } else {
-      throw new Error(response);
-    }
-  };
 
   const renderItem = ({ item, index }) => (
     <TouchableWithoutFeedback
@@ -140,15 +94,22 @@ export default function ChooseSportsScreen({ navigation, route }) {
       <Text style={ styles.sportList }>{item.sport_name}</Text>
       <View style={ styles.checkbox }>
         {sports?.[index]?.isChecked ? (
-          <FastImage source={ images.checkWhite } style={ styles.checkboxImg } />
+          <FastImage source={ images.checkWhite } resizeMode={'contain'} style={ styles.checkboxImg } />
         ) : (
-          <FastImage resizeMode={'contain'} tintColor={'white'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+          <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
         )}
       </View>
       <Separator />
 
     </TouchableWithoutFeedback>
   );
+
+  const finalStepSignUp = async () => {
+      let dummyEntity = { ...authContext?.entity }
+      dummyEntity = { ...dummyEntity, isLoggedIn: true }
+      await Utility.setStorage('authContextEntity', { ...dummyEntity })
+      await authContext.setEntity({ ...dummyEntity });
+  }
 
   return (
     <LinearGradient
@@ -169,17 +130,19 @@ export default function ChooseSportsScreen({ navigation, route }) {
           title={'CONTINUE'}
           extraStyle={ { position: 'absolute', bottom: hp('7%') } }
           onPress={ () => {
-            if (route.params && route.params.teamData) {
-              navigation.navigate('FollowTeams', {
-                teamData: route.params.teamData,
-                city: route.params.city,
-                state: route.params.state,
-                country: route.params.country,
-                sports: selected,
-              });
-            } else {
-              signUpWithTC();
-            }
+            updateProfile({ sports: selected }, () => {
+              if (route.params && route.params.teamData) {
+                navigation.navigate('FollowTeams', {
+                  teamData: route.params.teamData,
+                  city: route.params.city,
+                  state: route.params.state,
+                  country: route.params.country,
+                  sports: selected,
+                });
+              } else {
+                finalStepSignUp();
+              }
+            })
           } }
         />
     </LinearGradient>
@@ -196,14 +159,13 @@ const styles = StyleSheet.create({
 
   },
   unCheckboxImg: {
-    width: wp('5.5%'),
-    height: wp('5.5%'),
-    alignSelf: 'center',
+    width: 22,
+    height: 22,
+    tintColor: colors.whiteColor,
   },
   checkboxImg: {
-    width: wp('5.5%'),
-    height: wp('5.5%'),
-    alignSelf: 'center',
+    width: 22,
+    height: 22,
   },
   listItem: {
     flexDirection: 'row',

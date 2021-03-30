@@ -39,6 +39,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
   const authContext = useContext(AuthContext);
+  const dummyAuthContext = { ...authContext };
   // For activity indigator
   const [loading, setloading] = useState(false);
 
@@ -53,53 +54,72 @@ export default function LoginScreen({ navigation }) {
     return true;
   }, [email, password]);
 
-  const QBInitialLogin = useCallback((entity, response) => {
-    let qbEntity = entity;
-    QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
-      QBconnectAndSubscribe(qbEntity)
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      authContext.setEntity({ ...qbEntity })
-      setloading(false);
-    }).catch(async (error) => {
-      qbEntity = { ...qbEntity, QB: { connected: false } }
-      await Utility.setStorage('authContextEntity', { ...qbEntity, isLoggedIn: true })
-      authContext.setEntity({ ...qbEntity, isLoggedIn: true })
-      console.log('QB Login Error : ', error.message);
-      setloading(false);
-    });
-  }, [authContext])
+  const getRedirectionScreenName = useCallback((townscupUser) => new Promise((resolve, reject) => {
+    if (!townscupUser.birthday) resolve({ screen: 'AddBirthdayScreen' })
+    else if (!townscupUser.gender) resolve({ screen: 'ChooseGenderScreen' })
+    else if (!townscupUser.city) resolve({ screen: 'ChooseLocationScreen' })
+    else if (!townscupUser.sports) resolve({ screen: 'ChooseSportsScreen', params: { city: townscupUser?.city, state: townscupUser?.state_abbr, country: townscupUser?.country } })
+    else reject(new Error({ error: 'completed user profile' }))
+  }), [])
 
-  const saveUserDetails = useCallback(async (user, callBack) => {
+  const loginFinalRedirection = useCallback(async (firebaseUser, townscupUser) => {
+    const entity = { ...dummyAuthContext.entity }
+    const userData = { ...townscupUser }
+    entity.auth.user = { ...userData }
+    entity.obj = { ...userData };
+    await authContext.setTokenData(dummyAuthContext?.tokenData);
+    await Utility.setStorage('authContextUser', { ...userData })
+    await authContext.setUser({ ...userData });
+    await Utility.setStorage('authContextEntity', { ...entity })
+    await Utility.setStorage('loggedInEntity', entity)
+    await authContext.setEntity({ ...entity })
+    // eslint-disable-next-line no-underscore-dangle
+    if (!firebaseUser?._user?.emailVerified) {
+      firebaseUser.sendEmailVerification()
+      setloading(false);
+      navigation.navigate('EmailVerificationScreen', {
+          emailAddress: email,
+          password,
+        });
+      // eslint-disable-next-line no-underscore-dangle
+    } else if (firebaseUser?._user?.emailVerified) {
+      getRedirectionScreenName(userData).then((responseScreen) => {
+        setloading(false);
+        navigation.replace(responseScreen?.screen, { ...responseScreen?.params })
+      }).catch(async () => {
+        entity.isLoggedIn = true;
+        await Utility.setStorage('authContextEntity', { ...entity })
+        await Utility.setStorage('loggedInEntity', { ...entity })
+        await authContext.setEntity({ ...entity })
+        setloading(false);
+      });
+    }
+  }, [authContext, dummyAuthContext.entity, dummyAuthContext?.tokenData, email, getRedirectionScreenName, navigation, password])
+
+  const QBInitialLogin = useCallback((firebaseUser, townscupUser) => {
+    const response = { ...townscupUser };
+    let qbEntity = { ...dummyAuthContext?.entity };
+    QBlogin(qbEntity.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+      QBconnectAndSubscribe(qbEntity)
+      dummyAuthContext.entity = { ...qbEntity }
+      loginFinalRedirection(firebaseUser, townscupUser);
+    }).catch((error) => {
+      console.log('QB Login Error : ', error.message);
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      dummyAuthContext.entity = { ...qbEntity }
+      loginFinalRedirection(firebaseUser);
+    });
+  }, [dummyAuthContext, loginFinalRedirection])
+
+  const onAuthStateChanged = useCallback((user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
         };
-        const userDetail = { email };
-        const entity = {
-          auth: { user_id: user.uid },
-          uid: user.uid,
-          role: 'user',
-        };
-        await authContext.setTokenData(token);
-        await authContext.setEntity({ ...entity })
-        await Utility.setStorage('userInfo', userDetail);
-        await Utility.setStorage('loggedInEntity', entity);
-        await setloading(false);
-        await callBack();
-      }).catch(() => setloading(false));
-    }
-  }, [authContext, email]);
-
-  const onAuthStateChanged = useCallback((user) => {
-    if (user) {
-      user.getIdTokenResult().then((idTokenResult) => {
-        const token = {
-          token: idTokenResult.token,
-          expirationTime: idTokenResult.expirationTime,
-        };
+        dummyAuthContext.tokenData = token;
         Utility.setStorage('eventColor', eventDefaultColorsData);
         Utility.setStorage('groupEventValue', true)
         const userConfig = {
@@ -108,7 +128,7 @@ export default function LoginScreen({ navigation }) {
           headers: { Authorization: `Bearer ${token?.token}` },
         }
         apiCall(userConfig).then(async (response) => {
-          const entity = {
+          dummyAuthContext.entity = {
             uid: user.uid,
             role: 'user',
             obj: response.payload,
@@ -117,47 +137,25 @@ export default function LoginScreen({ navigation }) {
               user: response.payload,
             },
           }
-          authContext.setUser({ ...response.payload });
-          await authContext.setTokenData(token);
-          await Utility.setStorage('authContextEntity', { ...entity })
-          await Utility.setStorage('authContextUser', { ...response.payload })
-          await Utility.setStorage('loggedInEntity', entity)
-          authContext.setEntity({ ...entity })
-          QBInitialLogin(entity, response?.payload);
+          QBInitialLogin(user, response.payload);
         }).catch(async (error) => {
           // eslint-disable-next-line no-underscore-dangle
-          if (!user?._user?.emailVerified) {
-            user.sendEmailVerification()
-            saveUserDetails(user, () => {
-              navigation.navigate('EmailVerificationScreen', {
-                emailAddress: email,
-                password,
-              });
-            })
-            // eslint-disable-next-line no-underscore-dangle
-          } else if (user?._user?.emailVerified) {
-            setloading(false);
-            saveUserDetails(user, () => {
-              navigation.navigate('SignUpFromLoginScreen')
-            })
-          } else {
-            setloading(false);
-            setTimeout(() => Alert.alert(
-                'TownsCup',
-                error.message,
-            ), 100)
-          }
+          setloading(false);
+          setTimeout(() => Alert.alert(
+              'TownsCup',
+              error.message,
+          ), 100)
         });
       });
     }
-  }, [QBInitialLogin, authContext, saveUserDetails]);
+  }, [QBInitialLogin, dummyAuthContext]);
 
-  const login = useCallback(async (_email, _password) => {
+  const login = useCallback(async () => {
     setloading(true);
     await Utility.clearStorage();
     firebase
       .auth()
-      .signInWithEmailAndPassword(_email, _password)
+      .signInWithEmailAndPassword(email, password)
       .then(() => {
         const loginOnAuthStateChanged = auth().onAuthStateChanged(onAuthStateChanged);
         loginOnAuthStateChanged();
@@ -185,7 +183,7 @@ export default function LoginScreen({ navigation }) {
         }
         if (message !== '') setTimeout(() => Alert.alert('Towns Cup', message), 100)
       });
-  }, [onAuthStateChanged]);
+  }, [email, onAuthStateChanged, password]);
 
   // Psaaword Hide/Show function for setState
   const hideShowPassword = useCallback(() => {
@@ -229,7 +227,7 @@ export default function LoginScreen({ navigation }) {
 
   const onLogin = useCallback(async () => {
     if (validate()) {
-      if (authContext.networkConnected) login(email, password);
+      if (authContext.networkConnected) login();
       else authContext.showNetworkAlert();
     }
   }, [authContext, email, login, password, validate])

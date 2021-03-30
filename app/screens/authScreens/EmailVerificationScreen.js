@@ -33,11 +33,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
       .then(async (res) => {
         setLoading(false);
         if (res.user.emailVerified) {
-            if (!route.params?.first_name) {
-                navigation.replace('SignUpFromLoginScreen');
-            } else {
-                navigation.replace('AddBirthdayScreen');
-            }
+            navigation.replace('AddBirthdayScreen');
         } else {
           setTimeout(() => {
             Alert.alert('Your email hasn’t been verified yet.');
@@ -107,7 +103,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
           source={images.emailSendIconBG}
         />
 
-      <TouchableOpacity onPress={() => resend()} disabled={timer !== 0} style={{ alignItems: 'center' }}>
+      <TouchableOpacity onPress={resend} disabled={timer !== 0} style={{ alignItems: 'center' }}>
         <Text style={{
                         width: '85%',
                         textAlign: 'center',
@@ -120,7 +116,7 @@ export default function EmailVerificationScreen({ navigation, route }) {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => verifyUserEmail()}>
+      <TouchableOpacity onPress={verifyUserEmail}>
         <View
           style={{
             borderRadius: 40,

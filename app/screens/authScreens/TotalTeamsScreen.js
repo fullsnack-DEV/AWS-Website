@@ -20,6 +20,7 @@ import images from '../../Constants/ImagePath';
 const DELAY_PAGE_TIME = 2000;
 export default function TotalTeamsScreen({ navigation, route }) {
   useEffect(() => {
+    FastImage.preload([images.checkWhite, images.uncheckWhite]);
     setTimeout(() => {
       navigation.navigate('ChooseSportsScreen', {
         teamData: route.params.teamData,

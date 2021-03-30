@@ -31,15 +31,17 @@ import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
+import { createUser } from '../../api/Users';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
-
+let dummyAuthContext = {};
 export default function WelcomeScreen({ navigation }) {
   const fadeInOpacity = new Animated.Value(0);
 
   // For activity indigator
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
+  dummyAuthContext = { ...authContext };
   const [currentBackground, setCurrentBackground] = useState(1);
 
   useEffect(() => {
@@ -65,30 +67,116 @@ export default function WelcomeScreen({ navigation }) {
     offlineAccess: false,
   });
 
-  const QBInitialLogin = (entity, response) => {
-    let qbEntity = entity
-    QBlogin(qbEntity.uid, response).then(async (res) => {
-      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { ...res.user, connected: true, token: res?.session?.token } }
+  const getRedirectionScreenName = useCallback((townscupUser) => new Promise((resolve, reject) => {
+    if (!townscupUser.birthday) resolve({ screen: 'AddBirthdayScreen' })
+    else if (!townscupUser.gender) resolve({ screen: 'ChooseGenderScreen' })
+    else if (!townscupUser.city) resolve({ screen: 'ChooseLocationScreen' })
+    else if (!townscupUser.sports) resolve({ screen: 'ChooseSportsScreen', params: { city: townscupUser?.city, state: townscupUser?.state_abbr, country: townscupUser?.country } })
+    else reject(new Error({ error: 'completed user profile' }))
+  }), [])
+
+  const loginFinalRedirection = useCallback(async (townscupUser) => {
+    let entity = { ...dummyAuthContext?.entity }
+    console.log('townscupUser : ', townscupUser)
+    entity = {
+      ...entity,
+      auth: { ...entity?.auth, user: townscupUser },
+      obj: { ...entity?.obj, ...townscupUser },
+    }
+    await authContext.setTokenData(dummyAuthContext?.tokenData);
+    await Utility.setStorage('authContextUser', { ...townscupUser })
+    await Utility.setStorage('authContextEntity', { ...entity })
+    await Utility.setStorage('loggedInEntity', entity)
+    await authContext.setUser({ ...townscupUser });
+    await authContext.setEntity({ ...entity })
+    // eslint-disable-next-line no-underscore-dangle
+    getRedirectionScreenName(townscupUser).then((responseScreen) => {
+      setloading(false);
+      navigation.replace(responseScreen?.screen, { ...responseScreen?.params })
+    }).catch(async () => {
+      entity.isLoggedIn = true;
+      await Utility.setStorage('authContextEntity', { ...entity })
+      await Utility.setStorage('loggedInEntity', { ...entity })
+      setloading(false);
+      await authContext.setEntity({ ...entity })
+    });
+  }, [authContext, getRedirectionScreenName, navigation])
+
+  const QBInitialLogin = async (entity, townscupUser) => {
+    let qbEntity = { ...entity }
+    QBlogin(qbEntity?.uid, townscupUser).then(async (res) => {
+      qbEntity = { ...qbEntity, QB: { ...res?.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity);
-      await Utility.setStorage('authContextUser', { ...response })
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      await Utility.setStorage('loggedInEntity', qbEntity)
-      authContext.setUser(response);
-      authContext.setEntity({ ...qbEntity })
-      setloading(false);
+      dummyAuthContext.entity = { ...qbEntity }
+      await loginFinalRedirection(townscupUser);
     }).catch(async (error) => {
-      qbEntity = { ...qbEntity, isLoggedIn: true, QB: { connected: false } }
-      await Utility.setStorage('authContextUser', { ...response })
-      await Utility.setStorage('authContextEntity', { ...qbEntity })
-      await Utility.setStorage('loggedInEntity', qbEntity)
-      authContext.setUser(response);
-      authContext.setEntity({ ...qbEntity });
       console.log('QB Login Error : ', error.message);
-      setloading(false);
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      dummyAuthContext.entity = { ...qbEntity }
+      await loginFinalRedirection(townscupUser);
     });
   }
 
-  const socialSignInSignUp = (authResult, message) => {
+  const setDummyAuthContext = (key, value) => {
+    dummyAuthContext[key] = value;
+  }
+
+  const wholeSignUpProcessComplete = async (userData) => {
+    const entity = { ...dummyAuthContext?.entity };
+    const tokenData = dummyAuthContext?.tokenData;
+    entity.auth.user = { ...userData }
+    entity.obj = { ...userData }
+    entity.uid = userData?.user_id;
+    await Utility.setStorage('loggedInEntity', { ...entity })
+    await Utility.setStorage('authContextEntity', { ...entity })
+    await Utility.setStorage('authContextUser', { ...userData });
+    await authContext.setTokenData(tokenData);
+    await authContext.setUser({ ...userData });
+    await authContext.setEntity({ ...entity });
+    setloading(false);
+    navigation.navigate('AddBirthdayScreen')
+  }
+
+  const signUpWithQB = (response) => {
+    let qbEntity = { ...dummyAuthContext?.entity };
+    QBlogin(qbEntity?.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, QB: { ...res?.user, connected: true, token: res?.session?.token } }
+      QBconnectAndSubscribe(qbEntity)
+      setDummyAuthContext('entity', { ...qbEntity });
+      await wholeSignUpProcessComplete(response);
+    }).catch(async (error) => {
+      console.log('QB Login Error : ', error.message);
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      setDummyAuthContext('entity', qbEntity)
+      await wholeSignUpProcessComplete(response);
+    });
+  }
+
+  const signUpToTownsCup = async (userDetail) => {
+    setloading(true);
+    const data = {
+      first_name: userDetail?.first_name,
+      last_name: userDetail?.last_name,
+      email: userDetail?.email,
+    };
+
+    createUser(data, dummyAuthContext).then((createdUser) => {
+      const authEntity = { ...dummyAuthContext?.entity }
+      authEntity.obj = createdUser?.payload
+      authEntity.auth.user = createdUser?.payload
+      authEntity.role = 'user'
+      setDummyAuthContext('entity', authEntity);
+      setDummyAuthContext('user', createdUser?.payload);
+      signUpWithQB(createdUser?.payload);
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  };
+
+  const socialSignInSignUp = (authResult, message, extraData = {}) => {
     console.log(message, authResult);
     const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
       console.log('User :-', user);
@@ -99,6 +187,7 @@ export default function WelcomeScreen({ navigation }) {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
+          dummyAuthContext.tokenData = token;
           const userConfig = {
             method: 'get',
             url: `${Config.BASE_URL}/users/${user?.uid}`,
@@ -114,33 +203,24 @@ export default function WelcomeScreen({ navigation }) {
                 user: response.payload,
               },
             }
-            await authContext.setTokenData(token);
+            setDummyAuthContext('entity', entity);
             QBInitialLogin(entity, response?.payload);
           }).catch(async () => {
-            const entity = {
+            dummyAuthContext.entity = {
               auth: { user_id: user.uid },
               uid: user.uid,
               role: 'user',
             }
-            await authContext.setTokenData(token);
-            await Utility.setStorage('loggedInEntity', entity);
-            await authContext.setEntity({ ...entity })
-            const flName = user.displayName.split(' ');
-
-            const userDetail = {};
-            if (flName.length >= 2) {
-              [userDetail.first_name, userDetail.last_name] = flName
-            } else if (flName.length === 1) {
-              [userDetail.first_name, userDetail.last_name] = [flName[0], '']
-            } else if (flName.length === 0) {
+            const flName = user?.displayName?.split(' ');
+            const userDetail = { ...extraData };
+            if (flName?.length >= 2) [userDetail.first_name, userDetail.last_name] = flName
+            else if (flName?.length === 1) [userDetail.first_name, userDetail.last_name] = [flName[0], '']
+            else if (flName?.length === 0) {
               userDetail.first_name = 'Towns';
               userDetail.last_name = 'Cup';
             }
             userDetail.email = user.email;
-
-            await Utility.setStorage('userInfo', userDetail);
-            setloading(false);
-            navigation.replace('AddBirthdayScreen')
+            signUpToTownsCup(userDetail)
           });
         }).catch(() => setloading(false));
       }
@@ -148,9 +228,9 @@ export default function WelcomeScreen({ navigation }) {
     socialSignInSignUpOnAuthChanged();
   }
 
-  const signInSignUpWithSocialCredential = async (credential, provider) => {
+  const signInSignUpWithSocialCredential = async (credential, provider, extraData = {}) => {
     auth().signInWithCredential(credential).then(async (authResult) => {
-      socialSignInSignUp(authResult, provider);
+      socialSignInSignUp(authResult, provider, extraData);
     }).catch((error) => {
       setloading(false);
       let message = ''
@@ -214,18 +294,22 @@ export default function WelcomeScreen({ navigation }) {
       alert('Apple Login not supported')
     } else {
       setloading(true);
-      const appleAuthRequestResponse = await appleAuth.performRequest({
+      appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      });
-      if (!appleAuthRequestResponse.identityToken) {
-        Alert.alert('Apple Sign-In failed - no identify token returned');
-      }
-
-      // Create a Firebase credential from the response
-      const { identityToken, nonce } = appleAuthRequestResponse;
-      const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
-      await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ')
+      }).then(async (appleAuthRequestResponse) => {
+        if (!appleAuthRequestResponse.identityToken) {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert('Apple Sign-In failed - no identify token returned');
+          }, 200)
+        } else {
+          // Create a Firebase credential from the response
+          const { identityToken, nonce, fullName } = appleAuthRequestResponse;
+          const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
+          await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+        }
+      }).catch(() => setloading(false));
     }
   };
 
@@ -300,33 +384,24 @@ export default function WelcomeScreen({ navigation }) {
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <View style={{ marginBottom: hp(2) }}>
+          {Platform.OS === 'ios' && <AppleButton onPress={() => {
+            if (authContext.networkConnected) onAppleButtonPress();
+            else authContext.showNetworkAlert();
+          }}/>}
+
           <FacebookButton onPress={() => {
-        if (authContext.networkConnected) {
-          onFacebookButtonPress();
-        } else {
-          authContext.showNetworkAlert();
-        }
-          }}/>
-          <GoogleButton onPress={() => {
-            if (authContext.networkConnected) {
-              onGoogleButtonPress();
-            } else {
-              authContext.showNetworkAlert();
-            }
+            if (authContext.networkConnected) onFacebookButtonPress();
+            else authContext.showNetworkAlert();
           }}/>
 
-          <AppleButton onPress={() => {
-            if (authContext.networkConnected) {
-              onAppleButtonPress();
-            } else {
-              authContext.showNetworkAlert();
-            }
+          <GoogleButton onPress={() => {
+            if (authContext.networkConnected) onGoogleButtonPress();
+            else authContext.showNetworkAlert();
           }}/>
+
           <TouchableOpacity
             style={styles.allButton }
-            onPress={ () => {
-              navigation.navigate('SignupScreen')
-            }}>
+            onPress={ () => navigation.navigate('SignupScreen')}>
             <FastImage source={ images.email } resizeMode={'contain'} style={ styles.signUpImg } />
             <Text style={ styles.signUpText }>{strings.signUpText}</Text>
           </TouchableOpacity>

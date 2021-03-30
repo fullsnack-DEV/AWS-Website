@@ -231,6 +231,7 @@ const HomeFeed = ({
         <View style={styles.sepratorView} />
         <ActivityLoader visible={fullScreenLoading}/>
         <NewsFeedList
+            showEnptyDataText={currentTab === 0}
             updateCommentCount={updateCommentCount}
             onFeedScroll={onFeedScroll}
               refs={refs}

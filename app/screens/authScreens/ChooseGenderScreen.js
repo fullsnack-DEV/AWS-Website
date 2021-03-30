@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
 } from 'react-native';
@@ -17,10 +17,14 @@ import TCButton from '../../components/TCButton';
 import strings from '../../Constants/String';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import { updateUserProfile } from '../../api/Users';
+import AuthContext from '../../auth/context';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 export default function ChooseGenderScreen({ navigation }) {
+  const authContext = useContext(AuthContext);
   const [selected, setSelected] = useState(0);
-
+  const [loading, setLoading] = useState(false);
   const RenderRadio = ({ isSelected, onRadioPress }) => (
     <View style={{
       flex: 0.1,
@@ -51,10 +55,29 @@ export default function ChooseGenderScreen({ navigation }) {
       </TouchableOpacity>
     </View>
   )
+
+  const updateProfile = async (params, callback) => {
+    setLoading(true);
+    updateUserProfile(params, authContext).then(async (userResoponse) => {
+      const userData = userResoponse?.payload;
+      const entity = { ...authContext?.entity };
+      entity.auth.user = userData;
+      entity.obj = userData;
+      await Utility.setStorage('loggedInEntity', { ...entity })
+      await Utility.setStorage('authContextEntity', { ...entity })
+      await Utility.setStorage('authContextUser', { ...userData });
+      await authContext.setUser({ ...userData });
+      await authContext.setEntity({ ...entity });
+      setLoading(false);
+      callback();
+    }).catch(() => setLoading(false))
+  }
+
   return (
     <LinearGradient
           colors={[colors.themeColor1, colors.themeColor3]}
           style={styles.mainContainer}>
+      <ActivityLoader visible={loading}/>
       <FastImage resizeMode={'stretch'} style={styles.background} source={images.loginBg} />
       <Text style={ styles.checkEmailText }>{strings.addGenderText}</Text>
       <Text style={ styles.resetText }>{strings.notDisplayGenderText}</Text>
@@ -85,28 +108,14 @@ export default function ChooseGenderScreen({ navigation }) {
       <TCButton
         title={ strings.continueCapTitle }
         onPress={ async () => {
-          let userGender = {};
-          const user = await Utility.getStorage('userInfo');
-          if (selected === 0) {
-            userGender = {
-              ...user,
-              gender: 'male',
-            }
-          } else if (selected === 1) {
-            userGender = {
-              ...user,
-              gender: 'female',
-            }
-          } else if (selected === 2) {
-            userGender = {
-              ...user,
-              gender: 'other',
-            }
-          }
-
-          await Utility.setStorage('userInfo', userGender);
-          navigation.navigate('ChooseLocationScreen');
-        } }
+          let gender = {}
+          if (selected === 0) gender = 'male';
+          else if (selected === 1) gender = 'female';
+          else if (selected === 2) gender = 'other';
+          updateProfile({ gender }, () => {
+            navigation.navigate('ChooseLocationScreen');
+          });
+        }}
         extraStyle={ { bottom: hp('4%'), position: 'absolute' } }
       />
     </LinearGradient>

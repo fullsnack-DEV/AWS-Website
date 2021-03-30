@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
 import { widthPercentageToDP as wp } from '../utils';
+import colors from '../Constants/Colors';
 
 const CustomVideoPlayer = ({
   sourceURL,
@@ -79,7 +80,9 @@ const CustomVideoPlayer = ({
               focusable={true}
               source={{ uri: sourceURL }}
               ref={videoPlayerRef}
-              style={{ ...styles.mediaPlayer, ...videoStyle }}
+              style={{
+ ...styles.mediaPlayer, backgroundColor: 'black', ...videoStyle,
+              }}
               onEnd={onEnd}
               onLoad={onLoad}
               onLoadStart={onLoadStart}
@@ -91,7 +94,7 @@ const CustomVideoPlayer = ({
               fullscreenAutorotate={true}
           />
       <MediaControls
-              containerStyle={{ backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 100 }}
+              containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 100 }}
               sliderStyle={{ containerStyle: { zIndex: 100, paddingBottom: isLandscape ? wp(16) : 0 } }}
               // isFullScreen={isFullScreen}
               duration={duration}
@@ -111,7 +114,7 @@ const CustomVideoPlayer = ({
 
 const styles = StyleSheet.create({
   mediaPlayer: {
-    backgroundColor: 'black',
+    backgroundColor: colors.blackColor,
     justifyContent: 'center',
   },
 })

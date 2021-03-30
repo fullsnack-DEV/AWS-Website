@@ -26,17 +26,20 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import AuthContext from '../../auth/context'
 import apiCall from '../../utils/apiCall';
-import { checkTownscupEmail } from '../../api/Users';
+import { checkTownscupEmail, createUser } from '../../api/Users';
+import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 
 export default function SignupScreen({ navigation }) {
   const authContext = useContext(AuthContext)
-  const [fName, setFName] = useState('');
-  const [lName, setLName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [cPassword, setCPassword] = useState('');
-  const [hidePassword, setHidePassword] = useState(true);
+  const dummyAuthContext = { ...authContext }
+  const [fName, setFName] = useState('Raj ');
+  const [lName, setLName] = useState('Kapoor ');
+  const [email, setEmail] = useState('rajkapoordev+50@gmail.com');
+  const [password, setPassword] = useState('123456');
+  const [cPassword, setCPassword] = useState('123456');
+  const [hidePassword, setHidePassword] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
+
   // For activity indigator
   const [loading, setloading] = useState(false);
 
@@ -81,16 +84,16 @@ export default function SignupScreen({ navigation }) {
 
   }, [])
 
-  const checkUserIsRegistratedOrNotWithTownscup = (emailAddress) => new Promise((resolve) => {
-    checkTownscupEmail(encodeURIComponent(emailAddress)).then(() => {
+  const checkUserIsRegistratedOrNotWithTownscup = () => new Promise((resolve) => {
+    checkTownscupEmail(encodeURIComponent(email)).then(() => {
       resolve(true);
     }).catch(() => {
       resolve(false);
     })
   })
 
-  const checkUserIsRegistratedOrNotWithFirebase = (emailAddress) => new Promise((resolve, reject) => {
-    auth().fetchSignInMethodsForEmail(emailAddress).then((isAccountThereInFirebase) => {
+  const checkUserIsRegistratedOrNotWithFirebase = () => new Promise((resolve, reject) => {
+    auth().fetchSignInMethodsForEmail(email).then((isAccountThereInFirebase) => {
       if (isAccountThereInFirebase?.length > 0) {
         resolve(isAccountThereInFirebase);
       } else {
@@ -102,23 +105,76 @@ export default function SignupScreen({ navigation }) {
     })
   })
 
+  const wholeSignUpProcessComplete = async (userData) => {
+    const entity = dummyAuthContext?.entity;
+    const tokenData = dummyAuthContext?.tokenData;
+    entity.auth.user = { ...userData }
+    entity.obj = { ...userData }
+    entity.uid = userData?.user_id;
+    await Utility.setStorage('loggedInEntity', { ...entity })
+    await Utility.setStorage('authContextEntity', { ...entity })
+    await Utility.setStorage('authContextUser', { ...userData });
+    await authContext.setTokenData(tokenData);
+    await authContext.setUser({ ...userData });
+    await authContext.setEntity({ ...entity });
+    setloading(false);
+    navigation.navigate('EmailVerificationScreen', {
+      emailAddress: email,
+      password,
+      first_name: fName,
+    });
+  }
+
+  const signUpWithQB = (response) => {
+    let qbEntity = { ...dummyAuthContext.entity };
+    QBlogin(qbEntity.uid, response).then(async (res) => {
+      qbEntity = { ...qbEntity, QB: { ...res.user, connected: true, token: res?.session?.token } }
+      QBconnectAndSubscribe(qbEntity)
+      setDummyAuthContext('entity', qbEntity);
+      await wholeSignUpProcessComplete(response);
+    }).catch(async (error) => {
+      console.log('QB Login Error : ', error.message);
+      qbEntity = { ...qbEntity, QB: { connected: false } }
+      setDummyAuthContext('entity', qbEntity)
+      await wholeSignUpProcessComplete(response);
+    });
+  }
+
+  const signUpToTownsCup = async (uploadedProfilePic) => {
+    setloading(true);
+    const data = {
+      first_name: fName,
+      last_name: lName,
+      email,
+      thumbnail: uploadedProfilePic?.thumbnail ?? '',
+      full_image: uploadedProfilePic?.full_image ?? '',
+    };
+
+    createUser(data, dummyAuthContext).then((createdUser) => {
+      const authEntity = { ...dummyAuthContext.entity }
+      authEntity.obj = createdUser?.payload
+      authEntity.auth.user = createdUser?.payload
+      authEntity.role = 'user'
+      setDummyAuthContext('entity', authEntity);
+      setDummyAuthContext('user', createdUser?.payload);
+      signUpWithQB(createdUser?.payload);
+    }).catch((e) => {
+      setloading(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+  };
+
+  const setDummyAuthContext = (key, value) => {
+      dummyAuthContext[key] = value;
+  }
   const saveUserDetails = async (user) => {
     if (user) {
       user.getIdTokenResult().then(async (idTokenResult) => {
         const token = {
           token: idTokenResult.token,
           expirationTime: idTokenResult.expirationTime,
-        };
-        const userConfig = {
-          method: 'get',
-          url: `${Config.BASE_URL}/users/${user?.uid}`,
-          headers: { Authorization: `Bearer ${token?.token}` },
-        }
-
-        const userDetail = {
-          first_name: fName,
-          last_name: lName,
-          email,
         };
         const uploadImageConfig = {
           method: 'get',
@@ -130,7 +186,7 @@ export default function SignupScreen({ navigation }) {
           uid: user.uid,
           role: 'user',
         };
-        await authContext.setTokenData(token);
+        setDummyAuthContext('tokenData', token)
         if (profilePic) {
           const apiResponse = await apiCall(uploadImageConfig);
           const preSignedUrls = apiResponse?.payload?.preSignedUrls ?? [];
@@ -146,41 +202,24 @@ export default function SignupScreen({ navigation }) {
               type: profilePic?.path.split('.')[1] || 'jpeg',
             }),
           ]).then(async ([fullImage, thumbnail]) => {
-            userDetail.full_image = fullImage;
-            userDetail.thumbnail = thumbnail
-            await authContext.setEntity({ ...entity })
-            await Utility.setStorage('userInfo', userDetail);
-            await Utility.setStorage('loggedInEntity', entity);
+            setDummyAuthContext('entity', entity)
+            const uploadedProfilePic = { full_image: fullImage, thumbnail }
+            await signUpToTownsCup(uploadedProfilePic);
           }).catch(async () => {
-            await authContext.setEntity({ ...entity })
-            await Utility.setStorage('userInfo', userDetail);
-            await Utility.setStorage('loggedInEntity', entity);
+            setDummyAuthContext('entity', entity)
+            await signUpToTownsCup();
           })
         } else {
-          await authContext.setEntity({ ...entity })
-          await Utility.setStorage('userInfo', userDetail);
-          await Utility.setStorage('loggedInEntity', entity);
+          setDummyAuthContext('entity', entity)
+          await signUpToTownsCup();
         }
-        apiCall(userConfig).then(async () => {
-          setloading(false);
-          Alert.alert('User is already registered!');
-          navigation.navigate('LoginScreen');
-        })
-          .catch(() => {
-            setloading(false);
-            navigation.navigate('EmailVerificationScreen', {
-              emailAddress: email,
-              password,
-              first_name: fName,
-            });
-          });
       }).catch(() => setloading(false));
     }
   };
 
-  const signUpWithNewEmail = (emailAddress, passwordInput) => {
+  const signUpWithFirebase = () => {
     auth()
-      .createUserWithEmailAndPassword(emailAddress, passwordInput)
+      .createUserWithEmailAndPassword(email, password)
       .then(async () => {
         const signUpOnAuthChanged = auth().onAuthStateChanged((user) => {
           if (user) {
@@ -219,32 +258,38 @@ export default function SignupScreen({ navigation }) {
     } if (param[0].includes('google')) {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject({ provider: 'google' });
+    } if (param[0].includes('apple')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'apple' });
     }
     resolve(true);
   })
-  const signupUser = (fname, lname, emailAddress, passwordInput) => {
+  const signupUser = () => {
     setloading(true);
-    checkUserIsRegistratedOrNotWithTownscup(email).then((userExist) => {
+    checkUserIsRegistratedOrNotWithTownscup().then((userExist) => {
       if (userExist) {
         setloading(false);
         setTimeout(() => {
           Alert.alert('User is already registered with townscup!');
         }, 100)
       } else {
-        checkUserIsRegistratedOrNotWithFirebase(emailAddress).then((firebaseUserExist) => {
+        checkUserIsRegistratedOrNotWithFirebase().then((firebaseUserExist) => {
           if (firebaseUserExist) {
             registerWithAnotherProvider(firebaseUserExist).then(() => {
-              signUpWithNewEmail(emailAddress, passwordInput);
+              signUpWithFirebase();
             }).catch((error) => {
+              console.log(error)
               setloading(false)
               setTimeout(() => {
                 Alert.alert('Townscup', `This email is already registrated with ${error?.provider}`)
               }, 100)
             })
           } else {
-            signUpWithNewEmail(emailAddress, passwordInput);
+            signUpWithFirebase();
           }
-        }).catch(() => setloading(false));
+        }).catch(() => {
+          signUpWithFirebase();
+        });
       }
     })
   }
@@ -349,7 +394,7 @@ export default function SignupScreen({ navigation }) {
                 onPress={() => {
                   if (validate()) {
                     if (authContext.networkConnected) {
-                      signupUser(fName, lName, email, password);
+                      signupUser();
                     } else {
                       authContext.showNetworkAlert();
                     }
