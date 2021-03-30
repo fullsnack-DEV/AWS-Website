@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  SectionList,
-  KeyboardAvoidingView,
-} from 'react-native';
+ StyleSheet, Text, SectionList, View,
+ } from 'react-native';
 import moment from 'moment';
 import TCEventView from '../../../components/TCEventView';
-import colors from '../../../Constants/Colors'
+import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
 export default function EventScheduleScreen({
@@ -17,6 +14,7 @@ export default function EventScheduleScreen({
   entity,
   profileID,
   screenUserId,
+  onScroll,
 }) {
   const [filterData, setFilterData] = useState(null);
 
@@ -34,7 +32,7 @@ export default function EventScheduleScreen({
           nextDay: '[Tomorrow]',
           nextWeek: '[Future]',
           sameElse: '[Future]',
-        })
+        });
         if (dateText === 'Today') {
           todayData.push(item_filter);
         }
@@ -45,11 +43,15 @@ export default function EventScheduleScreen({
           futureData.push(item_filter);
         }
         return null;
-      })
-      console.log('ED: ', eventData)
+      });
+      console.log('ED: ', eventData);
       let filData = [];
       if (todayData && tomorrowData && futureData) {
-        if (todayData?.length > 0 || tomorrowData?.length > 0 || futureData?.length > 0) {
+        if (
+          todayData?.length > 0
+          || tomorrowData?.length > 0
+          || futureData?.length > 0
+        ) {
           filData = [
             {
               title: 'Today',
@@ -75,13 +77,15 @@ export default function EventScheduleScreen({
   }, [eventData]);
 
   return (
-    <KeyboardAvoidingView style={ styles.mainContainer } behavior={'padding'}>
+    <View style={styles.mainContainer}>
       {filterData && (
         <SectionList
-              ListEmptyComponent={<Text style={styles.dataNotFoundText}>
-                Data Not Found
-              </Text>}
-          renderItem={ ({ item }) => {
+        onScroll={onScroll}
+        scrollEventThrottle={1}
+          ListEmptyComponent={
+            <Text style={styles.dataNotFoundText}>Data Not Found</Text>
+          }
+          renderItem={({ item }) => {
             if (item.cal_type === 'event') {
               return (
                 <TCEventView
@@ -91,22 +95,26 @@ export default function EventScheduleScreen({
                   screenUserId={screenUserId}
                   onThreeDotPress={() => onThreeDotPress(item)}
                   eventBetweenSection={item.game}
-                  eventOfSection={item.game && item.game.referees && item.game.referees.length > 0}
+                  eventOfSection={
+                    item.game
+                    && item.game.referees
+                    && item.game.referees.length > 0
+                  }
                   entity={entity}
                 />
               );
             }
             return null;
           }}
-          renderSectionHeader={ ({ section }) => (
-            section.data.length > 0 && <Text style={ styles.sectionHeader }>{section.title}</Text>
-          )}
+          renderSectionHeader={({ section }) => section.data.length > 0 && (
+            <Text style={styles.sectionHeader}>{section.title}</Text>
+          )
+          }
           sections={filterData}
           keyExtractor={(item, index) => index.toString()}
-          bounces={false}
         />
       )}
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

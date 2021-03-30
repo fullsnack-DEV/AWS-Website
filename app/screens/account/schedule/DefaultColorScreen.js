@@ -41,7 +41,7 @@ export default function DefaultColorScreen({ navigation }) {
   const [pressAddEventColor, setPressAddEventColor] = useState('');
   const [addColorDoneButton, setAddColorDoneButton] = useState(false);
 
-  const TOTAL_COLOR = 11;
+  const TOTAL_COLOR = 10;
   const getStorageColors = async () => {
     const eventColorData = await Utility.getStorage('eventColors');
     const importedColorData = await Utility.getStorage('importedEventColor');

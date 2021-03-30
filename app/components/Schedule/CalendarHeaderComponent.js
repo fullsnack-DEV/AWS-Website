@@ -72,7 +72,7 @@ class CalendarHeaderComponent extends React.PureComponent {
             </View>
 
             <View>
-              {!this.props.horizontal ? (
+              {!this.props.isListView ? (
                 <TouchableOpacity
                   hitSlop={getHitSlop(15)}
                   style={{ marginRight: 15 }}
@@ -82,7 +82,7 @@ class CalendarHeaderComponent extends React.PureComponent {
                    source={images.goalsImage}
                 /> */}
                   <Image
-                    source={images.uncheckWhite}
+                    source={images.grayListIcon}
                     style={{
                       resizeMode: 'contain',
                       height: 18,
@@ -92,7 +92,7 @@ class CalendarHeaderComponent extends React.PureComponent {
                   />
                 </TouchableOpacity>
               ) : null}
-              {this.props.horizontal ? (
+              {this.props.isListView ? (
                 <TouchableOpacity
                   hitSlop={getHitSlop(15)}
                   style={{ marginRight: 15 }}
@@ -102,11 +102,11 @@ class CalendarHeaderComponent extends React.PureComponent {
                  source={images.goalsImage}
               /> */}
                   <Image
-                    source={images.orangeCheckBox}
+                    source={images.orangeListIcon}
                     style={{
                       resizeMode: 'contain',
-                      height: 18,
-                      width: 18,
+                      height: 16,
+                      width: 20,
 
                     }}
                   />
@@ -126,7 +126,7 @@ class CalendarHeaderComponent extends React.PureComponent {
             <View style={styles.week}>
               {weekDaysNames.map((day, index) => (
                 <Text key={index} style={styles.weekName} numberOfLines={1}>
-                  {day.toUpperCase()}
+                  {day}
                 </Text>
               ))}
             </View>
@@ -140,6 +140,7 @@ class CalendarHeaderComponent extends React.PureComponent {
 CalendarHeaderComponent.propTypes = {
   headerData: PropTypes.object,
   horizontal: PropTypes.bool,
+  isListView: PropTypes.bool,
   onPressArrowRight: PropTypes.func.isRequired,
   onPressArrowLeft: PropTypes.func.isRequired,
   onPressListView: PropTypes.func.isRequired,

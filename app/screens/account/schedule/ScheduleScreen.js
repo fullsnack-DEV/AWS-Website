@@ -22,6 +22,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
+  ScrollView,
+  Animated,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -78,6 +80,7 @@ import {
 import NotificationListTopHeaderShimmer from '../../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCThinDivider from '../../../components/TCThinDivider';
 
+const lastDistance = null;
 let selectedCalendarDate = moment();
 const { width } = Dimensions.get('window');
 
@@ -98,6 +101,9 @@ export default function ScheduleScreen({ navigation }) {
   const [isScorekeeperModal, setIsScorekeeperModal] = useState(false);
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
+  const [showTimeTable, setShowTimeTable] = useState(false);
+
+const [listView, setListView] = useState(false)
 
   const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
   const currentDate = moment();
@@ -112,7 +118,7 @@ export default function ScheduleScreen({ navigation }) {
     selectedCalendarMonthString,
     setselectedCalendarMonthString,
   ] = useState(selectedCalendarDate.format('YYYY-MM-DD'));
-const [markingDays, setMarkingDays] = useState({})
+  const [markingDays, setMarkingDays] = useState({});
 
   const actionSheet = useRef();
   const agendaRef = useRef();
@@ -122,6 +128,7 @@ const [markingDays, setMarkingDays] = useState({})
   const refContainer = useRef();
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(false);
+  const [animatedOpacityValue] = useState(new Animated.Value(0));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -172,7 +179,7 @@ const [markingDays, setMarkingDays] = useState({})
                 }
                 return null;
               });
-              drawMarkDay(eventData)
+              drawMarkDay(eventData);
               setFilterEventData(eventdata);
               eventTimeTableData.filter((timetable_item) => {
                 const timetable_date = new Date(
@@ -480,15 +487,16 @@ const [markingDays, setMarkingDays] = useState({})
   }, [currentTab, isFocused]);
 
   const renderGroupItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => {
-      if (groupList.length === 2) {
-        if (index !== 2) {
-          activeTab(index)
+    <TouchableOpacity
+      onPress={() => {
+        if (groupList.length === 2) {
+          if (index !== 2) {
+            activeTab(index);
+          }
+        } else {
+          activeTab(index);
         }
-      } else {
-        activeTab(index)
-      }
-    }}
+      }}
       key={index}>
       <NotificationProfileItem
         data={item}
@@ -508,7 +516,6 @@ const [markingDays, setMarkingDays] = useState({})
             elevation: 3,
           }}></View>
       )}
-
     </TouchableOpacity>
   );
 
@@ -613,80 +620,73 @@ const [markingDays, setMarkingDays] = useState({})
   );
 
   const onPressListView = () => {
-    // setHorizontal(true);
-    setMonthView(!monthView)
+    console.log('List view Pressed');
+    setListView(!listView);
   };
 
   const onPressGridView = () => {
-    // setHorizontal(false);
-    setMonthView(!monthView)
+    console.log('Grid view Pressed');
+    setListView(!listView);
   };
 
-const drawMarkDay = (eData) => {
-  const eventTimeTableData = eData;
-  const tempMarkDate = {};
-  eventTimeTableData.filter((event_item) => {
-    const startDate = new Date(event_item.start_datetime * 1000);
-    const eventDate = moment(startDate).format('YYYY-MM-DD');
-    tempMarkDate[eventDate] = {
-      event: true,
-      selected: false,
+  const drawMarkDay = (eData) => {
+    const eventTimeTableData = eData;
+    const tempMarkDate = {};
+    eventTimeTableData.filter((event_item) => {
+      const startDate = new Date(event_item.start_datetime * 1000);
+      const eventDate = moment(startDate).format('YYYY-MM-DD');
+      tempMarkDate[eventDate] = {
+        event: true,
+        selected: false,
       };
-  });
-  setMarkingDays(tempMarkDate)
-}
-
-  const getSelectedDayEvents = useCallback((date) => {
-    const markedDates = { ...markingDays };
-    console.log('MARKED::', Object.keys(markedDates));
-
-    Object.keys(markedDates).forEach((e) => {
-      if (markedDates[e].selected) {
-        markedDates[e].selected = false;
-      } else if (markedDates[e].selected) {
-        if (!markedDates[e].event) {
-          markedDates[e].selected = false;
-          delete markedDates[e];
-        }
-      }
     });
-    if (markedDates[date]) {
-      markedDates[date].selected = true;
-    } else {
-      markedDates[date] = { selected: true };
-    }
-    setMarkingDays(markedDates);
+    setMarkingDays(tempMarkDate);
+  };
 
-    console.log('MARKED DATES::', JSON.stringify(markedDates));
-  }, [markingDays])
+  const getSelectedDayEvents = useCallback(
+    (date) => {
+      const markedDates = { ...markingDays };
+      console.log('MARKED::', Object.keys(markedDates));
+
+      Object.keys(markedDates).forEach((e) => {
+        if (markedDates[e].selected) {
+          markedDates[e].selected = false;
+        } else if (markedDates[e].selected) {
+          if (!markedDates[e].event) {
+            markedDates[e].selected = false;
+            delete markedDates[e];
+          }
+        }
+      });
+      if (markedDates[date]) {
+        markedDates[date].selected = true;
+      } else {
+        markedDates[date] = { selected: true };
+      }
+      setMarkingDays(markedDates);
+
+      console.log('MARKED DATES::', JSON.stringify(markedDates));
+    },
+    [markingDays],
+  );
 
   const onDayPress = (dateObj) => {
     selectedCalendarDate = moment(dateObj.dateString);
-    getSelectedDayEvents(dateObj.dateString)
-    const selectedCalendarDateStr = selectedCalendarDate.format(
-      'YYYY-MM-DD',
-    );
-    setselectedCalendarMonthString(selectedCalendarDateStr)
+    getSelectedDayEvents(dateObj.dateString);
+    const selectedCalendarDateStr = selectedCalendarDate.format('YYYY-MM-DD');
+    setselectedCalendarMonthString(selectedCalendarDateStr);
     // drawMarkDay(eventData)
     setEventSelectDate(dateObj.dateString);
     const date = moment(dateObj.dateString).format('YYYY-MM-DD');
     const dataItem = [];
     timeTable.filter((time_table_item) => {
-      const startDate = new Date(
-        time_table_item.start_datetime * 1000,
-      );
-      const endDate = new Date(
-        time_table_item.end_datetime * 1000,
-      );
-      const eventDateSelect = moment(startDate).format(
-        'YYYY-MM-DD',
-      );
+      const startDate = new Date(time_table_item.start_datetime * 1000);
+      const endDate = new Date(time_table_item.end_datetime * 1000);
+      const eventDateSelect = moment(startDate).format('YYYY-MM-DD');
       if (eventDateSelect === date) {
         const obj = {
           ...time_table_item,
-          start: moment(startDate).format(
-            'YYYY-MM-DD hh:mm:ss',
-          ),
+          start: moment(startDate).format('YYYY-MM-DD hh:mm:ss'),
           end: moment(endDate).format('YYYY-MM-DD hh:mm:ss'),
         };
         dataItem.push(obj);
@@ -695,8 +695,32 @@ const drawMarkDay = (eData) => {
     });
     setFilterTimeTable(dataItem);
     return null;
-  }
+  };
 
+  const onKnobPress = () => {
+    setShowTimeTable(!showTimeTable)
+    setMonthView(!monthView)
+  }
+  const onReachedTop = ({ nativeEvent: e }) => {
+    const offset = e?.contentOffset?.y;
+
+      if (offset >= 20) {
+          Animated.timing(animatedOpacityValue, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start(() => setMonthView(true))
+      }
+      if (offset <= 20) {
+         Animated.timing(animatedOpacityValue, {
+        toValue: 0,
+        useNativeDriver: true,
+      }).start(() => setMonthView(false))
+  }
+}
+
+  const onScroll = (event) => {
+    onReachedTop(event)
+  };
   return (
     <View
       style={[styles.mainContainer, { opacity: activeScreen ? 1.0 : 0.5 }]}
@@ -707,7 +731,6 @@ const drawMarkDay = (eData) => {
           <NotificationListTopHeaderShimmer />
         ) : (
           groupList?.length > 1 && (
-
             <FlatList
               ref={refContainer}
               horizontal={true}
@@ -731,7 +754,6 @@ const drawMarkDay = (eData) => {
                 });
               }}
             />
-
           )
         )}
       </View>
@@ -777,17 +799,37 @@ const drawMarkDay = (eData) => {
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
-            <View >
-              <EventAgendaSection
-                    horizontal={monthView}
-                    onPressListView={onPressListView}
-                    onPressGridView={onPressGridView}
-                    onDayPress={onDayPress}
-                    selectedCalendarDate={selectedCalendarDateString}
-                    calendarMarkedDates={markingDays}
+            <EventAgendaSection
+              onKnobPress={onKnobPress}
+              isListView={listView}
+              showTimeTable={showTimeTable}
+              horizontal={monthView}
+              onPressListView={onPressListView}
+              onPressGridView={onPressGridView}
+              onDayPress={onDayPress}
+              selectedCalendarDate={selectedCalendarDateString}
+              calendarMarkedDates={markingDays}
+            />
+
+            {showTimeTable ? (
+              <View style={{ marginBottom: 100 }}>
+                <EventCalendar
+                    eventTapped={(event) => {
+                      console.log('Event ::--', event);
+                    }}
+                    events={filterTimeTable}
+                    width={width}
+                    initDate={selectionDate}
+                    scrollToFirst={false}
+                    renderEvent={(event) => renderCalenderEvent(event)}
+                    styles={{
+                      event: styles.eventViewStyle,
+                      line: { backgroundColor: colors.lightgrayColor },
+                    }}
                   />
-            </View>
-            <EventScheduleScreen
+              </View>
+              ) : <EventScheduleScreen
+              onScroll={onScroll}
               eventData={eventData}
               navigation={navigation}
               profileID={authContext.entity.uid}
@@ -830,7 +872,8 @@ const drawMarkDay = (eData) => {
                 }
               }}
               entity={authContext.entity}
-            />
+            />}
+
             {!createEventModal && (
               <CreateEventButton
                 source={images.plus}
@@ -848,34 +891,34 @@ const drawMarkDay = (eData) => {
         {!loading && scheduleIndexCounter === 1 && (
           <View style={{ flex: 1 }}>
             <View>
-              <View >
+              <View>
                 <EventAgendaSection
-                    horizontal={monthView}
-                    onPressListView={onPressListView}
-                    onPressGridView={onPressGridView}
-                    onDayPress={onDayPress}
-                    selectedCalendarDate={selectedCalendarDateString}
-                    calendarMarkedDates={markingDays}
-                  />
+                  horizontal={monthView}
+                  onPressListView={onPressListView}
+                  onPressGridView={onPressGridView}
+                  onDayPress={onDayPress}
+                  selectedCalendarDate={selectedCalendarDateString}
+                  calendarMarkedDates={markingDays}
+                />
               </View>
               {monthView && (
                 <View style={{ marginBottom: 300 }}>
                   <EventCalendar
-                      eventTapped={(event) => {
-                        console.log('Event ::--', event);
-                      }}
-                      events={filterTimeTable}
-                      width={width}
-                      initDate={selectionDate}
-                      scrollToFirst={false}
-                      renderEvent={(event) => renderCalenderEvent(event)}
-                      styles={{
-                        event: styles.eventViewStyle,
-                        line: { backgroundColor: colors.lightgrayColor },
-                      }}
-                    />
+                    eventTapped={(event) => {
+                      console.log('Event ::--', event);
+                    }}
+                    events={filterTimeTable}
+                    width={width}
+                    initDate={selectionDate}
+                    scrollToFirst={false}
+                    renderEvent={(event) => renderCalenderEvent(event)}
+                    styles={{
+                      event: styles.eventViewStyle,
+                      line: { backgroundColor: colors.lightgrayColor },
+                    }}
+                  />
                 </View>
-                )}
+              )}
             </View>
 
             {!createEventModal && (

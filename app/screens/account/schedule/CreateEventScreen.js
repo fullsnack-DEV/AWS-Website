@@ -91,7 +91,7 @@ export default function CreateEventScreen({ navigation, route }) {
         setEventColors([
           ...Utility.createdEventData,
           {
-            id: 5,
+            id: 10,
             color: '0',
             isSelected: false,
             isNew: true,
@@ -653,8 +653,8 @@ export default function CreateEventScreen({ navigation, route }) {
             }}
             doneButtonDisplay={addColorDoneButton}
             onDonePress={() => {
-              eventColors[5] = {
-                id: 5,
+              eventColors[10] = {
+                id: 10,
                 color: selectedEventColors,
                 isSelected: false,
                 isNew: true,

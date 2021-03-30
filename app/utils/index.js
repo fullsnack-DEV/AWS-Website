@@ -203,45 +203,39 @@ export const createdEventData = [
   },
   {
     id: 3,
-    color: colors.greenColorCard,
+    color: colors.lightYellowColorCard,
     isSelected: false,
   },
   {
     id: 4,
-    color: colors.blueColorCard,
+    color: colors.lightGreenColorCard,
     isSelected: false,
   },
   {
     id: 5,
-    color: colors.darkBlueColorCard,
+    color: colors.greenColorCard,
     isSelected: false,
   },
   {
     id: 6,
-    color: colors.darkBlueColorCard,
+    color: colors.skyColorCard,
     isSelected: false,
   },
   {
     id: 7,
-    color: colors.darkBlueColorCard,
+    color: colors.lightBlueColorCard,
     isSelected: false,
   },
   {
     id: 8,
-    color: colors.darkBlueColorCard,
+    color: colors.purpleColorCard,
     isSelected: false,
   },
   {
     id: 9,
-    color: colors.darkBlueColorCard,
+    color: colors.googleColor,
     isSelected: false,
   },
-  {
-    id: 10,
-    color: colors.darkBlueColorCard,
-    isSelected: false,
-  },
-
 ];
 export const importedEventData = [
   {
@@ -261,42 +255,37 @@ export const importedEventData = [
   },
   {
     id: 3,
-    color: colors.greenColorCard,
+    color: colors.lightYellowColorCard,
     isSelected: false,
   },
   {
     id: 4,
-    color: colors.blueColorCard,
+    color: colors.lightGreenColorCard,
     isSelected: false,
   },
   {
     id: 5,
-    color: colors.darkBlueColorCard,
+    color: colors.greenColorCard,
     isSelected: false,
   },
   {
     id: 6,
-    color: colors.darkBlueColorCard,
+    color: colors.skyColorCard,
     isSelected: false,
   },
   {
     id: 7,
-    color: colors.darkBlueColorCard,
+    color: colors.lightBlueColorCard,
     isSelected: false,
   },
   {
     id: 8,
-    color: colors.darkBlueColorCard,
+    color: colors.purpleColorCard,
     isSelected: false,
   },
   {
     id: 9,
-    color: colors.darkBlueColorCard,
-    isSelected: false,
-  },
-  {
-    id: 10,
-    color: colors.darkBlueColorCard,
+    color: colors.googleColor,
     isSelected: false,
   },
 
@@ -319,45 +308,39 @@ export const gamesEventData = [
   },
   {
     id: 3,
-    color: colors.greenColorCard,
+    color: colors.lightYellowColorCard,
     isSelected: false,
   },
   {
     id: 4,
-    color: colors.blueColorCard,
+    color: colors.lightGreenColorCard,
     isSelected: false,
   },
   {
     id: 5,
-    color: colors.darkBlueColorCard,
+    color: colors.greenColorCard,
     isSelected: false,
   },
   {
     id: 6,
-    color: colors.darkBlueColorCard,
+    color: colors.skyColorCard,
     isSelected: false,
   },
   {
     id: 7,
-    color: colors.darkBlueColorCard,
+    color: colors.lightBlueColorCard,
     isSelected: false,
   },
   {
     id: 8,
-    color: colors.darkBlueColorCard,
+    color: colors.purpleColorCard,
     isSelected: false,
   },
   {
     id: 9,
-    color: colors.darkBlueColorCard,
+    color: colors.googleColor,
     isSelected: false,
   },
-  {
-    id: 10,
-    color: colors.darkBlueColorCard,
-    isSelected: false,
-  },
-
 ];
 // eslint-disable-next-line no-bitwise
 export const getRandomColor = () => backgroundColors[backgroundColors.length * Math.random() | 0]
