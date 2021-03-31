@@ -82,14 +82,20 @@ export default function UpcomingMatchScreen({
       {dataNotFound
         ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
         : <SectionList
-          renderItem={ ({ item }) => (
-            <UpcomingMatchItems
-              data={item}
-              // onThreeDotPress={() => {}}
-              onItemPress={() => onGameCardClick(item)}
-              showEventNumbers={showEventNumbers}
-            />
-          ) }
+          renderItem={ ({ item }) => {
+            let isAssistantReferee = false;
+            const myRefereeData = item?.referees?.filter((refereeItem) => refereeItem?.referee_id === authContext?.entity?.uid);
+            if (myRefereeData?.length > 0 && !myRefereeData?.[0]?.chief_referee) isAssistantReferee = true;
+            return (
+              <UpcomingMatchItems
+                    data={item}
+                    // onThreeDotPress={() => {}}
+                    onItemPress={() => onGameCardClick(item)}
+                    showEventNumbers={showEventNumbers}
+                    showAssistReferee={isAssistantReferee}
+                />
+            )
+          } }
           renderSectionHeader={ ({ section: { title } }) => (
             <Text style={ styles.sectionHeader }>{title}</Text>
           ) }

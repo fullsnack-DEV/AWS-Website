@@ -19,6 +19,7 @@ const colors = {
   searchGrayColor: '#f0f0f0',
   assistTextColor: '#FF6A01',
   whiteColor: '#FFFFFF',
+  lightWhite: '#F7F7F7',
   parrotColor: '#E8FFB4',
   fbTextColor: '#4574DB',
   lightgrayPlayInColor: '#ffeddb',

@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import React, {
-  useCallback, memo, useEffect, useRef, useState, useMemo,
+  useCallback, memo, useEffect, useRef, useState, useMemo, useContext,
 } from 'react';
 import {
   StyleSheet,
@@ -32,6 +32,7 @@ import {
 
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
+import AuthContext from '../../auth/context';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 const NewsFeedPostItems = ({
@@ -44,6 +45,7 @@ const NewsFeedPostItems = ({
   onEditPressDone,
   updateCommentCount,
 }) => {
+  const authContext = useContext(AuthContext);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [showThreeDot, setShowThreeDot] = useState(false);
@@ -168,6 +170,11 @@ const NewsFeedPostItems = ({
 
   const onShareActionSheetItemPress = useCallback((index) => {
     if (index === 0) {
+      console.log(1);
+    } else if (index === 1) {
+      authContext.showAlert({ visible: true })
+      Clipboard.setString(descriptions);
+    } else if (index === 2) {
       const options = {
         message: descriptions,
       }
@@ -178,8 +185,6 @@ const NewsFeedPostItems = ({
           .catch((err) => {
             console.log('err :-', err);
           });
-    } else if (index === 1) {
-      Clipboard.setString(descriptions);
     }
   }, [descriptions])
 
@@ -368,7 +373,7 @@ const NewsFeedPostItems = ({
         <ActionSheet
           ref={shareActionSheet}
           title={'News Feed Post'}
-          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
+          options={['Repost', 'Copy Link', 'More', 'Cancel']}
           cancelButtonIndex={3}
           onPress={onShareActionSheetItemPress}
         />

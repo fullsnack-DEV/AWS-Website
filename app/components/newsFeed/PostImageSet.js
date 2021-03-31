@@ -4,7 +4,6 @@ import React, {
 import {
   StyleSheet, View, Text, TouchableWithoutFeedback,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
 import {
   widthPercentageToDP as wp,
@@ -12,7 +11,7 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import images from '../../Constants/ImagePath';
-import MultiImagePostView from './MultiImagePostView';
+import CommonModalPostView from '../../CommonModalPostView';
 
 function PostImageSet({
   data,
@@ -44,31 +43,25 @@ function PostImageSet({
         />
         <Text style={ styles.loadingTextStyle }>Loading...</Text>
       </View>
-      <Modal
-        isVisible={isModalVisible}
-        backdropColor="black"
-        style={{ margin: 0 }}
-        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
-        backdropOpacity={0}>
-        <MultiImagePostView
+      <CommonModalPostView
+          visible={isModalVisible}
           currentPage={itemNumber}
+          onLikePress={onLikePress}
+          navigation={navigation}
+          backBtnPress={() => setModalVisible(false)}
+          data={data}
+          item={item}
           openPostModal={(commentData) => {
             updateCommentCount(commentData)
             setModalVisible(true)
           }}
-          attachedImages={attachedImages}
-          data={data}
-          item={item}
           caller_id={caller_id}
-          navigation={navigation}
-          backBtnPress={() => setModalVisible(false)}
+          attachedImages={attachedImages}
           onImageProfilePress={() => {
             setModalVisible(false)
             onImageProfilePress()
           }}
-          onLikePress={onLikePress}
-        />
-      </Modal>
+      />
       <TouchableWithoutFeedback onPress={toggleModal}>
         <FastImage
           style={ [styles.uploadedImage, { position: 'absolute' }] }

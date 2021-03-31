@@ -296,6 +296,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   grayListIcon: require('../assets/images/gray_list_icon.png'),
   orangeListIcon: require('../assets/images/orange_list_icon.png'),
+  linkCopied: require('../assets/images/linkCopied.png'),
 };
 
 export default images;

@@ -371,7 +371,7 @@ export const QBleaveDialog = (dialogId) => QBChatConnected().then((connected) =>
 
 export const QBconnectAndSubscribe = async (entity) => {
   const connected = await QBChatConnected();
-  if (entity.QB) {
+  if (entity?.QB) {
     const { id } = entity.QB
     if (!connected) {
       return QB.chat.connect({ userId: id, password: QB_Auth_Password })

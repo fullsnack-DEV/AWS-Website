@@ -16,7 +16,6 @@ import { getGameHomeScreen } from '../../utils/gameUtils';
 export default function ScoreboardSportsScreen({
   sportsData,
   showEventNumbers,
-  showAssistReferee,
   navigation,
   onItemPress,
   onBackPress = () => {},
@@ -95,15 +94,20 @@ export default function ScoreboardSportsScreen({
       {dataNotFound
         ? <Text style={styles.dataNotFoundText}>Data Not Found!</Text>
         : <SectionList
-          renderItem={ ({ item }) => (
-            <RecentMatchItems
-              data={item}
-              // onThreeDotPress={() => {}}
-              showEventNumbers={showEventNumbers}
-              showAssistReferee={showAssistReferee}
-              onItemPress={() => onGameCardClick(item)}
-            />
-          ) }
+          renderItem={ ({ item }) => {
+            let isAssistantReferee = false;
+            const myRefereeData = item?.referees?.filter((refereeItem) => refereeItem?.referee_id === authContext?.entity?.uid);
+            if (myRefereeData?.length > 0 && !myRefereeData?.[0]?.chief_referee) isAssistantReferee = true;
+            return (
+              <RecentMatchItems
+                    data={item}
+                    // onThreeDotPress={() => {}}
+                    showEventNumbers={showEventNumbers}
+                    showAssistReferee={isAssistantReferee}
+                    onItemPress={() => onGameCardClick(item)}
+                />
+            )
+          } }
           renderSectionHeader={ ({ section }) => (
             section.data.length > 0 && <Text style={ styles.sectionHeader }>{section.title}</Text>
           ) }

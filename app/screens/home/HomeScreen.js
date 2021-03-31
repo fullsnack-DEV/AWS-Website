@@ -114,6 +114,7 @@ import ScrollableTabs from '../../components/ScrollableTabs';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
 import { ImageUploadContext } from '../../context/GetContexts';
 import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
+import GameStatus from '../../Constants/GameStatus';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
@@ -1134,15 +1135,16 @@ const HomeScreen = ({ navigation, route }) => {
         const upcomingMatch = [];
         console.log('Recentest Match API Response::->', res);
         if (res.payload.length > 0) {
-          res.payload.filter((event_item) => {
-            const eventStartDate = new Date(event_item.start_datetime * 1000)
-            if (eventStartDate > date) {
+          res.payload.map((event_item) => {
+            const eventStartDate = event_item.start_datetime * 1000
+            const isFutureDate = eventStartDate > date;
+            const isGameEnded = event_item?.status === GameStatus.ended;
+            if (isGameEnded) {
+              recentMatch.push(event_item);
+              setRefereeRecentMatch([...recentMatch]);
+            } else if (isFutureDate && !isGameEnded) {
               upcomingMatch.push(event_item);
               setRefereeUpcomingMatch([...upcomingMatch]);
-            } else {
-              recentMatch.push(event_item);
-
-              setRefereeRecentMatch([...recentMatch]);
             }
             return null;
           });

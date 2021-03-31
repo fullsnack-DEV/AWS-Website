@@ -15,6 +15,7 @@ import { firebaseConfig } from './app/utils/constant';
 import * as Utility from './app/utils';
 import strings from './app/Constants/String';
 import { ImageUploadProvider } from './app/context/GetContexts';
+import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 
 console.disableYellowBox = true
 // if (__DEV__) {
@@ -54,7 +55,7 @@ export default function App() {
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
   const [tokenData, setToken] = useState(null);
-
+  const [alertData, setAlertData] = useState(null);
   const setTokenData = useCallback(async (token) => {
     setToken(token);
     await Utility.setStorage('tokenData', token);
@@ -64,6 +65,10 @@ export default function App() {
     setEntity({ ...e })
   }, []);
 
+  const showAlert = (alertStuff) => {
+      setAlertData(alertStuff)
+      setTimeout(() => setAlertData(null), 1000)
+  }
   const authValue = useMemo(
     () => ({
       role,
@@ -77,12 +82,14 @@ export default function App() {
       updateAuth,
       networkConnected,
       showNetworkAlert,
+      showAlert,
     }),
     [role, user, entity, tokenData, networkConnected],
   );
   QBinit();
   return (
     <AuthContext.Provider value={authValue}>
+      {alertData?.visible && <CommonAlert alertData={alertData}/>}
       <ImageUploadProvider>
         <NavigationMainContainer/>
       </ImageUploadProvider>

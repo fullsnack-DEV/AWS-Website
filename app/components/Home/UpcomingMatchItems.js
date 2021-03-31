@@ -3,9 +3,8 @@ import {
   StyleSheet,
   View,
   Text,
-  // Image,
   TouchableWithoutFeedback,
-  // TouchableOpacity,
+  Image,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -15,12 +14,14 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts';
 import MatchBetweenUpcomingView from './MatchBetweenUpcomingView';
+import strings from '../../Constants/String';
 
 export default function UpcomingMatchItems({
   data,
   // onThreeDotPress,
   showEventNumbers,
   onItemPress,
+  showAssistReferee,
 }) {
   let startDate = '';
   if (data && data.start_datetime) {
@@ -91,6 +92,10 @@ export default function UpcomingMatchItems({
             <View style={styles.timeCityDividerStyle} />
             <Text numberOfLines={1} style={[styles.eventTime, { width: wp('42%') }]}>{location}</Text>
           </View>
+          {showAssistReferee && <View style={styles.assistRefereeViewStyle}>
+            <Image source={images.assistReferee} style={styles.assistRefereeStyle} />
+            <Text style={styles.assistTitleStyle}>{strings.assistRefereeTitle}</Text>
+          </View>}
           <MatchBetweenUpcomingView
             firstUserImage={team1Image ? { uri: team1Image } : images.team_ph}
             firstText={team1Title}
@@ -193,5 +198,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.linesepratorColor,
     marginHorizontal: 12,
     marginVertical: 1,
+  },
+  assistRefereeStyle: {
+    height: 15,
+    width: 15,
+  },
+  assistTitleStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.assistTextColor,
+    marginLeft: 5,
+  },
+  assistRefereeViewStyle: {
+    flexDirection: 'row',
+    backgroundColor: colors.blackGradientColor,
+    padding: 5,
+    marginLeft: 8,
+    marginTop: 15,
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
 });
