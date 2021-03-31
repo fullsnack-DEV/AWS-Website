@@ -49,6 +49,7 @@ const SoccerHome = ({ navigation, route }) => {
       getGameDetails();
   }, []);
 
+  console.log('soccerGameId:=>', soccerGameId);
   const getSoccerGameData = useCallback((gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext), [authContext, soccerGameId]);
 
   const getGameDetails = useCallback(() => {
@@ -97,8 +98,8 @@ const SoccerHome = ({ navigation, route }) => {
   const getSoccerGameReview = useCallback((gameId) => getGameReviews(gameId, authContext), [authContext]);
   const getSoccerGalleryData = useCallback((gameId) => getGameGallery(gameId, authContext), [authContext]);
   const getGameSportsList = useCallback(() => getSportsList(authContext), [authContext]);
-  const getRefereeReservation = useCallback((gameId) => getGameRefereeReservation(gameId, authContext), [authContext]);
-  const getScorekeeperReservation = useCallback((gameId) => getGameScorekeeperReservation(gameId, authContext), [authContext]);
+  const getRefereeReservation = useCallback((gameId = soccerGameId) => getGameRefereeReservation(gameId, authContext), [authContext]);
+  const getScorekeeperReservation = useCallback((gameId = soccerGameId) => getGameScorekeeperReservation(gameId, authContext), [authContext]);
   const getGameFeedData = useCallback(() => getGameFeed(gameData?.game_id, authContext), [authContext, gameData?.game_id]);
   const getGameNextFeedData = useCallback((last_id) => getGameNextFeed(gameData?.game_id, last_id, authContext), [authContext, gameData?.game_id]);
   const createGamePostData = useCallback((params) => createGamePost(params, authContext), [authContext]);

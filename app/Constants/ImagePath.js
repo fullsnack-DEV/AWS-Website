@@ -291,7 +291,11 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   feedPlusIcon: require('../assets/images/feedPlusIcon.png'),
   resetColor: require('../assets/images/reset_color.png'),
   appleLogo: require('../assets/images/appleLogo.png'),
-  // timeKnob: require('../assets/images/time_knob_gray.png'),
+  timeKnobGray: require('../assets/images/time_knob_gray.png'),
+  timeKnobOrange: require('../assets/images/time_knob_orange.png'),
+
+  grayListIcon: require('../assets/images/gray_list_icon.png'),
+  orangeListIcon: require('../assets/images/orange_list_icon.png'),
 };
 
 export default images;
