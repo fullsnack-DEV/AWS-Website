@@ -55,14 +55,25 @@ const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack)
      responses.map((item, index) => {
       let objAttachment = {}
       if (item.type === 'video') {
-        objAttachment = {
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-          duration: imageArray[index].duration,
-          is_short: imageArray[index].duration < 30000,
+        if (imageArray.length === 1) {
+          objAttachment = {
+            type: item.type,
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+            media_height: item.height,
+            media_width: item.width,
+            duration: imageArray[index].duration,
+            is_short: imageArray[index].duration < 30000,
+          }
+        } else {
+          objAttachment = {
+            type: item.type,
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+            media_height: item.height,
+            media_width: item.width,
+            duration: imageArray[index].duration,
+          }
         }
       } else {
         objAttachment = {

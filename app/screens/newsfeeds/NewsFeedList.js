@@ -1,16 +1,19 @@
 import React, {
-  useEffect, memo, useState, useContext, useCallback, useMemo,
+  useEffect,
+  memo,
+  useState,
+  useContext,
+  useCallback,
+  useMemo,
 } from 'react';
 import {
-  View, ActivityIndicator, FlatList, Text,
-} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+ View, ActivityIndicator, FlatList, Text,
+ } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useIsFocused } from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
-import colors from '../../Constants/Colors'
-import AuthContext from '../../auth/context'
+import colors from '../../Constants/Colors';
+import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
 
 const NewsFeedList = ({
@@ -34,80 +37,113 @@ const NewsFeedList = ({
 }) => {
   const [userID, setUserID] = useState('');
   const isFocused = useIsFocused();
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   useEffect(() => {
     if (isFocused) {
-      const entity = authContext.entity
+      const entity = authContext.entity;
       if (entity) {
         setUserID(entity.uid || entity.auth.user_id);
       }
     }
   }, [isFocused]);
 
-  const onProfilePress = useCallback((item) => {
-    if (item?.actor?.id) {
-      if (item?.actor?.id !== authContext?.entity?.uid) {
-        navigation.navigate('HomeScreen', {
-          uid: item.actor.id,
-          backButtonVisible: true,
-          role: item?.actor?.data?.entity_type === 'player' ? 'user' : item?.actor?.data?.entity_type,
-        })
+  const onProfilePress = useCallback(
+    (item) => {
+      if (item?.actor?.id) {
+        if (item?.actor?.id !== authContext?.entity?.uid) {
+          navigation.navigate('HomeScreen', {
+            uid: item.actor.id,
+            backButtonVisible: true,
+            role:
+              item?.actor?.data?.entity_type === 'player'
+                ? 'user'
+                : item?.actor?.data?.entity_type,
+          });
+        }
       }
-    }
-  }, [authContext?.entity?.uid, navigation])
+    },
+    [authContext?.entity?.uid, navigation],
+  );
 
-  const renderNewsFeed = useCallback(({ item }) => {
-    const onDeleteButtonPress = () => onDeletePost(item)
-    const onLikeButtonPress = () => onLikePress(item)
-    return (
-      <NewsFeedPostItems
-            updateCommentCount={updateCommentCount}
-            pullRefresh={pullRefresh}
-            item={item}
-            navigation={navigation}
-            caller_id={userID}
-            onEditPressDone={onEditPressDone}
-            onImageProfilePress={() => onProfilePress(item)}
-            onLikePress={onLikeButtonPress}
-            onDeletePost={onDeleteButtonPress}
+  const renderNewsFeed = useCallback(
+    ({ item }) => {
+      const onDeleteButtonPress = () => onDeletePost(item);
+      const onLikeButtonPress = () => onLikePress(item);
+      return (
+        <NewsFeedPostItems
+          updateCommentCount={updateCommentCount}
+          pullRefresh={pullRefresh}
+          item={item}
+          navigation={navigation}
+          caller_id={userID}
+          onEditPressDone={onEditPressDone}
+          onImageProfilePress={() => onProfilePress(item)}
+          onLikePress={onLikeButtonPress}
+          onDeletePost={onDeleteButtonPress}
         />
-    )
-  }, [updateCommentCount, pullRefresh, navigation, userID, onEditPressDone, onDeletePost, onLikePress, onProfilePress])
+      );
+    },
+    [
+      updateCommentCount,
+      pullRefresh,
+      navigation,
+      userID,
+      onEditPressDone,
+      onDeletePost,
+      onLikePress,
+      onProfilePress,
+    ],
+  );
 
-  const newsFeedListItemSeperator = useCallback(() => (
-    <View
-            style={{
-              marginTop: 10,
-              height: 8,
-              backgroundColor: colors.whiteGradientColor,
-            }}
-        />
-    ), [])
+  const newsFeedListItemSeperator = useCallback(
+    () => (
+      <View
+        style={{
+          marginTop: 10,
+          height: 8,
+          backgroundColor: colors.whiteGradientColor,
+        }}
+      />
+    ),
+    [],
+  );
 
-  const newsFeedListFooterComponent = useMemo(() => (
-      !footerLoading ? <View
+  const newsFeedListFooterComponent = useMemo(
+    () => (!footerLoading ? (
+      <View
           style={{
             height: hp(10),
           }}
-      /> : <ActivityIndicator size={'small'} color={ colors.blackColor } style={{ alignSelf: 'center', marginBottom: hp(10) }} />
-  ), [footerLoading])
+        />
+      ) : (
+        <ActivityIndicator
+          size={'small'}
+          color={colors.blackColor}
+          style={{ alignSelf: 'center', marginBottom: hp(10) }}
+        />
+      )),
+    [footerLoading],
+  );
 
   const newsFeedOnRefresh = useCallback(() => {
     if (onRefreshPress) {
-      const entity = authContext.entity
+      const entity = authContext.entity;
       if (entity) {
         setUserID(entity.uid || entity.auth.user_id);
       }
       onRefreshPress();
     }
-  }, [authContext.entity, onRefreshPress])
+  }, [authContext.entity, onRefreshPress]);
 
-  const newsFeedKeyExtractor = useCallback((item) => `feed1${item?.id?.toString()}`, [])
+  const newsFeedKeyExtractor = useCallback(
+    (item) => `feed1${item?.id?.toString()}`,
+    [],
+  );
 
   return (
     <View
-        onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
-        style={{ flex: 1 }}>
+      onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
+      style={{ flex: 1 }}>
       <FlatList
         onScroll={onFeedScroll}
         ref={refs}
@@ -117,9 +153,19 @@ const NewsFeedList = ({
         legacyImplementation={true}
         maxToRenderPerBatch={10}
         initialNumToRender={5}
-        ListEmptyComponent={showEnptyDataText && <Text style={{
- fontSize: 16, fontFamily: fonts.RLight, textAlign: 'center', padding: 15,
-        }}>{noDataFoundText}</Text>}
+        ListEmptyComponent={
+          showEnptyDataText && (
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RLight,
+                textAlign: 'center',
+                padding: 15,
+              }}>
+              {noDataFoundText}
+            </Text>
+        )
+        }
         bounces={true}
         data={postData ?? []}
         ItemSeparatorComponent={newsFeedListItemSeperator}
@@ -137,6 +183,6 @@ const NewsFeedList = ({
       />
     </View>
   );
-}
+};
 
 export default memo(NewsFeedList);

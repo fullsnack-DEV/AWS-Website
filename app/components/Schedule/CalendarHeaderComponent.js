@@ -53,6 +53,7 @@ class CalendarHeaderComponent extends React.PureComponent {
                   this.shouldLeftArrowBeDisabled() ? styles.disabled : {},
                 ]}>
                 <TouchableOpacity
+                hitSlop={getHitSlop(15)}
                   onPress={this.onPressArrowLeft}
                   disabled={this.shouldLeftArrowBeDisabled()}>
                   <Image
@@ -66,6 +67,7 @@ class CalendarHeaderComponent extends React.PureComponent {
               </Text>
               <TouchableOpacity
                 style={styles.iconContainer}
+                hitSlop={getHitSlop(15)}
                 onPress={this.onPressArrowRight}>
                 <Image style={styles.icon} source={images.nextArrow} />
               </TouchableOpacity>

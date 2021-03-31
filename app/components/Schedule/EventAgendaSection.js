@@ -14,6 +14,7 @@ import {
   View,
   Image,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import { Calendar } from 'react-native-toggle-calendar';
 import moment from 'moment';
@@ -21,6 +22,7 @@ import CalendarDayComponent from './CalendarDayComponent';
 import CalendarHeaderComponent from './CalendarHeaderComponent';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
+import { getHitSlop } from '../../utils';
 
 const selectedCalendarDate = moment();
 const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
@@ -95,14 +97,22 @@ class EventAgendaSection extends React.Component {
             horizontalStartReachedThreshold={0}
             // loading={this.state.calendarLoading}
           />
-          <View style={styles.knobContainer}>
-            <View style={styles.knobView}>
-              <TouchableWithoutFeedback
-                onPress={this.props.onKnobPress}>
-                <Image source={this.props.showTimeTable ? images.timeKnobOrange : images.timeKnobGray} style={styles.knobImage} />
-              </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            hitSlop={Platform.OS === 'ios' ? getHitSlop(15) : getHitSlop(30)}
+            onPress={this.props.onKnobPress}>
+            <View style={styles.knobContainer}>
+              <View style={styles.knobView}>
+                <Image
+                  source={
+                    this.props.showTimeTable
+                      ? images.timeKnobOrange
+                      : images.timeKnobGray
+                  }
+                  style={styles.knobImage}
+                />
+              </View>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </SafeAreaView>
       </>
     );
@@ -118,7 +128,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    elevation: 15,
+    elevation: 1,
     marginBottom: 20,
   },
   knobView: {
@@ -127,10 +137,10 @@ const styles = StyleSheet.create({
     width: 54,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    elevation: 15,
+    elevation: 1,
     marginTop: -8,
     borderRadius: 200,
   },

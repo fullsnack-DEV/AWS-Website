@@ -24,6 +24,7 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
+ Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -81,7 +82,7 @@ import NotificationListTopHeaderShimmer from '../../../components/shimmer/accoun
 import TCThinDivider from '../../../components/TCThinDivider';
 
 const lastDistance = null;
-let selectedCalendarDate = moment();
+let selectedCalendarDate = moment(new Date());
 const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation }) {
@@ -118,7 +119,7 @@ const [listView, setListView] = useState(false)
     selectedCalendarMonthString,
     setselectedCalendarMonthString,
   ] = useState(selectedCalendarDate.format('YYYY-MM-DD'));
-  const [markingDays, setMarkingDays] = useState({});
+  const [markingDays, setMarkingDays] = useState({ });
 
   const actionSheet = useRef();
   const agendaRef = useRef();
@@ -143,6 +144,13 @@ const [listView, setListView] = useState(false)
       ),
     });
   }, [navigation]);
+
+//   useEffect(() => {
+//     const defaultMark = { }
+//     defaultMark[selectedCalendarMonthString] = { selected: true }
+// setMarkingDays(defaultMark)
+// console.log('Default selected:', defaultMark);
+//   }, [selectedCalendarMonthString])
 
   const getEventsList = useCallback(
     (selectedObj) => {
@@ -698,6 +706,7 @@ const [listView, setListView] = useState(false)
   };
 
   const onKnobPress = () => {
+    console.log('Knob press');
     setShowTimeTable(!showTimeTable)
     setMonthView(!monthView)
   }
@@ -710,7 +719,7 @@ const [listView, setListView] = useState(false)
         useNativeDriver: true,
       }).start(() => setMonthView(true))
       }
-      if (offset <= 20) {
+      if (offset <= Platform.OS === 'ios' ? -80 : 1) {
          Animated.timing(animatedOpacityValue, {
         toValue: 0,
         useNativeDriver: true,

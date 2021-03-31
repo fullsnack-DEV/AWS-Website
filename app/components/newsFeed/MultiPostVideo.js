@@ -38,6 +38,10 @@ function MultiPostVideo({
     setModalVisible(!isModalVisible);
   };
 
+  console.log('attachedImages:=>', attachedImages);
+  console.log('item:=>', item);
+  console.log('data:=>', data);
+
   return (
     <View style={styles.singleImageDisplayStyle}>
       <View

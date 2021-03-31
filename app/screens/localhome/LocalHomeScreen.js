@@ -17,7 +17,6 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Alert,
-
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -35,7 +34,11 @@ import colors from '../../Constants/Colors';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
-import { getSportsList, getShortsList } from '../../api/Games'; // getRecentGameDetails
+import {
+  getSportsList,
+  // getRecentGameDetails,
+  getShortsList,
+} from '../../api/Games'; // getRecentGameDetails
 
 import { gameData } from '../../utils/constant';
 import ShortsCard from '../../components/ShortsCard';
@@ -51,6 +54,7 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
+import ShortsModalView from '../../components/newsFeed/ShortsModalView';
 
 // import AuthContext from '../../auth/context';
 
@@ -67,7 +71,7 @@ export default function LocalHomeScreen({ navigation }) {
   const [selectedLocationOption, setSelectedLocationOption] = useState();
   const [selectedSettingOption, setSelectedSettingOption] = useState();
 
-const [location] = useState('india');
+  const [location] = useState('india');
 
   const [selectedSport, setSelectedSport] = useState('Soccer');
   const [settingPopup, setSettingPopup] = useState(false);
@@ -75,7 +79,7 @@ const [location] = useState('india');
   const [sportsPopup, setSportsPopup] = useState(false);
   const [sportsListPopup, setSportsListPopup] = useState(false);
 
-// const [shortsList, setShortsList] = useState([]);
+  const [shortsList, setShortsList] = useState([]);
 
   const [recentMatch] = useState([]);
 
@@ -86,6 +90,11 @@ const [location] = useState('india');
   const [referees] = useState([]); // ['', '', '', '', '']
   const [scorekeepers] = useState([]); // ['', '', '', '', '']
 
+  const [selectedShortsIndex, setSelectedShortsIndex] = useState();
+  const [selectedShortItem, setSelectedShortItem] = useState({});
+
+const [shortsModalVisible, setShortsModalVisible] = useState(false)
+
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -95,7 +104,6 @@ const [location] = useState('india');
         // getRecentGameDetails('Soccer', 'ended', location, authContext),
         getSportsList(authContext),
         getShortsList(location, authContext),
-
       ];
       Promise.all(promises)
         .then(([res2, res3]) => {
@@ -116,7 +124,7 @@ const [location] = useState('india');
             setTimeout(() => setloading(false), 1000);
           }
           if (res3.payload) {
-            // setShortsList(res3.payload.results);
+            setShortsList(res3.payload.results);
           }
         })
         .catch((e) => {
@@ -297,7 +305,21 @@ const [location] = useState('india');
     [],
   );
 
-  const shortsListView = useCallback(() => <ShortsCard />, []);
+  const onShortPress = useCallback(({ cardItem, index }) => {
+    setShortsModalVisible(!shortsModalVisible);
+    setSelectedShortsIndex(index + 1)
+    setSelectedShortItem(cardItem)
+  }, [shortsModalVisible]);
+
+  const shortsListView = useCallback(
+    ({ item, index }) => (
+      <ShortsCard
+        cardItem={item}
+        onPress={({ cardItem }) => onShortPress({ index, cardItem })}
+      />
+    ),
+    [onShortPress],
+  );
   const keyExtractor = useCallback((item, index) => index.toString(), []);
   const renderRecentMatchItems = useCallback(
     ({ item }) => (
@@ -460,7 +482,7 @@ const [location] = useState('india');
             }
           />
           <Carousel
-            data={[]}// recentMatch
+            data={[]} // recentMatch
             scrollEnabled={recentMatch.length > 0}
             renderItem={renderRecentMatchItems}
             inactiveSlideScale={1}
@@ -523,7 +545,7 @@ const [location] = useState('india');
           <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={['', '', '', '', '']}
+            data={shortsList}
             keyExtractor={keyExtractor}
             renderItem={shortsListView}
           />
@@ -899,6 +921,29 @@ const [location] = useState('india');
             <TCThinDivider width={'100%'} marginBottom={15} />
             <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
           </View>
+        </Modal>
+        <Modal
+        isVisible={shortsModalVisible} // shortsModalVisible
+        backdropColor="black"
+        style={{ margin: 0, backgroundColor: colors.blackColor }}
+        backdropOpacity={0}>
+          <ShortsModalView
+          currentPage={selectedShortsIndex}
+          shorts = {shortsList}
+          // openPostModal={(commentData) => {
+          //   updateCommentCount(commentData)
+          //   setModalVisible(true)
+          // }}
+          item={selectedShortItem}
+          caller_id={authContext?.entity?.uid}
+          navigation={navigation}
+          backBtnPress={() => setShortsModalVisible(false)}
+          // onImageProfilePress={() => {
+          //   setShortsModalVisible(false)
+          //   onImageProfilePress()
+          // }}
+          // onLikePress={onLikePress}
+        />
         </Modal>
       </ScrollView>
     </View>
