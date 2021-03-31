@@ -53,13 +53,7 @@ function MultiImagePostView({
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(item?.reaction_counts?.comment ?? 0);
   const [, setCurrentAssetIndex] = useState(0);
-  useEffect(() => {
-      setTimeout(() => {
-          if (carouselRef && currentPage > 1) {
-              carouselRef.current.snapToItem(currentPage - 1, false)
-          }
-      }, 1000)
-  }, [currentPage, carouselRef])
+
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -237,7 +231,7 @@ function MultiImagePostView({
       <View style={{ flex: 1 }}>
         <Carousel
             onSnapToItem={setCurrentAssetIndex}
-            firstItem={0}
+            firstItem={Number(currentPage - 1)}
             nestedScrollEnabled={false}
             ref={carouselRef}
             data={attachedImages}

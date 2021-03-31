@@ -284,7 +284,7 @@ export default function AccountScreen({ navigation }) {
   const switchProfile = useCallback(
     async (item) => {
       let currentEntity = authContext.entity;
-
+        delete currentEntity?.QB;
       if (item.entity_type === 'player') {
         if (currentEntity.obj.entity_type === 'team') {
           team.push(currentEntity.obj);
@@ -334,13 +334,11 @@ export default function AccountScreen({ navigation }) {
         setParentGroup();
         setGroup(item);
       }
-      // setGroupList([authContext.entity.auth.user, ...club, ...team]);
-
-      // authContext.setEntity({ ...currentEntity });
-      // Utility.setStorage('authContextEntity', { ...currentEntity });
+      authContext.setEntity({ ...currentEntity });
+      await Utility.setStorage('authContextEntity', { ...currentEntity });
       return currentEntity;
     },
-    [authContext.entity, club, getParentClub, team],
+    [authContext, club, getParentClub, team],
   );
 
   const switchQBAccount = useCallback(
@@ -393,9 +391,8 @@ export default function AccountScreen({ navigation }) {
               setloading(false);
             });
         })
-        .catch(async () => {
-          authContext.setEntity({ ...currentEntity });
-          await Utility.setStorage('authContextEntity', { ...currentEntity });
+        .catch(async (error) => {
+            console.log('QB Issue', error)
           setloading(false);
         });
     },
@@ -407,7 +404,11 @@ export default function AccountScreen({ navigation }) {
       setloading(true);
       switchProfile(item)
         .then((currentEntity) => {
-          switchQBAccount(item, currentEntity);
+            scrollRef.current.scrollTo({ x: 0, y: 0 });
+            setloading(false);
+            authContext.setEntity({ ...currentEntity })
+            Utility.setStorage('authContextEntity', { ...currentEntity })
+            switchQBAccount(item, currentEntity);
         })
         .catch((e) => {
           setloading(false);
@@ -416,7 +417,7 @@ export default function AccountScreen({ navigation }) {
           }, 10);
         });
     },
-    [switchProfile, switchQBAccount],
+    [authContext, switchProfile, switchQBAccount],
   );
 
   const onLogout = useCallback(async () => {
@@ -563,7 +564,7 @@ export default function AccountScreen({ navigation }) {
       <TouchableWithoutFeedback
         style={styles.listContainer}
         onPress={() => {
-          scrollRef.current.scrollTo({ x: 0, y: 0 });
+          setloading(true);
           onSwitchProfile({ item, index });
         }}>
         <View>

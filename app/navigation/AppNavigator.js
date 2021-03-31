@@ -111,6 +111,11 @@ const getTabBarVisibility = (route) => {
     // || routeName === 'CreateEventScreen'
     || routeName === 'EditChallengeAvailability'
     || routeName === 'MessageChat'
+    || routeName === 'MessageInviteScreen'
+    || routeName === 'MessageNewGroupScreen'
+    || routeName === 'MessageEditGroupScreen'
+    || routeName === 'MessageSearchScreen'
+    || routeName === 'MessageEditInviteeScreen'
     || routeName === 'DefaultColorScreen'
     || routeName === 'GroupEventScreen'
     || routeName === 'ViewPrivacy'
@@ -119,7 +124,6 @@ const getTabBarVisibility = (route) => {
     || routeName === 'MemberProfileCreatedScreen'
     || routeName === 'InvitationSentScreen'
     || routeName === 'ConnectionReqSentScreen'
-    || routeName === 'MessageNewGroupScreen'
     || routeName === 'TennisRecording'
     || routeName === 'RegisterRefereeSuccess'
     || routeName === 'RegisterScorekeeperSuccess'
@@ -151,8 +155,9 @@ const AppNavigator = ({ navigation }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
-    QBeventListeners();
-  }, [navigation]);
+    if (authContext?.entity?.QB) QBeventListeners();
+    else setUnreadCount(0);
+  }, [authContext?.entity?.QB, navigation]);
 
   useEffect(() => {
     changeRole();
@@ -414,6 +419,7 @@ const AppNavigator = ({ navigation }) => {
         name="Message"
         component={MessageNavigator}
         options={({ route }) => ({
+            unmountOnBlur: true,
           ...(unreadCount > 0 && { tabBarBadge: unreadCount }),
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => {

@@ -3,7 +3,6 @@ import {
   StyleSheet, View, Text, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
 import Video from 'react-native-video';
-import Modal from 'react-native-modal';
 import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
@@ -13,7 +12,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 // import MultipleImageModal from './MultipleImageModal';
-import MultiImagePostView from './MultiImagePostView';
+import CommonModalPostView from '../../CommonModalPostView';
 
 function MultiPostVideo({
   data,
@@ -52,30 +51,25 @@ function MultiPostVideo({
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
       </View>
-      <Modal
-        isVisible={isModalVisible}
-        backdropColor="black"
-        style={{ margin: 0 }}
-        backdropOpacity={0}>
-        <MultiImagePostView
-            currentPage={itemNumber}
-          openPostModal={(commentData) => {
-            updateCommentCount(commentData)
-            setModalVisible(true)
-          }}
-          attachedImages={attachedImages}
-          data={data}
-          item={item}
-          caller_id={caller_id}
-          navigation={navigation}
-          backBtnPress={() => setModalVisible(false)}
-          onImageProfilePress={() => {
-            setModalVisible(false)
-            onImageProfilePress()
-          }}
-          onLikePress={onLikePress}
-        />
-      </Modal>
+      <CommonModalPostView
+        visible={isModalVisible}
+        currentPage={itemNumber}
+        onLikePress={onLikePress}
+        navigation={navigation}
+        backBtnPress={() => setModalVisible(false)}
+        data={data}
+        item={item}
+        openPostModal={(commentData) => {
+          updateCommentCount(commentData)
+          setModalVisible(true)
+        }}
+        caller_id={caller_id}
+        attachedImages={attachedImages}
+        onImageProfilePress={() => {
+          setModalVisible(false)
+          onImageProfilePress()
+        }}
+      />
       <TouchableWithoutFeedback
         onPress={() => {
           toggleModal();

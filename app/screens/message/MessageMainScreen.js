@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import QB from 'quickblox-react-native-sdk';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, StackActions } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash'
 // import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -27,7 +27,7 @@ import {
   QBgetDialogs,
   QBsetupSettings,
 } from '../../utils/QuickBlox';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils';
+import { widthPercentageToDP as wp } from '../../utils';
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 
@@ -47,7 +47,11 @@ const MessageMainScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused) {
+    if (!authContext?.entity?.QB) navigation.dispatch(StackActions.popToTop());
+  }, [authContext?.entity?.QB, navigation])
+
+  useEffect(() => {
+    if (authContext?.entity?.QB && isFocused) {
       connectAndSubscribe();
       QbMessageEmitter.addListener(
           QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE,
@@ -56,16 +60,9 @@ const MessageMainScreen = ({ navigation }) => {
     }
 
     return () => {
-      // setSavedDialogsData({
-      //   append: {},
-      //   dialogs: [],
-      //   limit: 30,
-      //   skip: 0,
-      //   total: 0,
-      // });
       QbMessageEmitter.removeListener(QB.chat.EVENT_TYPE.RECEIVED_NEW_MESSAGE);
     }
-  }, [navigation, isFocused])
+  }, [navigation, isFocused, authContext?.entity?.QB])
 
   const newDialogHandler = () => {
     getDialogs();
@@ -173,16 +170,15 @@ const MessageMainScreen = ({ navigation }) => {
     <Header
         showBackgroundColor={true}
         mainContainerStyle={{ paddingBottom: 0 }}
-            leftComponent={navigation.canGoBack()
-              && <View>
-                <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
-              </View>
+            leftComponent={<View>
+              <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
+            </View>
             }
             centerComponent={
               <Text style={styles.eventTextStyle}>Message</Text>
             }
-            rightComponent={
-              <View style={{ flexDirection: 'row' }}>
+            rightComponent={authContext?.entity?.QB
+              && <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
                   <FastImage source={images.messageSearchButton} resizeMode={'contain'} style={styles.rightImageStyle} />
                 </TouchableOpacity>
@@ -192,16 +188,33 @@ const MessageMainScreen = ({ navigation }) => {
               </View>
             }
         />
-    ), [navigation])
+    ), [navigation, authContext?.entity?.QB])
 
   return (
     <SafeAreaView style={ styles.mainContainer }>
       {renderHeader}
       <View style={styles.separateLine}/>
-      <View style={ styles.sperateLine } />
-      {loading
-          ? <UserListShimmer/>
-          : renderAllMessages
+      {!authContext?.entity?.QB && (
+        <Text
+              style={{
+                textAlign: 'center',
+                textAlignVertical: 'center',
+                alignSelf: 'center',
+                height: '100%',
+                width: '100%',
+                alignContent: 'center',
+                fontSize: 20,
+                fontFamily: fonts.RLight,
+                color: colors.lightBlackColor,
+              }}>Chat Module Connecting...
+        </Text>
+       )}
+      {/* eslint-disable-next-line no-nested-ternary */}
+      {authContext?.entity?.QB
+          ? loading
+            ? <UserListShimmer/>
+            : renderAllMessages
+          : null
       }
     </SafeAreaView>
   );
@@ -232,7 +245,6 @@ const styles = StyleSheet.create({
     borderColor: colors.grayColor,
     borderWidth: 0.5,
     width: wp(100),
-    marginBottom: hp(2),
   },
 });
 
