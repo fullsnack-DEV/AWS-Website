@@ -1,59 +1,66 @@
-import React, {
- useEffect, memo, useRef, useState,
- } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
   Image,
   TouchableOpacity,
+  FlatList,
   // Dimensions,
+  StatusBar,
   Text,
+  Dimensions,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 // import ImageZoom from 'react-native-image-pan-zoom';
-import Carousel from 'react-native-snap-carousel';
 import Orientation from 'react-native-orientation';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-community/clipboard';
-import ActionSheet from 'react-native-actionsheet';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import images from '../../Constants/ImagePath';
-import colors from '../../Constants/Colors';
-import Header from '../Home/Header';
-import fonts from '../../Constants/Fonts';
-import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
-import PostDescSection from './PostDescSection';
-import TagView from './TagView';
-import CustomVideoPlayer from '../CustomVideoPlayer';
+import { useIsFocused } from '@react-navigation/native';
+import images from '../../../Constants/ImagePath';
+import colors from '../../../Constants/Colors';
 
-function ShortsModalView({
-  backBtnPress,
-  item,
-  caller_id,
-  navigation,
-  onImageProfilePress,
-  onLikePress,
-  openPostModal,
-  currentPage,
-  shorts,
-}) {
+import fonts from '../../../Constants/Fonts';
+import { commentPostTimeCalculate } from '../../../Constants/LoaderImages';
+import PostDescSection from '../../../components/newsFeed/PostDescSection';
+import TagView from '../../../components/newsFeed/TagView';
+import ShortsPlayer from '../../../components/shorts/ShortsPlayer';
+
+function ShortsPlayScreen({ route }) {
+  const {
+    backBtnPress,
+    item,
+    caller_id,
+    navigation,
+    onImageProfilePress,
+    onLikePress,
+    openPostModal,
+    currentPage,
+    shorts,
+  } = route?.params;
   const carouselRef = useRef(0);
   const [topDesc, setTopDesc] = useState(false);
   const [scroll, setScroll] = useState(true);
-
+  const [isPlay, setIsPlay] = useState(false);
+const [hideButton, setHideButton] = useState(true)
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(
     item?.reaction_counts?.comment ?? 0,
   );
   const [, setCurrentAssetIndex] = useState(0);
+  const isFocused = useIsFocused();
   useEffect(() => {
     setTimeout(() => {
       if (carouselRef && currentPage > 1) {
-        carouselRef.current.snapToItem(currentPage - 1, false);
+        carouselRef.current.scrollToIndex({
+          animated: false,
+          index: currentPage - 1,
+        });
       }
     }, 1000);
   }, [currentPage, carouselRef]);
@@ -82,103 +89,120 @@ function ShortsModalView({
   }
 
   useEffect(() => {
-    Orientation.unlockAllOrientations();
-
-    return () => {
-      Orientation.lockToPortrait();
-    };
-  }, []);
+    if (isFocused) {
+      StatusBar.setBarStyle('light-content');
+    } else {
+      StatusBar.setBarStyle('dark-content');
+    }
+  }, [isFocused]);
 
   const shareActionSheet = useRef();
 
-  const renderMultipleImagePostView = ({ item: multiAttachItem }) => {
+  const renderMultipleImagePostView = ({ item: multiAttachItem, index }) => {
     const videoItem = JSON.parse(multiAttachItem?.object)?.attachments[0];
     const profileItem = multiAttachItem?.actor?.data;
     console.log('videoItem:=>', videoItem);
-    let portraitImgWidth = wp('100%');
-    let portraitImgHeight = hp('50%');
-
-      if (videoItem.media_height > videoItem.media_width) {
-        portraitImgWidth = wp('100%');
-        portraitImgHeight = hp('72%');
-      } else if (videoItem.media_height < videoItem.media_width) {
-        portraitImgWidth = wp('100%');
-        portraitImgHeight = hp('28%');
-      } else {
-        portraitImgWidth = wp('100%');
-        portraitImgHeight = hp('50%');
-      }
 
     return (
-      <View style={{ }}>
-        <View
+      <View
+        style={{
+          flex: 1,
+          alignSelf: 'center',
+          justifyContent: 'center',
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height,
+        }}>
+        {!hideButton && <View
           style={{
-           //  height: hp(100),
+            width: 60,
+            height: 60,
+            backgroundColor: colors.blackColor,
+            opacity: 0.5,
+            zIndex: 100,
+            position: 'absolute',
+            alignSelf: 'center',
+            borderRadius: 30,
             alignItems: 'center',
             justifyContent: 'center',
-            // zIndex: 100,
           }}>
+
           <Image
-            source={images.portraitVideoImage}
-            resizeMode={'cover'}
-            style={{
-              width: portraitImgWidth,
-              height: portraitImgHeight,
+              source={ !isPlay ? images.gamePause : images.gameStart}
+              resizeMode={'contain'}
+              style={
+                { height: 20, wodth: 12.5 }
+              }
+            />
+
+        </View>}
+        <View style={{ flex: 1 }}>
+          <Image source={images.portraitVideoImage} resizeMode={'cover'} />
+          <ShortsPlayer
+            payPausedPressed={() => {
+                setTimeout(() => setHideButton(!hideButton), 800);
+                setIsPlay(!isPlay)
             }}
-          />
-          <CustomVideoPlayer
-            onClick={toggleParentView}
+            playPause = {isPlay}
+
             isLandscape={false}
-            onPlayerStatusChanged={setScroll}
-            sourceURL={videoItem?.url}
+
+            sourceURL={videoItem?.thumbnail}
             containerStyle={{
               ...styles.singleImageDisplayStyle,
-              height: portraitImgHeight,
-              width: portraitImgWidth,
               position: 'absolute',
             }}
             videoStyle={{
               ...styles.singleImageDisplayStyle,
-              height: portraitImgHeight,
-              width: portraitImgWidth,
             }}
           />
         </View>
-        <View style={{ position: 'absolute', opacity: showParentView ? 1 : 0 }}>
-          <View style={styles.mainContainer}>
-            <TouchableWithoutFeedback onPress={onImageProfilePress}>
-              <Image
-                style={styles.background}
-                source={
-                  !profileItem?.thumbnail ? images.profilePlaceHolder : { uri: profileItem?.thumbnail }
-                }
-                resizeMode={'cover'}
-              />
-            </TouchableWithoutFeedback>
-            <View style={styles.userNameView}>
-              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>
-                {profileItem?.full_name}
-              </Text>
-              <Text style={styles.activeTimeAgoTxt}>
-                {commentPostTimeCalculate(multiAttachItem?.time, true)}
-              </Text>
-            </View>
+
+        <View style={styles.mainContainer}>
+          <TouchableWithoutFeedback onPress={onImageProfilePress}>
+            <Image
+              style={styles.background}
+              source={
+                !profileItem?.thumbnail
+                  ? images.profilePlaceHolder
+                  : { uri: profileItem?.thumbnail }
+              }
+              resizeMode={'cover'}
+            />
+          </TouchableWithoutFeedback>
+          <View style={styles.userNameView}>
+            <Text style={styles.userNameTxt} onPress={onImageProfilePress}>
+              {profileItem?.full_name}
+            </Text>
+            <Text style={styles.activeTimeAgoTxt}>
+              {commentPostTimeCalculate(multiAttachItem?.time, true)}
+            </Text>
           </View>
-          {topDesc && (
-            <View >
-              <PostDescSection
-                descriptions={descriptions}
-                containerStyle={{ marginHorizontal: 15 }}
-                descriptionTxt={{ color: colors.whiteColor }}
-                onReadMorePress={() => setTopDesc(false)}
-              />
-              <TagView
-                source={images.tagGreenImage}
-                tagText={'matches were tagged'}
-              />
-            </View>
-          )}
+          <TouchableOpacity onPress={() => {}}>
+            <Image
+              source={images.vertical3Dot}
+              resizeMode={'contain'}
+              style={{
+                height: 22,
+                width: 22,
+                tintColor: colors.whiteColor,
+              }}
+            />
+          </TouchableOpacity>
         </View>
+        {topDesc && (
+          <View>
+            <PostDescSection
+              descriptions={descriptions}
+              containerStyle={{ marginHorizontal: 15 }}
+              descriptionTxt={{ color: colors.whiteColor }}
+              onReadMorePress={() => setTopDesc(false)}
+            />
+            <TagView
+              source={images.tagGreenImage}
+              tagText={'matches were tagged'}
+            />
+          </View>
+        )}
 
         {!topDesc && (
           <View>
@@ -292,14 +316,6 @@ function ShortsModalView({
             </TouchableOpacity>
           </View>
         </View>
-
-        <ActionSheet
-          ref={shareActionSheet}
-          title={'News Feed Post'}
-          options={['Share', 'Copy Link', 'More Options', 'Cancel']}
-          cancelButtonIndex={3}
-          onPress={onShareActionSheetItemPress}
-        />
       </View>
     );
   };
@@ -339,16 +355,12 @@ function ShortsModalView({
     else setShowParentView((val) => !val);
   };
   return (
-
-    <View>
-
-      <Header
-            mainContainerStyle={{ paddingVertical: 5, width: wp(100) }}
+    <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
+      {/* <Header
             leftComponent={
               <TouchableOpacity
                 onPress={() => {
-                  Orientation.lockToPortrait();
-                  backBtnPress();
+                  navigation.goBack()
                 }}>
                 <Image
                   source={images.backArrow}
@@ -366,31 +378,39 @@ function ShortsModalView({
                 />
               </TouchableOpacity>
             }
-          />
-      <Carousel
-            onSnapToItem={setCurrentAssetIndex}
-            firstItem={0}
-            nestedScrollEnabled={false}
-            ref={carouselRef}
-            data={shorts} // (shorts || []).map((e) => JSON.parse(e.object).attachments[0])
-            renderItem={renderMultipleImagePostView}
-            contentContainerCustomStyle={{ alignSelf: 'center' }}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            scrollEnabled={scroll}
-            sliderWidth={wp(100)}
-            itemWidth={wp(100)}
-          />
-
+          /> */}
+      {/* <Carousel
+               onSnapToItem={setCurrentAssetIndex}
+               firstItem={0}
+               nestedScrollEnabled={false}
+               ref={carouselRef}
+               data={shorts} // (shorts || []).map((e) => JSON.parse(e.object).attachments[0])
+               renderItem={renderMultipleImagePostView}
+               contentContainerCustomStyle={{ alignSelf: 'center' }}
+               inactiveSlideScale={1}
+               inactiveSlideOpacity={1}
+               scrollEnabled={scroll}
+               sliderWidth={wp(100)}
+               itemWidth={wp(100)}
+             /> */}
+      <FlatList
+        nestedScrollEnabled={false}
+        ref={carouselRef}
+        data={shorts} // (shorts || []).map((e) => JSON.parse(e.object).attachments[0])
+        renderItem={renderMultipleImagePostView}
+        pagingEnabled={true}
+        onSnapToItem={setCurrentAssetIndex}
+        decelerationRate="fast"
+      />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    marginTop: 10,
-    marginLeft: 15,
+    margin: 15,
+
+    alignItems: 'center',
   },
   userNameTxt: {
     color: colors.whiteColor,
@@ -423,6 +443,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     marginVertical: '2%',
     alignSelf: 'center',
+    // marginBottom: 50,
   },
   commentlengthStyle: {
     alignSelf: 'center',
@@ -436,12 +457,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   singleImageDisplayStyle: {
-    height: hp('65%'),
+    height: hp('100%'),
     justifyContent: 'center',
-    width: wp('98%'),
+    width: wp('100%'),
     alignSelf: 'center',
     alignItems: 'center',
   },
 });
 
-export default memo(ShortsModalView);
+export default ShortsPlayScreen;
