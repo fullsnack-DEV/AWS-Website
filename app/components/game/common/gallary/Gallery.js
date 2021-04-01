@@ -47,13 +47,14 @@ const Gallery = ({
         })
   }, [authContext, gameData?.game_id, getGalleryData])
 
-  const callthis = useCallback((data, postDesc) => {
+  const callthis = useCallback((data, postDesc, taggedData) => {
     if (data) {
       const dataParams = {
         entity_type: 'game',
         game_id: gameData?.game_id,
         text: postDesc && postDesc,
         attachments: [],
+        tagged: taggedData,
       };
       const imageArray = data.map((dataItem) => (dataItem))
       imageUploadContext.uploadData(

@@ -25,6 +25,13 @@ const O_LANDSCAPE_IMAGE_HEIGHT = 1200;
 const O_PORTRAIT_IMAGE_WIDTH = 1200;
 const O_COMPRESSION_RATE = 72; // 0 to 100
 
+export const getPickedData = (pickedData, existingImageLength) => {
+  if (pickedData?.length > (MAX_UPLOAD_POST_ASSETS - (existingImageLength ?? 0))) {
+    return pickedData.slice(0, MAX_UPLOAD_POST_ASSETS - (existingImageLength ?? 0))
+  }
+  return pickedData;
+}
+
 export const uploadImageOnPreSignedUrls = async ({
   url, uri, type, cancelToken,
 }) => {

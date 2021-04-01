@@ -37,7 +37,7 @@ import images from '../../Constants/ImagePath';
 import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import { getSearchData } from '../../utils';
-import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
+import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 
@@ -265,10 +265,11 @@ const EditPostScreen = ({
       multiple: true,
       maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
     }).then((image) => {
+      const pickedData = getPickedData(image, selectImage?.length);
       let allSelectData = [];
       const secondData = [];
       if (selectImage.length > 0) {
-        image.filter((dataItem) => {
+        pickedData.filter((dataItem) => {
           const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
           if (filter_data.length === 0) {
             secondData.push(dataItem)
@@ -278,7 +279,7 @@ const EditPostScreen = ({
         allSelectData = [...selectImage, ...secondData];
         setSelectImage(allSelectData);
       } else {
-        setSelectImage(image);
+        setSelectImage(pickedData);
       }
     });
   }, [selectImage]);

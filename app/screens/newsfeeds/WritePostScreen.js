@@ -33,7 +33,7 @@ import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import AuthContext from '../../auth/context';
 import { getSearchData } from '../../utils';
-import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
+import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
@@ -172,8 +172,8 @@ export default function WritePostScreen({ navigation, route }) {
     const str = searchText?.replace(`${searchTag}`, joinedString.replace(/ /g, ''));
     setSearchText(`${str} `)
 
-    const isExist = tagsOfEntity.some((tagItem) => tagItem[entity_text] === item[entity_text])
-    if (!isExist) tagsArray.push(item)
+    const isExist = tagsOfEntity.some((tagItem) => tagItem?.entity_id === item[entity_text])
+    if (!isExist) tagsArray.push({ entity_id: item?.[entity_text], entity_type: item?.entity_type })
     setTagsOfEntity([...tagsOfEntity, ...tagsArray])
     setLetModalVisible(false)
     textInputRef.current.focus();
@@ -335,10 +335,11 @@ export default function WritePostScreen({ navigation, route }) {
         multiple: true,
         maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
       }).then((data) => {
+        const pickedData = getPickedData(data, selectImage?.length);
         let allSelectData = [];
         const secondData = [];
         if (selectImage?.length > 0) {
-          data.filter((dataItem) => {
+          pickedData.filter((dataItem) => {
             const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
             if (filter_data?.length === 0) {
               secondData.push(dataItem)
@@ -348,7 +349,7 @@ export default function WritePostScreen({ navigation, route }) {
           allSelectData = [...selectImage, ...secondData];
           setSelectImage(allSelectData);
         } else {
-          setSelectImage(data);
+          setSelectImage(pickedData);
         }
       }).catch((error) => {
         console.log(error);

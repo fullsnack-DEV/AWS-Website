@@ -230,6 +230,7 @@ export default function ChooseLocationScreen({ navigation }) {
     </TouchableWithoutFeedback>
   );
 
+  const removeExtendedSpecialCharacters = (str) => str.replace(/[^\x20-\x7E]/g, '')
   return (
     <LinearGradient
           colors={[colors.themeColor1, colors.themeColor3]}
@@ -241,11 +242,15 @@ export default function ChooseLocationScreen({ navigation }) {
       <View style={ styles.sectionStyle }>
         <Image source={ images.searchLocation } style={ styles.searchImg } />
         <TextInput
+            // Indiër - For Test
+          value={searchText}
+          autoCorrect={false}
+          spellCheck={false}
           style={ styles.textInput }
           placeholder={ strings.locationPlaceholderText }
           clearButtonMode="always"
           placeholderTextColor={ colors.themeColor }
-          onChangeText={setSearchText}
+          onChangeText={(text) => setSearchText(removeExtendedSpecialCharacters(text))}
         />
       </View>
       {noData && (
