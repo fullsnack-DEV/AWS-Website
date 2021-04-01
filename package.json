@@ -65,6 +65,7 @@
     "react-native-fs": "^2.16.6",
     "react-native-geocoding": "^0.4.0",
     "react-native-gesture-handler": "^1.8.0",
+    "react-native-get-random-values": "^1.6.0",
     "react-native-hyperlink": "0.0.19",
     "react-native-image-crop-picker": "^0.35.1",
     "react-native-image-pan-zoom": "^2.1.12",

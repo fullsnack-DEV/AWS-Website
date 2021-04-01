@@ -173,14 +173,14 @@ function MultiImagePostView({
                       sourceURL={multiAttachItem?.url}
                       containerStyle={{
                           ...styles.singleImageDisplayStyle,
-                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                          height: isLandScape ? landscapeImgHeight : hp(100),
+                          width: isLandScape ? landscapeImgWidth : wp(100),
                           position: 'absolute',
                       }}
                       videoStyle={{
                           ...styles.singleImageDisplayStyle,
-                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
-                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
+                          height: isLandScape ? landscapeImgHeight : hp(100),
+                          width: isLandScape ? landscapeImgWidth : wp(100),
                       }}
                   />
             </View>

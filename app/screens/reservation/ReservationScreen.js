@@ -93,7 +93,7 @@ export default function ReservationScreen({ navigation }) {
       <MatchReservation
               data={item}
               onPressGameCard={() => {
-                const gameHome = getGameHomeScreen(item.sport);
+                const gameHome = getGameHomeScreen(item?.sport);
                 if (item?.game?.game_id || item?.game_id) {
                   navigation.navigate(gameHome, {
                     gameId: item?.game?.game_id || item?.game_id,

@@ -34,10 +34,9 @@ import AppleButton from '../../components/AppleButton';
 import { createUser } from '../../api/Users';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
-let dummyAuthContext = {};
 export default function WelcomeScreen({ navigation }) {
   const fadeInOpacity = new Animated.Value(0);
-
+  let dummyAuthContext = {};
   // For activity indigator
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
@@ -298,7 +297,7 @@ export default function WelcomeScreen({ navigation }) {
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       }).then(async (appleAuthRequestResponse) => {
-        if (!appleAuthRequestResponse.identityToken) {
+        if (!appleAuthRequestResponse?.identityToken) {
           setloading(false);
           setTimeout(() => {
             Alert.alert('Apple Sign-In failed - no identify token returned');
@@ -314,25 +313,25 @@ export default function WelcomeScreen({ navigation }) {
   };
 
   const handleAndroidAppleLogin = async () => {
-    if (!appleAuthAndroid.isSupported) {
+    if (!appleAuthAndroid?.isSupported) {
       alert('Apple Login not supported')
     } else {
-      // Generate secure, random values for state and nonce
       const rawNonce = uuid();
       const state = uuid();
       appleAuthAndroid.configure({
-        clientId: 'com.tc.townscup',
+        clientId: 'com.townscup',
         redirectUri: 'https://townscup-fee6e.firebaseapp.com/__/auth/handler',
         scope: appleAuthAndroid.Scope.ALL,
         responseType: appleAuthAndroid.ResponseType.ALL,
         nonce: rawNonce,
         state,
       });
-
       const appleAuthRequestResponse = await appleAuthAndroid.signIn();
-      const { identityToken, nonce } = appleAuthRequestResponse;
-      const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
-      await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ')
+      console.log(appleAuthRequestResponse);
+      setloading(true);
+      const { id_token, nonce, fullName } = appleAuthRequestResponse;
+      const appleAndroidCredential = await auth.AppleAuthProvider.credential(id_token, nonce);
+      await signInSignUpWithSocialCredential(appleAndroidCredential, 'APPLE Android| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
     }
   };
 
@@ -384,10 +383,12 @@ export default function WelcomeScreen({ navigation }) {
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <View style={{ marginBottom: hp(2) }}>
-          {Platform.OS === 'ios' && <AppleButton onPress={() => {
+          {/* {Platform.OS === 'ios' && ( */}
+          <AppleButton onPress={() => {
             if (authContext.networkConnected) onAppleButtonPress();
             else authContext.showNetworkAlert();
-          }}/>}
+          }}/>
+          {/* )} */}
 
           <FacebookButton onPress={() => {
             if (authContext.networkConnected) onFacebookButtonPress();

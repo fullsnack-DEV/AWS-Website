@@ -63,7 +63,7 @@ const GameFeed = ({
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
-        taggedData: tagsOfEntity ?? [],
+        tagged: tagsOfEntity ?? [],
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
@@ -71,7 +71,7 @@ const GameFeed = ({
       const dataParams = {
         text: postDesc && postDesc,
         attachments: [],
-        taggedData: tagsOfEntity ?? [],
+        tagged: tagsOfEntity ?? [],
       };
       imageUploadContext.uploadData(
           authContext,
@@ -122,7 +122,7 @@ const GameFeed = ({
       const dataParams = {
         activity_id: selectEditItem.id,
         text: postDesc,
-        taggedData: tagData ?? [],
+        tagged: tagData ?? [],
       };
       updatePostAfterUpload(dataParams);
     } else if (data) {
@@ -140,7 +140,7 @@ const GameFeed = ({
         activity_id: selectEditItem.id,
         text: postDesc,
         attachments: [...alreadyUrlDone],
-        taggedData: tagData ?? [],
+        tagged: tagData ?? [],
       };
       if (createUrlData?.length > 0) {
         const imageArray = createUrlData.map((dataItem) => (dataItem))
