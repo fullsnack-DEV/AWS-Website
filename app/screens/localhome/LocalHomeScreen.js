@@ -54,7 +54,6 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
-import ShortsModalView from '../../components/newsFeed/ShortsModalView';
 
 // import AuthContext from '../../auth/context';
 
@@ -90,10 +89,7 @@ export default function LocalHomeScreen({ navigation }) {
   const [referees] = useState([]); // ['', '', '', '', '']
   const [scorekeepers] = useState([]); // ['', '', '', '', '']
 
-  const [selectedShortsIndex, setSelectedShortsIndex] = useState();
-  const [selectedShortItem, setSelectedShortItem] = useState({});
-
-const [shortsModalVisible, setShortsModalVisible] = useState(false)
+  const [, setShortsModalVisible] = useState(false);
 
   const authContext = useContext(AuthContext);
 
@@ -305,11 +301,22 @@ const [shortsModalVisible, setShortsModalVisible] = useState(false)
     [],
   );
 
-  const onShortPress = useCallback(({ cardItem, index }) => {
-    setShortsModalVisible(!shortsModalVisible);
-    setSelectedShortsIndex(index + 1)
-    setSelectedShortItem(cardItem)
-  }, [shortsModalVisible]);
+  const onShortPress = useCallback(
+    ({ cardItem, index }) => {
+      // setShortsModalVisible(!shortsModalVisible);
+      // setSelectedShortsIndex(index + 1);
+      // setSelectedShortItem(cardItem);
+
+      navigation.navigate('ShortsPlayScreen', {
+        currentPage: index + 1,
+        shorts: shortsList,
+        item: cardItem,
+        caller_id: authContext?.entity?.uid,
+        backBtnPress: () => setShortsModalVisible(false),
+      });
+    },
+    [authContext?.entity?.uid, navigation, shortsList],
+  );
 
   const shortsListView = useCallback(
     ({ item, index }) => (
@@ -922,7 +929,7 @@ const [shortsModalVisible, setShortsModalVisible] = useState(false)
             <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
           </View>
         </Modal>
-        <Modal
+        {/* <Modal
         isVisible={shortsModalVisible} // shortsModalVisible
         backdropColor="black"
         style={{ margin: 0, backgroundColor: colors.blackColor }}
@@ -944,7 +951,7 @@ const [shortsModalVisible, setShortsModalVisible] = useState(false)
           // }}
           // onLikePress={onLikePress}
         />
-        </Modal>
+        </Modal> */}
       </ScrollView>
     </View>
   );

@@ -252,13 +252,13 @@ const getGameSlots = async (entity_type, entity_id, queryString, headers, authCo
 
 const getGameRefereeReservation = (gameId, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/referees/game/${gameId}/reservation`,
+  url: `${Config.BASE_URL}/referees/game/${gameId}/reservation?fetchReview=true`,
   authContext,
 });
 
 const getGameScorekeeperReservation = (gameId, authContext) => makeAPIRequest({
   method: 'get',
-  url: `${Config.BASE_URL}/scorekeepers/game/${gameId}/reservation?scorekeeper_detail=true`,
+  url: `${Config.BASE_URL}/scorekeepers/game/${gameId}/reservation?fetchReview=true`, // &scorekeeper_detail=true
   authContext,
 });
 

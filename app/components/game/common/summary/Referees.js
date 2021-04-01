@@ -142,6 +142,7 @@ const Referees = ({
 
   const renderReferees = useCallback(
     ({ item }) => {
+      console.log('Referee Row:=>', item);
       const entity = authContext?.entity;
       const reservationDetail = item; // item?.reservation
       return (
@@ -155,7 +156,7 @@ const Referees = ({
             && !checkReviewExpired(gameData?.actual_enddatetime)
             && !isAdmin
           }
-          isReviewed={!!item?.review_id}
+          isReviewed={!!item?.referee?.review_id}
           followUser={followUser}
           unFollowUser={unFollowUser}
           userID={reservationDetail?.referee?.user_id}
@@ -170,7 +171,7 @@ const Referees = ({
             actionSheet.current.show();
           }}
           userRole={userRole}
-          onReviewPress={() => onReviewPress(item)}
+          onReviewPress={() => onReviewPress(item?.referee)}
         />
       );
     },

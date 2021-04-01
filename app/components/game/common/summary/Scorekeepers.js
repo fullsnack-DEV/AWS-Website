@@ -52,6 +52,7 @@ const Scorekeepers = ({
   }, [authContext.entity.uid]);
   useEffect(() => {
     getScorekeeperReservation(gameData?.game_id).then((res) => {
+      console.log('Scorekeeper reservation::=>', res);
       const refData = res?.payload?.filter(
         (item) => ![ScorekeeperReservationStatus.cancelled].includes(item?.status),
       );
@@ -123,7 +124,9 @@ const Scorekeepers = ({
         statusData = { status: 'Pending payment', color: colors.yellowColor };
         break;
       case ScorekeeperReservationStatus.offered:
-        if (isExpired) { statusData = { status: 'Expired', color: colors.userPostTimeColor }; } else statusData = { status: 'Sent', color: colors.yellowColor };
+        if (isExpired) {
+          statusData = { status: 'Expired', color: colors.userPostTimeColor };
+        } else statusData = { status: 'Sent', color: colors.yellowColor };
         break;
       case ScorekeeperReservationStatus.changeRequest:
         statusData = { status: 'Change requested', color: colors.yellowColor };
@@ -146,11 +149,12 @@ const Scorekeepers = ({
           myUserId={myUserId}
           isShowReviewButton={
             gameData?.status === 'ended'
-            && reservationDetail?.status !== ScorekeeperReservationStatus.offered
+            && reservationDetail?.status
+              !== ScorekeeperReservationStatus.offered
             && !checkReviewExpired(gameData?.actual_enddatetime)
             && !isAdmin
           }
-          isReviewed={!!item?.review_id}
+          isReviewed={!!item?.scorekeeper?.review_id}
           followUser={followUser}
           unFollowUser={unFollowUser}
           userID={reservationDetail?.scorekeeper?.user_id}
@@ -164,7 +168,7 @@ const Scorekeepers = ({
             actionSheet.current.show();
           }}
           userRole={userRole}
-          onReviewPress={() => onReviewPress(item)}
+          onReviewPress={() => onReviewPress(item?.scorekeeper)}
         />
       );
     },

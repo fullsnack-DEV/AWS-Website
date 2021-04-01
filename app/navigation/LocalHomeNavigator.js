@@ -14,6 +14,7 @@ import LookingTeamScreen from '../screens/localhome/LookingTeamScreen';
 import RefereesListScreen from '../screens/localhome/RefereesListScreen';
 import ScorekeeperListScreen from '../screens/localhome/ScorekeeperListScreen';
 import SearchCityScreen from '../screens/localhome/SearchCityScreen';
+import ShortsPlayScreen from '../screens/localhome/shorts/ShortsPlayScreen';
 
 const Stack = createStackNavigator();
 
@@ -168,13 +169,24 @@ const LocalHomeNavigator = () => (
         }}
       />
 
-    {/* <Stack.Screen
-      name="UserTagSelectionListScreen"
-      component={UserTagSelectionListScreen}
+    <Stack.Screen
+      name="ShortsPlayScreen"
+      component={ShortsPlayScreen}
       options={{
-        headerShown: false,
+        title: 'Shorts',
+        headerTintColor: colors.whiteColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+
+        headerTransparent: true,
+        headerStyle: {
+          backgroundColor: colors.blackColor,
+          borderBottomColor: colors.blackColor,
+          borderBottomWidth: 0,
+        },
       }}
-    /> */}
+    />
 
   </Stack.Navigator>
 );
