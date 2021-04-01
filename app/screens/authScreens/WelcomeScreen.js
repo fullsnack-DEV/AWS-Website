@@ -218,6 +218,10 @@ export default function WelcomeScreen({ navigation }) {
               userDetail.first_name = 'Towns';
               userDetail.last_name = 'Cup';
             }
+            if (!userDetail?.first_name) {
+              userDetail.first_name = 'Towns';
+              userDetail.last_name = 'Cup';
+            }
             userDetail.email = user.email;
             signUpToTownsCup(userDetail)
           });
