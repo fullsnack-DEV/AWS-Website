@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   mainContainerStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 15,
+    marginLeft: 10,
     marginBottom: 10,
   },
   imageStyle: {

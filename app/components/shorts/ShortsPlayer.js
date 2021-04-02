@@ -18,33 +18,28 @@ const ShortsPlayer = ({
   containerStyle,
   payPausedPressed,
   playPause,
+  curruentIndex,
+          curruentViewableIndex,
 }) => {
   const videoPlayerRef = useRef();
   // const [isFullScreen, setIsFullScreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const onLoad = () => {
-    videoPlayerRef.current.seek(0);
-    setIsLoading(false);
+        videoPlayerRef.current.seek(0);
+        setIsLoading(false);
   };
 
   return (
     <TouchableWithoutFeedback onPress={payPausedPressed}>
       <View style={{ ...containerStyle }}>
         <View
-          style={{
-            position: 'absolute',
-            alignSelf: 'center',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-          }}>
+          style={styles.loadingContainer}>
           <TCInnerLoader visible={isLoading} />
         </View>
-        <Video
+        {curruentIndex === curruentViewableIndex && <Video
           ref={videoPlayerRef}
-          paused={playPause}
-          hideShutterView={true}
+          paused={playPause }
           // muted={!mute}
           repeat={true}
           source={{ uri: sourceURL }}
@@ -55,7 +50,7 @@ const ShortsPlayer = ({
           }}
           resizeMode={resizeMode}
           onLoad={onLoad}
-        />
+        />}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -65,6 +60,13 @@ const styles = StyleSheet.create({
   mediaPlayer: {
     backgroundColor: colors.blackColor,
     justifyContent: 'center',
+  },
+  loadingContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
   },
 
 });
