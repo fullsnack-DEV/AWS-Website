@@ -15,7 +15,6 @@ export default function EventScheduleScreen({
   profileID,
   screenUserId,
   onScroll,
-  headerComponent,
 }) {
   const [filterData, setFilterData] = useState(null);
 
@@ -81,8 +80,6 @@ export default function EventScheduleScreen({
     <View style={styles.mainContainer}>
       {filterData && (
         <SectionList
-        stickySectionHeadersEnabled={false}
-        ListHeaderComponent={headerComponent}
         onScroll={onScroll}
         scrollEventThrottle={1}
           ListEmptyComponent={
