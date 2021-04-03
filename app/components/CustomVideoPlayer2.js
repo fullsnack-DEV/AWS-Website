@@ -17,7 +17,6 @@ const CustomVideoPlayer = ({
   onClick = () => {},
 }) => {
   const videoPlayerRef = useRef();
-  // const [videoMetaData, setVideoMetaData] = useState(null);
   const [duration, setDuration] = useState(0);
   // const [isFullScreen, setIsFullScreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +54,6 @@ const CustomVideoPlayer = ({
   };
 
   const onLoad = (data) => {
-    // setVideoMetaData({ ...data });
     videoPlayerRef.current.seek(0);
     setDuration(data.duration);
     setIsLoading(false);
@@ -98,11 +96,11 @@ const CustomVideoPlayer = ({
       <MediaControls
               containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 100 }}
               sliderStyle={{ containerStyle: { zIndex: 100, paddingBottom: isLandscape ? wp(16) : hp(5) } }}
-              // isFullScreen={false}
-              // onFullScreen={onFullScreen}
+              // isFullScreen={isFullScreen}
               duration={duration}
               isLoading={isLoading}
               mainColor={'rgba(0,0,0,0.5)'}
+              // onFullScreen={onFullScreen}
               onPaused={onPaused}
               onReplay={onReplay}
               onSeek={onSeek}

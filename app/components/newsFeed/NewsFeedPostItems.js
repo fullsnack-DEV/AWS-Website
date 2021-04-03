@@ -111,7 +111,6 @@ const NewsFeedPostItems = ({
   const listSpace = useMemo(() => <View style={{ width: wp('2%') }} />, [])
 
   const renderMultiplePostItems = useCallback(({ item: multiAttachItem, index }) => {
-    console.log('multiAttachItem:', multiAttachItem);
     if (multiAttachItem?.type === 'image') {
       return (
         <PostImageSet

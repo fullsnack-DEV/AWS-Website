@@ -40,18 +40,15 @@ import { getSearchData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
+const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagRegex = /(?!\w)@\w+/gmi
 
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gmi
 const EditPostScreen = ({
   navigation,
   route,
 }) => {
   const { params: { data, onPressDone } } = route;
   const textInputRef = useRef();
-  // const keyboardDidShowListener = null;
-  // const keyboardDidHideListener = null;
   let postText = '';
   let postAttachments = [];
   if (data && data.object) {
@@ -63,23 +60,20 @@ const EditPostScreen = ({
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState(postText);
   const [selectImage, setSelectImage] = useState(postAttachments);
+  const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const editObject = JSON.parse(route?.params?.data?.object);
-  const [tagsOfEntity, setTagsOfEntity] = useState(editObject?.taggedData || []);
+  const [tagsOfEntity, setTagsOfEntity] = useState(editObject?.tagged || []);
   const [searchTag, setSearchTag] = useState();
   const [searchUsers, setSearchUsers] = useState([]);
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
   const [searchGroups, setSearchGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
-  // const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   useEffect(() => {
-    // keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
-    // keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
-
     getUserList(authContext)
       .then((response) => {
         setUsers([...response.payload]);
@@ -97,11 +91,12 @@ const EditPostScreen = ({
       .catch((e) => {
         Alert.alert('', e.messages)
       });
-    // return () => {
-    //   keyboardDidShowListener.remove();
-    //   keyboardDidHideListener.remove();
-    // }
   }, [])
+
+  useEffect(() => {
+    if (searchText[currentTextInputIndex - 1] === '@') setLastTagStartIndex(currentTextInputIndex - 1);
+    if (searchText[currentTextInputIndex - 1] === ' ') setLastTagStartIndex(null);
+  }, [searchText])
 
   useEffect(() => {
     if (searchText?.length === 0) {
@@ -123,31 +118,39 @@ const EditPostScreen = ({
     if (letModalVisible) searchFilterFunction(searchTag?.replace('@', ''))
   }, [letModalVisible, searchTag])
 
+  const removeStr = (str, fromIndex, toIndex) => str.substring(0, fromIndex) + str.substring(toIndex, str.length)
+
+  const addStringInCurrentText = useCallback((str, fromIndex, toIndex, stringToAdd) => {
+    let string = removeStr(str, fromIndex, toIndex);
+    string = addStr(string, fromIndex, stringToAdd);
+    return string;
+  }, [])
+
   const onTagPress = useCallback((item) => {
     const tagsArray = [];
     let joinedString = '@';
     const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
-    const jsonData = { entity_type: '', entity_name: '', entity_id: '' }
+    const jsonData = { entity_type: '', entity_data: '', entity_id: '' }
     jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'user' : item?.entity_type;
     jsonData.entity_id = item?.[entity_text];
     if (item?.group_name) {
-      jsonData.entity_name = _.startCase(_.toLower(item?.group_name));
+      jsonData.entity_data = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
     } else {
-      const fName = _.startCase(_.toLower(item?.first_name));
-      const lName = _.startCase(_.toLower(item?.last_name));
-      jsonData.entity_name = `${fName} ${lName}`;
+      const fName = _.startCase(_.toLower(item?.first_name))?.replace(/ /g, '');
+      const lName = _.startCase(_.toLower(item?.last_name))?.replace(/ /g, '');
+      jsonData.entity_data = `${fName}${lName}`;
     }
-    // joinedString += `${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
-    joinedString += `${jsonData.entity_name } `;
-    const str = searchText?.replace(`${searchTag}`, joinedString.replace(/ /g, ''));
+    joinedString += `${jsonData.entity_data } `;
+    const str = addStringInCurrentText(searchText, lastTagStartIndex, currentTextInputIndex, joinedString);
     setSearchText(`${str} `)
 
-    const isExist = tagsOfEntity.some((tagItem) => tagItem[entity_text] === item[entity_text])
-    if (!isExist) tagsArray.push(item)
+    const isExist = tagsOfEntity.some((tagItem) => tagItem?.entity_id === item[entity_text])
+    if (!isExist) tagsArray.push({ entity_data: joinedString.replace(/ /g, ''), entity_id: item?.[entity_text], entity_type: jsonData?.entity_type })
     setTagsOfEntity([...tagsOfEntity, ...tagsArray])
     setLetModalVisible(false)
     textInputRef.current.focus();
-  }, [searchTag, searchText, tagsOfEntity])
+    setLastTagStartIndex(null);
+  }, [addStringInCurrentText, currentTextInputIndex, lastTagStartIndex, searchText, tagsOfEntity])
 
   useEffect(() => {
     let tagName = '';
@@ -157,21 +160,20 @@ const EditPostScreen = ({
         route.params.selectedTagList.map((tagItem) => {
           let joinedString = '@';
           const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
-          const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
+          const isExist = tagsOfEntity.some((item) => item?.entity_id === tagItem[entity_text])
 
-          const jsonData = { entity_type: '', entity_name: '', entity_id: '' }
+          const jsonData = { entity_type: '', entity_data: '', entity_id: '' }
           jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'user' : tagItem?.entity_type;
           jsonData.entity_id = tagItem?.[entity_text];
           if (tagItem?.group_name) {
-            jsonData.entity_name = _.startCase(_.toLower(tagItem?.group_name));
+            jsonData.entity_data = _.startCase(_.toLower(tagItem?.group_name))?.replace(/ /g, '');
           } else {
-            const fName = _.startCase(_.toLower(tagItem?.first_name));
-            const lName = _.startCase(_.toLower(tagItem?.last_name));
-            jsonData.entity_name = `${fName}${lName}`;
+            const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(/ /g, '');
+            const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(/ /g, '');
+            jsonData.entity_data = `${fName}${lName}`;
           }
-          // joinedString = `@${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
-          joinedString += `${jsonData.entity_name } `;
-          if (!isExist) tagsArray.push(tagItem)
+          joinedString += `${jsonData.entity_data } `;
+          if (!isExist) tagsArray.push({ entity_data: joinedString.replace(/ /g, ''), entity_id: jsonData?.entity_id, entity_type: jsonData?.entity_type })
           tagName = `${tagName} ${joinedString}`;
           textInputRef.current.focus();
           return null;
@@ -183,7 +185,7 @@ const EditPostScreen = ({
         setSearchText(output);
       }
     }
-  }, [route?.params?.selectedTagList]);
+  }, [route?.params]);
 
   const searchFilterFunction = useCallback((text) => {
     if (text?.length > 0) {
@@ -201,13 +203,10 @@ const EditPostScreen = ({
     userImage = data.actor.data.thumbnail;
   }
 
-  const renderTagText = (matchingString) => {
-    const pattern = /\B@\w+/g;
-    const match = matchingString.match(pattern);
-    return <Text style={{ ...styles.username, color: colors.greeColor }}>{match[0]}</Text>;
-  }
+  const renderTagText = useCallback((matchingString) => <Text style={{ ...styles.username, color: colors.greeColor }}>{`${matchingString}`}</Text>, [])
 
   const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length)
+
   const renderUrlPreview = useMemo(() => {
     if (searchText?.length > 0) {
       let desc = searchText
@@ -250,6 +249,7 @@ const EditPostScreen = ({
 
   const onKeyPress = useCallback(({ nativeEvent }) => {
     if (nativeEvent.key === 'Backspace' && searchText[currentTextInputIndex - 1] === '@') {
+      setLastTagStartIndex(null);
       setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText])
