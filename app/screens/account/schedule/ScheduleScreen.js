@@ -808,17 +808,6 @@ const [listView, setListView] = useState(false)
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
-            <EventAgendaSection
-              onKnobPress={onKnobPress}
-              isListView={listView}
-              showTimeTable={showTimeTable}
-              horizontal={monthView}
-              onPressListView={onPressListView}
-              onPressGridView={onPressGridView}
-              onDayPress={onDayPress}
-              selectedCalendarDate={selectedCalendarDateString}
-              calendarMarkedDates={markingDays}
-            />
 
             {showTimeTable ? (
               <View style={{ marginBottom: 100 }}>
@@ -838,6 +827,17 @@ const [listView, setListView] = useState(false)
                   />
               </View>
               ) : <EventScheduleScreen
+              headerComponent={() => <EventAgendaSection
+              onKnobPress={onKnobPress}
+              isListView={listView}
+              showTimeTable={showTimeTable}
+              horizontal={monthView}
+              onPressListView={onPressListView}
+              onPressGridView={onPressGridView}
+              onDayPress={onDayPress}
+              selectedCalendarDate={selectedCalendarDateString}
+              calendarMarkedDates={markingDays}
+            />}
               onScroll={onScroll}
               eventData={eventData}
               navigation={navigation}

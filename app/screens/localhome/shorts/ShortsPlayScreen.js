@@ -37,8 +37,10 @@ function ShortsPlayScreen({ route }) {
   useEffect(() => {
     if (isFocused) {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.blackColor);
     } else {
       StatusBar.setBarStyle('dark-content');
+      StatusBar.setBackgroundColor(colors.whiteColor);
     }
   }, [isFocused]);
 
@@ -61,7 +63,9 @@ function ShortsPlayScreen({ route }) {
   return (
     <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
       <FlatList
-        nestedScrollEnabled={false}
+      bounces={false}
+        nestedScrollEnabled={true}
+        showsVerticalScrollIndicator={false}
         ref={carouselRef}
         data={shortsData}
         renderItem={renderShortsVideo}
@@ -71,6 +75,15 @@ function ShortsPlayScreen({ route }) {
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
         keyExtractor={keyExtractor}
+        onScrollToIndexFailed={() => {
+          const wait = new Promise((resolve) => setTimeout(resolve, 200));
+          wait.then(() => {
+            carouselRef.current.scrollToIndex({
+              animated: false,
+              index: currentPage - 1,
+            });
+          });
+        }}
       />
     </View>
   );

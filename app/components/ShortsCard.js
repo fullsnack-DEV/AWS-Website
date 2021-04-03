@@ -5,6 +5,7 @@ import {
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
+import LinearGradient from 'react-native-linear-gradient';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 
@@ -19,6 +20,7 @@ function ShortsCard({ onPress, cardItem }) {
   console.log('DATA:=>', json);
   return (
     <TouchableOpacity onPress={() => onPress({ cardItem }) }>
+
       <View>
         <Video
         source={{ uri: json.attachments[0].thumbnail }}
@@ -31,15 +33,18 @@ function ShortsCard({ onPress, cardItem }) {
             {millisToMinutesAndSeconds(json.attachments[0].duration)}
           </Text>
         </View>
-        <View style={styles.shortsTextContainer}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.3)']}
+          style={styles.overlayStyle}>
           <Text style={styles.entityLable} numberOfLines={2}>
             {cardItem?.actor?.data?.entity_type === 'player'
             ? cardItem?.actor?.data?.full_name
             : cardItem?.actor?.data?.group_name}
           </Text>
           <Text style={styles.viewsLable}>121 views</Text>
-        </View>
+        </LinearGradient>
       </View>
+
     </TouchableOpacity>
   );
 }
@@ -64,19 +69,30 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     marginBottom: 5,
     marginLeft: 8,
+    marginTop: 15,
   },
   viewsLable: {
     fontFamily: fonts.RRegular,
     fontSize: 14,
     color: colors.whiteColor,
     marginLeft: 8,
+    paddingBottom: 15,
   },
-  shortsTextContainer: {
+  // shortsTextContainer: {
+  //   position: 'absolute',
+  //   // top: 0,
+  //   left: 15,
+  //   right: 0,
+  //   bottom: 15,
+  // },
+  overlayStyle: {
     position: 'absolute',
     // top: 0,
     left: 15,
     right: 0,
-    bottom: 15,
+    bottom: 0,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   durationContainer: {
     width: 30,

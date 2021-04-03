@@ -40,8 +40,8 @@ function WriteCommentItems({ data }) {
         <View style={ styles.userCommentTextStyle }>
           <Text style={ styles.userNameTxt }>
             {userName}{' '}
-            <Text style={ styles.commentTextStyle }>{commentText}</Text>
           </Text>
+          <Text style={ styles.commentTextStyle }>{commentText}</Text>
         </View>
         <Text style={ styles.activeTimeAgoTxt }>
           {commentPostTimeCalculate(commentTime)}

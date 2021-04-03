@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
+
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ParsedText from 'react-native-parsed-text';
 import colors from '../../Constants/Colors';
@@ -24,6 +25,7 @@ function PostDescSection({
   }
 
   return (
+
     <TouchableWithoutFeedback style={[styles.containerStyle, containerStyle]} onPress={onReadMorePress}>
       {descriptions.length > 0 && (
         <Text style={[styles.descText, descText]} onPress={onReadMorePress}>
@@ -50,6 +52,7 @@ function PostDescSection({
         </Text>
       )}
     </TouchableWithoutFeedback>
+
   );
 }
 

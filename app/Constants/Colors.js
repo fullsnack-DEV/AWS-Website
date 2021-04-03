@@ -95,7 +95,10 @@ const colors = {
   darkOrangColor: '#FF4E00',
   lightgrayBG: '#D8D8D8',
   refereeHomeDividerColor: '#D0D0D0',
-  blackOpacityColor: 'rgba(0,0,0,0.5)',
+  blackOpacityColor: 'rgba(0,0,0,0.8)',
+  blackLightOpacityColor: 'rgba(0,0,0,0.0)',
+
+  whiteOpacityColor: 'rgba(255,255,255,0.2)',
   navyBlue: '#3E6FB0',
   darkThemeColor: '#FF3B00',
 
