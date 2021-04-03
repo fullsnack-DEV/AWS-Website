@@ -99,6 +99,7 @@
     "react-native-status-bar-height": "^2.5.0",
     "react-native-svg": "^12.1.0",
     "react-native-svg-charts": "^5.4.0",
+    "react-native-swipe-modal-up-down": "^1.0.9",
     "react-native-text-gradient": "^0.1.7",
     "react-native-toggle-calendar": "^1.0.3",
     "react-native-url-preview": "^1.1.9",

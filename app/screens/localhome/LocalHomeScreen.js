@@ -89,8 +89,6 @@ export default function LocalHomeScreen({ navigation }) {
   const [referees] = useState([]); // ['', '', '', '', '']
   const [scorekeepers] = useState([]); // ['', '', '', '', '']
 
-  const [, setShortsModalVisible] = useState(false);
-
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -302,7 +300,7 @@ export default function LocalHomeScreen({ navigation }) {
   );
 
   const onShortPress = useCallback(
-    ({ cardItem, index }) => {
+    ({ index }) => {
       // setShortsModalVisible(!shortsModalVisible);
       // setSelectedShortsIndex(index + 1);
       // setSelectedShortItem(cardItem);
@@ -310,9 +308,7 @@ export default function LocalHomeScreen({ navigation }) {
       navigation.navigate('ShortsPlayScreen', {
         currentPage: index + 1,
         shorts: shortsList,
-        item: cardItem,
         caller_id: authContext?.entity?.uid,
-        backBtnPress: () => setShortsModalVisible(false),
       });
     },
     [authContext?.entity?.uid, navigation, shortsList],
@@ -929,29 +925,7 @@ export default function LocalHomeScreen({ navigation }) {
             <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
           </View>
         </Modal>
-        {/* <Modal
-        isVisible={shortsModalVisible} // shortsModalVisible
-        backdropColor="black"
-        style={{ margin: 0, backgroundColor: colors.blackColor }}
-        backdropOpacity={0}>
-          <ShortsModalView
-          currentPage={selectedShortsIndex}
-          shorts = {shortsList}
-          // openPostModal={(commentData) => {
-          //   updateCommentCount(commentData)
-          //   setModalVisible(true)
-          // }}
-          item={selectedShortItem}
-          caller_id={authContext?.entity?.uid}
-          navigation={navigation}
-          backBtnPress={() => setShortsModalVisible(false)}
-          // onImageProfilePress={() => {
-          //   setShortsModalVisible(false)
-          //   onImageProfilePress()
-          // }}
-          // onLikePress={onLikePress}
-        />
-        </Modal> */}
+
       </ScrollView>
     </View>
   );
