@@ -31,7 +31,7 @@ import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
-import { createUser } from '../../api/Users';
+import { checkTownscupEmail, createUser } from '../../api/Users';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
 export default function WelcomeScreen({ navigation }) {
@@ -174,6 +174,13 @@ export default function WelcomeScreen({ navigation }) {
       }, 10);
     });
   };
+  const checkUserIsRegistratedOrNotWithTownscup = (email) => new Promise((resolve) => {
+    checkTownscupEmail(encodeURIComponent(email)).then(() => {
+      resolve(true);
+    }).catch(() => {
+      resolve(false);
+    })
+  })
 
   const socialSignInSignUp = (authResult, message, extraData = {}) => {
     console.log(message, authResult);
@@ -187,44 +194,53 @@ export default function WelcomeScreen({ navigation }) {
             expirationTime: idTokenResult.expirationTime,
           };
           dummyAuthContext.tokenData = token;
-          const userConfig = {
-            method: 'get',
-            url: `${Config.BASE_URL}/users/${user?.uid}`,
-            headers: { Authorization: `Bearer ${token?.token}` },
-          }
-          apiCall(userConfig).then(async (response) => {
-            const entity = {
-              uid: user.uid,
-              role: 'user',
-              obj: response.payload,
-              auth: {
-                user_id: user.uid,
-                user: response.payload,
-              },
+          checkUserIsRegistratedOrNotWithTownscup(user?.email).then((userEsxist) => {
+            const userConfig = {
+              method: 'get',
+              url: `${Config.BASE_URL}/users/${user?.uid}`,
+              headers: { Authorization: `Bearer ${token?.token}` },
             }
-            setDummyAuthContext('entity', entity);
-            QBInitialLogin(entity, response?.payload);
-          }).catch(async () => {
-            dummyAuthContext.entity = {
-              auth: { user_id: user.uid },
-              uid: user.uid,
-              role: 'user',
+            if (userEsxist) {
+              apiCall(userConfig).then(async (response) => {
+                const entity = {
+                  uid: user.uid,
+                  role: 'user',
+                  obj: response.payload,
+                  auth: {
+                    user_id: user.uid,
+                    user: response.payload,
+                  },
+                }
+                setDummyAuthContext('entity', entity);
+                QBInitialLogin(entity, response?.payload);
+              }).catch((error) => {
+                console.log('Login Error', error)
+                setloading(false);
+              })
+            } else {
+              dummyAuthContext.entity = {
+                auth: { user_id: user.uid },
+                uid: user.uid,
+                role: 'user',
+              }
+              const flName = user?.displayName?.split(' ');
+              const userDetail = { ...extraData };
+              if (flName?.length >= 2) [userDetail.first_name, userDetail.last_name] = flName
+              else if (flName?.length === 1) [userDetail.first_name, userDetail.last_name] = [flName[0], '']
+              else if (flName?.length === 0) {
+                userDetail.first_name = 'Towns';
+                userDetail.last_name = 'Cup';
+              }
+              if (!userDetail?.first_name) {
+                userDetail.first_name = 'Towns';
+                userDetail.last_name = 'Cup';
+              }
+              userDetail.email = user.email;
+              signUpToTownsCup(userDetail)
             }
-            const flName = user?.displayName?.split(' ');
-            const userDetail = { ...extraData };
-            if (flName?.length >= 2) [userDetail.first_name, userDetail.last_name] = flName
-            else if (flName?.length === 1) [userDetail.first_name, userDetail.last_name] = [flName[0], '']
-            else if (flName?.length === 0) {
-              userDetail.first_name = 'Towns';
-              userDetail.last_name = 'Cup';
-            }
-            if (!userDetail?.first_name) {
-              userDetail.first_name = 'Towns';
-              userDetail.last_name = 'Cup';
-            }
-            userDetail.email = user.email;
-            signUpToTownsCup(userDetail)
-          });
+          }).catch((error) => {
+            console.log('Check TC Email Error', error)
+          })
         }).catch(() => setloading(false));
       }
     });

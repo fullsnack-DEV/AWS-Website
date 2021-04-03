@@ -32,7 +32,7 @@ function MultipleVideoRender({ data }) {
           paused={true}
         />
       </TouchableWithoutFeedback>
-      <Image style={styles.videoPlayImageStyle} source={images.videoPlayBtn} />
+      <Image style={styles.videoPlayImageStyle} source={images.galleryVideoIcon} />
       <Image style={styles.multiImageIconStyle} source={images.multipleImagesIcon} />
       <Modal
         isVisible={isModalVisible}
@@ -64,10 +64,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   videoPlayImageStyle: {
-    width: 25,
-    height: 25,
+    width: 40,
+    height: 40,
     position: 'absolute',
-    tintColor: colors.redColor,
   },
   multiImageIconStyle: {
     width: 15,

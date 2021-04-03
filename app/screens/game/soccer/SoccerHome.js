@@ -147,6 +147,7 @@ const SoccerHome = ({ navigation, route }) => {
 
   const renderGalleryTab = useMemo(() => (
     <Gallery
+          isAdmin={isAdmin}
           gameData={gameData}
           getGalleryData={getSoccerGalleryData}
           navigation={navigation}

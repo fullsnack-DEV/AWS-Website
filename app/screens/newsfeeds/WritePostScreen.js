@@ -36,14 +36,13 @@ import { getSearchData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
-// const tagRegex = /\b_\.{(.*?)}\._\b/gmi;
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gmi
-// const tagPrefix = '_.';
-// const tagSuffix = '._';
+const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagRegex = /(?!\w)@\w+/gmi
+
 export default function WritePostScreen({ navigation, route }) {
   const textInputRef = useRef();
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
+  const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const authContext = useContext(AuthContext);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData || []);
@@ -70,6 +69,11 @@ export default function WritePostScreen({ navigation, route }) {
   }
 
   useEffect(() => {
+    if (searchText[currentTextInputIndex - 1] === '@') setLastTagStartIndex(currentTextInputIndex - 1);
+    if (searchText[currentTextInputIndex - 1] === ' ') setLastTagStartIndex(null);
+  }, [searchText])
+
+  useEffect(() => {
     let tagName = '';
     const tagsArray = [];
     if (route.params && route.params.selectedTagList) {
@@ -77,21 +81,20 @@ export default function WritePostScreen({ navigation, route }) {
         route.params.selectedTagList.map((tagItem) => {
           let joinedString = '@';
           const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
-          const isExist = tagsOfEntity.some((item) => item[entity_text] === tagItem[entity_text])
+          const isExist = tagsOfEntity.some((item) => item?.entity_id === tagItem[entity_text])
 
-          const jsonData = { entity_type: '', entity_name: '', entity_id: '' }
+          const jsonData = { entity_type: '', entity_data: '', entity_id: '' }
           jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'user' : tagItem?.entity_type;
           jsonData.entity_id = tagItem?.[entity_text];
           if (tagItem?.group_name) {
-            jsonData.entity_name = _.startCase(_.toLower(tagItem?.group_name));
+            jsonData.entity_data = _.startCase(_.toLower(tagItem?.group_name))?.replace(/ /g, '');
           } else {
-            const fName = _.startCase(_.toLower(tagItem?.first_name));
-            const lName = _.startCase(_.toLower(tagItem?.last_name));
-            jsonData.entity_name = `${fName}${lName}`;
+            const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(/ /g, '');
+            const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(/ /g, '');
+            jsonData.entity_data = `${fName}${lName}`;
           }
-          // joinedString = `@${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
-          joinedString += `${jsonData.entity_name } `;
-          if (!isExist) tagsArray.push(tagItem)
+          joinedString += `${jsonData.entity_data } `;
+          if (!isExist) tagsArray.push({ entity_data: joinedString.replace(/ /g, ''), entity_id: jsonData?.entity_id, entity_type: jsonData?.entity_type })
           tagName = `${tagName} ${joinedString}`;
           textInputRef.current.focus();
           return null;
@@ -103,7 +106,7 @@ export default function WritePostScreen({ navigation, route }) {
         setSearchText(output);
       }
     }
-  }, [route.params]);
+  }, [route?.params]);
 
   useEffect(() => {
     if (searchText?.length === 0) {
@@ -153,40 +156,41 @@ export default function WritePostScreen({ navigation, route }) {
     }
   }, [searchGroups, searchUsers]);
 
+  const removeStr = (str, fromIndex, toIndex) => str.substring(0, fromIndex) + str.substring(toIndex, str.length)
+
+  const addStringInCurrentText = useCallback((str, fromIndex, toIndex, stringToAdd) => {
+    let string = removeStr(str, fromIndex, toIndex);
+    string = addStr(string, fromIndex, stringToAdd);
+    return string;
+  }, [])
+
   const onTagPress = useCallback((item) => {
     const tagsArray = [];
     let joinedString = '@';
     const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
-    const jsonData = { entity_type: '', entity_name: '', entity_id: '' }
+    const jsonData = { entity_type: '', entity_data: '', entity_id: '' }
     jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'user' : item?.entity_type;
     jsonData.entity_id = item?.[entity_text];
     if (item?.group_name) {
-      jsonData.entity_name = _.startCase(_.toLower(item?.group_name));
+      jsonData.entity_data = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
     } else {
-      const fName = _.startCase(_.toLower(item?.first_name));
-      const lName = _.startCase(_.toLower(item?.last_name));
-      jsonData.entity_name = `${fName} ${lName}`;
+      const fName = _.startCase(_.toLower(item?.first_name))?.replace(/ /g, '');
+      const lName = _.startCase(_.toLower(item?.last_name))?.replace(/ /g, '');
+      jsonData.entity_data = `${fName}${lName}`;
     }
-    // joinedString += `${tagPrefix}${JSON.stringify(jsonData)}${tagSuffix} `;
-    joinedString += `${jsonData.entity_name } `;
-    const str = searchText?.replace(`${searchTag}`, joinedString.replace(/ /g, ''));
+    joinedString += `${jsonData.entity_data } `;
+    const str = addStringInCurrentText(searchText, lastTagStartIndex, currentTextInputIndex, joinedString);
     setSearchText(`${str} `)
 
     const isExist = tagsOfEntity.some((tagItem) => tagItem?.entity_id === item[entity_text])
-    if (!isExist) tagsArray.push({ entity_id: item?.[entity_text], entity_type: item?.entity_type })
+    if (!isExist) tagsArray.push({ entity_data: joinedString.replace(/ /g, ''), entity_id: item?.[entity_text], entity_type: jsonData?.entity_type })
     setTagsOfEntity([...tagsOfEntity, ...tagsArray])
     setLetModalVisible(false)
     textInputRef.current.focus();
-  }, [searchTag, searchText, tagsOfEntity])
+    setLastTagStartIndex(null);
+  }, [addStringInCurrentText, currentTextInputIndex, lastTagStartIndex, searchText, tagsOfEntity])
 
-  const renderTagText = useCallback((matchingString) => {
-    const match = matchingString.match(tagRegex);
-    // let removedPrefixSuffix = match?.[0]?.replace(tagPrefix, '')
-    // removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
-    // const jsonData = JSON.parse(removedPrefixSuffix);
-    return <Text style={{ ...styles.username, color: colors.greeColor }}>{`${match[0]}`}</Text>;
-    // return <Text style={{ ...styles.username, color: colors.greeColor }}>{`${jsonData?.entity_name}`}</Text>;
-  }, [])
+  const renderTagText = useCallback((matchingString) => <Text style={{ ...styles.username, color: colors.greeColor }}>{`${matchingString}`}</Text>, [])
 
   const renderTagUsersAndGroups = useCallback(({ item }) => (
     <TouchableOpacity
@@ -221,15 +225,7 @@ export default function WritePostScreen({ navigation, route }) {
                   setloading(true);
                   const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
                   tagsOfEntity.map(async (item, index) => {
-                    let joinedString = '@';
-                    if (item?.group_id) {
-                      joinedString += _.startCase(_.toLower(item?.group_name))
-                    } else {
-                      const fName = _.startCase(_.toLower(item?.first_name));
-                      const lName = _.startCase(_.toLower(item?.last_name));
-                      joinedString += fName + lName;
-                    }
-                    const isThere = searchText.includes(joinedString?.replace(/ /g, ''))
+                    const isThere = searchText.includes(item?.entity_data?.replace(/ /g, ''))
                     if (!isThere) tagData.splice(index, 1);
                     return null;
                   })
@@ -258,6 +254,7 @@ export default function WritePostScreen({ navigation, route }) {
 
   const onKeyPress = useCallback(({ nativeEvent }) => {
     if (nativeEvent.key === 'Backspace' && searchText[currentTextInputIndex - 1] === '@') {
+      setLastTagStartIndex(null);
       setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText])

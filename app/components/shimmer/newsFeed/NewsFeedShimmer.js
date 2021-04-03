@@ -8,18 +8,18 @@ const NewsFeedShimmer = () => (
             .fill('')
             .map((item, index) => (
               <View key={index}>
-                <View key={index} style={{ flexDirection: 'row', marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
                   <ShimmerView style={{ marginRight: 15, borderRadius: 50 }} width={30} height={30} />
                   <View style={{ flex: 1 }}>
                     <ShimmerView style={{ width: '60%', height: 10 }} />
                     <ShimmerView style={{ width: '40%', height: 10 }} />
                   </View>
                 </View>
-                <View key={index} style={{ marginBottom: 10 }}>
+                <View style={{ marginBottom: 10 }}>
                   <ShimmerView style={{ width: '100%' }} height={200} />
                 </View>
 
-                <View key={index} style={{ marginBottom: 10 }}>
+                <View style={{ marginBottom: 10 }}>
                   <ShimmerView style={{ width: '100%' }} height={15} />
                   <ShimmerView style={{ width: '100%' }} height={15} />
                   <ShimmerView style={{ width: '100%' }} height={5} />

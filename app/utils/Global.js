@@ -111,7 +111,6 @@ const globalApiCall = async ({
   let caller_id;
   let caller;
   console.log('entity::', entity, url);
-  console.log('entity.role', entity.role);
   if (entity.role === 'team' || entity.role === 'club') {
     caller_id = entity.uid;
     caller = entity.role;

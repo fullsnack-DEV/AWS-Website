@@ -25,10 +25,8 @@ import {
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
-import ImagePicker from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
-import _ from 'lodash';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -47,7 +45,7 @@ import {
 import AuthContext from '../../auth/context';
 import TCScrollableProfileTabs from '../../components/TCScrollableProfileTabs';
 import {
-  getUserDetails, getGallery, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails, patchRegisterScorekeeperDetails,
+  getUserDetails, followUser, unfollowUser, inviteUser, patchRegisterRefereeDetails, patchRegisterScorekeeperDetails,
 } from '../../api/Users';
 import {
   createPost, createReaction,
@@ -59,11 +57,6 @@ import {
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as Utils from '../challenge/ChallengeUtility';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import AddPhotoItem from '../../components/Home/AddPhotoItem';
-import SingleImageRender from '../../components/Home/SingleImageRender';
-import MultipleImageRender from '../../components/Home/MultipleImageRender';
-import SingleVideoRender from '../../components/Home/SingleVideoRender';
-import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import UserInfo from '../../components/Home/User/UserInfo';
 import GroupInfo from '../../components/Home/GroupInfo';
@@ -113,8 +106,8 @@ import ScorekeeperFeedPostItems from '../../components/game/soccer/home/review/r
 import ScrollableTabs from '../../components/ScrollableTabs';
 import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreenShimmer';
 import { ImageUploadContext } from '../../context/GetContexts';
-import { MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 import GameStatus from '../../Constants/GameStatus';
+import AllInOneGallery from './AllInOneGallery';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews']
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews']
@@ -152,6 +145,7 @@ const history_Data = [{
 
 const HomeScreen = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
+  const galleryRef = useRef();
   const imageUploadContext = useContext(ImageUploadContext);
   const isFocused = useIsFocused();
   // const viewRef = useRef();
@@ -175,11 +169,9 @@ const HomeScreen = ({ navigation, route }) => {
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false)
   const [reviewerDetailModalVisible, setReviewerDetailModalVisible] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [galleryData, setGalleryData] = useState([]);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
   const [userID, setUserID] = useState('');
-  const [indexCounter, setIndexCounter] = useState(0);
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentRefereeTab, setRefereeCurrentTab] = useState(0);
@@ -353,9 +345,8 @@ const HomeScreen = ({ navigation, route }) => {
   const getUserData = async (uid, admin) => {
     // setloading(true);
     const promises = [getUserDetails(uid, authContext),
-      getJoinedGroups(uid, authContext),
-      getGallery(uid, authContext)]
-    Promise.all(promises).then(([res1, res2, res3]) => {
+      getJoinedGroups(uid, authContext)]
+    Promise.all(promises).then(([res1, res2]) => {
       const userDetails = res1.payload;
       console.log('Get user detail by ID:=>', userDetails);
       if (!userDetails.games) {
@@ -385,9 +376,6 @@ const HomeScreen = ({ navigation, route }) => {
         userDetails.joined_teams = res2.payload.teams;
         userDetails.joined_clubs = res2.payload.clubs;
       }
-      if (res3) {
-        setGalleryData(res3.payload);
-      }
       setCurrentUserData({ ...userDetails });
       setIsClubHome(false)
       setIsTeamHome(false)
@@ -414,12 +402,11 @@ const HomeScreen = ({ navigation, route }) => {
       getUserData(uid, admin)
     } else {
       const promises = [getGroupDetails(uid, authContext),
-        getGroupMembers(uid, authContext),
-        getGallery(uid, authContext)]
+        getGroupMembers(uid, authContext)]
       if (clubHome) {
         promises.push(getTeamsOfClub(uid, authContext))
       }
-      Promise.all(promises).then(([res1, res2, res3, res4]) => {
+      Promise.all(promises).then(([res1, res2, res3]) => {
         const groupDetails = res1.payload;
         console.log('groupDetails', groupDetails)
 
@@ -427,10 +414,7 @@ const HomeScreen = ({ navigation, route }) => {
         groupDetails.history = history_Data
         groupDetails.joined_members = res2.payload;
         if (res3) {
-          setGalleryData(res3.payload);
-        }
-        if (res4) {
-          groupDetails.joined_teams = res4.payload;
+          groupDetails.joined_teams = res3.payload;
         }
         setCurrentUserData(groupDetails);
         setIsClubHome(clubHome)
@@ -451,9 +435,7 @@ const HomeScreen = ({ navigation, route }) => {
   const createPostAfterUpload = (dataParams) => {
     createPost(dataParams, authContext)
       .then(() => {
-        getGallery(userID, authContext).then((res) => {
-          setGalleryData(res.payload);
-        });
+        if (galleryRef?.current?.refreshGallery) galleryRef.current.refreshGallery();
       })
       .catch((error) => {
         setloading(false)
@@ -486,22 +468,6 @@ const HomeScreen = ({ navigation, route }) => {
     }
   }, [authContext, createPostAfterUpload, imageUploadContext])
 
-  const allData = [];
-  const fromMeData = [];
-  const taggedData = [];
-  (galleryData).map((itemImage) => {
-    if (itemImage.attachments && itemImage.attachments.length > 0) {
-      allData.push(itemImage)
-    }
-    if (itemImage.activity_id && itemImage.attachments && itemImage.attachments.length > 0) {
-      fromMeData.push(itemImage)
-    }
-    if (itemImage.tagged_activity_id && itemImage.attachments && itemImage.attachments.length > 0) {
-      taggedData.push(itemImage)
-    }
-    return null;
-  })
-
   let fullName = '';
   if (currentUserData && currentUserData.full_name) {
     fullName = currentUserData.full_name;
@@ -521,159 +487,6 @@ const HomeScreen = ({ navigation, route }) => {
   if (currentUserData && currentUserData.thumbnail) {
     userThumbnail = currentUserData.thumbnail;
   }
-  const allGalleryRenderItem = useCallback(({ item, index }) => {
-    console.log('Gallery Item:=>', item);
-    if (index === 0) {
-      return (
-        <AddPhotoItem
-          onAddPhotoPress={() => {
-            ImagePicker.openPicker({
-              width: 300,
-              height: 400,
-              multiple: true,
-              maxFiles: MAX_UPLOAD_POST_ASSETS,
-            }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: pickImages })
-            });
-          }}
-        />
-      );
-    }
-    if (item.attachments.length > 0) {
-      if (item.attachments[0].type === 'image') {
-        if (item.attachments.length === 1) {
-          return (
-            <SingleImageRender
-              data={item}
-            />
-          );
-        }
-        return (
-          <MultipleImageRender
-            data={item}
-          />
-        );
-      }
-      if (item.attachments[0].type === 'video') {
-        if (item.attachments.length === 1) {
-          return (
-            <SingleVideoRender
-              data={item}
-            />
-          );
-        }
-        return (
-          <MultipleVideoRender
-            data={item}
-          />
-        );
-      }
-    }
-    return <View />
-  }, [callthis, navigation])
-
-  const fromMeRenderItem = useCallback(({ item, index }) => {
-    if (index === 0) {
-      return (
-        <AddPhotoItem
-          onAddPhotoPress={() => {
-            ImagePicker.openPicker({
-              width: 300,
-              height: 400,
-              cropping: true,
-              multiple: true,
-              maxFiles: MAX_UPLOAD_POST_ASSETS,
-            }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: pickImages })
-            });
-          }}
-        />
-      );
-    }
-    if (item.attachments.length > 0) {
-      if (item.attachments[0].type === 'image') {
-        if (item.attachments.length === 1) {
-          return (
-            <SingleImageRender
-              data={item}
-            />
-          );
-        }
-        return (
-          <MultipleImageRender
-            data={item}
-          />
-        );
-      }
-      if (item.attachments[0].type === 'video') {
-        if (item.attachments.length === 1) {
-          return (
-            <SingleVideoRender
-              data={item}
-            />
-          );
-        }
-        return (
-          <MultipleVideoRender
-            data={item}
-          />
-        );
-      }
-    }
-    return <View />
-  }, [callthis, navigation])
-
-  const taggedRenderItem = useCallback(({ item, index }) => {
-    if (index === 0) {
-      return (
-        <AddPhotoItem
-          onAddPhotoPress={() => {
-            ImagePicker.openPicker({
-              width: 300,
-              height: 400,
-              cropping: true,
-              multiple: true,
-              maxFiles: MAX_UPLOAD_POST_ASSETS,
-            }).then((pickImages) => {
-              navigation.navigate('WritePostScreen', { postData: {}, onPressDone: callthis, selectedImageList: pickImages })
-            });
-          }}
-        />
-      );
-    }
-    if (item.attachments.length > 0) {
-      if (item.attachments[0].type === 'image') {
-        if (item.attachments.length === 1) {
-          return (
-            <SingleImageRender
-              data={item}
-            />
-          );
-        }
-        return (
-          <MultipleImageRender
-            data={item}
-          />
-        );
-      }
-      if (item.attachments[0].type === 'video') {
-        if (item.attachments.length === 1) {
-          return (
-            <SingleVideoRender
-              data={item}
-            />
-          );
-        }
-        return (
-          <MultipleVideoRender
-            data={item}
-          />
-        );
-      }
-    }
-    return <View />
-  }, [callthis, navigation])
-
   const callFollowUser = async () => {
     currentUserData.is_following = true;
     currentUserData.follower_count += 1;
@@ -1921,55 +1734,6 @@ const HomeScreen = ({ navigation, route }) => {
     </View>
   ), [actionSheetOpetions, authContext, calenderInnerIndexCounter, createEventModal, eventData, filterEventData, filterTimeTable, findCancelButtonIndex, goToChallengeDetail, goToRefereReservationDetail, isRefereeModal, navigation, onCalenderDayPress, onInnerCalenderDayPress, onSchedultEventItemPress, refereeFound, refereeReservData, refereeReservModal, renderInnerCalender, renderMainCalender, renderRefereeReservation, route?.params?.uid, scheduleIndexCounter, selectedEventItem, selectionDate, timeTableSelectionDate])
 
-  const renderMainGalleryTab = useMemo(() => (
-    <View>
-      <View style={{
-        flexDirection: 'row',
-        paddingHorizontal: 10,
-        borderBottomColor: colors.lightgrayColor,
-        borderBottomWidth: 1,
-        marginBottom: 15,
-      }}>
-        {['All', 'From me', 'Tagged'].map((item, index) => (
-          <TouchableOpacity key={item} style={{ padding: 10 }} onPress={() => setIndexCounter(index)}>
-            <Text style={{
-                color: index === indexCounter ? colors.themeColor : colors.lightBlackColor,
-                fontFamily: index === indexCounter ? fonts.RBold : fonts.RRegular,
-            }}>
-              {_.startCase(item)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-
-      </View>
-      {/* <View style={styles.sepratorLineStyle} /> */}
-      {indexCounter === 0 && <FlatList
-            data={['0', ...allData]}
-            bounces={false}
-            renderItem={allGalleryRenderItem}
-            numColumns={3}
-            style={{ marginHorizontal: 1.5 }}
-            keyExtractor={(item, index) => index}
-        />}
-      {indexCounter === 1 && <FlatList
-            data={['0', ...fromMeData]}
-            bounces={false}
-            renderItem={fromMeRenderItem}
-            numColumns={3}
-            style={{ marginHorizontal: 1.5 }}
-            keyExtractor={(item, index) => index}
-        />}
-      {indexCounter === 2 && <FlatList
-            data={['0', ...taggedData]}
-            bounces={false}
-            renderItem={taggedRenderItem}
-            numColumns={3}
-            style={{ marginHorizontal: 1.5 }}
-            keyExtractor={(item, index) => index}
-        />}
-    </View>
-  ), [allData, allGalleryRenderItem, fromMeData, fromMeRenderItem, indexCounter, taggedData, taggedRenderItem])
-
   const renderHomeMainReviewTab = useMemo(() => (
     <View>
       <ReviewSection
@@ -1996,10 +1760,20 @@ const HomeScreen = ({ navigation, route }) => {
       {currentTab === 1 && renderMainInfoTab}
       {currentTab === 2 && renderMainScoreboardTab}
       {currentTab === 3 && renderMainScheduleTab}
-      {currentTab === 4 && renderMainGalleryTab}
+      {currentTab === 4 && (
+        <AllInOneGallery
+          isAdmin={isAdmin}
+          ref={galleryRef}
+          entity_type={['user', 'player'].includes(route?.params?.role ?? authContext.entity?.role) ? 'player' : route?.params?.role ?? authContext.entity?.role}
+          entity_id={route?.params?.uid ?? authContext.entity?.uid}
+          onAddPhotoPress={(pickImages) => {
+            navigation.navigate('WritePostScreen', { postData: currentUserData, onPressDone: callthis, selectedImageList: pickImages })
+          }}
+        />
+      )}
       {currentTab === 5 && isTeamHome && renderHomeMainReviewTab}
     </View>
-    ), [currentTab, isTeamHome, renderHomeMainReviewTab, renderMainGalleryTab, renderMainInfoTab, renderMainScheduleTab, renderMainScoreboardTab]);
+    ), [authContext.entity?.role, authContext.entity?.uid, callthis, currentTab, currentUserData, isAdmin, isTeamHome, navigation, renderHomeMainReviewTab, renderMainInfoTab, renderMainScheduleTab, renderMainScoreboardTab, route?.params?.role, route?.params?.uid]);
 
   const handleMainRefOnScroll = Animated.event([
     { nativeEvent: { contentOffset: { y: mainFlatListFromTop } } },
@@ -2312,7 +2086,7 @@ const feedScreenHeader = useMemo(() => (
                     currentUserData={currentUserData}
                     isAdmin={isAdmin}
                     navigation={navigation}
-                    setGalleryData={setGalleryData}
+                    setGalleryData={() => {}}
                     userID={route?.params?.uid ?? authContext.entity?.uid}
                 />
               )}

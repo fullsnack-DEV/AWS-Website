@@ -1,24 +1,19 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import React, {
-  useState, useEffect, useContext, useCallback,
+  useState, useContext, useCallback,
 } from 'react';
 import {
- StyleSheet, View, Text, TouchableOpacity,
+ StyleSheet, View, Text,
 } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
-import Hyperlink from 'react-native-hyperlink'
-import _ from 'lodash';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
-// const tagRegex = /@\b_\.{(.*?)}\._\b/gmi;
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gmi
-const tagPrefix = '@_.';
-const tagSuffix = '._';
+const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+// const tagRegex = /(?!\w)@\w+/gmi
+
 const NewsFeedDescription = ({
   descriptions,
   character,
@@ -30,88 +25,16 @@ const NewsFeedDescription = ({
 }) => {
   const authContext = useContext(AuthContext);
   const [readMore, setReadMore] = useState();
-  const [taggedData, setTaggedData] = useState([]);
-
-  useEffect(() => {
-    const tagArray = []
-
-    tagData.map((item) => {
-      let joinedString = '@';
-      if (item?.group_name) {
-        joinedString += _.startCase(_.toLower(item?.group_name))
-      } else {
-        const fName = _.startCase(_.toLower(item?.first_name));
-        const lName = _.startCase(_.toLower(item?.last_name));
-        joinedString += fName + lName;
-      }
-      tagArray.push(joinedString?.replace(/ /g, ''));
-      setTaggedData([...tagArray]);
-      return null;
-    })
-  }, [tagData]);
 
   const toggleNumberOfLines = useCallback(() => setReadMore((val) => !val), []);
 
-  const handleNamePress = useCallback((name) => {
-    // const re = new RegExp(name, 'gmi');
-    // const getFetchCount = getIndicesOf(name);
-    const entityIndex = taggedData?.findIndex((item) => item === name);
-    const fetchedEntity = tagData?.[entityIndex];
-    const entity_text = ['player', 'user']?.includes(fetchedEntity?.entity_type) ? 'user_id' : 'group_id'
-    if (fetchedEntity?.[entity_text]) {
-      if (fetchedEntity[entity_text] !== authContext?.entity?.uid) {
-        navigation.push('HomeScreen', {
-          uid: fetchedEntity[entity_text],
-          role: ['user', 'player']?.includes(fetchedEntity.entity_type) ? 'user' : fetchedEntity.entity_type,
-          backButtonVisible: true,
-        })
-      }
-    }
-  }, [authContext?.entity?.uid, navigation, tagData, taggedData])
-
-  const renderText = useCallback((matchingString) => {
-    const match = matchingString.match(tagRegex);
-    let color = colors.black;
-    const isTagName = taggedData?.includes(match?.[0])
-    if (isTagName) color = colors.greeColor;
-    return (
-      <Text onPress={() => isTagName && handleNamePress(match[0])} style={{ ...styles.username, color }}>{match?.[0]}</Text>
-    )
-    // let removedPrefixSuffix = match?.[0]?.replace(tagPrefix, '')
-    // removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
-    // const jsonData = JSON.parse(removedPrefixSuffix);
-    // return <Text style={{ ...styles.username, color: colors.greeColor }}>@{_.startCase(matchingString) ?? ''}</Text>;
-  }, [handleNamePress, taggedData])
-
-  const renderURLText = useCallback((matchingString) => {
-    const match = matchingString.match(urlRegex);
-    const color = colors.navyBlue;
-    return <Text style={{ color }}>{match?.[0]}</Text>
-  }, [])
-
-  // const handleNamePress = useCallback((data) => {
-  //   let removedPrefixSuffix = data?.replace(tagPrefix, '')
-  //   removedPrefixSuffix = removedPrefixSuffix?.replace(tagSuffix, '');
-  //   const jsonData = JSON.parse(removedPrefixSuffix);
-  //   if (jsonData?.entity_id) {
-  //     if (jsonData?.entity_id !== authContext?.entity?.uid) {
-  //       navigation.push('HomeScreen', {
-  //         uid: jsonData?.entity_id,
-  //         role: jsonData?.entity_type,
-  //         backButtonVisible: true,
-  //         menuBtnVisible: false,
-  //       })
-  //     }
-  //   }
-  // }, [authContext?.entity?.uid, navigation])
-
-  const getIndicesOf = (searchStr, str = descriptions) => {
+  const getIndicesOf = useCallback((searchStr, str = descriptions) => {
     const searchStrLen = searchStr.length;
     if (searchStrLen === 0) {
       return [];
     }
     let startIndex = 0;
-        let index
+    let index
     const indices = [];
     // eslint-disable-next-line no-cond-assign
     while ((index = str.toLowerCase().indexOf(searchStr.toLowerCase(), startIndex)) > -1) {
@@ -119,7 +42,44 @@ const NewsFeedDescription = ({
       startIndex = index + searchStrLen;
     }
     return indices;
-  }
+  }, [descriptions])
+
+  const handleNamePress = useCallback((name, startTagIndex) => {
+    // console.log(`${name} - ${startTagIndex}`, getIndicesOf(name));
+    const currentIndexsOfMatch = getIndicesOf(name);
+    const isExistIndex = currentIndexsOfMatch?.findIndex((item) => item === startTagIndex)
+    const fetchedAllEntity = tagData?.filter((item) => item?.entity_data === name);
+    if (fetchedAllEntity?.length > 0) {
+      let fetchedEntity = fetchedAllEntity?.[0];
+      if (fetchedAllEntity?.length > 1 && isExistIndex !== -1) fetchedEntity = fetchedAllEntity?.[isExistIndex];
+      if (fetchedEntity?.entity_id) {
+        if (fetchedEntity?.entity_id !== authContext?.entity?.uid) {
+          navigation.push('HomeScreen', {
+            uid: fetchedEntity?.entity_id,
+            role: ['user', 'player']?.includes(fetchedEntity?.entity_type) ? 'user' : fetchedEntity?.entity_type,
+            backButtonVisible: true,
+          })
+        }
+      }
+    }
+  }, [authContext?.entity?.uid, getIndicesOf, navigation, tagData])
+
+  const renderTagText = useCallback((match, matchData) => {
+    // console.log(matchData);
+    const startTagIndex = descriptions?.indexOf(matchData?.input?.substr(matchData?.index, descriptions?.length))
+    let color = colors.black;
+    const isTagName = tagData?.filter((item) => item?.entity_data === match)?.length > 0;
+    if (isTagName) color = colors.greeColor;
+    return (
+      <Text onPress={() => isTagName && handleNamePress(match, startTagIndex)} style={{ ...styles.username, color }}>{match}</Text>
+    )
+  }, [descriptions, handleNamePress, tagData])
+
+  const renderURLText = useCallback((matchingString) => {
+    const match = matchingString.match(urlRegex);
+    const color = colors.navyBlue;
+    return <Text style={{ color }}>{match?.[0]}</Text>
+  }, [])
 
   return (
     <View style={[styles.containerStyle, containerStyle]}>
@@ -130,10 +90,9 @@ const NewsFeedDescription = ({
               style={[styles.text, descriptionTxt]}
               parse={
                 [
-                    { pattern: tagRegex, renderText },
+                    { pattern: tagRegex, renderText: renderTagText },
                     { pattern: urlRegex, renderText: renderURLText },
-              ]
-              }
+              ]}
               childrenProps={{ allowFontScaling: false }}
             >
               {readMore ? descriptions : descriptions.substring(0, character)}

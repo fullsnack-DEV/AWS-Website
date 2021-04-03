@@ -30,6 +30,7 @@ const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery']
 const TennisHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext)
   const gameFeedFlatListRef = useRef(null);
+  const galleryRef = useRef(null);
   const [tennisGameId] = useState(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
@@ -115,6 +116,8 @@ const TennisHome = ({ navigation, route }) => {
 
   const renderGalleryTab = useMemo(() => (
     <Gallery
+        isAdmin={isAdmin}
+        galleryRef={galleryRef}
           gameData={gameData}
           getGalleryData={getTennisGalleryData}
           navigation={navigation}/>
@@ -143,6 +146,7 @@ const TennisHome = ({ navigation, route }) => {
 
   const onEndReached = useCallback(() => {
     if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()
+    if (currentTab === 3) galleryRef.current.onEndReached()
   }, [currentTab])
 
   const renderTopHeaderWithTabContain = useMemo(() => (

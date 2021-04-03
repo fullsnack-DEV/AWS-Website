@@ -1,5 +1,5 @@
 import React, {
- useEffect, memo, useRef, useState,
+ useEffect, memo, useRef, useState, Fragment,
 } from 'react';
 import {
   View,
@@ -173,14 +173,14 @@ function MultiImagePostView({
                       sourceURL={multiAttachItem?.url}
                       containerStyle={{
                           ...styles.singleImageDisplayStyle,
-                          height: isLandScape ? landscapeImgHeight : hp(100),
-                          width: isLandScape ? landscapeImgWidth : wp(100),
+                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
                           position: 'absolute',
                       }}
                       videoStyle={{
                           ...styles.singleImageDisplayStyle,
-                          height: isLandScape ? landscapeImgHeight : hp(100),
-                          width: isLandScape ? landscapeImgWidth : wp(100),
+                          height: isLandScape ? landscapeImgHeight : portraitImgHeight,
+                          width: isLandScape ? landscapeImgWidth : portraitImgWidth,
                       }}
                   />
             </View>
@@ -224,6 +224,175 @@ function MultiImagePostView({
         else setShowParentView((val) => !val)
     }
 
+    const renderAbsoluteView = () => (
+      <Fragment>
+        <View style={{ position: 'absolute', opacity: showParentView ? 1 : 0 }}>
+          <Header
+                        mainContainerStyle={{ paddingVertical: 5, width: dimention.width }}
+                        leftComponent={
+                          <TouchableOpacity onPress={() => {
+                                Orientation.lockToPortrait();
+                                backBtnPress()
+                          }}>
+                            <Image
+                                    source={images.backArrow}
+                                    resizeMode={'contain'}
+                                    style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
+                                />
+                          </TouchableOpacity>
+                        }
+                        rightComponent={
+                          <TouchableOpacity onPress={() => {}}>
+                            <Image
+                                    source={images.vertical3Dot}
+                                    resizeMode={'contain'}
+                                    style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
+                          </TouchableOpacity>
+                        }
+                    />
+          <View style={styles.mainContainer}>
+            <TouchableWithoutFeedback onPress={onImageProfilePress}>
+              <Image
+                                style={styles.background}
+                                source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
+                                resizeMode={'cover'}
+                            />
+            </TouchableWithoutFeedback>
+            <View style={styles.userNameView}>
+              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
+              <Text style={styles.activeTimeAgoTxt}>
+                {commentPostTimeCalculate(item?.time, true)}
+              </Text>
+            </View>
+          </View>
+          {topDesc && <View style={{ marginTop: 5 }}>
+            <PostDescSection
+                            descriptions={descriptions}
+                            containerStyle={{ marginHorizontal: 15 }}
+                            descriptionTxt={{ color: colors.whiteColor }}
+                            onReadMorePress={() => setTopDesc(false)}
+                        />
+            <TagView
+                            source={images.tagGreenImage}
+                            tagText={'matches were tagged'}
+                        />
+          </View>}
+        </View>
+
+        <SafeAreaView style={{ position: 'absolute', bottom: 0, opacity: showParentView ? 1 : 0 }}>
+          {!topDesc && <View>
+            <PostDescSection
+                            descriptions={descriptions}
+                            character={50}
+                            containerStyle={{ marginHorizontal: 12 }}
+                            descriptionTxt={{ color: colors.whiteColor }}
+                            onReadMorePress={() => {
+                                if (descriptions.length > 50) {
+                                    setTopDesc(true);
+                                } else {
+                                    setTopDesc(false);
+                                }
+                            }}
+                        />
+            <TagView
+                            source={images.tagGreenImage}
+                            tagText={'matches were tagged'}
+                        />
+          </View>}
+          <View style={styles.commentShareLikeView}>
+            <View
+                            style={{
+                                flexDirection: 'row',
+                                width: isLandScape ? hp('60%') : wp('60%'),
+                            }}>
+              <View
+                                style={{
+                                    flexDirection: 'row',
+                                }}>
+                <TouchableOpacity
+                                    onPress={onBackPress}
+                                    style={styles.imageTouchStyle}>
+                  <Image
+                                        style={[styles.commentImage, { top: 2 }]}
+                                        source={images.commentImage}
+                                        resizeMode={'cover'}
+                                    />
+                </TouchableOpacity>
+                <Text style={styles.commentlengthStyle}>
+                  {commentCount > 0 ? commentCount : ''}
+                </Text>
+              </View>
+
+              <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginLeft: 10,
+                                }}>
+                <TouchableOpacity
+                                    onPress={() => {
+                                        shareActionSheet.current.show();
+                                    }}
+                                    style={styles.imageTouchStyle}>
+                  <Image
+                                        style={styles.commentImage}
+                                        source={images.shareImage}
+                                        resizeMode={'contain'}
+                                    />
+                </TouchableOpacity>
+                <Text style={styles.commentlengthStyle}>{''}</Text>
+              </View>
+            </View>
+
+            <View
+                            style={{
+                                flexDirection: 'row',
+                                width: isLandScape ? hp('32%') : wp('32%'),
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}>
+              {item?.reaction_counts?.clap !== undefined && (
+                <Text
+                                    style={[
+                                        styles.commentlengthStyle,
+                                        {
+                                            color: like === true ? '#FF8A01' : colors.whiteColor,
+                                        },
+                                    ]}>
+                  {likeCount === 0 ? '' : likeCount}
+                </Text>
+                            )}
+              <TouchableOpacity
+                                onPress={() => {
+                                    setLike(!like);
+                                    if (like) {
+                                        setLikeCount(likeCount - 1);
+                                    } else {
+                                        setLikeCount(likeCount + 1);
+                                    }
+                                    onLikePress()
+                                }}
+                                style={styles.imageTouchStyle}>
+                {like === true ? (
+                  <Image
+                                        style={styles.commentImage}
+                                        source={images.likeImage}
+                                        resizeMode={'contain'}
+                                    />
+                                ) : (
+                                  <Image
+                                        style={styles.commentImage}
+                                        source={images.unlikeImage}
+                                        resizeMode={'contain'}
+                                    />
+                                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Fragment>
+        )
   return (
     <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: colors.blackColor }}
@@ -243,171 +412,7 @@ function MultiImagePostView({
             sliderWidth={isLandScape ? hp(100) : wp(100)}
             itemWidth={isLandScape ? hp(100) : wp(100)}
         />
-        <View style={{ position: 'absolute', opacity: showParentView ? 1 : 0 }}>
-          <Header
-            mainContainerStyle={{ paddingVertical: 5, width: dimention.width }}
-            leftComponent={
-              <TouchableOpacity onPress={() => {
-                Orientation.lockToPortrait();
-                backBtnPress()
-              }}>
-                <Image
-                    source={images.backArrow}
-                    resizeMode={'contain'}
-                    style={{ height: 22, width: 16, tintColor: colors.whiteColor }}
-                />
-              </TouchableOpacity>
-            }
-            rightComponent={
-              <TouchableOpacity onPress={() => {}}>
-                <Image
-                    source={images.vertical3Dot}
-                    resizeMode={'contain'}
-                    style={{ height: 22, width: 22, tintColor: colors.whiteColor }} />
-              </TouchableOpacity>
-            }
-          />
-          <View style={styles.mainContainer}>
-            <TouchableWithoutFeedback onPress={onImageProfilePress}>
-              <Image
-                  style={styles.background}
-                  source={!userImage ? images.profilePlaceHolder : { uri: userImage }}
-                  resizeMode={'cover'}
-              />
-            </TouchableWithoutFeedback>
-            <View style={styles.userNameView}>
-              <Text style={styles.userNameTxt} onPress={onImageProfilePress}>{item?.actor?.data?.full_name}</Text>
-              <Text style={styles.activeTimeAgoTxt}>
-                {commentPostTimeCalculate(item?.time, true)}
-              </Text>
-            </View>
-          </View>
-          {topDesc && <View style={{ marginTop: 5 }}>
-            <PostDescSection
-                descriptions={descriptions}
-                containerStyle={{ marginHorizontal: 15 }}
-                descriptionTxt={{ color: colors.whiteColor }}
-                onReadMorePress={() => setTopDesc(false)}
-            />
-            <TagView
-              source={images.tagGreenImage}
-              tagText={'matches were tagged'}
-            />
-          </View>}
-        </View>
-
-        <SafeAreaView style={{ position: 'absolute', bottom: 0, opacity: showParentView ? 1 : 0 }}>
-          {!topDesc && <View>
-            <PostDescSection
-                descriptions={descriptions}
-                character={50}
-                containerStyle={{ marginHorizontal: 12 }}
-                descriptionTxt={{ color: colors.whiteColor }}
-                onReadMorePress={() => {
-                  if (descriptions.length > 50) {
-                    setTopDesc(true);
-                  } else {
-                    setTopDesc(false);
-                  }
-                }}
-            />
-            <TagView
-              source={images.tagGreenImage}
-              tagText={'matches were tagged'}
-            />
-          </View>}
-          <View style={styles.commentShareLikeView}>
-            <View
-                style={{
-                  flexDirection: 'row',
-                  width: isLandScape ? hp('60%') : wp('60%'),
-                }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                }}>
-                <TouchableOpacity
-                    onPress={onBackPress}
-                    style={styles.imageTouchStyle}>
-                  <Image
-                    style={[styles.commentImage, { top: 2 }]}
-                    source={images.commentImage}
-                    resizeMode={'cover'}
-                    />
-                </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>
-                  {commentCount > 0 ? commentCount : ''}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginLeft: 10,
-                }}>
-                <TouchableOpacity
-                    onPress={() => {
-                      shareActionSheet.current.show();
-                    }}
-                    style={styles.imageTouchStyle}>
-                  <Image
-                    style={styles.commentImage}
-                    source={images.shareImage}
-                    resizeMode={'contain'}
-                    />
-                </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>{''}</Text>
-              </View>
-            </View>
-
-            <View
-                style={{
-                  flexDirection: 'row',
-                  width: isLandScape ? hp('32%') : wp('32%'),
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                }}>
-              {item?.reaction_counts?.clap !== undefined && (
-                <Text
-                    style={[
-                      styles.commentlengthStyle,
-                      {
-                        color: like === true ? '#FF8A01' : colors.whiteColor,
-                      },
-                    ]}>
-                  {likeCount === 0 ? '' : likeCount}
-                </Text>
-              )}
-              <TouchableOpacity
-                onPress={() => {
-                  setLike(!like);
-                  if (like) {
-                    setLikeCount(likeCount - 1);
-                  } else {
-                    setLikeCount(likeCount + 1);
-                  }
-                  onLikePress()
-                }}
-                style={styles.imageTouchStyle}>
-                {like === true ? (
-                  <Image
-                    style={styles.commentImage}
-                    source={images.likeImage}
-                    resizeMode={'contain'}
-                    />
-                ) : (
-                  <Image
-                    style={styles.commentImage}
-                    source={images.unlikeImage}
-                    resizeMode={'contain'}
-                    />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </SafeAreaView>
+        {renderAbsoluteView()}
         <ActionSheet
           ref={shareActionSheet}
           title={'News Feed Post'}
