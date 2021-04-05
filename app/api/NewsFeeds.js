@@ -54,3 +54,9 @@ export const getUserPosts = async (params, authContext) => makeAPIRequest({
   params,
   authContext,
 });
+
+export const getAllGames = async (teamId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}teams/${teamId}/games/`,
+  authContext,
+});

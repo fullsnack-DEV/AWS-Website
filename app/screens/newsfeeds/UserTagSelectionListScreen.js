@@ -28,6 +28,7 @@ import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
+import { getAllGames } from '../../api/NewsFeeds';
 
 export default function UserTagSelectionListScreen({ navigation, route }) {
   const [searchText, setSearchText] = useState('');
@@ -37,6 +38,9 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
   const [groupData, setGroupData] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchData, setSearchData] = useState([]);
+  const [selectedMatch, setSelectedMatch] = useState([]);
+  const [gamesData, setGamesData] = useState([]);
+
   const authContext = useContext(AuthContext)
 
   useEffect(() => {
@@ -65,6 +69,13 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
         console.log('eeeee Get Users :-', e.response);
         Alert.alert('', e.messages)
       });
+
+      getAllGames('3f124a09-8620-44ff-b505-8d49261e366e', authContext).then((res) => {
+        setGamesData([...res?.payload])
+        console.log(res);
+      }).catch((error) => {
+        console.log(error)
+      })
   }, []);
 
   useEffect(() => {
@@ -156,13 +167,27 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
     );
   }, [selectedUsers, toggleSelection]);
 
+  const onSelectMatch = useCallback((gameItem) => {
+    const gData = _.cloneDeep(selectedMatch)
+    const gIndex = gData?.findIndex((item) => item?.game_id === gameItem?.game_id)
+    if (gIndex === -1) gData.push(gameItem);
+    else gData.splice(gIndex, 1);
+    setSelectedMatch([...gData]);
+  }, [selectedMatch]);
+
   const renderSingleTab = useCallback((data) => {
     let filteredData = data;
     if (currentTab === 1) {
       filteredData = data?.filter((item) => item?.entity_type === currentGrpupTab)
     }
     if (currentTab === 2) {
-      return <TagMatches />
+      return (
+        <TagMatches
+              gamesData={gamesData}
+              selectedMatch={selectedMatch}
+              onSelectMatch={onSelectMatch}
+          />
+      )
     }
     return (
       <View>
@@ -198,7 +223,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
           />
       </View>
     )
-  }, [currentGrpupTab, currentTab, renderItem]);
+  }, [currentGrpupTab, currentTab, gamesData, onSelectMatch, renderItem, selectedMatch]);
 
   const renderTabContain = useMemo(() => {
     const dataTabList = [userData, groupData]
@@ -222,6 +247,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
           rightComponent={
             <TouchableOpacity style={{ padding: 2 }} onPress={() => {
               if (route?.params?.comeFrom) {
+                if (selectedMatch?.length > 0 && route?.params?.onSelectMatch) route.params.onSelectMatch(selectedMatch)
                 navigation.navigate(route?.params?.comeFrom, { selectedTagList: selectedUsers });
               }
             }}>
@@ -229,7 +255,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
             </TouchableOpacity>
           }
       />
-  ), [navigation, route?.params?.comeFrom, selectedUsers])
+  ), [navigation, route.params, selectedMatch, selectedUsers])
 
   const renderSearchBox = useMemo(() => (
     <TCSearchBox
