@@ -20,6 +20,8 @@ import {
   SafeAreaView,
   Platform,
   TextInput,
+  Keyboard,
+  ScrollView,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -30,6 +32,7 @@ import ActionSheet from 'react-native-actionsheet';
 
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
 import { createReaction, getReactions } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -79,10 +82,29 @@ function ShortsVideoView({
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
   const taggedItem = JSON.parse(multiAttachItem?.object)?.taggedData || [];
 
-  // setCommentCount(commentCount);
-  // setLikeCount(3)
-  // likeSettings(likeCount, multiAttachItem?.own_reactions);
-  // commentSettings(reactionCounts?.comment ?? 0)
+  const [bottomViewHeight, setBottomViewHeight] = useState();
+
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardHide = () => setKeyboardOffset(0);
+  const keyboardDidShowListener = useRef();
+  const keyboardDidHideListener = useRef();
+
+  useEffect(() => {
+    keyboardDidShowListener.current = Keyboard.addListener(
+      'keyboardWillShow',
+      onKeyboardShow,
+    );
+    keyboardDidHideListener.current = Keyboard.addListener(
+      'keyboardWillHide',
+      onKeyboardHide,
+    );
+
+    return () => {
+      keyboardDidShowListener.current.remove();
+      keyboardDidHideListener.current.remove();
+    };
+  }, []);
 
   console.log('videoItem:=>', multiAttachItem);
 
@@ -160,7 +182,7 @@ function ShortsVideoView({
     };
     getReactions(params, authContext)
       .then((response) => {
-        setCommentData(response.payload);
+        setCommentData(response?.payload?.reverse());
         setloading(false);
       })
       .catch((e) => {
@@ -179,38 +201,23 @@ function ShortsVideoView({
     [],
   );
   const listEmptyComponent = () => (
-    <View
-      style={styles.emptyContainer}>
-      <Text
-        style={styles.emptyText}>
-        No Comments Yet
-      </Text>
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No Comments Yet</Text>
     </View>
   );
+
+  const onLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    setBottomViewHeight(height);
+  };
+
   return (
     <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
       <View
-        style={{
-          flex: 1,
-          alignSelf: 'center',
-          justifyContent: 'center',
-          width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height,
-        }}>
+        style={styles.mainViewContainer}>
         {!hideButton && (
           <View
-            style={{
-              width: 60,
-              height: 60,
-              backgroundColor: colors.blackColor,
-              opacity: 0.5,
-              zIndex: 100,
-              position: 'absolute',
-              alignSelf: 'center',
-              borderRadius: 30,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+            style={styles.playPauseContainer}>
             <Image
               source={!isPlay ? images.gamePause : images.gameStart}
               resizeMode={'contain'}
@@ -218,7 +225,15 @@ function ShortsVideoView({
             />
           </View>
         )}
-        <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            position: 'absolute',
+            bottom: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+          }}>
           <Image source={images.portraitVideoImage} resizeMode={'cover'} />
           <ShortsPlayer
             curruentIndex={index}
@@ -240,81 +255,110 @@ function ShortsVideoView({
             }}
           />
         </View>
-        <View style={styles.bottomContainer}>
-          <View style={styles.mainContainer}>
-            <TouchableWithoutFeedback
-              onPress={() => onProfilePress(multiAttachItem)}>
-              <Image
-                style={styles.background}
-                source={
-                  !profileItem?.thumbnail
-                    ? images.profilePlaceHolder
-                    : { uri: profileItem?.thumbnail }
-                }
-                resizeMode={'cover'}
-              />
-            </TouchableWithoutFeedback>
-            <View style={styles.userNameView}>
-              <Text
-                style={styles.userNameTxt}
-                onPress={() => onProfilePress(multiAttachItem)}>
-                {profileItem?.full_name}
-              </Text>
-              <Text style={styles.activeTimeAgoTxt}>
-                {commentPostTimeCalculate(multiAttachItem?.time, true)}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                shareActionSheet.current.show();
-              }}>
-              <Image
-                source={images.vertical3Dot}
-                resizeMode={'contain'}
-                style={{
-                  height: 22,
-                  width: 22,
-                  tintColor: colors.whiteColor,
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-          {topDesc && (
-            <View>
-              <PostDescSection
-                descriptions={descriptionItem ?? ''}
-                containerStyle={{ marginHorizontal: 15 }}
-                descriptionTxt={{ color: colors.whiteColor }}
-                onReadMorePress={() => setTopDesc(false)}
-              />
-              <TagView
-                source={images.tagGreenImage}
-                tagText={'matches were tagged'}
-              />
-            </View>
-          )}
 
-          {!topDesc && (
-            <View>
-              <PostDescSection
-                descriptions={descriptionItem ?? ''}
-                character={50}
-                containerStyle={{ marginHorizontal: 12 }}
-                descriptionTxt={{ color: colors.whiteColor }}
-                onReadMorePress={() => {
-                  if (descriptionItem.length > 50) {
-                    setTopDesc(true);
-                  } else {
-                    setTopDesc(false);
-                  }
-                }}
-              />
-              <TagView
-                source={images.tagGreenImage}
-                tagText={'matches were tagged'}
-              />
-            </View>
-          )}
+        <LinearGradient
+          colors={[colors.blackLightOpacityColor, colors.blackOpacityColor]}
+          style={[styles.overlayStyle, { height: bottomViewHeight + 120 }]}>
+          <View style={{ flex: 1 }}>
+            <ScrollView
+            scrollEventThrottle={100}
+              nestedScrollEnabled={true}
+              style={
+                topDesc
+                  ? {
+                      position: 'absolute',
+                      height:
+                        bottomViewHeight > Dimensions.get('window').height - 130
+                          ? Dimensions.get('window').height - 130
+                          : bottomViewHeight,
+                      bottom: 0,
+                    }
+                  : {
+                      position: 'absolute',
+                      bottom: 0,
+                      flex: 1,
+              }
+              }>
+              <View onLayout={onLayout}>
+                <View style={styles.mainContainer}>
+                  <TouchableWithoutFeedback
+                    onPress={() => onProfilePress(multiAttachItem)}>
+                    <View style={styles.backgroundProfileView}>
+                      <Image
+                        style={styles.background}
+                        source={
+                          !profileItem?.thumbnail
+                            ? images.profilePlaceHolder
+                            : { uri: profileItem?.thumbnail }
+                        }
+                        resizeMode={'cover'}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                  <View style={styles.userNameView}>
+                    <Text
+                      style={styles.userNameTxt}
+                      onPress={() => onProfilePress(multiAttachItem)}>
+                      {profileItem?.full_name}
+                    </Text>
+                    <Text style={styles.activeTimeAgoTxt}>
+                      {commentPostTimeCalculate(multiAttachItem?.time, true)}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      shareActionSheet.current.show();
+                    }}>
+                    <Image
+                      source={images.vertical3Dot}
+                      resizeMode={'contain'}
+                      style={{
+                        height: 22,
+                        width: 22,
+                        tintColor: colors.whiteColor,
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {topDesc && (
+                  <View>
+                    <PostDescSection
+                      descriptions={descriptionItem ?? ''}
+                      containerStyle={{ marginHorizontal: 15 }}
+                      descriptionTxt={{ color: colors.whiteColor }}
+                      onReadMorePress={() => setTopDesc(false)}
+                    />
+                    <TagView
+                      source={images.tagGreenImage}
+                      tagText={'matches were tagged'}
+                    />
+                  </View>
+                )}
+                {!topDesc && (
+                  <View>
+                    <PostDescSection
+                      descriptions={descriptionItem ?? ''}
+                      character={50}
+                      containerStyle={{ marginHorizontal: 12 }}
+                      descriptionTxt={{ color: colors.whiteColor }}
+                      onReadMorePress={() => {
+                        if (descriptionItem.length > 50) {
+                          setTopDesc(true);
+                        } else {
+                          setTopDesc(false);
+                        }
+                      }}
+                    />
+                    <TagView
+                      source={images.tagGreenImage}
+                      tagText={'matches were tagged'}
+                    />
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+          </View>
           <View style={styles.commentShareLikeView}>
             <View
               style={{
@@ -398,7 +442,8 @@ function ShortsVideoView({
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </LinearGradient>
+
         <ActionSheet
           ref={shareActionSheet}
           // title={'News Feed Post'}
@@ -413,89 +458,82 @@ function ShortsVideoView({
           PressToanimateDirection={'down'}
           // fade={true}
           ContentModal={
-            <View style={ { flex: 1 } }>
+            <View style={{ flex: 1 }}>
               <TCThinDivider width={'100%'} height={1} />
-              <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : null}>
-                <ActivityLoader visible={loading} />
+              <FlatList
+                data={commentData}
+                renderItem={renderComments}
+                keyExtractor={(item) => index.toString()}
+                ListEmptyComponent={listEmptyComponent}
+                style={{ marginBottom: 100 }}
+              />
 
-                {commentData ? (
-                  <FlatList
-                    data={commentData}
-                    renderItem={renderComments}
-                    keyExtractor={(item) => index.toString()}
-                    ListEmptyComponent={listEmptyComponent}
-                  />
-                ) : (
-                  <View style={{ flex: 1, backgroundColor: 'green' }} />
-                )}
-
-                <SafeAreaView style={styles.bottomSafeAreaStyle}>
-                  {/* <View style={styles.bottomSperateLine} /> */}
-                  <View style={styles.bottomImgView}>
-                    <View style={styles.commentReportView}>
-                      <Image
-                        source={
-                          userImage
-                            ? { uri: userImage }
-                            : images.profilePlaceHolder
-                        }
-                        resizeMode={'cover'}
-                        style={{ width: 40, height: 40, borderRadius: 40 / 2 }}
-                      />
-                    </View>
-                    <View style={styles.onlyMeViewStyle}>
-                      <TextInput
-                        placeholder={'Write a comment'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                        multiline={true}
-                        textAlignVertical={'top'}
-                        value={commentTxt}
-                        onChangeText={(text) => setCommentText(text)}
-                        style={{
-                          textAlignVertical: 'center',
-                          fontSize: 14,
-                          lineHeight: 14,
-                          width: wp('66%'),
-                          marginHorizontal: '2%',
-                          color: colors.lightBlackColor,
-                          fontFamily: fonts.RRegular,
-                          paddingVertical: 0,
-                          paddingLeft: 8,
-                          alignSelf: 'center',
-                          maxHeight: hp(20),
-                        }}
-                      />
-                      {commentTxt.trim().length > 0 && (
-                        <TouchableOpacity
-                          onPress={() => {
-                            const bodyParams = {
-                              reaction_type: 'comment',
-                              activity_id: multiAttachItem?.id,
-                              data: {
-                                text: commentTxt,
-                              },
-                            };
-                            createReaction(bodyParams, authContext)
-                              .then((response) => {
-                                const dataOfComment = [...commentData];
-                                dataOfComment.push(response.payload);
-                                setCommentData(dataOfComment);
-                                setCommentCount(dataOfComment.length);
-                                setCommentText('');
-                              })
-                              .catch((e) => {
-                                console.log(e);
-                              });
-                          }}>
-                          <Text style={styles.sendTextStyle}>SEND</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
+              <SafeAreaView
+                style={[
+                  styles.bottomSafeAreaStyle,
+                  { bottom: keyboardOffset, position: 'absolute' },
+                ]}>
+                {/* <View style={styles.bottomSperateLine} /> */}
+                <View style={styles.bottomImgView}>
+                  <View style={styles.commentReportView}>
+                    <Image
+                      source={
+                        userImage ? { uri: userImage } : images.profilePlaceHolder
+                      }
+                      resizeMode={'cover'}
+                      style={{ width: 40, height: 40, borderRadius: 40 / 2 }}
+                    />
                   </View>
-                </SafeAreaView>
-              </KeyboardAvoidingView>
+                  <View style={styles.onlyMeViewStyle}>
+                    <TextInput
+                      placeholder={'Write a comment'}
+                      placeholderTextColor={colors.userPostTimeColor}
+                      multiline={true}
+                      textAlignVertical={'top'}
+                      value={commentTxt}
+                      onChangeText={(text) => setCommentText(text)}
+                      style={{
+                        textAlignVertical: 'center',
+                        fontSize: 14,
+                        lineHeight: 14,
+                        width: wp('66%'),
+                        marginHorizontal: '2%',
+                        color: colors.lightBlackColor,
+                        fontFamily: fonts.RRegular,
+                        paddingVertical: 0,
+                        paddingLeft: 8,
+                        alignSelf: 'center',
+                        maxHeight: hp(20),
+                      }}
+                    />
+                    {commentTxt.trim().length > 0 && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          const bodyParams = {
+                            reaction_type: 'comment',
+                            activity_id: multiAttachItem?.id,
+                            data: {
+                              text: commentTxt,
+                            },
+                          };
+                          createReaction(bodyParams, authContext)
+                            .then((response) => {
+                              const dataOfComment = [...commentData];
+                              dataOfComment.unshift(response.payload);
+                              setCommentData(dataOfComment);
+                              setCommentCount(dataOfComment.length);
+                              setCommentText('');
+                            })
+                            .catch((e) => {
+                              console.log(e);
+                            });
+                        }}>
+                        <Text style={styles.sendTextStyle}>SEND</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              </SafeAreaView>
             </View>
           }
           HeaderStyle={styles.headerContent}
@@ -544,9 +582,18 @@ const styles = StyleSheet.create({
     top: 2,
   },
   background: {
-    borderRadius: hp('2.5%'),
-    height: hp('5%'),
-    width: hp('5%'),
+    borderRadius: 20,
+    height: 40,
+    width: 40,
+  },
+  backgroundProfileView: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 88,
+    height: 44,
+    width: 44,
+    backgroundColor: colors.whiteColor,
   },
   commentImage: {
     height: 32,
@@ -558,7 +605,7 @@ const styles = StyleSheet.create({
     margin: 15,
     marginVertical: '2%',
     alignSelf: 'center',
-    marginBottom: 45,
+    marginBottom: 40,
   },
   commentlengthStyle: {
     alignSelf: 'center',
@@ -578,7 +625,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
   },
-  bottomContainer: {},
+  overlayStyle: {
+    paddingTop: 15,
+    position: 'absolute',
+    bottom: 0,
+  },
   containerHeader: {
     flex: 1,
     alignContent: 'center',
@@ -630,6 +681,8 @@ const styles = StyleSheet.create({
       height: -3,
       width: 0,
     },
+    width: '100%',
+    elevation: 5,
   },
   emptyText: {
     fontSize: 18,
@@ -642,6 +695,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: '60%',
+  },
+  playPauseContainer: {
+    width: 60,
+    height: 60,
+    backgroundColor: colors.blackOpacityColor,
+    zIndex: 100,
+    position: 'absolute',
+    alignSelf: 'center',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mainViewContainer: {
+    flex: 1,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
 });
 

@@ -75,12 +75,12 @@ export default function AccountScreen({ navigation }) {
 
   // Account menu opetions
   const userMenu = [
-    { key: 'My Reservations' },
-    { key: 'My Sports', member: [{ opetions: 'Add a sport' }] },
-    { key: 'My Refereeing', member: [{ opetions: 'Register as a referee' }] },
-    { key: 'My Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
-    { key: 'My Teams', member: [{ opetions: 'Create a Team' }] },
-    { key: 'My Clubs', member: [{ opetions: 'Create a Club' }] },
+    { key: 'Reservations' },
+    { key: 'Sports', member: [{ opetions: 'Add a sport' }] },
+    { key: 'Refereeing', member: [{ opetions: 'Register as a referee' }] },
+    { key: 'Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
+    { key: 'Teams', member: [{ opetions: 'Create a Team' }] },
+    { key: 'Clubs', member: [{ opetions: 'Create a Club' }] },
     // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
     // {key: 'Register as a Referee'},
     // {key: 'Register as a personal player'},
@@ -99,10 +99,10 @@ export default function AccountScreen({ navigation }) {
     { key: 'Setting & Privacy' },
   ];
   const teamMenu = [
-    { key: 'My Reservations' },
+    { key: 'Reservations' },
     { key: 'Members' },
     // {key: 'My Leagues'},
-    { key: 'My Clubs', member: [{ opetions: 'Create a Club' }] },
+    { key: 'Clubs', member: [{ opetions: 'Create a Club' }] },
     {
       key: 'Payment & Payout',
       member: [
@@ -114,9 +114,9 @@ export default function AccountScreen({ navigation }) {
     },
   ];
   const clubMenu = [
-    { key: 'My Reservations' },
+    { key: 'Reservations' },
     { key: 'Members' },
-    { key: 'My Teams', member: [{ opetions: 'Create a Team' }] },
+    { key: 'Teams', member: [{ opetions: 'Create a Team' }] },
     // {key: 'My Leagues'},
     // {key: 'Invite Teams'},
     {
@@ -447,7 +447,7 @@ export default function AccountScreen({ navigation }) {
   }, [onLogout]);
 
   const handleSections = async (section) => {
-    if (section === 'My Reservations') {
+    if (section === 'Reservations') {
       navigation.navigate('ReservationNavigator', {
         screen: 'ReservationScreen',
       });
@@ -1132,25 +1132,25 @@ export default function AccountScreen({ navigation }) {
                 onPress={() => {
                   handleSections(section);
                 }}>
-                {section === 'My Reservations' && (
+                {section === 'Reservations' && (
                   <Image source={images.mySchedule} style={styles.menuItem} />
                 )}
-                {section === 'My Sports' && (
+                {section === 'Sports' && (
                   <Image source={images.mySports} style={styles.menuItem} />
                 )}
-                {section === 'My Refereeing' && (
+                {section === 'Refereeing' && (
                   <Image source={images.myRefereeing} style={styles.menuItem} />
                 )}
-                {section === 'My Scorekeeping' && (
+                {section === 'Scorekeeping' && (
                   <Image source={images.myRefereeing} style={styles.menuItem} />
                 )}
-                {section === 'My Teams' && (
+                {section === 'Teams' && (
                   <Image source={images.myTeams} style={styles.menuItem} />
                 )}
-                {section === 'My Clubs' && (
+                {section === 'Clubs' && (
                   <Image source={images.myClubs} style={styles.menuItem} />
                 )}
-                {section === 'My Leagues' && (
+                {section === 'Leagues' && (
                   <Image source={images.myLeagues} style={styles.menuItem} />
                 )}
                 {section === 'Payment & Payout' && (
