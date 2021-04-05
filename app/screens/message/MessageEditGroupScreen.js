@@ -110,7 +110,7 @@ const MessageEditGroupScreen = ({ route, navigation }) => {
           }
           rightComponent={!uploadImageInProgress
             && <TouchableOpacity style={{ padding: 2 }} onPress={onDonePress}>
-              <Text style={styles.eventTextStyle}>Done</Text>
+              <Text style={{ ...styles.eventTextStyle, width: 100, textAlign: 'right' }}>Done</Text>
             </TouchableOpacity>
           }
       />

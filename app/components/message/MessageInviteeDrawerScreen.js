@@ -117,7 +117,7 @@ const MessageInviteeDrawerScreen = ({
           </Text>
           <TouchableOpacity onPress={() => {
             navigation.closeDrawer();
-            navigation.navigate('MessageEditGroupScreen', { dialog, onPressDone })
+            if (dialog?.type === QB.chat.DIALOG_TYPE.GROUP_CHAT) navigation.navigate('MessageEditGroupScreen', { dialog, onPressDone })
           }} >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={[styles.title, { marginLeft: wp(3) }]}>

@@ -48,14 +48,6 @@ export default function ChooseLocationScreen({ navigation }) {
     getLocationData(searchText);
   }, [searchText]);
   useEffect(() => {
-    // Geolocation.getCurrentPosition(
-    //   (position) => {
-    //     console.log('Location Data::=>', JSON.stringify(position));
-    //   },
-    //   (error) => alert(JSON.stringify(error)),
-    //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    // );
-
     if (Platform.OS === 'android') {
       requestPermission();
     } else {
@@ -64,7 +56,6 @@ export default function ChooseLocationScreen({ navigation }) {
   }, []);
 
   const requestPermission = async () => {
-    // const granted =
     await PermissionsAndroid.requestMultiple([
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
@@ -75,9 +66,6 @@ export default function ChooseLocationScreen({ navigation }) {
       && result['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
       ) {
         getLocation();
-        // this.setState({
-        //   permissionsGranted: true,
-        // });
       }
     }).catch((error) => {
       console.warn(error);
@@ -145,17 +133,17 @@ export default function ChooseLocationScreen({ navigation }) {
       updateProfile(userData, () => {
         if (response.payload.length > 0) {
           navigation.navigate('TotalTeamsScreen', {
-            city: currentLocation.city,
-            state: currentLocation.stateAbbr,
-            country: currentLocation.country,
-            totalTeams: response.payload.length,
-            teamData: response.payload,
+            city: currentLocation?.city,
+            state: currentLocation?.stateAbbr,
+            country: currentLocation?.country,
+            totalTeams: response?.payload?.length,
+            teamData: response?.payload,
           });
         } else {
           navigation.navigate('ChooseSportsScreen', {
-            city: currentLocation.city,
-            state: currentLocation.stateAbbr,
-            country: currentLocation.country,
+            city: currentLocation?.city,
+            state: currentLocation?.stateAbbr,
+            country: currentLocation?.country,
           });
         }
       })
@@ -186,36 +174,36 @@ export default function ChooseLocationScreen({ navigation }) {
   const getTeamsData = async (item) => {
     setLoading(true);
     const queryParams = {
-      state: item.terms?.[1]?.value,
-      city: item.terms?.[0]?.value,
+      state: item?.terms?.[1]?.value,
+      city: item?.terms?.[0]?.value,
     };
-
     searchGroups(queryParams, authContext).then((response) => {
       const userData = {
-        city: item.terms?.[0]?.value,
-        state_abbr: item.terms[1].value,
-        country: item.terms?.[2]?.value,
+        city: item?.terms?.[0]?.value,
+        state_abbr: item?.terms?.[1]?.value,
+        country: item?.terms?.[2]?.value,
       }
       updateProfile(userData, () => {
         if (response.payload.length > 0) {
           navigation.navigate('TotalTeamsScreen', {
-            city: item.terms?.[0]?.value,
-            state: item.terms[1].value,
-            country: item.terms?.[2]?.value,
-            totalTeams: response.payload.length,
-            teamData: response.payload,
+            city: item?.terms?.[0]?.value,
+            state: item?.terms?.[1]?.value,
+            country: item?.terms?.[2]?.value,
+            totalTeams: response?.payload?.length,
+            teamData: response?.payload,
           });
         } else {
           navigation.navigate('ChooseSportsScreen', {
-            city: item.terms?.[0]?.value,
-            state: item.terms?.[1]?.value,
-            country: item.terms?.[2]?.value,
+            city: item?.terms?.[0]?.value,
+            state: item?.terms?.[1]?.value,
+            country: item?.terms?.[2]?.value,
           });
         }
       })
     }).catch((e) => {
+      console.log(e);
       setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
+        Alert.alert(`${strings.alertmessagetitle} - 1`, e.message);
       }, 10);
     });
   };

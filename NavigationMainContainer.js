@@ -14,7 +14,6 @@ import ActivityLoader from './app/components/loader/ActivityLoader';
 
 export default function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
-
   const [appInitialize, setAppInitialize] = useState(false);
 
   const resetApp = useCallback(async () => {
