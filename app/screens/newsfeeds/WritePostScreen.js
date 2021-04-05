@@ -235,13 +235,14 @@ export default function WritePostScreen({ navigation, route }) {
                   const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
                   const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
                   format_tagged_data.map(async (item, index) => {
-                    const isThere = searchText.includes(item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''))
+                    const isThere = item?.entity_type !== 'game' ? searchText.includes(item?.entity_data?.tagged_formatted_name?.replace(/ /g, '')) : true;
                     if (!isThere) format_tagged_data.splice(index, 1);
                     return null;
                   })
                   // eslint-disable-next-line no-param-reassign
                   tagData.forEach((tData) => delete tData.entity_data);
-                   onPressDone(selectImage, searchText, tagData, format_tagged_data);
+
+                  onPressDone(selectImage, searchText, tagData, format_tagged_data);
                   navigation.goBack()
                   setTimeout(() => {
                     setloading(false);
@@ -365,8 +366,28 @@ export default function WritePostScreen({ navigation, route }) {
       });
   }, [selectImage])
 
+  const onSelectMatch = (selectedMatch) => {
+    const tagsArray = []
+      if (selectedMatch?.length > 0) {
+        selectedMatch.map((gameTagItem) => {
+          const entity_data = {}
+          const jsonData = { entity_type: 'game', entity_id: gameTagItem?.game_id }
+          jsonData.entity_data = getTaggedEntityData(entity_data, gameTagItem, 'game')
+          const isExist = tagsOfEntity.some((item) => item?.entity_id === gameTagItem?.game_id)
+          if (!isExist) tagsArray.push(jsonData)
+          textInputRef.current.focus();
+          return null;
+        })
+        setLetModalVisible(false)
+        setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+      }
+  }
+
   const onSelectTagButtonPress = useCallback(() => {
-    navigation.navigate('UserTagSelectionListScreen', { comeFrom: 'WritePostScreen' });
+    navigation.navigate('UserTagSelectionListScreen', {
+      comeFrom: 'WritePostScreen',
+      onSelectMatch,
+    });
   }, [navigation]);
 
   return (

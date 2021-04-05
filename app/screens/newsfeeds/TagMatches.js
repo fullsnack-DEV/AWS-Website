@@ -1,10 +1,15 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {
+ memo, useCallback,
+} from 'react';
+import {
+ FlatList, StyleSheet, Text, View,
+} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
+import TCGameCard from '../../components/TCGameCard';
 
-const RowTitleWithTextInput = ({ title, selectedText, onPress }) => (
+const RowTitleWithTextInput = memo(({ title, selectedText, onPress }) => (
   <View style={{
  flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 15,
   }}>
@@ -35,26 +40,52 @@ const RowTitleWithTextInput = ({ title, selectedText, onPress }) => (
       </TouchableOpacity>
     </View>
   </View>
-    )
+))
+
 // const [, setFirstTeam] = useState(null)
 // const [, setSecondTeam] = useState(null)
 // const [, setSports] = useState(null)
 // const [, setDate] = useState(null)
-const TagMatches = () => (
-  <View style={styles.mainContainer}>
-    {/*  Row View */}
-    <View>
-      {/* First Team Name */}
-      <RowTitleWithTextInput title={'Team 1'}/>
-      <RowTitleWithTextInput title={'Team 2'}/>
-      <RowTitleWithTextInput title={'Sports'}/>
-      <RowTitleWithTextInput title={'Date'}/>
-      {/* Second Team Name */}
-      {/* Sports */}
-      {/* Date */}
-    </View>
-  </View>
-)
+const TagMatches = ({ gamesData, selectedMatch, onSelectMatch }) => {
+    const renderGamesData = useCallback(({ item }) => {
+        const isSelected = selectedMatch?.findIndex((it) => it?.game_id === item?.game_id) !== -1;
+        return (
+          <View style={{ marginVertical: 10 }}>
+            <TCGameCard
+                    isSelected={isSelected}
+                    data={item}
+                    showSelectionCheckBox={true}
+                    onPress={() => onSelectMatch(item)}
+                />
+          </View>
+        )
+    }, [onSelectMatch, selectedMatch])
+
+    return (
+      <View style={styles.mainContainer}>
+        {/*  Row View */}
+        <View>
+          {/* First Team Name */}
+          <RowTitleWithTextInput title={'Team 1'}/>
+
+          {/* Second Team Name */}
+          <RowTitleWithTextInput title={'Team 2'}/>
+
+          {/* Sports */}
+          <RowTitleWithTextInput title={'Sports'}/>
+
+          {/* Date */}
+          <RowTitleWithTextInput title={'Date'}/>
+
+          <FlatList
+              keyExtractor={(item) => item?.game_id}
+              data={gamesData}
+              renderItem={renderGamesData}
+          />
+        </View>
+      </View>
+    )
+}
 
 const styles = StyleSheet.create({
     mainContainer: {

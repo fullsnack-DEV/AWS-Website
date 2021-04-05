@@ -6,12 +6,15 @@ import {
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
+import FastImage from 'react-native-fast-image';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 import ReservationStatus from '../Constants/ReservationStatus';
 
- function GameCard({ data, onPress, cardWidth = '86%' }) {
+ function GameCard({
+ data, onPress, cardWidth = '86%', isSelected = false, showSelectionCheckBox = false,
+}) {
   const months = [
     'Jan',
     'Feb',
@@ -39,7 +42,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
   };
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
         <LinearGradient
         colors={data?.status === ReservationStatus.cancelled ? [colors.startGrayGrdient, colors.endGrayGradient] : [colors.yellowColor, colors.assistTextColor]}
@@ -54,7 +57,18 @@ import ReservationStatus from '../Constants/ReservationStatus';
           </View>
         </LinearGradient>
         <View style={styles.eventText}>
-          <Text style={styles.eventTitle}>{data.sport}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={styles.eventTitle}>{data.sport}</Text>
+            <View style={{ marginRight: 7, marginBottom: 5 }}>
+              {/* eslint-disable-next-line no-nested-ternary */}
+              {showSelectionCheckBox
+                ? isSelected ? (
+                  <FastImage source={ images.orangeCheckBox } resizeMode={'contain'} style={ styles.checkboxImg } />
+                  ) : (
+                    <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+                ) : null}
+            </View>
+          </View>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
               {formatAMPM(new Date(data.start_datetime * 1000))} -{' '}
@@ -266,6 +280,15 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     opacity: 0.4,
+  },
+  unCheckboxImg: {
+    width: 22,
+    height: 22,
+    tintColor: colors.whiteColor,
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
   },
 });
 
