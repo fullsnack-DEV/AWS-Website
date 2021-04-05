@@ -32,7 +32,7 @@ import images from '../../Constants/ImagePath';
 import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import AuthContext from '../../auth/context';
-import { getSearchData } from '../../utils';
+import { getSearchData, getTaggedEntityData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
@@ -45,7 +45,7 @@ export default function WritePostScreen({ navigation, route }) {
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const authContext = useContext(AuthContext);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
-  const [tagsOfEntity, setTagsOfEntity] = useState(route.params.taggedData || []);
+  const [tagsOfEntity, setTagsOfEntity] = useState([]);
   const [searchTag, setSearchTag] = useState();
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState(route.params.selectedImageList);
@@ -81,20 +81,24 @@ export default function WritePostScreen({ navigation, route }) {
         route.params.selectedTagList.map((tagItem) => {
           let joinedString = '@';
           const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id'
+          let entity_data = {}
+          let entity_name = '';
           const isExist = tagsOfEntity.some((item) => item?.entity_id === tagItem[entity_text])
 
-          const jsonData = { entity_type: '', entity_data: '', entity_id: '' }
-          jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'user' : tagItem?.entity_type;
+          const jsonData = { entity_type: '', entity_data, entity_id: '' }
+          jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'player' : tagItem?.entity_type;
           jsonData.entity_id = tagItem?.[entity_text];
           if (tagItem?.group_name) {
-            jsonData.entity_data = _.startCase(_.toLower(tagItem?.group_name))?.replace(/ /g, '');
+            entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(/ /g, '');
           } else {
             const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(/ /g, '');
             const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(/ /g, '');
-            jsonData.entity_data = `${fName}${lName}`;
+            entity_name = `${fName}${lName}`;
           }
-          joinedString += `${jsonData.entity_data } `;
-          if (!isExist) tagsArray.push({ entity_data: joinedString.replace(/ /g, ''), entity_id: jsonData?.entity_id, entity_type: jsonData?.entity_type })
+          joinedString += `${entity_name} `;
+          entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '')
+          entity_data = getTaggedEntityData(entity_data, tagItem)
+          if (!isExist) tagsArray.push({ entity_data, entity_id: jsonData?.entity_id, entity_type: jsonData?.entity_type })
           tagName = `${tagName} ${joinedString}`;
           textInputRef.current.focus();
           return null;
@@ -165,25 +169,30 @@ export default function WritePostScreen({ navigation, route }) {
   }, [])
 
   const onTagPress = useCallback((item) => {
+    console.log(item);
     const tagsArray = [];
     let joinedString = '@';
+    let entity_data = {}
+    let entity_name = '';
     const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id'
-    const jsonData = { entity_type: '', entity_data: '', entity_id: '' }
-    jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'user' : item?.entity_type;
+    const jsonData = { entity_type: '', entity_data, entity_id: '' }
+    jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'player' : item?.entity_type;
     jsonData.entity_id = item?.[entity_text];
     if (item?.group_name) {
-      jsonData.entity_data = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
+      entity_name = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
     } else {
       const fName = _.startCase(_.toLower(item?.first_name))?.replace(/ /g, '');
       const lName = _.startCase(_.toLower(item?.last_name))?.replace(/ /g, '');
-      jsonData.entity_data = `${fName}${lName}`;
+      entity_name = `${fName}${lName}`;
     }
-    joinedString += `${jsonData.entity_data } `;
+    joinedString += `${entity_name } `;
+    entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '')
+    entity_data = getTaggedEntityData(entity_data, item);
     const str = addStringInCurrentText(searchText, lastTagStartIndex, currentTextInputIndex, joinedString);
     setSearchText(`${str} `)
 
     const isExist = tagsOfEntity.some((tagItem) => tagItem?.entity_id === item[entity_text])
-    if (!isExist) tagsArray.push({ entity_data: joinedString.replace(/ /g, ''), entity_id: item?.[entity_text], entity_type: jsonData?.entity_type })
+    if (!isExist) tagsArray.push({ entity_data, entity_id: item?.[entity_text], entity_type: jsonData?.entity_type })
     setTagsOfEntity([...tagsOfEntity, ...tagsArray])
     setLetModalVisible(false)
     textInputRef.current.focus();
@@ -224,12 +233,15 @@ export default function WritePostScreen({ navigation, route }) {
                 } else {
                   setloading(true);
                   const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-                  tagsOfEntity.map(async (item, index) => {
-                    const isThere = searchText.includes(item?.entity_data?.replace(/ /g, ''))
-                    if (!isThere) tagData.splice(index, 1);
+                  const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
+                  format_tagged_data.map(async (item, index) => {
+                    const isThere = searchText.includes(item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''))
+                    if (!isThere) format_tagged_data.splice(index, 1);
                     return null;
                   })
-                   onPressDone(selectImage, searchText, tagData);
+                  // eslint-disable-next-line no-param-reassign
+                  tagData.forEach((tData) => delete tData.entity_data);
+                   onPressDone(selectImage, searchText, tagData, format_tagged_data);
                   navigation.goBack()
                   setTimeout(() => {
                     setloading(false);
@@ -336,11 +348,11 @@ export default function WritePostScreen({ navigation, route }) {
         let allSelectData = [];
         const secondData = [];
         if (selectImage?.length > 0) {
-          pickedData.filter((dataItem) => {
-            const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
-            if (filter_data?.length === 0) {
+          pickedData.map((dataItem) => {
+            // const filter_data = selectImage.filter((imageItem) => imageItem?.path === dataItem?.path);
+            // if (filter_data?.length === 0) {
               secondData.push(dataItem)
-            }
+            // }
             return null;
           })
           allSelectData = [...selectImage, ...secondData];

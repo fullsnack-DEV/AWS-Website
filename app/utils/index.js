@@ -461,4 +461,18 @@ export const validURL = (str) => {
   return !!pattern.test(str);
 }
 
+export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) => {
+  if (entity_type === 'game') {
+    return ({
+      ...entity_raw_data,
+    })
+  }
+  return ({
+    ...entity_raw_data,
+    city: entity_item?.city,
+    full_name: ['player', 'user']?.includes(entity_item?.entity_type) ? entity_item?.full_name : entity_item?.group_name,
+    thumbnail: entity_item?.thumbnail,
+  })
+}
+
 export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)

@@ -18,7 +18,7 @@ export const getWholeGallery = (gallery_type, entity_type, entity_id, authContex
     if (entity_type === 'team') eType = 'teams'
     if (entity_type === 'game') eType = 'games'
     let url = `${Config.BASE_URL}/${eType}/${entity_id}/${gal_type}`;
-    if (last_id) url += `?id_lt=${last_id}}`
+    if (last_id) url += `?id_lt=${last_id}`
 
     return makeAPIRequest({
         method: 'get',

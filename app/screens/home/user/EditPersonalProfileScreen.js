@@ -195,9 +195,7 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
 
   const openImagePicker = (width = 400, height = 400) => {
     let cropCircle = false;
-    if (currentImageSelection === 1) {
-      cropCircle = true;
-    }
+    if (currentImageSelection === 1) cropCircle = true;
     ImagePicker.openPicker({
       width,
       height,
@@ -228,10 +226,13 @@ export default function EditPersonalProfileScreen({ navigation, route }) {
   }
 
   const openCamera = (width = 400, height = 400) => {
+    let cropCircle = false;
+    if (currentImageSelection === 1) cropCircle = true;
     ImagePicker.openCamera({
       width,
       height,
       cropping: true,
+      cropperCircleOverlay: cropCircle,
     }).then((data) => {
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
