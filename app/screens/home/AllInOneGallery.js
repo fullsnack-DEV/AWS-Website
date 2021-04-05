@@ -51,7 +51,7 @@ const AllInOneGallery = ({
         if (isNextDataLoading) {
             getWholeGallery(galleryType, entity_type, entity_id, authContext, galleryData?.[galleryData?.length - 1]?.id).then((res) => {
                 if (res?.payload?.next === '') setIsNextDataLoading(false);
-                setGalleryData([...res.payload?.results]);
+                setGalleryData([...galleryData, ...res.payload?.results]);
             }).catch(() => {
                 setIsNextDataLoading(false);
             })

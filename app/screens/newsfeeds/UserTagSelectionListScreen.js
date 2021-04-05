@@ -27,6 +27,7 @@ import TCSearchBox from '../../components/TCSearchBox';
 import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
 import ScrollableTabs from '../../components/ScrollableTabs';
+import TagMatches from './TagMatches';
 
 export default function UserTagSelectionListScreen({ navigation, route }) {
   const [searchText, setSearchText] = useState('');
@@ -160,6 +161,9 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
     if (currentTab === 1) {
       filteredData = data?.filter((item) => item?.entity_type === currentGrpupTab)
     }
+    if (currentTab === 2) {
+      return <TagMatches />
+    }
     return (
       <View>
         {currentTab === 1 && (
@@ -261,7 +265,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
       {renderSearchBox}
       {renderSelectedEntity}
       <ScrollableTabs
-          tabs={['People', 'Groups', 'Games']}
+          tabs={['People', 'Groups', 'Matches']}
           onTabPress={onTabPress}
           currentTab={currentTab}
       />

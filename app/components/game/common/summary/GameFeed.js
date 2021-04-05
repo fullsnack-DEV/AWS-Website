@@ -113,7 +113,7 @@ const GameFeed = ({
       });
   }, [authContext, gameFeedData])
 
-  const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
+  const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData, format_tagged_data = []) => {
     const alreadyUrlDone = [];
     const createUrlData = [];
 
@@ -122,6 +122,7 @@ const GameFeed = ({
         activity_id: selectEditItem.id,
         text: postDesc,
         tagged: tagData ?? [],
+        format_tagged_data,
       };
       updatePostAfterUpload(dataParams);
     } else if (data) {
@@ -140,6 +141,7 @@ const GameFeed = ({
         text: postDesc,
         attachments: [...alreadyUrlDone],
         tagged: tagData ?? [],
+        format_tagged_data,
       };
       if (createUrlData?.length > 0) {
         const imageArray = createUrlData.map((dataItem) => (dataItem))

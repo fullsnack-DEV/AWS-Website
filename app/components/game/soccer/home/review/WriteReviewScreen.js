@@ -332,10 +332,10 @@ export default function WriteReviewScreen({ navigation, route }) {
                   const secondData = [];
                   if (selectImage.length > 0) {
                     data.filter((dataItem) => {
-                      const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
-                      if (filter_data.length === 0) {
+                      // const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
+                      // if (filter_data.length === 0) {
                         secondData.push(dataItem)
-                      }
+                      // }
                       return null;
                     })
                     allSelectData = [...selectImage, ...secondData];

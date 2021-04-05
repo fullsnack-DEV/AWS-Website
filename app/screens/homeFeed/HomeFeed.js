@@ -67,7 +67,7 @@ const HomeFeed = ({
             });
     }, [authContext, postData, setGalleryData, userID])
 
-    const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
+    const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData, format_tagged_data = []) => {
         const alreadyUrlDone = [];
         const createUrlData = [];
 
@@ -76,6 +76,7 @@ const HomeFeed = ({
                 activity_id: selectEditItem.id,
                 text: postDesc,
                 tagged: tagData ?? [],
+                format_tagged_data,
             };
             updatePostAfterUpload(dataParams);
         } else if (data) {
@@ -94,6 +95,7 @@ const HomeFeed = ({
                 text: postDesc,
                 tagged: tagData ?? [],
                 attachments: [...alreadyUrlDone],
+                format_tagged_data,
             };
             if (createUrlData?.length > 0) {
                 const imageArray = createUrlData.map((dataItem) => (dataItem))

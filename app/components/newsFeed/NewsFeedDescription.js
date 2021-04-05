@@ -48,7 +48,7 @@ const NewsFeedDescription = ({
     // console.log(`${name} - ${startTagIndex}`, getIndicesOf(name));
     const currentIndexsOfMatch = getIndicesOf(name);
     const isExistIndex = currentIndexsOfMatch?.findIndex((item) => item === startTagIndex)
-    const fetchedAllEntity = tagData?.filter((item) => item?.entity_data === name);
+    const fetchedAllEntity = tagData?.filter((item) => item?.entity_data?.tagged_formatted_name === name);
     if (fetchedAllEntity?.length > 0) {
       let fetchedEntity = fetchedAllEntity?.[0];
       if (fetchedAllEntity?.length > 1 && isExistIndex !== -1) fetchedEntity = fetchedAllEntity?.[isExistIndex];
@@ -68,7 +68,7 @@ const NewsFeedDescription = ({
     // console.log(matchData);
     const startTagIndex = descriptions?.indexOf(matchData?.input?.substr(matchData?.index, descriptions?.length))
     let color = colors.black;
-    const isTagName = tagData?.filter((item) => item?.entity_data === match)?.length > 0;
+    const isTagName = tagData?.filter((item) => item?.entity_data?.tagged_formatted_name === match)?.length > 0;
     if (isTagName) color = colors.greeColor;
     return (
       <Text onPress={() => isTagName && handleNamePress(match, startTagIndex)} style={{ ...styles.username, color }}>{match}</Text>

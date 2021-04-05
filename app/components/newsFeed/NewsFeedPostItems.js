@@ -237,10 +237,10 @@ const NewsFeedPostItems = ({
     <NewsFeedDescription
           descriptions={descriptions}
           character={attachedImages?.length > 0 ? 140 : 480}
-          tagData={myItem?.tagged ?? []}
+          tagData={myItem?.format_tagged_data ?? []}
           navigation={navigation}
       />
-  ), [attachedImages?.length, descriptions, myItem?.tagged, navigation]);
+  ), [attachedImages?.length, descriptions, myItem?.format_tagged_data, navigation]);
 
   const onWriteCommentPress = useCallback(() => {
     navigation.navigate('WriteCommentScreen', {

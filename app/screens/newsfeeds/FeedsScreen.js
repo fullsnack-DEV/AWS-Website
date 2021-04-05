@@ -64,11 +64,12 @@ const FeedsScreen = ({ navigation }) => {
         });
   }, [authContext])
 
-  const onPressDone = useCallback((data, postDesc, tagsOfEntity) => {
+  const onPressDone = useCallback((data, postDesc, tagsOfEntity, format_tagged_data = []) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
         tagged: tagsOfEntity ?? [],
+        format_tagged_data,
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
@@ -78,6 +79,7 @@ const FeedsScreen = ({ navigation }) => {
         text: postDesc && postDesc,
         attachments: [],
         tagged: tagsOfEntity ?? [],
+        format_tagged_data,
       };
       imageUploadContext.uploadData(
           authContext,
@@ -120,7 +122,7 @@ const FeedsScreen = ({ navigation }) => {
       });
   }, [authContext, postData])
 
-  const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData) => {
+  const editPostDoneCall = useCallback((data, postDesc, selectEditItem, tagData, format_tagged_data) => {
     const alreadyUrlDone = [];
     const createUrlData = [];
 
@@ -129,6 +131,7 @@ const FeedsScreen = ({ navigation }) => {
         activity_id: selectEditItem.id,
         text: postDesc,
         tagged: tagData ?? [],
+        format_tagged_data,
       };
       updatePostAfterUpload(dataParams);
     } else if (data) {
@@ -146,6 +149,7 @@ const FeedsScreen = ({ navigation }) => {
         activity_id: selectEditItem.id,
         text: postDesc,
         tagged: tagData ?? [],
+        format_tagged_data,
         attachments: [...alreadyUrlDone],
       };
       if (createUrlData?.length > 0) {
