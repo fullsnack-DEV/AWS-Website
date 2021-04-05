@@ -15,14 +15,13 @@ import ActivityLoader from '../../../loader/ActivityLoader';
 import { ImageUploadContext } from '../../../../context/ImageUploadContext';
 
 const GameFeed = ({
-  gameFeedRefs,
   gameData,
   navigation,
   currentUserData,
   getGameFeedData,
   createGamePostData,
   getGameNextFeedData,
-}) => {
+}, gameFeedRefs) => {
   const authContext = useContext(AuthContext);
   const imageUploadContext = useContext(ImageUploadContext)
   const [gameFeedData, setGameFeedData] = useState([]);

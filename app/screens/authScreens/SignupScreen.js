@@ -34,7 +34,7 @@ export default function SignupScreen({ navigation }) {
   const dummyAuthContext = { ...authContext }
   const [fName, setFName] = useState('Raj ');
   const [lName, setLName] = useState('Kapoor ');
-  const [email, setEmail] = useState('rajkapoordev+50@gmail.com');
+  const [email, setEmail] = useState('rajkapoordev+10@gmail.com');
   const [password, setPassword] = useState('123456');
   const [cPassword, setCPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(false);

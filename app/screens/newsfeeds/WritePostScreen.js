@@ -36,8 +36,8 @@ import { getSearchData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
-const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-// const tagRegex = /(?!\w)@\w+/gmi
+// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
+const tagRegex = /(?!\w)@\w+/gmi
 
 export default function WritePostScreen({ navigation, route }) {
   const textInputRef = useRef();

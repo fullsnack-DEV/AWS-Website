@@ -40,14 +40,13 @@ import * as Utils from '../../challenge/ChallengeUtility';
 import AddSetGameModal from './AddSetGameModal';
 
 const TennisMatchRecordsList = ({
-                                  matchRef,
   navigation,
   matchData,
   visibleSetScore = true,
   isAdmin,
   visibleAddSetGameButton = false,
   matchRecords3DotRef,
-}) => {
+}, matchRef) => {
   const authContext = useContext(AuthContext)
   const [visibleAddSetAndGameButton, setVisibleAddSetAndGameButton] = useState(false);
   const [editorChecked, setEditorChecked] = useState(false);

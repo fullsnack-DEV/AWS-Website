@@ -1,18 +1,14 @@
 /* eslint-disable react-native/split-platform-components */
 import React, {
-  useState, useContext, useEffect, useMemo, useCallback,
+ useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import {
-  View, Text, TouchableOpacity, Alert, StyleSheet,
-  StatusBar, Animated, Platform,
+ Alert, Animated, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import auth from '@react-native-firebase/auth';
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 import { appleAuth, appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { v4 as uuid } from 'uuid';
@@ -36,11 +32,9 @@ import { checkTownscupEmail, createUser } from '../../api/Users';
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
 export default function WelcomeScreen({ navigation }) {
   const fadeInOpacity = new Animated.Value(0);
-  let dummyAuthContext = {};
   // For activity indigator
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext)
-  dummyAuthContext = { ...authContext };
   const [currentBackground, setCurrentBackground] = useState(1);
 
   useEffect(() => {
@@ -74,9 +68,8 @@ export default function WelcomeScreen({ navigation }) {
     else reject(new Error({ error: 'completed user profile' }))
   }), [])
 
-  const loginFinalRedirection = useCallback(async (townscupUser) => {
+  const loginFinalRedirection = useCallback(async (townscupUser, dummyAuthContext) => {
     let entity = { ...dummyAuthContext?.entity }
-    console.log('townscupUser : ', townscupUser)
     entity = {
       ...entity,
       auth: { ...entity?.auth, user: townscupUser },
@@ -101,26 +94,23 @@ export default function WelcomeScreen({ navigation }) {
     });
   }, [authContext, getRedirectionScreenName, navigation])
 
-  const QBInitialLogin = async (entity, townscupUser) => {
-    let qbEntity = { ...entity }
+  const QBInitialLogin = async (dummyAuth, townscupUser) => {
+    const dummyAuthContext = { ...dummyAuth };
+    let qbEntity = { ...dummyAuthContext?.entity }
     QBlogin(qbEntity?.uid, townscupUser).then(async (res) => {
       qbEntity = { ...qbEntity, QB: { ...res?.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity);
       dummyAuthContext.entity = { ...qbEntity }
-      await loginFinalRedirection(townscupUser);
+      await loginFinalRedirection(townscupUser, dummyAuthContext);
     }).catch(async (error) => {
       console.log('QB Login Error : ', error.message);
       qbEntity = { ...qbEntity, QB: { connected: false } }
       dummyAuthContext.entity = { ...qbEntity }
-      await loginFinalRedirection(townscupUser);
+      await loginFinalRedirection(townscupUser, dummyAuthContext);
     });
   }
 
-  const setDummyAuthContext = (key, value) => {
-    dummyAuthContext[key] = value;
-  }
-
-  const wholeSignUpProcessComplete = async (userData) => {
+  const wholeSignUpProcessComplete = async (userData, dummyAuthContext) => {
     const entity = { ...dummyAuthContext?.entity };
     const tokenData = dummyAuthContext?.tokenData;
     entity.auth.user = { ...userData }
@@ -136,22 +126,24 @@ export default function WelcomeScreen({ navigation }) {
     navigation.navigate('AddBirthdayScreen')
   }
 
-  const signUpWithQB = (response) => {
+  const signUpWithQB = (response, dummyAuth) => {
+    const dummyAuthContext = { ...dummyAuth };
     let qbEntity = { ...dummyAuthContext?.entity };
     QBlogin(qbEntity?.uid, response).then(async (res) => {
       qbEntity = { ...qbEntity, QB: { ...res?.user, connected: true, token: res?.session?.token } }
       QBconnectAndSubscribe(qbEntity)
-      setDummyAuthContext('entity', { ...qbEntity });
-      await wholeSignUpProcessComplete(response);
+      dummyAuthContext.entity = qbEntity
+      await wholeSignUpProcessComplete(response, dummyAuthContext);
     }).catch(async (error) => {
       console.log('QB Login Error : ', error.message);
       qbEntity = { ...qbEntity, QB: { connected: false } }
-      setDummyAuthContext('entity', qbEntity)
-      await wholeSignUpProcessComplete(response);
+      dummyAuthContext.entity = qbEntity
+      await wholeSignUpProcessComplete(response, dummyAuthContext);
     });
   }
 
-  const signUpToTownsCup = async (userDetail) => {
+  const signUpToTownsCup = async (userDetail, dummyAuth) => {
+    const dummyAuthContext = { ...dummyAuth }
     setloading(true);
     const data = {
       first_name: userDetail?.first_name,
@@ -164,9 +156,9 @@ export default function WelcomeScreen({ navigation }) {
       authEntity.obj = createdUser?.payload
       authEntity.auth.user = createdUser?.payload
       authEntity.role = 'user'
-      setDummyAuthContext('entity', authEntity);
-      setDummyAuthContext('user', createdUser?.payload);
-      signUpWithQB(createdUser?.payload);
+      dummyAuthContext.entity = authEntity
+      dummyAuthContext.user = createdUser?.payload;
+      signUpWithQB(createdUser?.payload, dummyAuthContext);
     }).catch((e) => {
       setloading(false);
       setTimeout(() => {
@@ -174,6 +166,7 @@ export default function WelcomeScreen({ navigation }) {
       }, 10);
     });
   };
+
   const checkUserIsRegistratedOrNotWithTownscup = (email) => new Promise((resolve) => {
     checkTownscupEmail(encodeURIComponent(email)).then(() => {
       resolve(true);
@@ -183,7 +176,7 @@ export default function WelcomeScreen({ navigation }) {
   })
 
   const socialSignInSignUp = (authResult, message, extraData = {}) => {
-    console.log(message, authResult);
+    const dummyAuthContext = { ...authContext }
     const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged((user) => {
       console.log('User :-', user);
       if (user) {
@@ -202,7 +195,7 @@ export default function WelcomeScreen({ navigation }) {
             }
             if (userEsxist) {
               apiCall(userConfig).then(async (response) => {
-                const entity = {
+                dummyAuthContext.entity = {
                   uid: user.uid,
                   role: 'user',
                   obj: response.payload,
@@ -211,8 +204,7 @@ export default function WelcomeScreen({ navigation }) {
                     user: response.payload,
                   },
                 }
-                setDummyAuthContext('entity', entity);
-                QBInitialLogin(entity, response?.payload);
+                QBInitialLogin(dummyAuthContext, response?.payload);
               }).catch((error) => {
                 console.log('Login Error', error)
                 setloading(false);
@@ -236,7 +228,7 @@ export default function WelcomeScreen({ navigation }) {
                 userDetail.last_name = 'Cup';
               }
               userDetail.email = user.email;
-              signUpToTownsCup(userDetail)
+              signUpToTownsCup(userDetail, dummyAuthContext)
             }
           }).catch((error) => {
             console.log('Check TC Email Error', error)
