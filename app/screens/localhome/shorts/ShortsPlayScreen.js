@@ -1,26 +1,47 @@
 import React, {
- useEffect, useRef, useState, useCallback,
+ useEffect, useRef, useState, useCallback, useLayoutEffect,
  } from 'react';
-import { View, FlatList, StatusBar } from 'react-native';
+import {
+ View, FlatList, StatusBar, TouchableWithoutFeedback, Image, StyleSheet,
+} from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 
 import ShortsVideoView from '../../../components/shorts/ShortsVideoView';
+import images from '../../../Constants/ImagePath';
 
 const viewabilityConfig = {
   itemVisiblePercentThreshold: 50,
 };
 
-function ShortsPlayScreen({ route }) {
+function ShortsPlayScreen({ route, navigation }) {
   const { caller_id, currentPage, shorts } = route?.params;
 
   const carouselRef = useRef(0);
 
   const [, setCurrentAssetIndex] = useState(0);
   const [curruentViewIndex, setCurruentViewIndex] = useState(0);
+  const [closeButtonVisible, setCloseButtonVisible] = useState(false);
   const [shortsData, setShortsData] = useState([]);
   const isFocused = useIsFocused();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (closeButtonVisible ? (
+
+        <TouchableWithoutFeedback style={styles.mainContainerStyle} onPress={() => {
+          setCloseButtonVisible(false)
+        }}>
+          <Image
+            source={images.menuClose}
+            style={styles.imageStyle}
+            resizeMode={'contain'}
+          />
+        </TouchableWithoutFeedback>
+      ) : null),
+    });
+  }, [closeButtonVisible, navigation]);
 
   useEffect(() => {
     setShortsData(shorts);
@@ -44,14 +65,16 @@ function ShortsPlayScreen({ route }) {
     }
   }, [isFocused]);
 
-  const renderShortsVideo = ({ item: multiAttachItem, index }) => (
+  const renderShortsVideo = useCallback(({ item: multiAttachItem, index }) => (
     <ShortsVideoView
+      onclosePress={handleCloseButton}
+      isClosed={closeButtonVisible}
       multiAttachItem={multiAttachItem}
       index={index}
       caller_id={caller_id}
       curruentViewIndex={curruentViewIndex}
     />
-  );
+  ), [caller_id, closeButtonVisible, curruentViewIndex]);
 
   const onViewableItemsChanged = useCallback(({ viewableItems }) => {
     if (viewableItems && viewableItems.length > 0) {
@@ -59,6 +82,10 @@ function ShortsPlayScreen({ route }) {
     }
   }, []);
   const keyExtractor = useCallback((item, index) => index.toString(), [])
+
+const handleCloseButton = (toggleValue) => {
+setCloseButtonVisible(toggleValue)
+}
 
   return (
     <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
@@ -88,5 +115,14 @@ function ShortsPlayScreen({ route }) {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  imageStyle: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
+    tintColor: colors.whiteColor,
+    marginRight: 15,
+  },
 
+});
 export default ShortsPlayScreen;

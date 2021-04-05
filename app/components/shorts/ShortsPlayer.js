@@ -48,7 +48,7 @@ const ShortsPlayer = ({
             backgroundColor: 'black',
             ...videoStyle,
           }}
-          resizeMode={resizeMode}
+           resizeMode={resizeMode}
           onLoad={onLoad}
         />}
       </View>

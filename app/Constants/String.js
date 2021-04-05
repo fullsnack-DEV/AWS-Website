@@ -583,6 +583,7 @@ hiringPlayersPlaceholderText: 'There is no Hiring team.\nWould you like to start
 lookingTeamsPlaceholderText: 'There is no Player.\nWould you like to start registering players?',
 refereesPlaceholderText: 'There is no referee.\nWould you like to start registering Referees?',
 scorekeepersPlaceholderText: 'There is no Scorekeeper.\nWould you like to start registering\nScorekeeper?',
-
+taggedPeopleText: 'Tagged People',
+taggedMatchesText: 'Tagged matches',
 };
 export default strings;
