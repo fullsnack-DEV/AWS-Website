@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 import React, {
   useEffect,
@@ -5,6 +6,7 @@ import React, {
   useState,
   useCallback,
   useContext,
+  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -22,6 +24,7 @@ import {
   TextInput,
   Keyboard,
   ScrollView,
+  SectionList,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -45,8 +48,13 @@ import ShortsPlayer from './ShortsPlayer';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
 import WriteCommentItems from '../newsFeed/WriteCommentItems';
+import TeamClubLeagueView from '../Home/TeamClubLeagueView';
 
 import ActivityLoader from '../loader/ActivityLoader';
+import TaggedEntityView from './TaggedEntityView';
+import strings from '../../Constants/String';
+
+// let bottomViewHeight = 0
 
 function ShortsVideoView({
   multiAttachItem,
@@ -54,7 +62,10 @@ function ShortsVideoView({
   navigation,
   caller_id,
   curruentViewIndex,
+  onclosePress,
+  isClosed,
 }) {
+  console.log('isClosed', isClosed);
   const shareActionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [topDesc, setTopDesc] = useState(false);
@@ -80,9 +91,16 @@ function ShortsVideoView({
   const videoItem = JSON.parse(multiAttachItem?.object)?.attachments[0];
   const profileItem = multiAttachItem?.actor?.data;
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
-  const taggedItem = JSON.parse(multiAttachItem?.object)?.taggedData || [];
+  const taggedItems = JSON.parse(multiAttachItem?.object)?.format_tagged_data || [];
+  const entityTagList = taggedItems.filter(
+    (e) => e?.entity_type === 'player'
+      || e?.entity_type === 'team'
+      || e?.entity_type === 'club'
+      || e?.entity_type === 'user',
+  );
+  const gameTagList = taggedItems.filter((e) => e?.entity_type === 'game');
 
-  const [bottomViewHeight, setBottomViewHeight] = useState();
+  const [bottomViewHeight, setBottomViewHeight] = useState(0);
 
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
@@ -173,6 +191,8 @@ function ShortsVideoView({
     [authContext?.entity?.uid, navigation],
   );
 
+  const getTagText = () => {};
+
   useEffect(() => {
     const entity = authContext.entity;
     setCurrentUserDetail(entity.obj || entity.auth.user);
@@ -206,18 +226,117 @@ function ShortsVideoView({
     </View>
   );
 
-  const onLayout = (event) => {
+  const onLayout = useCallback((event) => {
     const { height } = event.nativeEvent.layout;
     setBottomViewHeight(height);
+  }, []);
+
+  const renderEntityTaggedItems = useCallback(
+    ({ item }) => {
+      let teamIcon = '';
+      let teamImagePH = '';
+      if (item?.entity_type === 'team') {
+        teamIcon = images.myTeams;
+        teamImagePH = images.team_ph;
+      } else if (item?.entity_type === 'club') {
+        teamIcon = images.myClubs;
+        teamImagePH = images.club_ph;
+      } else if (item?.entity_type === 'league') {
+        teamIcon = images.myLeagues;
+        teamImagePH = images.leaguePlaceholder;
+      } else if (item?.entity_type === 'player') {
+        teamImagePH = images.profilePlaceHolder;
+      }
+      return (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            onclosePress(!isClosed);
+          }}>
+          <TaggedEntityView
+            onProfilePress={() => {
+              navigation.push('HomeScreen', {
+                uid: item?.entity_id,
+                role: ['user', 'player']?.includes(item?.entity_type)
+                  ? 'user'
+                  : item?.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              });
+            }}
+            teamImage={
+              item?.entity_data?.thumbnail !== ''
+                ? { uri: item?.entity_data?.thumbnail }
+                : teamImagePH
+            }
+            teamTitle={item?.entity_data?.full_name}
+            teamIcon={teamIcon}
+            teamCityName={`${item?.entity_data?.city}`}
+          />
+        </TouchableWithoutFeedback>
+      );
+    },
+    [isClosed, navigation, onclosePress],
+  );
+
+  const renderMatchTaggedItems = useCallback(
+    ({ item }) => {
+      let teamIcon = '';
+      let teamImagePH = '';
+      if (item?.entity_type === 'team') {
+        teamIcon = images.myTeams;
+        teamImagePH = images.team_ph;
+      } else if (item?.entity_type === 'club') {
+        teamIcon = images.myClubs;
+        teamImagePH = images.club_ph;
+      } else if (item?.entity_type === 'league') {
+        teamIcon = images.myLeagues;
+        teamImagePH = images.leaguePlaceholder;
+      } else if (item?.entity_type === 'player') {
+        teamImagePH = images.profilePlaceHolder;
+      }
+      return (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            onclosePress(!isClosed);
+          }}>
+          <TaggedEntityView
+            onProfilePress={() => {
+              navigation.push('HomeScreen', {
+                uid: item?.entity_id,
+                role: ['user', 'player']?.includes(item?.entity_type)
+                  ? 'user'
+                  : item?.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              });
+            }}
+            teamImage={
+              item?.entity_data?.thumbnail !== ''
+                ? { uri: item?.entity_data?.thumbnail }
+                : teamImagePH
+            }
+            teamTitle={item?.entity_data?.full_name}
+            teamIcon={teamIcon}
+            teamCityName={`${item?.entity_data?.city}`}
+          />
+        </TouchableWithoutFeedback>
+      );
+    },
+    [isClosed, navigation, onclosePress],
+  );
+
+  const renderSeparator = ({ section }) => {
+    if (section.title !== strings.taggedMatchesText) {
+      return <View style={styles.saperatorLine} />;
+    }
+    return null;
   };
 
   return (
     <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
-      <View
-        style={styles.mainViewContainer}>
+      <View style={styles.mainViewContainer}>
         {!hideButton && (
-          <View
-            style={styles.playPauseContainer}>
+          <View style={styles.playPauseContainer}>
             <Image
               source={!isPlay ? images.gamePause : images.gameStart}
               resizeMode={'contain'}
@@ -258,107 +377,157 @@ function ShortsVideoView({
 
         <LinearGradient
           colors={[colors.blackLightOpacityColor, colors.blackOpacityColor]}
-          style={[styles.overlayStyle, { height: bottomViewHeight + 120 }]}>
-          <View style={{ flex: 1 }}>
+          style={[
+            styles.overlayStyle,
+            {
+              height: isClosed
+                ? Dimensions.get('window').height - 70
+                : bottomViewHeight + 120,
+            },
+          ]}>
+          <View
+            style={{
+              flex: 1,
+            }}>
             <ScrollView
-            scrollEventThrottle={100}
+              scrollEventThrottle={100}
               nestedScrollEnabled={true}
               style={
-                topDesc
+                isClosed
                   ? {
+                height: bottomViewHeight > Dimensions.get('window').height
+                  ? Dimensions.get('window').height
+                  : bottomViewHeight,
+}
+                  : {
+                      width: '100%',
                       position: 'absolute',
                       height:
-                        bottomViewHeight > Dimensions.get('window').height - 130
-                          ? Dimensions.get('window').height - 130
+                        bottomViewHeight > Dimensions.get('window').height - 165
+                          ? Dimensions.get('window').height - 165
                           : bottomViewHeight,
                       bottom: 0,
-                    }
-                  : {
-                      position: 'absolute',
-                      bottom: 0,
-                      flex: 1,
               }
               }>
-              <View onLayout={onLayout}>
-                <View style={styles.mainContainer}>
-                  <TouchableWithoutFeedback
-                    onPress={() => onProfilePress(multiAttachItem)}>
-                    <View style={styles.backgroundProfileView}>
-                      <Image
-                        style={styles.background}
-                        source={
-                          !profileItem?.thumbnail
-                            ? images.profilePlaceHolder
-                            : { uri: profileItem?.thumbnail }
-                        }
-                        resizeMode={'cover'}
-                      />
+              {!isClosed ? (
+                <View onLayout={onLayout}>
+                  <View>
+                    <View style={styles.mainContainer}>
+                      <TouchableWithoutFeedback
+                        onPress={() => onProfilePress(multiAttachItem)}>
+                        <View style={styles.backgroundProfileView}>
+                          <Image
+                            style={styles.background}
+                            source={
+                              !profileItem?.thumbnail
+                                ? images.profilePlaceHolder
+                                : { uri: profileItem?.thumbnail }
+                            }
+                            resizeMode={'cover'}
+                          />
+                        </View>
+                      </TouchableWithoutFeedback>
+                      <View style={styles.userNameView}>
+                        <Text
+                          style={styles.userNameTxt}
+                          onPress={() => onProfilePress(multiAttachItem)}>
+                          {profileItem?.full_name}
+                        </Text>
+                        <Text style={styles.activeTimeAgoTxt}>
+                          {commentPostTimeCalculate(
+                            multiAttachItem?.time,
+                            true,
+                          )}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={() => {
+                          shareActionSheet.current.show();
+                        }}>
+                        <Image
+                          source={images.vertical3Dot}
+                          resizeMode={'contain'}
+                          style={{
+                            height: 22,
+                            width: 22,
+                            tintColor: colors.whiteColor,
+                          }}
+                        />
+                      </TouchableOpacity>
                     </View>
-                  </TouchableWithoutFeedback>
-                  <View style={styles.userNameView}>
-                    <Text
-                      style={styles.userNameTxt}
-                      onPress={() => onProfilePress(multiAttachItem)}>
-                      {profileItem?.full_name}
-                    </Text>
-                    <Text style={styles.activeTimeAgoTxt}>
-                      {commentPostTimeCalculate(multiAttachItem?.time, true)}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      shareActionSheet.current.show();
-                    }}>
-                    <Image
-                      source={images.vertical3Dot}
-                      resizeMode={'contain'}
-                      style={{
-                        height: 22,
-                        width: 22,
-                        tintColor: colors.whiteColor,
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
 
-                {topDesc && (
-                  <View>
-                    <PostDescSection
-                      descriptions={descriptionItem ?? ''}
-                      containerStyle={{ marginHorizontal: 15 }}
-                      descriptionTxt={{ color: colors.whiteColor }}
-                      onReadMorePress={() => setTopDesc(false)}
-                    />
-                    <TagView
-                      source={images.tagGreenImage}
-                      tagText={'matches were tagged'}
-                    />
+                    <View>
+                      {topDesc ? (
+                        <PostDescSection
+                          descriptions={descriptionItem ?? ''}
+                          containerStyle={{ marginHorizontal: 15 }}
+                          descriptionTxt={{ color: colors.whiteColor }}
+                          onReadMorePress={() => setTopDesc(false)}
+                        />
+                      ) : (
+                        <PostDescSection
+                          descriptions={descriptionItem ?? ''}
+                          character={50}
+                          containerStyle={{ marginHorizontal: 12 }}
+                          descriptionTxt={{ color: colors.whiteColor }}
+                          onReadMorePress={() => {
+                            if (descriptionItem.length > 50) {
+                              setTopDesc(true);
+                            } else {
+                              setTopDesc(false);
+                            }
+                          }}
+                        />
+                      )}
+                    </View>
+
+                    <TouchableWithoutFeedback
+                      style={styles.mainContainerStyle}
+                      onPress={() => {
+                        onclosePress(!isClosed);
+                      }}>
+                      <Image
+                        source={images.tagGreenImage}
+                        style={styles.imageStyle}
+                        resizeMode={'contain'}
+                      />
+                      <Text style={styles.tagTextStyle}>
+                        matches were tagged
+                      </Text>
+                    </TouchableWithoutFeedback>
                   </View>
-                )}
-                {!topDesc && (
-                  <View>
-                    <PostDescSection
-                      descriptions={descriptionItem ?? ''}
-                      character={50}
-                      containerStyle={{ marginHorizontal: 12 }}
-                      descriptionTxt={{ color: colors.whiteColor }}
-                      onReadMorePress={() => {
-                        if (descriptionItem.length > 50) {
-                          setTopDesc(true);
-                        } else {
-                          setTopDesc(false);
-                        }
-                      }}
-                    />
-                    <TagView
-                      source={images.tagGreenImage}
-                      tagText={'matches were tagged'}
-                    />
-                  </View>
-                )}
-              </View>
+                </View>
+              ) : (
+                <SectionList
+                  nestedScrollEnabled={true}
+                  ItemSeparatorComponent={renderSeparator}
+                  renderSectionHeader={({ section: { title } }) => {
+                    if (gameTagList.length > 0 && title === strings.taggedMatchesText) {
+                      return <Text style={styles.tagTitle}>{title}</Text>;
+                    }
+                   if (entityTagList.length > 0 && title === strings.taggedPeopleText) {
+                      return <Text style={styles.tagTitle}>{title}</Text>;
+                    }
+                    return null
+                  }}
+                  sections={[
+                    {
+                      title: strings.taggedMatchesText,
+                      data: gameTagList,
+                      renderItem: renderMatchTaggedItems,
+                    },
+                    {
+                      title: strings.taggedPeopleText,
+                      data: entityTagList,
+                      renderItem: renderEntityTaggedItems,
+                    },
+                  ]}
+                  keyExtractor={(item) => item.name + index}
+                />
+              )}
             </ScrollView>
           </View>
+
           <View style={styles.commentShareLikeView}>
             <View
               style={{
@@ -626,6 +795,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   overlayStyle: {
+    width: '100%',
     paddingTop: 15,
     position: 'absolute',
     bottom: 0,
@@ -713,6 +883,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  mainContainerStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginBottom: 10,
+  },
+  imageStyle: {
+    height: 30,
+    width: 30,
+  },
+  tagTextStyle: {
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+  },
+  tagTitle: {
+    fontSize: 20,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    marginLeft: 15,
+    marginBottom: 5,
+  },
+  saperatorLine: {
+    backgroundColor: colors.whiteColor,
+    width: '92%',
+    alignSelf: 'center',
+    height: 1,
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
 
