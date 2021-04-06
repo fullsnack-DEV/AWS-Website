@@ -34,6 +34,7 @@ import { getMyGroups } from '../../api/Groups';
 import AuthContext from '../../auth/context';
 import { getSearchData, getTaggedEntityData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
+import TCGameCard from '../../components/TCGameCard';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -326,6 +327,7 @@ export default function WritePostScreen({ navigation, route }) {
   const ItemSeparatorComponent = useCallback(() => (
     <View style={ { width: wp('1%') } } />
   ), [])
+
   const renderSelectedImageList = useMemo(() => selectImage?.length > 0 && (
     <FlatList
           data={ selectImage }
@@ -366,13 +368,14 @@ export default function WritePostScreen({ navigation, route }) {
       });
   }, [selectImage])
 
-  const onSelectMatch = (selectedMatch) => {
+  const onSelectMatch = useCallback((selectedMatch) => {
     const tagsArray = []
       if (selectedMatch?.length > 0) {
         selectedMatch.map((gameTagItem) => {
           const entity_data = {}
           const jsonData = { entity_type: 'game', entity_id: gameTagItem?.game_id }
           jsonData.entity_data = getTaggedEntityData(entity_data, gameTagItem, 'game')
+          console.log('PARSE', jsonData.entity_data)
           const isExist = tagsOfEntity.some((item) => item?.entity_id === gameTagItem?.game_id)
           if (!isExist) tagsArray.push(jsonData)
           textInputRef.current.focus();
@@ -381,14 +384,45 @@ export default function WritePostScreen({ navigation, route }) {
         setLetModalVisible(false)
         setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
       }
-  }
+  }, [tagsOfEntity])
 
   const onSelectTagButtonPress = useCallback(() => {
     navigation.navigate('UserTagSelectionListScreen', {
       comeFrom: 'WritePostScreen',
       onSelectMatch,
     });
-  }, [navigation]);
+  }, [navigation, onSelectMatch]);
+
+  const removeTaggedGame = useCallback((taggedGame) => {
+    const gData = _.cloneDeep(tagsOfEntity)
+    const filterData = gData?.filter((item) => item?.entity_id !== taggedGame?.entity_id)
+    setTagsOfEntity([...filterData]);
+  }, [tagsOfEntity])
+
+  const renderSelectedGame = useCallback(({ item }) => (
+    <View style={{ marginRight: 15 }}>
+      <TCGameCard
+            onPress={() => removeTaggedGame(item)}
+            isSelected={true}
+            data={item?.entity_data}
+            showSelectionCheckBox={true}
+        />
+    </View>
+      ), [removeTaggedGame])
+
+  const renderGameTags = useMemo(() => (
+    <FlatList
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        pagingEnabled={true}
+        horizontal={true}
+        data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
+        renderItem={renderSelectedGame}
+        keyExtractor={(item) => item?.entity_id }
+    />
+    ), [renderSelectedGame, tagsOfEntity])
 
   return (
     <KeyboardAvoidingView
@@ -426,6 +460,7 @@ export default function WritePostScreen({ navigation, route }) {
 
         {renderUrlPreview}
         {renderSelectedImageList}
+        {renderGameTags}
         {renderModalTagEntity}
       </View>
       <SafeAreaView style={ styles.bottomSafeAreaStyle }>

@@ -8,6 +8,7 @@ import fonts from '../../Constants/Fonts'
 function TagView({
   source,
   tagText,
+  tagTextStyle,
 }) {
   return (
     <View style={styles.mainContainerStyle}>
@@ -16,7 +17,7 @@ function TagView({
         style={styles.imageStyle}
         resizeMode={'contain'}
       />
-      <Text style={styles.tagTextStyle}>{tagText}</Text>
+      <Text style={{ ...styles.tagTextStyle, ...tagTextStyle }}>{tagText}</Text>
     </View>
   );
 }

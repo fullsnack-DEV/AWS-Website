@@ -38,6 +38,7 @@ import { getUserList } from '../../api/Users';
 import { getMyGroups } from '../../api/Groups';
 import { getSearchData, getTaggedEntityData } from '../../utils';
 import { getPickedData, MAX_UPLOAD_POST_ASSETS } from '../../utils/imageAction';
+import TCGameCard from '../../components/TCGameCard';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -292,6 +293,81 @@ const EditPostScreen = ({
     });
   }, [selectImage]);
 
+  const onSelectMatch = useCallback((selectedMatch) => {
+    const tagsArray = []
+    if (selectedMatch?.length > 0) {
+      selectedMatch.map((gameTagItem) => {
+        const entity_data = {}
+        const jsonData = { entity_type: 'game', entity_id: gameTagItem?.game_id }
+        jsonData.entity_data = getTaggedEntityData(entity_data, gameTagItem, 'game')
+        const isExist = tagsOfEntity.some((item) => item?.entity_id === gameTagItem?.game_id)
+        if (!isExist) tagsArray.push(jsonData)
+        textInputRef.current.focus();
+        return null;
+      })
+      setLetModalVisible(false)
+      setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+    }
+  }, [tagsOfEntity])
+
+  const removeTaggedGame = useCallback((taggedGame) => {
+    const gData = _.cloneDeep(tagsOfEntity)
+    const filterData = gData?.filter((item) => item?.entity_id !== taggedGame?.entity_id)
+    setTagsOfEntity([...filterData]);
+  }, [tagsOfEntity])
+
+  const renderSelectedGame = useCallback(({ item }) => (
+    <View style={{ marginRight: 15 }}>
+      <TCGameCard
+            onPress={() => removeTaggedGame(item)}
+            isSelected={true}
+            data={item?.entity_data}
+            showSelectionCheckBox={true}
+        />
+    </View>
+  ), [removeTaggedGame])
+
+  const renderGameTags = useMemo(() => (
+    <FlatList
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 15, marginVertical: 15 }}
+        pagingEnabled={true}
+        horizontal={true}
+        data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
+        renderItem={renderSelectedGame}
+        keyExtractor={(item) => item?.entity_id }
+    />
+  ), [renderSelectedGame, tagsOfEntity])
+
+  const renderSelectedImageList = useMemo(() => selectImage.length > 0 && (
+    <FlatList
+                data={selectImage}
+                horizontal={true}
+                // scrollEnabled={true}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item, index }) => (
+                  <EditSelectedImages
+                        data={item}
+                        itemNumber={index + 1}
+                        totalItemNumber={selectImage.length}
+                        onItemPress={() => {
+                          const imgs = [...selectImage];
+                          const idx = imgs.indexOf(item);
+                          if (idx > -1) {
+                            imgs.splice(idx, 1);
+                          }
+                          setSelectImage(imgs);
+                        }}
+                    />
+                )}
+                ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
+                style={{ paddingTop: 10, marginHorizontal: wp('3%') }}
+                keyExtractor={(item, index) => index.toString()}
+            />
+  ), [selectImage])
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -317,7 +393,7 @@ const EditPostScreen = ({
                 const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
                 const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
                 format_tagged_data.map(async (item, index) => {
-                  const isThere = searchText.includes(item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''))
+                  const isThere = item?.entity_type !== 'game' ? searchText.includes(item?.entity_data?.tagged_formatted_name?.replace(/ /g, '')) : true;
                   if (!isThere) format_tagged_data.splice(index, 1);
                   return null;
                 })
@@ -368,34 +444,10 @@ const EditPostScreen = ({
           </ParsedText>
         </TextInput>
         {renderUrlPreview}
+        {renderSelectedImageList}
+        {renderGameTags}
         {renderModalTagEntity}
 
-        {selectImage.length > 0 && (
-          <FlatList
-            data={selectImage}
-            horizontal={true}
-            // scrollEnabled={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <EditSelectedImages
-                data={item}
-                itemNumber={index + 1}
-                totalItemNumber={selectImage.length}
-                onItemPress={() => {
-                  const imgs = [...selectImage];
-                  const idx = imgs.indexOf(item);
-                  if (idx > -1) {
-                    imgs.splice(idx, 1);
-                  }
-                  setSelectImage(imgs);
-                }}
-              />
-            )}
-            ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
-            style={{ paddingTop: 10, marginHorizontal: wp('3%') }}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        )}
       </ScrollView>
 
       <SafeAreaView style={styles.bottomSafeAreaStyle}>
@@ -419,7 +471,10 @@ const EditPostScreen = ({
               source={images.tagImage}
               imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }}
               onImagePress={() => {
-                navigation.navigate('UserTagSelectionListScreen', { comeFrom: 'EditPostScreen' });
+                navigation.navigate('UserTagSelectionListScreen', {
+                  comeFrom: 'EditPostScreen',
+                  onSelectMatch,
+                });
               }}
             />
           </View>

@@ -23,9 +23,10 @@ const AllInOneGallery = ({
     entity_id,
     entity_type,
     onAddPhotoPress,
+    showSubTabs = true,
  }, galleryRef) => {
     const authContext = useContext(AuthContext);
-    const [galleryType, setGalleryType] = useState(GALLERY_TYPE.ALL)
+    const [galleryType, setGalleryType] = useState(GALLERY_TYPE.FROMME)
     const [galleryData, setGalleryData] = useState([]);
     const [isNextDataLoading, setIsNextDataLoading] = useState(true);
 
@@ -89,7 +90,7 @@ const AllInOneGallery = ({
         }
         return <View />
     }, [isAdmin, onAddPhotoPress])
-
+    const finalGalleryData = isAdmin ? ['0', ...galleryData] : galleryData
     return (
       <View>
         <View style={{
@@ -99,7 +100,7 @@ const AllInOneGallery = ({
                 borderBottomWidth: 1,
                 marginBottom: 15,
         }}>
-          {[GALLERY_TYPE.ALL, GALLERY_TYPE.FROMME, GALLERY_TYPE.TAGGED].map((item) => (
+          {showSubTabs && [GALLERY_TYPE.FROMME, GALLERY_TYPE.TAGGED].map((item) => (
             <TouchableOpacity key={item} style={{ padding: 10 }} onPress={() => {
                 setGalleryData([]);
                 setGalleryType(item)
@@ -115,7 +116,8 @@ const AllInOneGallery = ({
 
         </View>
         <FlatList
-                data={['0', ...galleryData]}
+                ListEmptyComponent={<Text style={{ textAlign: 'center', fontFamily: fonts.RLight, fontSize: 16 }}>No Gallery Found</Text>}
+                data={finalGalleryData}
                 bounces={false}
                 renderItem={allGalleryRenderItem}
                 numColumns={3}

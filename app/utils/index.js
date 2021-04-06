@@ -4,6 +4,7 @@ import {
 
 import AsyncStorage from '@react-native-community/async-storage';
 import _ from 'lodash';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import strings from '../Constants/String'
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
@@ -462,31 +463,23 @@ export const validURL = (str) => {
 }
 
 export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) => {
-  const entity = { ...entity_raw_data }
+  let entity = { ...entity_raw_data }
   if (entity_type === 'game') {
-    entity.home_team = {}
-    entity.away_team = {}
-    entity.venue = {}
-    if (entity_item?.status) entity.status = entity_item?.status
-    if (entity_item?.start_datetime) entity.start_datetime = entity_item?.start_datetime
-    if (entity_item?.end_datetime) entity.end_datetime = entity_item?.end_datetime
-    if (entity_item?.end_datetime) entity.end_datetime = entity_item?.end_datetime
-    if (entity_item?.userChallenge) entity.userChallenge = entity_item?.userChallenge
-    if (entity_item?.singlePlayerGame) entity.singlePlayerGame = entity_item?.singlePlayerGame
-    if (entity_item?.home_team?.thumbnail) entity.home_team.thumbnail = entity_item?.home_team?.thumbnail
-    if (entity_item?.home_team?.group_name) entity.home_team.group_name = entity_item?.home_team?.group_name
-    if (entity_item?.away_team?.full_name) entity.away_team.full_name = entity_item?.away_team?.full_name
-    if (entity_item?.away_team?.thumbnail) entity.away_team.thumbnail = entity_item?.away_team?.thumbnail
-    if (entity_item?.away_team?.group_name) entity.away_team.group_name = entity_item?.away_team?.group_name
-    if (entity_item?.home_team?.full_name) entity.home_team.full_name = entity_item?.home_team?.full_name
-    if (entity_item?.venue?.address) entity.venue.address = entity_item?.venue?.address
-    if (entity_item?.venue?.description) entity.venue.description = entity_item?.venue?.description
+    const pickedEntity = _.pick(entity_item, [
+      'sport', 'status', 'start_datetime', 'end_datetime', 'singlePlayerGame', 'userChallenge',
+      'home_team.thumbnail', 'home_team.group_name', 'home_team.full_name',
+      'away_team.thumbnail', 'away_team.group_name', 'away_team.full_name',
+      'venue.address', 'venue.description',
+    ])
+    entity = { ...entity, ...pickedEntity }
   } else {
-    entity.full_name = ['player', 'user']?.includes(entity_item?.entity_type) ? entity_item?.full_name : entity_item?.group_name
-    if (entity_item?.city) entity.city = entity_item?.city;
-    if (entity_item?.thumbnail) entity.thumbnail = entity_item?.thumbnail;
+    const pickedEntity = _.pick(entity_item, ['group_name', 'full_name', 'city', 'thumbnail']);
+    entity = { ...entity, pickedEntity }
   }
   return entity;
 }
+
+export const getWidth = (isLandscape, portraitWidth, landscapeWidth = portraitWidth) => (isLandscape ? hp(landscapeWidth) : wp(portraitWidth))
+export const getHeight = (isLandscape, portraitHeight, landscapeHeight = portraitHeight) => (isLandscape ? wp(landscapeHeight) : hp(portraitHeight))
 
 export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)
