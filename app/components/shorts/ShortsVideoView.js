@@ -90,6 +90,7 @@ function ShortsVideoView({
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
   const videoItem = JSON.parse(multiAttachItem?.object)?.attachments[0];
+  console.log('Video Item:', videoItem);
   const profileItem = multiAttachItem?.actor?.data;
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
   const taggedItems = JSON.parse(multiAttachItem?.object)?.format_tagged_data || [];
@@ -373,15 +374,18 @@ const getTaggedText = () => {
             containerStyle={{
               ...styles.videoDisplayStyle,
               height: Dimensions.get('window').width * 1.78,
+              marginTop: Dimensions.get('window').height > Dimensions.get('window').width * 1.78 ? ((Dimensions.get('window').width * 1.78) - videoItem?.media_height) / 4 : 0,
               position: 'absolute',
             }}
             videoStyle={{
               ...styles.videoDisplayStyle,
               height: Dimensions.get('window').width * 1.78,
+              marginTop: Dimensions.get('window').height > Dimensions.get('window').width * 1.78 ? ((Dimensions.get('window').width * 1.78) - videoItem?.media_height) / 4 : 0,
             }}
           />
-        </View>
 
+        </View>
+        <Text style={{ backgroundColor: 'red' }}>{(Dimensions.get('window').width * 1.78 - videoItem?.media_height) / 3}</Text>
         <LinearGradient
           colors={[colors.blackLightOpacityColor, colors.blackOpacityColor]}
           style={[
@@ -802,7 +806,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     alignSelf: 'center',
     alignItems: 'center',
-    marginTop: 50,
+
   },
   overlayStyle: {
     width: '100%',
