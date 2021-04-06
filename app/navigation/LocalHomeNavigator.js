@@ -173,7 +173,7 @@ const LocalHomeNavigator = () => (
       name="ShortsPlayScreen"
       component={ShortsPlayScreen}
       options={{
-        title: 'Shorts',
+        title: '',
         headerTintColor: colors.whiteColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -181,7 +181,7 @@ const LocalHomeNavigator = () => (
 
         headerTransparent: true,
         headerStyle: {
-          backgroundColor: colors.blackColor,
+          backgroundColor: colors.yellowColor,
           borderBottomColor: colors.blackColor,
           borderBottomWidth: 0,
         },

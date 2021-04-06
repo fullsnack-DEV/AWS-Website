@@ -8,13 +8,12 @@ import {
 
   TouchableWithoutFeedback,
 } from 'react-native';
-import colors from '../../Constants/Colors';
 import TCInnerLoader from '../TCInnerLoader';
 
 const ShortsPlayer = ({
   sourceURL,
   videoStyle,
-  resizeMode = 'contain',
+  resizeMode = 'stretch',
   containerStyle,
   payPausedPressed,
   playPause,
@@ -44,8 +43,7 @@ const ShortsPlayer = ({
           repeat={true}
           source={{ uri: sourceURL }}
           style={{
-            ...styles.mediaPlayer,
-            backgroundColor: 'black',
+
             ...videoStyle,
           }}
            resizeMode={resizeMode}
@@ -57,10 +55,7 @@ const ShortsPlayer = ({
 };
 
 const styles = StyleSheet.create({
-  mediaPlayer: {
-    backgroundColor: colors.blackColor,
-    justifyContent: 'center',
-  },
+
   loadingContainer: {
     position: 'absolute',
     alignSelf: 'center',

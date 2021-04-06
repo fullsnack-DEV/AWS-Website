@@ -63,7 +63,7 @@ const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack)
             media_height: item.height,
             media_width: item.width,
             duration: imageArray[index].duration,
-            is_short: imageArray[index].duration < 30000,
+            is_short: imageArray[index].duration < 30000 && item.height > item.width,
           }
         } else {
           objAttachment = {

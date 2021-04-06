@@ -1,4 +1,10 @@
 import {
+
+  useState,
+  useCallback,
+
+} from 'react';
+import {
   Platform, Alert, Dimensions, PixelRatio, LayoutAnimation,
 } from 'react-native';
 
@@ -490,3 +496,14 @@ export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) =
 }
 
 export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)
+
+export const useComponentSize = () => {
+  const [componentHeight, setComponentHeight] = useState(0);
+
+  const onLayout = useCallback((event) => {
+    const { height } = event.nativeEvent.layout;
+    setComponentHeight(height);
+  }, []);
+
+  return [componentHeight, onLayout];
+};
