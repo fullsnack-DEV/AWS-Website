@@ -1,37 +1,36 @@
 /* eslint-disable no-useless-escape */
+
 import React, {
-  useState, useContext, useCallback, useMemo,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
-import {
-  StyleSheet, View, Text, FlatList,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
-import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
-import AuthContext from '../../auth/context';
-import TCGameCard from '../TCGameCard';
-import images from '../../Constants/ImagePath';
-import TagView from './TagView';
-import { getGameHomeScreen } from '../../utils/gameUtils';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
+import AuthContext from '../../../auth/context';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
 const tagRegex = /(?!\w)@\w+/gmi
 
-const NewsFeedDescription = ({
+const FeedDescriptionSection = ({
   descriptions,
-  character,
   descriptionTxt,
   descText,
-  containerStyle,
-  tagData = [],
+  tagData,
+  setReadMore,
+  readMore,
   navigation,
+  isLandscape,
 }) => {
   const authContext = useContext(AuthContext);
-  const [readMore, setReadMore] = useState();
+  const [character, setCharacter] = useState(30);
+  const toggleNumberOfLines = useCallback(() => setReadMore(!readMore), [readMore, setReadMore]);
 
-  const toggleNumberOfLines = useCallback(() => setReadMore((val) => !val), []);
-
+  useEffect(() => {
+    if (isLandscape) setCharacter(65)
+    else setCharacter(30)
+  }, [isLandscape])
   const getIndicesOf = useCallback((searchStr, str = descriptions) => {
     const searchStrLen = searchStr.length;
     if (searchStrLen === 0) {
@@ -71,13 +70,13 @@ const NewsFeedDescription = ({
   const renderTagText = useCallback((match, matchData) => {
     // console.log(matchData);
     const startTagIndex = descriptions?.indexOf(matchData?.input?.substr(matchData?.index, descriptions?.length))
-    let color = colors.black;
+    let color = colors.whiteColor;
     const isTagName = tagData?.filter((item) => item?.entity_data?.tagged_formatted_name === match)?.length > 0;
     if (isTagName) color = colors.greeColor;
     return (
       <Text
-          onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-          style={{ ...styles.username, color }}>
+            onPress={() => isTagName && handleNamePress(match, startTagIndex)}
+            style={{ ...styles.username, color }}>
         {match}
       </Text>
     )
@@ -89,54 +88,18 @@ const NewsFeedDescription = ({
     return <Text style={{ color }}>{match?.[0]}</Text>
   }, [])
 
-  const renderSelectedGame = useCallback(({ item }) => (
-    <View style={{ marginRight: 10 }}>
-      <TCGameCard
-          data={item?.entity_data}
-          onPress={() => {
-            const routeName = getGameHomeScreen(item?.entity_data?.sport);
-            navigation.push(routeName, { gameId: item?.entity_id })
-          }}
-      />
-    </View>
-  ), [navigation]);
-
-  const renderGameTags = useMemo(() => {
-    const taggedMatchCount = tagData?.filter((item) => item?.entity_type === 'game')?.length
-    return (
-      <View style={{ marginVertical: 15 }}>
-        {taggedMatchCount > 0 && <TagView
-              tagTextStyle={{ color: colors.greeColor }}
-              source={images.tagGreenImage}
-              tagText={`${taggedMatchCount} game${taggedMatchCount > 1 ? 's were' : ' was'} tagged`}
-          />}
-        <FlatList
-              bounces={false}
-              contentContainerStyle={{ paddingHorizontal: 15 }}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              pagingEnabled={true}
-              horizontal={true}
-              data={tagData?.filter((item) => item?.entity_type === 'game')}
-              renderItem={renderSelectedGame}
-              keyExtractor={(item) => item?.entity_id }
-          />
-      </View>
-    )
-  }, [renderSelectedGame, tagData])
-
-  const renderDescriptions = useMemo(() => descriptions?.length > 0 && (
+  return useMemo(() => descriptions?.length > 0 && (
     <View style={{ paddingHorizontal: 15 }}>
       <Text style={[styles.descText, descText]} numberOfLines={0}>
         <ParsedText
-                  style={[styles.text, descriptionTxt]}
-                  parse={
-                    [
-                      { pattern: tagRegex, renderText: renderTagText },
-                      { pattern: urlRegex, renderText: renderURLText },
-                  ]}
-                  childrenProps={{ allowFontScaling: false }}
-              >
+              style={[styles.text, descriptionTxt]}
+              parse={
+                [
+                  { pattern: tagRegex, renderText: renderTagText },
+                  { pattern: urlRegex, renderText: renderURLText },
+              ]}
+              childrenProps={{ allowFontScaling: false }}
+          >
           {readMore ? descriptions : descriptions.substring(0, character)}
         </ParsedText>
         {descriptions?.length > character && !readMore ? '... ' : ' '}
@@ -144,24 +107,13 @@ const NewsFeedDescription = ({
           <Text onPress={toggleNumberOfLines} style={[styles.descText, descText]}>
             {readMore ? 'less' : 'more'}
           </Text>
-              )}
+          )}
       </Text>
     </View>
-      ),
-   [character, descText, descriptionTxt, descriptions, readMore, renderTagText, renderURLText, toggleNumberOfLines])
-
-  return (
-    <View style={[styles.containerStyle, containerStyle]}>
-      {renderDescriptions}
-      {renderGameTags}
-    </View>
-  );
+  ), [character, descText, descriptionTxt, descriptions, readMore, renderTagText, renderURLText, toggleNumberOfLines]);
 }
 
 const styles = StyleSheet.create({
-  containerStyle: {
-    // paddingHorizontal: 18,
-  },
   descText: {
     color: 'gray',
     fontSize: 12,
@@ -169,6 +121,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
+    color: colors.greeColor,
   },
   text: {
     fontSize: 16,
@@ -176,7 +129,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-
 });
 
-export default NewsFeedDescription;
+export default FeedDescriptionSection;

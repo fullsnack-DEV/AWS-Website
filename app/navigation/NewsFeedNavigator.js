@@ -35,6 +35,23 @@ import MembersProfileScreen from '../screens/account/groupConnections/MembersPro
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import AddCardScreen from '../screens/account/payment/AddCardScreen';
+import SoccerHome from '../screens/game/soccer/SoccerHome';
+import LeaveReview from '../screens/game/soccer/review/leaveReview/LeaveReview';
+import SoccerRecording from '../screens/game/soccer/SoccerRecording';
+import TennisRecording from '../screens/game/tennis/TennisRecording';
+import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
+import SoccerApproveDisapproveConfirmation
+    from '../screens/game/soccer/summary/approveDisapprove/SoccerApproveDisapproveConfirmation';
+import GameDetailRecord from '../screens/game/soccer/GameDetailRecord';
+import TennisHome from '../screens/game/tennis/TennisHome';
+import TennisRecordList from '../screens/game/tennis/TennisRecordList';
+import TennisDeletedRecordScreen from '../screens/game/tennis/TennisDeletedRecordScreen';
+import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
+import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/BookScorekeeper';
+import ScorekeeperBookingDateAndTime
+    from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
+import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 
 const Stack = createStackNavigator();
 
@@ -466,6 +483,166 @@ const NewsFeedNavigator = () => (
             borderBottomWidth: 0.3,
           },
         } }
+      />
+
+    {/*    New */}
+
+    <Stack.Screen
+          name="SoccerHome"
+          component={SoccerHome}
+          options={{
+              tabBarVisible: false,
+              headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="LeaveReview"
+          component={LeaveReview}
+          options={{
+              headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="SoccerRecording"
+          component={SoccerRecording}
+          options={{
+              title: 'Match Records',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="TennisRecording"
+          component={TennisRecording}
+          options={{
+              title: 'Match Records',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="SoccerRecordList"
+          component={SoccerRecordList}
+          options={{
+              title: 'Match Record',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="SoccerApproveDisapproveConfirmation"
+          component={SoccerApproveDisapproveConfirmation}
+          options={{
+              title: 'Match Record',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="GameDetailRecord"
+          component={GameDetailRecord}
+          options={{
+              title: 'Match Record',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    {/* Tennis */}
+    <Stack.Screen
+          name="TennisHome"
+          component={TennisHome}
+          options={{
+              headerShown: false,
+          }}
+      />
+
+    <Stack.Screen
+          name="TennisRecordList"
+          component={TennisRecordList}
+          options={{
+              headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="TennisDeletedRecordScreen"
+          component={TennisDeletedRecordScreen}
+          options={{
+              headerShown: false,
+          }}
+      />
+    {/*  Book A Referee */}
+    <Stack.Screen
+          name="BookReferee"
+          component={BookReferee}
+          options={{
+              headerShown: false,
+          }}
+      />
+
+    {/*  Book A Scorekeeper */}
+    <Stack.Screen
+          name="BookScorekeeper"
+          component={BookScorekeeper}
+          options={{
+              headerShown: false,
+          }}
+      />
+    <Stack.Screen
+          name="ScorekeeperBookingDateAndTime"
+          component={ScorekeeperBookingDateAndTime}
+          options={{
+              headerShown: false,
+          }}
+      />
+
+    <Stack.Screen
+          name="BookScorekeeperSuccess"
+          component={BookScorekeeperSuccess}
+          options={{
+              headerShown: false,
+          }}
+      />
+
+    <Stack.Screen
+          name={'FeedViewScreen'}
+          component={FeedViewScreen}
+          options={{ headerShown: false }}
       />
   </Stack.Navigator>
 );

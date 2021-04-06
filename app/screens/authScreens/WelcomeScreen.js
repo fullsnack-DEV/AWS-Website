@@ -187,13 +187,13 @@ export default function WelcomeScreen({ navigation }) {
             expirationTime: idTokenResult.expirationTime,
           };
           dummyAuthContext.tokenData = token;
-          checkUserIsRegistratedOrNotWithTownscup(user?.email).then((userEsxist) => {
+          checkUserIsRegistratedOrNotWithTownscup(user?.email).then((userExist) => {
             const userConfig = {
               method: 'get',
               url: `${Config.BASE_URL}/users/${user?.uid}`,
               headers: { Authorization: `Bearer ${token?.token}` },
             }
-            if (userEsxist) {
+            if (userExist) {
               apiCall(userConfig).then(async (response) => {
                 dummyAuthContext.entity = {
                   uid: user.uid,
