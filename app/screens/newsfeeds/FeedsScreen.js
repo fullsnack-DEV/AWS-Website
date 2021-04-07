@@ -278,7 +278,7 @@ const FeedsScreen = ({ navigation }) => {
   return (
     <View style={styles.mainContainer}>
       {/* <TCButton title={'d'} onPress={() => { */}
-      {/*  navigation.navigate('FeedViewScreen', { feedItem: postData?.[2] }) */}
+      {/*  navigation.navigate('FeedViewScreen', { feedItem: postData?.[0] }) */}
       {/* }}/> */}
       <ActivityLoader visible={loading} />
       {renderTopHeader}

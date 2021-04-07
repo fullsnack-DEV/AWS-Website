@@ -28,6 +28,7 @@ import apiCall from '../../utils/apiCall';
 import { QBconnectAndSubscribe, QBlogin } from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
 import { checkTownscupEmail, createUser } from '../../api/Users';
+import { getHitSlop } from '../../utils/index';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
 export default function WelcomeScreen({ navigation }) {
@@ -420,6 +421,7 @@ export default function WelcomeScreen({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
+              hitSlop={getHitSlop(15)}
             onPress={ () => navigation.navigate('LoginScreen') }
             style={ styles.alreadyView }>
             <Text style={ styles.alreadyMemberText }>{strings.alreadyMember}</Text>

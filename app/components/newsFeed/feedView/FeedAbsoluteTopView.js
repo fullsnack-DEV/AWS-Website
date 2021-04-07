@@ -1,13 +1,13 @@
 import React, { memo, useCallback, useContext } from 'react';
 import {
-    Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
+    Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import { getHitSlop, getWidth } from '../../../utils';
+import { getHeight, getHitSlop, getWidth } from '../../../utils';
 import { commentPostTimeCalculate } from '../../../Constants/LoaderImages';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -15,7 +15,7 @@ import FeedDescriptionSection from './FeedDescriptionSection';
 
 const FeedAbsoluteTopView = ({
     feedItem = {},
-    isLandScape,
+    isLandscape,
     readMore,
     setReadMore,
     navigation,
@@ -38,15 +38,14 @@ const FeedAbsoluteTopView = ({
 
     return (
       <SafeAreaView style={{
- position: 'absolute', top: 0, bottom: 0, backgroundColor: readMore ? 'rgba(0,0,0,0.4)' : 'transparent',
+ position: 'absolute', top: 0, ...(readMore && { bottom: 0 }), backgroundColor: readMore ? 'rgba(0,0,0,0.6)' : 'transparent',
       }}>
         <View
-                colors={[colors.blackColor, colors.whiteColor]}
                 style={{
                     paddingHorizontal: 15,
                     paddingVertical: 15,
                     flexDirection: 'row',
-                    width: getWidth(isLandScape, 100),
+                    width: getWidth(isLandscape, 100),
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }}>
@@ -86,19 +85,35 @@ const FeedAbsoluteTopView = ({
             </Text>
           </View>
         </View>
-        {readMore && (
-          <TouchableOpacity activeOpacity={1} onPress={() => setReadMore(!readMore)} style={{ flex: 1 }}>
-            <FeedDescriptionSection
+
+        {(!readMore && isLandscape) && <FeedDescriptionSection
+              readMore={readMore}
+              setReadMore={setReadMore}
+              navigation={navigation}
+              tagData={feedSubItem?.format_tagged_data}
+              descriptions={feedSubItem?.text}
+              isLandscape={isLandscape}
+              descriptionTxt={{ color: colors.whiteColor }}
+          />}
+
+        {readMore && <View style={{ height: getHeight(isLandscape, 65, 40), paddingVertical: 15 }}>
+          <ScrollView
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}>
+            <TouchableOpacity activeOpacity={1} onPress={() => setReadMore(!readMore)}>
+              <FeedDescriptionSection
                       readMore={readMore}
                       setReadMore={setReadMore}
                       navigation={navigation}
                       tagData={feedSubItem?.format_tagged_data}
                       descriptions={feedSubItem?.text}
-                      isLandscape={isLandScape}
+                      isLandscape={isLandscape}
                       descriptionTxt={{ color: colors.whiteColor }}
                   />
-          </TouchableOpacity>
-          )}
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+          }
       </SafeAreaView>
     )
 }

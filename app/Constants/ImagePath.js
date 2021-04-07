@@ -298,6 +298,13 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   orangeListIcon: require('../assets/images/orange_list_icon.png'),
   linkCopied: require('../assets/images/linkCopied.png'),
   galleryVideoIcon: require('../assets/images/galleryVideoIcon.png'),
+  videoPauseIcon: require('../assets/images/videoPauseIcon.png'),
+  videoPlayIcon: require('../assets/images/videoPlayIcon.png'),
+  videoFullScreen: require('../assets/images/videoFullScreen.png'),
+  videoMuteSound: require('../assets/images/videoMuteSound.png'),
+  videoNormalScreen: require('../assets/images/videoNormalScreen.png'),
+  videoUnMuteSound: require('../assets/images/videoUnMuteSound.png'),
+  videoThumb: require('../assets/images/videoThumb.png'),
 };
 
 export default images;

@@ -53,7 +53,7 @@ const TCSlider = ({
                 renderRail={renderRail}
                 renderRailSelected={renderRailSelected}
                 onValueChanged={handleValueChange}
-            />
+    />
   )
 }
 

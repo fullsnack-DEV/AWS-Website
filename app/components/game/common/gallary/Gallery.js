@@ -16,7 +16,7 @@ const Gallery = ({
   const authContext = useContext(AuthContext);
   const imageUploadContext = useContext(ImageUploadContext)
   const createPostAfterUpload = useCallback((dataParams) => {
-    createPost(dataParams, authContext)
+    createPost({ ...dataParams, is_gallery: true }, authContext)
         .then(() => {
           if (galleryRef?.current?.refreshGallery) galleryRef.current.refreshGallery();
         })

@@ -9,11 +9,11 @@ const TCZoomableImage = ({
   style,
   onClick = () => {},
 }) => {
-  const [isLoaded, setIsLoaded] = useState(true)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   return (
     <>
-      {isLoaded
+      {!isLoaded
         && <View style={{
           position: 'absolute',
           top: 0,
