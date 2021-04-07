@@ -32,10 +32,10 @@ import {
 } from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 // import ImageZoom from 'react-native-image-pan-zoom';
-
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Utility from '../../utils/index';
 import { createReaction, getReactions } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -47,6 +47,7 @@ import TagView from '../newsFeed/TagView';
 import ShortsPlayer from './ShortsPlayer';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
+import TCGameCard from '../TCGameCard';
 import WriteCommentItems from '../newsFeed/WriteCommentItems';
 import TeamClubLeagueView from '../Home/TeamClubLeagueView';
 
@@ -89,6 +90,7 @@ function ShortsVideoView({
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
   const videoItem = JSON.parse(multiAttachItem?.object)?.attachments[0];
+  console.log('Video Item:', videoItem);
   const profileItem = multiAttachItem?.actor?.data;
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
   const taggedItems = JSON.parse(multiAttachItem?.object)?.format_tagged_data || [];
@@ -100,7 +102,7 @@ function ShortsVideoView({
   );
   const gameTagList = taggedItems.filter((e) => e?.entity_type === 'game');
 
-  const [bottomViewHeight, setBottomViewHeight] = useState(0);
+  const [componentHeight, onLayout] = Utility.useComponentSize();
 
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
@@ -123,8 +125,6 @@ function ShortsVideoView({
       keyboardDidHideListener.current.remove();
     };
   }, []);
-
-  console.log('videoItem:=>', multiAttachItem);
 
   useEffect(() => {
     likeSettings(likeCount, multiAttachItem?.own_reactions);
@@ -209,7 +209,7 @@ function ShortsVideoView({
         Alert.alert('', e.messages);
         setloading(false);
       });
-  }, []);
+  }, [authContext, multiAttachItem?.id]);
 
   let userImage = '';
   if (currentUserDetail && currentUserDetail.thumbnail) {
@@ -226,10 +226,10 @@ function ShortsVideoView({
     </View>
   );
 
-  const onLayout = useCallback((event) => {
-    const { height } = event.nativeEvent.layout;
-    setBottomViewHeight(height);
-  }, []);
+  // const onLayout = useCallback((event) => {
+  //   const { height } = event.nativeEvent.layout;
+  //   setBottomViewHeight(height);
+  // }, []);
 
   const renderEntityTaggedItems = useCallback(
     ({ item }) => {
@@ -279,58 +279,64 @@ function ShortsVideoView({
   );
 
   const renderMatchTaggedItems = useCallback(
-    ({ item }) => {
-      let teamIcon = '';
-      let teamImagePH = '';
-      if (item?.entity_type === 'team') {
-        teamIcon = images.myTeams;
-        teamImagePH = images.team_ph;
-      } else if (item?.entity_type === 'club') {
-        teamIcon = images.myClubs;
-        teamImagePH = images.club_ph;
-      } else if (item?.entity_type === 'league') {
-        teamIcon = images.myLeagues;
-        teamImagePH = images.leaguePlaceholder;
-      } else if (item?.entity_type === 'player') {
-        teamImagePH = images.profilePlaceHolder;
-      }
-      return (
-        <TouchableWithoutFeedback
+    ({ item }) => (
+      <TouchableWithoutFeedback
           onPress={() => {
             onclosePress(!isClosed);
           }}>
-          <TaggedEntityView
-            onProfilePress={() => {
-              navigation.push('HomeScreen', {
-                uid: item?.entity_id,
-                role: ['user', 'player']?.includes(item?.entity_type)
-                  ? 'user'
-                  : item?.entity_type,
-                backButtonVisible: true,
-                menuBtnVisible: false,
-              });
-            }}
-            teamImage={
-              item?.entity_data?.thumbnail !== ''
-                ? { uri: item?.entity_data?.thumbnail }
-                : teamImagePH
-            }
-            teamTitle={item?.entity_data?.full_name}
-            teamIcon={teamIcon}
-            teamCityName={`${item?.entity_data?.city}`}
-          />
-        </TouchableWithoutFeedback>
-      );
-    },
-    [isClosed, navigation, onclosePress],
+        <TCGameCard data={item?.entity_data} cardWidth={'92%'}/>
+      </TouchableWithoutFeedback>
+      ),
+    [isClosed, onclosePress],
   );
 
   const renderSeparator = ({ section }) => {
-    if (section.title !== strings.taggedMatchesText) {
+    if (section.title === strings.taggedPeopleText) {
       return <View style={styles.saperatorLine} />;
+    }
+    if (section.title === strings.taggedMatchesText) {
+      return <View style={styles.saperatorLineGame} />;
     }
     return null;
   };
+
+const getTaggedText = () => {
+  if (entityTagList.length > 0 && gameTagList.length > 0) {
+    if (entityTagList.length > 1 && gameTagList.length > 1) {
+      return `${entityTagList.length} matches and ${entityTagList.length} people were tagged`
+    }
+      if (entityTagList.length === 1 && gameTagList.length > 1) {
+        return `${entityTagList.length} match and ${entityTagList.length} people were tagged`
+      }
+      if (entityTagList.length > 1 && gameTagList.length === 1) {
+        return `${entityTagList.length} matches and ${entityTagList.length} person were tagged`
+      }
+      if (entityTagList.length === 1 && gameTagList.length === 1) {
+        return `${entityTagList.length} match and ${entityTagList.length} person were tagged`
+      }
+  } else {
+    if (entityTagList.length > 0 && gameTagList.length === 0) {
+      if (entityTagList.length > 1 && gameTagList.length === 0) {
+        return `${entityTagList.length} matches were tagged`
+      }
+      if (entityTagList.length === 1 && gameTagList.length === 0) {
+        return `${entityTagList.length} match was tagged`
+      }
+    }
+    if (entityTagList.length === 0 && gameTagList.length > 0) {
+      if (entityTagList.length === 0 && gameTagList.length > 1) {
+        return `${gameTagList.length} people were tagged`
+      }
+      if (entityTagList.length === 0 && gameTagList.length === 1) {
+        return `${gameTagList.length} person was tagged`
+      }
+    }
+    if (entityTagList.length === 0 && gameTagList.length === 0) {
+      return ''
+    }
+  }
+  return ''
+}
 
   return (
     <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
@@ -366,23 +372,28 @@ function ShortsVideoView({
             isLandscape={false}
             sourceURL={videoItem?.thumbnail}
             containerStyle={{
-              ...styles.singleImageDisplayStyle,
+              ...styles.videoDisplayStyle,
+              height: Dimensions.get('window').width * 1.78,
+              marginTop: Dimensions.get('window').height > Dimensions.get('window').width * 1.78 ? ((Dimensions.get('window').width * 1.78) - videoItem?.media_height) / 4 : 0,
               position: 'absolute',
             }}
             videoStyle={{
-              ...styles.singleImageDisplayStyle,
+              ...styles.videoDisplayStyle,
+              height: Dimensions.get('window').width * 1.78,
+              marginTop: Dimensions.get('window').height > Dimensions.get('window').width * 1.78 ? ((Dimensions.get('window').width * 1.78) - videoItem?.media_height) / 4 : 0,
             }}
           />
-        </View>
 
+        </View>
+        <Text style={{ backgroundColor: 'red' }}>{(Dimensions.get('window').width * 1.78 - videoItem?.media_height) / 3}</Text>
         <LinearGradient
           colors={[colors.blackLightOpacityColor, colors.blackOpacityColor]}
           style={[
             styles.overlayStyle,
             {
               height: isClosed
-                ? Dimensions.get('window').height - 70
-                : bottomViewHeight + 120,
+                ? componentHeight + 100
+                : componentHeight + 120,
             },
           ]}>
           <View
@@ -395,17 +406,17 @@ function ShortsVideoView({
               style={
                 isClosed
                   ? {
-                height: bottomViewHeight > Dimensions.get('window').height
+                height: componentHeight > Dimensions.get('window').height
                   ? Dimensions.get('window').height
-                  : bottomViewHeight,
+                  : componentHeight,
 }
                   : {
                       width: '100%',
                       position: 'absolute',
                       height:
-                        bottomViewHeight > Dimensions.get('window').height - 165
+                      componentHeight > Dimensions.get('window').height - 165
                           ? Dimensions.get('window').height - 165
-                          : bottomViewHeight,
+                          : componentHeight,
                       bottom: 0,
               }
               }>
@@ -481,7 +492,7 @@ function ShortsVideoView({
                       )}
                     </View>
 
-                    <TouchableWithoutFeedback
+                    {getTaggedText() !== '' && <TouchableWithoutFeedback
                       style={styles.mainContainerStyle}
                       onPress={() => {
                         onclosePress(!isClosed);
@@ -492,13 +503,14 @@ function ShortsVideoView({
                         resizeMode={'contain'}
                       />
                       <Text style={styles.tagTextStyle}>
-                        matches were tagged
+                        {getTaggedText()}
                       </Text>
-                    </TouchableWithoutFeedback>
+                    </TouchableWithoutFeedback>}
                   </View>
                 </View>
               ) : (
-                <SectionList
+                <View onLayout={onLayout}>
+                  <SectionList
                   nestedScrollEnabled={true}
                   ItemSeparatorComponent={renderSeparator}
                   renderSectionHeader={({ section: { title } }) => {
@@ -524,6 +536,8 @@ function ShortsVideoView({
                   ]}
                   keyExtractor={(item) => item.name + index}
                 />
+                </View>
+
               )}
             </ScrollView>
           </View>
@@ -787,12 +801,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  singleImageDisplayStyle: {
-    height: hp('100%'),
+  videoDisplayStyle: {
     justifyContent: 'center',
-    width: wp('100%'),
+    width: Dimensions.get('window').width,
     alignSelf: 'center',
     alignItems: 'center',
+
   },
   overlayStyle: {
     width: '100%',
@@ -913,6 +927,14 @@ const styles = StyleSheet.create({
     height: 1,
     marginTop: 10,
     marginBottom: 10,
+  },
+  saperatorLineGame: {
+    backgroundColor: 'transparent',
+    width: '92%',
+    alignSelf: 'center',
+    height: 1,
+    marginTop: 8,
+    marginBottom: 8,
   },
 });
 
