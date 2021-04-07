@@ -1,8 +1,5 @@
 import {
 
-  useState,
-  useCallback,
-
 } from 'react';
 import {
   Platform, Alert, Dimensions, PixelRatio, LayoutAnimation,
@@ -489,14 +486,3 @@ export const getWidth = (isLandscape, portraitWidth, landscapeWidth = portraitWi
 export const getHeight = (isLandscape, portraitHeight, landscapeHeight = portraitHeight) => (isLandscape ? wp(landscapeHeight) : hp(portraitHeight))
 
 export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)
-
-export const useComponentSize = () => {
-  const [componentHeight, setComponentHeight] = useState(0);
-
-  const onLayout = useCallback((event) => {
-    const { height } = event.nativeEvent.layout;
-    setComponentHeight(height);
-  }, []);
-
-  return [componentHeight, onLayout];
-};

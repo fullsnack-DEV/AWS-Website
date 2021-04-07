@@ -121,6 +121,11 @@ const images = {
   likeImage: require('../assets/images/like_icon.png'),
   unlikeImage: require('../assets/images/unlike_icon.png'),
 
+  shortComment: require('../assets/images/short_comment.png'),
+  shortShare: require('../assets/images/short_share.png'),
+  shortDisLike: require('../assets/images/short_dislike.png'),
+  shortLike: require('../assets/images/short_like.png'),
+
   checkWhiteLanguage: require('../assets/images/ic_white_check_language.png'),
   mySchedule: require('../assets/images/My_Schedule.png'),
   mySports: require('../assets/images/My_Sports.png'),

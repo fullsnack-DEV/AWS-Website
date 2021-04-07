@@ -68,7 +68,7 @@ function ShortsPlayScreen({ route, navigation }) {
   const renderShortsVideo = useCallback(({ item: multiAttachItem, index }) => (
     <ShortsVideoView
       onclosePress={handleCloseButton}
-      isClosed={closeButtonVisible}
+      isClose={closeButtonVisible}
       multiAttachItem={multiAttachItem}
       index={index}
       caller_id={caller_id}
@@ -102,6 +102,9 @@ setCloseButtonVisible(toggleValue)
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
         keyExtractor={keyExtractor}
+        onMomentumScrollEnd={() => {
+          setCloseButtonVisible(false)
+        }}
         onScrollToIndexFailed={() => {
           const wait = new Promise((resolve) => setTimeout(resolve, 200));
           wait.then(() => {
