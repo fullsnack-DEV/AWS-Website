@@ -1,21 +1,20 @@
 import React, {
- useEffect, useRef, useState, useCallback, useLayoutEffect,
+ useEffect, useRef, useState, useCallback,
  } from 'react';
 import {
- View, FlatList, StatusBar, TouchableWithoutFeedback, Image, StyleSheet,
+ View, FlatList, StatusBar,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 
 import ShortsVideoView from '../../../components/shorts/ShortsVideoView';
-import images from '../../../Constants/ImagePath';
 
 const viewabilityConfig = {
   itemVisiblePercentThreshold: 50,
 };
 
-function ShortsPlayScreen({ route, navigation }) {
+function ShortsPlayScreen({ route }) {
   const { caller_id, currentPage, shorts } = route?.params;
 
   const carouselRef = useRef(0);
@@ -25,23 +24,6 @@ function ShortsPlayScreen({ route, navigation }) {
   const [closeButtonVisible, setCloseButtonVisible] = useState(false);
   const [shortsData, setShortsData] = useState([]);
   const isFocused = useIsFocused();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (closeButtonVisible ? (
-
-        <TouchableWithoutFeedback style={styles.mainContainerStyle} onPress={() => {
-          setCloseButtonVisible(false)
-        }}>
-          <Image
-            source={images.menuClose}
-            style={styles.imageStyle}
-            resizeMode={'contain'}
-          />
-        </TouchableWithoutFeedback>
-      ) : null),
-    });
-  }, [closeButtonVisible, navigation]);
 
   useEffect(() => {
     setShortsData(shorts);
@@ -68,7 +50,6 @@ function ShortsPlayScreen({ route, navigation }) {
   const renderShortsVideo = useCallback(({ item: multiAttachItem, index }) => (
     <ShortsVideoView
       onclosePress={handleCloseButton}
-      isClose={closeButtonVisible}
       multiAttachItem={multiAttachItem}
       index={index}
       caller_id={caller_id}
@@ -118,14 +99,5 @@ setCloseButtonVisible(toggleValue)
     </View>
   );
 }
-const styles = StyleSheet.create({
-  imageStyle: {
-    height: 15,
-    width: 15,
-    resizeMode: 'contain',
-    tintColor: colors.whiteColor,
-    marginRight: 15,
-  },
 
-});
 export default ShortsPlayScreen;

@@ -26,6 +26,8 @@ import {
   ScrollView,
   SectionList,
 } from 'react-native';
+import Modal from 'react-native-modal';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -35,6 +37,8 @@ import ActionSheet from 'react-native-actionsheet';
 import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import { stubTrue } from 'lodash';
+import { color } from 'react-native-reanimated';
 import * as Utility from '../../utils/index';
 import { createReaction, getReactions } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
@@ -56,6 +60,8 @@ import TaggedEntityView from './TaggedEntityView';
 import strings from '../../Constants/String';
 
 // let bottomViewHeight = 0
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 
 function ShortsVideoView({
   multiAttachItem,
@@ -64,9 +70,7 @@ function ShortsVideoView({
   caller_id,
   curruentViewIndex,
   onclosePress,
-  isClose,
 }) {
-  console.log('isClosed', isClose);
   const shareActionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [topDesc, setTopDesc] = useState(false);
@@ -91,7 +95,7 @@ function ShortsVideoView({
   const [commentData, setCommentData] = useState([]);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
-  const [isClosed, setIsClosed] = useState(isClose);
+  const [isClosed, setIsClosed] = useState(false);
 
   const videoItem = JSON.parse(multiAttachItem?.object)?.attachments[0];
   console.log('Video Item:', videoItem);
@@ -133,10 +137,6 @@ function ShortsVideoView({
   useEffect(() => {
     likeSettings(likeCount, multiAttachItem?.own_reactions);
   }, []);
-
-  useEffect(() => {
-   setIsClosed(isClose)
-  }, [isClose]);
 
   const onLayout = useCallback((event) => {
     const { height } = event.nativeEvent.layout;
@@ -275,7 +275,7 @@ function ShortsVideoView({
               });
             }}
             teamImage={
-              item?.entity_data?.thumbnail !== ''
+              item?.entity_data?.thumbnail
                 ? { uri: item?.entity_data?.thumbnail }
                 : teamImagePH
             }
@@ -357,9 +357,8 @@ function ShortsVideoView({
     ) {
       return (
         StatusBar.currentHeight
-        + (Dimensions.get('window').height
-          - videoItem?.media_height
-            * (Dimensions.get('window').width / videoItem?.media_width))
+        + (windowHeight
+          - videoItem?.media_height * (windowWidth / videoItem?.media_width))
           / 2
       );
     }
@@ -410,7 +409,7 @@ function ShortsVideoView({
               ...styles.videoDisplayStyle, // AVH*DW/AVW
               height:
                 videoItem?.media_height
-                * (Dimensions.get('window').width / videoItem?.media_width),
+                * (windowWidth / videoItem?.media_width),
               marginTop: getMarginTop(),
               position: 'absolute',
             }}
@@ -419,7 +418,7 @@ function ShortsVideoView({
 
               height:
                 videoItem?.media_height
-                * (Dimensions.get('window').width / videoItem?.media_width),
+                * (windowWidth / videoItem?.media_width),
               // marginTop:
               //   Dimensions.get('window').height
               //   > Dimensions.get('window').width * 1.78
@@ -437,7 +436,8 @@ function ShortsVideoView({
         }\nVideo width: ${
           Dimensions.get('window').height - videoItem?.media_height
         }\nNotch Height: ${StatusBar.currentHeight}`}</Text> */}
-        <View style={{ ...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0 } }>
+        <View
+          style={{ ...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0 }}>
           <View style={{}}>
             <TouchableOpacity
               onPress={() => {
@@ -533,21 +533,21 @@ function ShortsVideoView({
                 isClosed
                   ? {
                       height:
-                      componentHeight > Dimensions.get('window').height - 110
-                      ? Dimensions.get('window').height - 110
-                      : componentHeight,
+                        componentHeight > windowHeight - 110
+                          ? windowHeight - 110
+                          : componentHeight,
                     }
                   : {
                       width: '100%',
                       position: 'absolute',
                       height:
-                        componentHeight > Dimensions.get('window').height - 110
-                          ? Dimensions.get('window').height - 110
+                        componentHeight > windowHeight - 110
+                          ? windowHeight - 110
                           : componentHeight,
                       bottom: 24,
               }
               }>
-              {!isClosed ? (
+              {!isClosed && (
                 <View
                   onLayout={onLayout}
                   style={{
@@ -610,7 +610,7 @@ function ShortsVideoView({
                     <TouchableWithoutFeedback
                       style={styles.mainContainerStyle}
                       onPress={() => {
-                        onclosePress(!isClosed);
+                        setIsClosed(!isClosed);
                       }}>
                       <Image
                         source={images.tagGreenImage}
@@ -621,47 +621,75 @@ function ShortsVideoView({
                     </TouchableWithoutFeedback>
                   )}
                 </View>
-              ) : (
-                <View onLayout={onLayout} >
-                  <SectionList
-                    nestedScrollEnabled={true}
-                    ItemSeparatorComponent={renderSeparator}
-                    renderSectionHeader={({ section: { title } }) => {
-                      if (
-                        gameTagList.length > 0
-                        && title === strings.taggedMatchesText
-                      ) {
-                        return <Text style={styles.tagTitle}>{title}</Text>;
-                      }
-                      if (
-                        entityTagList.length > 0
-                        && title === strings.taggedPeopleText
-                      ) {
-                        return <Text style={styles.tagTitle}>{title}</Text>;
-                      }
-                      return null;
-                    }}
-                    sections={[
-                      {
-                        title: strings.taggedMatchesText,
-                        data: gameTagList,
-                        renderItem: renderMatchTaggedItems,
-                      },
-                      {
-                        title: strings.taggedPeopleText,
-                        data: entityTagList,
-                        renderItem: renderEntityTaggedItems,
-                      },
-                    ]}
-                    keyExtractor={(item) => item.name + index}
-
-                  />
-                </View>
               )}
             </ScrollView>
           </View>
         </LinearGradient>
 
+        {isClosed && (
+          <Modal
+            isVisible={isClosed}
+            backdropColor="black"
+            style={{ margin: 0 }}
+            backdropOpacity={0.5}>
+            <SafeAreaView style={{ flex: 1, marginTop: hp(10) }}>
+              <TouchableWithoutFeedback
+                          style={styles.closeContainer}
+                          onPress={() => {
+                            setIsClosed(!isClosed);
+                          }}>
+                <Image
+                            source={images.menuClose}
+                            style={styles.closeImageStyle}
+                            resizeMode={'contain'}
+                          />
+              </TouchableWithoutFeedback>
+              <SectionList
+                nestedScrollEnabled={true}
+                ItemSeparatorComponent={renderSeparator}
+                stickySectionHeadersEnabled={true}
+                renderSectionHeader={({ section: { title } }) => {
+                  if (
+                    gameTagList.length > 0
+                    && title === strings.taggedMatchesText
+                  ) {
+                    return (
+                      <View style={styles.closeStyle}>
+                        <Text style={styles.tagTitle}>{title}</Text>
+
+                      </View>
+                    );
+                  }
+                  if (
+                    entityTagList.length > 0
+                    && title === strings.taggedPeopleText
+                  ) {
+                    return (
+                      <View style={styles.closeStyle}>
+                        <Text style={styles.tagTitle}>{title}</Text>
+
+                      </View>
+                    );
+                  }
+                  return null;
+                }}
+                sections={[
+                  {
+                    title: strings.taggedMatchesText,
+                    data: gameTagList,
+                    renderItem: renderMatchTaggedItems,
+                  },
+                  {
+                    title: strings.taggedPeopleText,
+                    data: entityTagList,
+                    renderItem: renderEntityTaggedItems,
+                  },
+                ]}
+                keyExtractor={(item) => Math.random()}
+              />
+            </SafeAreaView>
+          </Modal>
+        )}
         <ActionSheet
           ref={shareActionSheet}
           // title={'News Feed Post'}
@@ -845,7 +873,7 @@ const styles = StyleSheet.create({
   },
   videoDisplayStyle: {
     justifyContent: 'center',
-    width: Dimensions.get('window').width,
+    width: windowWidth,
     alignSelf: 'center',
     alignItems: 'center',
   },
@@ -936,14 +964,24 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'center',
     justifyContent: 'center',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: windowWidth,
+    height: windowHeight,
   },
   mainContainerStyle: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 10,
-    marginBottom: 10,
+  },
+  closeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.blackOpacityColor,
+    marginRight: 10,
+    height: 25,
+    width: 25,
+    borderRadius: 50,
+    alignSelf: 'flex-end',
   },
   imageStyle: {
     height: 30,
@@ -959,7 +997,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.whiteColor,
     marginLeft: 15,
-    marginBottom: 5,
   },
   saperatorLine: {
     backgroundColor: colors.whiteColor,
@@ -976,6 +1013,22 @@ const styles = StyleSheet.create({
     height: 1,
     marginTop: 8,
     marginBottom: 8,
+  },
+  closeStyle: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+     paddingBottom: 10,
+     paddingTop: 10,
+    // backgroundColor: 'black',
+  },
+  closeImageStyle: {
+    height: 12,
+    width: 12,
+    resizeMode: 'contain',
+    tintColor: colors.whiteColor,
+
   },
 });
 
