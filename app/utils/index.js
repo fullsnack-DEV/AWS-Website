@@ -477,7 +477,7 @@ export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) =
     entity = { ...entity, ...pickedEntity }
   } else {
     const pickedEntity = _.pick(entity_item, ['group_name', 'full_name', 'city', 'thumbnail']);
-    entity = { ...entity, pickedEntity }
+    entity = { ...entity, ...pickedEntity }
   }
   return entity;
 }

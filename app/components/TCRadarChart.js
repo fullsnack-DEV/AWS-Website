@@ -79,7 +79,6 @@ const TCRadarChart = ({
   }, [radarChartData]);
 
   useEffect(() => {
-    console.log('Radar DAta:=>', radarChartData);
     setChartData(processData(radarChart));
     setMaximaData(getMaxima(radarChart));
   }, [radarChart])

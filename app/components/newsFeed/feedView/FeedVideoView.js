@@ -1,19 +1,26 @@
 import React, {
- useCallback, useMemo, useRef, useState, Fragment,
+    useCallback, useMemo, useRef, useState, Fragment, useEffect,
 } from 'react';
 import { Platform, Text, View } from 'react-native';
 import Video from 'react-native-video';
-// import Slider from '@react-native-community/slider'
+import IosSlider from '@react-native-community/slider'
+import AndroidSlider from 'rn-range-slider';
 import FastImage from 'react-native-fast-image';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import Slider from 'rn-range-slider';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Orientation from 'react-native-orientation';
+import LinearGradient from 'react-native-linear-gradient';
 import { getHeight, getHitSlop, getWidth } from '../../../utils';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
+import TCInnerLoader from '../../TCInnerLoader';
 
 const FeedVideoView = ({
- sourceData, isLandscape, isFullScreen, setIsFullScreen,
+  sourceData,
+   isLandscape,
+   isFullScreen,
+   setIsFullScreen,
+   showParent,
+   setShowParent,
 }) => {
     const videoPlayerRef = useRef();
     const [paused, setPaused] = useState(true);
@@ -23,24 +30,73 @@ const FeedVideoView = ({
     const onPaused = useCallback(() => setPaused((val) => !val), []);
     const [isMute, setIsMute] = useState(false);
 
-    const renderPlayPauseButton = useMemo(() => (
-      <TouchableOpacity
-          onPress={onPaused}
-          style={{
-              zIndex: 1,
-              backgroundColor: 'green',
-            position: 'absolute',
-              alignSelf: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-          }}>
-        <FastImage
-                    source={ paused ? images.videoPlayIcon : images.videoPauseIcon}
-                    resizeMode={'contain'}
-                    style={{ height: 60, width: 60 }}
-        />
-      </TouchableOpacity>
-    ), [onPaused, paused])
+    useEffect(() => {
+        if (isFullScreen) {
+            if (sourceData?.media_height < sourceData?.media_width) {
+                Orientation.lockToLandscape();
+                Orientation.unlockAllOrientations();
+            } else {
+                Orientation.lockToPortrait();
+                Orientation.unlockAllOrientations();
+            }
+        } else {
+            Orientation.lockToPortrait();
+            Orientation.unlockAllOrientations();
+        }
+    }, [isFullScreen])
+
+    const renderPlayPauseButton = useMemo(() => {
+        let gradientColors = ['transparent', 'transparent'];
+        if (paused) gradientColors = ['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)', 'transparent', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']
+        return !videoLoader && (
+          <LinearGradient
+                colors={gradientColors}
+                style={{
+                    // backgroundColor: paused ? 'rgba(0,0,0,0.3)' : 'transparent',
+                    zIndex: 1,
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    alignSelf: 'center',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+            <TouchableOpacity onPress={onPaused}>
+              <FastImage
+                        source={ paused ? images.videoPlayIcon : images.videoPauseIcon}
+                        resizeMode={'contain'}
+                        style={{
+                            height: 60,
+                            width: 60,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            borderRadius: 50,
+                        }}
+                    />
+            </TouchableOpacity>
+          </LinearGradient>
+        )
+    }, [onPaused, paused, showParent, videoLoader])
+
+    const renderVideoLoader = useMemo(() => videoLoader && (
+      <View
+            style={{
+                zIndex: 1,
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+        <TCInnerLoader visible={true} />
+      </View>
+    ), [videoLoader])
 
     const renderRail = useCallback(() => (
       <View
@@ -68,7 +124,7 @@ const FeedVideoView = ({
       <FastImage
             source={images.videoThumb}
             resizeMode={'contain'}
-            style={{ height: 25, width: 25 }}/>
+            style={{ height: 30, width: 30 }}/>
     ), []);
 
     const secondsToHms = (date) => {
@@ -98,14 +154,7 @@ const FeedVideoView = ({
         return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
     }
 
-    const onFullScreen = useCallback(() => {
-        setIsFullScreen(!isFullScreen);
-        if (sourceData?.media_height < sourceData?.media_width) {
-            if (isFullScreen) Orientation.lockToPortrait();
-            else Orientation.lockToLandscape();
-            Orientation.unlockAllOrientations();
-        }
-    }, [isFullScreen, setIsFullScreen, sourceData?.media_height, sourceData?.media_width])
+    const onFullScreen = useCallback(() => setIsFullScreen(!isFullScreen), [isFullScreen, setIsFullScreen])
 
     const renderSeekBar = useMemo(() => (
       <View style={{
@@ -129,23 +178,42 @@ const FeedVideoView = ({
             width: 50,
             color: colors.whiteColor,
         }}>
-          {secondsToHms(currentTime?.toFixed(0))}
+          {secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
         </Text>
-        <Slider
-              disableRange
-              low={currentTime}
-              min={0}
-              max={(sourceData?.duration / 1000)}
-              step={1}
-              style={{ flex: 1 }}
-              renderThumb={renderThumb}
-              renderRail={renderRail}
-              renderRailSelected={renderRailSelected}
-              onValueChanged={(value) => {
-                  setCurrentTime(value);
-                  if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(value);
-              }}
-          />
+        {Platform?.OS === 'ios' ? (
+          <IosSlider
+                  tapToSeek={true}
+                  value={currentTime}
+                  style={{ flex: 1 }}
+                  onValueChange={(value) => setCurrentTime(value)}
+                  onSlidingStart={() => !paused && setPaused(true)}
+                  onSlidingComplete={(value) => {
+                      if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(value)
+                      setPaused(false);
+                  }}
+                  step={1}
+                  minimumValue={0}
+                  maximumValue={(sourceData?.duration / 1000)}
+                  minimumTrackTintColor={colors.whiteColor}
+                  maximumTrackTintColor={'rgba(255,255,255,0.5)'}
+              />
+          ) : (
+            <AndroidSlider
+                disableRange
+                min={0}
+                low={currentTime}
+                max={(sourceData?.duration / 1000)}
+                step={1}
+                style={{ flex: 1 }}
+                renderThumb={renderThumb}
+                renderRail={renderRail}
+                renderRailSelected={renderRailSelected}
+                onValueChanged={(lowValue, highValue, fromUser) => {
+                    setCurrentTime(lowValue);
+                    if (fromUser && videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(lowValue);
+                }}
+            />
+          )}
         <Text style={{
             fontSize: 12,
             width: 50,
@@ -185,7 +253,7 @@ const FeedVideoView = ({
           />
         </TouchableOpacity>
       </View>
-    ), [currentTime, isFullScreen, isLandscape, isMute, onFullScreen, renderRail, renderRailSelected, renderThumb, sourceData.duration])
+    ), [currentTime, isFullScreen, isLandscape, isMute, onFullScreen, paused, renderRail, renderRailSelected, renderThumb, sourceData.duration])
 
     const renderVideo = useMemo(() => (
       <Fragment>
@@ -193,44 +261,42 @@ const FeedVideoView = ({
               height: getHeight(isLandscape, 100),
               width: getWidth(isLandscape, 100),
         }}>
-          {videoLoader && <View style={{ position: 'absolute', zIndex: -1 }}>
-            <FastImage
-                        style={{ height: 50, width: 50 }}
-                        source={images.imageLoadingGIF}
-                        resizeMode={FastImage.resizeMode.contain}
-                    />
-            <Text style={{ color: 'white' }}>Loading...</Text>
-          </View>}
           <Video
+                  ref={videoPlayerRef}
+                  onEnd={() => {
+                      if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(0);
+                      setCurrentTime(0);
+                      setPaused(true);
+                  }}
                   muted={isMute}
                   paused={paused}
+                  fullscreenOrientation={'all'}
                   onProgress={onProgress}
-                  ref={videoPlayerRef}
                   focusable={true}
-                  source={{ uri: sourceData?.url ?? '' }}
+                  // source={{ uri: sourceData?.url ?? '', cache: true }}
+                  source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', cache: true }} // Landscape Video
                   style={{ height: getHeight(isLandscape, 100), width: getWidth(isLandscape, 100) }}
-                  onLoad={() => {
-                      setVideoLoader(false);
-                      videoPlayerRef.current.seek(0);
-                  }}
+                  onLoad={() => videoPlayerRef.current.seek(0)}
                   resizeMode={'contain'}
                   fullscreenAutorotate={true}
+                  onBuffer={(bufferData) => setVideoLoader(bufferData?.isBuffering)}
               />
         </View>
       </Fragment>
-        ), [isLandscape, isMute, onProgress, paused, sourceData?.url, videoLoader])
+        ), [isFullScreen, isLandscape, isMute, onProgress, paused, sourceData?.url])
 
     return (
-      <View style={{
+      <TouchableWithoutFeedback onPress={setShowParent} style={{
           alignItems: 'center',
           justifyContent: 'center',
           width: getWidth(isLandscape, 100),
           height: getHeight(isLandscape, 100),
       }}>
-        {renderPlayPauseButton}
-        {renderSeekBar}
+        {renderVideoLoader}
+        {showParent && renderPlayPauseButton}
+        {showParent && renderSeekBar}
         {renderVideo}
-      </View>
+      </TouchableWithoutFeedback>
     )
 }
 

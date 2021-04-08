@@ -211,7 +211,6 @@ export default function EditGroupProfileScreen({ navigation, route }) {
       cropperCircleOverlay: cropCircle,
 
     }).then((data) => {
-      console.log('image data:=>', data);
       // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
         setGroupProfile({ ...groupProfile, thumbnail: data.path })

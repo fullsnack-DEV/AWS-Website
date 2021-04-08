@@ -176,7 +176,6 @@ const Summary = ({
 
     getGameLineUp()
       .then((response) => {
-        console.log('AllRoster Data:=>', response.payload);
         const homeTeamPlayers = response.payload.home_team.roster.concat(
           response.payload.home_team.non_roster,
         );
@@ -219,7 +218,6 @@ const Summary = ({
             if (awayTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
               found = true;
               teamName = gameData?.home_team?.group_name;
-              console.log('Team name Data:=>', teamName);
               if (gameData?.away_review_id || gameData?.home_review_id) {
                 // setLeaveReviewText(`EDIT A REVIEW FOR ${teamName}`);
                 setLeaveReviewText(strings.editReviewText);

@@ -20,7 +20,8 @@ const FeedViewScreen = ({ navigation, route }) => {
   const [feedSubItem, setFeedSubItem] = useState(null)
   const [readMore, setReadMore] = useState(false)
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [curruentViewIndex, setCurruentViewIndex] = useState(0);
+  const [currentViewIndex, setCurrentViewIndex] = useState(0);
+  const [showParent, setShowsParent] = useState(true);
 
   useEffect(() => {
     if (route?.params?.feedItem) {
@@ -30,6 +31,10 @@ const FeedViewScreen = ({ navigation, route }) => {
       setFeedSubItem({ ...subItem });
     }
   }, [route?.params?.feedItem])
+
+  useEffect(() => {
+    if (!showParent) setShowsParent(true);
+  }, [currentViewIndex])
 
   useEffect(() => {
     if (isFocused) {
@@ -49,8 +54,13 @@ const FeedViewScreen = ({ navigation, route }) => {
   }, [isFocused])
 
   const orientationChange = useCallback((orientation) => {
-    if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) setisLandscape(true);
-    else setisLandscape(false);
+    if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) {
+      setIsFullScreen(true);
+      setisLandscape(true);
+    } else {
+      setisLandscape(false);
+      setIsFullScreen(false);
+    }
   }, []);
 
   const renderTopView = useMemo(() => (
@@ -88,17 +98,31 @@ const FeedViewScreen = ({ navigation, route }) => {
   ), [feedItem, feedSubItem, isLandscape, navigation, onLikePress, readMore])
 
   // const renderAbsoluteShadeView = useMemo(() => <FeedAbsoluteShadeView isLandscape={isLandscape}/>, [isLandscape])
+  const setShowParent = useCallback(() => {
+    setShowsParent((val) => !val)
+  }, [])
 
-  const renderPostView = useMemo(() => <FeedPostView currentIndex={curruentViewIndex} setCurruentViewIndex={setCurruentViewIndex} setIsFullScreen={setIsFullScreen} isFullScreen={isFullScreen} feedSubItem={feedSubItem} isLandscape={isLandscape}/>, [feedSubItem, isFullScreen, isLandscape])
+  const renderPostView = useMemo(() => (
+    <FeedPostView
+          setShowParent={setShowParent}
+          isLandscape={isLandscape}
+          feedSubItem={feedSubItem}
+          showParent={showParent}
+          currentViewIndex={currentViewIndex}
+          isFullScreen={isFullScreen}
+          setCurrentViewIndex={setCurrentViewIndex}
+          setIsFullScreen={setIsFullScreen}
+    />
+  ), [currentViewIndex, feedSubItem, isFullScreen, isLandscape, setShowParent, showParent])
 
   const renderAbsoluteView = useMemo(() => (
     <Fragment>
       {renderPostView}
-      {renderTopView}
+      {showParent && renderTopView }
       {/* {renderAbsoluteShadeView} */}
-      {renderBottomView}
+      {showParent && renderBottomView}
     </Fragment>
-  ), [renderBottomView, renderPostView, renderTopView])
+  ), [renderBottomView, renderPostView, renderTopView, showParent])
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.blackColor }}>
