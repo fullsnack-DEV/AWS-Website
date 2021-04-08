@@ -98,7 +98,7 @@ const colors = {
   blackOpacityColor: 'rgba(0,0,0,0.8)',
   blackLightOpacityColor: 'rgba(0,0,0,0.0)',
 
-  whiteOpacityColor: 'rgba(255,255,255,0.2)',
+  whiteOpacityColor: 'rgba(255,255,255,0.5)',
   navyBlue: '#3E6FB0',
   darkThemeColor: '#FF3B00',
 

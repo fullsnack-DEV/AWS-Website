@@ -64,9 +64,9 @@ function ShortsVideoView({
   caller_id,
   curruentViewIndex,
   onclosePress,
-  isClosed,
+  isClose,
 }) {
-  console.log('isClosed', isClosed);
+  console.log('isClosed', isClose);
   const shareActionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [topDesc, setTopDesc] = useState(false);
@@ -77,17 +77,21 @@ function ShortsVideoView({
     multiAttachItem?.reaction_counts?.clap ?? 0,
   );
 
+  const [componentHeight, setComponentHeight] = useState(0);
+
   const [commentCount, setCommentCount] = useState(
     multiAttachItem?.reaction_counts?.comment ?? 0,
   );
+
   const [ShowComment, setShowModelComment] = useState(false);
   const [animateModal, setanimateModal] = useState(false);
 
   // comment
   const [commentTxt, setCommentText] = useState('');
   const [commentData, setCommentData] = useState([]);
-  const [loading, setloading] = useState(true);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
+
+  const [isClosed, setIsClosed] = useState(isClose);
 
   const videoItem = JSON.parse(multiAttachItem?.object)?.attachments[0];
   console.log('Video Item:', videoItem);
@@ -102,7 +106,7 @@ function ShortsVideoView({
   );
   const gameTagList = taggedItems.filter((e) => e?.entity_type === 'game');
 
-  const [componentHeight, onLayout] = Utility.useComponentSize();
+  // const [componentHeight, onLayout] = Utility.useComponentSize();
 
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
@@ -128,6 +132,15 @@ function ShortsVideoView({
 
   useEffect(() => {
     likeSettings(likeCount, multiAttachItem?.own_reactions);
+  }, []);
+
+  useEffect(() => {
+   setIsClosed(isClose)
+  }, [isClose]);
+
+  const onLayout = useCallback((event) => {
+    const { height } = event.nativeEvent.layout;
+    setComponentHeight(height);
   }, []);
 
   const onLikePress = useCallback(
@@ -203,11 +216,9 @@ function ShortsVideoView({
     getReactions(params, authContext)
       .then((response) => {
         setCommentData(response?.payload?.reverse());
-        setloading(false);
       })
       .catch((e) => {
         Alert.alert('', e.messages);
-        setloading(false);
       });
   }, [authContext, multiAttachItem?.id]);
 
@@ -281,12 +292,12 @@ function ShortsVideoView({
   const renderMatchTaggedItems = useCallback(
     ({ item }) => (
       <TouchableWithoutFeedback
-          onPress={() => {
-            onclosePress(!isClosed);
-          }}>
-        <TCGameCard data={item?.entity_data} cardWidth={'92%'}/>
+        onPress={() => {
+          onclosePress(!isClosed);
+        }}>
+        <TCGameCard data={item?.entity_data} cardWidth={'92%'} />
       </TouchableWithoutFeedback>
-      ),
+    ),
     [isClosed, onclosePress],
   );
 
@@ -297,46 +308,70 @@ function ShortsVideoView({
     if (section.title === strings.taggedMatchesText) {
       return <View style={styles.saperatorLineGame} />;
     }
-    return null;
+    return <View></View>;
   };
 
-const getTaggedText = () => {
-  if (entityTagList.length > 0 && gameTagList.length > 0) {
-    if (entityTagList.length > 1 && gameTagList.length > 1) {
-      return `${entityTagList.length} matches and ${entityTagList.length} people were tagged`
-    }
+  const getTaggedText = () => {
+    if (entityTagList.length > 0 && gameTagList.length > 0) {
+      if (entityTagList.length > 1 && gameTagList.length > 1) {
+        return `${entityTagList.length} matches and ${entityTagList.length} people were tagged`;
+      }
       if (entityTagList.length === 1 && gameTagList.length > 1) {
-        return `${entityTagList.length} match and ${entityTagList.length} people were tagged`
+        return `${entityTagList.length} match and ${entityTagList.length} people were tagged`;
       }
       if (entityTagList.length > 1 && gameTagList.length === 1) {
-        return `${entityTagList.length} matches and ${entityTagList.length} person were tagged`
+        return `${entityTagList.length} matches and ${entityTagList.length} person were tagged`;
       }
       if (entityTagList.length === 1 && gameTagList.length === 1) {
-        return `${entityTagList.length} match and ${entityTagList.length} person were tagged`
+        return `${entityTagList.length} match and ${entityTagList.length} person were tagged`;
       }
-  } else {
-    if (entityTagList.length > 0 && gameTagList.length === 0) {
-      if (entityTagList.length > 1 && gameTagList.length === 0) {
-        return `${entityTagList.length} matches were tagged`
+    } else {
+      if (entityTagList.length > 0 && gameTagList.length === 0) {
+        if (entityTagList.length > 1 && gameTagList.length === 0) {
+          return `${entityTagList.length} matches were tagged`;
+        }
+        if (entityTagList.length === 1 && gameTagList.length === 0) {
+          return `${entityTagList.length} match was tagged`;
+        }
       }
-      if (entityTagList.length === 1 && gameTagList.length === 0) {
-        return `${entityTagList.length} match was tagged`
+      if (entityTagList.length === 0 && gameTagList.length > 0) {
+        if (entityTagList.length === 0 && gameTagList.length > 1) {
+          return `${gameTagList.length} people were tagged`;
+        }
+        if (entityTagList.length === 0 && gameTagList.length === 1) {
+          return `${gameTagList.length} person was tagged`;
+        }
+      }
+      if (entityTagList.length === 0 && gameTagList.length === 0) {
+        return '';
       }
     }
-    if (entityTagList.length === 0 && gameTagList.length > 0) {
-      if (entityTagList.length === 0 && gameTagList.length > 1) {
-        return `${gameTagList.length} people were tagged`
-      }
-      if (entityTagList.length === 0 && gameTagList.length === 1) {
-        return `${gameTagList.length} person was tagged`
-      }
+    return '';
+  };
+
+  const getMarginTop = () => {
+    if (
+      Number(
+        parseFloat(videoItem?.media_height / videoItem?.media_width).toFixed(2),
+      ) < 1.78
+    ) {
+      return (
+        StatusBar.currentHeight
+        + (Dimensions.get('window').height
+          - videoItem?.media_height
+            * (Dimensions.get('window').width / videoItem?.media_width))
+          / 2
+      );
     }
-    if (entityTagList.length === 0 && gameTagList.length === 0) {
-      return ''
+    if (
+      Number(
+        parseFloat(videoItem?.media_height / videoItem?.media_width).toFixed(2),
+      ) >= 1.78
+    ) {
+      return StatusBar.currentHeight;
     }
-  }
-  return ''
-}
+    return 0;
+  };
 
   return (
     <View style={{ backgroundColor: colors.blackColor, flex: 1 }}>
@@ -372,28 +407,119 @@ const getTaggedText = () => {
             isLandscape={false}
             sourceURL={videoItem?.thumbnail}
             containerStyle={{
-              ...styles.videoDisplayStyle,
-              height: Dimensions.get('window').width * 1.78,
-              marginTop: Dimensions.get('window').height > Dimensions.get('window').width * 1.78 ? ((Dimensions.get('window').width * 1.78) - videoItem?.media_height) / 4 : 0,
+              ...styles.videoDisplayStyle, // AVH*DW/AVW
+              height:
+                videoItem?.media_height
+                * (Dimensions.get('window').width / videoItem?.media_width),
+              marginTop: getMarginTop(),
               position: 'absolute',
             }}
             videoStyle={{
               ...styles.videoDisplayStyle,
-              height: Dimensions.get('window').width * 1.78,
-              marginTop: Dimensions.get('window').height > Dimensions.get('window').width * 1.78 ? ((Dimensions.get('window').width * 1.78) - videoItem?.media_height) / 4 : 0,
+
+              height:
+                videoItem?.media_height
+                * (Dimensions.get('window').width / videoItem?.media_width),
+              // marginTop:
+              //   Dimensions.get('window').height
+              //   > Dimensions.get('window').width * 1.78
+              //     ? (Dimensions.get('window').width * 1.78
+              //         - videoItem?.media_height)
+              //       / 4
+              //     : 0,
             }}
           />
-
         </View>
-        <Text style={{ backgroundColor: 'red' }}>{(Dimensions.get('window').width * 1.78 - videoItem?.media_height) / 3}</Text>
+        {/* <Text style={{ backgroundColor: 'white' }}>{`Margin Top: ${
+          (Dimensions.get('window').width * 1.78 - videoItem?.media_height) / 4
+        }\nScreen height: ${Dimensions.get('window').height}\nVideo height: ${
+          videoItem?.media_height
+        }\nVideo width: ${
+          Dimensions.get('window').height - videoItem?.media_height
+        }\nNotch Height: ${StatusBar.currentHeight}`}</Text> */}
+        <View style={{ ...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0 } }>
+          <View style={{}}>
+            <TouchableOpacity
+              onPress={() => {
+                if (like) {
+                  setLikeCount(likeCount - 1);
+                } else {
+                  setLikeCount(likeCount + 1);
+                }
+                setLike(!like);
+                onLikePress(multiAttachItem);
+              }}
+              style={styles.imageTouchStyle}>
+              <Image
+                style={styles.commentImage}
+                source={like ? images.shortLike : images.shortDisLike}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
+            {likeCount > 0 && (
+              <Text
+                style={[
+                  styles.commentlengthStyle,
+                  {
+                    color: like === true ? '#FF8A01' : colors.whiteColor,
+                  },
+                ]}>
+                {likeCount}
+              </Text>
+            )}
+          </View>
+          <View>
+            <TouchableOpacity
+              onPress={() => setShowModelComment(true)}
+              style={styles.imageTouchStyle}>
+              <Image
+                style={[styles.commentImage, { top: 2 }]}
+                source={images.shortComment}
+                resizeMode={'cover'}
+              />
+            </TouchableOpacity>
+            {commentCount > 0 && (
+              <Text style={styles.commentlengthStyle}>{commentCount}</Text>
+            )}
+          </View>
+
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                shareActionSheet.current.show();
+              }}
+              style={styles.imageTouchStyle}>
+              <Image
+                style={styles.commentImage}
+                source={images.shortShare}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
+            <Text style={styles.commentlengthStyle}> </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.imageTouchStyle}
+            onPress={() => {
+              shareActionSheet.current.show();
+            }}>
+            <Image
+              source={images.vertical3Dot}
+              resizeMode={'contain'}
+              style={{
+                height: 22,
+                width: 22,
+                tintColor: colors.whiteColor,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
         <LinearGradient
           colors={[colors.blackLightOpacityColor, colors.blackOpacityColor]}
           style={[
             styles.overlayStyle,
             {
-              height: isClosed
-                ? componentHeight + 100
-                : componentHeight + 120,
+              height: isClosed ? componentHeight + 100 : componentHeight + 120,
             },
           ]}>
           <View
@@ -406,93 +532,82 @@ const getTaggedText = () => {
               style={
                 isClosed
                   ? {
-                height: componentHeight > Dimensions.get('window').height
-                  ? Dimensions.get('window').height
-                  : componentHeight,
-}
+                      height:
+                      componentHeight > Dimensions.get('window').height - 110
+                      ? Dimensions.get('window').height - 110
+                      : componentHeight,
+                    }
                   : {
                       width: '100%',
                       position: 'absolute',
                       height:
-                      componentHeight > Dimensions.get('window').height - 165
-                          ? Dimensions.get('window').height - 165
+                        componentHeight > Dimensions.get('window').height - 110
+                          ? Dimensions.get('window').height - 110
                           : componentHeight,
-                      bottom: 0,
+                      bottom: 24,
               }
               }>
               {!isClosed ? (
-                <View onLayout={onLayout}>
-                  <View>
-                    <View style={styles.mainContainer}>
-                      <TouchableWithoutFeedback
-                        onPress={() => onProfilePress(multiAttachItem)}>
-                        <View style={styles.backgroundProfileView}>
-                          <Image
-                            style={styles.background}
-                            source={
-                              !profileItem?.thumbnail
-                                ? images.profilePlaceHolder
-                                : { uri: profileItem?.thumbnail }
-                            }
-                            resizeMode={'cover'}
-                          />
-                        </View>
-                      </TouchableWithoutFeedback>
-                      <View style={styles.userNameView}>
-                        <Text
-                          style={styles.userNameTxt}
-                          onPress={() => onProfilePress(multiAttachItem)}>
-                          {profileItem?.full_name}
-                        </Text>
-                        <Text style={styles.activeTimeAgoTxt}>
-                          {commentPostTimeCalculate(
-                            multiAttachItem?.time,
-                            true,
-                          )}
-                        </Text>
-                      </View>
-                      <TouchableOpacity
-                        onPress={() => {
-                          shareActionSheet.current.show();
-                        }}>
+                <View
+                  onLayout={onLayout}
+                  style={{
+                    paddingBottom: 40,
+                    width: '85%',
+                  }}>
+                  <View style={styles.mainContainer}>
+                    <TouchableWithoutFeedback
+                      onPress={() => onProfilePress(multiAttachItem)}>
+                      <View style={styles.backgroundProfileView}>
                         <Image
-                          source={images.vertical3Dot}
-                          resizeMode={'contain'}
-                          style={{
-                            height: 22,
-                            width: 22,
-                            tintColor: colors.whiteColor,
-                          }}
+                          style={styles.background}
+                          source={
+                            !profileItem?.thumbnail
+                              ? images.profilePlaceHolder
+                              : { uri: profileItem?.thumbnail }
+                          }
+                          resizeMode={'cover'}
                         />
-                      </TouchableOpacity>
+                      </View>
+                    </TouchableWithoutFeedback>
+                    <View style={styles.userNameView}>
+                      <Text
+                        style={styles.userNameTxt}
+                        onPress={() => onProfilePress(multiAttachItem)}>
+                        {profileItem?.full_name}
+                      </Text>
+                      <Text style={styles.activeTimeAgoTxt}>
+                        {commentPostTimeCalculate(multiAttachItem?.time, true)}
+                      </Text>
                     </View>
+                  </View>
 
-                    <View>
-                      {topDesc ? (
-                        <PostDescSection
-                          descriptions={descriptionItem ?? ''}
-                          containerStyle={{ marginHorizontal: 15 }}
-                          descriptionTxt={{ color: colors.whiteColor }}
-                          onReadMorePress={() => setTopDesc(false)}
-                        />
-                      ) : (
-                        <PostDescSection
-                          descriptions={descriptionItem ?? ''}
-                          character={50}
-                          containerStyle={{ marginHorizontal: 12 }}
-                          descriptionTxt={{ color: colors.whiteColor }}
-                          onReadMorePress={() => {
-                            if (descriptionItem.length > 50) {
-                              setTopDesc(true);
-                            } else {
-                              setTopDesc(false);
-                            }
-                          }}
-                        />
-                      )}
-                    </View>
+                  <View>
+                    {topDesc ? (
+                      <PostDescSection
+                        descriptions={descriptionItem ?? ''}
+                        containerStyle={{ marginHorizontal: 15 }}
+                        descriptionTxt={{ color: colors.whiteColor }}
+                        onReadMorePress={() => setTopDesc(false)}
+                      />
+                    ) : (
+                      <PostDescSection
+                        descriptions={descriptionItem ?? ''}
+                        character={50}
+                        containerStyle={{ marginHorizontal: 12 }}
+                        descriptionTxt={{ color: colors.whiteColor }}
+                        onReadMorePress={() => {
+                          if (descriptionItem.length > 50) {
+                            setTopDesc(true);
+                          } else {
+                            setTopDesc(false);
+                          }
+                        }}
+                      />
+                    )}
+                  </View>
 
-                    {getTaggedText() !== '' && <TouchableWithoutFeedback
+                  {getTaggedText() !== '' && (
+                    <TouchableWithoutFeedback
                       style={styles.mainContainerStyle}
                       onPress={() => {
                         onclosePress(!isClosed);
@@ -502,128 +617,48 @@ const getTaggedText = () => {
                         style={styles.imageStyle}
                         resizeMode={'contain'}
                       />
-                      <Text style={styles.tagTextStyle}>
-                        {getTaggedText()}
-                      </Text>
-                    </TouchableWithoutFeedback>}
-                  </View>
+                      <Text style={styles.tagTextStyle}>{getTaggedText()}</Text>
+                    </TouchableWithoutFeedback>
+                  )}
                 </View>
               ) : (
-                <View onLayout={onLayout}>
+                <View onLayout={onLayout} >
                   <SectionList
-                  nestedScrollEnabled={true}
-                  ItemSeparatorComponent={renderSeparator}
-                  renderSectionHeader={({ section: { title } }) => {
-                    if (gameTagList.length > 0 && title === strings.taggedMatchesText) {
-                      return <Text style={styles.tagTitle}>{title}</Text>;
-                    }
-                   if (entityTagList.length > 0 && title === strings.taggedPeopleText) {
-                      return <Text style={styles.tagTitle}>{title}</Text>;
-                    }
-                    return null
-                  }}
-                  sections={[
-                    {
-                      title: strings.taggedMatchesText,
-                      data: gameTagList,
-                      renderItem: renderMatchTaggedItems,
-                    },
-                    {
-                      title: strings.taggedPeopleText,
-                      data: entityTagList,
-                      renderItem: renderEntityTaggedItems,
-                    },
-                  ]}
-                  keyExtractor={(item) => item.name + index}
-                />
-                </View>
+                    nestedScrollEnabled={true}
+                    ItemSeparatorComponent={renderSeparator}
+                    renderSectionHeader={({ section: { title } }) => {
+                      if (
+                        gameTagList.length > 0
+                        && title === strings.taggedMatchesText
+                      ) {
+                        return <Text style={styles.tagTitle}>{title}</Text>;
+                      }
+                      if (
+                        entityTagList.length > 0
+                        && title === strings.taggedPeopleText
+                      ) {
+                        return <Text style={styles.tagTitle}>{title}</Text>;
+                      }
+                      return null;
+                    }}
+                    sections={[
+                      {
+                        title: strings.taggedMatchesText,
+                        data: gameTagList,
+                        renderItem: renderMatchTaggedItems,
+                      },
+                      {
+                        title: strings.taggedPeopleText,
+                        data: entityTagList,
+                        renderItem: renderEntityTaggedItems,
+                      },
+                    ]}
+                    keyExtractor={(item) => item.name + index}
 
+                  />
+                </View>
               )}
             </ScrollView>
-          </View>
-
-          <View style={styles.commentShareLikeView}>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: wp('60%'),
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                }}>
-                <TouchableOpacity
-                  onPress={() => setShowModelComment(true)}
-                  style={styles.imageTouchStyle}>
-                  <Image
-                    style={[styles.commentImage, { top: 2 }]}
-                    source={images.commentImage}
-                    resizeMode={'cover'}
-                  />
-                </TouchableOpacity>
-                {commentCount > 0 && (
-                  <Text style={styles.commentlengthStyle}>{commentCount}</Text>
-                )}
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginLeft: 10,
-                }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    shareActionSheet.current.show();
-                  }}
-                  style={styles.imageTouchStyle}>
-                  <Image
-                    style={styles.commentImage}
-                    source={images.shareImage}
-                    resizeMode={'contain'}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.commentlengthStyle}>{''}</Text>
-              </View>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                width: wp('32%'),
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-              }}>
-              {likeCount > 0 && (
-                <Text
-                  style={[
-                    styles.commentlengthStyle,
-                    {
-                      color: like === true ? '#FF8A01' : colors.whiteColor,
-                    },
-                  ]}>
-                  {likeCount}
-                </Text>
-              )}
-              <TouchableOpacity
-                onPress={() => {
-                  if (like) {
-                    setLikeCount(likeCount - 1);
-                  } else {
-                    setLikeCount(likeCount + 1);
-                  }
-                  setLike(!like);
-                  onLikePress(multiAttachItem);
-                }}
-                style={styles.imageTouchStyle}>
-                <Image
-                  style={styles.commentImage}
-                  source={like ? images.likeImage : images.unlikeImage}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
-            </View>
           </View>
         </LinearGradient>
 
@@ -779,34 +814,40 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   commentImage: {
-    height: 32,
-    width: 32,
-    alignSelf: 'flex-end',
+    height: 20,
+    width: 20,
+    alignSelf: 'center',
   },
   commentShareLikeView: {
-    flexDirection: 'row',
-    margin: 15,
-    marginVertical: '2%',
-    alignSelf: 'center',
-    marginBottom: 40,
+    width: '15%',
+    height: 330, // 372
+    alignSelf: 'flex-end',
+    position: 'absolute',
+    bottom: 24,
+    right: 0,
+    justifyContent: 'space-evenly',
   },
   commentlengthStyle: {
     alignSelf: 'center',
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 14,
-    marginHorizontal: 5,
+    marginTop: 5,
   },
   imageTouchStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+    height: 40,
+    width: 40,
+    backgroundColor: colors.whiteOpacityColor,
+    borderRadius: 80,
+    alignSelf: 'center',
   },
   videoDisplayStyle: {
     justifyContent: 'center',
     width: Dimensions.get('window').width,
     alignSelf: 'center',
     alignItems: 'center',
-
   },
   overlayStyle: {
     width: '100%',

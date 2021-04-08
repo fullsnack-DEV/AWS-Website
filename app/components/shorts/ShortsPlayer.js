@@ -13,7 +13,7 @@ import TCInnerLoader from '../TCInnerLoader';
 const ShortsPlayer = ({
   sourceURL,
   videoStyle,
-  resizeMode = 'stretch',
+  resizeMode = 'contain',
   containerStyle,
   payPausedPressed,
   playPause,
