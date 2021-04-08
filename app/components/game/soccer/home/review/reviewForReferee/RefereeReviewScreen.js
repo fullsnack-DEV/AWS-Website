@@ -126,7 +126,6 @@ export default function RefereeReviewScreen({ navigation, route }) {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    console.log('Refrees Reviews data:=>', reviews);
     reviews = { ...reviews, ...attr };
 
     setReviewsData({ ...reviews });

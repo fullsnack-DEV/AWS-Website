@@ -166,7 +166,7 @@ const SoccerHome = ({ navigation, route }) => {
   const renderImageProgress = useMemo(() => <ImageProgress/>, [])
 
   const onEndReached = useCallback(() => {
-    if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()
+    if (currentTab === 0 && gameFeedFlatListRef?.current?.onEndReached) gameFeedFlatListRef.current.onEndReached()
   }, [currentTab])
 
   const renderTopHeaderWithTabContain = useMemo(() => (

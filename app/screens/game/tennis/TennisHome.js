@@ -145,8 +145,8 @@ const TennisHome = ({ navigation, route }) => {
   }, [authContext, gameData?.game_id, getGameDetails]);
 
   const onEndReached = useCallback(() => {
-    if (currentTab === 0) gameFeedFlatListRef.current.onEndReached()
-    if (currentTab === 3) galleryRef.current.onEndReached()
+    if (currentTab === 0 && gameFeedFlatListRef?.current?.onEndReached) gameFeedFlatListRef.current.onEndReached()
+    if (currentTab === 3 && galleryRef?.current?.onEndReached) galleryRef.current.onEndReached()
   }, [currentTab])
 
   const renderTopHeaderWithTabContain = useMemo(() => (

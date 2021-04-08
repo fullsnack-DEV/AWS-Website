@@ -16,7 +16,6 @@ export default function RefereesProfileSection({
   onBookRefereePress,
   bookRefereeButtonVisible = true,
 }) {
-  console.log('Currunt user data:=>', feesCount);
   return (
     <View style={styles.topViewContainer}>
       <View style={{ flexDirection: 'row' }}>

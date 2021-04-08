@@ -352,7 +352,6 @@ function RefereeFeedPostItems({
                 }}>
               <TouchableOpacity
                   onPress={() => {
-                    console.log('Comment Item:=>', item);
                     //  navigation.navigate('WriteCommentScreen', {
                     //    data: item,
                     //  });

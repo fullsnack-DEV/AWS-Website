@@ -11,7 +11,7 @@ const TCInnerLoader = ({
   <Fragment>
     {visible && (
       <FastImage
-        source={images.imageUploadingGIF}
+        source={images.videoLoading}
         style={{
           height: size,
           width: size,

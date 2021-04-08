@@ -5,41 +5,52 @@ import FeedImageView from './FeedImageView';
 import FeedVideoView from './FeedVideoView';
 
 const FeedPostView = ({
+ showParent,
+ setShowParent,
+ currentViewIndex,
  isLandscape,
-                          feedSubItem,
-                          setIsFullScreen,
-                          isFullScreen,
-                          setCurruentViewIndex,
+feedSubItem,
+setIsFullScreen,
+isFullScreen,
+setCurrentViewIndex,
 
 }) => {
-    const renderAttachments = useCallback(({ item }) => (
+    const renderAttachments = useCallback(({ item, index }) => (
       <View style={{
               height: getHeight(isLandscape, 100),
               width: getWidth(isLandscape, 100),
               justifyContent: 'center',
               alignItems: 'center',
       }}>
-        {item?.type === 'video' ? (
-          <FeedVideoView
-              isFullScreen={isFullScreen}
-              setIsFullScreen={setIsFullScreen}
-              sourceData={item}
-              isLandscape={isLandscape}
-          />
-      ) : (
-        <FeedImageView
-            sourceData={item}
-            isLandscape={isLandscape}
-        />
-      )}
+        {currentViewIndex === index && (
+          <>
+            {item?.type === 'video' ? (
+              <FeedVideoView
+                          showParent={showParent}
+                          setShowParent={setShowParent}
+                          isFullScreen={isFullScreen}
+                          setIsFullScreen={setIsFullScreen}
+                          sourceData={item}
+                          isLandscape={isLandscape}
+                      />
+                  ) : (
+                    <FeedImageView
+                        setShowParent={setShowParent}
+                        sourceData={item}
+                        isLandscape={isLandscape}
+                    />
+                  )}
+          </>
+          )}
       </View>
-      ), [isFullScreen, isLandscape, setIsFullScreen])
+      ), [currentViewIndex, isFullScreen, isLandscape, setIsFullScreen, setShowParent, showParent])
 
     const onViewableItemsChanged = useCallback(({ viewableItems }) => {
+        console.log(viewableItems);
         if (viewableItems && viewableItems.length > 0) {
-            setCurruentViewIndex(viewableItems[0].index);
+            setCurrentViewIndex(viewableItems[0].index);
         }
-    }, [setCurruentViewIndex]);
+    }, [setCurrentViewIndex]);
 
  return useMemo(() => (
    <View style={{
@@ -49,23 +60,24 @@ const FeedPostView = ({
         height: getHeight(isLandscape, 100),
    }}>
      <FlatList
-         initialNumToRender={1}
-         maxToRenderPerBatch={1}
-         windowSize={feedSubItem?.attachments?.length ?? 1}
-         removeClippedSubviews={true}
-         viewabilityConfig={{ itemVisiblePercentThreshold: 5 }}
+         nestedScrollEnabled={true}
+         // initialNumToRender={1}
+         // maxToRenderPerBatch={1}
+         // windowSize={feedSubItem?.attachments?.length === 0 ? 1 : feedSubItem?.attachments?.length}
+         // removeClippedSubviews={true}
+         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+         onViewableItemsChanged={onViewableItemsChanged}
          showsVerticalScrollIndicator={false}
          showsHorizontalScrollIndicator={false}
          style={{ zIndex: -100 }}
          horizontal={true}
          pagingEnabled={true}
          bounces={false}
-         onViewableItemsChanged={onViewableItemsChanged}
          keyExtractor={(item, index) => `IMG_VID${index}`}
          data={feedSubItem?.attachments ?? []}
          renderItem={renderAttachments}
      />
    </View>
-  ), [feedSubItem?.attachments, isLandscape, renderAttachments])
+  ), [feedSubItem?.attachments, isLandscape, onViewableItemsChanged, renderAttachments])
 }
 export default FeedPostView;

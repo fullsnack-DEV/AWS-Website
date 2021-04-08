@@ -123,7 +123,6 @@ export default function ScorekeeperReviewScreen({ navigation, route }) {
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
-    console.log('Refrees Reviews data:=>', reviews);
     reviews = { ...reviews, ...attr };
 
     setReviewsData({ ...reviews });

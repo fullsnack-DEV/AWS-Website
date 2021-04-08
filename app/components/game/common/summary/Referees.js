@@ -46,7 +46,6 @@ const Referees = ({
   const [refree, setRefree] = useState([]);
   const [myUserId, setMyUserId] = useState(null);
 
-  console.log('Referee screen game data:=>', gameData);
   useEffect(() => {
     setMyUserId(authContext.entity.uid);
   }, [authContext.entity.uid]);
@@ -58,7 +57,6 @@ const Referees = ({
         );
         const cloneRefData = [];
         refData.map((item) => {
-          console.log('Referee map data:=>', item);
           const isExpired = new Date(item?.expiry_datetime * 1000).getTime()
             < new Date().getTime();
           if (
@@ -79,7 +77,6 @@ const Referees = ({
 
   const goToRefereReservationDetail = useCallback(
     (data) => {
-      console.log('Selected Referee Data:=>', data);
       setloading(true);
       RefereeUtils.getRefereeReservationDetail(
         data?.reservation_id,
