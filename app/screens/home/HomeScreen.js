@@ -433,7 +433,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const createPostAfterUpload = (dataParams) => {
-    createPost(dataParams, authContext)
+    createPost({ ...dataParams, is_gallery: true }, authContext)
       .then(() => {
         if (galleryRef?.current?.refreshGallery) galleryRef.current.refreshGallery();
       })
@@ -445,11 +445,12 @@ const HomeScreen = ({ navigation, route }) => {
       })
   }
 
-  const callthis = useCallback((data, postDesc, tagsOfEntity) => {
+  const callthis = useCallback((data, postDesc, tagsOfEntity, format_tagged_data = []) => {
     if (postDesc.trim().length > 0 && data?.length === 0) {
       const dataParams = {
         text: postDesc,
-        taggedData: tagsOfEntity ?? [],
+        tagged: tagsOfEntity ?? [],
+        format_tagged_data,
       };
       createPostAfterUpload(dataParams);
     } else if (data) {
@@ -457,7 +458,8 @@ const HomeScreen = ({ navigation, route }) => {
       const dataParams = {
         text: postDesc && postDesc,
         attachments: [],
-        taggedData: tagsOfEntity ?? [],
+        tagged: tagsOfEntity ?? [],
+        format_tagged_data,
       };
       imageUploadContext.uploadData(
           authContext,

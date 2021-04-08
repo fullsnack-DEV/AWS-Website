@@ -15,7 +15,7 @@ import FeedDescriptionSection from './FeedDescriptionSection';
 const FeedAbsoluteBottomView = ({
     feedItem = {},
     feedSubItem = {},
-    isLandScape,
+    isLandscape,
     navigation,
     onLikePress,
     readMore,
@@ -33,7 +33,7 @@ const FeedAbsoluteBottomView = ({
             setCommentCount(feedItem?.reaction_counts?.comment ?? 0)
             if (feedItem?.own_reactions?.clap !== undefined) {
                 filterLike = feedItem?.own_reactions.clap?.filter((clapItem) => clapItem.user_id === authContext?.entity?.uid);
-                if (filterLike.length > 0) setLike(true);
+                if (filterLike?.length > 0) setLike(true);
                 else setLike(false);
             } else {
                 setLike(false);
@@ -50,24 +50,25 @@ const FeedAbsoluteBottomView = ({
 
     return (
       <Fragment>
-        <SafeAreaView style={{ position: 'absolute', bottom: 0, width: getWidth(isLandScape, 100) }}>
+        <SafeAreaView style={{ position: 'absolute', bottom: 0, width: getWidth(isLandscape, 100) }}>
           <View>
-            {!readMore && <FeedDescriptionSection
+            {!readMore && !isLandscape && <FeedDescriptionSection
             readMore={readMore}
             setReadMore={setReadMore}
             navigation={navigation}
             tagData={feedSubItem?.format_tagged_data}
             descriptions={feedSubItem?.text}
-            isLandscape={isLandScape}
+            isLandscape={isLandscape}
             descriptionTxt={{ color: colors.whiteColor }}
            />}
-            <TagView
-                    source={images.tagGreenImage}
-                    tagText={'2 matches were tagged'}
+            {!isLandscape && <TagView
+                  source={images.tagGreenImage}
+                  tagText={'2 matches were tagged'}
                 />
+              }
           </View>
           {/* Bottom Buttons */}
-          <View style={{ ...styles.commentShareLikeView, width: getWidth(isLandScape, 100) }}>
+          <View style={{ ...styles.commentShareLikeView, width: getWidth(isLandscape, 100) }}>
 
             {/* Comment And Share Button Button */}
             <View style={{
@@ -75,7 +76,7 @@ const FeedAbsoluteBottomView = ({
                     justifyContent: 'flex-start',
                     alignItems: 'center',
                     paddingLeft: 15,
-                    width: getWidth(isLandScape, 70),
+                    width: getWidth(isLandscape, 70),
             }}>
               <View
                         style={{
@@ -121,26 +122,25 @@ const FeedAbsoluteBottomView = ({
             <View
                     style={{
                         paddingRight: 15,
-                        width: getWidth(isLandScape, 30),
+                        width: getWidth(isLandscape, 30),
                         flexDirection: 'row',
                         justifyContent: 'flex-end',
                     }}>
-              {feedItem?.reaction_counts?.clap !== undefined && (
-                <Text
+
+              <Text
                             style={[
                                 styles.commentlengthStyle,
                                 {
                                     color: like === true ? '#FF8A01' : colors.whiteColor,
                                 },
                             ]}>
-                  {likeCount === 0 ? '' : likeCount}
-                </Text>
-                    )}
+                {likeCount === 0 ? '' : likeCount}
+              </Text>
               <TouchableOpacity
                         onPress={() => {
                             setLike(!like);
-                            if (like) setLikeCount(likeCount - 1);
-                            else setLikeCount(likeCount + 1);
+                            if (like) setLikeCount((val) => val - 1);
+                            else setLikeCount((val) => val + 1);
                             onLikePress()
                         }}
                         style={styles.imageTouchStyle}>
