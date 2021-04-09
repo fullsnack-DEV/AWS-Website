@@ -1,83 +1,62 @@
-import React, { useCallback, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View } from 'react-native';
+import Carousel from 'react-native-snap-carousel';
 import { getHeight, getWidth } from '../../../utils';
 import FeedImageView from './FeedImageView';
 import FeedVideoView from './FeedVideoView';
 
 const FeedPostView = ({
- showParent,
- setShowParent,
- currentViewIndex,
- isLandscape,
-feedSubItem,
-setIsFullScreen,
-isFullScreen,
-setCurrentViewIndex,
-
+     showParent,
+     setShowParent,
+     isLandscape,
+    feedSubItem,
+    setIsFullScreen,
+    isFullScreen,
+    currentPage,
 }) => {
+    const [currentViewIndex, setCurrentViewIndex] = useState(0);
     const renderAttachments = useCallback(({ item, index }) => (
-      <View style={{
-              height: getHeight(isLandscape, 100),
-              width: getWidth(isLandscape, 100),
-              justifyContent: 'center',
-              alignItems: 'center',
-      }}>
-        {currentViewIndex === index && (
-          <>
-            {item?.type === 'video' ? (
-              <FeedVideoView
-                          showParent={showParent}
-                          setShowParent={setShowParent}
-                          isFullScreen={isFullScreen}
-                          setIsFullScreen={setIsFullScreen}
-                          sourceData={item}
-                          isLandscape={isLandscape}
-                      />
-                  ) : (
-                    <FeedImageView
-                        setShowParent={setShowParent}
-                        sourceData={item}
-                        isLandscape={isLandscape}
-                    />
-                  )}
-          </>
-          )}
+      <View>
+        <>
+          {item?.type === 'video'
+              ? (
+                <>
+                  {currentViewIndex === index && <FeedVideoView
+                              showParent={showParent}
+                              setShowParent={setShowParent}
+                              isFullScreen={isFullScreen}
+                              setIsFullScreen={setIsFullScreen}
+                              sourceData={item}
+                              isLandscape={isLandscape}
+                        />}
+                </>
+              ) : (
+                <FeedImageView
+                    setShowParent={setShowParent}
+                    sourceData={item}
+                    isLandscape={isLandscape}
+                />
+              )}
+        </>
       </View>
       ), [currentViewIndex, isFullScreen, isLandscape, setIsFullScreen, setShowParent, showParent])
 
-    const onViewableItemsChanged = useCallback(({ viewableItems }) => {
-        console.log(viewableItems);
-        if (viewableItems && viewableItems.length > 0) {
-            setCurrentViewIndex(viewableItems[0].index);
-        }
-    }, [setCurrentViewIndex]);
-
- return useMemo(() => (
-   <View style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: getWidth(isLandscape, 100),
-        height: getHeight(isLandscape, 100),
-   }}>
-     <FlatList
-         nestedScrollEnabled={true}
-         // initialNumToRender={1}
-         // maxToRenderPerBatch={1}
-         // windowSize={feedSubItem?.attachments?.length === 0 ? 1 : feedSubItem?.attachments?.length}
-         // removeClippedSubviews={true}
-         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-         onViewableItemsChanged={onViewableItemsChanged}
-         showsVerticalScrollIndicator={false}
-         showsHorizontalScrollIndicator={false}
-         style={{ zIndex: -100 }}
-         horizontal={true}
-         pagingEnabled={true}
-         bounces={false}
-         keyExtractor={(item, index) => `IMG_VID${index}`}
-         data={feedSubItem?.attachments ?? []}
-         renderItem={renderAttachments}
-     />
-   </View>
-  ), [feedSubItem?.attachments, isLandscape, onViewableItemsChanged, renderAttachments])
+ return (
+   <Carousel
+           onSnapToItem={setCurrentViewIndex}
+           firstItem={Number(currentPage - 1)}
+           nestedScrollEnabled={true}
+           windowSize={3}
+           bounces={false}
+           data={feedSubItem?.attachments ?? []}
+           renderItem={renderAttachments}
+           inactiveSlideScale={1}
+           inactiveSlideOpacity={1}
+           sliderWidth={getWidth(isLandscape, 100)}
+           itemWidth={getWidth(isLandscape, 100)}
+           sliderHeight={getHeight(isLandscape, 100)}
+           itemHeight={getHeight(isLandscape, 100)}
+       />
+    )
 }
 export default FeedPostView;

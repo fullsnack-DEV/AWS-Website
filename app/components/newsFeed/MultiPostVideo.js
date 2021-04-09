@@ -34,7 +34,8 @@ function MultiPostVideo({
   const [videoLoad, setVideoLoad] = useState(false);
 
   const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+    // setModalVisible(!isModalVisible);
+    navigation.navigate('FeedViewScreen', { feedItem: item, currentPage: itemNumber })
   };
 
   return (

@@ -42,8 +42,9 @@ function VideoPost({
   }
 
   const toggleModal = useCallback(() => {
-    setModalVisible((isVisible) => !isVisible);
-  }, []);
+    // setModalVisible((isVisible) => !isVisible);
+    navigation.navigate('FeedViewScreen', { feedItem: item })
+  }, [item, navigation]);
 
   const onVideoLoad = useCallback(() => {
       videoPlayerRef.current.seek(0)

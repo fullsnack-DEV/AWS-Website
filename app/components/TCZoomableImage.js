@@ -43,6 +43,7 @@ const TCZoomableImage = ({
             pagingEnabled={true}
             source={source}
             androidScaleType="contain"
+            fadeDuration={0.5}
             resizeMode={'contain'}
             style={style}
         />

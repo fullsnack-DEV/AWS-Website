@@ -12,7 +12,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import { getHeight, getHitSlop, getWidth } from '../../../utils';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
-import TCInnerLoader from '../../TCInnerLoader';
 
 const FeedVideoView = ({
   sourceData,
@@ -27,32 +26,33 @@ const FeedVideoView = ({
     const [videoLoader, setVideoLoader] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const onProgress = useCallback((data) => setCurrentTime(data?.currentTime), []);
-    const onPaused = useCallback(() => setPaused((val) => !val), []);
+
+    const onPaused = useCallback(() => {
+        if (currentTime === 0) videoPlayerRef.current.seek(0)
+        setPaused((val) => !val)
+    }, [currentTime]);
+
     const [isMute, setIsMute] = useState(false);
 
     useEffect(() => {
         if (isFullScreen) {
-            if (sourceData?.media_height < sourceData?.media_width) {
-                Orientation.lockToLandscape();
-                Orientation.unlockAllOrientations();
-            } else {
-                Orientation.lockToPortrait();
-                Orientation.unlockAllOrientations();
-            }
+            setShowParent(false);
+            setPaused(false);
+            if (sourceData?.media_height < sourceData?.media_width) Orientation.lockToLandscape();
+            else Orientation.lockToPortrait();
         } else {
-            Orientation.lockToPortrait();
+            setShowParent(true);
             Orientation.unlockAllOrientations();
         }
     }, [isFullScreen])
 
     const renderPlayPauseButton = useMemo(() => {
-        let gradientColors = ['transparent', 'transparent'];
-        if (paused) gradientColors = ['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)', 'transparent', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']
-        return !videoLoader && (
+        const shadeColor = 'rgba(0,0,0,0.4)';
+        const gradientColors = [shadeColor, shadeColor, 'transparent', shadeColor, shadeColor]
+        return (
           <LinearGradient
                 colors={gradientColors}
                 style={{
-                    // backgroundColor: paused ? 'rgba(0,0,0,0.3)' : 'transparent',
                     zIndex: 1,
                     position: 'absolute',
                     top: 0,
@@ -64,7 +64,7 @@ const FeedVideoView = ({
                     justifyContent: 'center',
                 }}
             >
-            <TouchableOpacity onPress={onPaused}>
+            {!videoLoader && <TouchableOpacity onPress={onPaused}>
               <FastImage
                         source={ paused ? images.videoPlayIcon : images.videoPauseIcon}
                         resizeMode={'contain'}
@@ -75,10 +75,10 @@ const FeedVideoView = ({
                             borderRadius: 50,
                         }}
                     />
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </LinearGradient>
         )
-    }, [onPaused, paused, showParent, videoLoader])
+    }, [onPaused, paused, videoLoader])
 
     const renderVideoLoader = useMemo(() => videoLoader && (
       <View
@@ -94,7 +94,17 @@ const FeedVideoView = ({
                 justifyContent: 'center',
             }}
         >
-        <TCInnerLoader visible={true} />
+        {renderVideoLoader}
+
+        <FastImage
+              source={images.videoLoading}
+              resizeMode={'contain'}
+              style={{
+                  height: 40,
+                  width: 40,
+                  alignSelf: 'center',
+              }}
+          />
       </View>
     ), [videoLoader])
 
@@ -262,19 +272,21 @@ const FeedVideoView = ({
               width: getWidth(isLandscape, 100),
         }}>
           <Video
+              disableFocus={true}
                   ref={videoPlayerRef}
                   onEnd={() => {
-                      if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(0);
+                      // if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(0);
                       setCurrentTime(0);
+                      setShowParent(true);
                       setPaused(true);
                   }}
                   muted={isMute}
                   paused={paused}
                   fullscreenOrientation={'all'}
                   onProgress={onProgress}
-                  focusable={true}
-                  // source={{ uri: sourceData?.url ?? '', cache: true }}
-                  source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', cache: true }} // Landscape Video
+                  // focusable={true}
+                  source={{ uri: sourceData?.url ?? '', cache: true }}
+                  // source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', cache: true }} // Landscape Video
                   style={{ height: getHeight(isLandscape, 100), width: getWidth(isLandscape, 100) }}
                   onLoad={() => videoPlayerRef.current.seek(0)}
                   resizeMode={'contain'}

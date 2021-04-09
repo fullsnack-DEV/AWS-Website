@@ -14,6 +14,7 @@ import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
 
 const FeedAbsoluteTopView = ({
+    showParent,
     feedItem = {},
     isLandscape,
     readMore,
@@ -37,9 +38,15 @@ const FeedAbsoluteTopView = ({
     }, [authContext?.entity?.uid, feedItem?.actor?.data?.entity_type, feedItem?.actor?.id, navigation])
 
     return (
-      <SafeAreaView style={{
- position: 'absolute', top: 0, ...(readMore && { bottom: 0 }), backgroundColor: readMore ? 'rgba(0,0,0,0.6)' : 'transparent',
-      }}>
+      <SafeAreaView
+          pointerEvents={showParent ? 'auto' : 'none'}
+          style={{
+              opacity: showParent ? 1 : 0,
+              position: 'absolute',
+              top: 0,
+          ...(readMore && { bottom: 0 }),
+          backgroundColor: readMore ? 'rgba(0,0,0,0.6)' : 'transparent',
+          }}>
         <View
                 style={{
                     paddingHorizontal: 15,

@@ -20,6 +20,7 @@ const FeedAbsoluteBottomView = ({
     onLikePress,
     readMore,
     setReadMore,
+    showParent,
 }) => {
     const authContext = useContext(AuthContext);
     const [like, setLike] = useState(false);
@@ -50,7 +51,14 @@ const FeedAbsoluteBottomView = ({
 
     return (
       <Fragment>
-        <SafeAreaView style={{ position: 'absolute', bottom: 0, width: getWidth(isLandscape, 100) }}>
+        <SafeAreaView
+            pointerEvents={showParent ? 'auto' : 'none'}
+            style={{
+                position: 'absolute',
+                bottom: 0,
+                width: getWidth(isLandscape, 100),
+                opacity: showParent ? 1 : 0,
+            }}>
           <View>
             {!readMore && !isLandscape && <FeedDescriptionSection
             readMore={readMore}
