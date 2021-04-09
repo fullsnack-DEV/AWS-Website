@@ -192,6 +192,12 @@ const addPlayerReview = (playerId, gameId, params, authContext) => makeAPIReques
   data: params,
   authContext,
 })
+const patchPlayerReview = (playerId, gameId, reviewId, params, authContext) => makeAPIRequest({
+  method: 'patch',
+  url: `${Config.BASE_URL}players/${playerId}/games/${gameId}/reviews/${reviewId}`,
+  data: params,
+  authContext,
+})
 const addRefereeReview = (refereeId, gameId, params, authContext) => makeAPIRequest({
   method: 'post',
   url: `${Config.BASE_URL}referees/${refereeId}/games/${gameId}/reviews`,
@@ -326,4 +332,5 @@ export {
   getGameNextFeed,
   getRecentGameDetails,
   getShortsList,
+  patchPlayerReview,
 }

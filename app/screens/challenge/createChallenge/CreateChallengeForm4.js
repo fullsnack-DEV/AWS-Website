@@ -216,7 +216,7 @@ export default function CreateChallengeForm4({ navigation, route }) {
           <TCThinDivider />
           <TCInfoField
             title={'Address'}
-            value={bodyParams.venue.address}
+            value={bodyParams.venue.address ?? bodyParams.venue.description}
             marginLeft={30}
             titleStyle={{ fontSize: 16 }}
           />

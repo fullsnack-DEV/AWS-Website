@@ -140,6 +140,12 @@ const Referees = ({
   const renderReferees = useCallback(
     ({ item }) => {
       console.log('Referee Row:=>', item);
+
+      console.log('gameData?.status === GameStatus.ended', gameData?.status === GameStatus.ended);
+      console.log('reservationDetail?.status !== RefereeReservationStatus.offered', item?.status !== RefereeReservationStatus.offered);
+      console.log('!checkReviewExpired(gameData?.actual_enddatetime)', !checkReviewExpired(gameData?.actual_enddatetime));
+      console.log('!isAdmin', !isAdmin);
+
       const entity = authContext?.entity;
       const reservationDetail = item; // item?.reservation
       return (
