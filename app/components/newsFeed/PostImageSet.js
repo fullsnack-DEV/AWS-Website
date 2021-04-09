@@ -30,7 +30,8 @@ function PostImageSet({
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
 
   const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+    // setModalVisible(!isModalVisible);
+    navigation.navigate('FeedViewScreen', { feedItem: item, currentPage: itemNumber })
   };
 
   return (

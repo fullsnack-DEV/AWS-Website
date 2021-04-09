@@ -3,6 +3,8 @@ import { View } from 'react-native';
 import TCZoomableImage from '../../TCZoomableImage';
 import { getHeight, getWidth } from '../../../utils';
 
+// const sourceURL = 'https://source.unsplash.com/random?orientation=landscape';
+
 const FeedImageView = ({
     setShowParent,
     sourceData,
@@ -18,6 +20,7 @@ const FeedImageView = ({
             onClick={setShowParent}
             source={{ uri: sourceData?.url ?? '' }}
             style={{
+                resizeMode: 'contain',
                 width: getWidth(isLandscape, 100),
                 height: getHeight(isLandscape, 100),
             }}

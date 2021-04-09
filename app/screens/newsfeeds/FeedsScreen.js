@@ -23,7 +23,6 @@ import { ImageUploadContext } from '../../context/GetContexts';
 import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
 import { widthPercentageToDP as wp } from '../../utils';
-// import TCButton from '../../components/TCButton';
 
 const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
@@ -277,9 +276,6 @@ const FeedsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.mainContainer}>
-      {/* <TCButton title={'d'} onPress={() => { */}
-      {/*  navigation.navigate('FeedViewScreen', { feedItem: postData?.[5] }) */}
-      {/* }}/> */}
       <ActivityLoader visible={loading} />
       {renderTopHeader}
       {firstTimeLoading
