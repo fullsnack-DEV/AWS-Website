@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, {
   useEffect,
   useState,
@@ -9,7 +10,6 @@ import React, {
 import {
  Text, View, StyleSheet, FlatList,
  } from 'react-native';
-import _ from 'lodash';
 import ActionSheet from 'react-native-actionsheet';
 import { useIsFocused } from '@react-navigation/native';
 import fonts from '../../../../Constants/Fonts';
@@ -122,11 +122,16 @@ const Referees = ({
       case RefereeReservationStatus.cancelled:
         statusData = { status: 'Cancelled', color: colors.greeColor };
         break;
+      case RefereeReservationStatus.declined:
+        statusData = { status: 'Declined', color: colors.grayColor };
+        break;
       case RefereeReservationStatus.pendingpayment:
         statusData = { status: 'Pending payment', color: colors.yellowColor };
         break;
       case RefereeReservationStatus.offered:
-        if (isExpired) { statusData = { status: 'Expired', color: colors.userPostTimeColor }; } else statusData = { status: 'Sent', color: colors.yellowColor };
+        if (isExpired) {
+          statusData = { status: 'Expired', color: colors.userPostTimeColor };
+        } else statusData = { status: 'Sent', color: colors.yellowColor };
         break;
       case RefereeReservationStatus.changeRequest:
         statusData = { status: 'Change requested', color: colors.yellowColor };
@@ -139,12 +144,11 @@ const Referees = ({
 
   const renderReferees = useCallback(
     ({ item }) => {
-      console.log('Referee Row:=>', item);
-
-      console.log('gameData?.status === GameStatus.ended', gameData?.status === GameStatus.ended);
-      console.log('reservationDetail?.status !== RefereeReservationStatus.offered', item?.status !== RefereeReservationStatus.offered);
-      console.log('!checkReviewExpired(gameData?.actual_enddatetime)', !checkReviewExpired(gameData?.actual_enddatetime));
-      console.log('!isAdmin', !isAdmin);
+      console.log('Referee Condi:=>', ![
+        RefereeReservationStatus.offered,
+        RefereeReservationStatus.cancelled,
+        RefereeReservationStatus.declined,
+      ].includes(item?.status));
 
       const entity = authContext?.entity;
       const reservationDetail = item; // item?.reservation
@@ -155,9 +159,13 @@ const Referees = ({
           myUserId={myUserId}
           isShowReviewButton={
             gameData?.status === GameStatus.ended
-            && reservationDetail?.status !== RefereeReservationStatus.offered
+            && ![
+              RefereeReservationStatus.offered,
+              RefereeReservationStatus.cancelled,
+              RefereeReservationStatus.declined,
+            ].includes(reservationDetail?.status)
             && !checkReviewExpired(gameData?.actual_enddatetime)
-            && !isAdmin
+            && isAdmin
           }
           isReviewed={!!item?.referee?.review_id}
           followUser={followUser}

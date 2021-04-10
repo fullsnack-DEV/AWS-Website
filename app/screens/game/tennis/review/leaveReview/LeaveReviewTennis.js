@@ -38,6 +38,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
+  const { selectedTeam } = route?.params;
+  console.log('selectedTeam:=>', selectedTeam);
   const [reviewsData, setReviewsData] = useState(currentForm === 1 ? {
 
     player_id: route?.params?.gameData?.home_team?.user_id,

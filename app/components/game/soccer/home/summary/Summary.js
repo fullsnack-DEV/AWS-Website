@@ -1,5 +1,10 @@
 import React, {
-    useEffect, useState, useRef, useContext, useMemo, useCallback,
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  useMemo,
+  useCallback,
 } from 'react';
 import {
   View,
@@ -25,9 +30,7 @@ import TCGradientButton from '../../../../TCGradientButton';
 import colors from '../../../../../Constants/Colors';
 import ApproveDisapprove from './approveDisapprove/ApproveDisapprove';
 import TCInnerLoader from '../../../../TCInnerLoader';
-import {
-  checkReviewExpired,
-} from '../../../../../utils/gameUtils';
+import { checkReviewExpired } from '../../../../../utils/gameUtils';
 import fonts from '../../../../../Constants/Fonts';
 import strings from '../../../../../Constants/String';
 import GameFeed from '../../../common/summary/GameFeed';
@@ -195,7 +198,9 @@ const Summary = ({
           [...homeTeamRoasters, ...awayTeamRoasters].includes(
             authContext.entity.uid,
           )
-        ) { setLineUpUser(true); }
+        ) {
+          setLineUpUser(true);
+        }
 
         for (let i = 0; i < homeTeamPlayers.length; i++) {
           if (homeTeamPlayers?.[i]?.member_id === authContext.entity.uid) {
@@ -229,7 +234,10 @@ const Summary = ({
               break;
             }
           }
-          const data = [...gameData?.referees ?? [], ...gameData?.scorekeepers ?? []]
+          const data = [
+            ...(gameData?.referees ?? []),
+            ...(gameData?.scorekeepers ?? []),
+          ];
           if (
             data.some(
               (obj) => obj?.referee_id === authContext.entity.uid
@@ -247,44 +255,62 @@ const Summary = ({
   };
   const showLeaveReviewButton = () => lineUpUser || isRefereeAdmin || isScorekeeperAdmin;
 
-  const getRefereeReviewsData = useCallback((item) => {
-    setLoading(true);
-    getGameReview(gameData?.game_id, item?.review_id, authContext)
-      .then((response) => {
-        console.log('Get review of referee::=>', response.payload);
-        navigation.navigate('RefereeReviewScreen', {
-          gameReviewData: response.payload,
-          gameData,
-          userData: item,
-          sliderAttributesForReferee,
-          starAttributesForReferee,
+  const getRefereeReviewsData = useCallback(
+    (item) => {
+      setLoading(true);
+      getGameReview(gameData?.game_id, item?.review_id, authContext)
+        .then((response) => {
+          console.log('Get review of referee::=>', response.payload);
+          navigation.navigate('RefereeReviewScreen', {
+            gameReviewData: response.payload,
+            gameData,
+            userData: item,
+            sliderAttributesForReferee,
+            starAttributesForReferee,
+          });
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
-      });
-  }, [authContext, gameData, navigation, sliderAttributesForReferee, starAttributesForReferee]);
-  const getScorekeeperReviewsData = useCallback((item) => {
-    setLoading(true);
-    getGameReview(gameData?.game_id, item?.review_id, authContext)
-      .then((response) => {
-        console.log('Get review of scorekeeper::=>', response.payload);
-        navigation.navigate('ScorekeeperReviewScreen', {
-          gameReviewData: response.payload,
-          gameData,
-          userData: item,
-          sliderAttributesForScorekeeper,
-          starAttributesForScorekeeper,
+    },
+    [
+      authContext,
+      gameData,
+      navigation,
+      sliderAttributesForReferee,
+      starAttributesForReferee,
+    ],
+  );
+  const getScorekeeperReviewsData = useCallback(
+    (item) => {
+      setLoading(true);
+      getGameReview(gameData?.game_id, item?.review_id, authContext)
+        .then((response) => {
+          console.log('Get review of scorekeeper::=>', response.payload);
+          navigation.navigate('ScorekeeperReviewScreen', {
+            gameReviewData: response.payload,
+            gameData,
+            userData: item,
+            sliderAttributesForScorekeeper,
+            starAttributesForScorekeeper,
+          });
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
-      });
-  }, [authContext, gameData, navigation, sliderAttributesForScorekeeper, starAttributesForScorekeeper]);
+    },
+    [
+      authContext,
+      gameData,
+      navigation,
+      sliderAttributesForScorekeeper,
+      starAttributesForScorekeeper,
+    ],
+  );
 
   const getGameReviewsData = useCallback((reviewID) => {
     setLoading(true);
@@ -306,354 +332,455 @@ const Summary = ({
       });
   }, []);
 
-  const reviewOperationsActionSheetOptions = useMemo(() => (gameData?.review_id
-          ? [
-              strings.editReviewForTeams,
-              strings.reviewForReferees,
-              strings.cancel,
+  const reviewOperationsActionSheetOptions = useMemo(
+    () => (gameData?.review_id
+        ? [
+            strings.editReviewForTeams,
+            strings.reviewForReferees,
+            strings.cancel,
           ]
-          : [
-              strings.reviewForTeams,
-              strings.reviewForReferees,
-              strings.cancel,
-          ]), [gameData?.review_id]);
+        : [strings.reviewForTeams, strings.reviewForReferees, strings.cancel]),
+    [gameData?.review_id],
+  );
 
-  const onReviewActionsheetItemPress = useCallback((index, sections) => {
-          console.log('Sections:=>', sections);
-          if (index === 0) {
-              console.log('gameData?.review_id:=>', gameData?.review_id);
-              if (gameData?.review_id) {
-                  getGameReviewsData();
-              } else {
-                  navigation.navigate('LeaveReview', {
-                      gameData,
-                      sliderAttributes,
-                      starAttributes,
-                  });
-              }
-          } else if (index === 1) {
-              navigation.navigate('ReviewRefereeList', {
-                  gameData,
-                  sliderAttributesForReferee,
-                  starAttributesForReferee,
-              });
-          }
-  }, [gameData, getGameReviewsData, navigation, sliderAttributes, sliderAttributesForReferee, starAttributes, starAttributesForReferee])
-
-    const renderScoreRecordingButton = useMemo(() => (isAdmin || isRefereeAdmin || isScorekeeperAdmin) && (
-      <TCGradientButton
-        onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
+  const onReviewActionsheetItemPress = useCallback(
+    (index, sections) => {
+      console.log('Sections:=>', sections);
+      if (index === 0) {
+        console.log('gameData?.review_id:=>', gameData?.review_id);
+        if (gameData?.review_id) {
+          getGameReviewsData();
+        } else {
+          navigation.navigate('LeaveReview', {
+            gameData,
+            sliderAttributes,
+            starAttributes,
+          });
         }
-        startGradientColor={colors.yellowColor}
-        endGradientColor={colors.themeColor}
-        title={'RECORD MATCH'}
-        style={{
+      } else if (index === 1) {
+        navigation.navigate('ReviewRefereeList', {
+          gameData,
+          sliderAttributesForReferee,
+          starAttributesForReferee,
+        });
+      }
+    },
+    [
+      gameData,
+      getGameReviewsData,
+      navigation,
+      sliderAttributes,
+      sliderAttributesForReferee,
+      starAttributes,
+      starAttributesForReferee,
+    ],
+  );
+
+  const renderScoreRecordingButton = useMemo(
+    () => (isAdmin || isRefereeAdmin || isScorekeeperAdmin) && (
+      <TCGradientButton
+          onPress={() => navigation.navigate('SoccerRecording', { gameId: gameData?.game_id })
+          }
+          startGradientColor={colors.yellowColor}
+          endGradientColor={colors.themeColor}
+          title={'RECORD MATCH'}
+          style={{
             borderRadius: 5,
-        }}
-        outerContainerStyle={{
+          }}
+          outerContainerStyle={{
             marginHorizontal: 5,
             marginTop: 5,
             marginBottom: 0,
-        }}
-    />
-    ), [gameData?.game_id, isAdmin, isRefereeAdmin, isScorekeeperAdmin, navigation]);
-
-  const renderLeaveAReviewButton = useMemo(() => !loading
-  && gameData?.status === 'ended'
-  && !checkReviewExpired(gameData?.actual_enddatetime)
-  && !isAdmin
-  && showLeaveReviewButton() && (
-    <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
-      <View>
-        <TCGradientButton
-                  onPress={() => {
-                      if (playerFrom !== '') {
-                          if (gameData?.home_review_id) {
-                              getGameReviewsData(gameData?.home_review_id);
-                          } else if (gameData?.away_review_id) {
-                              getGameReviewsData(gameData?.away_review_id);
-                          } else {
-                              navigation.navigate('LeaveReview', {
-                                  gameData,
-                                  selectedTeam: playerFrom === 'home' ? 'away' : 'home',
-                                  sliderAttributes,
-                                  starAttributes,
-                              });
-                          }
-                      } else {
-                          setIsPopupVisible(true);
-                      }
-                  }}
-                  startGradientColor={colors.yellowColor}
-                  endGradientColor={colors.themeColor}
-                  title={leaveReviewText?.toUpperCase()}
-                  style={{
-                      borderRadius: 5,
-                  }}
-                  outerContainerStyle={{
-                      marginHorizontal: 5,
-                      marginTop: 5,
-                      marginBottom: 0,
-                  }}
-              />
-      </View>
-    </View>
-  ), [gameData, getGameReviewsData, isAdmin, leaveReviewText, loading, navigation, playerFrom, showLeaveReviewButton, sliderAttributes, starAttributes])
-
-    const renderApproveDisapproveSection = useMemo(() => gameData?.status === 'ended' && isAdmin && (
-      <ApproveDisapprove
-            getGameData={getGameData}
-            navigation={navigation}
-            gameId={gameData?.game_id}
-            gameData={gameData}
-            approveDisapproveGameScore={approveDisapproveGameScore}
+          }}
         />
-    ), [approveDisapproveGameScore, gameData, getGameData, isAdmin, navigation])
+      ),
+    [
+      gameData?.game_id,
+      isAdmin,
+      isRefereeAdmin,
+      isScorekeeperAdmin,
+      navigation,
+    ],
+  );
 
-    const renderMatchRecordsSection = useMemo(() => (
-      <MatchRecords
-            navigation={navigation}
-            isAdmin={isAdmin}
-            gameId={gameData?.game_id}
-            gameData={gameData}
-            getGameMatchRecords={getGameMatchRecords}
-        />
-    ), [gameData, getGameMatchRecords, isAdmin, navigation])
-
-    const renderSpecialRulesSection = useMemo(() => (
-      <SpecialRules
-            specialRulesData={gameData?.special_rule ?? ''}
-            isAdmin={isAdmin}
-        />
-    ), [gameData?.special_rule, isAdmin])
-
-    const renderRefereesSection = useMemo(() => (
-      <Referees
-            getRefereeReservation={getRefereeReservation}
-            gameData={gameData}
-            navigation={navigation}
-            isAdmin={isAdmin}
-            userRole={userRole}
-            followUser={followSoccerUser}
-            unFollowUser={unFollowSoccerUser}
-            onReviewPress={(referee) => {
-              console.log('Referee Pressed:=>', referee);
-                if (referee?.review_id) {
-                    getRefereeReviewsData(referee);
+  const renderLeaveAReviewButton = useMemo(
+    () => !loading
+      && gameData?.status === 'ended'
+      && !checkReviewExpired(gameData?.actual_enddatetime)
+      && !isAdmin
+      && showLeaveReviewButton() && (
+        <View style={{ backgroundColor: colors.whiteColor, marginTop: 5 }}>
+          <View>
+            <TCGradientButton
+              onPress={() => {
+                if (playerFrom !== '') {
+                  if (gameData?.home_review_id) {
+                    getGameReviewsData(gameData?.home_review_id);
+                  } else if (gameData?.away_review_id) {
+                    getGameReviewsData(gameData?.away_review_id);
+                  } else {
+                    navigation.navigate('LeaveReview', {
+                      gameData,
+                      selectedTeam: playerFrom === 'home' ? 'away' : 'home',
+                      sliderAttributes,
+                      starAttributes,
+                    });
+                  }
+                } else {
+                  setIsPopupVisible(true);
                 }
-                navigation.navigate('RefereeReviewScreen', {
-                    gameData,
-                    userData: referee,
-                    sliderAttributesForReferee,
-                    starAttributesForReferee,
-                });
-            }}
-        />
-    ), [followSoccerUser, gameData, getRefereeReservation, getRefereeReviewsData, isAdmin, navigation, sliderAttributesForReferee, starAttributesForReferee, unFollowSoccerUser, userRole])
-
-    const renderScorekeeperSection = useMemo(() => (
-      <Scorekeepers
-            getScorekeeperReservation={getScorekeeperReservation}
-            followUser={followSoccerUser}
-            unFollowUser={unFollowSoccerUser}
-            gameData={gameData}
-            navigation={navigation}
-            isAdmin={isAdmin}
-            userRole={userRole}
-            onReviewPress={(scorekeeper) => {
-                if (scorekeeper?.review_id) {
-                    getScorekeeperReviewsData(scorekeeper);
-                }
-                navigation.navigate('ScorekeeperReviewScreen', {
-                    gameData,
-                    userData: scorekeeper,
-                    sliderAttributesForScorekeeper,
-                    starAttributesForScorekeeper,
-                });
-            }}
-        />
-    ), [followSoccerUser, gameData, getScorekeeperReservation, getScorekeeperReviewsData, isAdmin, navigation, sliderAttributesForScorekeeper, starAttributesForScorekeeper, unFollowSoccerUser, userRole])
-
-    const renderGameFeedSection = useMemo(() => (
-      <GameFeed
-            getGameNextFeedData={getGameNextFeedData}
-            gameFeedRefs={gameFeedFlatListRef}
-            setUploadImageProgressData={setUploadImageProgressData}
-            createGamePostData={createGamePostData}
-            gameData={gameData}
-            getGameFeedData={getGameFeedData}
-            navigation={navigation}
-            currentUserData={authContext?.entity?.obj}
-            userID={authContext?.entity?.uid}
-        />
-    ), [authContext?.entity?.obj, authContext?.entity?.uid, createGamePostData, gameData, gameFeedFlatListRef, getGameFeedData, getGameNextFeedData, navigation, setUploadImageProgressData])
-
-    return (
-      <View style={styles.mainContainer}>
-        <TCInnerLoader visible={loading} />
-
-        <View style={{ marginBottom: hp(1), backgroundColor: colors.whiteColor, padding: 10 }}>
-          {renderScoreRecordingButton}
-          {renderLeaveAReviewButton}
+              }}
+              startGradientColor={colors.yellowColor}
+              endGradientColor={colors.themeColor}
+              title={leaveReviewText?.toUpperCase()}
+              style={{
+                borderRadius: 5,
+              }}
+              outerContainerStyle={{
+                marginHorizontal: 5,
+                marginTop: 5,
+                marginBottom: 0,
+              }}
+            />
+          </View>
         </View>
+      ),
+    [
+      gameData,
+      getGameReviewsData,
+      isAdmin,
+      leaveReviewText,
+      loading,
+      navigation,
+      playerFrom,
+      showLeaveReviewButton,
+      sliderAttributes,
+      starAttributes,
+    ],
+  );
 
-        {renderApproveDisapproveSection}
-        {renderMatchRecordsSection}
-        {renderSpecialRulesSection}
-        {renderRefereesSection}
-        {renderScorekeeperSection}
-        {renderGameFeedSection}
+  const renderApproveDisapproveSection = useMemo(
+    () => gameData?.status === 'ended'
+      && isAdmin && (
+        <ApproveDisapprove
+          getGameData={getGameData}
+          navigation={navigation}
+          gameId={gameData?.game_id}
+          gameData={gameData}
+          approveDisapproveGameScore={approveDisapproveGameScore}
+        />
+      ),
+    [approveDisapproveGameScore, gameData, getGameData, isAdmin, navigation],
+  );
 
-        {isPopupVisible && <Modal
-        backdropColor="black"
-        onBackdropPress={() => setIsPopupVisible(false)}
-        backdropOpacity={0.5}
-        animationType="slide"
-        transparent={true}
-        visible={isPopupVisible}
-        onRequestClose={() => {
-          // this.closeButtonFunction()
+  const renderMatchRecordsSection = useMemo(
+    () => (
+      <MatchRecords
+        navigation={navigation}
+        isAdmin={isAdmin}
+        gameId={gameData?.game_id}
+        gameData={gameData}
+        getGameMatchRecords={getGameMatchRecords}
+      />
+    ),
+    [gameData, getGameMatchRecords, isAdmin, navigation],
+  );
+
+  const renderSpecialRulesSection = useMemo(
+    () => (
+      <SpecialRules
+        specialRulesData={gameData?.special_rule ?? ''}
+        isAdmin={isAdmin}
+      />
+    ),
+    [gameData?.special_rule, isAdmin],
+  );
+
+  const renderRefereesSection = useMemo(
+    () => (
+      <Referees
+        getRefereeReservation={getRefereeReservation}
+        gameData={gameData}
+        navigation={navigation}
+        isAdmin={isAdmin}
+        userRole={userRole}
+        followUser={followSoccerUser}
+        unFollowUser={unFollowSoccerUser}
+        onReviewPress={(referee) => {
+          console.log('Referee Pressed:=>', referee);
+          if (referee?.review_id) {
+            getRefereeReviewsData(referee);
+          }
+          navigation.navigate('RefereeReviewScreen', {
+            gameData,
+            userData: referee,
+            sliderAttributesForReferee,
+            starAttributesForReferee,
+          });
+        }}
+      />
+    ),
+    [
+      followSoccerUser,
+      gameData,
+      getRefereeReservation,
+      getRefereeReviewsData,
+      isAdmin,
+      navigation,
+      sliderAttributesForReferee,
+      starAttributesForReferee,
+      unFollowSoccerUser,
+      userRole,
+    ],
+  );
+
+  const renderScorekeeperSection = useMemo(
+    () => (
+      <Scorekeepers
+        getScorekeeperReservation={getScorekeeperReservation}
+        followUser={followSoccerUser}
+        unFollowUser={unFollowSoccerUser}
+        gameData={gameData}
+        navigation={navigation}
+        isAdmin={isAdmin}
+        userRole={userRole}
+        onReviewPress={(scorekeeper) => {
+          if (scorekeeper?.review_id) {
+            getScorekeeperReviewsData(scorekeeper);
+          }
+          navigation.navigate('ScorekeeperReviewScreen', {
+            gameData,
+            userData: scorekeeper,
+            sliderAttributesForScorekeeper,
+            starAttributesForScorekeeper,
+          });
+        }}
+      />
+    ),
+    [
+      followSoccerUser,
+      gameData,
+      getScorekeeperReservation,
+      getScorekeeperReviewsData,
+      isAdmin,
+      navigation,
+      sliderAttributesForScorekeeper,
+      starAttributesForScorekeeper,
+      unFollowSoccerUser,
+      userRole,
+    ],
+  );
+
+  const renderGameFeedSection = useMemo(
+    () => (
+      <GameFeed
+        getGameNextFeedData={getGameNextFeedData}
+        gameFeedRefs={gameFeedFlatListRef}
+        setUploadImageProgressData={setUploadImageProgressData}
+        createGamePostData={createGamePostData}
+        gameData={gameData}
+        getGameFeedData={getGameFeedData}
+        navigation={navigation}
+        currentUserData={authContext?.entity?.obj}
+        userID={authContext?.entity?.uid}
+      />
+    ),
+    [
+      authContext?.entity?.obj,
+      authContext?.entity?.uid,
+      createGamePostData,
+      gameData,
+      gameFeedFlatListRef,
+      getGameFeedData,
+      getGameNextFeedData,
+      navigation,
+      setUploadImageProgressData,
+    ],
+  );
+
+  return (
+    <View style={styles.mainContainer}>
+      <TCInnerLoader visible={loading} />
+
+      <View
+        style={{
+          marginBottom: hp(1),
+          backgroundColor: colors.whiteColor,
+          padding: 10,
         }}>
-          <View
+        {renderScoreRecordingButton}
+        {renderLeaveAReviewButton}
+      </View>
+
+      {renderApproveDisapproveSection}
+      {renderMatchRecordsSection}
+      {renderSpecialRulesSection}
+      {renderRefereesSection}
+      {renderScorekeeperSection}
+      {renderGameFeedSection}
+
+      {isPopupVisible && (
+        <Modal
+          onBackdropPress={() => setIsPopupVisible(false)}
+          backdropOpacity={1}
+          animationType="slide"
+          hasBackdrop
           style={{
-            // height: '50%',
-            marginTop: 'auto',
-            // backgroundColor: 'blue',
+            margin: 0,
+            backgroundColor: colors.blackOpacityColor,
+          }}
+          visible={isPopupVisible}
+          onRequestClose={() => {
+            // this.closeButtonFunction()
           }}>
+          <View
+            style={{
+              // height: '50%',
+              marginTop: 'auto',
+              // backgroundColor: 'blue',
+            }}>
             <View style={styles.bottomPopupContainer}>
               <View style={styles.titlePopup}>
                 <TouchableWithoutFeedback
-                onPress={() => {
-                  setIsPopupVisible(false);
-                  setSelectedTeamForReview();
-                }}>
-                  <Image source={images.cancelImage} style={styles.closeButton} />
+                  onPress={() => {
+                    setIsPopupVisible(false);
+                    setSelectedTeamForReview();
+                  }}>
+                  <Image
+                    source={images.cancelImage}
+                    style={styles.closeButton}
+                  />
                 </TouchableWithoutFeedback>
                 <Text style={styles.startTime}>Leave a team review</Text>
                 <Text
-                style={styles.doneText}
-                onPress={() => {
-                  setIsPopupVisible(false);
-                  console.log('gameData?.review_id:=>', gameData?.review_id);
-                  if (playerFrom === '' && selectedTeamForReview) {
-                    if (selectedTeamForReview === 'home') {
-                      if (gameData?.home_review_id) {
-                        getGameReviewsData(gameData?.home_review_id);
-                      } else {
-                        navigation.navigate('LeaveReview', {
-                          gameData,
-                          selectedTeam: selectedTeamForReview,
-                          sliderAttributes,
-                          starAttributes,
-                        });
+                  style={styles.doneText}
+                  onPress={() => {
+                    setIsPopupVisible(false);
+                    console.log('gameData?.review_id:=>', gameData?.review_id);
+                    if (playerFrom === '' && selectedTeamForReview) {
+                      if (selectedTeamForReview === 'home') {
+                        if (gameData?.home_review_id) {
+                          getGameReviewsData(gameData?.home_review_id);
+                        } else {
+                          navigation.navigate('LeaveReview', {
+                            gameData,
+                            selectedTeam: selectedTeamForReview,
+                            sliderAttributes,
+                            starAttributes,
+                          });
+                        }
                       }
-                    }
-                    if (selectedTeamForReview === 'away') {
-                      if (gameData?.away_review_id) {
-                        getGameReviewsData(gameData?.away_review_id);
-                      } else {
-                        navigation.navigate('LeaveReview', {
-                          gameData,
-                          selectedTeam: selectedTeamForReview,
-                          sliderAttributes,
-                          starAttributes,
-                        });
+                      if (selectedTeamForReview === 'away') {
+                        if (gameData?.away_review_id) {
+                          getGameReviewsData(gameData?.away_review_id);
+                        } else {
+                          navigation.navigate('LeaveReview', {
+                            gameData,
+                            selectedTeam: selectedTeamForReview,
+                            sliderAttributes,
+                            starAttributes,
+                          });
+                        }
                       }
+                    } else {
+                      Alert.alert(
+                        strings.alertmessagetitle,
+                        strings.chooseTeamFirst,
+                      );
                     }
-                  } else {
-                    Alert.alert(
-                      strings.alertmessagetitle,
-                      strings.chooseTeamFirst,
-                    );
-                  }
-                }}>
+                  }}>
                   Done
                 </Text>
               </View>
               <View style={styles.separatorLine}></View>
               <View>
                 <Text
-                style={{
-                  alignSelf: 'center',
-                  marginBottom: 20,
-                  fontFamily: fonts.RRegular,
-                  fontSize: 20,
-                  color: colors.lightBlackColor,
-                }}>
+                  style={{
+                    alignSelf: 'center',
+                    marginBottom: 20,
+                    fontFamily: fonts.RRegular,
+                    fontSize: 20,
+                    color: colors.lightBlackColor,
+                  }}>
                   Choose a team to leave a review for.
                 </Text>
                 <View style={styles.entityView}>
                   <TouchableWithoutFeedback
-                  onPress={() => {
-                    setSelectedTeamForReview('home');
-                  }}>
+                    onPress={() => {
+                      setSelectedTeamForReview('home');
+                    }}>
                     {selectedTeamForReview === 'home' ? (
                       <LinearGradient
-                      colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.leftEntityView}>
+                        colors={[colors.yellowColor, colors.themeColor]}
+                        style={styles.leftEntityView}>
                         <Image
-                        source={images.teamPlaceholder}
-                        style={styles.teamProfileView}
-                      />
+                          source={images.teamPlaceholder}
+                          style={styles.teamProfileView}
+                        />
                         <Text style={styles.teamNameText} numberOfLines={2}>
                           {gameData?.home_team?.group_name}
                         </Text>
                       </LinearGradient>
-                  ) : (
-                    <View style={styles.leftEntityView}>
-                      <Image
-                        source={images.teamPlaceholder}
-                        style={styles.teamProfileView}
-                      />
-                      <Text style={styles.teamNameTextBlack} numberOfLines={2}>
-                        {gameData?.home_team?.group_name}
-                      </Text>
-                    </View>
-                  )}
+                    ) : (
+                      <View style={styles.leftEntityView}>
+                        <Image
+                          source={images.teamPlaceholder}
+                          style={styles.teamProfileView}
+                        />
+                        <Text
+                          style={styles.teamNameTextBlack}
+                          numberOfLines={2}>
+                          {gameData?.home_team?.group_name}
+                        </Text>
+                      </View>
+                    )}
                   </TouchableWithoutFeedback>
 
                   <Text style={styles.vs}>VS</Text>
                   <TouchableWithoutFeedback
-                  onPress={() => {
-                    setSelectedTeamForReview('away');
-                  }}>
+                    onPress={() => {
+                      setSelectedTeamForReview('away');
+                    }}>
                     {selectedTeamForReview === 'away' ? (
                       <LinearGradient
-                      colors={[colors.yellowColor, colors.themeColor]}
-                      style={styles.rightEntityView}>
+                        colors={[colors.yellowColor, colors.themeColor]}
+                        style={styles.rightEntityView}>
                         <Image
-                        source={images.teamPlaceholder}
-                        style={styles.teamProfileView}
-                      />
+                          source={images.teamPlaceholder}
+                          style={styles.teamProfileView}
+                        />
                         <Text style={styles.teamNameText} numberOfLines={2}>
                           {gameData?.away_team?.group_name}
                         </Text>
                       </LinearGradient>
-                  ) : (
-                    <View style={styles.rightEntityView}>
-                      <Image
-                        source={images.teamPlaceholder}
-                        style={styles.teamProfileView}
-                      />
-                      <Text style={styles.teamNameTextBlack} numberOfLines={2}>
-                        {gameData?.away_team?.group_name}
-                      </Text>
-                    </View>
-                  )}
+                    ) : (
+                      <View style={styles.rightEntityView}>
+                        <Image
+                          source={images.teamPlaceholder}
+                          style={styles.teamProfileView}
+                        />
+                        <Text
+                          style={styles.teamNameTextBlack}
+                          numberOfLines={2}>
+                          {gameData?.away_team?.group_name}
+                        </Text>
+                      </View>
+                    )}
                   </TouchableWithoutFeedback>
                 </View>
               </View>
             </View>
           </View>
-        </Modal>}
+        </Modal>
+      )}
 
-        <ActionSheet
+      <ActionSheet
         ref={reviewOpetions}
         options={reviewOperationsActionSheetOptions}
         cancelButtonIndex={2}
         onPress={onReviewActionsheetItemPress}
       />
-      </View>
+    </View>
   );
 };
 

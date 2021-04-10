@@ -546,9 +546,15 @@ const strings = {
   punchualityDescScorekeeper: 'Did the the scorekeeper arrive at the match place on time?',
   chooseTeamFirst: 'Please choose any one team for review.',
   descriptionScorekeeperPlaceholder: 'Describe yourself as a scorekeeper',
+
   editReviewText: 'EDIT REVIEW FOR A TEAM',
   leaveReviewText: 'LEAVE REVIEW FOR A TEAM',
   leaveOrEditReviewText: 'LEAVE OR EDIT YOUR REVIEW',
+
+  editReviewPlayerText: 'EDIT REVIEW FOR A PLAYER',
+  leaveReviewplayerText: 'LEAVE REVIEW FOR A PLAYER',
+  leaveOrEditReviewPlayerText: 'LEAVE OR EDIT YOUR REVIEW',
+
   bookReferee: 'BOOK REFEREE',
   bookScorekeeper: 'BOOK SCOREKEEPER',
   refereeRequestScreenTitle: 'Referee Reservation Request',

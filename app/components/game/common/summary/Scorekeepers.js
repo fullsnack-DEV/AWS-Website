@@ -120,6 +120,9 @@ const Scorekeepers = ({
       case ScorekeeperReservationStatus.cancelled:
         statusData = { status: 'Cancelled', color: colors.greeColor };
         break;
+        case ScorekeeperReservationStatus.declined:
+          statusData = { status: 'Declined', color: colors.grayColor };
+          break;
       case ScorekeeperReservationStatus.pendingpayment:
         statusData = { status: 'Pending payment', color: colors.yellowColor };
         break;
@@ -149,10 +152,13 @@ const Scorekeepers = ({
           myUserId={myUserId}
           isShowReviewButton={
             gameData?.status === 'ended'
-            && reservationDetail?.status
-              !== ScorekeeperReservationStatus.offered
+            && ![
+              ScorekeeperReservationStatus.offered,
+              ScorekeeperReservationStatus.cancelled,
+              ScorekeeperReservationStatus.declined,
+            ].includes(reservationDetail?.status)
             && !checkReviewExpired(gameData?.actual_enddatetime)
-            && !isAdmin
+            && isAdmin
           }
           isReviewed={!!item?.scorekeeper?.review_id}
           followUser={followUser}
