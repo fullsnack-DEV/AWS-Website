@@ -478,9 +478,9 @@ function ShortsVideoView({
                 resizeMode={'cover'}
               />
             </TouchableOpacity>
-            {commentCount > 0 && (
-              <Text style={styles.commentlengthStyle}>{commentCount}</Text>
-            )}
+
+            <Text style={styles.commentlengthStyle}>{commentCount > 0 ? commentCount : ' '}</Text>
+
           </View>
 
           <View>

@@ -225,6 +225,8 @@ export default function CreateChallengeForm1({ navigation, route }) {
       country:
         route?.params?.venueObj?.terms[termLength - 1]?.value
         || venueData?.country,
+      lat: cordinate?.latitude,
+      long: cordinate?.longitude,
     };
     bodyParams.sport = sport;
     bodyParams.responsible_to_secure_venue = secureVenue === 0
@@ -464,7 +466,7 @@ export default function CreateChallengeForm1({ navigation, route }) {
                 onPress={() => {
                   setVenue(0);
                   if (route && route.params && route.params.venueObj) {
-                    getLatLongData(route.params.venueObj.description);
+                    getLatLongData(route.params.venueObj.description || route.params.venueObj.address);
                   }
                 }}>
                 <Image

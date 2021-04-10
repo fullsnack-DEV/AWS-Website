@@ -433,8 +433,8 @@ export default function LocalHomeScreen({ navigation }) {
           data={sports}
           keyExtractor={keyExtractor}
           renderItem={sportsListView}
-          initialScrollIndex={sports.indexOf(selectedSport)}
-          initialNumToRender={sports.length}
+          // initialScrollIndex={sports.indexOf(selectedSport)}
+           initialNumToRender={sports.length}
           onScrollToIndexFailed={(info) => {
             const wait = new Promise((resolve) => setTimeout(resolve, 500));
             wait.then(() => {
