@@ -116,6 +116,12 @@ const getTeamReviews = (teamId, authContext) => makeAPIRequest({
   authContext,
 })
 
+const getUserReviews = (userId, authContext) => makeAPIRequest({
+  method: 'get',
+  url: `${Config.BASE_URL}/users/${userId}/reviews`,
+  authContext,
+})
+
 const getGameLineUp = (teamId, gameId, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}teams/${teamId}/games/${gameId}/roster?fetchNonRoster=true&reviewStatus=true`,
@@ -333,4 +339,5 @@ export {
   getRecentGameDetails,
   getShortsList,
   patchPlayerReview,
+  getUserReviews,
 }
