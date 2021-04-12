@@ -61,28 +61,32 @@ const TagMatches = ({ gamesData, selectedMatch, onSelectMatch }) => {
         )
     }, [onSelectMatch, selectedMatch])
 
+    const ListHeaderComponent = () => (
+      <View>
+        {/* First Team Name */}
+        <RowTitleWithTextInput title={'Team 1'}/>
+
+        {/* Second Team Name */}
+        <RowTitleWithTextInput title={'Team 2'}/>
+
+        {/* Sports */}
+        <RowTitleWithTextInput title={'Sports'}/>
+
+        {/* Date */}
+        <RowTitleWithTextInput title={'Date'}/>
+      </View>
+    )
+
     return (
       <View style={styles.mainContainer}>
         {/*  Row View */}
-        <View>
-          {/* First Team Name */}
-          <RowTitleWithTextInput title={'Team 1'}/>
 
-          {/* Second Team Name */}
-          <RowTitleWithTextInput title={'Team 2'}/>
-
-          {/* Sports */}
-          <RowTitleWithTextInput title={'Sports'}/>
-
-          {/* Date */}
-          <RowTitleWithTextInput title={'Date'}/>
-
-          <FlatList
+        <FlatList
+            ListHeaderComponent={ListHeaderComponent}
               keyExtractor={(item) => item?.game_id}
               data={gamesData}
               renderItem={renderGamesData}
           />
-        </View>
       </View>
     )
 }

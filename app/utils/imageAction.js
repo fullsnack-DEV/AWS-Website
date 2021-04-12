@@ -2,6 +2,7 @@ import fs from 'react-native-fs';
 import axios from 'axios';
 import { decode as atob } from 'base-64';
 import ImageResizer from 'react-native-image-resizer';
+import _ from 'lodash';
 import getImagePreSignedURL from '../api/Media';
 
 export const MAX_UPLOAD_POST_ASSETS = 12
@@ -105,7 +106,7 @@ const originalImageSize = (imageData) => {
 
   // const heightRatio = imageData.height > 400 ?
 }
-const uploadImage = async (data, authContext, cancelToken) => {
+const uploadImage = async (data, authContext, cancelToken, preSignedUrls) => {
   const image = {
     ...data,
     thumbURL: '',
@@ -120,17 +121,13 @@ const uploadImage = async (data, authContext, cancelToken) => {
      resOriginal = await ImageResizer.createResizedImage(image.path, originalImgData.width, originalImgData.height, 'JPEG', O_COMPRESSION_RATE, 0, null)
   }
 
-  return getImagePreSignedURL({ count: 2 }, authContext, cancelToken).then((response) => {
-    const preSignedUrls = response.payload.preSignedUrls || [];
-    if (preSignedUrls.length !== 2) {
-      throw new Error('failed-presigned-url')
-    }
-    const promises = [uploadImageOnPreSignedUrls({
-      url: preSignedUrls[0],
-      uri: image?.mime?.split('/')?.[0] === 'image' ? resOriginal.uri : image.path,
-      type: image.mime,
-      cancelToken,
-    }),
+    const promises = [
+        uploadImageOnPreSignedUrls({
+          url: preSignedUrls[0],
+          uri: image?.mime?.split('/')?.[0] === 'image' ? resOriginal.uri : image.path,
+          type: image.mime,
+          cancelToken,
+      }),
       uploadImageOnPreSignedUrls({
         url: preSignedUrls[1],
         uri: image?.mime?.split('/')?.[0] === 'image' ? resThumb.uri : image.path,
@@ -147,7 +144,6 @@ const uploadImage = async (data, authContext, cancelToken) => {
         type: image?.mime?.split('/')?.[0],
       })
     })
-  });
 };
 
 const uploadImages = (images, authContext, cb = () => {}, cancelRequest = () => {}) => new Promise((resolve) => {
@@ -155,16 +151,22 @@ const uploadImages = (images, authContext, cb = () => {}, cancelRequest = () => 
   const promises = [];
   const source = axios.CancelToken.source();
   cancelRequest(source);
-  images.forEach((item) => promises.push(uploadImage(item, authContext, source.token)));
-  cb(0, images.length);
-  for (const promise of promises) {
-    // eslint-disable-next-line no-loop-func
-    promise.then((image) => {
-      completed += 1;
-      cb(completed, images.length, image);
-    });
-  }
-  resolve(Promise.all(promises));
+  getImagePreSignedURL({ count: images?.length * 2 }, authContext, source.token).then(async (responsePresignedURLS) => {
+    const preSignedUrls = await _.chunk(responsePresignedURLS?.payload?.preSignedUrls, 2);
+    console.log('Presigned URLs : ', preSignedUrls);
+    if (preSignedUrls?.length > 0) {
+      images.forEach((item, index) => promises.push(uploadImage(item, authContext, source.token, preSignedUrls?.[index])));
+      cb(0, images.length);
+      for (const promise of promises) {
+        // eslint-disable-next-line no-loop-func
+        promise.then((image) => {
+          completed += 1;
+          cb(completed, images.length, image);
+        });
+      }
+      resolve(Promise.all(promises));
+    }
+  });
 });
 
 export default uploadImages;

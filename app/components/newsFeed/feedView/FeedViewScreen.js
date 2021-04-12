@@ -22,7 +22,6 @@ const FeedViewScreen = ({ navigation, route }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showParent, setShowsParent] = useState(true);
 
-  console.log('CU', route?.params?.currentPage)
   useEffect(() => {
     if (route?.params?.feedItem) {
       setFeedItem({ ...route?.params?.feedItem })
@@ -50,13 +49,9 @@ const FeedViewScreen = ({ navigation, route }) => {
   }, [isFocused])
 
   const orientationChange = useCallback((orientation) => {
-    if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) {
-      setIsFullScreen(true);
-      setisLandscape(true);
-    } else {
-      setisLandscape(false);
-      setIsFullScreen(false);
-    }
+    console.log(orientation);
+    if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) setisLandscape(true);
+    else setisLandscape(false);
   }, []);
 
   const renderTopView = useMemo(() => (
@@ -104,7 +99,7 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   const renderPostView = useMemo(() => (
     <FeedPostView
-          currentPage={route?.params?.currentPage ?? 0}
+          currentPage={route?.params?.currentPage}
           setShowParent={setShowParent}
           isLandscape={isLandscape}
           feedSubItem={feedSubItem}

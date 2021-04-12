@@ -1,7 +1,9 @@
 import React, {
     useCallback, useMemo, useRef, useState, Fragment, useEffect,
 } from 'react';
-import { Platform, Text, View } from 'react-native';
+import {
+ Platform, Text, View,
+} from 'react-native';
 import Video from 'react-native-video';
 import IosSlider from '@react-native-community/slider'
 import AndroidSlider from 'rn-range-slider';
@@ -51,8 +53,10 @@ const FeedVideoView = ({
         const gradientColors = [shadeColor, shadeColor, 'transparent', shadeColor, shadeColor]
         return (
           <LinearGradient
+                pointerEvents={showParent ? 'auto' : 'none'}
                 colors={gradientColors}
                 style={{
+                    opacity: showParent ? 1 : 0,
                     zIndex: 1,
                     position: 'absolute',
                     top: 0,
@@ -78,7 +82,7 @@ const FeedVideoView = ({
             </TouchableOpacity>}
           </LinearGradient>
         )
-    }, [onPaused, paused, videoLoader])
+    }, [onPaused, paused, showParent, videoLoader])
 
     const renderVideoLoader = useMemo(() => videoLoader && (
       <View
@@ -167,7 +171,10 @@ const FeedVideoView = ({
     const onFullScreen = useCallback(() => setIsFullScreen(!isFullScreen), [isFullScreen, setIsFullScreen])
 
     const renderSeekBar = useMemo(() => (
-      <View style={{
+      <View
+          pointerEvents={showParent ? 'auto' : 'none'}
+          style={{
+          opacity: showParent ? 1 : 0,
           paddingHorizontal: 10,
           height: 50,
           width: getWidth(isLandscape, 100),
@@ -181,7 +188,7 @@ const FeedVideoView = ({
               15,
               Platform?.OS === 'ios' ? 15 : 22,
           ),
-      }}>
+          }}>
         <Text style={{
             textAlign: 'center',
             fontSize: 12,
@@ -263,7 +270,7 @@ const FeedVideoView = ({
           />
         </TouchableOpacity>
       </View>
-    ), [currentTime, isFullScreen, isLandscape, isMute, onFullScreen, paused, renderRail, renderRailSelected, renderThumb, sourceData.duration])
+    ), [currentTime, isFullScreen, isLandscape, isMute, onFullScreen, paused, renderRail, renderRailSelected, renderThumb, showParent, sourceData.duration])
 
     const renderVideo = useMemo(() => (
       <Fragment>
@@ -288,6 +295,7 @@ const FeedVideoView = ({
                   source={{ uri: sourceData?.url ?? '', cache: true }}
                   // source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', cache: true }} // Landscape Video
                   style={{ height: getHeight(isLandscape, 100), width: getWidth(isLandscape, 100) }}
+                  fullscreen={Platform.OS === 'android' ? isFullScreen : false}
                   onLoad={() => videoPlayerRef.current.seek(0)}
                   resizeMode={'contain'}
                   fullscreenAutorotate={true}
@@ -295,7 +303,7 @@ const FeedVideoView = ({
               />
         </View>
       </Fragment>
-        ), [isFullScreen, isLandscape, isMute, onProgress, paused, sourceData?.url])
+        ), [isFullScreen, isLandscape, isMute, onProgress, paused, setShowParent, sourceData?.url])
 
     return (
       <TouchableWithoutFeedback onPress={setShowParent} style={{
@@ -305,8 +313,8 @@ const FeedVideoView = ({
           height: getHeight(isLandscape, 100),
       }}>
         {renderVideoLoader}
-        {showParent && renderPlayPauseButton}
-        {showParent && renderSeekBar}
+        {renderPlayPauseButton}
+        {renderSeekBar}
         {renderVideo}
       </TouchableWithoutFeedback>
     )
