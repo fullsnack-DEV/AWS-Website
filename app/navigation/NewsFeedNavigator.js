@@ -52,6 +52,7 @@ import ScorekeeperBookingDateAndTime
     from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import FeedTaggedScreen from '../components/newsFeed/feedView/FeedTaggedScreen';
 
 const Stack = createStackNavigator();
 
@@ -642,6 +643,12 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
           name={'FeedViewScreen'}
           component={FeedViewScreen}
+          options={{ headerShown: false }}
+      />
+
+    <Stack.Screen
+          name={'FeedTaggedScreen'}
+          component={FeedTaggedScreen}
           options={{ headerShown: false }}
       />
   </Stack.Navigator>

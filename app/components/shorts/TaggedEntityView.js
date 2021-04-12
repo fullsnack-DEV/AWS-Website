@@ -14,20 +14,22 @@ export default function TaggedEntityView({
   teamTitle,
   teamCityName,
   onProfilePress,
+  titleStyle,
+  cityStyle,
 }) {
   return (
-    <View style={styles.topViewContainer}>
-      <TouchableOpacity onPress={onProfilePress} style={styles.profileView}>
+    <TouchableOpacity style={styles.topViewContainer} onPress={onProfilePress} activeOpacity={0.8}>
+      <View style={styles.profileView}>
         <Image source={teamImage} style={ styles.profileImage } />
-      </TouchableOpacity>
+      </View>
       <View style={styles.topTextContainer}>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.teamTitleTextStyle}>{teamTitle}</Text>
+          <Text style={{ ...styles.teamTitleTextStyle, ...titleStyle }}>{teamTitle}</Text>
           <Image source={teamIcon} style={styles.teamIconStyle} resizeMode={'contain'} />
         </View>
-        <Text style={styles.userNameTextStyle}>{teamCityName}</Text>
+        <Text style={{ ...styles.userNameTextStyle, ...cityStyle }}>{teamCityName}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
 
   );
 }

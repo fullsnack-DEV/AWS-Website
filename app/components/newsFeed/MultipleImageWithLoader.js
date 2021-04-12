@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     width: wp('98%'),
     alignSelf: 'center',
     alignItems: 'center',
-    resizeMode: 'contain',
   },
 });
 

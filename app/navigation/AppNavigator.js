@@ -142,6 +142,7 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ScorekeeperAcceptDeclineScreen'
     || routeName === 'ShortsPlayScreen'
     || routeName === 'FeedViewScreen'
+    || routeName === 'FeedTaggedScreen'
   ) {
     return false;
   }

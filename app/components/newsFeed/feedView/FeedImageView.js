@@ -18,9 +18,8 @@ const FeedImageView = ({
   }}>
     <TCZoomableImage
             onClick={setShowParent}
-            source={{ uri: sourceData?.url ?? '' }}
+            source={{ uri: sourceData?.thumbnail ?? '' }}
             style={{
-                resizeMode: 'contain',
                 width: getWidth(isLandscape, 100),
                 height: getHeight(isLandscape, 100),
             }}

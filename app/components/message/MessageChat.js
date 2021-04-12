@@ -501,6 +501,7 @@ const MessageChat = ({
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,

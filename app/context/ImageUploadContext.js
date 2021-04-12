@@ -48,9 +48,7 @@ const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack)
     setData('cancelRequest', cancelToken)
   }
   setData('totalUploadCount', imageArray?.length ?? 1);
-  console.log('imageArry:=>', imageArray);
   uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-    console.log('Upload response:=>', responses);
     const attachments = [];
      responses.map((item, index) => {
       let objAttachment = {}

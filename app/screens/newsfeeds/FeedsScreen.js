@@ -265,8 +265,12 @@ const FeedsScreen = ({ navigation }) => {
     <>
       <Header
           showBackgroundColor={true}
+          leftComponent={<View>
+            <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
+          </View>
+          }
           centerComponent={
-            <Text style={styles.eventTitleTextStyle}>News Feed</Text>
+            <Text style={styles.eventTitleTextStyle}>Feed</Text>
           }
           rightComponent={topRightButton}
       />
@@ -306,6 +310,12 @@ const styles = StyleSheet.create({
   rightImageStyle: {
     height: 30,
     width: 30,
+    tintColor: colors.blackColor,
+    resizeMode: 'contain',
+  },
+  backImageStyle: {
+    height: 36,
+    width: 36,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },
