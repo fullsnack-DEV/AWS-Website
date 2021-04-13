@@ -172,6 +172,7 @@ import RegisterPlayerSuccess from '../screens/account/registerPlayer/RegisterPla
 import AccountScreen from '../screens/account/AccountScreen';
 import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
+import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -208,6 +209,7 @@ const AccountNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="GroupListScreen"
       component={GroupListScreen}
@@ -1932,6 +1934,15 @@ const AccountNavigator = () => (
         headerShown: false,
       }}
     />
+
+    <Stack.Screen
+          name="LeaveReviewTennis"
+          component={ LeaveReviewTennis }
+          options={ {
+              headerShown: false,
+          }}
+      />
+
     {/* Scorekeeper screens */}
     <Stack.Screen
       name="ScorekeeperReservationScreen"

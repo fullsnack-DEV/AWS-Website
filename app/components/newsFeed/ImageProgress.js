@@ -131,8 +131,8 @@ const ImageProgress = () => {
 
   const renderSingleUploadData = useCallback(({ item }) => (
     <SingleImageProgressBar
-              numberOfUploaded={item?.doneUploadCount ?? 2}
-              totalUpload={item?.totalUploadCount ?? 2}
+              numberOfUploaded={item?.doneUploadCount ?? 1}
+              totalUpload={item?.totalUploadCount ?? 1}
               imageData={item?.dataArray}
               onCancelPress={() => onCancelPress(item)}
           />

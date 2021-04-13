@@ -26,6 +26,7 @@ const NewsFeedDescription = ({
   containerStyle,
   tagData = [],
   navigation,
+  disableTouch = false,
 }) => {
   const authContext = useContext(AuthContext);
   const [readMore, setReadMore] = useState();
@@ -152,7 +153,9 @@ const NewsFeedDescription = ({
 
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      {renderDescriptions}
+      <View pointerEvents={disableTouch ? 'none' : 'auto'}>
+        {renderDescriptions}
+      </View>
       {renderGameTags}
     </View>
   );

@@ -26,8 +26,10 @@ import AuthContext from '../../../../../auth/context';
 import strings from '../../../../../Constants/String';
 import uploadImages from '../../../../../utils/imageAction';
 import ActivityLoader from '../../../../../components/loader/ActivityLoader';
+import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
 
 const LeaveReviewTennis = ({ navigation, route }) => {
+  const imageUploadContext = useContext(ImageUploadContext)
   const authContext = useContext(AuthContext);
   const [currentForm, setCurrentForm] = useState(route?.params?.selectedTeam === 'home' ? 1 : 2);
   const [loading, setLoading] = useState(false);
@@ -260,6 +262,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
         });
     }
   }
+
   const uploadMediaForTeamA = () => {
     if (reviewsData?.attachments?.length) {
       const UrlArray = []
@@ -294,34 +297,53 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     }
   }
   const uploadMediaForTeamB = () => {
+    setLoading(false) // CHANGED
+    const { onPressReviewDone } = route?.params;
     if (reviewsData?.attachments?.length) {
-      const UrlArray = []
-      const pathArray = []
-      const o = reviewsData?.attachments.map((e) => {
-        if (e.path) {
-          pathArray.push(e)
-        } else {
-          UrlArray.push(e)
-        }
-      })
-      setTotalUploadCount(pathArray?.length || 1);
-      // setProgressBar(true);
-      setLoading(true);
-      const imageArray = pathArray
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        const obj = { ...reviewsData }
-        obj.attachments = [...attachments, ...UrlArray]
-        console.log('Attachments Full Object::=>', obj);
-        setReviewsData({ ...obj })
-        patchOrAddReview()
-      })
+      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData)
+      navigation.goBack();
+      // if (route?.params?.gameReviewData) {
+      //   // setLoading(true);
+      //   const teamReview = reviewsData
+      //   delete teamReview.created_at;
+      //   delete teamReview.entity_type;
+      //   const team1ID = teamReview.entity_id
+      //   delete teamReview.entity_id;
+      //   teamReview.player_id = team1ID
+      //   delete teamReview.game_id;
+      //   const reviewID = teamReview.review_id;
+      //   delete teamReview.review_id;
+      //   delete teamReview.reviewer_id;
+      //   delete teamReview.sport;
+      //
+      //   const dataParams = { ...teamReview };
+      //   const imageArray = pathArray.map((dataItem) => (dataItem))
+      //   imageUploadContext.uploadData(
+      //       authContext,
+      //       dataParams,
+      //       imageArray,
+      //       patchOrAddReview,
+      //   )
+      // }
+
+      // setTotalUploadCount(pathArray?.length || 1);
+      // // setProgressBar(true);
+      // setLoading(true);
+      // const imageArray = pathArray
+      // uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
+      //   const attachments = responses.map((item) => ({
+      //     type: item.type,
+      //     url: item.fullImage,
+      //     thumbnail: item.thumbnail,
+      //     media_height: item.height,
+      //     media_width: item.width,
+      //   }))
+      //   const obj = { ...reviewsData }
+      //   obj.attachments = [...attachments, ...UrlArray]
+      //   console.log('Attachments Full Object::=>', obj);
+      //   setReviewsData({ ...obj })
+      //   patchOrAddReview()
+      // })
     } else {
       patchOrAddReview()
     }
@@ -382,7 +404,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               navigation = {navigation}
               route={route}
               isRefereeAvailable={route?.params?.isRefereeAvailable}
-              tags={reviewsData?.tagged || route?.params?.entityTags}
+              tags={route?.params?.format_tagged_data || reviewsData?.format_tagged_data}
             />
           )}
         </ScrollView>

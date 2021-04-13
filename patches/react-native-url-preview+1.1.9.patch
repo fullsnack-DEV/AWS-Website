@@ -1,0 +1,25 @@
+diff --git a/node_modules/react-native-url-preview/index.js b/node_modules/react-native-url-preview/index.js
+index 3d596c9..ea35e10 100644
+--- a/node_modules/react-native-url-preview/index.js
++++ b/node_modules/react-native-url-preview/index.js
+@@ -23,7 +23,19 @@ export default class RNUrlPreview extends React.PureComponent {
+       linkFavicon: undefined,
+       linkImg: undefined
+     };
+-    this.getPreview(props.text);
++    // this.getPreview(props.text);
++  }
++
++  componentDidMount() {
++    this.getPreview(this.props.text);
++  }
++
++  componentDidUpdate(nextProps) {
++    if (nextProps.text !== null) {
++      this.getPreview(nextProps.text);
++    } else {
++      this.setState({isUri: false});
++    }
+   }
+ 
+   getPreview = text => {

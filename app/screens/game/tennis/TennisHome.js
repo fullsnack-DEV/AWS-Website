@@ -89,7 +89,7 @@ const TennisHome = ({ navigation, route }) => {
           setIsRefereeAdmin(checkIsRefereeAdmin);
           setIsScorekeeperAdmin(checkIsScorekeeperAdmin);
 
-          setGameData(res.payload);
+          setGameData({ ...res.payload });
         }
       })
       .catch((error) => {

@@ -68,7 +68,6 @@ export const thumbnailImageSize = (imageData) => {
       img.height = imageData.height
       img.width = imageData.width
     }
-    console.log(`image width  ::${img.width} image height  ::${img.height}`);
       return img
   }
     if (imageData.width > T_PORTRAIT_IMAGE_WIDTH) {
@@ -78,7 +77,6 @@ export const thumbnailImageSize = (imageData) => {
       img.height = imageData.height
       img.width = imageData.width
     }
-    console.log(`image width  ::${img.width} image height  ::${img.height}`);
       return img
 }
 const originalImageSize = (imageData) => {
@@ -91,7 +89,6 @@ const originalImageSize = (imageData) => {
       img.height = imageData.height
       img.width = imageData.width
     }
-    console.log(`image width  ::${img.width} image height  ::${img.height}`);
       return img
   }
     if (imageData.width > O_PORTRAIT_IMAGE_WIDTH) {
@@ -101,7 +98,6 @@ const originalImageSize = (imageData) => {
       img.height = imageData.height
       img.width = imageData.width
     }
-    console.log(`image width  ::${img.width} image height  ::${img.height}`);
       return img
 
   // const heightRatio = imageData.height > 400 ?
@@ -146,7 +142,7 @@ const uploadImage = async (data, authContext, cancelToken, preSignedUrls) => {
     })
 };
 
-const uploadImages = (images, authContext, cb = () => {}, cancelRequest = () => {}) => new Promise((resolve) => {
+const uploadImages = async (images, authContext, cb = () => {}, cancelRequest = () => {}) => new Promise((resolve) => {
   let completed = 0;
   const promises = [];
   const source = axios.CancelToken.source();

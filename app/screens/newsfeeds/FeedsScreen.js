@@ -74,7 +74,6 @@ const FeedsScreen = ({ navigation }) => {
       createPostAfterUpload(dataParams);
     } else if (data) {
       const imageArray = data.map((dataItem) => (dataItem))
-      console.log('Image Array Data::=>', imageArray);
       const dataParams = {
         text: postDesc && postDesc,
         attachments: [],

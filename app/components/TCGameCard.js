@@ -49,10 +49,10 @@ import ReservationStatus from '../Constants/ReservationStatus';
           style={data?.status === ReservationStatus.offered ? [styles.colorView, { opacity: 0.7 }] : styles.colorView}>
           <View style={styles.dateView}>
             <Text style={styles.dateMonthText}>
-              {months[new Date(data.start_datetime * 1000).getMonth()]}
+              {months[new Date(data?.start_datetime * 1000).getMonth()]}
             </Text>
             <Text style={styles.dateText}>
-              {new Date(data.start_datetime * 1000).getDate()}
+              {new Date(data?.start_datetime * 1000).getDate()}
             </Text>
           </View>
         </LinearGradient>
@@ -71,7 +71,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
           </View>
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
-              {formatAMPM(new Date(data.start_datetime * 1000))} -{' '}
+              {formatAMPM(new Date(data?.start_datetime * 1000))} -{' '}
               {formatAMPM(new Date(data.end_datetime * 1000))}
             </Text>
             <Text style={styles.textSaperator}> | </Text>
