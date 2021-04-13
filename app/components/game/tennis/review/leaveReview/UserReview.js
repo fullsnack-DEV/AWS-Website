@@ -76,7 +76,8 @@ const UserReview = ({
 
         <Pressable
           style={{
-            height: 120,
+            flex: 1,
+            // height: 120,
             marginVertical: 10,
             alignItems: 'flex-start',
             // padding: 10,
@@ -96,15 +97,17 @@ const UserReview = ({
               // onPressDone: callthis,
               selectedImageList:
                 reviewsData?.attachments || [],
-              taggedData: reviewsData?.tagged || [],
+              taggedData: tags || [],
             });
           }}>
-          <View pointerEvents="none">
+          <View>
             {reviewsData?.comment !== '' ? (
               <NewsFeedDescription
+                          disableTouch={true}
                           descriptions={reviewsData.comment}
                           containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
-                          tags={tags}
+                          tagData={tags}
+                          // tags={tags}
                         />
             ) : (
               <Text

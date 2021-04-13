@@ -5,6 +5,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -34,6 +35,7 @@ import ImageProgress from '../../../components/newsFeed/ImageProgress';
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery']
 const SoccerHome = ({ navigation, route }) => {
   const gameFeedFlatListRef = useRef(null);
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext)
   const [soccerGameId] = useState(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
@@ -45,9 +47,10 @@ const SoccerHome = ({ navigation, route }) => {
 
   const [userRole, setUserRole] = useState(false);
   const [userId, setUserId] = useState(null);
+
   useEffect(() => {
       getGameDetails();
-  }, []);
+  }, [navigation, isFocused]);
 
   console.log('soccerGameId:=>', soccerGameId);
   const getSoccerGameData = useCallback((gameId = soccerGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext), [authContext, soccerGameId]);

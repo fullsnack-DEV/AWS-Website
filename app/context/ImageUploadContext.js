@@ -48,43 +48,30 @@ const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack)
     setData('cancelRequest', cancelToken)
   }
   setData('totalUploadCount', imageArray?.length ?? 1);
+
   uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
     const attachments = [];
      responses.map((item, index) => {
-      let objAttachment = {}
+      const objAttachment = {
+        type: item.type,
+        url: item.fullImage,
+        thumbnail: item.thumbnail,
+        media_height: item.height,
+        media_width: item.width,
+      }
       if (item.type === 'video') {
         if (imageArray.length === 1) {
-          objAttachment = {
-            type: item.type,
-            url: item.fullImage,
-            thumbnail: item.thumbnail,
-            media_height: item.height,
-            media_width: item.width,
-            duration: imageArray[index].duration,
-            is_short: imageArray[index].duration < 30000 && item.height > item.width,
-          }
+          objAttachment.duration = imageArray[index].duration
+          objAttachment.is_short = imageArray[index].duration < 30000 && item.height > item.width
         } else {
-          objAttachment = {
-            type: item.type,
-            url: item.fullImage,
-            thumbnail: item.thumbnail,
-            media_height: item.height,
-            media_width: item.width,
-            duration: imageArray[index].duration,
-          }
-        }
-      } else {
-        objAttachment = {
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
+          objAttachment.duration = imageArray[index].duration
         }
       }
+
       attachments.push(objAttachment)
     })
-    const dParams = dataParams;
+
+    const dParams = { ...dataParams };
     dParams.attachments = [...dataParams?.attachments, ...attachments];
     dispatch({ type: 'removeUploadingData', payload: currentImagesDataUploadID })
     callBack(dParams);

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useContext,
   useEffect,
@@ -37,9 +36,10 @@ import TCInnerLoader from '../../../../TCInnerLoader';
 import AuthContext from '../../../../../auth/context';
 import TennisScoreView from '../../TennisScoreView';
 import GameFeed from '../../../common/summary/GameFeed';
-import { getGameReview } from '../../../../../api/Games';
+import { addPlayerReview, getGameReview, patchPlayerReview } from '../../../../../api/Games';
 import images from '../../../../../Constants/ImagePath';
 import strings from '../../../../../Constants/String';
+import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
 
 // import GameStatus from '../../../../../Constants/GameStatus';
 
@@ -61,6 +61,7 @@ const Summary = ({
   gameFeedFlatListRef,
   getGameNextFeedData,
 }) => {
+  const imageUploadContext = useContext(ImageUploadContext)
   console.log('GameData:=>', gameData);
   console.log('isRefereeAdmin:=>', isRefereeAdmin);
   console.log('isScorekeeperAdmin:=>', isScorekeeperAdmin);
@@ -228,6 +229,84 @@ const Summary = ({
     }
   }
 
+  const patchOrAddReview = useCallback(({ isAlreadyReviewed, currentForm, reviewsData }) => {
+    if (isAlreadyReviewed) {
+      setLoading(true);
+      const teamReview = reviewsData
+      delete teamReview.created_at;
+      delete teamReview.entity_type;
+      const team1ID = teamReview.entity_id
+      delete teamReview.entity_id;
+      teamReview.player_id = team1ID
+      delete teamReview.game_id;
+      const reviewID = teamReview.review_id;
+      delete teamReview.review_id;
+      delete teamReview.reviewer_id;
+      delete teamReview.sport;
+
+      const reviewObj = {
+
+        ...teamReview,
+
+      };
+
+      console.log('Edited Review Object::=>', reviewObj);
+      patchPlayerReview(currentForm === 1 ? gameData?.home_team?.user_id : gameData?.away_team?.user_id, gameData?.game_id, reviewID, reviewObj, authContext)
+          .then(() => {
+            setLoading(false);
+            // navigation.goBack();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+            // navigation.goBack();
+          });
+    } else {
+      console.log('New Review Object::=>', reviewsData);
+      setLoading(true);
+      addPlayerReview(currentForm === 1 ? gameData?.home_team?.user_id : gameData?.away_team?.user_id, gameData?.game_id, reviewsData, authContext)
+          .then(() => {
+            setLoading(false);
+            // navigation.goBack();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+            // navigation.goBack();
+          });
+    }
+  }, [authContext, gameData?.away_team?.user_id, gameData?.game_id, gameData?.home_team?.user_id])
+
+  const onPressReviewDone = useCallback((currentForm, isAlreadyReviewed, reviewsData) => {
+    const reviewData = { ...reviewsData }
+    const alreadyUrlDone = [];
+    const createUrlData = [];
+
+    if (reviewsData.attachments.length > 0) {
+      reviewsData.attachments.map((dataItem) => {
+        if (dataItem.thumbnail) {
+          alreadyUrlDone.push(dataItem);
+        } else {
+          createUrlData.push(dataItem);
+        }
+        return null;
+      })
+    }
+
+    reviewData.attachments = [...alreadyUrlDone]
+    if (createUrlData?.length > 0) {
+      const imageArray = createUrlData.map((dataItem) => (dataItem))
+      imageUploadContext.uploadData(
+          authContext,
+          reviewData,
+          imageArray,
+          (dataParams) => patchOrAddReview({ currentForm, isAlreadyReviewed, reviewsData: dataParams }),
+      )
+    } else {
+      patchOrAddReview({ currentForm, isAlreadyReviewed, reviewsData })
+    }
+  }, [authContext, imageUploadContext, patchOrAddReview])
+
   const getGameReviewsData = useCallback(
     (reviewID) => {
       setLoading(true);
@@ -245,6 +324,7 @@ const Summary = ({
             sliderAttributes,
             starAttributes,
             isRefereeAvailable: gameData?.referees?.length > 0,
+            onPressReviewDone,
           });
           setLoading(false);
         })
@@ -253,8 +333,8 @@ const Summary = ({
           setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
     },
-    [authContext, gameData, navigation, selectedTeamForReview, sliderAttributes, starAttributes],
-  );
+    [authContext, gameData, navigation, onPressReviewDone, selectedTeamForReview, sliderAttributes, starAttributes],
+);
 
   const renderRecordButton = useMemo(
     () => (gameData?.status !== 'ended' ? (
