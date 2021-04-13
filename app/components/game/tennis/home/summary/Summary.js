@@ -233,6 +233,7 @@ const Summary = ({
       setLoading(true);
       getGameReview(gameData?.game_id, reviewID, authContext)
         .then((response) => {
+          console.log('gameData?.referees?.length > 0', gameData?.referees?.length > 0);
           console.log(
             'Edit Review By Review ID Response::=>',
             response.payload,
@@ -243,6 +244,7 @@ const Summary = ({
             selectedTeam: selectedTeamForReview,
             sliderAttributes,
             starAttributes,
+            isRefereeAvailable: gameData?.referees?.length > 0,
           });
           setLoading(false);
         })
@@ -358,6 +360,7 @@ const Summary = ({
                           selectedTeam: playerFrom === 'home' ? 'away' : 'home',
                           sliderAttributes,
                           starAttributes,
+                          isRefereeAvailable: gameData?.referees?.length > 0,
                         });
                       }
                     } else {
@@ -622,7 +625,7 @@ const Summary = ({
                   style={styles.doneText}
                   onPress={() => {
                     setIsPopupVisible(false);
-                    console.log('gameData?.review_id:=>', gameData?.review_id);
+                    console.log('gameData?.review_id:=>', gameData?.referees?.length > 0);
                     if (playerFrom === '' && selectedTeamForReview) {
                       if (selectedTeamForReview === 'home') {
                         if (gameData?.home_review_id) {
@@ -633,6 +636,7 @@ const Summary = ({
                             selectedTeam: selectedTeamForReview,
                             sliderAttributes,
                             starAttributes,
+                            isRefereeAvailable: gameData?.referees?.length > 0,
                           });
                         }
                       }
@@ -645,6 +649,7 @@ const Summary = ({
                             selectedTeam: selectedTeamForReview,
                             sliderAttributes,
                             starAttributes,
+                            isRefereeAvailable: gameData?.referees?.length > 0,
                           });
                         }
                       }

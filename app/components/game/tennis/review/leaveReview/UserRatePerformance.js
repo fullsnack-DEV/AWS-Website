@@ -2,44 +2,46 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native'
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
-import TCAttributeRatingWithSlider from '../../../../TCAttributeRatingWithSlider';
 import TCRatingStarSlider from '../../../../TCRatingStarSlider';
 
 const QUSTIONS = [
-  // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
+   { attrName: 'punctuality', desc: 'Did the players arrive at the match place on time?' },
   // { attrName: 'manner', desc: 'Did the players arrive at the match place on time?' },
   { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-  { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
+  { attrName: 'RespectForReferre', desc: 'Did the players respect the referees and their decisions?' },
+]
+const QUSTIONS_WITHOUT_REFREE = [
+  { attrName: 'punctuality', desc: 'Did the players arrive at the match place on time?' },
+ // { attrName: 'manner', desc: 'Did the players arrive at the match place on time?' },
+ { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
+
 ]
 const UserRatePerformance = ({
-  teamNo,
   reviewsData,
   setTeamReview,
-  reviewAttributes,
   starColor,
-}) => {
-  console.log('RA : ', reviewAttributes);
-  return (
-    <View style={styles.mainContainer}>
+  isRefereeAvailable,
+}) => (
+  <View style={styles.mainContainer}>
 
-      {/*    Title */}
-      <Text style={styles.titleText}>Rate<Text style={{ color: colors.redDelColor }}>*</Text></Text>
+    {/*    Title */}
+    <Text style={styles.titleText}>Rate<Text style={{ color: colors.redDelColor }}>*</Text></Text>
 
-      {/* Ratings */}
-      <View style={styles.rateSection}>
+    {/* Ratings */}
+    <View style={styles.rateSection}>
 
-        {/* Poor Excellent Section */}
-        <View style={{ ...styles.poorExcellentSection }}>
+      {/* Poor Excellent Section */}
+      {/* <View style={{ ...styles.poorExcellentSection }}>
           <View style={{ flex: 0.3 }}/>
           <View style={styles.poorExcellentChildSection}>
             <Text style={styles.poorExcellenceText}>Poor</Text>
             <Text>Excellent</Text>
           </View>
           <View style={{ flex: 0.1 }}/>
-        </View>
+        </View> */}
 
-        {/*    Rating Slider */}
-        {reviewAttributes.length ? reviewAttributes.map((item, index) => (<View key={index}>
+      {/*    Rating Slider */}
+      {/* {reviewAttributes.length ? reviewAttributes.map((item, index) => (<View key={index}>
           <TCAttributeRatingWithSlider
             selectedTrackColors={teamNo === 0
               ? [colors.yellowColor, colors.themeColor]
@@ -48,25 +50,36 @@ const UserRatePerformance = ({
                 title={item}
                 rating={reviewsData[item]}
             />
-        </View>)) : null}
-      </View>
-
-      {/* Questions */}
-      {QUSTIONS.map((item, index) => (
-        <View style={{ marginVertical: 5 }} key={index}>
-          <Text style={styles.questionText}>{item.desc}</Text>
-          <TCRatingStarSlider
-            currentRating={reviewsData[item.attrName]}
-            onPress={(star) => {
-              setTeamReview(item.attrName, star)
-            }}
-              style={{ alignSelf: 'flex-end' }}
-              starColor={starColor}/>
-        </View>
-      ))}
+        </View>)) : null} */}
     </View>
+
+    {/* Questions */}
+
+    {isRefereeAvailable ? QUSTIONS.map((item, index) => (
+      <View style={{ marginVertical: 5 }} key={index}>
+        <Text style={styles.questionText}>{item.desc}</Text>
+        <TCRatingStarSlider
+                currentRating={reviewsData[item.attrName]}
+                onPress={(star) => {
+                  setTeamReview(item.attrName, star)
+                }}
+                  style={{ alignSelf: 'flex-end' }}
+                  starColor={starColor}/>
+      </View>
+          )) : QUSTIONS_WITHOUT_REFREE.map((item, index) => (
+            <View style={{ marginVertical: 5 }} key={index}>
+              <Text style={styles.questionText}>{item.desc}</Text>
+              <TCRatingStarSlider
+                currentRating={reviewsData[item.attrName]}
+                onPress={(star) => {
+                  setTeamReview(item.attrName, star)
+                }}
+                  style={{ alignSelf: 'flex-end' }}
+                  starColor={starColor}/>
+            </View>
+          ))}
+  </View>
   )
-}
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -79,22 +92,22 @@ const styles = StyleSheet.create({
   rateSection: {
     marginVertical: 10,
   },
-  poorExcellentSection: {
-    flex: 1,
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    marginVertical: 5,
-  },
-  poorExcellentChildSection: {
-    flex: 0.6,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  poorExcellenceText: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
+  // poorExcellentSection: {
+  //   flex: 1,
+  //   flexDirection: 'row',
+  //   alignSelf: 'flex-end',
+  //   marginVertical: 5,
+  // },
+  // poorExcellentChildSection: {
+  //   flex: 0.6,
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  // },
+  // poorExcellenceText: {
+  //   fontSize: 12,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  // },
   questionText: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,

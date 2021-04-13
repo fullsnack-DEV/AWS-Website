@@ -22,6 +22,7 @@ const UserReview = ({
   setTeamReview,
   reviewAttributes,
   teamData,
+  isRefereeAvailable,
   starColor,
   navigation,
   tags = [],
@@ -66,30 +67,19 @@ const UserReview = ({
         setTeamReview={(key, value) => setTeamReview(teamNo, key, value)}
         reviewAttributes={reviewAttributes}
         starColor={starColor}
+        isRefereeAvailable={isRefereeAvailable}
       />
 
       {/*  Leave a Review */}
       <View style={styles.leaveReviewContainer}>
         <Text style={styles.titleText}>Leave a review</Text>
-        {/* <TCInputBox
-          onChangeText={(value) => setTeamReview(teamNo, 'comment', value)}
-          value={reviewsData?.team_reviews?.[teamNo]?.comment ?? ''}
-          multiline={true}
-          placeHolderText={'Describe what you thought and felt about New York City FC while watching or playing the game.'}
-          textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
-          style={{
-            height: 120,
-            marginVertical: 10,
-            alignItems: 'flex-start',
-            padding: 15,
-          }}
-      /> */}
+
         <Pressable
           style={{
             height: 120,
             marginVertical: 10,
             alignItems: 'flex-start',
-            padding: 15,
+            // padding: 10,
             backgroundColor: colors.offwhite,
             shadowColor: colors.googleColor,
             shadowOffset: { width: 0, height: 2 },
@@ -110,18 +100,6 @@ const UserReview = ({
             });
           }}>
           <View pointerEvents="none">
-            {/* <TCInputBox
-                        value={reviewsData?.team_reviews[teamNo]?.comment ?? ''}
-                        multiline={true}
-                        placeHolderText={`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
-                        textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
-                        style={{
-                          height: 120,
-                          marginVertical: 10,
-                          alignItems: 'flex-start',
-                          padding: 15,
-                        }} /> */}
-
             {reviewsData?.comment !== '' ? (
               <NewsFeedDescription
                           descriptions={reviewsData.comment}
@@ -135,7 +113,7 @@ const UserReview = ({
                         fontSize: 16,
                         color: colors.grayColor,
                       }}>
-                {`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
+                {`Describe what you thought and felt about ${teamData?.full_name} while watching or playing the game.`}
               </Text>)}
           </View>
         </Pressable>

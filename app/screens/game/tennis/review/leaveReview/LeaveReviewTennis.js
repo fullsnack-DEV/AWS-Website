@@ -38,6 +38,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   const [cancelApiRequest, setCancelApiRequest] = useState(null);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
 
+  console.log('route?.params?.isRefereeAvailable', route?.params?.isRefereeAvailable);
   const { selectedTeam } = route?.params;
   console.log('selectedTeam:=>', selectedTeam);
   const [reviewsData, setReviewsData] = useState(currentForm === 1 ? {
@@ -367,6 +368,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               setTeamReview={setTeamReview}
               navigation = {navigation}
               route={route}
+              isRefereeAvailable={route?.params?.isRefereeAvailable}
               tags={reviewsData?.tagged || route?.params?.entityTags}
             />
           ) : (
@@ -379,6 +381,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               setTeamReview={setTeamReview}
               navigation = {navigation}
               route={route}
+              isRefereeAvailable={route?.params?.isRefereeAvailable}
               tags={reviewsData?.tagged || route?.params?.entityTags}
             />
           )}

@@ -110,18 +110,6 @@ const TeamReview = ({
             });
           }}>
           <View pointerEvents="none">
-            {/* <TCInputBox
-                        value={reviewsData?.team_reviews[teamNo]?.comment ?? ''}
-                        multiline={true}
-                        placeHolderText={`Describe what you thought and felt about ${teamData?.group_name} while watching or playing the game.`}
-                        textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
-                        style={{
-                          height: 120,
-                          marginVertical: 10,
-                          alignItems: 'flex-start',
-                          padding: 15,
-                        }} /> */}
-
             {reviewsData?.comment !== '' ? (
               <NewsFeedDescription
                           descriptions={reviewsData.comment}
