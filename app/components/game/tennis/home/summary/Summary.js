@@ -60,6 +60,7 @@ const Summary = ({
   getGameFeedData,
   gameFeedFlatListRef,
   getGameNextFeedData,
+  getGameData,
 }) => {
   const imageUploadContext = useContext(ImageUploadContext)
   console.log('GameData:=>', gameData);
@@ -254,6 +255,7 @@ const Summary = ({
       patchPlayerReview(currentForm === 1 ? gameData?.home_team?.user_id : gameData?.away_team?.user_id, gameData?.game_id, reviewID, reviewObj, authContext)
           .then(() => {
             setLoading(false);
+            getGameData()
             // navigation.goBack();
           })
           .catch((error) => {
@@ -267,6 +269,7 @@ const Summary = ({
       addPlayerReview(currentForm === 1 ? gameData?.home_team?.user_id : gameData?.away_team?.user_id, gameData?.game_id, reviewsData, authContext)
           .then(() => {
             setLoading(false);
+            getGameData()
             // navigation.goBack();
           })
           .catch((error) => {
@@ -275,7 +278,7 @@ const Summary = ({
             // navigation.goBack();
           });
     }
-  }, [authContext, gameData?.away_team?.user_id, gameData?.game_id, gameData?.home_team?.user_id])
+  }, [authContext, gameData?.away_team?.user_id, gameData?.game_id, gameData?.home_team?.user_id, getGameData])
 
   const onPressReviewDone = useCallback((currentForm, isAlreadyReviewed, reviewsData) => {
     const reviewData = { ...reviewsData }
@@ -320,7 +323,7 @@ const Summary = ({
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam: selectedTeamForReview,
+            selectedTeam: gameData?.home_team?.user_id === authContext?.entity?.uid ? 'away' : 'home',
             sliderAttributes,
             starAttributes,
             isRefereeAvailable: gameData?.referees?.length > 0,
@@ -333,7 +336,7 @@ const Summary = ({
           setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
     },
-    [authContext, gameData, navigation, onPressReviewDone, selectedTeamForReview, sliderAttributes, starAttributes],
+    [authContext, gameData, navigation, onPressReviewDone, sliderAttributes, starAttributes],
 );
 
   const renderRecordButton = useMemo(
@@ -441,6 +444,7 @@ const Summary = ({
                           sliderAttributes,
                           starAttributes,
                           isRefereeAvailable: gameData?.referees?.length > 0,
+                          onPressReviewDone,
                         });
                       }
                     } else {
@@ -717,6 +721,7 @@ const Summary = ({
                             sliderAttributes,
                             starAttributes,
                             isRefereeAvailable: gameData?.referees?.length > 0,
+                            onPressReviewDone,
                           });
                         }
                       }
@@ -730,6 +735,7 @@ const Summary = ({
                             sliderAttributes,
                             starAttributes,
                             isRefereeAvailable: gameData?.referees?.length > 0,
+                            onPressReviewDone,
                           });
                         }
                       }

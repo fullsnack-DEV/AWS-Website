@@ -7,6 +7,7 @@ import React, {
   useRef,
 } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
@@ -36,6 +37,8 @@ const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery'];
 
 const TennisHome = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
+
   const gameFeedFlatListRef = useRef(null);
   const galleryRef = useRef(null);
   const [tennisGameId] = useState(route?.params?.gameId);
@@ -51,7 +54,7 @@ const TennisHome = ({ navigation, route }) => {
 
   useEffect(() => {
     getGameDetails();
-  }, [navigation]);
+  }, [navigation, isFocused]);
 
   const getTennisGameData = useCallback(
     (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext),
