@@ -329,6 +329,7 @@ const EditPostScreen = ({
 
   const renderGameTags = useMemo(() => (
     <FlatList
+        style={{ paddingVertical: 15 }}
         bounces={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -363,7 +364,7 @@ const EditPostScreen = ({
                     />
                 )}
                 ItemSeparatorComponent={() => <View style={{ width: wp('1%') }} />}
-                style={{ paddingTop: 10, marginHorizontal: wp('3%') }}
+                style={{ paddingVertical: 10, marginHorizontal: wp('3%') }}
                 keyExtractor={(item, index) => index.toString()}
             />
   ), [selectImage])

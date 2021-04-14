@@ -13,7 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
-  Alert,
+  Alert, ScrollView,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -335,7 +335,7 @@ export default function WritePostScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={ false }
           renderItem={renderSelectedImage}
           ItemSeparatorComponent={ItemSeparatorComponent}
-          style={ { paddingTop: 10, marginHorizontal: wp('3%') } }
+          style={ { paddingVertical: 10, marginHorizontal: wp('3%') } }
           keyExtractor={ (item, index) => index.toString() }
       />
   ), [ItemSeparatorComponent, renderSelectedImage, selectImage])
@@ -412,6 +412,7 @@ export default function WritePostScreen({ navigation, route }) {
 
   const renderGameTags = useMemo(() => (
     <FlatList
+        style={{ paddingVertical: 15 }}
         bounces={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -433,7 +434,7 @@ export default function WritePostScreen({ navigation, route }) {
       <View style={ styles.sperateLine } />
       {renderCurrentUseProfile}
 
-      <View
+      <ScrollView
           bounces={ false }
           style={{ flex: 1, overflow: 'visible' }}
           // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
@@ -462,7 +463,7 @@ export default function WritePostScreen({ navigation, route }) {
         {renderSelectedImageList}
         {renderGameTags}
         {renderModalTagEntity}
-      </View>
+      </ScrollView>
       <SafeAreaView style={ styles.bottomSafeAreaStyle }>
         <View style={ styles.bottomImgView }>
           <View style={ styles.onlyMeViewStyle }>

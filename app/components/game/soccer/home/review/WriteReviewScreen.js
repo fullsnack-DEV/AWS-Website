@@ -11,6 +11,7 @@ import {
   StyleSheet,
   SafeAreaView,
   KeyboardAvoidingView,
+  ScrollView,
   Platform,
   FlatList,
   Alert,
@@ -321,7 +322,7 @@ export default function WriteReviewScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={ false }
           renderItem={renderSelectedImage}
           ItemSeparatorComponent={ItemSeparatorComponent}
-          style={ { paddingTop: 10, marginHorizontal: wp('3%') } }
+          style={ { paddingVertical: 10, marginHorizontal: wp('3%') } }
           keyExtractor={ (item, index) => index.toString() }
       />
   ), [ItemSeparatorComponent, renderSelectedImage, selectImage])
@@ -398,7 +399,8 @@ export default function WriteReviewScreen({ navigation, route }) {
 
   const renderGameTags = useMemo(() => (
     <FlatList
-          bounces={false}
+        style={{ paddingVertical: 15 }}
+        bounces={false}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 15 }}
@@ -420,7 +422,7 @@ export default function WriteReviewScreen({ navigation, route }) {
       <View style={ styles.userDetailView }>
         <Text style={ styles.userTxt }>Leave a review</Text>
       </View>
-      <View
+      <ScrollView
             bounces={ false }
             style={{ flex: 1, overflow: 'visible' }}
             // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
@@ -449,7 +451,7 @@ export default function WriteReviewScreen({ navigation, route }) {
         {renderSelectedImageList}
         {renderGameTags}
         {renderModalTagEntity}
-      </View>
+      </ScrollView>
       <SafeAreaView style={ styles.bottomSafeAreaStyle }>
         <View style={ styles.bottomImgView }>
           {/* <View style={ styles.onlyMeViewStyle }> */}
