@@ -52,6 +52,7 @@ export const uploadImageOnPreSignedUrls = async ({
     };
     const response = await axios(options);
     if (response.status === 200) {
+      console.log('RESPONSE CAME')
       return url.split('?')[0]
     }
 
@@ -103,6 +104,7 @@ const originalImageSize = (imageData) => {
   // const heightRatio = imageData.height > 400 ?
 }
 const uploadImage = async (data, authContext, cancelToken, preSignedUrls) => {
+  console.log('CALLED AT A TIME');
   const image = {
     ...data,
     thumbURL: '',
@@ -142,25 +144,26 @@ const uploadImage = async (data, authContext, cancelToken, preSignedUrls) => {
     })
 };
 
-const uploadImages = async (images, authContext, cb = () => {}, cancelRequest = () => {}) => new Promise((resolve) => {
-  let completed = 0;
-  const promises = [];
+const uploadImages = async (images, authContext, setUploadedCount = () => {}, cancelRequest = () => {}) => new Promise((resolve, reject) => {
+  const responses = [];
   const source = axios.CancelToken.source();
   cancelRequest(source);
   getImagePreSignedURL({ count: images?.length * 2 }, authContext, source.token).then(async (responsePresignedURLS) => {
     const preSignedUrls = await _.chunk(responsePresignedURLS?.payload?.preSignedUrls, 2);
-    console.log('Presigned URLs : ', preSignedUrls);
     if (preSignedUrls?.length > 0) {
-      images.forEach((item, index) => promises.push(uploadImage(item, authContext, source.token, preSignedUrls?.[index])));
-      cb(0, images.length);
-      for (const promise of promises) {
-        // eslint-disable-next-line no-loop-func
-        promise.then((image) => {
-          completed += 1;
-          cb(completed, images.length, image);
-        });
+      setUploadedCount(0, images.length);
+      const getAssetsURLS = ({ currentCount = 0 }) => {
+        if (currentCount !== images?.length) {
+          uploadImage(images?.[currentCount], authContext, source?.token, preSignedUrls[currentCount]).then((res) => {
+            setUploadedCount(currentCount + 1, images?.length, res)
+            responses.push(res);
+            getAssetsURLS({ currentCount: currentCount + 1 })
+          }).catch(() => reject(new Error('Uploading Error')))
+        } else {
+          resolve(responses);
+        }
       }
-      resolve(Promise.all(promises));
+      getAssetsURLS({ preSignedUrls });
     }
   });
 });

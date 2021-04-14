@@ -104,13 +104,13 @@ const NewsFeedDescription = ({
 
   const renderGameTags = useMemo(() => {
     const taggedMatchCount = tagData?.filter((item) => item?.entity_type === 'game')?.length
-    return (
+    return taggedMatchCount?.length > 0 && (
       <View style={{ marginVertical: 15 }}>
-        {taggedMatchCount > 0 && <TagView
+        <TagView
               tagTextStyle={{ color: colors.greeColor }}
               source={images.tagGreenImage}
               tagText={`${taggedMatchCount} game${taggedMatchCount > 1 ? 's were' : ' was'} tagged`}
-          />}
+          />
         <FlatList
               bounces={false}
               contentContainerStyle={{ paddingHorizontal: 15 }}

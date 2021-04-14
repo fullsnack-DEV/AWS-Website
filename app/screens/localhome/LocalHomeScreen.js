@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+    Fragment,
   useLayoutEffect,
   useState,
   useContext,
@@ -21,13 +22,11 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Modal from 'react-native-modal';
-// import DraggableFlatList from 'react-native-draggable-flatlist';
 import { useIsFocused } from '@react-navigation/native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
 import AuthContext from '../../auth/context';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -36,7 +35,6 @@ import strings from '../../Constants/String';
 import TCGameCard from '../../components/TCGameCard';
 import {
   getSportsList,
-  // getRecentGameDetails,
   getShortsList,
 } from '../../api/Games'; // getRecentGameDetails
 
@@ -54,6 +52,7 @@ import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
 import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import Header from '../../components/Home/Header';
+import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
 
 // import AuthContext from '../../auth/context';
 
@@ -63,7 +62,7 @@ export default function LocalHomeScreen({ navigation }) {
 
   const isFocused = useIsFocused();
 
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const [sports, setSports] = useState([]);
 
   const [locationPopup, setLocationPopup] = useState(false);
@@ -423,84 +422,88 @@ export default function LocalHomeScreen({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
       {renderTopHeader}
-      <ActivityLoader visible={loading} />
       <TCThinDivider width={'100%'} />
-      <View style={styles.sportsListView}>
-        <FlatList
-          ref={refContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={sports}
-          keyExtractor={keyExtractor}
-          renderItem={sportsListView}
-          // initialScrollIndex={sports.indexOf(selectedSport)}
-           initialNumToRender={sports.length}
-          onScrollToIndexFailed={(info) => {
-            const wait = new Promise((resolve) => setTimeout(resolve, 500));
-            wait.then(() => {
-              refContainer.current.scrollToIndex({
-                animated: true,
-                index: info.index,
-              });
-            });
-          }}
-          style={{
-            width: '100%',
-            height: 50,
-            alignContent: 'center',
-          }}
-        />
-      </View>
+      {/* <ActivityLoader visible={loading} /> */}
+      {loading
+            ? <LocalHomeScreenShimmer/>
+            : (
+              <Fragment>
+                <View style={styles.sportsListView}>
+                  <FlatList
+                            ref={refContainer}
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                            data={sports}
+                            keyExtractor={keyExtractor}
+                            renderItem={sportsListView}
+                            // initialScrollIndex={sports.indexOf(selectedSport)}
+                            initialNumToRender={sports.length}
+                            onScrollToIndexFailed={(info) => {
+                                const wait = new Promise((resolve) => setTimeout(resolve, 500));
+                                wait.then(() => {
+                                    refContainer.current.scrollToIndex({
+                                        animated: true,
+                                        index: info.index,
+                                    });
+                                });
+                            }}
+                            style={{
+                                width: '100%',
+                                height: 50,
+                                alignContent: 'center',
+                            }}
+                        />
+                </View>
 
-      <ScrollView>
-        <View>
-          <FlatList
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={[
-              'Soccer',
-              'Baseball',
-              'Basketball',
-              'Tennis Single',
-              'Tennis Double',
-            ]}
-            keyExtractor={keyExtractor}
-            renderItem={renderStatusView}
-            ListHeaderComponent={renderStatusHeader}
-            style={{
-              width: '100%',
-              height: 90,
-              alignContent: 'center',
-              // backgroundColor: 'red',
-              margin: 15,
-              marginBottom: 0,
-            }}
-          />
-          <TCThinDivider width={'100%'} marginTop={10} />
-          <TCTitleWithArrow
-            title={strings.recentMatchesTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('RecentMatchScreen', { gameData: recentMatch })
-            }
-          />
-          <Carousel
-            data={[]} // recentMatch
-            scrollEnabled={recentMatch.length > 0}
-            renderItem={renderRecentMatchItems}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            sliderWidth={widthPercentageToDP(100)}
-            itemWidth={widthPercentageToDP(94)}
-            ListEmptyComponent={() => (
-              <TCGameCardPlaceholder
-                data={gameData}
-                cardWidth={'94%'}
-                placeholderText={strings.recentMatchPlaceholderText}
-              />
-            )}
-          />
-          {/* <FlatList
+                <ScrollView>
+                  <View>
+                    <FlatList
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                data={[
+                                    'Soccer',
+                                    'Baseball',
+                                    'Basketball',
+                                    'Tennis Single',
+                                    'Tennis Double',
+                                ]}
+                                keyExtractor={keyExtractor}
+                                renderItem={renderStatusView}
+                                ListHeaderComponent={renderStatusHeader}
+                                style={{
+                                    width: '100%',
+                                    height: 90,
+                                    alignContent: 'center',
+                                    // backgroundColor: 'red',
+                                    margin: 15,
+                                    marginBottom: 0,
+                                }}
+                            />
+                    <TCThinDivider width={'100%'} marginTop={10} />
+                    <TCTitleWithArrow
+                                title={strings.recentMatchesTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('RecentMatchScreen', { gameData: recentMatch })
+                                }
+                            />
+                    <Carousel
+                                data={[]} // recentMatch
+                                scrollEnabled={recentMatch.length > 0}
+                                renderItem={renderRecentMatchItems}
+                                inactiveSlideScale={1}
+                                inactiveSlideOpacity={1}
+                                sliderWidth={widthPercentageToDP(100)}
+                                itemWidth={widthPercentageToDP(94)}
+                                ListEmptyComponent={() => (
+                                  <TCGameCardPlaceholder
+                                        data={gameData}
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.recentMatchPlaceholderText}
+                                    />
+                                )}
+                            />
+                    {/* <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={[{ ...gameData }, { ...gameData }, { ...gameData }, { ...gameData }]}
@@ -514,419 +517,423 @@ export default function LocalHomeScreen({ navigation }) {
           />)}
           style={{ marginLeft: 15 }}
         /> */}
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.upcomingMatchesTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('UpcomingMatchScreen')}
-          />
-          <Carousel
-            data={upcomingMatch}
-            scrollEnabled={upcomingMatch.length > 0}
-            renderItem={renderGameItems}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            sliderWidth={widthPercentageToDP(100)}
-            itemWidth={widthPercentageToDP(94)}
-            ListEmptyComponent={() => (
-              <TCGameCardPlaceholder
-                data={gameData}
-                cardWidth={'94%'}
-                placeholderText={strings.upcomingMatchPlaceholderText}
-              />
-            )}
-          />
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.shortsTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-          />
-          <FlatList
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={shortsList}
-            keyExtractor={keyExtractor}
-            renderItem={shortsListView}
-          />
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.lookingForTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('LookingForChallengeScreen')}
-          />
-          <Carousel
-            data={challengerMatch}
-            scrollEnabled={challengerMatch.length > 0}
-            renderItem={renderChallengerItems}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            sliderWidth={widthPercentageToDP(100)}
-            itemWidth={widthPercentageToDP(94)}
-            ListEmptyComponent={() => (
-              <TCTeamsCardPlaceholder
-                data={gameData}
-                cardWidth={'94%'}
-                placeholderText={strings.challengerPlaceholderText}
-              />
-            )}
-          />
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.hiringPlayerTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('HiringPlayerScreen')}
-          />
-          <Carousel
-            data={hiringPlayers}
-            scrollEnabled={hiringPlayers.length > 0}
-            renderItem={renderHiringPlayersItems}
-            inactiveSlideScale={1}
-            inactiveSlideOpacity={1}
-            sliderWidth={widthPercentageToDP(100)}
-            itemWidth={widthPercentageToDP(94)}
-            ListEmptyComponent={() => (
-              <TCTeamsCardPlaceholder
-                data={gameData}
-                cardWidth={'94%'}
-                placeholderText={strings.hiringPlayersPlaceholderText}
-              />
-            )}
-          />
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.lookingForTeamTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('LookingTeamScreen')}
-          />
-          <FlatList
-            horizontal={true}
-            scrollEnabled={lookingTeam.length > 0}
-            showsHorizontalScrollIndicator={false}
-            data={lookingTeam}
-            ItemSeparatorComponent={renderSeparator}
-            keyExtractor={keyExtractor}
-            renderItem={renderEntityListView}
-            style={{ marginLeft: 15 }}
-            ListEmptyComponent={() => (
-              <TCEntityListPlaceholder
-                cardWidth={'94%'}
-                placeholderText={strings.lookingTeamsPlaceholderText}
-              />
-            )}
-          />
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.refereesTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('RefereesListScreen')}
-          />
-          <FlatList
-            horizontal={true}
-            scrollEnabled={referees.length > 0}
-            showsHorizontalScrollIndicator={false}
-            data={referees}
-            ItemSeparatorComponent={renderSeparator}
-            keyExtractor={keyExtractor}
-            renderItem={renderRefereesScorekeeperListView}
-            style={{ marginLeft: 15 }}
-            ListEmptyComponent={() => (
-              <TCEntityListPlaceholder
-                cardWidth={'94%'}
-                placeholderText={strings.refereesPlaceholderText}
-              />
-            )}
-          />
-        </View>
-        <View>
-          <TCTitleWithArrow
-            title={strings.scorekeeperTitle}
-            showArrow={true}
-            viewStyle={{ marginTop: 20, marginBottom: 15 }}
-            onPress={() => navigation.navigate('ScorekeeperListScreen')}
-          />
-          <FlatList
-            horizontal={true}
-            scrollEnabled={scorekeepers.length > 0}
-            showsHorizontalScrollIndicator={false}
-            data={scorekeepers}
-            ItemSeparatorComponent={renderSeparator}
-            keyExtractor={keyExtractor}
-            renderItem={renderRefereesScorekeeperListView}
-            style={{ marginLeft: 15 }}
-            ListEmptyComponent={() => (
-              <TCEntityListPlaceholder
-                cardWidth={'94%'}
-                placeholderText={strings.scorekeepersPlaceholderText}
-              />
-            )}
-          />
-        </View>
-        <Modal
-          onBackdropPress={() => setLocationPopup(false)}
-          backdropOpacity={1}
-          animationType="slide"
-          hasBackdrop
-          style={{
-            margin: 0,
-            backgroundColor: colors.blackOpacityColor,
-          }}
-          visible={locationPopup}>
-          <View style={styles.bottomPopupContainer}>
-            <View style={styles.viewsContainer}>
-              <Text
-                onPress={() => setLocationPopup(false)}
-                style={styles.cancelText}>
-                Cancel
-              </Text>
-              <Text style={styles.locationText}>Location</Text>
-              <Text style={styles.doneText}>{'    '}</Text>
-            </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <TouchableWithoutFeedback
-              onPress={() => setSelectedLocationOption(0)}>
-              {selectedLocationOption === 0 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text
-                    style={[
-                      styles.curruentLocationText,
-                      { color: colors.whiteColor },
-                    ]}>
-                    Current location
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.curruentLocationText}>
-                    Current location
-                  </Text>
-                </View>
-              )}
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={() => setSelectedLocationOption(1)}>
-              {selectedLocationOption === 1 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
-                    Home city
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.myCityText}>Home city</Text>
-                </View>
-              )}
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={() => setSelectedLocationOption(2)}>
-              {selectedLocationOption === 2 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text style={[styles.worldText, { color: colors.whiteColor }]}>
-                    World
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.worldText}>World</Text>
-                </View>
-              )}
-            </TouchableWithoutFeedback>
-            <Text style={styles.orText}>Or</Text>
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.upcomingMatchesTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('UpcomingMatchScreen')}
+                            />
+                    <Carousel
+                                data={upcomingMatch}
+                                scrollEnabled={upcomingMatch.length > 0}
+                                renderItem={renderGameItems}
+                                inactiveSlideScale={1}
+                                inactiveSlideOpacity={1}
+                                sliderWidth={widthPercentageToDP(100)}
+                                itemWidth={widthPercentageToDP(94)}
+                                ListEmptyComponent={() => (
+                                  <TCGameCardPlaceholder
+                                        data={gameData}
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.upcomingMatchPlaceholderText}
+                                    />
+                                )}
+                            />
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.shortsTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                            />
+                    <FlatList
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                data={shortsList}
+                                keyExtractor={keyExtractor}
+                                renderItem={shortsListView}
+                            />
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.lookingForTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('LookingForChallengeScreen')}
+                            />
+                    <Carousel
+                                data={challengerMatch}
+                                scrollEnabled={challengerMatch.length > 0}
+                                renderItem={renderChallengerItems}
+                                inactiveSlideScale={1}
+                                inactiveSlideOpacity={1}
+                                sliderWidth={widthPercentageToDP(100)}
+                                itemWidth={widthPercentageToDP(94)}
+                                ListEmptyComponent={() => (
+                                  <TCTeamsCardPlaceholder
+                                        data={gameData}
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.challengerPlaceholderText}
+                                    />
+                                )}
+                            />
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.hiringPlayerTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('HiringPlayerScreen')}
+                            />
+                    <Carousel
+                                data={hiringPlayers}
+                                scrollEnabled={hiringPlayers.length > 0}
+                                renderItem={renderHiringPlayersItems}
+                                inactiveSlideScale={1}
+                                inactiveSlideOpacity={1}
+                                sliderWidth={widthPercentageToDP(100)}
+                                itemWidth={widthPercentageToDP(94)}
+                                ListEmptyComponent={() => (
+                                  <TCTeamsCardPlaceholder
+                                        data={gameData}
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.hiringPlayersPlaceholderText}
+                                    />
+                                )}
+                            />
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.lookingForTeamTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('LookingTeamScreen')}
+                            />
+                    <FlatList
+                                horizontal={true}
+                                scrollEnabled={lookingTeam.length > 0}
+                                showsHorizontalScrollIndicator={false}
+                                data={lookingTeam}
+                                ItemSeparatorComponent={renderSeparator}
+                                keyExtractor={keyExtractor}
+                                renderItem={renderEntityListView}
+                                style={{ marginLeft: 15 }}
+                                ListEmptyComponent={() => (
+                                  <TCEntityListPlaceholder
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.lookingTeamsPlaceholderText}
+                                    />
+                                )}
+                            />
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.refereesTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('RefereesListScreen')}
+                            />
+                    <FlatList
+                                horizontal={true}
+                                scrollEnabled={referees.length > 0}
+                                showsHorizontalScrollIndicator={false}
+                                data={referees}
+                                ItemSeparatorComponent={renderSeparator}
+                                keyExtractor={keyExtractor}
+                                renderItem={renderRefereesScorekeeperListView}
+                                style={{ marginLeft: 15 }}
+                                ListEmptyComponent={() => (
+                                  <TCEntityListPlaceholder
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.refereesPlaceholderText}
+                                    />
+                                )}
+                            />
+                  </View>
+                  <View>
+                    <TCTitleWithArrow
+                                title={strings.scorekeeperTitle}
+                                showArrow={true}
+                                viewStyle={{ marginTop: 20, marginBottom: 15 }}
+                                onPress={() => navigation.navigate('ScorekeeperListScreen')}
+                            />
+                    <FlatList
+                                horizontal={true}
+                                scrollEnabled={scorekeepers.length > 0}
+                                showsHorizontalScrollIndicator={false}
+                                data={scorekeepers}
+                                ItemSeparatorComponent={renderSeparator}
+                                keyExtractor={keyExtractor}
+                                renderItem={renderRefereesScorekeeperListView}
+                                style={{ marginLeft: 15 }}
+                                ListEmptyComponent={() => (
+                                  <TCEntityListPlaceholder
+                                        cardWidth={'94%'}
+                                        placeholderText={strings.scorekeepersPlaceholderText}
+                                    />
+                                )}
+                            />
+                  </View>
+                  <Modal
+                            onBackdropPress={() => setLocationPopup(false)}
+                            backdropOpacity={1}
+                            animationType="slide"
+                            hasBackdrop
+                            style={{
+                                margin: 0,
+                                backgroundColor: colors.blackOpacityColor,
+                            }}
+                            visible={locationPopup}>
+                    <View style={styles.bottomPopupContainer}>
+                      <View style={styles.viewsContainer}>
+                        <Text
+                                        onPress={() => setLocationPopup(false)}
+                                        style={styles.cancelText}>
+                          Cancel
+                        </Text>
+                        <Text style={styles.locationText}>Location</Text>
+                        <Text style={styles.doneText}>{'    '}</Text>
+                      </View>
+                      <TCThinDivider width={'100%'} marginBottom={15} />
+                      <TouchableWithoutFeedback
+                                    onPress={() => setSelectedLocationOption(0)}>
+                        {selectedLocationOption === 0 ? (
+                          <LinearGradient
+                                            colors={[colors.yellowColor, colors.orangeGradientColor]}
+                                            style={styles.backgroundView}>
+                            <Text
+                                                style={[
+                                                    styles.curruentLocationText,
+                                                    { color: colors.whiteColor },
+                                                ]}>
+                              Current location
+                            </Text>
+                          </LinearGradient>
+                                    ) : (
+                                      <View style={styles.backgroundView}>
+                                        <Text style={styles.curruentLocationText}>
+                                          Current location
+                                        </Text>
+                                      </View>
+                                    )}
+                      </TouchableWithoutFeedback>
+                      <TouchableWithoutFeedback
+                                    onPress={() => setSelectedLocationOption(1)}>
+                        {selectedLocationOption === 1 ? (
+                          <LinearGradient
+                                            colors={[colors.yellowColor, colors.orangeGradientColor]}
+                                            style={styles.backgroundView}>
+                            <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
+                              Home city
+                            </Text>
+                          </LinearGradient>
+                                    ) : (
+                                      <View style={styles.backgroundView}>
+                                        <Text style={styles.myCityText}>Home city</Text>
+                                      </View>
+                                    )}
+                      </TouchableWithoutFeedback>
+                      <TouchableWithoutFeedback
+                                    onPress={() => setSelectedLocationOption(2)}>
+                        {selectedLocationOption === 2 ? (
+                          <LinearGradient
+                                            colors={[colors.yellowColor, colors.orangeGradientColor]}
+                                            style={styles.backgroundView}>
+                            <Text style={[styles.worldText, { color: colors.whiteColor }]}>
+                              World
+                            </Text>
+                          </LinearGradient>
+                                    ) : (
+                                      <View style={styles.backgroundView}>
+                                        <Text style={styles.worldText}>World</Text>
+                                      </View>
+                                    )}
+                      </TouchableWithoutFeedback>
+                      <Text style={styles.orText}>Or</Text>
 
-            <TouchableOpacity
-              style={styles.sectionStyle}
-              onPress={() => {
-                setLocationPopup(false);
-                navigation.navigate('SearchCityScreen');
-              }}>
-              <Text style={styles.searchText}>{strings.searchTitle}</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-        <Modal
-          onBackdropPress={() => setSettingPopup(false)}
-          backdropOpacity={1}
-          animationType="slide"
-          hasBackdrop
-          style={{
-            margin: 0,
-            backgroundColor: colors.blackOpacityColor,
-          }}
-          visible={settingPopup}>
-          <View style={styles.bottomPopupContainer}>
-            <View style={styles.viewsContainer}>
-              <Text
-                onPress={() => setSettingPopup(false)}
-                style={styles.cancelText}>
-                Cancel
-              </Text>
-              <Text style={styles.locationText}>Setting</Text>
-              <Text
-                style={styles.doneText}
-                onPress={() => {
-                  if (selectedSettingOption === 1) {
-                    setSettingPopup(false);
-                    setLocationPopup(true);
-                  } else {
-                    setSettingPopup(false);
-                    setSportsPopup(true);
-                  }
-                }}>
-                {'Done'}
-              </Text>
-            </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <TouchableWithoutFeedback
-              onPress={() => setSelectedSettingOption(0)}>
-              {selectedSettingOption === 0 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text
-                    style={[
-                      styles.curruentLocationText,
-                      { color: colors.whiteColor },
-                    ]}>
-                    Sports
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.curruentLocationText}>Sports</Text>
-                </View>
-              )}
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={() => setSelectedSettingOption(1)}>
-              {selectedSettingOption === 1 ? (
-                <LinearGradient
-                  colors={[colors.yellowColor, colors.orangeGradientColor]}
-                  style={styles.backgroundView}>
-                  <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
-                    Location
-                  </Text>
-                </LinearGradient>
-              ) : (
-                <View style={styles.backgroundView}>
-                  <Text style={styles.myCityText}>Location</Text>
-                </View>
-              )}
-            </TouchableWithoutFeedback>
-          </View>
-        </Modal>
-        <Modal
-          onBackdropPress={() => setSportsPopup(false)}
-          backdropOpacity={1}
-          animationType="slide"
-          hasBackdrop
-          style={{
-            margin: 0,
-            backgroundColor: colors.blackOpacityColor,
-          }}
-          visible={sportsPopup}>
-          <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
-            <View style={styles.viewsContainer}>
-              <Text
-                onPress={() => setSettingPopup(false)}
-                style={styles.cancelText}>
-                Cancel
-              </Text>
-              <Text style={styles.locationText}>Sports</Text>
-              <Text
-                style={styles.doneText}
-                onPress={() => {
-                  console.log('DONE::');
-                }}>
-                {'Done'}
-              </Text>
-            </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              data={[
-                'Soccer',
-                'Baseball',
-                'Basketball',
-                'Tennis Single',
-                'Tennis Double',
-              ]}
-              keyExtractor={keyExtractor}
-              renderItem={renderSportsView}
-              style={{
-                width: '100%',
-                alignContent: 'center',
-                marginBottom: 15,
-                paddingVertical: 15,
-              }}
-              // dragHitSlop={{
-              //   top: 15,
-              //   bottom: 15,
-              //   left: 15,
-              //   right: 15,
-              // }}
+                      <TouchableOpacity
+                                    style={styles.sectionStyle}
+                                    onPress={() => {
+                                        setLocationPopup(false);
+                                        navigation.navigate('SearchCityScreen');
+                                    }}>
+                        <Text style={styles.searchText}>{strings.searchTitle}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </Modal>
+                  <Modal
+                            onBackdropPress={() => setSettingPopup(false)}
+                            backdropOpacity={1}
+                            animationType="slide"
+                            hasBackdrop
+                            style={{
+                                margin: 0,
+                                backgroundColor: colors.blackOpacityColor,
+                            }}
+                            visible={settingPopup}>
+                    <View style={styles.bottomPopupContainer}>
+                      <View style={styles.viewsContainer}>
+                        <Text
+                                        onPress={() => setSettingPopup(false)}
+                                        style={styles.cancelText}>
+                          Cancel
+                        </Text>
+                        <Text style={styles.locationText}>Setting</Text>
+                        <Text
+                                        style={styles.doneText}
+                                        onPress={() => {
+                                            if (selectedSettingOption === 1) {
+                                                setSettingPopup(false);
+                                                setLocationPopup(true);
+                                            } else {
+                                                setSettingPopup(false);
+                                                setSportsPopup(true);
+                                            }
+                                        }}>
+                          {'Done'}
+                        </Text>
+                      </View>
+                      <TCThinDivider width={'100%'} marginBottom={15} />
+                      <TouchableWithoutFeedback
+                                    onPress={() => setSelectedSettingOption(0)}>
+                        {selectedSettingOption === 0 ? (
+                          <LinearGradient
+                                            colors={[colors.yellowColor, colors.orangeGradientColor]}
+                                            style={styles.backgroundView}>
+                            <Text
+                                                style={[
+                                                    styles.curruentLocationText,
+                                                    { color: colors.whiteColor },
+                                                ]}>
+                              Sports
+                            </Text>
+                          </LinearGradient>
+                                    ) : (
+                                      <View style={styles.backgroundView}>
+                                        <Text style={styles.curruentLocationText}>Sports</Text>
+                                      </View>
+                                    )}
+                      </TouchableWithoutFeedback>
+                      <TouchableWithoutFeedback
+                                    onPress={() => setSelectedSettingOption(1)}>
+                        {selectedSettingOption === 1 ? (
+                          <LinearGradient
+                                            colors={[colors.yellowColor, colors.orangeGradientColor]}
+                                            style={styles.backgroundView}>
+                            <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
+                              Location
+                            </Text>
+                          </LinearGradient>
+                                    ) : (
+                                      <View style={styles.backgroundView}>
+                                        <Text style={styles.myCityText}>Location</Text>
+                                      </View>
+                                    )}
+                      </TouchableWithoutFeedback>
+                    </View>
+                  </Modal>
+                  <Modal
+                            onBackdropPress={() => setSportsPopup(false)}
+                            backdropOpacity={1}
+                            animationType="slide"
+                            hasBackdrop
+                            style={{
+                                margin: 0,
+                                backgroundColor: colors.blackOpacityColor,
+                            }}
+                            visible={sportsPopup}>
+                    <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+                      <View style={styles.viewsContainer}>
+                        <Text
+                                        onPress={() => setSettingPopup(false)}
+                                        style={styles.cancelText}>
+                          Cancel
+                        </Text>
+                        <Text style={styles.locationText}>Sports</Text>
+                        <Text
+                                        style={styles.doneText}
+                                        onPress={() => {
+                                            console.log('DONE::');
+                                        }}>
+                          {'Done'}
+                        </Text>
+                      </View>
+                      <TCThinDivider width={'100%'} marginBottom={15} />
+                      <FlatList
+                                    showsHorizontalScrollIndicator={false}
+                                    data={[
+                                        'Soccer',
+                                        'Baseball',
+                                        'Basketball',
+                                        'Tennis Single',
+                                        'Tennis Double',
+                                    ]}
+                                    keyExtractor={keyExtractor}
+                                    renderItem={renderSportsView}
+                                    style={{
+                                        width: '100%',
+                                        alignContent: 'center',
+                                        marginBottom: 15,
+                                        paddingVertical: 15,
+                                    }}
+                                    // dragHitSlop={{
+                                    //   top: 15,
+                                    //   bottom: 15,
+                                    //   left: 15,
+                                    //   right: 15,
+                                    // }}
 
-              // onDragEnd={({ data }) => setSportsSource(data)}
-            />
-            <TouchableOpacity
-              style={styles.addSportsView}
-              onPress={() => {
-                setSportsPopup(false);
-                setSportsListPopup(true);
-              }}>
-              <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-        <Modal
-          onBackdropPress={() => setSportsListPopup(false)}
-          backdropOpacity={1}
-          animationType="slide"
-          hasBackdrop
-          style={{
-            flex: 1,
-            margin: 0,
-            backgroundColor: colors.blackOpacityColor,
-          }}
-          visible={sportsListPopup}>
-          <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
-            <View style={styles.viewsContainer}>
-              <Text
-                onPress={() => setSportsListPopup(false)}
-                style={styles.cancelText}>
-                Cancel
-              </Text>
-              <Text style={styles.locationText}>Add or delete Sports </Text>
-              <Text
-                style={styles.doneText}
-                onPress={() => {
-                  console.log('DONE::', selectedSports);
-                }}>
-                {'Apply'}
-              </Text>
-            </View>
-            <TCThinDivider width={'100%'} marginBottom={15} />
-            <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
-          </View>
-        </Modal>
+                                    // onDragEnd={({ data }) => setSportsSource(data)}
+                                />
+                      <TouchableOpacity
+                                    style={styles.addSportsView}
+                                    onPress={() => {
+                                        setSportsPopup(false);
+                                        setSportsListPopup(true);
+                                    }}>
+                        <Text style={styles.addSportsTitle}>Add or delete Sports</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </Modal>
+                  <Modal
+                            onBackdropPress={() => setSportsListPopup(false)}
+                            backdropOpacity={1}
+                            animationType="slide"
+                            hasBackdrop
+                            style={{
+                                flex: 1,
+                                margin: 0,
+                                backgroundColor: colors.blackOpacityColor,
+                            }}
+                            visible={sportsListPopup}>
+                    <View style={[styles.bottomPopupContainer, { height: '80%' }]}>
+                      <View style={styles.viewsContainer}>
+                        <Text
+                                        onPress={() => setSportsListPopup(false)}
+                                        style={styles.cancelText}>
+                          Cancel
+                        </Text>
+                        <Text style={styles.locationText}>Add or delete Sports </Text>
+                        <Text
+                                        style={styles.doneText}
+                                        onPress={() => {
+                                            console.log('DONE::', selectedSports);
+                                        }}>
+                          {'Apply'}
+                        </Text>
+                      </View>
+                      <TCThinDivider width={'100%'} marginBottom={15} />
+                      <SportsListView sports={sports} onSelect={isIconCheckedOrNot} />
+                    </View>
+                  </Modal>
 
-      </ScrollView>
+                </ScrollView>
+              </Fragment>
+            )
+        }
+
     </View>
   );
 }

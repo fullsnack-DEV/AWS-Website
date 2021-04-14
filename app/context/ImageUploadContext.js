@@ -75,6 +75,8 @@ const uploadData = (dispatch) => (authContext, dataParams, imageArray, callBack)
     dParams.attachments = [...dataParams?.attachments, ...attachments];
     dispatch({ type: 'removeUploadingData', payload: currentImagesDataUploadID })
     callBack(dParams);
+  }).catch(() => {
+    dispatch({ type: 'removeUploadingData', payload: currentImagesDataUploadID })
   })
 }
 export const { Provider: ImageUploadProvider, Context: ImageUploadContext } = CreateDataContext(
