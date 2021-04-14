@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, {
   useEffect,
   useState,
@@ -19,7 +20,15 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
-import { getGameReview } from '../../../../../api/Games';
+import {
+  addGameReview,
+  getGameReview,
+  patchGameReview,
+  addRefereeReview,
+  patchRefereeReview,
+  patchScorekeeperReview,
+  addScorekeeperReview,
+} from '../../../../../api/Games';
 import { heightPercentageToDP as hp } from '../../../../../utils';
 import MatchRecords from './MatchRecords';
 import SpecialRules from './SpecialRules';
@@ -36,6 +45,7 @@ import strings from '../../../../../Constants/String';
 import GameFeed from '../../../common/summary/GameFeed';
 
 import images from '../../../../../Constants/ImagePath';
+import { ImageUploadContext } from '../../../../../context/ImageUploadContext';
 
 const Summary = ({
   gameData,
@@ -59,6 +69,8 @@ const Summary = ({
   gameFeedFlatListRef,
   getGameNextFeedData,
 }) => {
+  console.log('GameData Soccer:=>', gameData);
+  const imageUploadContext = useContext(ImageUploadContext);
   const authContext = useContext(AuthContext);
   const reviewOpetions = useRef();
   const isFocused = useIsFocused();
@@ -70,6 +82,7 @@ const Summary = ({
   const [starAttributes, setStarAttributes] = useState([]);
   const [leaveReviewText, setLeaveReviewText] = useState('');
   const [lineUpUser, setLineUpUser] = useState(false);
+  const [pressedReferee, setPressedReferee] = useState({});
 
   const [sliderAttributesForReferee, setSliderAttributesForReferee] = useState(
     [],
@@ -115,9 +128,9 @@ const Summary = ({
           if (teamReviewProp?.length) {
             teamReviewProp.filter((item) => {
               if (item.type === 'slider') {
-                sliderReviewProp.push(item?.name.toLowerCase());
+                sliderReviewProp.push(item?.title.toLowerCase());
               } else if (item.type === 'star') {
-                starReviewProp.push(item?.name.toLowerCase());
+                starReviewProp.push(item);
               }
               return true;
             });
@@ -129,7 +142,7 @@ const Summary = ({
               if (item.type === 'slider') {
                 sliderReviewPropForPlayer.push(item?.name.toLowerCase());
               } else if (item.type === 'star') {
-                starReviewPropForPlayer.push(item?.name.toLowerCase());
+                starReviewPropForPlayer.push(item);
               }
               return true;
             });
@@ -139,7 +152,7 @@ const Summary = ({
               if (item.type === 'topstar') {
                 sliderReviewPropForReferee.push(item?.name.toLowerCase());
               } else if (item.type === 'star') {
-                starReviewPropForReferee.push(item?.name.toLowerCase());
+                starReviewPropForReferee.push(item);
               }
               return true;
             });
@@ -151,7 +164,7 @@ const Summary = ({
               if (item.type === 'topstar') {
                 sliderReviewPropForScorekeeper.push(item?.name.toLowerCase());
               } else if (item.type === 'star') {
-                starReviewPropForScorekeeper.push(item?.name.toLowerCase());
+                starReviewPropForScorekeeper.push(item);
               }
               return true;
             });
@@ -267,6 +280,7 @@ const Summary = ({
             userData: item,
             sliderAttributesForReferee,
             starAttributesForReferee,
+            onPressRefereeReviewDone,
           });
           setLoading(false);
         })
@@ -295,6 +309,7 @@ const Summary = ({
             userData: item,
             sliderAttributesForScorekeeper,
             starAttributesForScorekeeper,
+            onPressScorekeeperReviewDone,
           });
           setLoading(false);
         })
@@ -312,25 +327,39 @@ const Summary = ({
     ],
   );
 
-  const getGameReviewsData = useCallback((reviewID) => {
-    setLoading(true);
-    getGameReview(gameData?.game_id, reviewID, authContext)
-      .then((response) => {
-        console.log('Edit Review By Review ID Response::=>', response.payload);
-        navigation.navigate('LeaveReview', {
-          gameData,
-          gameReviewData: response.payload,
-          selectedTeam: selectedTeamForReview,
-          sliderAttributes,
-          starAttributes,
+  const getGameReviewsData = useCallback(
+    (reviewID) => {
+      setLoading(true);
+      getGameReview(gameData?.game_id, reviewID, authContext)
+        .then((response) => {
+          console.log(
+            'Edit Review By Review ID Response::=>',
+            response.payload,
+          );
+          navigation.navigate('LeaveReview', {
+            gameData,
+            gameReviewData: response.payload,
+            selectedTeam: selectedTeamForReview,
+            sliderAttributes,
+            starAttributes,
+            onPressReviewDone,
+          });
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
         });
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setTimeout(() => Alert.alert('TownsCup', error?.message), 100);
-      });
-  }, []);
+    },
+    [
+      authContext,
+      gameData,
+      navigation,
+      selectedTeamForReview,
+      sliderAttributes,
+      starAttributes,
+    ],
+  );
 
   const reviewOperationsActionSheetOptions = useMemo(
     () => (gameData?.review_id
@@ -355,6 +384,7 @@ const Summary = ({
             gameData,
             sliderAttributes,
             starAttributes,
+            onPressReviewDone,
           });
         }
       } else if (index === 1) {
@@ -424,6 +454,7 @@ const Summary = ({
                       selectedTeam: playerFrom === 'home' ? 'away' : 'home',
                       sliderAttributes,
                       starAttributes,
+                      onPressReviewDone,
                     });
                   }
                 } else {
@@ -507,6 +538,7 @@ const Summary = ({
         followUser={followSoccerUser}
         unFollowUser={unFollowSoccerUser}
         onReviewPress={(referee) => {
+          setPressedReferee(referee);
           console.log('Referee Pressed:=>', referee);
           if (referee?.review_id) {
             getRefereeReviewsData(referee);
@@ -516,6 +548,7 @@ const Summary = ({
             userData: referee,
             sliderAttributesForReferee,
             starAttributesForReferee,
+            onPressRefereeReviewDone,
           });
         }}
       />
@@ -553,6 +586,7 @@ const Summary = ({
             userData: scorekeeper,
             sliderAttributesForScorekeeper,
             starAttributesForScorekeeper,
+            onPressScorekeeperReviewDone,
           });
         }}
       />
@@ -598,6 +632,314 @@ const Summary = ({
     ],
   );
 
+  const patchOrAddScorekeeperReview = useCallback(
+    ({
+ currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id,
+ }) => {
+      if (isAlreadyReviewed) {
+        setLoading(true);
+
+        const teamReview = { ...reviewsData };
+        delete teamReview.created_at;
+        delete teamReview.entity_type;
+        delete teamReview.entity_id;
+        delete teamReview.game_id;
+        const reviewID = teamReview.review_id;
+        delete teamReview.review_id;
+        delete teamReview.reviewer_id;
+        delete teamReview.sport;
+
+        const reviewObj = {
+          ...teamReview,
+        };
+        console.log('Edited Review Object::=>', teamReview);
+        patchScorekeeperReview(
+          scorekeeper_id,
+          gameData?.game_id,
+          reviewID,
+          reviewObj,
+          authContext,
+        )
+          .then(() => {
+            setLoading(false);
+            getGameData();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+            navigation.goBack();
+          });
+      } else {
+        setLoading(true);
+        addScorekeeperReview(
+          scorekeeper_id,
+          gameData?.game_id,
+          reviewsData,
+          authContext,
+        )
+          .then(() => {
+            setLoading(false);
+            getGameData();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+            navigation.goBack();
+          });
+      }
+    },
+    [authContext, gameData?.game_id, getGameData, navigation],
+  );
+
+  const patchOrAddRefereeReview = useCallback(
+    ({
+ currentForm, isAlreadyReviewed, reviewsData, referee_id,
+ }) => {
+      if (isAlreadyReviewed) {
+        setLoading(true);
+
+        const teamReview = { ...reviewsData };
+        delete teamReview.created_at;
+        delete teamReview.entity_type;
+        delete teamReview.entity_id;
+        delete teamReview.game_id;
+        const reviewID = teamReview.review_id;
+        delete teamReview.review_id;
+        delete teamReview.reviewer_id;
+        delete teamReview.sport;
+
+        const reviewObj = {
+          ...teamReview,
+        };
+        console.log('Edited Review Object::=>', teamReview);
+        patchRefereeReview(
+          referee_id,
+          gameData?.game_id,
+          reviewID,
+          reviewObj,
+          authContext,
+        )
+          .then(() => {
+            setLoading(false);
+            getGameData();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+            navigation.goBack();
+          });
+      } else {
+        setLoading(true);
+        addRefereeReview(
+          referee_id,
+          gameData?.game_id,
+          reviewsData,
+          authContext,
+        )
+          .then(() => {
+            setLoading(false);
+            getGameData();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+            navigation.goBack();
+          });
+      }
+    },
+    [authContext, gameData?.game_id, getGameData, navigation],
+  );
+
+  const patchOrAddReview = useCallback(
+    ({ isAlreadyReviewed, currentForm, reviewsData }) => {
+      if (isAlreadyReviewed) {
+        setLoading(true);
+        const teamReview = reviewsData;
+        delete teamReview.created_at;
+        delete teamReview.entity_type;
+        const team1ID = teamReview.entity_id;
+        delete teamReview.entity_id;
+        teamReview.player_id = team1ID;
+        delete teamReview.game_id;
+        const reviewID = teamReview.review_id;
+        delete teamReview.review_id;
+        delete teamReview.reviewer_id;
+        delete teamReview.sport;
+
+        const reviewObj = {
+          ...teamReview,
+        };
+
+        console.log('Edited Review Object::=>', reviewObj);
+        patchGameReview(gameData?.game_id, reviewID, reviewObj, authContext)
+          .then(() => {
+            setLoading(false);
+            getGameData();
+            // navigation.goBack();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+            // navigation.goBack();
+          });
+      } else {
+        console.log('New Review Object::=>', reviewsData);
+        setLoading(true);
+        addGameReview(gameData?.game_id, reviewsData, authContext)
+          .then(() => {
+            setLoading(false);
+            getGameData();
+            // navigation.goBack();
+          })
+          .catch((error) => {
+            setLoading(false);
+            setTimeout(
+              () => Alert.alert(strings.alertmessagetitle, error?.message),
+              100,
+            );
+            // navigation.goBack();
+          });
+      }
+    },
+    [authContext, gameData?.game_id, getGameData],
+  );
+  const onPressReviewDone = useCallback(
+    (currentForm, isAlreadyReviewed, reviewsData) => {
+      const reviewData = { ...reviewsData };
+      const alreadyUrlDone = [];
+      const createUrlData = [];
+
+      if (reviewsData.attachments.length > 0) {
+        reviewsData.attachments.map((dataItem) => {
+          if (dataItem.thumbnail) {
+            alreadyUrlDone.push(dataItem);
+          } else {
+            createUrlData.push(dataItem);
+          }
+          return null;
+        });
+      }
+
+      reviewData.attachments = [...alreadyUrlDone];
+      if (createUrlData?.length > 0) {
+        const imageArray = createUrlData.map((dataItem) => dataItem);
+        imageUploadContext.uploadData(
+          authContext,
+          reviewData,
+          imageArray,
+          (dataParams) => patchOrAddReview({
+              currentForm,
+              isAlreadyReviewed,
+              reviewsData: dataParams,
+            }),
+        );
+      } else {
+        patchOrAddReview({ currentForm, isAlreadyReviewed, reviewsData });
+      }
+    },
+    [authContext, patchOrAddReview, imageUploadContext],
+  );
+
+  const onPressRefereeReviewDone = useCallback(
+    (currentForm, isAlreadyReviewed, reviewsData, referee_id) => {
+      const reviewData = { ...reviewsData };
+      const alreadyUrlDone = [];
+      const createUrlData = [];
+
+      if (reviewsData.attachments.length > 0) {
+        reviewsData.attachments.map((dataItem) => {
+          if (dataItem.thumbnail) {
+            alreadyUrlDone.push(dataItem);
+          } else {
+            createUrlData.push(dataItem);
+          }
+          return null;
+        });
+      }
+
+      reviewData.attachments = [...alreadyUrlDone];
+      if (createUrlData?.length > 0) {
+        const imageArray = createUrlData.map((dataItem) => dataItem);
+        imageUploadContext.uploadData(
+          authContext,
+          reviewData,
+          imageArray,
+          (dataParams) => patchOrAddRefereeReview({
+              currentForm,
+              isAlreadyReviewed,
+              reviewsData: dataParams,
+              referee_id,
+            }),
+        );
+      } else {
+        patchOrAddRefereeReview({
+          currentForm,
+          isAlreadyReviewed,
+          reviewsData,
+          referee_id,
+        });
+      }
+    },
+    [imageUploadContext, authContext, patchOrAddRefereeReview],
+  );
+
+  const onPressScorekeeperReviewDone = useCallback(
+    (currentForm, isAlreadyReviewed, reviewsData, scorekeeper_id) => {
+      const reviewData = { ...reviewsData };
+      const alreadyUrlDone = [];
+      const createUrlData = [];
+
+      if (reviewsData.attachments.length > 0) {
+        reviewsData.attachments.map((dataItem) => {
+          if (dataItem.thumbnail) {
+            alreadyUrlDone.push(dataItem);
+          } else {
+            createUrlData.push(dataItem);
+          }
+          return null;
+        });
+      }
+
+      reviewData.attachments = [...alreadyUrlDone];
+      if (createUrlData?.length > 0) {
+        const imageArray = createUrlData.map((dataItem) => dataItem);
+        imageUploadContext.uploadData(
+          authContext,
+          reviewData,
+          imageArray,
+          (dataParams) => patchOrAddScorekeeperReview({
+              currentForm,
+              isAlreadyReviewed,
+              reviewsData: dataParams,
+              scorekeeper_id,
+            }),
+        );
+      } else {
+        patchOrAddScorekeeperReview({
+          currentForm,
+          isAlreadyReviewed,
+          reviewsData,
+          scorekeeper_id,
+        });
+      }
+    },
+    [imageUploadContext, authContext, patchOrAddScorekeeperReview],
+  );
   return (
     <View style={styles.mainContainer}>
       <TCInnerLoader visible={loading} />
@@ -667,6 +1009,7 @@ const Summary = ({
                             selectedTeam: selectedTeamForReview,
                             sliderAttributes,
                             starAttributes,
+                            onPressReviewDone,
                           });
                         }
                       }
@@ -679,6 +1022,7 @@ const Summary = ({
                             selectedTeam: selectedTeamForReview,
                             sliderAttributes,
                             starAttributes,
+                            onPressReviewDone,
                           });
                         }
                       }

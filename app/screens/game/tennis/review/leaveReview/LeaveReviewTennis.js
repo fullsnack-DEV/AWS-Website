@@ -33,7 +33,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
   const [currentForm, setCurrentForm] = useState(route?.params?.selectedTeam === 'home' ? 1 : 2);
   const [loading, setLoading] = useState(false);
-  const [sliderAttributes, setSliderAttributes] = useState([]);
+  const [starAttributes, setStarAttributes] = useState([]);
+
   const [progressBar, setProgressBar] = useState(false);
   const [totalUploadCount, setTotalUploadCount] = useState(0);
   const [doneUploadCount, setDoneUploadCount] = useState(0);
@@ -88,14 +89,13 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags, route?.params?.format_tagged_data]);
 
   useEffect(() => {
-    setSliderAttributes([...route?.params?.sliderAttributes]);
+    setStarAttributes([...route?.params?.starAttributesForPlayer]);
 
     // console.log('Edit review Data::=>', JSON.stringify(route?.params?.gameReviewData?.results));
     if (!route?.params?.gameReviewData) {
-      loadSliderAttributes(route?.params?.sliderAttributes);
-      loadStarAttributes(route?.params?.starAttributes);
+      loadStarAttributes(route?.params?.starAttributesForPlayer || []);
     }
-  }, []);
+  }, [route?.params?.gameReviewData, route?.params?.starAttributesForPlayer]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -139,7 +139,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     setLoading(true);
     const attr = {};
     attributes.map((item) => {
-      attr[item] = 0;
+      attr[item.name] = 0;
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
@@ -303,7 +303,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
             <UserReview
               teamNo={0}
               reviewsData={reviewsData}
-              reviewAttributes={sliderAttributes}
+              reviewAttributes={starAttributes}
               starColor={STAR_COLOR.YELLOW}
               teamData={route?.params?.gameData?.home_team}
               setTeamReview={setTeamReview}
@@ -318,7 +318,7 @@ const LeaveReviewTennis = ({ navigation, route }) => {
               reviewsData={reviewsData}
               starColor={STAR_COLOR.BLUE}
               teamData={route?.params?.gameData?.away_team}
-              reviewAttributes={sliderAttributes}
+              reviewAttributes={starAttributes}
               setTeamReview={setTeamReview}
               navigation = {navigation}
               route={route}

@@ -5,19 +5,21 @@ import fonts from '../../../../../../Constants/Fonts';
 import TCAttributeRatingWithSlider from '../../../../../TCAttributeRatingWithSlider';
 import TCRatingStarSlider from '../../../../../TCRatingStarSlider';
 
-const QUSTIONS = [
-  // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
-  { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-  { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
-]
+// const QUSTIONS = [
+//   // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
+//   { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
+//   { attrName: 'punctuality', desc: 'Did the players respect the referees and their decisions?' },
+// ]
 const RatePerformance = ({
   teamNo,
   reviewsData,
   setTeamReview,
   reviewAttributes,
+  starAttributes,
   starColor,
 }) => {
-  console.log('RA : ', reviewAttributes);
+  console.log('reviewAttributes for team:=> : ', reviewAttributes);
+  console.log('starAttributes for team:=> : ', starAttributes);
   return (
     <View style={styles.mainContainer}>
 
@@ -51,13 +53,13 @@ const RatePerformance = ({
       </View>
 
       {/* Questions */}
-      {QUSTIONS.map((item, index) => (
+      {starAttributes.map((item, index) => (
         <View style={{ marginVertical: 5 }} key={index}>
-          <Text style={styles.questionText}>{item.desc}</Text>
+          <Text style={styles.questionText}>{item.description}</Text>
           <TCRatingStarSlider
-            currentRating={reviewsData[item.attrName]}
+            currentRating={reviewsData[item.name]}
             onPress={(star) => {
-              setTeamReview(item.attrName, star)
+              setTeamReview(item.name, star)
             }}
               style={{ alignSelf: 'flex-end' }}
               starColor={starColor}/>
