@@ -8,7 +8,7 @@ const QUSTIONS = [
    { attrName: 'punctuality', desc: 'Did the players arrive at the match place on time?' },
   // { attrName: 'manner', desc: 'Did the players arrive at the match place on time?' },
   { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-  { attrName: 'RespectForReferre', desc: 'Did the players respect the referees and their decisions?' },
+  { attrName: 'respectforreferre', desc: 'Did the players respect the referees and their decisions?' },
 ]
 const QUSTIONS_WITHOUT_REFREE = [
   { attrName: 'punctuality', desc: 'Did the players arrive at the match place on time?' },

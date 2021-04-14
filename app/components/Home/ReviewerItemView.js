@@ -39,11 +39,11 @@ function ReviewerItemView({
     console.log('Item data::=>', item);
     console.log(
       'refereeReview data::=>',
-      JSON.parse(item?.object)?.refereeReview || JSON.parse(item?.object)?.scorekeeperReview,
+      JSON.parse(item?.object)?.refereeReview || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview,
     );
     setReviewObj(
       JSON.parse(item?.object)?.refereeReview
-        || JSON.parse(item?.object)?.scorekeeperReview,
+        || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview,
     );
   }, [item]);
 
@@ -66,6 +66,11 @@ function ReviewerItemView({
     }
     if (reviewObj?.member === 'scorekeeper') {
       obj.name = 'Scorekeeper';
+      obj.image = images.scorekeeperPH;
+      return obj;
+    }
+    if (reviewObj?.member === 'opponent') {
+      obj.name = 'Opponent';
       obj.image = images.scorekeeperPH;
       return obj;
     }
@@ -116,6 +121,8 @@ function ReviewerItemView({
                       === 'referee' && getTeamData()?.image)
                     || (reviewObj?.member
                       === 'scorekeeper' && getTeamData()?.image)
+                    || (reviewObj?.member
+                      === 'opponent' && getTeamData()?.image)
                   }
                   style={styles.imageStyle}
                   resizeMode={'contain'}

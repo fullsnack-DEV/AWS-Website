@@ -81,7 +81,11 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       obj.tagged = route?.params?.entityTags
       setReviewsData(obj)
     }
-  }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags]);
+    if (route?.params?.format_tagged_data) {
+      obj.format_tagged_data = route?.params?.format_tagged_data
+      setReviewsData(obj)
+    }
+  }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags, route?.params?.format_tagged_data]);
 
   useEffect(() => {
     setSliderAttributes([...route?.params?.sliderAttributes]);
@@ -144,11 +148,10 @@ const LeaveReviewTennis = ({ navigation, route }) => {
     setLoading(false);
   };
 
-  const isValidReview = (teamNo) => {
-    const exceptKey = ['player_id', 'comment', 'attachments', 'tagged'];
+  const isValidReview = () => {
+    const exceptKey = ['player_id', 'comment', 'attachments', 'tagged', 'format_tagged_data', 'created_at', 'member', 'review_id', 'reviewer_id'];
     let isValid = true;
-    const reviews = _.cloneDeep(reviewsData);
-    const review = reviews
+    const review = _.cloneDeep(reviewsData);
     Object.keys(review).map((key) => {
       if (!exceptKey.includes(key) && isValid && Number(review?.[key]) <= 0) {
         isValid = false;
@@ -159,40 +162,15 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   };
   const createReview = () => {
     console.log('Review Data::=>', JSON.stringify(reviewsData));
-    // if (route?.params?.gameReviewData) {
-    //   if (currentForm === 1) {
-    //     if (isValidReview(currentForm)) {
-    //       setCurrentForm(2);
-    //     } else {
-    //       Alert.alert('Please, complete all ratings before moving to the next.');
-    //     }
-    //   } else if (isValidReview(currentForm)) {
-    //     setLoading(true);
-    //     uploadMediaForTeamA()
-    //   } else {
-    //     Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
-    //   }
-    // } else if (currentForm === 1) {
-    //   if (isValidReview(currentForm)) {
-    //     setCurrentForm(2);
-    //   } else {
-    //     Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
-    //   }
-    // } else if (isValidReview(currentForm)) {
-    //   setLoading(true);
-    //   uploadMediaForTeamA()
-    // } else {
-    //   Alert.alert(strings.alertmessagetitle, strings.completeReviewFirst);
-    // }
 
     if (currentForm === 1) {
-      if (isValidReview(currentForm)) {
+      if (isValidReview()) {
         uploadMediaForTeamA()
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
       }
     } else if (currentForm === 2) {
-      if (isValidReview(currentForm)) {
+      if (isValidReview()) {
         uploadMediaForTeamB()
       } else {
         Alert.alert('Please, complete all ratings before moving to the next.');
@@ -237,6 +215,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
       };
 
       console.log('Edited Review Object::=>', reviewObj);
+      console.log(`Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`);
+      console.log(`away userID:=> ${route?.params?.gameData?.away_team?.user_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`);
       patchPlayerReview(currentForm === 1 ? route?.params?.gameData?.home_team?.user_id : route?.params?.gameData?.away_team?.user_id, route?.params?.gameData?.game_id, reviewID, reviewObj, authContext)
         .then(() => {
           setLoading(false);
@@ -249,6 +229,8 @@ const LeaveReviewTennis = ({ navigation, route }) => {
         });
     } else {
       console.log('New Review Object::=>', reviewsData);
+      console.log(`Home userID:=> ${route?.params?.gameData?.home_team?.user_id} home username:=> ${route?.params?.gameData?.home_team?.full_name}`);
+      console.log(`away userID:=> ${route?.params?.gameData?.away_team?.user_id} away username:=> ${route?.params?.gameData?.away_team?.full_name}`);
       setLoading(true);
       addPlayerReview(currentForm === 1 ? route?.params?.gameData?.home_team?.user_id : route?.params?.gameData?.away_team?.user_id, route?.params?.gameData?.game_id, reviewsData, authContext)
         .then(() => {
@@ -264,86 +246,23 @@ const LeaveReviewTennis = ({ navigation, route }) => {
   }
 
   const uploadMediaForTeamA = () => {
+    console.log('A called');
+    setLoading(false) // CHANGED
+    const { onPressReviewDone } = route?.params;
     if (reviewsData?.attachments?.length) {
-      const UrlArray = []
-      const pathArray = []
-      const o = reviewsData?.attachments.map((e) => {
-        if (e.path) {
-          pathArray.push(e)
-        } else {
-          UrlArray.push(e)
-        }
-      })
-      setTotalUploadCount(pathArray?.length || 1);
-      // setProgressBar(true);
-      setLoading(true);
-      const imageArray = pathArray
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-        const attachments = responses.map((item) => ({
-          type: item.type,
-          url: item.fullImage,
-          thumbnail: item.thumbnail,
-          media_height: item.height,
-          media_width: item.width,
-        }))
-        const obj = { ...reviewsData }
-        obj.attachments = [...attachments, ...UrlArray]
-        console.log('Attachments Full Object::=>', obj);
-        setReviewsData({ ...obj })
-        patchOrAddReview()
-      })
+      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
+      navigation.goBack();
     } else {
       patchOrAddReview()
     }
   }
   const uploadMediaForTeamB = () => {
+    console.log('B called');
     setLoading(false) // CHANGED
     const { onPressReviewDone } = route?.params;
     if (reviewsData?.attachments?.length) {
-      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData)
+      onPressReviewDone(currentForm, !!route?.params?.gameReviewData, reviewsData);
       navigation.goBack();
-      // if (route?.params?.gameReviewData) {
-      //   // setLoading(true);
-      //   const teamReview = reviewsData
-      //   delete teamReview.created_at;
-      //   delete teamReview.entity_type;
-      //   const team1ID = teamReview.entity_id
-      //   delete teamReview.entity_id;
-      //   teamReview.player_id = team1ID
-      //   delete teamReview.game_id;
-      //   const reviewID = teamReview.review_id;
-      //   delete teamReview.review_id;
-      //   delete teamReview.reviewer_id;
-      //   delete teamReview.sport;
-      //
-      //   const dataParams = { ...teamReview };
-      //   const imageArray = pathArray.map((dataItem) => (dataItem))
-      //   imageUploadContext.uploadData(
-      //       authContext,
-      //       dataParams,
-      //       imageArray,
-      //       patchOrAddReview,
-      //   )
-      // }
-
-      // setTotalUploadCount(pathArray?.length || 1);
-      // // setProgressBar(true);
-      // setLoading(true);
-      // const imageArray = pathArray
-      // uploadImages(imageArray, authContext, progressStatus, cancelRequest).then((responses) => {
-      //   const attachments = responses.map((item) => ({
-      //     type: item.type,
-      //     url: item.fullImage,
-      //     thumbnail: item.thumbnail,
-      //     media_height: item.height,
-      //     media_width: item.width,
-      //   }))
-      //   const obj = { ...reviewsData }
-      //   obj.attachments = [...attachments, ...UrlArray]
-      //   console.log('Attachments Full Object::=>', obj);
-      //   setReviewsData({ ...obj })
-      //   patchOrAddReview()
-      // })
     } else {
       patchOrAddReview()
     }

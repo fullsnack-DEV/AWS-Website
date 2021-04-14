@@ -58,7 +58,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
         </LinearGradient>
         <View style={styles.eventText}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.eventTitle}>{data.sport}</Text>
+            <Text style={styles.eventTitle}>{data?.sport}</Text>
             <View style={{ marginRight: 7, marginBottom: 5 }}>
               {/* eslint-disable-next-line no-nested-ternary */}
               {showSelectionCheckBox
@@ -72,7 +72,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
           <View style={styles.bottomView}>
             <Text style={styles.eventTimeLocation}>
               {formatAMPM(new Date(data?.start_datetime * 1000))} -{' '}
-              {formatAMPM(new Date(data.end_datetime * 1000))}
+              {formatAMPM(new Date(data?.end_datetime * 1000))}
             </Text>
             <Text style={styles.textSaperator}> | </Text>
             <Text style={styles.addressView} numberOfLines={1}>
