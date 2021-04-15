@@ -286,7 +286,7 @@ const getRecentGameDetails = (sportName, status, location, authContext) => makeA
   authContext,
 });
 
-const getShortsList = (location, authContext) => makeAPIRequest({
+const getShortsList = async (location, authContext) => makeAPIRequest({
   method: 'get',
   url: `${Config.BASE_URL}shorts?location=${location}`,
   authContext,
