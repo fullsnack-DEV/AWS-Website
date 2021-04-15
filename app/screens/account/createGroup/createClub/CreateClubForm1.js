@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+ useState, useEffect, useContext, useRef,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,7 +16,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import ActionSheet from 'react-native-actionsheet';
+import ImagePicker from 'react-native-image-crop-picker';
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
@@ -26,9 +29,12 @@ import strings from '../../../../Constants/String';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import { groupMemberGenderItems } from '../../../../utils';
+import TCProfileImageControl from '../../../../components/TCProfileImageControl';
 
 export default function CreateClubForm1({ navigation, route }) {
   const isFocused = useIsFocused();
+  const actionSheet = useRef();
+  const actionSheetWithDelete = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState('');
@@ -44,6 +50,10 @@ export default function CreateClubForm1({ navigation, route }) {
 
   const [minAgeValue, setMinAgeValue] = React.useState([]);
   const [maxAgeValue, setMaxAgeValue] = React.useState([]);
+
+  const [currentImageSelection, setCurrentImageSelection] = useState(0);
+  const [thumbnail, setThumbnail] = useState();
+  const [backgroundThumbnail, setBackgroundThumbnail] = useState();
 
   useEffect(() => {
     getSports()
@@ -115,16 +125,104 @@ export default function CreateClubForm1({ navigation, route }) {
       }, 10);
     });
   }
+
+  const onBGImageClicked = () => {
+    setCurrentImageSelection(0);
+    setTimeout(() => {
+      if (backgroundThumbnail) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
+      }
+    }, 0.1);
+  };
+
+  const onProfileImageClicked = () => {
+    setCurrentImageSelection(1);
+    setTimeout(() => {
+      if (thumbnail) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
+      }
+    }, 0.1);
+  };
+
+  const openImagePicker = (width = 400, height = 400) => {
+    let cropCircle = false;
+    if (currentImageSelection === 1) {
+      cropCircle = true;
+    }
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: cropCircle,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
+      if (currentImageSelection === 1) {
+        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+        setThumbnail(data.path);
+      } else {
+        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+        setBackgroundThumbnail(data.path);
+      }
+    });
+  };
+
+  const deleteImage = () => {
+    if (currentImageSelection) {
+      // 1 means profile image
+      // setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' })
+      setThumbnail();
+    } else {
+      // 0 means profile image
+      // setGroupProfile({ ...groupProfile, background_thumbnail: '', background_full_image: '' })
+      setBackgroundThumbnail();
+    }
+  };
+
+  const openCamera = (width = 400, height = 400) => {
+    ImagePicker.openCamera({
+      width,
+      height,
+      cropping: true,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
+      if (currentImageSelection === 1) {
+        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+        setThumbnail(data.path);
+      } else {
+        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+        setBackgroundThumbnail(data.path);
+      }
+    });
+  };
+
   return (
     <>
       <ScrollView style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
-        <View style={ styles.formSteps }>
+        {/* <View style={ styles.formSteps }>
           <View style={ styles.form1 }></View>
           <View style={ styles.form2 }></View>
           <View style={ styles.form3 }></View>
-        </View>
+        </View> */}
         <View>
+          <TCProfileImageControl
+            profileImage={
+              thumbnail ? { uri: thumbnail } : undefined
+            }
+            profileImagePlaceholder={images.teamPlaceholder}
+            bgImage={
+              backgroundThumbnail
+                ? { uri: backgroundThumbnail }
+                : undefined
+            }
+            onPressBGImage={() => onBGImageClicked()}
+            onPressProfileImage={() => onProfileImageClicked()}
+            showEditButtons
+          />
           <Text style={ styles.fieldTitle }>
             {strings.SportsTextFieldTitle}
             <Text style={ styles.mendatory }> {strings.star}</Text>
@@ -411,6 +509,12 @@ export default function CreateClubForm1({ navigation, route }) {
             } else if (gender !== '') {
               form1.gender = gender;
             }
+            if (thumbnail) {
+              form1.thumbnail = thumbnail;
+            }
+            if (backgroundThumbnail) {
+              form1.background_thumbnail = backgroundThumbnail;
+            }
             checkValidation();
             if (sports !== '' && clubName !== '' && location !== '') {
               navigation.navigate('CreateClubForm2', {
@@ -432,6 +536,48 @@ export default function CreateClubForm1({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            if (currentImageSelection) {
+              openImagePicker();
+            } else {
+              openImagePicker(750, 348);
+            }
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            if (currentImageSelection) {
+              openImagePicker();
+            } else {
+              openImagePicker(750, 348);
+            }
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
     </>
   );
 }
@@ -461,35 +607,35 @@ const styles = StyleSheet.create({
   fieldView: {
     marginTop: 15,
   },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
+  // form1: {
+  //   backgroundColor: colors.themeColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
 
-  form2: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
+  // form2: {
+  //   backgroundColor: colors.lightgrayColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
+  // form3: {
+  //   backgroundColor: colors.lightgrayColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
 
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
+  // formSteps: {
+  //   alignSelf: 'flex-end',
+  //   flexDirection: 'row',
+  //   marginRight: 15,
+  //   marginTop: 15,
+  // },
 
   mainContainer: {
     flex: 1,

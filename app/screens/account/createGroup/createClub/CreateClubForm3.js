@@ -27,6 +27,7 @@ import fonts from '../../../../Constants/Fonts';
 import AuthContext from '../../../../auth/context'
 import DataSource from '../../../../Constants/DataSource';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import uploadImages from '../../../../utils/imageAction';
 
 export default function CreateClubForm3({ navigation, route }) {
   const [membershipFee, setMembershipFee] = useState(0);
@@ -63,24 +64,82 @@ export default function CreateClubForm3({ navigation, route }) {
     bodyParams.unread = 0;
 
     const entity = authContext.entity
-    createGroup(
-      bodyParams,
-      entity.role === 'team' && entity.uid,
-      entity.role === 'team' && 'club',
-      authContext,
-    ).then((response) => {
-      setloading(false)
-      navigation.navigate('ClubCreatedScreen', {
-        groupName: response.payload.group_name,
-        group_id: response.payload.group_id,
-        entity_type: response.payload.entity_type,
-      }).catch((e) => {
-        setTimeout(() => {
-          setloading(false)
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
+
+    if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
+      const imageArray = [];
+      if (bodyParams?.thumbnail) {
+        imageArray.push({ path: bodyParams?.thumbnail });
+      }
+      if (bodyParams?.background_thumbnail) {
+        imageArray.push({ path: bodyParams?.background_thumbnail });
+      }
+      uploadImages(imageArray, authContext)
+        .then((responses) => {
+          const attachments = responses.map((item) => ({
+            type: 'image',
+            url: item.fullImage,
+            thumbnail: item.thumbnail,
+          }));
+          if (bodyParams?.thumbnail) {
+            bodyParams.thumbnail = attachments[0].thumbnail;
+            bodyParams.full_image = attachments[0].url;
+          }
+
+          if (bodyParams?.background_thumbnail) {
+            let bgInfo = attachments[0];
+            if (attachments.length > 1) {
+              bgInfo = attachments[1];
+            }
+            bodyParams.background_thumbnail = bgInfo.thumbnail;
+            bodyParams.background_full_image = bgInfo.url;
+          }
+          createGroup(
+            bodyParams,
+            entity.role === 'team' && entity.uid,
+            entity.role === 'team' && 'club',
+            authContext,
+          ).then((response) => {
+            setloading(false)
+            navigation.navigate('ClubCreatedScreen', {
+              groupName: response.payload.group_name,
+              group_id: response.payload.group_id,
+              entity_type: response.payload.entity_type,
+            }).catch((e) => {
+              setTimeout(() => {
+                setloading(false)
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+          });
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert('Towns Cup', e.messages);
+          }, 0.1);
+        })
+        .finally(() => {
+          setloading(false);
+        });
+    } else {
+      createGroup(
+        bodyParams,
+        entity.role === 'team' && entity.uid,
+        entity.role === 'team' && 'club',
+        authContext,
+      ).then((response) => {
+        setloading(false)
+        navigation.navigate('ClubCreatedScreen', {
+          groupName: response.payload.group_name,
+          group_id: response.payload.group_id,
+          entity_type: response.payload.entity_type,
+        }).catch((e) => {
+          setTimeout(() => {
+            setloading(false)
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
       });
-    });
+    }
   };
 
   return (
