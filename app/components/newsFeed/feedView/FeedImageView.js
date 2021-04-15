@@ -11,19 +11,21 @@ const FeedImageView = ({
     isLandscape,
 }) => (
   <View style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        // width: getWidth(isLandscape, 100),
-        // height: getHeight(isLandscape, 100),
+            alignItems: 'center',
+            justifyContent: 'center',
+            // width: getWidth(isLandscape, 100),
+            // height: getHeight(isLandscape, 100),
   }}>
     <TCZoomableImage
-            onClick={setShowParent}
-            source={{ uri: sourceData?.thumbnail ?? '' }}
-            style={{
-                width: getWidth(isLandscape, 100),
-                height: getHeight(isLandscape, 100),
-            }}
-        />
+                onClick={setShowParent}
+                source={{ uri: sourceData?.url ?? '' }}
+                isLandscape={isLandscape}
+                thumbnailSource={{ uri: sourceData?.thumbnail ?? '' }}
+                style={{
+                    width: getWidth(isLandscape, 100),
+                    height: getHeight(isLandscape, 100),
+                }}
+            />
   </View>
-)
+    )
 export default FeedImageView;

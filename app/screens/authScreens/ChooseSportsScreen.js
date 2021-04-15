@@ -96,7 +96,7 @@ export default function ChooseSportsScreen({ navigation, route }) {
         {sports?.[index]?.isChecked ? (
           <FastImage source={ images.checkWhite } resizeMode={'contain'} style={ styles.checkboxImg } />
         ) : (
-          <FastImage resizeMode={'contain'} source={ images.uncheckWhite } style={ styles.unCheckboxImg } />
+          <FastImage resizeMode={'contain'} source={ images.unCheckWhiteBorder } style={ styles.unCheckboxImg } />
         )}
       </View>
       <Separator />

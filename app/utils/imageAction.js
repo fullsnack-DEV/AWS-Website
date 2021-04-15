@@ -148,6 +148,7 @@ const uploadImages = async (images, authContext, setUploadedCount = () => {}, ca
   const responses = [];
   const source = axios.CancelToken.source();
   cancelRequest(source);
+
   getImagePreSignedURL({ count: images?.length * 2 }, authContext, source.token).then(async (responsePresignedURLS) => {
     const preSignedUrls = await _.chunk(responsePresignedURLS?.payload?.preSignedUrls, 2);
     if (preSignedUrls?.length > 0) {

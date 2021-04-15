@@ -65,7 +65,6 @@ const FeedPostView = ({
            }}
            nestedScrollEnabled={false}
            getItemLayout = {(data, index) => ({ length: getWidth(isLandscape, 100), offset: getWidth(isLandscape, 100) * index, index })}
-           initialScrollIndex={0}
            firstItem={Number(currentPage) - 1}
            data={feedSubItem?.attachments ?? []}
            renderItem={renderAttachments}

@@ -256,7 +256,7 @@ const MessageChat = ({
         </Text>}
         <View style={{ flex: 1, alignSelf: type === 'sender' ? 'flex-end' : 'flex-start' }}>
           {isReceiver && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: hp(1) }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: hp(1) }}>
               <View style={{ ...styles.avatarContainer }}>
                 <FastImage source={finalImage} style={{ height: 26, width: 26, borderRadius: 25 }}/>
               </View>
@@ -604,6 +604,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 10,
     color: colors.userPostTimeColor,
+    marginVertical: 5,
   },
   selectedImageContainer: {
     flex: 1,

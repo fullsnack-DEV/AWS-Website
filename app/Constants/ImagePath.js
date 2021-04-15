@@ -311,6 +311,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   videoUnMuteSound: require('../assets/images/videoUnMuteSound.png'),
   videoThumb: require('../assets/images/videoThumb.png'),
   videoLoading: require('../assets/images/videoLoading.gif'),
+  unCheckWhiteBorder: require('../assets/images/unCheckWhiteBorder.png'),
 };
 
 export default images;

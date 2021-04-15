@@ -38,7 +38,7 @@ const UserHomeTopSection = ({
 
   const oneLineSection = useMemo(() => {
     let games = []
-    if (userDetails?.games) {
+    if (userDetails?.games?.length) {
       games = userDetails?.games?.map((obj) => {
         const o = { ...obj };
         o.type = EntityStatus.playin;
