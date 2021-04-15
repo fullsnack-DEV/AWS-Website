@@ -80,7 +80,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
             </Text>
           </View>
           <View style={styles.gameVSView}>
-            {data.userChallenge || data.singlePlayerGame ? (
+            {data?.userChallenge || data?.singlePlayerGame ? (
               <View style={styles.leftGameView}>
                 {data?.home_team?.thumbnail ? (
                   <Image
@@ -94,7 +94,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
                   />
                 )}
                 <Text style={styles.leftEntityText} numberOfLines={2}>
-                  {data.home_team.full_name}
+                  {data?.home_team?.full_name}
                 </Text>
               </View>
             ) : (
@@ -121,7 +121,7 @@ import ReservationStatus from '../Constants/ReservationStatus';
             {data?.userChallenge || data?.singlePlayerGame ? (
               <View style={styles.rightGameView}>
                 <Text style={styles.rightEntityText} numberOfLines={2}>
-                  {data.away_team.full_name}
+                  {data?.away_team?.full_name}
                 </Text>
                 {data?.away_team?.thumbnail ? (
                   <Image

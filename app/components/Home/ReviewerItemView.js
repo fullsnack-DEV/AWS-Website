@@ -1,7 +1,10 @@
 /* eslint-disable consistent-return */
-import React, { useRef, useState, useEffect } from 'react';
+import React, {
+ useRef, useState, useEffect, useCallback, useContext,
+} from 'react';
 import {
-StyleSheet, View, Image, TouchableOpacity, Text, Alert,
+StyleSheet, View, Image, TouchableOpacity, Text, Alert, FlatList, TextInput, SafeAreaView,
+ Keyboard,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -9,14 +12,18 @@ import {
 } from 'react-native-responsive-screen';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image';
-
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
 import moment from 'moment';
+import SwipeUpDownModal from 'react-native-swipe-modal-up-down';
+import { createReaction, getReactions } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import PostDescription from './PostDescription';
+import TCThinDivider from '../TCThinDivider';
+import WriteCommentItems from '../newsFeed/WriteCommentItems';
+import AuthContext from '../../auth/context';
 
 function ReviewerItemView({
   item,
@@ -28,25 +35,125 @@ function ReviewerItemView({
   onReadMorePress,
   onFeedPress,
 }) {
+  console.log('ITEM::=>', item);
+  const authContext = useContext(AuthContext);
   const videoPlayerRef = useRef();
   const [reviewObj, setReviewObj] = useState();
+  const [currentUserDetail, setCurrentUserDetail] = useState(null);
+  const [ShowComment, setShowModelComment] = useState(false);
+  const [commentData, setCommentData] = useState([]);
+  const [commentTxt, setCommentText] = useState('');
+  const [commentCount, setCommentCount] = useState(
+    item?.reaction_counts?.comment ?? 0,
+  );
+  const [like, setLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(
+    item?.reaction_counts?.clap ?? 0,
+  );
+
   const actionSheet = useRef();
   let attachedImages = [];
   if (reviewObj?.attachments) {
     attachedImages = reviewObj.attachments;
   }
+
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardHide = () => setKeyboardOffset(0);
+  const keyboardDidShowListener = useRef();
+  const keyboardDidHideListener = useRef();
+
   useEffect(() => {
-    console.log('Item data::=>', item);
-    console.log(
-      'refereeReview data::=>',
-      JSON.parse(item?.object)?.refereeReview || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview,
+    keyboardDidShowListener.current = Keyboard.addListener(
+      'keyboardWillShow',
+      onKeyboardShow,
     );
+    keyboardDidHideListener.current = Keyboard.addListener(
+      'keyboardWillHide',
+      onKeyboardHide,
+    );
+
+    return () => {
+      keyboardDidShowListener.current.remove();
+      keyboardDidHideListener.current.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    const entity = authContext.entity;
+    setCurrentUserDetail(entity.obj || entity.auth.user);
+    const params = {
+      activity_id: item?.id,
+      reaction_type: 'comment',
+    };
+    getReactions(params, authContext)
+      .then((response) => {
+        setCommentData(response?.payload?.reverse());
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+      });
+  }, [authContext, item?.id]);
+
+  useEffect(() => {
     setReviewObj(
       JSON.parse(item?.object)?.refereeReview
         || JSON.parse(item?.object)?.scorekeeperReview || JSON.parse(item?.object)?.playerReview,
     );
   }, [item]);
 
+  useEffect(() => {
+    likeSettings(likeCount, item?.own_reactions);
+  }, []);
+
+  const onLikePress = useCallback(
+    (obj) => {
+      const bodyParams = {
+        reaction_type: 'clap',
+        activity_id: obj.id,
+      };
+      createReaction(bodyParams, authContext).catch((e) => {
+        Alert.alert('', e.messages);
+      });
+    },
+    [authContext],
+  );
+
+  const likeSettings = useCallback(
+    (claps, ownReactions) => {
+      let filterLike = [];
+      if (claps !== 0) {
+        setLikeCount(claps);
+      }
+      if (claps !== 0) {
+        filterLike = (ownReactions?.clap || []).filter(
+          (clapItem) => clapItem.user_id === authContext?.entity?.uid,
+        );
+        if (filterLike.length > 0) {
+          setLike(true);
+        } else {
+          setLike(false);
+        }
+      } else {
+        setLike(false);
+      }
+    },
+    [authContext?.entity?.uid],
+  );
+
+const isAdmin = () => {
+  console.log('gameData:=>', gameData);
+  console.log('Home:', gameData?.home_team?.id);
+  console.log('Away:', gameData?.away_team?.id);
+  console.log('Curruent :', currentUserDetail?.group_id ?? currentUserDetail?.user_id);
+  if (gameData?.home_team?.id === (currentUserDetail?.group_id ?? currentUserDetail?.user_id)) {
+    return true
+  }
+  if (gameData?.away_team?.id === (currentUserDetail?.group_id ?? currentUserDetail?.user_id)) {
+    return true
+  }
+  return false
+}
   const getTeamData = () => {
     const obj = {};
     if (reviewObj?.member === 'home') {
@@ -80,10 +187,21 @@ function ReviewerItemView({
       return obj;
     }
   };
+
+  const renderComments = useCallback(
+    ({ item: comments }) => <WriteCommentItems data={comments} />,
+    [],
+  );
+  const listEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No Comments Yet</Text>
+    </View>
+  );
   return (
-    <TouchableOpacity
-      onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, false)
-      }>
+    // <TouchableOpacity
+    //   onPress={() => onFeedPress(item, feedIndex, gameData, indexNumber, false)
+    //   }>
+    <View>
       <View style={styles.containerStyle}>
         <View style={styles.mainContainer}>
           <TouchableWithoutFeedback onPress={onImageProfilePress}>
@@ -339,27 +457,33 @@ function ReviewerItemView({
                 flexDirection: 'row',
                 width: wp('52%'),
               }}>
-              <View
+              <TouchableWithoutFeedback
                 style={{
                   flexDirection: 'row',
-                }}>
+                }}
+                onPress={() => {
+                  if (isAdmin()) {
+                    setShowModelComment(true)
+                  }
+                }}
+                >
                 <Image
                   style={[styles.commentImage, { top: 2 }]}
                   source={images.commentImage}
                   resizeMode={'contain'}
                 />
-                <Text style={styles.commentlengthStyle}>
-                  {item?.reaction_counts?.comment ?? 0}
-                </Text>
-              </View>
+                <Text style={styles.commentlengthStyle}>{commentCount > 0 ? commentCount : ' '}</Text>
+              </TouchableWithoutFeedback>
 
-              <View
+              <TouchableWithoutFeedback
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginLeft: 10,
-                }}>
+                }}
+                onPress={() => Alert.alert('Share')}
+                >
                 <Image
                   style={styles.commentImage}
                   source={images.shareImage}
@@ -367,25 +491,45 @@ function ReviewerItemView({
                 />
 
                 <Text style={styles.commentlengthStyle}>0</Text>
-              </View>
+              </TouchableWithoutFeedback>
             </View>
 
-            <View
+            <TouchableWithoutFeedback
               style={{
                 flexDirection: 'row',
                 width: wp('32%'),
                 justifyContent: 'flex-end',
                 alignItems: 'center',
-              }}>
-              <Text style={styles.commentlengthStyle}>
-                {item?.reaction_counts?.clap ?? 0}
-              </Text>
+              }}
+              onPress={() => {
+                if (isAdmin()) {
+                  if (like) {
+                    setLikeCount(likeCount - 1);
+                  } else {
+                    setLikeCount(likeCount + 1);
+                  }
+                  setLike(!like);
+                  onLikePress(item);
+                }
+              }}
+              >
+              {likeCount > 0 && (
+                <Text
+                style={[
+                  styles.commentlengthStyle,
+                  {
+                    color: like === true ? colors.themeColor : colors.whiteColor,
+                  },
+                ]}>
+                  {likeCount}
+                </Text>
+            )}
               <Image
                 style={styles.commentImage}
-                source={images.unlikeImage}
+                source={like ? images.likeImage : images.unlikeImage}
                 resizeMode={'contain'}
               />
-            </View>
+            </TouchableWithoutFeedback>
           </View>
           <ActionSheet
             ref={actionSheet}
@@ -425,7 +569,109 @@ function ReviewerItemView({
           <Text style={styles.reviewsTextStyle}>reviews</Text>
         </TouchableOpacity>
       )}
-    </TouchableOpacity>
+
+      <SwipeUpDownModal
+          modalVisible={ShowComment}
+          PressToanimate={true}
+          OpenModalDirection={'down'}
+          PressToanimateDirection={'down'}
+          // fade={true}
+          ContentModal={
+            <View style={{ flex: 1 }}>
+              <TCThinDivider width={'100%'} height={1} />
+              <FlatList
+                data={commentData}
+                renderItem={renderComments}
+                keyExtractor={(index) => index.toString()}
+                ListEmptyComponent={listEmptyComponent}
+                style={{ marginBottom: 100 }}
+              />
+
+              <SafeAreaView
+                style={[
+                  styles.bottomSafeAreaStyle,
+                  { bottom: keyboardOffset, position: 'absolute' },
+                ]}>
+                {/* <View style={styles.bottomSperateLine} /> */}
+                <View style={styles.bottomImgView}>
+                  <View style={styles.commentReportView}>
+                    <Image
+                      source={
+                        currentUserDetail?.thumbnail ? { uri: currentUserDetail?.thumbnail } : images.profilePlaceHolder
+                      }
+                      resizeMode={'cover'}
+                      style={{ width: 40, height: 40, borderRadius: 40 / 2 }}
+                    />
+                  </View>
+                  <View style={styles.onlyMeViewStyle}>
+                    <TextInput
+                      placeholder={'Write a comment'}
+                      placeholderTextColor={colors.userPostTimeColor}
+                      multiline={true}
+                      textAlignVertical={'top'}
+                      value={commentTxt}
+                      onChangeText={(text) => setCommentText(text)}
+                      style={{
+                        textAlignVertical: 'center',
+                        fontSize: 14,
+                        lineHeight: 14,
+                        width: wp('66%'),
+                        marginHorizontal: '2%',
+                        color: colors.lightBlackColor,
+                        fontFamily: fonts.RRegular,
+                        paddingVertical: 0,
+                        paddingLeft: 8,
+                        alignSelf: 'center',
+                        maxHeight: hp(20),
+                      }}
+                    />
+                    {commentTxt.trim().length > 0 && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          const bodyParams = {
+                            reaction_type: 'comment',
+                            activity_id: item?.id,
+                            data: {
+                              text: commentTxt,
+                            },
+                          };
+                          createReaction(bodyParams, authContext)
+                            .then((response) => {
+                              const dataOfComment = [...commentData];
+                              dataOfComment.unshift(response.payload);
+                              setCommentData(dataOfComment);
+                              setCommentCount(dataOfComment.length);
+                              setCommentText('');
+                            })
+                            .catch((e) => {
+                              console.log(e);
+                            });
+                        }}>
+                        <Text style={styles.sendTextStyle}>SEND</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              </SafeAreaView>
+            </View>
+          }
+          HeaderStyle={styles.headerContent}
+          ContentModalStyle={styles.Modal}
+          HeaderContent={
+            <View style={styles.containerHeader}>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowModelComment(false);
+                }}>
+                <Text>Comments</Text>
+              </TouchableOpacity>
+            </View>
+          }
+          onClose={() => {
+            setShowModelComment(false);
+          }}
+        />
+    </View>
   );
 }
 
@@ -580,6 +826,74 @@ const styles = StyleSheet.create({
     marginVertical: '1%',
     width: wp('28%'),
   },
+  emptyText: {
+    fontSize: 18,
+    fontFamily: fonts.RMedium,
+    color: colors.grayColor,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: '60%',
+  },
+
+  containerHeader: {
+    flex: 1,
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 55,
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+  },
+  headerContent: {
+    marginTop: 55,
+  },
+  Modal: {
+    backgroundColor: colors.whiteColor,
+    marginTop: 110,
+  },
+  bottomImgView: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    paddingVertical: hp('1.5%'),
+    width: wp('92%'),
+  },
+  commentReportView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  onlyMeViewStyle: {
+    alignItems: 'center',
+    backgroundColor: colors.grayBackgroundColor,
+    borderRadius: 6,
+    flexDirection: 'row',
+    marginHorizontal: wp('2%'),
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 0.5,
+    width: wp('80%'),
+  },
+  sendTextStyle: {
+    color: colors.themeColor,
+    fontFamily: fonts.RBold,
+    fontSize: 11,
+  },
+  bottomSafeAreaStyle: {
+    backgroundColor: colors.whiteColor,
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
+    width: '100%',
+    elevation: 5,
+  },
+
 });
 
 export default ReviewerItemView;

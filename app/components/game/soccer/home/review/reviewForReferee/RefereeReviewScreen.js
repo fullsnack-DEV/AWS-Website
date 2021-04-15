@@ -1,8 +1,8 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-vars */
 import React, {
-  useState, useEffect, useLayoutEffect, useContext,
-} from 'react';
+ useState, useEffect, useLayoutEffect, useContext,
+ } from 'react';
 import {
   Alert,
   ScrollView,
@@ -19,7 +19,10 @@ import FastImage from 'react-native-fast-image';
 import fonts from '../../../../../../Constants/Fonts';
 
 import { STAR_COLOR } from '../../../../../../utils';
-import { addRefereeReview, patchRefereeReview } from '../../../../../../api/Games';
+import {
+  addRefereeReview,
+  patchRefereeReview,
+} from '../../../../../../api/Games';
 import TCInnerLoader from '../../../../../TCInnerLoader';
 import images from '../../../../../../Constants/ImagePath';
 import colors from '../../../../../../Constants/Colors';
@@ -35,11 +38,11 @@ import strings from '../../../../../../Constants/String';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import NewsFeedDescription from '../../../../../newsFeed/NewsFeedDescription';
 
-const QUSTIONS = [
-  // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
-  // { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
-  { attrName: 'punctuality', desc: strings.punchualityDesc },
-];
+// const QUSTIONS = [
+//   // { attrName: 'ontime', desc: 'Did the players arrive at the match place on time?' },
+//   // { attrName: 'manner', desc: 'Did the players keep good manners for the other players, officials and spectators during the match?' },
+//   { attrName: 'punctuality', desc: strings.punchualityDesc },
+// ];
 export default function RefereeReviewScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -55,6 +58,10 @@ export default function RefereeReviewScreen({ navigation, route }) {
   const [reviewsData, setReviewsData] = useState({});
 
   useEffect(() => {
+    console.log(
+      'route?.params?.starAttributesForReferee',
+      route?.params?.starAttributesForReferee,
+    );
     const unsubscribe = navigation.addListener('focus', async () => {
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
@@ -66,38 +73,47 @@ export default function RefereeReviewScreen({ navigation, route }) {
   }, [authContext.entity]);
 
   useEffect(() => {
-    console.log(
-      'Progress Data::=>',
-      progressBar + totalUploadCount + doneUploadCount,
-    );
-
-    const obj = { ...reviewsData }
+    const obj = { ...reviewsData };
+    console.log('Review data1::=>', obj);
     if (route?.params?.searchText) {
-      obj.comment = route?.params?.searchText ?? ''
-      setReviewsData(obj)
+      obj.comment = route?.params?.searchText ?? '';
+      setReviewsData(obj);
     }
     if (route?.params?.selectedImageList) {
       // setSelectImage(route?.params?.selectedImageList);
-      obj.attachments = route?.params?.selectedImageList
-      setReviewsData(obj)
+      obj.attachments = route?.params?.selectedImageList;
+      setReviewsData(obj);
     }
     if (route?.params?.entityTags) {
-      console.table(route?.params?.entityTags)
+      console.table(route?.params?.entityTags);
 
-      obj.tagged = route?.params?.entityTags
-      setReviewsData(obj)
+      obj.tagged = route?.params?.entityTags;
+      setReviewsData(obj);
+    }
+    if (route?.params?.format_tagged_data) {
+      obj.format_tagged_data = route?.params?.format_tagged_data;
+      setReviewsData(obj);
     }
     console.log('Review data::=>', obj);
-  }, [route?.params?.selectedImageList, route?.params?.searchText, route?.params?.entityTags]);
+  }, [
+    route?.params?.selectedImageList,
+    route?.params?.searchText,
+    route?.params?.entityTags,
+    progressBar,
+    totalUploadCount,
+    doneUploadCount,
+    route?.params?.format_tagged_data,
+  ]);
 
   useEffect(() => {
     if (route?.params?.gameReviewData?.results[0]?.object) {
-      const reviewObj = JSON.parse(route?.params?.gameReviewData?.results?.[0]?.object)
-        ?.refereeReview
+      const reviewObj = JSON.parse(
+        route?.params?.gameReviewData?.results?.[0]?.object,
+      )?.refereeReview;
       console.log('Edit review Data::=>', reviewObj);
       setReviewsData({ ...reviewObj });
     }
-  }, [route?.params?.gameReviewData?.results[0]?.object]);
+  }, [route?.params?.gameReviewData?.results]);
 
   useEffect(() => {
     // setSliderAttributesForReferee([...route?.params?.sliderAttributesForReferee]);
@@ -119,6 +135,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
   const loadSliderAttributes = (attributes) => {
     setLoading(true);
+
     // setSliderAttributesForReferee([...attributes]);
     const attr = {};
     attributes.map((item) => {
@@ -134,9 +151,10 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
   const loadStarAttributes = (attributes) => {
     setLoading(true);
+
     const attr = {};
     attributes.map((item) => {
-      attr[item] = 0;
+      attr[item.name] = 0;
       return true;
     });
     let reviews = _.cloneDeep(reviewsData);
@@ -147,7 +165,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
   };
 
   const isValidReview = () => {
-    const exceptKey = ['comment', 'attachments', 'tagged'];
+    const exceptKey = ['comment', 'attachments', 'tagged', 'format_tagged_data'];
     let isValid = true;
     console.log('reviewsData ::=>', reviewsData);
     const reviews = _.cloneDeep(reviewsData);
@@ -200,7 +218,7 @@ export default function RefereeReviewScreen({ navigation, route }) {
     if (route?.params?.gameReviewData) {
       setLoading(true);
       console.log('Edited Review Object reviewData::=>', data);
-      const teamReview = { ...data }
+      const teamReview = { ...data };
       delete teamReview.created_at;
       delete teamReview.entity_type;
       delete teamReview.entity_id;
@@ -227,7 +245,10 @@ export default function RefereeReviewScreen({ navigation, route }) {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     } else {
@@ -245,50 +266,26 @@ export default function RefereeReviewScreen({ navigation, route }) {
         })
         .catch((error) => {
           setLoading(false);
-          setTimeout(() => Alert.alert(strings.alertmessagetitle, error?.message), 100);
+          setTimeout(
+            () => Alert.alert(strings.alertmessagetitle, error?.message),
+            100,
+          );
           navigation.goBack();
         });
     }
-  }
+  };
 
   const uploadMedia = () => {
+    setLoading(false) // CHANGED
+    const { onPressRefereeReviewDone } = route?.params;
     if (reviewsData?.attachments?.length) {
-      const UrlArray = [];
-      const pathArray = [];
-      const o = reviewsData?.attachments.map((e) => {
-        if (e.path) {
-          pathArray.push(e);
-        } else {
-          UrlArray.push(e);
-        }
-      });
-      setLoading(true);
-      setTotalUploadCount(pathArray?.length || 1);
-      setProgressBar(true);
-      const imageArray = pathArray;
-      uploadImages(imageArray, authContext, progressStatus, cancelRequest).then(
-        (responses) => {
-          const attachments = responses.map((item) => ({
-            type: item.type,
-            url: item.fullImage,
-            thumbnail: item.thumbnail,
-            media_height: item.height,
-            media_width: item.width,
-          }));
-          console.log('Attachments::=>', attachments);
-
-          const obj = { ...reviewsData }
-          obj.attachments = [...attachments, ...UrlArray]
-          setReviewsData({ ...obj })
-          console.log('dataParams::=>', obj);
-          patchOrAddRefereeReview(obj)
-        },
-      );
+      onPressRefereeReviewDone(1, !!route?.params?.gameReviewData, reviewsData, route?.params?.userData?.user_id);
+      navigation.goBack();
     } else {
-      patchOrAddRefereeReview(reviewsData)
+      patchOrAddRefereeReview(reviewsData);
     }
   };
-  console.log('reviewsData?.comment', reviewsData);
+
   return (
     <View style={{ flex: 1 }}>
       <Header
@@ -362,38 +359,40 @@ export default function RefereeReviewScreen({ navigation, route }) {
 
                 {/* Ratings */}
                 <View style={styles.rateSection}>
-                  {route?.params?.sliderAttributesForReferee.map((item, index) => (
-                    <View
-                      style={{
-                        marginVertical: 10,
-                        flexDirection: 'row',
-                      }}
-                      key={index}>
-                      <Text style={styles.starText}>
-                        {item.charAt(0).toUpperCase() + item.slice(1)}
-                      </Text>
-                      <View style={{ flex: 1 }}>
-                        <TCRatingStarSlider
-                          currentRating={reviewsData[item]}
-                          onPress={(star) => {
-                            setTeamReview(item, star);
-                          }}
-                          style={{ alignSelf: 'flex-end' }}
-                          starColor={STAR_COLOR.GREEN}
-                        />
+                  {route?.params?.sliderAttributesForReferee.map(
+                    (item, index) => (
+                      <View
+                        style={{
+                          marginVertical: 10,
+                          flexDirection: 'row',
+                        }}
+                        key={index}>
+                        <Text style={styles.starText}>
+                          {item.charAt(0).toUpperCase() + item.slice(1)}
+                        </Text>
+                        <View style={{ flex: 1 }}>
+                          <TCRatingStarSlider
+                            currentRating={reviewsData[item]}
+                            onPress={(star) => {
+                              setTeamReview(item, star);
+                            }}
+                            style={{ alignSelf: 'flex-end' }}
+                            starColor={STAR_COLOR.GREEN}
+                          />
+                        </View>
                       </View>
-                    </View>
-                  ))}
+                    ),
+                  )}
                 </View>
 
                 {/* Questions */}
-                {QUSTIONS.map((item, index) => (
+                {route?.params?.starAttributesForReferee.map((item, index) => (
                   <View style={{ marginVertical: 5 }} key={index}>
-                    <Text style={styles.questionText}>{item.desc}</Text>
+                    <Text style={styles.questionText}>{item.description}</Text>
                     <TCRatingStarSlider
-                      currentRating={reviewsData[item.attrName]}
+                      currentRating={reviewsData[item.name]}
                       onPress={(star) => {
-                        setTeamReview(item.attrName, star);
+                        setTeamReview(item.name, star);
                       }}
                       style={{ alignSelf: 'flex-end' }}
                       starColor={STAR_COLOR.GREEN}
@@ -406,55 +405,56 @@ export default function RefereeReviewScreen({ navigation, route }) {
               <View style={styles.leaveReviewContainer}>
                 <Text style={styles.titleText}>Leave a review</Text>
                 <Pressable
-                style={{
-                  height: 120,
-                  marginVertical: 10,
-                  alignItems: 'flex-start',
-                  padding: 15,
-                  backgroundColor: colors.offwhite,
-                  shadowColor: colors.googleColor,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 5,
-                  elevation: 5,
-                  borderRadius: 5,
-                }}
+                  style={{
+                    flex: 1,
+                    // height: 120,
+                    marginVertical: 10,
+                    alignItems: 'flex-start',
+                    padding: 10,
+                    paddingVertical: 20,
+                    backgroundColor: colors.offwhite,
+                    shadowColor: colors.googleColor,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 5,
+                    elevation: 5,
+                    borderRadius: 5,
+                  }}
                   onPress={() => {
                     navigation.navigate('WriteReviewScreen', {
                       comeFrom: 'RefereeReviewScreen',
-                      postData: currentUserDetail,
+                      postData: null,
                       searchText: reviewsData?.comment ?? '',
                       // onPressDone: callthis,
                       selectedImageList: reviewsData?.attachments || [],
+                      taggedData:
+                      route?.params?.format_tagged_data || reviewsData?.format_tagged_data || [],
                     });
                   }}>
-                  <View pointerEvents="none">
-                    {/* <TCInputBox
-                        value={route?.params?.searchText ?? ''}
-                        multiline={true}
-                        placeHolderText={`Describe what you thought and felt about ${route?.params?.userData?.first_name} ${route?.params?.userData?.last_name} while watching or playing the game.`}
-                        textInputStyle={{ fontSize: 16, color: colors.userPostTimeColor }}
-                        style={{
-                          height: 120,
-                          marginVertical: 10,
-                          alignItems: 'flex-start',
-                          padding: 15,
-                        }} /> */}
-
+                  <View>
                     {reviewsData?.comment?.length > 0 ? (
                       <NewsFeedDescription
-                          descriptions={reviewsData.comment}
-                          containerStyle={{ marginHorizontal: 5, marginVertical: 2 }}
-                        />
+                        disableTouch={true}
+                        descriptions={reviewsData.comment}
+                        containerStyle={{
+                          marginHorizontal: 5,
+                          marginVertical: 2,
+                        }}
+                        tagData={
+                          route?.params?.format_tagged_data || reviewsData?.format_tagged_data || []
+                        }
+                        // tags={tags}
+                      />
                     ) : (
                       <Text
-                      style={{
-                        fontFamily: fonts.RRegular,
-                        fontSize: 16,
-                        color: colors.grayColor,
-                      }}>
+                        style={{
+                          fontFamily: fonts.RRegular,
+                          fontSize: 16,
+                          color: colors.grayColor,
+                        }}>
                         {`Describe what you thought and felt about ${route?.params?.userData?.first_name} ${route?.params?.userData?.last_name} while watching or playing the game.`}
-                      </Text>)}
+                      </Text>
+                    )}
                   </View>
                 </Pressable>
               </View>

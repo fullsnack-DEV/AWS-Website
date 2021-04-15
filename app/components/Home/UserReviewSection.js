@@ -68,8 +68,8 @@ function UserReviewSection({
               style={{ marginVertical: 15 }}
               renderItem={({ item: reviewItem }) => (
                 <ReviewRatingView
-                  title={
-                    Object.keys(reviewItem)?.[0]?.charAt(0).toUpperCase()
+                  title={Object.keys(reviewItem)?.[0] === 'respectforreferre' ? 'Respect For Referee'
+                    : Object.keys(reviewItem)?.[0]?.charAt(0).toUpperCase()
                     + Object.keys(reviewItem)?.[0]?.slice(1)
                   }
                   rating={parseFloat(Object.values(reviewItem)?.[0]).toFixed(2)}
