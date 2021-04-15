@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+ useState, useEffect, useContext, useRef,
+ } from 'react';
 import {
   StyleSheet,
   View,
@@ -18,6 +20,8 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import LinearGradient from 'react-native-linear-gradient';
+import ActionSheet from 'react-native-actionsheet';
+import ImagePicker from 'react-native-image-crop-picker';
 import { getSportsList } from '../../../../api/Games';
 import AuthContext from '../../../../auth/context';
 import DataSource from '../../../../Constants/DataSource';
@@ -29,9 +33,12 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import TCThickDivider from '../../../../components/TCThickDivider';
 import { groupMemberGenderItems } from '../../../../utils';
+import TCProfileImageControl from '../../../../components/TCProfileImageControl';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
+  const actionSheet = useRef();
+  const actionSheetWithDelete = useRef();
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState('');
@@ -54,9 +61,13 @@ export default function CreateTeamForm1({ navigation, route }) {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
 
+  const [currentImageSelection, setCurrentImageSelection] = useState(0);
+  const [thumbnail, setThumbnail] = useState();
+  const [backgroundThumbnail, setBackgroundThumbnail] = useState();
+
   useEffect(() => {
     if (isFocused) {
-      getSports()
+      getSports();
       const minAgeArray = [];
       let maxAgeArray = [];
       for (let i = 1; i <= 70; i++) {
@@ -135,34 +146,111 @@ export default function CreateTeamForm1({ navigation, route }) {
   };
 
   const getSports = () => {
-    getSportsList(authContext).then((response) => {
-      const arr = [];
-      for (const tempData of response.payload) {
-        const obj = {};
-        obj.label = tempData.sport_name;
-        obj.value = tempData.sport_name;
-        arr.push(obj);
+    getSportsList(authContext)
+      .then((response) => {
+        const arr = [];
+        for (const tempData of response.payload) {
+          const obj = {};
+          obj.label = tempData.sport_name;
+          obj.value = tempData.sport_name;
+          arr.push(obj);
+        }
+        setSportList(arr);
+        setTimeout(() => setloading(false), 1000);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const onBGImageClicked = () => {
+    setCurrentImageSelection(0);
+    setTimeout(() => {
+      if (backgroundThumbnail) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
       }
-      setSportList(arr);
-      setTimeout(() => setloading(false), 1000);
-    }).catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
+    }, 0.1);
+  };
+
+  const onProfileImageClicked = () => {
+    setCurrentImageSelection(1);
+    setTimeout(() => {
+      if (thumbnail) {
+        actionSheetWithDelete.current.show();
+      } else {
+        actionSheet.current.show();
+      }
+    }, 0.1);
+  };
+
+  const openImagePicker = (width = 400, height = 400) => {
+    let cropCircle = false;
+    if (currentImageSelection === 1) {
+      cropCircle = true;
+    }
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+      cropperCircleOverlay: cropCircle,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
+      if (currentImageSelection === 1) {
+        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+        setThumbnail(data.path);
+      } else {
+        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+        setBackgroundThumbnail(data.path);
+      }
     });
-  }
+  };
+
+  const deleteImage = () => {
+    if (currentImageSelection) {
+      // 1 means profile image
+      // setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' })
+      setThumbnail();
+    } else {
+      // 0 means profile image
+      // setGroupProfile({ ...groupProfile, background_thumbnail: '', background_full_image: '' })
+      setBackgroundThumbnail();
+    }
+  };
+
+  const openCamera = (width = 400, height = 400) => {
+    ImagePicker.openCamera({
+      width,
+      height,
+      cropping: true,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
+      if (currentImageSelection === 1) {
+        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
+        setThumbnail(data.path);
+      } else {
+        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
+        setBackgroundThumbnail(data.path);
+      }
+    });
+  };
 
   return (
     <>
-      <ScrollView style={styles.mainContainer} showsVerticalScrollIndicator={false}>
-        <ActivityLoader visible={ loading } />
-        <View style={styles.formSteps}>
+      <ScrollView
+        style={styles.mainContainer}
+        showsVerticalScrollIndicator={false}>
+        <ActivityLoader visible={loading} />
+        {/* <View style={styles.formSteps}>
           <View style={styles.form1}></View>
           <View style={styles.form2}></View>
           <View style={styles.form3}></View>
           <View style={styles.form4}></View>
-        </View>
+        </View> */}
         {parentGroupID && (
           <View>
             <View>
@@ -178,7 +266,10 @@ export default function CreateTeamForm1({ navigation, route }) {
                     style={styles.profileImgGroup}
                   />
                 ) : (
-                  <Image source={images.club_ph} style={styles.profileImgGroup} />
+                  <Image
+                    source={images.club_ph}
+                    style={styles.profileImgGroup}
+                  />
                 )}
 
                 <View
@@ -190,12 +281,12 @@ export default function CreateTeamForm1({ navigation, route }) {
                   <Text style={styles.nameText}>
                     {route.params.clubObject.group_name}
                   </Text>
-                  <Image source={images.clubC} style={ styles.teamTImage } />
+                  <Image source={images.clubC} style={styles.teamTImage} />
                 </View>
               </View>
             </View>
             <View>
-              <TCThickDivider marginTop={10}/>
+              <TCThickDivider marginTop={10} />
               <Text style={styles.clubBelongText}>
                 {strings.clubBelongText} {route.params.clubObject.group_name}.
               </Text>
@@ -204,7 +295,20 @@ export default function CreateTeamForm1({ navigation, route }) {
         )}
 
         <View>
-
+          <TCProfileImageControl
+            profileImage={
+              thumbnail ? { uri: thumbnail } : undefined
+            }
+            profileImagePlaceholder={images.teamPlaceholder}
+            bgImage={
+              backgroundThumbnail
+                ? { uri: backgroundThumbnail }
+                : undefined
+            }
+            onPressBGImage={() => onBGImageClicked()}
+            onPressProfileImage={() => onProfileImageClicked()}
+            showEditButtons
+          />
           <TCLabel title={strings.SportsTextFieldTitle} required={true} />
           <RNPickerSelect
             placeholder={{
@@ -226,7 +330,6 @@ export default function CreateTeamForm1({ navigation, route }) {
           />
         </View>
         <View style={styles.fieldView}>
-
           <TCLabel title={strings.teamNameTitle} required={true} />
           <TextInput
             placeholder={strings.teamNamePlaceholder}
@@ -240,7 +343,10 @@ export default function CreateTeamForm1({ navigation, route }) {
             <View style={styles.fieldView}>
               <Text style={styles.playerTitle}>{strings.player1Title}</Text>
               <View style={styles.searchView}>
-                <Image source={images.searchLocation} style={styles.searchImg} />
+                <Image
+                  source={images.searchLocation}
+                  style={styles.searchImg}
+                />
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('SearchPlayerScreen', { player: 1 });
@@ -259,7 +365,10 @@ export default function CreateTeamForm1({ navigation, route }) {
               <Text style={styles.playerTitle}>{strings.player2Title}</Text>
 
               <View style={styles.searchView}>
-                <Image source={images.searchLocation} style={styles.searchImg} />
+                <Image
+                  source={images.searchLocation}
+                  style={styles.searchImg}
+                />
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('SearchPlayerScreen', { player: 2 });
@@ -278,7 +387,7 @@ export default function CreateTeamForm1({ navigation, route }) {
         )}
         {sports.toLowerCase() !== 'tennis'.toLowerCase() && (
           <View style={styles.fieldView}>
-            <TCLabel title={strings.genderTitle}/>
+            <TCLabel title={strings.genderTitle} />
             <RNPickerSelect
               placeholder={{
                 label: strings.selectGenderPlaceholder,
@@ -290,7 +399,12 @@ export default function CreateTeamForm1({ navigation, route }) {
               }}
               useNativeAndroidPickerStyle={false}
               // eslint-disable-next-line no-sequences
-              style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+              style={{
+                ...(Platform.OS === 'ios'
+                  ? styles.inputIOS
+                  : styles.inputAndroid),
+                ...styles,
+              }}
               value={gender}
               Icon={() => (
                 <Image source={images.dropDownArrow} style={styles.downArrow} />
@@ -301,8 +415,7 @@ export default function CreateTeamForm1({ navigation, route }) {
 
         <View style={styles.fieldView}>
           {sports.toLowerCase() !== 'tennis'.toLowerCase() && (
-
-            <TCLabel title={strings.membersAgeTitle}/>
+            <TCLabel title={strings.membersAgeTitle} />
           )}
           {sports.toLowerCase() !== 'tennis'.toLowerCase() && (
             <View
@@ -424,16 +537,21 @@ export default function CreateTeamForm1({ navigation, route }) {
             </View>
           )}
           <View style={styles.fieldView}>
-            <TCLabel title={strings.curruencyType}/>
+            <TCLabel title={strings.curruencyType} />
             <RNPickerSelect
               placeholder={{}}
               items={DataSource.CurrencyType}
               onValueChange={(value) => {
-                setCurruency(value)
+                setCurruency(value);
               }}
               useNativeAndroidPickerStyle={false}
               // eslint-disable-next-line no-sequences
-              style={{ ...(Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), ...styles }}
+              style={{
+                ...(Platform.OS === 'ios'
+                  ? styles.inputIOS
+                  : styles.inputAndroid),
+                ...styles,
+              }}
               value={curruency}
               Icon={() => (
                 <Image source={images.dropDownArrow} style={styles.downArrow} />
@@ -441,11 +559,11 @@ export default function CreateTeamForm1({ navigation, route }) {
             />
           </View>
           <View style={styles.fieldView}>
-            <TCLabel title={strings.locationTitle} required={true}/>
+            <TCLabel title={strings.locationTitle} required={true} />
             <TouchableOpacity
               onPress={() => navigation.navigate('SearchLocationScreen', {
-                comeFrom: 'CreateTeamForm1',
-              })
+                  comeFrom: 'CreateTeamForm1',
+                })
               }>
               <TextInput
                 placeholder={strings.searchCityPlaceholder}
@@ -468,36 +586,38 @@ export default function CreateTeamForm1({ navigation, route }) {
               checkValidation();
 
               if (sports !== '' && teamName !== '' && location !== '') {
+                const obj = {
+                  sport: sports,
+                  group_name: teamName,
+                  gender,
+                  min_age: minAge,
+                  max_age: maxAge,
+                  city,
+                  state_abbr: state,
+                  country,
+                  currency_type: curruency,
+
+                };
+                if (thumbnail) {
+                  obj.thumbnail = thumbnail;
+                }
+                if (backgroundThumbnail) {
+                  obj.background_thumbnail = backgroundThumbnail;
+                }
                 if (player1ID !== '' && player2 !== '') {
                   navigation.navigate('CreateTeamForm2', {
                     createTeamForm1: {
-                      sport: sports,
-                      group_name: teamName,
-                      gender,
-                      min_age: minAge,
-                      max_age: maxAge,
-                      city,
-                      state_abbr: state,
-                      country,
+                      ...obj,
                       parent_group_id: parentGroupID,
                       player1: player1ID,
                       player2: player2ID,
-                      currency_type: curruency,
                     },
                   });
                 } else {
                   navigation.navigate('CreateTeamForm2', {
                     createTeamForm1: {
-                      sport: sports,
-                      group_name: teamName,
-                      gender,
-                      min_age: minAge,
-                      max_age: maxAge,
-                      city,
-                      state_abbr: state,
-                      country,
+                      ...obj,
                       parent_group_id: parentGroupID,
-                      currency_type: curruency,
                     },
                   });
                 }
@@ -516,18 +636,27 @@ export default function CreateTeamForm1({ navigation, route }) {
               checkValidation();
 
               if (sports !== '' && teamName !== '' && location !== '') {
+                const obj = {
+                  sport: sports,
+                  group_name: teamName,
+                  gender,
+                  min_age: minAge,
+                  max_age: maxAge,
+                  city,
+                  state_abbr: state,
+                  country,
+                  currency_type: curruency,
+                };
+                if (thumbnail) {
+                  obj.thumbnail = thumbnail;
+                }
+                if (backgroundThumbnail) {
+                  obj.background_thumbnail = backgroundThumbnail;
+                }
                 if (player1ID !== '' && player2 !== '') {
                   navigation.navigate('CreateTeamForm2', {
                     createTeamForm1: {
-                      sport: sports,
-                      group_name: teamName,
-                      gender,
-                      min_age: minAge,
-                      max_age: maxAge,
-                      city,
-                      state_abbr: state,
-                      country,
-                      currency_type: curruency,
+                      ...obj,
                       player1: player1ID,
                       player2: player2ID,
                     },
@@ -536,15 +665,7 @@ export default function CreateTeamForm1({ navigation, route }) {
                   console.log('MOVE TO NEXT');
                   navigation.navigate('CreateTeamForm2', {
                     createTeamForm1: {
-                      sport: sports,
-                      group_name: teamName,
-                      gender,
-                      min_age: minAge,
-                      max_age: maxAge,
-                      city,
-                      state_abbr: state,
-                      country,
-                      currency_type: curruency,
+                      ...obj,
                     },
                   });
                 }
@@ -558,6 +679,48 @@ export default function CreateTeamForm1({ navigation, route }) {
           </TouchableOpacity>
         )}
       </ScrollView>
+      <ActionSheet
+        ref={actionSheet}
+        // title={'News Feed Post'}
+        options={[strings.camera, strings.album, strings.cancelTitle]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            if (currentImageSelection) {
+              openImagePicker();
+            } else {
+              openImagePicker(750, 348);
+            }
+          }
+        }}
+      />
+      <ActionSheet
+        ref={actionSheetWithDelete}
+        // title={'News Feed Post'}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            openCamera();
+          } else if (index === 1) {
+            if (currentImageSelection) {
+              openImagePicker();
+            } else {
+              openImagePicker(750, 348);
+            }
+          } else if (index === 2) {
+            deleteImage();
+          }
+        }}
+      />
     </>
   );
 }
@@ -601,40 +764,40 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form4: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
+  // form1: {
+  //   backgroundColor: colors.themeColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
+  // form2: {
+  //   backgroundColor: colors.lightgrayColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
+  // form3: {
+  //   backgroundColor: colors.lightgrayColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
+  // form4: {
+  //   backgroundColor: colors.lightgrayColor,
+  //   height: 5,
+  //   marginLeft: 2,
+  //   marginRight: 2,
+  //   width: 10,
+  // },
+  // formSteps: {
+  //   alignSelf: 'flex-end',
+  //   flexDirection: 'row',
+  //   marginRight: 15,
+  //   marginTop: 15,
+  // },
 
   inputAndroid: {
     alignSelf: 'center',
@@ -777,7 +940,6 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 10,
     width: wp('80%'),
-
   },
   searchView: {
     alignSelf: 'center',

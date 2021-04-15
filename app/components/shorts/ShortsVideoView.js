@@ -27,7 +27,8 @@ import {
   SectionList,
 } from 'react-native';
 import Modal from 'react-native-modal';
-
+import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
+import { hasNotch } from 'react-native-device-info';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -71,6 +72,12 @@ function ShortsVideoView({
   curruentViewIndex,
   onclosePress,
 }) {
+  const insets = useSafeAreaInsets();
+
+  console.log('insets:=>', insets);
+  console.log('hasNotch:=>', hasNotch());
+  // Alert.alert('insets:=>', JSON.stringify(insets))
+
   const shareActionSheet = useRef();
   const authContext = useContext(AuthContext);
   const [topDesc, setTopDesc] = useState(false);
@@ -353,21 +360,30 @@ function ShortsVideoView({
     if (
       Number(
         parseFloat(videoItem?.media_height / videoItem?.media_width).toFixed(2),
-      ) < 1.78
+      ) <= 1.78
     ) {
-      return (
-        StatusBar.currentHeight
-        + (windowHeight
-          - videoItem?.media_height * (windowWidth / videoItem?.media_width))
-          / 2
-      );
+      if (hasNotch()) {
+        return (
+          insets.top
+          + (windowHeight
+            - videoItem?.media_height * (windowWidth / videoItem?.media_width))
+            / 2
+        );
+      }
+
+        return (
+          insets.top - 20
+          + (windowHeight
+            - videoItem?.media_height * (windowWidth / videoItem?.media_width))
+            / 2
+        );
     }
     if (
       Number(
         parseFloat(videoItem?.media_height / videoItem?.media_width).toFixed(2),
       ) >= 1.78
     ) {
-      return StatusBar.currentHeight;
+      return 0;
     }
     return 0;
   };
@@ -435,7 +451,7 @@ function ShortsVideoView({
           videoItem?.media_height
         }\nVideo width: ${
           Dimensions.get('window').height - videoItem?.media_height
-        }\nNotch Height: ${StatusBar.currentHeight}`}</Text> */}
+        }\nNotch Height: ${insets.top}`}</Text> */}
         <View
           style={{ ...styles.commentShareLikeView, zIndex: !isClosed ? 1 : 0 }}>
           <View style={{}}>

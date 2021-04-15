@@ -383,7 +383,7 @@ PODS:
     - React
   - react-native-photo-view-ex (1.1.0):
     - React
-  - react-native-safe-area-context (3.1.9):
+  - react-native-safe-area-context (3.2.0):
     - React-Core
   - react-native-slider (3.0.3):
     - React
@@ -469,6 +469,8 @@ PODS:
   - RNCPicker (1.8.1):
     - React-Core
   - RNDateTimePicker (3.0.9):
+    - React-Core
+  - RNDeviceInfo (8.1.0):
     - React-Core
   - RNFastImage (8.3.4):
     - React-Core
@@ -601,6 +603,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
@@ -760,6 +763,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/picker"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNFBApp:
@@ -854,7 +859,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 52cf0ee8342548a485e28f4b09e56b477567244d
   react-native-orientation: d4a97266b06ec8d45d74e626656a730ebbebbb6f
   react-native-photo-view-ex: 201dddcbe44fe531b824eae5e1b99b1f494c0588
-  react-native-safe-area-context: 86612d2c9a9e94e288319262d10b5f93f0b395f5
+  react-native-safe-area-context: e471852c5ed67eea4b10c5d9d43c1cebae3b231d
   react-native-slider: b733e17fdd31186707146debf1f04b5d94aa1a93
   react-native-video: 1574074179ecaf6a9dd067116c8f31bf9fec15c8
   react-native-viewpager: 118e65d8c65c56fe48d12a35cdcf1fe7e027a366
@@ -876,6 +881,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
   RNDateTimePicker: 986d4794006e5caaebd089a724f54d35631a8dd4
+  RNDeviceInfo: 77944ee74f4464aa4672b62e3239e4fa69ab534f
   RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 1624ffcfc328c00ec3049d2f1bbf09d3e78dcdb7
   RNFBAuth: 888e490f4bc371e6afa68d587c7c791976a5f52f
@@ -900,4 +906,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: e9fac4ac06e5b845988aea722e153080cad21f0c
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1
