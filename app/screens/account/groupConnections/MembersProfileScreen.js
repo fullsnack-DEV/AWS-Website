@@ -29,6 +29,7 @@ import strings from '../../../Constants/String';
 import TCMessageButton from '../../../components/TCMessageButton';
 import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
+import TCInnerLoader from '../../../components/TCInnerLoader';
 
 let entity = {};
 export default function MembersProfileScreen({ navigation, route }) {
@@ -38,7 +39,8 @@ export default function MembersProfileScreen({ navigation, route }) {
   const actionSheet = useRef();
   const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
+  const [firstTimeLoad, setFirstTimeLoad] = useState(true);
   // const [editable, setEditable] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [editBasicInfo, setEditBasicInfo] = useState(false);
@@ -73,7 +75,7 @@ export default function MembersProfileScreen({ navigation, route }) {
     return age;
   }
   const getMemberInformation = async () => {
-    setloading(true)
+    if (!firstTimeLoad) setloading(true)
     entity = authContext.entity
     setSwitchUser(entity)
 
@@ -92,9 +94,11 @@ export default function MembersProfileScreen({ navigation, route }) {
       console.log('PROFILE RESPONSE::', response.payload);
       setMemberDetail(response.payload);
       setloading(false)
+      if (firstTimeLoad) setFirstTimeLoad(false);
     })
       .catch((e) => {
         setloading(false);
+        if (firstTimeLoad) setFirstTimeLoad(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -130,11 +134,14 @@ export default function MembersProfileScreen({ navigation, route }) {
   return (
     <SafeAreaView>
       <ActivityLoader visible={loading} />
-      {memberDetail && <ScrollView>
+      <TCInnerLoader visible={firstTimeLoad} size={50}/>
+      {memberDetail && !firstTimeLoad && <ScrollView>
         <View style={styles.roleViewContainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
             <TCProfileView image={memberDetail.thumbnail ? { uri: memberDetail.thumbnail } : images.profilePlaceHolder} name={`${memberDetail.first_name} ${memberDetail.last_name}`} location={memberDetail.city && memberDetail.state_abbr && memberDetail.country && `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`}/>
-            {editProfile && <TouchableWithoutFeedback onPress={() => navigation.navigate('EditMemberInfoScreen', { memberInfo: memberDetail })}>
+            {editProfile && <TouchableWithoutFeedback onPress={() => {
+              navigation.navigate('EditMemberInfoScreen', { memberInfo: memberDetail })
+            }}>
               <Image source={ images.editSection } style={ styles.editImage } />
             </TouchableWithoutFeedback>}
           </View>

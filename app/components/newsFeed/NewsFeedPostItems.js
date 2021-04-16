@@ -224,7 +224,8 @@ const NewsFeedPostItems = ({
   ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
 
   const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length)
-  const renderURLPreview = () => {
+
+  const renderURLPreview = useMemo(() => {
     const obj = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object
     let desc = obj?.text.toLowerCase()
     const position = desc.search(urlRegex)
@@ -236,7 +237,7 @@ const NewsFeedPostItems = ({
             imageStyle={styles.previewImageStyle}
         />
     );
-  }
+  }, [item?.object])
 
   const renderDescription = useMemo(() => (
     <NewsFeedDescription
@@ -286,7 +287,7 @@ const NewsFeedPostItems = ({
             />
           )
         }
-        {renderURLPreview()}
+        {renderURLPreview}
         {renderDescription}
 
         <View style={{ marginTop: 10, marginLeft: 10 }}/>

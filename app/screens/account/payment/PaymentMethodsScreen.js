@@ -21,16 +21,26 @@ import * as Utility from '../../../utils';
 import images from '../../../Constants/ImagePath';
 import { publishableKey } from '../../../utils/constant';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
+import TCInnerLoader from '../../../components/TCInnerLoader';
 
 export default function PaymentMethodsScreen({ navigation, route }) {
   const [loading, setloading] = useState(false);
+  const [firstTimeLoad, setFirstTimeLoad] = useState(true);
   const authContext = useContext(AuthContext)
   const isFocused = useIsFocused();
   const [selectedCard, setSelectedCard] = useState()
   const [cards, setCards] = useState([])
 
   useEffect(() => {
-    if (isFocused) { getPaymentMethods() }
+    if (isFocused) {
+        setFirstTimeLoad(true);
+        getPaymentMethods().then(() => {
+            setFirstTimeLoad(false)
+        }).catch((error) => {
+            setFirstTimeLoad(false);
+            console.log(error);
+        })
+    }
   }, [isFocused])
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,24 +55,24 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       ),
     });
   }, [navigation, loading, selectedCard])
-  const getPaymentMethods = async () => {
-    setloading(true)
+  const getPaymentMethods = () => new Promise((resolve, reject) => {
     paymentMethods(authContext)
         .then((response) => {
           setCards([...response.payload])
-          setloading(false)
+          // setloading(false)
           if (response.payload.length === 0) {
             openNewCardScreen();
           }
+          resolve(true)
         })
         .catch((e) => {
-          console.log('error in payment method', e)
-          setloading(false)
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 0.3)
+            reject(new Error(e.message))
+          // setloading(false)
+          // setTimeout(() => {
+          //   Alert.alert(strings.alertmessagetitle, e.message);
+          // }, 0.3)
         })
-  }
+  })
 
   const onCardSelected = async (item) => {
     navigation.navigate(route?.params?.comeFrom, {
@@ -199,7 +209,11 @@ export default function PaymentMethodsScreen({ navigation, route }) {
     }
     attachPaymentMethod(params, authContext)
         .then(() => {
-          getPaymentMethods();
+          getPaymentMethods().then(() => {
+              setloading(false)
+          }).catch(() => {
+              setloading(false);
+          });
         })
         .catch((e) => {
           console.log('error in onSaveCard', e)
@@ -253,15 +267,18 @@ export default function PaymentMethodsScreen({ navigation, route }) {
       <Text style={{
         marginLeft: 15, marginTop: 15, color: colors.lightBlackColor, fontFamily: fonts.RRegular, fontSize: 20,
       }}>{strings.selectPaymentMethod}</Text>
-      <FlatList
-            style={{ marginTop: 15 }}
-              data={cards}
-              renderItem={renderCard}
-              keyExtractor={(item) => item.id}
-              ListFooterComponent={renderFooter}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-          />
+      <TCInnerLoader visible={firstTimeLoad} size={50}/>
+      {!firstTimeLoad && (
+        <FlatList
+                style={{ marginTop: 15 }}
+                data={cards}
+                renderItem={renderCard}
+                keyExtractor={(item) => item.id}
+                ListFooterComponent={renderFooter}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+            />
+        )}
     </View>
   );
 }

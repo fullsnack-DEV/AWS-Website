@@ -36,10 +36,9 @@ const TCZoomableImage = ({
            />
 
           <BlurView
-              style={{ ...style, resizeMode: 'contain', position: 'absolute' }}
+              style={{ ...style, position: 'absolute' }}
               blurType="dark"
-              blurAmount={1}
-              reducedTransparencyFallbackColor={'gray'}
+              blurAmount={0.5}
            />
           <FastImage
               style={{
