@@ -130,13 +130,13 @@ const strings = {
   player2Title: 'Player 2',
   searchHereText: 'Search here',
   searchText: 'Search',
-  genderTitle: 'Member\'s Gender',
+  genderTitle: 'Player\'s Gender',
   curruencyType: 'Currency Type',
   feeCyclePlaceholder: 'Fees cycle',
   selectCode: 'Country Code',
   selectGenderPlaceholder: 'Select Gender',
   selectCurruencyTypePlaceholder: 'Select Currency Type',
-  membersAgeTitle: 'Member\'s Age',
+  membersAgeTitle: 'Player\'s Age',
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
   locationTitle: 'Location',
@@ -591,5 +591,7 @@ refereesPlaceholderText: 'There is no referee.\nWould you like to start register
 scorekeepersPlaceholderText: 'There is no Scorekeeper.\nWould you like to start registering\nScorekeeper?',
 taggedPeopleText: 'Tagged People',
 taggedMatchesText: 'Tagged matches',
+
+manageChallengeText: 'MANAGE CHALLENGE',
 };
 export default strings;

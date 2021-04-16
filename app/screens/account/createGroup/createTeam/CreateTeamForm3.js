@@ -24,6 +24,7 @@ import colors from '../../../../Constants/Colors'
 import fonts from '../../../../Constants/Fonts'
 import DataSource from '../../../../Constants/DataSource';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 export default function CreateTeamForm3({ navigation, route }) {
   const [basicFee, setBasicFee] = useState(0.0);
@@ -33,34 +34,32 @@ export default function CreateTeamForm3({ navigation, route }) {
   const [membershipFeeDetail, setMembershipFeeDetail] = useState('');
 
   return (
-    <TCKeyboardView>
-      <ScrollView style={ styles.mainContainer }>
-        <View style={ styles.formSteps }>
-          <View style={ styles.form1 }></View>
-          <View style={ styles.form2 }></View>
-          <View style={ styles.form3 }></View>
-          <View style={ styles.form4 }></View>
-        </View>
-        <Text style={ styles.registrationText }>{strings.registerTitle}</Text>
-        <Text style={ styles.registrationDescText }>
-          {strings.registerSubTitle}
-        </Text>
-        <View style={ styles.fieldView }>
-          <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
-        </View>
-        <View style={ styles.matchFeeView }>
-          <TextInput
+    <>
+      <TCFormProgress totalSteps={4} curruentStep={3}/>
+      <TCKeyboardView>
+
+        <ScrollView style={ styles.mainContainer }>
+
+          <Text style={ styles.registrationText }>{strings.registerTitle}</Text>
+          <Text style={ styles.registrationDescText }>
+            {strings.registerSubTitle}
+          </Text>
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
+          </View>
+          <View style={ styles.matchFeeView }>
+            <TextInput
             placeholder={ strings.enterFeePlaceholder }
             style={ styles.feeText }
             onChangeText={ (text) => setBasicFee(text) }
             value={ basicFee }
             keyboardType={ 'decimal-pad' }></TextInput>
-          <Text style={ styles.curruency }>{route?.params?.createTeamForm2?.currency_type}</Text>
-        </View>
+            <Text style={ styles.curruency }>{route?.params?.createTeamForm2?.currency_type}</Text>
+          </View>
 
-        <View style={ styles.fieldView }>
-          <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
-          <TextInput
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
+            <TextInput
             style={ styles.descriptionTxt }
             onChangeText={ (text) => setBasicFeeDetail(text) }
             value={ basicFeeDetail }
@@ -69,17 +68,17 @@ export default function CreateTeamForm3({ navigation, route }) {
             textAlignVertical={'top'}
             placeholder={ strings.feeDetailsPlaceholder }
           />
-        </View>
-        <Text style={ styles.registrationText }>
-          {strings.membershipFeeTitle}
-        </Text>
-        <Text style={ styles.registrationDescText }>
-          {strings.membershipSubTitle}
-        </Text>
+          </View>
+          <Text style={ styles.registrationText }>
+            {strings.membershipFeeTitle}
+          </Text>
+          <Text style={ styles.registrationDescText }>
+            {strings.membershipSubTitle}
+          </Text>
 
-        <View style={ styles.fieldView }>
-          <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
-          <View
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
+            <View
             style={ {
               flexDirection: 'row',
 
@@ -90,7 +89,7 @@ export default function CreateTeamForm3({ navigation, route }) {
               marginRight: 15,
               justifyContent: 'space-between',
             } }>
-            <RNPickerSelect
+              <RNPickerSelect
               placeholder={ {
                 label: strings.feeCyclePlaceholder,
                 value: null,
@@ -145,20 +144,20 @@ export default function CreateTeamForm3({ navigation, route }) {
                   />
               ) }
             />
-            <View style={ styles.halfMatchFeeView }>
-              <TextInput
+              <View style={ styles.halfMatchFeeView }>
+                <TextInput
                 placeholder={ strings.enterFeePlaceholder }
                 style={ styles.halffeeText }
                 keyboardType={ 'decimal-pad' }
                 onChangeText={ (text) => setMembershipFee(text) }
                 value={ membershipFee }></TextInput>
-              <Text style={ styles.curruency }>{route?.params?.createTeamForm2?.currency_type}</Text>
+                <Text style={ styles.curruency }>{route?.params?.createTeamForm2?.currency_type}</Text>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={ styles.fieldView }>
-          <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
-          <TextInput
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
+            <TextInput
             style={ styles.descriptionTxt }
             onChangeText={ (text) => setMembershipFeeDetail(text) }
             value={ membershipFeeDetail }
@@ -167,8 +166,8 @@ export default function CreateTeamForm3({ navigation, route }) {
             numberOfLines={ 4 }
             placeholder={ strings.membershipPlaceholder }
           />
-        </View>
-        <TouchableOpacity
+          </View>
+          <TouchableOpacity
           onPress={ () => navigation.navigate('CreateTeamForm4', {
             createTeamForm3: {
               ...route.params.createTeamForm2,
@@ -180,14 +179,15 @@ export default function CreateTeamForm3({ navigation, route }) {
             },
           })
           }>
-          <LinearGradient
+            <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-            <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </ScrollView>
-    </TCKeyboardView>
+              <Text style={ styles.nextButtonText }>{strings.nextTitle}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </ScrollView>
+      </TCKeyboardView>
+    </>
   );
 }
 
@@ -239,40 +239,7 @@ const styles = StyleSheet.create({
 
     color: colors.lightBlackColor,
   },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form4: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
+
   halfMatchFeeView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,

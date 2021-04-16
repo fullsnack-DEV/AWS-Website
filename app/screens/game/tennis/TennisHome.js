@@ -57,6 +57,7 @@ const TennisHome = ({ navigation, route }) => {
   }, [navigation, isFocused]);
 
   const getTennisGameData = useCallback(
+
     (gameId = tennisGameId, fetchTeamData = true) => getGameData(gameId, fetchTeamData, authContext),
     [authContext, tennisGameId],
   );

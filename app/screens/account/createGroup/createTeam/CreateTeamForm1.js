@@ -34,6 +34,7 @@ import TCLabel from '../../../../components/TCLabel';
 import TCThickDivider from '../../../../components/TCThickDivider';
 import { groupMemberGenderItems } from '../../../../utils';
 import TCProfileImageControl from '../../../../components/TCProfileImageControl';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 export default function CreateTeamForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -241,16 +242,12 @@ export default function CreateTeamForm1({ navigation, route }) {
 
   return (
     <>
+      <TCFormProgress totalSteps={4} curruentStep={1}/>
       <ScrollView
         style={styles.mainContainer}
         showsVerticalScrollIndicator={false}>
         <ActivityLoader visible={loading} />
-        {/* <View style={styles.formSteps}>
-          <View style={styles.form1}></View>
-          <View style={styles.form2}></View>
-          <View style={styles.form3}></View>
-          <View style={styles.form4}></View>
-        </View> */}
+
         {parentGroupID && (
           <View>
             <View>

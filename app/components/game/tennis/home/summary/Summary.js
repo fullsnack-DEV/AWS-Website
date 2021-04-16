@@ -72,9 +72,6 @@ const Summary = ({
   getGameData,
 }) => {
   const imageUploadContext = useContext(ImageUploadContext);
-  console.log('GameData:=>', gameData);
-  console.log('isRefereeAdmin:=>', isRefereeAdmin);
-  console.log('isScorekeeperAdmin:=>', isScorekeeperAdmin);
   const authContext = useContext(AuthContext);
 
   const [playerFrom, setplayerFrom] = useState('');
@@ -136,7 +133,7 @@ const Summary = ({
         if (teamReviewProp?.length) {
           teamReviewProp.filter((item) => {
             if (item.type === 'slider') {
-              sliderReviewProp.push(item?.name.toLowerCase());
+              sliderReviewProp.push(item?.name?.toLowerCase());
             } else if (item.type === 'star') {
               starReviewProp.push(item);
             }
@@ -160,7 +157,7 @@ const Summary = ({
         if (refereeReviewProp?.length) {
           refereeReviewProp.filter((item) => {
             if (item.type === 'topstar') {
-              sliderReviewPropForReferee.push(item?.name.toLowerCase());
+              sliderReviewPropForReferee.push(item?.name?.toLowerCase());
             } else if (item.type === 'star') {
               starReviewPropForReferee.push(item);
             }
@@ -172,7 +169,7 @@ const Summary = ({
         if (scorekeeperReviewProp?.length) {
           scorekeeperReviewProp.filter((item) => {
             if (item.type === 'topstar') {
-              sliderReviewPropForScorekeeper.push(item?.name.toLowerCase());
+              sliderReviewPropForScorekeeper.push(item?.name?.toLowerCase());
             } else if (item.type === 'star') {
               starReviewPropForScorekeeper.push(item);
             }
@@ -222,7 +219,7 @@ const Summary = ({
           setLeaveReviewText(strings.editReviewPlayerText);
         } else {
           // setLeaveReviewText(`LEAVE A REVIEW FOR ${teamName}`);
-          setLeaveReviewText(strings.leaveReviewPlayerText);
+          setLeaveReviewText(strings.leaveReviewplayerText);
         }
         setplayerFrom('away');
       }
@@ -373,8 +370,8 @@ const Summary = ({
           navigation.navigate('LeaveReviewTennis', {
             gameData,
             gameReviewData: response.payload,
-            selectedTeam:
-              gameData?.home_team?.user_id === authContext?.entity?.uid
+            selectedTeam: selectedTeamForReview
+              ?? gameData?.home_team?.user_id === authContext?.entity?.uid
                 ? 'away'
                 : 'home',
             starAttributesForPlayer,
@@ -979,7 +976,7 @@ const Summary = ({
               <Text
                 style={styles.doneText}
                 onPress={() => {
-                  setIsPopupVisible(false);
+                   setIsPopupVisible(false);
                   console.log(
                     'gameData?.review_id:=>',
                     gameData?.referees?.length > 0,
@@ -987,12 +984,11 @@ const Summary = ({
                   if (playerFrom === '' && selectedTeamForReview) {
                     if (selectedTeamForReview === 'home') {
                       if (gameData?.home_review_id) {
-                        getGameReviewsData(gameData?.home_review_id);
+                         getGameReviewsData(gameData?.home_review_id);
                       } else {
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: selectedTeamForReview,
-
                           starAttributesForPlayer,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
@@ -1006,7 +1002,6 @@ const Summary = ({
                         navigation.navigate('LeaveReviewTennis', {
                           gameData,
                           selectedTeam: selectedTeamForReview,
-
                           starAttributesForPlayer,
                           isRefereeAvailable: gameData?.referees?.length > 0,
                           onPressReviewDone,
