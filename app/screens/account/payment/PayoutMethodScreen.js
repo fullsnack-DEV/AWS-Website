@@ -13,9 +13,11 @@ import { merchantAuthDetail, addMerchantAccount } from '../../../api/Users';
 import strings from '../../../Constants/String'
 import colors from '../../../Constants/Colors'
 import { resgisterMerchantURL } from '../../../utils/constant';
+import TCInnerLoader from '../../../components/TCInnerLoader';
 
 export default function PayoutMethodScreen({ navigation }) {
   const [loading, setloading] = useState(false);
+  const [firstTimeLoad, setFirstTimeLoad] = useState(false);
   const authContext = useContext(AuthContext)
   const [merchantURL, setMerchantURL] = useState();
   const [redirectURI, setRedirectURI] = useState();
@@ -28,7 +30,7 @@ export default function PayoutMethodScreen({ navigation }) {
   }, [])
 
   const callPaymentAuthDetailAPI = async () => {
-    setloading(true)
+      setFirstTimeLoad(true)
     merchantAuthDetail(authContext.entity.uid, authContext)
       .then((response) => {
         setState(response.payload.state)
@@ -41,11 +43,11 @@ export default function PayoutMethodScreen({ navigation }) {
         urlString = `${urlString}&stripe_user[country]=CA`
         setMerchantURL(urlString)
         console.log('URL::=>', urlString)
-        setloading(false)
+        setFirstTimeLoad(false)
       })
       .catch((e) => {
         console.log('error in payout method', e)
-        setloading(false)
+        setFirstTimeLoad(false)
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10)
@@ -77,6 +79,7 @@ export default function PayoutMethodScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      <TCInnerLoader visible={firstTimeLoad} size={50}/>
       {merchantURL && <WebView
         ref={webView}
         source={{ uri: merchantURL }}

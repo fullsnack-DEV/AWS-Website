@@ -6,7 +6,6 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
 import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/soccer/home/summary/Summary';
@@ -31,6 +30,7 @@ import { followUser, unfollowUser } from '../../../api/Users';
 
 import LineUp from '../../../components/game/soccer/home/lineUp/LineUp';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
+import GameHomeShimer from '../../../components/shimmer/game/GameHomeShimer';
 
 const TAB_ITEMS = ['Summary', 'Line-up', 'Stats', 'Gallery']
 const SoccerHome = ({ navigation, route }) => {
@@ -40,7 +40,7 @@ const SoccerHome = ({ navigation, route }) => {
   const [soccerGameId] = useState(route?.params?.gameId);
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRefereeAdmin, setIsRefereeAdmin] = useState(false);
   const [isScorekeeperAdmin, setIsScorekeeperAdmin] = useState(false);
@@ -49,7 +49,9 @@ const SoccerHome = ({ navigation, route }) => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    if (isFocused) {
       getGameDetails();
+    }
   }, [navigation, isFocused]);
 
   console.log('soccerGameId:=>', soccerGameId);
@@ -155,7 +157,7 @@ const SoccerHome = ({ navigation, route }) => {
           getGalleryData={getSoccerGalleryData}
           navigation={navigation}
       />
-  ), [gameData, getSoccerGalleryData, navigation])
+  ), [gameData, getSoccerGalleryData, isAdmin, navigation])
 
   const renderTabContain = useCallback((tabKey) => (
     <View style={{ flex: 1 }}>
@@ -186,12 +188,13 @@ const SoccerHome = ({ navigation, route }) => {
             renderTabContain={renderTabContain}
         />
     </TopBackgroundHeader>
-  ), [currentTab, gameData, isAdmin, navigation, renderTabContain, route?.params?.onBackPress])
+  ), [currentTab, gameData, isAdmin, navigation, onEndReached, renderTabContain, route?.params?.onBackPress])
 
   return (
     <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      {renderTopHeaderWithTabContain}
+      {loading
+          ? <GameHomeShimer navigation={navigation}/>
+          : renderTopHeaderWithTabContain}
       {renderImageProgress}
     </View>
   );

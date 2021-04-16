@@ -74,7 +74,7 @@ export default function EditMemberInfoScreen({ navigation, route }) {
           full_image: attachments[0].url, thumbnail: attachments[0].thumbnail, first_name: memberInfo.first_name, last_name: memberInfo.last_name,
         }
         console.log('BODY PARAMS:', bodyParams);
-        editMemberInfo(memberInfo.group.group_id, memberInfo.user_id, bodyParams)
+        editMemberInfo(memberInfo?.group?.group_id, memberInfo?.user_id, bodyParams)
       })
         .catch((e) => {
           setloading(false);
@@ -87,7 +87,7 @@ export default function EditMemberInfoScreen({ navigation, route }) {
         first_name: memberInfo.first_name, last_name: memberInfo.last_name,
       }
 
-      editMemberInfo(memberInfo.group.group_id, memberInfo.user_id, bodyParams)
+      editMemberInfo(memberInfo?.group?.group_id, memberInfo?.user_id, bodyParams)
     }
   }
   const editMemberInfo = (groupID, memberID, param) => {

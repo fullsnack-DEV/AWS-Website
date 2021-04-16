@@ -32,6 +32,7 @@ import { followUser, unfollowUser } from '../../../api/Users';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import AuthContext from '../../../auth/context';
 import strings from '../../../Constants/String';
+import GameHomeShimer from '../../../components/shimmer/game/GameHomeShimer';
 
 const TAB_ITEMS = ['Summary', 'Stats', 'Review', 'Gallery'];
 
@@ -45,6 +46,7 @@ const TennisHome = ({ navigation, route }) => {
   const [currentTab, setCurrentTab] = useState(0);
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fistTimeLoad, setFirstTimeLoad] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRefereeAdmin, setIsRefereeAdmin] = useState(false);
   const [isScorekeeperAdmin, setIsScorekeeperAdmin] = useState(false);
@@ -53,7 +55,13 @@ const TennisHome = ({ navigation, route }) => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    getGameDetails();
+    if (isFocused) {
+      getGameDetails().then(() => {
+        setFirstTimeLoad(false);
+      }).catch(() => {
+        setFirstTimeLoad(false);
+      });
+    }
   }, [navigation, isFocused]);
 
   const getTennisGameData = useCallback(
@@ -61,8 +69,7 @@ const TennisHome = ({ navigation, route }) => {
     [authContext, tennisGameId],
   );
 
-  const getGameDetails = useCallback(() => {
-    setLoading(true);
+  const getGameDetails = useCallback(() => new Promise((resolve, reject) => {
     getTennisGameData(tennisGameId)
       .then(async (res) => {
         console.log('GET GAME DETAIL::', res.payload);
@@ -94,12 +101,13 @@ const TennisHome = ({ navigation, route }) => {
 
           setGameData({ ...res.payload });
         }
+        resolve(true);
       })
       .catch((error) => {
         console.log(error);
+        reject(new Error(error));
       })
-      .finally(() => setLoading(false));
-  }, [authContext.entity, getTennisGameData, tennisGameId]);
+  }), [authContext.entity, getTennisGameData, tennisGameId]);
 
   const getSoccerGameStats = useCallback(
     (gameId) => getGameStats(gameId, authContext),
@@ -230,7 +238,9 @@ const TennisHome = ({ navigation, route }) => {
     setLoading(true);
     resetGame(gameData?.game_id, authContext)
       .then(() => {
-        getGameDetails();
+        getGameDetails()
+            .then(() => setLoading(false))
+            .catch(() => setLoading(false));
       })
       .catch((e) => {
         setLoading(false);
@@ -281,7 +291,9 @@ const TennisHome = ({ navigation, route }) => {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-      {renderTopHeaderWithTabContain}
+      {fistTimeLoad
+          ? <GameHomeShimer navigation={navigation}/>
+          : renderTopHeaderWithTabContain}
       {renderImageProgress}
     </View>
   );

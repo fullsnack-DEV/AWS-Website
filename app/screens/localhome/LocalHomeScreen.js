@@ -9,15 +9,15 @@ import React, {
   useRef,
 } from 'react';
 import {
-  View,
-  StyleSheet,
-  FlatList,
-  Text,
-  Image,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Platform,
-  Alert,
+    View,
+    StyleSheet,
+    FlatList,
+    Text,
+    Image,
+    ScrollView,
+    TouchableWithoutFeedback,
+    Platform,
+    Alert, InteractionManager,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -88,42 +88,44 @@ export default function LocalHomeScreen({ navigation }) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    if (isFocused) {
-      setloading(true);
-      const promises = [
-        // getRecentGameDetails('Soccer', 'ended', location, authContext),
-        getSportsList(authContext),
-        getShortsList(location, authContext),
-      ];
-      Promise.all(promises)
-        .then(([res2, res3]) => {
-          // console.log('Recent API Response:=>', res1);
-          console.log('Sport API Response:=>', res2);
-          console.log('Shorts API Response:=>', res3);
-          setloading(false);
-          // if (res1.payload) {
-          //   setRecentMatch(res1.payload.results);
-          // }
-          if (res2.payload) {
-            const arr = [];
-            for (const tempData of res2.payload) {
-              tempData.isChecked = false;
-              arr.push(tempData);
-            }
-            setSports(arr);
-            setTimeout(() => setloading(false), 1000);
+      InteractionManager.runAfterInteractions(() => {
+          if (isFocused) {
+              setloading(true);
+              const promises = [
+                  // getRecentGameDetails('Soccer', 'ended', location, authContext),
+                  getSportsList(authContext),
+                  getShortsList(location, authContext),
+              ];
+              Promise.all(promises)
+                  .then(([res2, res3]) => {
+                      // console.log('Recent API Response:=>', res1);
+                      console.log('Sport API Response:=>', res2);
+                      console.log('Shorts API Response:=>', res3);
+                      setloading(false);
+                      // if (res1.payload) {
+                      //   setRecentMatch(res1.payload.results);
+                      // }
+                      if (res2.payload) {
+                          const arr = [];
+                          for (const tempData of res2.payload) {
+                              tempData.isChecked = false;
+                              arr.push(tempData);
+                          }
+                          setSports(arr);
+                          setTimeout(() => setloading(false), 1000);
+                      }
+                      if (res3.payload) {
+                          setShortsList(res3.payload.results);
+                      }
+                  })
+                  .catch((e) => {
+                      setloading(false);
+                      setTimeout(() => {
+                          Alert.alert(strings.alertmessagetitle, e.message);
+                      }, 10);
+                  });
           }
-          if (res3.payload) {
-            setShortsList(res3.payload.results);
-          }
-        })
-        .catch((e) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
+      })
   }, [authContext, isFocused]);
 
   const isIconCheckedOrNot = useCallback(
