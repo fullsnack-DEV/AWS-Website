@@ -12,7 +12,7 @@ import {
   StyleSheet,
   StatusBar,
   View,
-  Image,
+
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
@@ -21,7 +21,6 @@ import moment from 'moment';
 import CalendarDayComponent from './CalendarDayComponent';
 import CalendarHeaderComponent from './CalendarHeaderComponent';
 import colors from '../../Constants/Colors';
-import images from '../../Constants/ImagePath';
 import { getHitSlop } from '../../utils';
 
 const selectedCalendarDate = moment();
@@ -41,7 +40,6 @@ class EventAgendaSection extends React.Component {
       saveButtonClicked: false,
       calendarLoading: true,
     };
-
     this.onPressArrowLeft = this.onPressArrowLeft.bind(this);
     this.onPressArrowRight = this.onPressArrowRight.bind(this);
   }
@@ -91,6 +89,8 @@ class EventAgendaSection extends React.Component {
             isListView={this.props.isListView}
             markedDates={this.props.calendarMarkedDates}
             horizontal={this.props.horizontal}
+            onPressListView={this.props.onPressListView}
+            onPressGridView={this.props.onPressGridView}
             onDayPress={this.props.onDayPress}
             showPastDatesInHorizontal={1}
             horizontalEndReachedThreshold={100}
@@ -101,16 +101,7 @@ class EventAgendaSection extends React.Component {
             hitSlop={Platform.OS === 'ios' ? getHitSlop(15) : getHitSlop(30)}
             onPress={this.props.onKnobPress}>
             <View style={styles.knobContainer}>
-              <View style={styles.knobView}>
-                <Image
-                  source={
-                    this.props.showTimeTable
-                      ? images.timeKnobOrange
-                      : images.timeKnobGray
-                  }
-                  style={styles.knobImage}
-                />
-              </View>
+
             </View>
           </TouchableWithoutFeedback>
         </SafeAreaView>
@@ -131,25 +122,7 @@ const styles = StyleSheet.create({
     elevation: 1,
     marginBottom: 20,
   },
-  knobView: {
-    alignSelf: 'center',
-    // hight: 35,
-    width: 54,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 1,
-    marginTop: -8,
-    borderRadius: 200,
-  },
-  knobImage: {
-    resizeMode: 'contain',
-    alignSelf: 'center',
-    height: 22,
-    width: 22,
-  },
+
 });
 
 export default EventAgendaSection;

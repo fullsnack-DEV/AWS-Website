@@ -630,11 +630,15 @@ const [listView, setListView] = useState(false)
   const onPressListView = () => {
     console.log('List view Pressed');
     setListView(!listView);
+    setShowTimeTable(true)
+    setMonthView(true)
   };
 
   const onPressGridView = () => {
     console.log('Grid view Pressed');
     setListView(!listView);
+    setShowTimeTable(false)
+    setMonthView(false)
   };
 
   const drawMarkDay = (eData) => {
@@ -705,7 +709,7 @@ const [listView, setListView] = useState(false)
     return null;
   };
 
-  const onKnobPress = () => {
+  const onKnobClick = () => {
     console.log('Knob press');
     setShowTimeTable(!showTimeTable)
     setMonthView(!monthView)
@@ -809,8 +813,7 @@ const [listView, setListView] = useState(false)
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
             <EventAgendaSection
-              onKnobPress={onKnobPress}
-              isListView={listView}
+              isListView={monthView}
               showTimeTable={showTimeTable}
               horizontal={monthView}
               onPressListView={onPressListView}
@@ -902,6 +905,7 @@ const [listView, setListView] = useState(false)
             <View>
               <View>
                 <EventAgendaSection
+
                   horizontal={monthView}
                   onPressListView={onPressListView}
                   onPressGridView={onPressGridView}

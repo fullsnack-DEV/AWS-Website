@@ -316,6 +316,11 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
   teamGreenPH: require('../assets/images/team_green_ph.png'),
 
+  menuGray: require('../assets/images/menu_gray.png'),
+  menuOrange: require('../assets/images/menu_orange.png'),
+  scheduleGray: require('../assets/images/schedule_ic_gray.png'),
+  scheduleOrange: require('../assets/images/schedule_ic_orange.png'),
+
 };
 
 export default images;
