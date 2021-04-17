@@ -28,6 +28,7 @@ import AuthContext from '../../../../auth/context'
 import DataSource from '../../../../Constants/DataSource';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import uploadImages from '../../../../utils/imageAction';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 export default function CreateClubForm3({ navigation, route }) {
   const [membershipFee, setMembershipFee] = useState(0);
@@ -128,10 +129,18 @@ export default function CreateClubForm3({ navigation, route }) {
         authContext,
       ).then((response) => {
         setloading(false)
-        navigation.navigate('ClubCreatedScreen', {
+        // navigation.navigate('ClubCreatedScreen', {
+        //   groupName: response.payload.group_name,
+        //   group_id: response.payload.group_id,
+        //   entity_type: response.payload.entity_type,
+        // }
+        navigation.push('HomeScreen', {
+          uid: response.payload.group_id,
+          role: response.payload.entity_type,
+          backButtonVisible: false,
+          menuBtnVisible: false,
+          isEntityCreated: true,
           groupName: response.payload.group_name,
-          group_id: response.payload.group_id,
-          entity_type: response.payload.entity_type,
         }).catch((e) => {
           setTimeout(() => {
             setloading(false)
@@ -143,23 +152,21 @@ export default function CreateClubForm3({ navigation, route }) {
   };
 
   return (
-    <TCKeyboardView>
-      <ScrollView style={ styles.mainContainer }>
+    <>
+      <TCFormProgress totalSteps={3} curruentStep={3}/>
 
-        <ActivityLoader visible={loading} />
-        <View style={ styles.formSteps }>
-          <View style={ styles.form1 }></View>
-          <View style={ styles.form2 }></View>
-          <View style={ styles.form3 }></View>
-        </View>
+      <TCKeyboardView>
+        <ScrollView style={ styles.mainContainer }>
 
-        <Text style={ styles.registrationText }>
-          {strings.membershipFeeTitle}
-        </Text>
+          <ActivityLoader visible={loading} />
 
-        <View style={ styles.fieldView }>
-          <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
-          <View
+          <Text style={ styles.registrationText }>
+            {strings.membershipFeeTitle}
+          </Text>
+
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>{strings.basicFeeTitle}</Text>
+            <View
             style={ {
               flexDirection: 'row',
 
@@ -170,7 +177,7 @@ export default function CreateClubForm3({ navigation, route }) {
               marginRight: 15,
               justifyContent: 'space-between',
             } }>
-            <RNPickerSelect
+              <RNPickerSelect
               placeholder={ {
                 label: strings.feeCyclePlaceholder,
                 value: null,
@@ -225,20 +232,20 @@ export default function CreateClubForm3({ navigation, route }) {
                   />
               ) }
             />
-            <View style={ styles.halfMatchFeeView }>
-              <TextInput
+              <View style={ styles.halfMatchFeeView }>
+                <TextInput
                 placeholder={ strings.enterFeePlaceholder }
                 style={ styles.halffeeText }
                 keyboardType={ 'decimal-pad' }
                 onChangeText={ (text) => setMembershipFee(text) }
                 value={ membershipFee }></TextInput>
-              <Text style={ styles.curruency }>CAD</Text>
+                <Text style={ styles.curruency }>CAD</Text>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={ styles.fieldView }>
-          <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
-          <TextInput
+          <View style={ styles.fieldView }>
+            <Text style={ styles.fieldTitle }>{strings.feeDetailsText}</Text>
+            <TextInput
             style={ styles.descriptionTxt }
             onChangeText={ (text) => setMembershipFeeDetail(text) }
             value={ membershipFeeDetail }
@@ -247,20 +254,21 @@ export default function CreateClubForm3({ navigation, route }) {
             numberOfLines={ 4 }
             placeholder={ strings.membershipPlaceholder }
           />
-        </View>
-        <TouchableOpacity
+          </View>
+          <TouchableOpacity
           onPress={ () => {
             console.log('filling ended..');
             creatClubCall();
           } }>
-          <LinearGradient
+            <LinearGradient
             colors={ [colors.yellowColor, colors.themeColor] }
             style={ styles.nextButton }>
-            <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </ScrollView>
-    </TCKeyboardView>
+              <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </ScrollView>
+      </TCKeyboardView>
+    </>
   );
 }
 
@@ -305,34 +313,7 @@ const styles = StyleSheet.create({
 
     color: colors.lightBlackColor,
   },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
 
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
   halfMatchFeeView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,

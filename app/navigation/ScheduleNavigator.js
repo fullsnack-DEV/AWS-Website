@@ -607,7 +607,7 @@ const ScheduleNavigator = () => (
         name="CreateTeamForm1"
         component={ CreateTeamForm1 }
         options={ {
-          title: 'Create a Team',
+          title: 'Create Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -623,7 +623,7 @@ const ScheduleNavigator = () => (
         name="CreateTeamForm2"
         component={ CreateTeamForm2 }
         options={ {
-          title: 'Create a Team',
+          title: 'Create Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -639,7 +639,7 @@ const ScheduleNavigator = () => (
         name="CreateTeamForm3"
         component={ CreateTeamForm3 }
         options={ {
-          title: 'Create a Team',
+          title: 'Create Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -655,7 +655,7 @@ const ScheduleNavigator = () => (
         name="CreateTeamForm4"
         component={ CreateTeamForm4 }
         options={ {
-          title: 'Create a Team',
+          title: 'Create Team',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -671,7 +671,7 @@ const ScheduleNavigator = () => (
         name="CreateClubForm1"
         component={ CreateClubForm1 }
         options={ {
-          title: 'Create a Club',
+          title: 'Create Club',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -687,7 +687,7 @@ const ScheduleNavigator = () => (
         name="CreateClubForm2"
         component={ CreateClubForm2 }
         options={ {
-          title: 'Create a Club',
+          title: 'Create Club',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',
@@ -703,7 +703,7 @@ const ScheduleNavigator = () => (
         name="CreateClubForm3"
         component={ CreateClubForm3 }
         options={ {
-          title: 'Create a Club',
+          title: 'Create Club',
           headerTintColor: colors.blackColor,
           headerTitleStyle: {
             fontWeight: '500',

@@ -30,6 +30,7 @@ import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import { groupMemberGenderItems } from '../../../../utils';
 import TCProfileImageControl from '../../../../components/TCProfileImageControl';
+import TCFormProgress from '../../../../components/TCFormProgress';
 
 export default function CreateClubForm1({ navigation, route }) {
   const isFocused = useIsFocused();
@@ -201,13 +202,10 @@ export default function CreateClubForm1({ navigation, route }) {
 
   return (
     <>
+      <TCFormProgress totalSteps={3} curruentStep={1}/>
       <ScrollView style={ styles.mainContainer }>
         <ActivityLoader visible={ loading } />
-        {/* <View style={ styles.formSteps }>
-          <View style={ styles.form1 }></View>
-          <View style={ styles.form2 }></View>
-          <View style={ styles.form3 }></View>
-        </View> */}
+
         <View>
           <TCProfileImageControl
             profileImage={

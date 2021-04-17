@@ -11,6 +11,7 @@ const images = {
   signUpFb: require('../assets/images/signup_fb.png'),
   signUpGoogle: require('../assets/images/signup_google.png'),
   bgImage: require('../assets/images/ic_bg.png'),
+  entityCreatedBG: require('../assets/images/entity_created_bg.png'),
   searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
@@ -312,6 +313,9 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   videoThumb: require('../assets/images/videoThumb.png'),
   videoLoading: require('../assets/images/videoLoading.gif'),
   unCheckWhiteBorder: require('../assets/images/unCheckWhiteBorder.png'),
+
+  teamGreenPH: require('../assets/images/team_green_ph.png'),
+
 };
 
 export default images;

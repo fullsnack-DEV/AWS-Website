@@ -142,32 +142,47 @@ const Referees = ({
     return statusData[type];
   }, []);
 
+  const isCheckReviewButton = useCallback(
+    (reservationDetail) => {
+      if (
+        gameData?.status === GameStatus.ended
+        && ![
+          RefereeReservationStatus.offered,
+          RefereeReservationStatus.cancelled,
+          RefereeReservationStatus.declined,
+        ].includes(reservationDetail?.status)
+        && !checkReviewExpired(gameData?.actual_enddatetime)
+        && isAdmin
+      ) {
+        return true;
+      }
+
+      return false;
+    },
+    [gameData?.actual_enddatetime, gameData?.status, isAdmin],
+  );
+
+  const isCheckThreeDotButtonShown = useCallback((item) => {
+    // if (isCheckReviewButton(reservationDetail)) {
+    //   return false;
+    // }
+    const entity = authContext?.entity;
+    if (item?.initiated_by === entity?.uid) {
+      return true;
+    }
+
+    return false;
+  }, [authContext?.entity]);
   const renderReferees = useCallback(
     ({ item }) => {
-      console.log('Referee Condi:=>', ![
-        RefereeReservationStatus.offered,
-        RefereeReservationStatus.cancelled,
-        RefereeReservationStatus.declined,
-      ].includes(item?.status));
-
-      const entity = authContext?.entity;
       const reservationDetail = item; // item?.reservation
       return (
         <TCUserFollowUnfollowList
           statusColor={getRefereeStatusMessage(reservationDetail, 'color')}
           statusTitle={getRefereeStatusMessage(reservationDetail, 'status')}
           myUserId={myUserId}
-          isShowReviewButton={
-            gameData?.status === GameStatus.ended
-            && ![
-              RefereeReservationStatus.offered,
-              RefereeReservationStatus.cancelled,
-              RefereeReservationStatus.declined,
-            ].includes(reservationDetail?.status)
-            && !checkReviewExpired(gameData?.actual_enddatetime)
-            && isAdmin
-          }
-          isReviewed={!!item?.referee?.review_id}
+          isShowReviewButton={isCheckReviewButton(reservationDetail)}
+          isReviewed={!!item?.referee?.review_id} // we have to change this condition if both player can give review to referee
           followUser={followUser}
           unFollowUser={unFollowUser}
           userID={reservationDetail?.referee?.user_id}
@@ -176,7 +191,7 @@ const Referees = ({
           is_following={reservationDetail?.referee?.is_following}
           onFollowUnfollowPress={onFollowPress}
           profileImage={reservationDetail?.referee?.thumbnail}
-          isShowThreeDots={item?.initiated_by === entity?.uid}
+          isShowThreeDots={isCheckThreeDotButtonShown(item)}
           onThreeDotPress={() => {
             selectedRefereeData = item;
             actionSheet.current.show();
@@ -187,12 +202,10 @@ const Referees = ({
       );
     },
     [
-      authContext?.entity,
       followUser,
-      gameData?.actual_enddatetime,
-      gameData?.status,
       getRefereeStatusMessage,
-      isAdmin,
+      isCheckReviewButton,
+      isCheckThreeDotButtonShown,
       myUserId,
       onFollowPress,
       onReviewPress,

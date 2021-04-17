@@ -663,7 +663,7 @@ const isAdmin = () => {
                 onPress={() => {
                   setShowModelComment(false);
                 }}>
-                <Text>Comments</Text>
+                <Text>{`Reply from ${authContext?.entity?.obj?.full_name || authContext?.entity?.obj?.group_name}`}</Text>
               </TouchableOpacity>
             </View>
           }
