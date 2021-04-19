@@ -11,7 +11,7 @@ import FastImage from 'react-native-fast-image';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Orientation from 'react-native-orientation';
 import LinearGradient from 'react-native-linear-gradient';
-import { getHeight, getHitSlop, getWidth } from '../../../utils';
+import { getHeight, getWidth } from '../../../utils';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 
@@ -19,9 +19,9 @@ const FeedVideoView = ({
   sourceData,
    isLandscape,
    isFullScreen,
-   setIsFullScreen,
    showParent,
    setShowParent,
+   isMute,
 }) => {
     const videoPlayerRef = useRef();
     const [paused, setPaused] = useState(true);
@@ -34,12 +34,11 @@ const FeedVideoView = ({
         setPaused((val) => !val)
     }, [currentTime]);
 
-    const [isMute, setIsMute] = useState(false);
-
     useEffect(() => {
         if (isFullScreen) {
             setShowParent(false);
             setPaused(false);
+            console.log(sourceData);
             if (sourceData?.media_height < sourceData?.media_width) Orientation.lockToLandscape();
             else Orientation.lockToPortrait();
         } else {
@@ -143,7 +142,7 @@ const FeedVideoView = ({
 
     const secondsToHms = (date) => {
         let hDisplay = '';
-        let mDisplay = '00';
+        let mDisplay = '0';
         let sDisplay = '00';
 
         const d = Number(date);
@@ -168,8 +167,6 @@ const FeedVideoView = ({
         return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
     }
 
-    const onFullScreen = useCallback(() => setIsFullScreen(!isFullScreen), [isFullScreen, setIsFullScreen])
-
     const renderSeekBar = useMemo(() => (
       <View
           pointerEvents={showParent ? 'auto' : 'none'}
@@ -185,8 +182,9 @@ const FeedVideoView = ({
           zIndex: 10,
           bottom: getHeight(
               isLandscape,
-              15,
-              Platform?.OS === 'ios' ? 15 : 22,
+              5,
+              // eslint-disable-next-line no-nested-ternary
+              Platform?.OS === 'ios' ? 10 : (isFullScreen ? 10 : 20),
           ),
           }}>
         <Text style={{
@@ -242,35 +240,8 @@ const FeedVideoView = ({
           {/* {secondsToHms(((sourceData.duration / 1000) - currentTime).toFixed(0))} */}
         </Text>
 
-        {/*  Mute Unmute Button */}
-        <TouchableOpacity hitSlop={getHitSlop(10)} onPress={() => setIsMute((val) => !val)}>
-          <FastImage
-              source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
-              resizeMode={'contain'}
-              style={{
-                  marginHorizontal: 10,
-                  height: 15,
-                  width: 15,
-                  tintColor: colors.whiteColor,
-              }}
-          />
-        </TouchableOpacity>
-
-        {/*  Full Screen Button */}
-        <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen}>
-          <FastImage
-              source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
-              resizeMode={'contain'}
-              style={{
-                  marginHorizontal: 5,
-                  height: 15,
-                  width: 15,
-                  tintColor: colors.whiteColor,
-              }}
-          />
-        </TouchableOpacity>
       </View>
-    ), [currentTime, isFullScreen, isLandscape, isMute, onFullScreen, paused, renderRail, renderRailSelected, renderThumb, showParent, sourceData.duration])
+    ), [currentTime, isFullScreen, isLandscape, paused, renderRail, renderRailSelected, renderThumb, showParent, sourceData.duration])
 
     const renderVideo = useMemo(() => (
       <Fragment>
@@ -298,7 +269,7 @@ const FeedVideoView = ({
                   fullscreen={Platform.OS === 'android' ? isFullScreen : false}
                   onLoad={() => videoPlayerRef.current.seek(0)}
                   resizeMode={'contain'}
-                  fullscreenAutorotate={true}
+                  // fullscreenAutorotate={true}
                   onBuffer={(bufferData) => setVideoLoader(bufferData?.isBuffering)}
               />
         </View>

@@ -2,7 +2,6 @@ import PhotoView from 'react-native-photo-view-ex';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { BlurView } from '@react-native-community/blur';
 import images from '../Constants/ImagePath';
 import { getHeight, getWidth } from '../utils';
 
@@ -19,6 +18,7 @@ const TCZoomableImage = ({
     <>
       {!isLoaded
         && <View style={{
+          backgroundColor: 'rgba(0,0,0,0.3)',
           position: 'absolute',
           top: 0,
           bottom: 0,
@@ -35,18 +35,14 @@ const TCZoomableImage = ({
               resizeMode={FastImage.resizeMode.contain}
            />
 
-          <BlurView
-              style={{ ...style, position: 'absolute' }}
-              blurType="dark"
-              blurAmount={0.5}
-           />
+          <View style={{ ...style, position: 'absolute', backgroundColor: 'rgba(0,0,0,0.4)' }} />
           <FastImage
               style={{
                 height: 50,
                 width: 50,
                 position: 'absolute',
               }}
-              source={images.imageLoadingGIF}
+              source={images.videoLoading}
               resizeMode={FastImage.resizeMode.contain}
             />
         </View>

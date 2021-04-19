@@ -320,6 +320,10 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   menuOrange: require('../assets/images/menu_orange.png'),
   scheduleGray: require('../assets/images/schedule_ic_gray.png'),
   scheduleOrange: require('../assets/images/schedule_ic_orange.png'),
+  feedViewLikeButton: require('../assets/images/feedViewLikeButton.png'),
+  feedViewUnLike: require('../assets/images/feedViewUnLike.png'),
+  feedViewCommentButton: require('../assets/images/feedViewCommentButton.png'),
+  feedViewShareButton: require('../assets/images/feedViewShareButton.png'),
 
 };
 

@@ -342,8 +342,6 @@ export default function WritePostScreen({ navigation, route }) {
 
   const onImagePress = useCallback(() => {
       ImagePicker.openPicker({
-        width: 300,
-        height: 400,
         multiple: true,
         maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
       }).then((data) => {
