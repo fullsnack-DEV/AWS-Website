@@ -12,16 +12,12 @@ import {
   StyleSheet,
   StatusBar,
   View,
-
-  TouchableWithoutFeedback,
-  Platform,
 } from 'react-native';
 import { Calendar } from 'react-native-toggle-calendar';
 import moment from 'moment';
 import CalendarDayComponent from './CalendarDayComponent';
 import CalendarHeaderComponent from './CalendarHeaderComponent';
 import colors from '../../Constants/Colors';
-import { getHitSlop } from '../../utils';
 
 const selectedCalendarDate = moment();
 const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
@@ -83,27 +79,24 @@ class EventAgendaSection extends React.Component {
             dayComponent={CalendarDayComponent}
             calendarHeaderComponent={CalendarHeaderComponent}
             headerData={this.state.calendarHeaderData}
-            style={styles.calendar}
+            style={ styles.calendar}
             onPressArrowLeft={this.onPressArrowLeft}
             onPressArrowRight={this.onPressArrowRight}
-            isListView={this.props.isListView}
             markedDates={this.props.calendarMarkedDates}
             horizontal={this.props.horizontal}
             onPressListView={this.props.onPressListView}
-            onPressGridView={this.props.onPressGridView}
+            onPressGridView={ this.props.onPressGridView}
             onDayPress={this.props.onDayPress}
             showPastDatesInHorizontal={1}
             horizontalEndReachedThreshold={100}
             horizontalStartReachedThreshold={0}
             // loading={this.state.calendarLoading}
           />
-          <TouchableWithoutFeedback
-            hitSlop={Platform.OS === 'ios' ? getHitSlop(15) : getHitSlop(30)}
-            onPress={this.props.onKnobPress}>
-            <View style={styles.knobContainer}>
 
-            </View>
-          </TouchableWithoutFeedback>
+          <View style={styles.knobContainer}>
+
+          </View>
+
         </SafeAreaView>
       </>
     );

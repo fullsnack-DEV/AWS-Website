@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
@@ -24,7 +25,8 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
- Platform,
+  Platform,
+  SectionList,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -53,8 +55,10 @@ import {
   getEventById,
   getEvents,
   getSlots,
+  blockedSlots,
   // deleteEvent
 } from '../../../api/Schedule';
+
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
@@ -80,12 +84,29 @@ import {
 } from '../../../utils/QuickBlox';
 import NotificationListTopHeaderShimmer from '../../../components/shimmer/account/NotificationListTopHeaderShimmer';
 import TCThinDivider from '../../../components/TCThinDivider';
+import UnavailableTimeView from '../../../components/challenge/UnavailableTimeView';
+import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 
 const lastDistance = null;
 let selectedCalendarDate = moment(new Date());
 const { width } = Dimensions.get('window');
 
 export default function ScheduleScreen({ navigation }) {
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const daysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
@@ -103,8 +124,9 @@ export default function ScheduleScreen({ navigation }) {
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
   const [showTimeTable, setShowTimeTable] = useState(false);
+  const [isMenu, setIsMenu] = useState(false);
 
-const [listView, setListView] = useState(false)
+  const [listView, setListView] = useState(true);
 
   const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
   const currentDate = moment();
@@ -119,7 +141,7 @@ const [listView, setListView] = useState(false)
     selectedCalendarMonthString,
     setselectedCalendarMonthString,
   ] = useState(selectedCalendarDate.format('YYYY-MM-DD'));
-  const [markingDays, setMarkingDays] = useState({ });
+  const [markingDays, setMarkingDays] = useState({});
 
   const actionSheet = useRef();
   const agendaRef = useRef();
@@ -130,6 +152,12 @@ const [listView, setListView] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(false);
   const [animatedOpacityValue] = useState(new Animated.Value(0));
+  const [blockedSlot, setBlockedSlot] = useState();
+  const [slots, setSlots] = useState();
+
+  const [blockedGroups, setBlockedGroups] = useState([]);
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -145,12 +173,93 @@ const [listView, setListView] = useState(false)
     });
   }, [navigation]);
 
-//   useEffect(() => {
-//     const defaultMark = { }
-//     defaultMark[selectedCalendarMonthString] = { selected: true }
-// setMarkingDays(defaultMark)
-// console.log('Default selected:', defaultMark);
-//   }, [selectedCalendarMonthString])
+  useEffect(() => {
+    getBlockedSlots();
+  }, [isFocused]);
+
+  const getSimpleDateFormat = (dateValue) => {
+    moment.locale('en');
+    return moment(new Date(dateValue)).format('yy/MM/DD');
+  };
+
+  const getBlockedSlots = () => {
+    setloading(true);
+    console.log('Other team Object:', authContext?.entity?.obj);
+    blockedSlots(
+      authContext?.entity?.obj?.entity_type === 'player' ? 'users' : 'groups',
+      authContext?.entity?.obj?.group_id || authContext?.entity?.obj?.user_id,
+      authContext,
+    )
+      .then((response) => {
+        setloading(false);
+        const bookSlots = response.payload;
+        setSlots(bookSlots);
+
+        const markedDates = {};
+        // const group = bookSlots.reduce((r, a) => {
+        //   // r[a.start_datetime] = [...r[a.start_datetime] || [], a];
+        //   r[new Date(a.start_datetime)] = [...(r[new Date(a.start_datetime)] || []), a];
+        //   return r;
+        // }, {});
+
+        const group = bookSlots.reduce((groups, data) => {
+          const title = moment(new Date(data.start_datetime * 1000)).format(
+            'yyyy-MM-DD',
+          );
+          if (!groups[title]) {
+            groups[title] = [];
+          }
+          groups[title].push(data);
+          return groups;
+        }, {});
+        const groupArrays = Object.keys(group).map((date) => ({
+          title: date,
+          data: group[date],
+        }));
+
+        setBlockedGroups(
+          groupArrays.sort((b, a) => new Date(b.title) - new Date(a.title)),
+        );
+        console.log('Groups:=>', group);
+        // eslint-disable-next-line array-callback-return
+        (bookSlots || []).map((e) => {
+          const original_date = moment(
+            new Date(e.start_datetime * 1000),
+          ).format('yyyy-MM-DD');
+          if (e.allDay === true) {
+            markedDates[original_date] = {
+              disabled: true,
+              startingDay: true,
+              endingDay: true,
+              disableTouchEvent: true,
+              customStyles: {
+                container: {
+                  backgroundColor: colors.lightgrayColor,
+                },
+                text: {
+                  color: colors.grayColor,
+                },
+              },
+            };
+          } else {
+            markedDates[original_date] = {
+              marked: true,
+              dotColor: colors.themeColor,
+              activeOpacity: 1,
+            };
+          }
+
+          console.log('BLOCKED::', markedDates);
+        });
+
+        console.log('Marked dates::', JSON.stringify(markedDates));
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
 
   const getEventsList = useCallback(
     (selectedObj) => {
@@ -627,19 +736,31 @@ const [listView, setListView] = useState(false)
     [topRightButton],
   );
 
-  const onPressListView = () => {
-    console.log('List view Pressed');
-    setListView(!listView);
-    setShowTimeTable(true)
-    setMonthView(true)
-  };
+  const onPressListView = useCallback((value, buttonIndex) => {
+    console.log('List view Pressed:=>', value, buttonIndex);
+    if (buttonIndex === 2) {
+      setListView(value);
+    } else if (buttonIndex === 1) {
+      setShowTimeTable(value);
+      // setMonthView(true)
+    } else if (buttonIndex === 0) {
+      setIsMenu(value);
+      console.log('menu:=>', buttonIndex);
+    }
+  }, []);
 
-  const onPressGridView = () => {
-    console.log('Grid view Pressed');
-    setListView(!listView);
-    setShowTimeTable(false)
-    setMonthView(false)
-  };
+  const onPressGridView = useCallback((value, buttonIndex) => {
+    console.log('Grid view Pressed:=>', value, buttonIndex);
+    if (buttonIndex === 2) {
+      setListView(value);
+    } else if (buttonIndex === 1) {
+      setShowTimeTable(value);
+      // setMonthView(false)
+    } else if (buttonIndex === 0) {
+      setIsMenu(value);
+      console.log('menu:=>', buttonIndex);
+    }
+  }, []);
 
   const drawMarkDay = (eData) => {
     const eventTimeTableData = eData;
@@ -705,34 +826,45 @@ const [listView, setListView] = useState(false)
       }
       return null;
     });
+    const temp = [];
+    slots.map((e) => {
+      if (
+        getSimpleDateFormat(new Date(e.start_datetime * 1000))
+        === getSimpleDateFormat(new Date(dateObj.dateString))
+      ) {
+        temp.push(e);
+      }
+    });
+    setBlockedSlot(temp);
     setFilterTimeTable(dataItem);
     return null;
   };
 
   const onKnobClick = () => {
     console.log('Knob press');
-    setShowTimeTable(!showTimeTable)
-    setMonthView(!monthView)
-  }
+    setShowTimeTable(!showTimeTable);
+    setMonthView(!monthView);
+  };
   const onReachedTop = ({ nativeEvent: e }) => {
     const offset = e?.contentOffset?.y;
 
-      if (offset >= 20) {
-          Animated.timing(animatedOpacityValue, {
+    if (offset >= 20) {
+      Animated.timing(animatedOpacityValue, {
         toValue: 1,
         useNativeDriver: true,
-      }).start(() => setMonthView(true))
-      }
-      if (offset <= -80) { // Platform.OS === 'ios' ? -80 : 1
-         Animated.timing(animatedOpacityValue, {
+      }).start(() => setMonthView(true));
+    }
+    if (offset <= -80) {
+      // Platform.OS === 'ios' ? -80 : 1
+      Animated.timing(animatedOpacityValue, {
         toValue: 0,
         useNativeDriver: true,
-      }).start(() => setMonthView(false))
-  }
-}
+      }).start(() => setMonthView(false));
+    }
+  };
 
   const onScroll = (event) => {
-    onReachedTop(event)
+    onReachedTop(event);
   };
   return (
     <View
@@ -805,7 +937,7 @@ const [listView, setListView] = useState(false)
                 showSwitchProfilePopup();
               }
             }}>
-            Calender
+            Availability
           </Text>
         </View>
         <TCThinDivider width={'100%'} marginBottom={12} />
@@ -813,9 +945,9 @@ const [listView, setListView] = useState(false)
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
             <EventAgendaSection
-              isListView={monthView}
               showTimeTable={showTimeTable}
-              horizontal={monthView}
+              isMenu={isMenu}
+              horizontal={listView}
               onPressListView={onPressListView}
               onPressGridView={onPressGridView}
               onDayPress={onDayPress}
@@ -826,65 +958,67 @@ const [listView, setListView] = useState(false)
             {showTimeTable ? (
               <View style={{ marginBottom: 100 }}>
                 <EventCalendar
-                    eventTapped={(event) => {
-                      console.log('Event ::--', event);
-                    }}
-                    events={filterTimeTable}
-                    width={width}
-                    initDate={selectionDate}
-                    scrollToFirst={false}
-                    renderEvent={(event) => renderCalenderEvent(event)}
-                    styles={{
-                      event: styles.eventViewStyle,
-                      line: { backgroundColor: colors.lightgrayColor },
-                    }}
-                  />
+                  eventTapped={(event) => {
+                    console.log('Event ::--', event);
+                  }}
+                  events={filterTimeTable}
+                  width={width}
+                  initDate={selectionDate}
+                  scrollToFirst={false}
+                  renderEvent={(event) => renderCalenderEvent(event)}
+                  styles={{
+                    event: styles.eventViewStyle,
+                    line: { backgroundColor: colors.lightgrayColor },
+                  }}
+                />
               </View>
-              ) : <EventScheduleScreen
-              onScroll={onScroll}
-              eventData={eventData}
-              navigation={navigation}
-              profileID={authContext.entity.uid}
-              onThreeDotPress={(item) => {
-                if (activeScreen) {
-                  setSelectedEventItem(item);
-                } else {
-                  showSwitchProfilePopup();
-                }
-              }}
-              onItemPress={async (item) => {
-                if (activeScreen) {
-                  const entity = authContext.entity;
-                  if (item?.game_id) {
-                    if (item?.game?.sport) {
-                      const gameHome = getGameHomeScreen(item.game.sport);
-                      navigation.navigate(gameHome, {
-                        gameId: item?.game_id,
-                      });
+            ) : (
+              <EventScheduleScreen
+                onScroll={onScroll}
+                eventData={eventData}
+                navigation={navigation}
+                profileID={authContext.entity.uid}
+                onThreeDotPress={(item) => {
+                  if (activeScreen) {
+                    setSelectedEventItem(item);
+                  } else {
+                    showSwitchProfilePopup();
+                  }
+                }}
+                onItemPress={async (item) => {
+                  if (activeScreen) {
+                    const entity = authContext.entity;
+                    if (item?.game_id) {
+                      if (item?.game?.sport) {
+                        const gameHome = getGameHomeScreen(item.game.sport);
+                        navigation.navigate(gameHome, {
+                          gameId: item?.game_id,
+                        });
+                      }
+                    } else {
+                      getEventById(
+                        entity.role === 'user' ? 'users' : 'groups',
+                        entity.uid || entity.auth.user_id,
+                        item.cal_id,
+                        authContext,
+                      )
+                        .then((response) => {
+                          navigation.navigate('EventScreen', {
+                            data: response.payload,
+                            gameData: item,
+                          });
+                        })
+                        .catch((e) => {
+                          console.log('Error :-', e);
+                        });
                     }
                   } else {
-                    getEventById(
-                      entity.role === 'user' ? 'users' : 'groups',
-                      entity.uid || entity.auth.user_id,
-                      item.cal_id,
-                      authContext,
-                    )
-                      .then((response) => {
-                        navigation.navigate('EventScreen', {
-                          data: response.payload,
-                          gameData: item,
-                        });
-                      })
-                      .catch((e) => {
-                        console.log('Error :-', e);
-                      });
+                    showSwitchProfilePopup();
                   }
-                } else {
-                  showSwitchProfilePopup();
-                }
-              }}
-              entity={authContext.entity}
-            />}
+                }}
+                entity={authContext.entity}
+              />
+            )}
 
             {!createEventModal && (
               <CreateEventButton
@@ -902,36 +1036,39 @@ const [listView, setListView] = useState(false)
         )}
         {!loading && scheduleIndexCounter === 1 && (
           <View style={{ flex: 1 }}>
-            <View>
-              <View>
-                <EventAgendaSection
+            <EventAgendaSection
+              showTimeTable={showTimeTable}
+              isMenu={isMenu}
+              horizontal={true}
+              onPressListView={onPressListView}
+              onPressGridView={onPressGridView}
+              onDayPress={onDayPress}
+              selectedCalendarDate={selectedCalendarDateString}
+              calendarMarkedDates={markingDays}
+            />
 
-                  horizontal={monthView}
-                  onPressListView={onPressListView}
-                  onPressGridView={onPressGridView}
-                  onDayPress={onDayPress}
-                  selectedCalendarDate={selectedCalendarDateString}
-                  calendarMarkedDates={markingDays}
-                />
-              </View>
-              {monthView && (
-                <View style={{ marginBottom: 300 }}>
-                  <EventCalendar
-                    eventTapped={(event) => {
-                      console.log('Event ::--', event);
-                    }}
-                    events={filterTimeTable}
-                    width={width}
-                    initDate={selectionDate}
-                    scrollToFirst={false}
-                    renderEvent={(event) => renderCalenderEvent(event)}
-                    styles={{
-                      event: styles.eventViewStyle,
-                      line: { backgroundColor: colors.lightgrayColor },
-                    }}
+            {/* Availibility bottom view */}
+
+            <View style={{ marginBottom: 160 }}>
+              {/* <Text style={styles.slotHeader}>
+                Available time For challenge
+              </Text> */}
+              <SectionList
+                sections={blockedGroups}
+                renderItem={({ item }) => (
+                  <BlockSlotView
+                    startDate={item.start_datetime}
+                    endDate={item.end_datetime}
+                    allDay={item.allDay}
                   />
-                </View>
-              )}
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                renderSectionHeader={({ section: { title } }) => (
+                  <Text style={styles.sectionHeader}>
+                    {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
+                  </Text>
+                )}
+              />
             </View>
 
             {!createEventModal && (
@@ -1314,8 +1451,13 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     width: wp(100),
   },
-  // imageStyle: {
-  //   height: 20,
-  //   width: 20,
-  // },
+
+  sectionHeader: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginBottom: 8,
+    marginTop: 8,
+  },
 });
