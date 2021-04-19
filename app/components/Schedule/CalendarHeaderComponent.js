@@ -14,12 +14,21 @@ const weekDaysNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const now = moment();
 
 class CalendarHeaderComponent extends React.PureComponent {
+  onKnobClick;
+
   constructor(props) {
     super(props);
+    this.onKnobClick = this.onKnobClick.bind(this);
     this.onPressArrowLeft = this.onPressArrowLeft.bind(this);
     this.onPressArrowRight = this.onPressArrowRight.bind(this);
     this.shouldLeftArrowBeDisabled = this.shouldLeftArrowBeDisabled.bind(this);
+    console.log('Function:', this.props);
+    console.log('Function:', this.props.onKnobClick);
   }
+
+onKnobClick() {
+  this.props.onKnobClick();
+}
 
   onPressArrowLeft() {
     this.props.onPressArrowLeft(this.props.month, this.props.addMonth);
@@ -45,7 +54,17 @@ class CalendarHeaderComponent extends React.PureComponent {
               justifyContent: 'space-between',
               width: '100%',
             }}>
-            <View/>
+            <TouchableOpacity onPress={this.props.onKnobClick}>
+              <Image
+                  source={
+                    this.props.showTimeTable
+                      ? images.menuGray
+                      : images.menuOrange
+                  }
+                  style={styles.knobImage}
+                />
+            </TouchableOpacity>
+
             <View style={{ flexDirection: 'row', marginLeft: 35 }}>
               <View
                 style={[
@@ -73,47 +92,58 @@ class CalendarHeaderComponent extends React.PureComponent {
               </TouchableOpacity>
             </View>
 
-            <View>
-              {!this.props.isListView ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+              {!this.props.horizontal ? (
                 <TouchableOpacity
                   hitSlop={getHitSlop(15)}
                   style={{ marginRight: 15 }}
                   onPress={this.props.onPressListView}>
-                  {/* <Image
+
+                  <Image
+                    source={this.props.horizontal ? images.scheduleOrange : images.scheduleGray}
+                    style={{
+                      resizeMode: 'contain',
+                      height: 25,
+                      width: 25,
+
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              style={{ marginRight: 15 }}
+              onPress={this.props.onPressGridView}>
+
+                <Image
+                source={this.props.horizontal ? images.scheduleOrange : images.scheduleGray}
+                style={{
+                  resizeMode: 'contain',
+                  height: 25,
+                  width: 25,
+
+                }}
+              />
+              </TouchableOpacity>}
+
+              <TouchableOpacity
+                  hitSlop={getHitSlop(15)}
+                  style={{ marginRight: 15 }}
+                  onPress={this.props.onPressListView}>
+                {/* <Image
                   style={styles.icon}
                    source={images.goalsImage}
                 /> */}
-                  <Image
+                <Image
                     source={images.grayListIcon}
                     style={{
                       resizeMode: 'contain',
                       height: 18,
                       width: 18,
-
                     }}
                   />
-                </TouchableOpacity>
-              ) : null}
-              {this.props.isListView ? (
-                <TouchableOpacity
-                  hitSlop={getHitSlop(15)}
-                  style={{ marginRight: 15 }}
-                  onPress={this.props.onPressGridView}>
-                  {/* <Image
-                style={styles.icon}
-                 source={images.goalsImage}
-              /> */}
-                  <Image
-                    source={images.orangeListIcon}
-                    style={{
-                      resizeMode: 'contain',
-                      height: 16,
-                      width: 20,
+              </TouchableOpacity>
 
-                    }}
-                  />
-                </TouchableOpacity>
-              ) : null}
             </View>
 
           </View>
@@ -142,6 +172,7 @@ class CalendarHeaderComponent extends React.PureComponent {
 CalendarHeaderComponent.propTypes = {
   headerData: PropTypes.object,
   horizontal: PropTypes.bool,
+  onKnobClick: PropTypes.func.isRequired,
   isListView: PropTypes.bool,
   onPressArrowRight: PropTypes.func.isRequired,
   onPressArrowLeft: PropTypes.func.isRequired,
@@ -194,6 +225,12 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.4,
+  },
+  knobImage: {
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    height: 25,
+    width: 25,
   },
 });
 
