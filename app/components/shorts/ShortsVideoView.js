@@ -28,7 +28,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
-import { hasNotch } from 'react-native-device-info';
+// import { hasNotch } from 'react-native-device-info';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -75,7 +75,6 @@ function ShortsVideoView({
   const insets = useSafeAreaInsets();
 
   console.log('insets:=>', insets);
-  console.log('hasNotch:=>', hasNotch());
   // Alert.alert('insets:=>', JSON.stringify(insets))
 
   const shareActionSheet = useRef();
@@ -319,6 +318,8 @@ function ShortsVideoView({
   };
 
   const getTaggedText = () => {
+    console.log('ET', entityTagList)
+    console.log('GT', gameTagList)
     if (entityTagList.length > 0 && gameTagList.length > 0) {
       if (entityTagList.length > 1 && gameTagList.length > 1) {
         return `${entityTagList.length} matches and ${entityTagList.length} people were tagged`;
@@ -362,7 +363,7 @@ function ShortsVideoView({
         parseFloat(videoItem?.media_height / videoItem?.media_width).toFixed(2),
       ) <= 1.78
     ) {
-      if (hasNotch()) {
+      if (true) {
         return (
           insets.top
           + (windowHeight

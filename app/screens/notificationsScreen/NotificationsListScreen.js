@@ -456,7 +456,9 @@ function NotificationsListScreen({ navigation }) {
         data={item}
         onPressFirstEntity={openHomePage}
         onPressSecondEntity={openHomePage}
-        onPressCard={() => {}}
+        onPressCard={() => {
+            console.log(item)
+        }}
       />
     </AppleStyleSwipeableRow>
   );

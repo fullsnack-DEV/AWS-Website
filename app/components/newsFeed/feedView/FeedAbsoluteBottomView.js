@@ -94,7 +94,7 @@ const FeedAbsoluteBottomView = ({
         return '';
     }, [feedSubItem]);
 
-    const renderBottomButtons = useMemo(() => (
+    const renderBottomButtons = useMemo(() => !readMore && (
       <View style={{ ...styles.commentShareLikeView, width: getWidth(isLandscape, 100) }}>
 
         {/* Comment And Share Button Button */}
@@ -114,7 +114,7 @@ const FeedAbsoluteBottomView = ({
                         style={styles.imageTouchStyle}>
               <Image
                             style={[styles.commentImage, { top: 2 }]}
-                            source={images.commentImage}
+                            source={images.feedViewCommentButton}
                             resizeMode={'cover'}
                         />
             </TouchableOpacity>
@@ -137,7 +137,7 @@ const FeedAbsoluteBottomView = ({
                         style={styles.imageTouchStyle}>
               <Image
                             style={styles.commentImage}
-                            source={images.shareImage}
+                            source={images.feedViewShareButton}
                             resizeMode={'contain'}
                         />
             </TouchableOpacity>
@@ -151,6 +151,7 @@ const FeedAbsoluteBottomView = ({
                     paddingRight: 15,
                     width: getWidth(isLandscape, 30),
                     flexDirection: 'row',
+                    alignItems: 'center',
                     justifyContent: 'flex-end',
                 }}>
 
@@ -174,20 +175,20 @@ const FeedAbsoluteBottomView = ({
             {like === true ? (
               <Image
                             style={styles.commentImage}
-                            source={images.likeImage}
+                            source={images.feedViewLikeButton}
                             resizeMode={'contain'}
                         />
                     ) : (
                       <Image
-                            style={styles.commentImage}
-                            source={images.unlikeImage}
+                          style={styles.commentImage}
+                            source={images.feedViewUnLike}
                             resizeMode={'contain'}
                         />
                     )}
           </TouchableOpacity>
         </View>
       </View>
-    ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress])
+    ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress, readMore])
 
     return (
       <Fragment>
@@ -199,17 +200,21 @@ const FeedAbsoluteBottomView = ({
                 width: getWidth(isLandscape, 100),
                 opacity: showParent ? 1 : 0,
             }}>
-          <View>
-            {!readMore && !isLandscape && <FeedDescriptionSection
-            readMore={readMore}
-            setReadMore={setReadMore}
-            navigation={navigation}
-            tagData={feedSubItem?.format_tagged_data}
-            descriptions={feedSubItem?.text}
-            isLandscape={isLandscape}
-            descriptionTxt={{ color: colors.whiteColor }}
-           />}
-            {!isLandscape && (
+          <View style={{ paddingBottom: !readMore && !isLandscape ? 40 : 0, justifyContent: 'flex-end' }}>
+            {!readMore && !isLandscape && (
+              <View style={{ paddingVertical: 5 }}>
+                <FeedDescriptionSection
+                    readMore={readMore}
+                    setReadMore={setReadMore}
+                    navigation={navigation}
+                    tagData={feedSubItem?.format_tagged_data}
+                    descriptions={feedSubItem?.text}
+                    isLandscape={isLandscape}
+                    descriptionTxt={{ color: colors.whiteColor }}
+                   />
+              </View>
+            )}
+            {!isLandscape && !readMore && taggedText !== '' && (
               <TouchableOpacity onPress={onTaggedPress}>
                 <TagView
                   source={images.tagGreenImage}
@@ -229,8 +234,8 @@ const FeedAbsoluteBottomView = ({
 
 const styles = StyleSheet.create({
     commentImage: {
-        height: 32,
-        width: 32,
+        height: 22,
+        width: 22,
         alignSelf: 'flex-end',
     },
     commentShareLikeView: {

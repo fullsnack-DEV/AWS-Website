@@ -1,5 +1,5 @@
 import React, {
- useCallback, useEffect, useRef, useState,
+ useCallback, useRef,
 } from 'react';
 import { View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
@@ -15,33 +15,29 @@ const FeedPostView = ({
     feedSubItem,
     setIsFullScreen,
     isFullScreen,
-    currentPage,
+    currentViewIndex,
+    setCurrentViewIndex,
+    setIsMute,
+    isMute,
 }) => {
     const carouselRef = useRef();
-    const [currentViewIndex, setCurrentViewIndex] = useState(0);
-    useEffect(() => {
-        if (carouselRef?.current?.scrollToIndex) {
-            carouselRef.current.scrollToIndex({
-                animated: false,
-                index: currentPage - 1,
-            });
-        }
-    }, [currentPage])
-
     const renderAttachments = useCallback(({ item, index }) => (
       <View>
         <>
           {item?.type === 'video'
               ? (
                 <>
-                  {currentViewIndex === index && <FeedVideoView
+                  {currentViewIndex === index && (
+                    <FeedVideoView
+                              isMute={isMute}
                               showParent={showParent}
                               setShowParent={setShowParent}
                               isFullScreen={isFullScreen}
                               setIsFullScreen={setIsFullScreen}
                               sourceData={item}
                               isLandscape={isLandscape}
-                        />}
+                        />
+                  )}
                 </>
               ) : (
                 <FeedImageView
@@ -52,20 +48,20 @@ const FeedPostView = ({
               )}
         </>
       </View>
-      ), [currentViewIndex, isFullScreen, isLandscape, setIsFullScreen, setShowParent, showParent])
+      ), [currentViewIndex, isFullScreen, isLandscape, isMute, setIsFullScreen, setShowParent, showParent])
 
  return (
    <Carousel
            ref={carouselRef}
            onSnapToItem={(itemIndex) => {
+                   setCurrentViewIndex(itemIndex)
                    Orientation.unlockAllOrientations();
                    setIsFullScreen(false)
-                   setShowParent(true)
-                   setCurrentViewIndex(itemIndex)
+                    setIsMute(false)
+                    setShowParent(true)
            }}
            nestedScrollEnabled={false}
            getItemLayout = {(data, index) => ({ length: getWidth(isLandscape, 100), offset: getWidth(isLandscape, 100) * index, index })}
-           firstItem={Number(currentPage) - 1}
            data={feedSubItem?.attachments ?? []}
            renderItem={renderAttachments}
            inactiveSlideScale={1}

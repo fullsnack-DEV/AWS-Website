@@ -1,13 +1,17 @@
-import React, { memo, useCallback, useContext } from 'react';
+import React, {
+ memo, useCallback, Fragment, useContext,
+} from 'react';
+import _ from 'lodash'
 import {
     Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import { getHeight, getHitSlop, getWidth } from '../../../utils';
+import { getHitSlop, getWidth } from '../../../utils';
 import { commentPostTimeCalculate } from '../../../Constants/LoaderImages';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -21,6 +25,11 @@ const FeedAbsoluteTopView = ({
     setReadMore,
     navigation,
     feedSubItem,
+    isFullScreen,
+    onFullScreen,
+    isMute,
+    setIsMute,
+    currentViewIndex,
  }) => {
     const userImage = feedItem?.actor?.data?.thumbnail ? { uri: feedItem?.actor?.data?.thumbnail } : images?.profilePlaceHolder;
     const authContext = useContext(AuthContext);
@@ -45,51 +54,101 @@ const FeedAbsoluteTopView = ({
               position: 'absolute',
               top: 0,
           ...(readMore && { bottom: 0 }),
-          backgroundColor: readMore ? 'rgba(0,0,0,0.6)' : 'transparent',
+          backgroundColor: readMore ? 'rgba(0,0,0,0.7)' : 'transparent',
           }}>
         <View
                 style={{
                     paddingHorizontal: 15,
-                    paddingVertical: 15,
                     flexDirection: 'row',
                     width: getWidth(isLandscape, 100),
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }}>
-          <TouchableOpacity
+          <View style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+          }}>
+            <TouchableOpacity
                     hitSlop={getHitSlop(15)}
                     onPress={() => {
                         Orientation.lockToPortrait();
                         navigation.goBack();
                     }}
                 >
-            <Image
+              <FastImage
+                        tintColor={colors.whiteColor}
                         source={images.backArrow}
                         resizeMode={'contain'}
-                        style={{ height: 20, width: 20, tintColor: colors.whiteColor }}
+                        style={{ height: 20, width: 20 }}
                     />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <Image
+            </TouchableOpacity>
+
+            <View style={styles.mainContainer}>
+              <TouchableWithoutFeedback onPress={onProfilePress}>
+                <Image
+                            style={styles.background}
+                            source={userImage}
+                            resizeMode={'cover'}
+                        />
+              </TouchableWithoutFeedback>
+              <View style={styles.userNameView}>
+                <Text numberOfLines={1} style={{ ...styles.userNameTxt, maxWidth: getWidth(isLandscape, 40) }} onPress={() => {}}>
+                  {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
+                </Text>
+                <Text style={styles.activeTimeAgoTxt}>
+                  {commentPostTimeCalculate(feedItem?.time, true)}
+                </Text>
+              </View>
+            </View>
+
+          </View>
+
+          {/* Right Buttons */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+            {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
+              <Fragment>
+                {/*  Mute Unmute Button */}
+                <TouchableOpacity hitSlop={getHitSlop(10)} onPress={() => setIsMute((val) => !val)}>
+                  <FastImage
+                              source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
+                              resizeMode={'contain'}
+                              style={{
+                                  marginHorizontal: 10,
+                                  height: 18,
+                                  width: 18,
+                                  tintColor: colors.whiteColor,
+                              }}
+                          />
+                </TouchableOpacity>
+
+                {/*  Full Screen Button */}
+                <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen}>
+                  <FastImage
+                              source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
+                              resizeMode={'contain'}
+                              style={{
+                                  marginHorizontal: 5,
+                                  height: 18,
+                                  width: 18,
+                                  tintColor: colors.whiteColor,
+                              }}
+                          />
+                </TouchableOpacity>
+              </Fragment>
+              )}
+
+            <TouchableOpacity onPress={() => {}}>
+              <Image
                         source={images.vertical3Dot}
                         resizeMode={'contain'}
-                        style={{ height: 20, width: 20, tintColor: colors.whiteColor }} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.mainContainer}>
-          <TouchableWithoutFeedback onPress={onProfilePress}>
-            <Image
-                        style={styles.background}
-                        source={userImage}
-                        resizeMode={'cover'}
-                    />
-          </TouchableWithoutFeedback>
-          <View style={styles.userNameView}>
-            <Text style={styles.userNameTxt} onPress={() => {}}>{feedItem?.actor?.data?.full_name}</Text>
-            <Text style={styles.activeTimeAgoTxt}>
-              {commentPostTimeCalculate(feedItem?.time, true)}
-            </Text>
+                        style={{
+                            height: 18,
+                            width: 18,
+                            tintColor: colors.whiteColor,
+                            marginHorizontal: 5,
+                        }} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -103,10 +162,8 @@ const FeedAbsoluteTopView = ({
               descriptionTxt={{ color: colors.whiteColor }}
           />}
 
-        {readMore && <View style={{ height: getHeight(isLandscape, 65, 40), paddingVertical: 15 }}>
-          <ScrollView
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}>
+        {readMore && <View style={{ flex: 1, paddingVertical: 15 }}>
+          <ScrollView indicatorStyle={'white'} showsVerticalScrollIndicator={true}>
             <TouchableOpacity activeOpacity={1} onPress={() => setReadMore(!readMore)}>
               <FeedDescriptionSection
                       readMore={readMore}
@@ -138,7 +195,6 @@ const styles = StyleSheet.create({
     userNameView: {
         flexDirection: 'column',
         marginLeft: wp('4%'),
-        width: wp('70%'),
     },
     activeTimeAgoTxt: {
         color: colors.whiteColor,

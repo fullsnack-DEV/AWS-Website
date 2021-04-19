@@ -21,9 +21,14 @@ const FeedViewScreen = ({ navigation, route }) => {
   const [readMore, setReadMore] = useState(false)
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showParent, setShowsParent] = useState(true);
+  const [currentViewIndex, setCurrentViewIndex] = useState(0);
+  const [isMute, setIsMute] = useState(false);
+
+  const onFullScreen = useCallback(() => setIsFullScreen((val) => setIsFullScreen(!val)), [])
 
   useEffect(() => {
     if (route?.params?.feedItem) {
+      console.log(route?.params?.feedItem);
       setFeedItem({ ...route?.params?.feedItem })
       const item = route?.params?.feedItem;
       const subItem = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object;
@@ -56,15 +61,20 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   const renderTopView = useMemo(() => (
     <FeedAbsoluteTopView
-        showParent={showParent}
+        currentViewIndex={currentViewIndex}
         feedSubItem={feedSubItem}
+        isMute={isMute}
+        setIsMute={setIsMute}
+        isFullScreen={isFullScreen}
+        onFullScreen={onFullScreen}
+        showParent={showParent}
         navigation={navigation}
         feedItem={feedItem}
         isLandscape={isLandscape}
         readMore={readMore}
         setReadMore={setReadMore}
       />
-    ), [feedItem, feedSubItem, isLandscape, navigation, readMore, showParent])
+    ), [currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, isMute, navigation, onFullScreen, readMore, showParent])
 
   const onLikePress = useCallback(() => {
     const bodyParams = {
@@ -99,15 +109,20 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   const renderPostView = useMemo(() => (
     <FeedPostView
+          setIsFullScreen={setIsFullScreen}
+          isMute={isMute}
+          setIsMute={setIsMute}
+          currentViewIndex={currentViewIndex}
+          setCurrentViewIndex={setCurrentViewIndex}
           currentPage={route?.params?.currentPage}
           setShowParent={setShowParent}
           isLandscape={isLandscape}
           feedSubItem={feedSubItem}
           showParent={showParent}
           isFullScreen={isFullScreen}
-          setIsFullScreen={setIsFullScreen}
+          onFullScreen={onFullScreen}
     />
-  ), [feedSubItem, isFullScreen, isLandscape, route?.params?.currentPage, setShowParent, showParent])
+  ), [currentViewIndex, feedSubItem, isFullScreen, isLandscape, isMute, onFullScreen, route?.params?.currentPage, setShowParent, showParent])
 
   const renderAbsoluteView = useMemo(() => (
     <Fragment>

@@ -72,7 +72,7 @@ const FeedDescriptionSection = ({
     const startTagIndex = descriptions?.indexOf(matchData?.input?.substr(matchData?.index, descriptions?.length))
     let color = colors.whiteColor;
     const isTagName = tagData?.filter((item) => item?.entity_data?.tagged_formatted_name === match)?.length > 0;
-    if (isTagName) color = colors.greeColor;
+    if (isTagName) color = colors.darkYellowColor;
     return (
       <Text
             onPress={() => isTagName && handleNamePress(match, startTagIndex)}
@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    color: colors.greeColor,
   },
   text: {
     fontSize: 16,
