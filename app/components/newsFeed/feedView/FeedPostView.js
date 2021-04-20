@@ -19,6 +19,11 @@ const FeedPostView = ({
     setCurrentViewIndex,
     setIsMute,
     isMute,
+    currentTime,
+    setCurrentTime,
+    videoPlayerRef,
+    paused,
+    setPaused,
 }) => {
     const carouselRef = useRef();
     const renderAttachments = useCallback(({ item, index }) => (
@@ -29,6 +34,11 @@ const FeedPostView = ({
                 <>
                   {currentViewIndex === index && (
                     <FeedVideoView
+                              paused={paused}
+                              setPaused={setPaused}
+                              videoPlayerRef={videoPlayerRef}
+                              currentTime={currentTime}
+                              setCurrentTime={setCurrentTime}
                               isMute={isMute}
                               showParent={showParent}
                               setShowParent={setShowParent}
@@ -48,7 +58,7 @@ const FeedPostView = ({
               )}
         </>
       </View>
-      ), [currentViewIndex, isFullScreen, isLandscape, isMute, setIsFullScreen, setShowParent, showParent])
+      ), [currentTime, currentViewIndex, isFullScreen, isLandscape, isMute, paused, setCurrentTime, setIsFullScreen, setPaused, setShowParent, showParent, videoPlayerRef])
 
  return (
    <Carousel

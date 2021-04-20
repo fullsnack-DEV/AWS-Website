@@ -28,7 +28,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
-// import { hasNotch } from 'react-native-device-info';
+import { hasNotch } from 'react-native-device-info';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -363,7 +363,7 @@ function ShortsVideoView({
         parseFloat(videoItem?.media_height / videoItem?.media_width).toFixed(2),
       ) <= 1.78
     ) {
-      if (true) {
+      if (hasNotch()) {
         return (
           insets.top
           + (windowHeight

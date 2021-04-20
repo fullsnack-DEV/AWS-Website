@@ -2,12 +2,15 @@ import React, {
     useCallback, Fragment, useContext, useEffect, useState, useMemo,
 } from 'react';
 import {
-    Image, SafeAreaView, StyleSheet, Text, View,
+    Image, Platform, SafeAreaView, StyleSheet, Text, View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import IosSlider from '@react-native-community/slider';
+import AndroidSlider from 'rn-range-slider';
+import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import { getWidth } from '../../../utils';
+import { getTaggedText, getWidth } from '../../../utils';
 import fonts from '../../../Constants/Fonts';
 import TagView from '../TagView';
 import AuthContext from '../../../auth/context';
@@ -22,7 +25,15 @@ const FeedAbsoluteBottomView = ({
     readMore,
     setReadMore,
     showParent,
+    currentTime,
+    setCurrentTime,
+    paused,
+    setPaused,
+    videoPlayerRef,
+    currentViewIndex,
+    shareActionSheetRef,
 }) => {
+    const sourceData = feedSubItem?.attachments?.[currentViewIndex];
     const authContext = useContext(AuthContext);
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
@@ -57,41 +68,7 @@ const FeedAbsoluteBottomView = ({
     const taggedText = useMemo(() => {
         const gameTagList = feedSubItem?.format_tagged_data?.filter((item) => item?.entity_type === 'game')
         const entityTagList = feedSubItem?.format_tagged_data?.filter((item) => item?.entity_type !== 'game')
-        if (entityTagList?.length > 0 && gameTagList?.length > 0) {
-            if (entityTagList?.length > 1 && gameTagList?.length > 1) {
-                return `${entityTagList?.length} matches and ${entityTagList?.length} people were tagged`;
-            }
-            if (entityTagList?.length === 1 && gameTagList?.length > 1) {
-                return `${entityTagList?.length} match and ${entityTagList?.length} people were tagged`;
-            }
-            if (entityTagList?.length > 1 && gameTagList?.length === 1) {
-                return `${entityTagList?.length} matches and ${entityTagList?.length} person were tagged`;
-            }
-            if (entityTagList?.length === 1 && gameTagList?.length === 1) {
-                return `${entityTagList?.length} match and ${entityTagList?.length} person were tagged`;
-            }
-        } else {
-            if (entityTagList?.length > 0 && gameTagList?.length === 0) {
-                if (entityTagList?.length > 1 && gameTagList?.length === 0) {
-                    return `${entityTagList?.length} matches were tagged`;
-                }
-                if (entityTagList?.length === 1 && gameTagList?.length === 0) {
-                    return `${entityTagList?.length} match was tagged`;
-                }
-            }
-            if (entityTagList?.length === 0 && gameTagList?.length > 0) {
-                if (entityTagList?.length === 0 && gameTagList?.length > 1) {
-                    return `${gameTagList?.length} people were tagged`;
-                }
-                if (entityTagList?.length === 0 && gameTagList?.length === 1) {
-                    return `${gameTagList?.length} person was tagged`;
-                }
-            }
-            if (entityTagList?.length === 0 && gameTagList?.length === 0) {
-                return '';
-            }
-        }
-        return '';
+        return getTaggedText(entityTagList, gameTagList)
     }, [feedSubItem]);
 
     const renderBottomButtons = useMemo(() => !readMore && (
@@ -132,7 +109,7 @@ const FeedAbsoluteBottomView = ({
                     }}>
             <TouchableOpacity
                         onPress={() => {
-                            // shareActionSheet.current.show();
+                            shareActionSheetRef.current.show();
                         }}
                         style={styles.imageTouchStyle}>
               <Image
@@ -190,6 +167,132 @@ const FeedAbsoluteBottomView = ({
       </View>
     ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress, readMore])
 
+    const renderRail = useCallback(() => (
+      <View
+            style={{
+                flex: 1,
+                height: 4,
+                borderRadius: 5,
+                backgroundColor: 'rgba(255,255,255,0.5)',
+            }}
+        />
+    ), []);
+
+    const renderRailSelected = useCallback(() => (
+      <View
+            style={{
+                flex: 1,
+                height: 4,
+                borderRadius: 5,
+                backgroundColor: colors.whiteColor,
+            }}
+        />
+    ), []);
+
+    const renderThumb = useCallback(() => (
+      <FastImage
+            source={images.videoThumb}
+            resizeMode={'contain'}
+            style={{ height: 30, width: 30 }}/>
+    ), []);
+
+    const secondsToHms = (date) => {
+        let hDisplay = '';
+        let mDisplay = '0';
+        let sDisplay = '00';
+
+        const d = Number(date);
+
+        const h = Math.floor(d / 3600);
+        // eslint-disable-next-line no-mixed-operators
+        const m = Math.floor(d % 3600 / 60);
+        const s = Math.floor(d % 3600 % 60);
+
+        // Hour
+        if (h > 0 && h?.toString()?.length === 1) hDisplay = `0${h}`
+        if (h > 0 && h?.toString()?.length > 1) hDisplay = `${h}`
+
+        // Minuites
+        if (m > 0 && m?.toString()?.length === 1) mDisplay = `0${m}`
+        if (m > 0 && m?.toString()?.length > 1) mDisplay = `${m}`
+
+        // Seconds
+        if (s > 0 && s?.toString()?.length === 1) sDisplay = `0${s}`
+        if (s > 0 && s?.toString()?.length > 1) sDisplay = `${s}`
+
+        return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
+    }
+
+    const renderSeekBar = useMemo(() => (
+      <View
+            pointerEvents={showParent && !readMore ? 'auto' : 'none'}
+            style={{
+                opacity: (showParent && !readMore) ? 1 : 0,
+                paddingHorizontal: 10,
+                height: 50,
+                width: getWidth(isLandscape, 100),
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+                zIndex: 10,
+            }}>
+        <Text style={{
+                textAlign: 'center',
+                fontSize: 12,
+                width: 50,
+                color: colors.whiteColor,
+        }}>
+          {secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
+        </Text>
+        {Platform?.OS === 'ios' ? (
+          <IosSlider
+                    tapToSeek={true}
+                    value={currentTime}
+                    style={{
+                        flex: 1,
+                    }}
+                    onValueChange={(value) => setCurrentTime(value)}
+                    onSlidingStart={() => !paused && setPaused(true)}
+                    onSlidingComplete={(value) => {
+                        if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(value)
+                        setPaused(false);
+                    }}
+                    step={1}
+                    minimumValue={0}
+                    maximumValue={(sourceData?.duration / 1000)}
+                    minimumTrackTintColor={colors.whiteColor}
+                    maximumTrackTintColor={'rgba(255,255,255,0.5)'}
+                />
+            ) : (
+              <AndroidSlider
+                    disableRange
+                    min={0}
+                    low={currentTime}
+                    max={(sourceData?.duration / 1000)}
+                    step={1}
+                    style={{ flex: 1 }}
+                    renderThumb={renderThumb}
+                    renderRail={renderRail}
+                    renderRailSelected={renderRailSelected}
+                    onValueChanged={(lowValue, highValue, fromUser) => {
+                        setCurrentTime(lowValue);
+                        if (fromUser && videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(lowValue);
+                    }}
+                />
+            )}
+        <Text style={{
+                fontSize: 12,
+                width: 50,
+                color: colors.whiteColor,
+                textAlign: 'center',
+
+        }}>
+          {sourceData?.duration && secondsToHms((sourceData?.duration / 1000))}
+        </Text>
+
+      </View>
+    ), [currentTime, isLandscape, paused, readMore, renderRail, renderRailSelected, renderThumb, setCurrentTime, setPaused, showParent, sourceData?.duration, videoPlayerRef])
+
     return (
       <Fragment>
         <SafeAreaView
@@ -200,9 +303,9 @@ const FeedAbsoluteBottomView = ({
                 width: getWidth(isLandscape, 100),
                 opacity: showParent ? 1 : 0,
             }}>
-          <View style={{ paddingBottom: !readMore && !isLandscape ? 40 : 0, justifyContent: 'flex-end' }}>
+          <View style={{ justifyContent: 'flex-end' }}>
             {!readMore && !isLandscape && (
-              <View style={{ paddingVertical: 5 }}>
+              <View style={{ paddingVertical: 5, paddingHorizontal: 10 }}>
                 <FeedDescriptionSection
                     readMore={readMore}
                     setReadMore={setReadMore}
@@ -222,6 +325,7 @@ const FeedAbsoluteBottomView = ({
                 />
               </TouchableOpacity>
             )}
+            {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && renderSeekBar}
           </View>
 
           {/* Bottom Buttons */}

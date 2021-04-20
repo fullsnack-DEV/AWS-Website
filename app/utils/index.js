@@ -482,6 +482,19 @@ export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) =
   return entity;
 }
 
+export const getTaggedText = (entityTagList, gameTagList) => {
+  const entityTagsListLength = entityTagList?.length ?? 0;
+  const gameTagsListLength = gameTagList?.length ?? 0;
+  let matchText = '', entityText = '', betweenText = '', lastText = '', entityLengthText = '', matchLengthText = '';
+  if (entityTagsListLength > 0) entityLengthText = entityTagsListLength;
+  if (gameTagsListLength > 0) matchLengthText = gameTagsListLength;
+  if (gameTagsListLength > 0) matchText = gameTagsListLength > 1 ? 'matches ' : 'match ';
+  if (entityTagsListLength > 0) entityText = entityTagsListLength > 1 ? 'people  ' : 'person ';
+  if (gameTagsListLength > 0 && entityTagsListLength > 0) betweenText = 'and ';
+  if ((entityTagsListLength + gameTagsListLength) > 0) lastText = (entityTagsListLength + gameTagsListLength) > 1 ? 'were tagged' : 'was tagged';
+  return `${entityLengthText} ${entityText}${betweenText}${matchLengthText} ${matchText}${lastText}`
+}
+
 export const getWidth = (isLandscape, portraitWidth, landscapeWidth = portraitWidth) => (isLandscape ? hp(landscapeWidth) : wp(portraitWidth))
 export const getHeight = (isLandscape, portraitHeight, landscapeHeight = portraitHeight) => (isLandscape ? wp(landscapeHeight) : hp(portraitHeight))
 
