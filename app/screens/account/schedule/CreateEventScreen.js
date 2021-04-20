@@ -79,7 +79,7 @@ export default function CreateEventScreen({ navigation, route }) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState('Does not repeat');
+  const [selectWeekMonth, setSelectWeekMonth] = useState('');
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -155,10 +155,10 @@ export default function CreateEventScreen({ navigation, route }) {
       dateValue = `${moment(date).format('ddd MMM DD YYYY')} 11:59:59 PM`;
       console.log('Date Value :-', dateValue);
       setEventEnddateTime(dateValue);
-      setEventUntildateTime(dateValue);
+      setEventUntildateTime(moment(dateValue).add(5, 'm').toDate());
     } else {
       setEventEnddateTime(date);
-      setEventUntildateTime(date);
+      setEventUntildateTime(moment(date).add(5, 'm').toDate());
     }
     setEndDateVisible(!endDateVisible);
   };
@@ -512,7 +512,7 @@ export default function CreateEventScreen({ navigation, route }) {
             <EventMonthlySelection
               title={strings.repeat}
               dataSource={[
-                { label: 'Does not repeat', value: 'Does not repeat' },
+
                 { label: 'Daily', value: 'Daily' },
                 { label: 'Weekly', value: 'Weekly' },
                 {
@@ -529,13 +529,13 @@ export default function CreateEventScreen({ navigation, route }) {
                 },
                 { label: 'Yearly', value: 'Yearly' },
               ]}
-              // placeholder={strings.selectTimePlaceholder}
+              placeholder={'Does not repeat'}
               value={selectWeekMonth}
               onValueChange={(value) => {
                 setSelectWeekMonth(value);
               }}
             />
-            {selectWeekMonth !== 'Does not repeat' && (
+            {selectWeekMonth !== '' && (
               <EventTimeSelectItem
                 title={strings.until}
                 toggle={!toggle}
@@ -635,7 +635,7 @@ export default function CreateEventScreen({ navigation, route }) {
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             minimumDate={
-              eventEndDateTime || moment(eventEndDateTime).add(5, 'm').toDate()
+             moment(eventEndDateTime).add(5, 'm').toDate()
             }
             minutesGap={5}
             mode={toggle ? 'date' : 'datetime'}

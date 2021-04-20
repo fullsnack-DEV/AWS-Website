@@ -3797,7 +3797,8 @@ const HomeScreen = ({ navigation, route }) => {
         hasBackdrop
         onBackdropPress={() => setIsEntityCreateModalVisible(false)}
         backdropOpacity={0}>
-        <View style={styles.mainContainerView}>
+
+        <View style={styles.modalContainerViewStyle}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
           <TouchableOpacity
@@ -3806,7 +3807,7 @@ const HomeScreen = ({ navigation, route }) => {
             <Image
               source={images.cancelWhite}
               style={{
-                marginTop: 50,
+                marginTop: 25,
                 marginRight: 25,
                 height: 15,
                 width: 15,
@@ -3847,6 +3848,9 @@ const HomeScreen = ({ navigation, route }) => {
               {'has been created.'}
             </Text>
           </View>
+          <Text style={styles.manageChallengeDetailTitle}>
+            {strings.manageChallengeDetailText}
+          </Text>
           <TouchableOpacity
             style={styles.goToProfileButton}
             onPress={() => {
@@ -3857,6 +3861,7 @@ const HomeScreen = ({ navigation, route }) => {
             </Text>
           </TouchableOpacity>
         </View>
+
       </Modal>
 
       {/* Entity create modal */}
@@ -3940,8 +3945,8 @@ const styles = StyleSheet.create({
   modalContainerViewStyle: {
     height: hp('94%'),
     backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
   headerMainContainerStyle: {
     borderTopLeftRadius: 10,
@@ -4063,6 +4068,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     resizeMode: 'stretch',
     width: '100%',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
   foundText: {
     color: colors.whiteColor,
@@ -4075,9 +4082,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 75,
   },
-  mainContainerView: {
-    flex: 1,
-  },
 
   goToProfileButton: {
     alignSelf: 'center',
@@ -4087,6 +4091,14 @@ const styles = StyleSheet.create({
     height: 45,
     marginBottom: wp('15%'),
     width: '92%',
+  },
+  manageChallengeDetailTitle: {
+    alignSelf: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    textAlign: 'center',
+    marginBottom: 15,
   },
   goToProfileTitle: {
     color: colors.whiteColor,

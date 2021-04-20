@@ -340,8 +340,9 @@ function NotificationsListScreen({ navigation }) {
 
   const onDelete = ({ item }) => {
     if (activeScreen) {
-      // setloading(true);
+     // setloading(true);
       const ids = item.activities.map((activity) => activity.id);
+      // setMainNotificationsList(mainNotificationsList.filter((obj) => obj.id !== ids))
       deleteNotification(ids, item.type, authContext)
         .then(() => {
           callNotificationList()

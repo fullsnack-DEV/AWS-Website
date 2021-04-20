@@ -17,7 +17,7 @@ import {
     ScrollView,
     TouchableWithoutFeedback,
     Platform,
-    Alert, InteractionManager,
+    Alert,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -88,7 +88,6 @@ export default function LocalHomeScreen({ navigation }) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-      InteractionManager.runAfterInteractions(() => {
           if (isFocused) {
               setloading(true);
               const promises = [
@@ -125,8 +124,7 @@ export default function LocalHomeScreen({ navigation }) {
                       }, 10);
                   });
           }
-      })
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, location]);
 
   const isIconCheckedOrNot = useCallback(
     ({ item, index }) => {
