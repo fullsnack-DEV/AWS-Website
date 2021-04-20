@@ -3,10 +3,10 @@ import React, {
 } from 'react';
 import _ from 'lodash'
 import {
-    Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+    Image, SafeAreaView, ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TouchableWithoutFeedback, TouchableOpacity } from 'react-native-gesture-handler';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
@@ -26,10 +26,12 @@ const FeedAbsoluteTopView = ({
     navigation,
     feedSubItem,
     isFullScreen,
-    onFullScreen,
+    setIsFullScreen,
+    setIsLandscape,
     isMute,
     setIsMute,
     currentViewIndex,
+    onThreeDotPress,
  }) => {
     const userImage = feedItem?.actor?.data?.thumbnail ? { uri: feedItem?.actor?.data?.thumbnail } : images?.profilePlaceHolder;
     const authContext = useContext(AuthContext);
@@ -46,6 +48,25 @@ const FeedAbsoluteTopView = ({
         }
     }, [authContext?.entity?.uid, feedItem?.actor?.data?.entity_type, feedItem?.actor?.id, navigation])
 
+    const onFullScreen = useCallback(() => {
+        const sourceData = feedSubItem?.attachments?.[currentViewIndex];
+        if (isFullScreen) {
+                Orientation.lockToPortrait();
+                setIsLandscape(false);
+                setIsFullScreen(false);
+            setTimeout(() => Orientation.unlockAllOrientations(), 1500);
+        } else if (sourceData?.media_height < sourceData?.media_width) {
+                Orientation.lockToLandscape();
+                setIsLandscape(true);
+                setIsFullScreen(false);
+            } else {
+                Orientation.lockToPortrait();
+                setIsLandscape(false);
+                setIsFullScreen(true);
+            }
+        setTimeout(() => Orientation.unlockAllOrientations(), 1500);
+    }, [currentViewIndex, feedSubItem?.attachments, isFullScreen, setIsFullScreen, setIsLandscape])
+
     return (
       <SafeAreaView
           pointerEvents={showParent ? 'auto' : 'none'}
@@ -58,6 +79,7 @@ const FeedAbsoluteTopView = ({
           }}>
         <View
                 style={{
+                    zIndex: 100,
                     paddingHorizontal: 15,
                     flexDirection: 'row',
                     width: getWidth(isLandscape, 100),
@@ -138,7 +160,7 @@ const FeedAbsoluteTopView = ({
               </Fragment>
               )}
 
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={onThreeDotPress}>
               <Image
                         source={images.vertical3Dot}
                         resizeMode={'contain'}
@@ -162,9 +184,12 @@ const FeedAbsoluteTopView = ({
               descriptionTxt={{ color: colors.whiteColor }}
           />}
 
-        {readMore && <View style={{ flex: 1, paddingVertical: 15 }}>
-          <ScrollView indicatorStyle={'white'} showsVerticalScrollIndicator={true}>
-            <TouchableOpacity activeOpacity={1} onPress={() => setReadMore(!readMore)}>
+        {readMore && <View style={{ flex: 1, paddingVertical: 15, marginHorizontal: 15 }}>
+          <ScrollView indicatorStyle={'white'} style={{ zIndex: 10 }}
+              showsVerticalScrollIndicator={true}>
+            <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => setReadMore(!readMore)}>
               <FeedDescriptionSection
                       readMore={readMore}
                       setReadMore={setReadMore}

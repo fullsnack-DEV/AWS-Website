@@ -68,7 +68,6 @@ const FeedDescriptionSection = ({
   }, [authContext?.entity?.uid, getIndicesOf, navigation, tagData])
 
   const renderTagText = useCallback((match, matchData) => {
-    // console.log(matchData);
     const startTagIndex = descriptions?.indexOf(matchData?.input?.substr(matchData?.index, descriptions?.length))
     let color = colors.whiteColor;
     const isTagName = tagData?.filter((item) => item?.entity_data?.tagged_formatted_name === match)?.length > 0;
@@ -89,7 +88,7 @@ const FeedDescriptionSection = ({
   }, [])
 
   return useMemo(() => descriptions?.length > 0 && (
-    <View style={{ paddingHorizontal: 15 }}>
+    <View style={{ paddingHorizontal: 5 }}>
       <Text style={[styles.descText, descText]} numberOfLines={0}>
         <ParsedText
               style={[styles.text, descriptionTxt]}
@@ -119,6 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   username: {
+    zIndex: 100,
     fontSize: 16,
     fontFamily: fonts.RRegular,
   },

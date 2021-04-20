@@ -191,7 +191,7 @@ const NewsFeedPostItems = ({
             console.log('err :-', err);
           });
     }
-  }, [descriptions])
+  }, [authContext, descriptions])
 
   const renderProfileInfo = useMemo(() => (
     <View style={styles.mainContainer}>
