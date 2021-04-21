@@ -4,11 +4,12 @@ import React, {
 import { View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import Orientation from 'react-native-orientation';
-import { getHeight, getWidth } from '../../../utils';
+import { getScreenHeight, getScreenWidth } from '../../../utils';
 import FeedImageView from './FeedImageView';
 import FeedVideoView from './FeedVideoView';
 
 const FeedPostView = ({
+     screenInsets,
      showParent,
      setShowParent,
      isLandscape,
@@ -34,6 +35,7 @@ const FeedPostView = ({
                 <>
                   {currentViewIndex === index && (
                     <FeedVideoView
+                              screenInsets={screenInsets}
                               paused={paused}
                               setPaused={setPaused}
                               videoPlayerRef={videoPlayerRef}
@@ -51,6 +53,7 @@ const FeedPostView = ({
                 </>
               ) : (
                 <FeedImageView
+                    screenInsets={screenInsets}
                     setShowParent={setShowParent}
                     sourceData={item}
                     isLandscape={isLandscape}
@@ -71,15 +74,15 @@ const FeedPostView = ({
                     setShowParent(true)
            }}
            nestedScrollEnabled={false}
-           getItemLayout = {(data, index) => ({ length: getWidth(isLandscape, 100), offset: getWidth(isLandscape, 100) * index, index })}
+           getItemLayout = {(data, index) => ({ length: getScreenWidth({ isLandscape, screenInsets }), offset: getScreenWidth({ isLandscape, screenInsets }) * index, index })}
            data={feedSubItem?.attachments ?? []}
            renderItem={renderAttachments}
            inactiveSlideScale={1}
            inactiveSlideOpacity={1}
-           sliderWidth={getWidth(isLandscape, 100)}
-           itemWidth={getWidth(isLandscape, 100)}
-           sliderHeight={getHeight(isLandscape, 100)}
-           itemHeight={getHeight(isLandscape, 100)}
+           sliderWidth={getScreenWidth({ isLandscape, screenInsets })}
+           itemWidth={getScreenWidth({ isLandscape, screenInsets })}
+           sliderHeight={getScreenHeight({ isLandscape, screenInsets })}
+           itemHeight={getScreenHeight({ isLandscape, screenInsets })}
        />
     )
 }

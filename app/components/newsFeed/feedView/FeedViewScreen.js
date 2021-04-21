@@ -1,14 +1,16 @@
 import React, {
   Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
-import { Alert, SafeAreaView, StatusBar } from 'react-native';
+import {
+ Alert, View, SafeAreaView, StatusBar,
+} from 'react-native';
 import Orientation from 'react-native-orientation';
 import { useIsFocused } from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
 import Clipboard from '@react-native-community/clipboard';
 import Share from 'react-native-share';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../../../Constants/Colors';
-// import FeedAbsoluteShadeView from './FeedAbsoluteShadeVIew';
 import FeedAbsoluteTopView from './FeedAbsoluteTopView';
 import FeedAbsoluteBottomView from './FeedAbsoluteBottomView';
 import { createReaction } from '../../../api/NewsFeeds';
@@ -16,6 +18,7 @@ import AuthContext from '../../../auth/context';
 import FeedPostView from './FeedPostView';
 
 const FeedViewScreen = ({ navigation, route }) => {
+  const screenInsets = useSafeAreaInsets();
   const shareActionSheetRef = useRef();
   const videoPlayerRef = useRef();
   const threeDotRef = useRef();
@@ -35,8 +38,16 @@ const FeedViewScreen = ({ navigation, route }) => {
   const onFullScreen = useCallback(() => setIsFullScreen((val) => setIsFullScreen(!val)), [])
 
   useEffect(() => {
+  }, [])
+
+  useEffect(() => {
+    setCurrentTime(0);
+    setPaused(true);
+    setIsMute(false);
+  }, [currentViewIndex])
+
+  useEffect(() => {
     if (route?.params?.feedItem) {
-      console.log(route?.params?.feedItem);
       setIsPostOwner(route?.params?.feedItem?.ownerId === authContext?.entity?.uid || route?.params?.feedItem?.foreign_id === authContext?.entity?.uid);
       setFeedItem({ ...route?.params?.feedItem })
       const item = route?.params?.feedItem;
@@ -81,6 +92,7 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   const renderTopView = useMemo(() => (
     <FeedAbsoluteTopView
+        screenInsets={screenInsets}
         onThreeDotPress={onThreeDotPress}
         currentViewIndex={currentViewIndex}
         feedSubItem={feedSubItem}
@@ -96,7 +108,7 @@ const FeedViewScreen = ({ navigation, route }) => {
         readMore={readMore}
         setReadMore={setReadMore}
       />
-    ), [currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, isMute, navigation, onThreeDotPress, readMore, showParent])
+    ), [currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, isMute, navigation, onThreeDotPress, readMore, screenInsets, showParent])
 
   const onLikePress = useCallback(() => {
     const bodyParams = {
@@ -116,6 +128,7 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   const renderBottomView = useMemo(() => (
     <FeedAbsoluteBottomView
+        screenInsets={screenInsets}
         shareActionSheetRef={shareActionSheetRef}
         currentViewIndex={currentViewIndex}
         paused={paused}
@@ -133,9 +146,7 @@ const FeedViewScreen = ({ navigation, route }) => {
         readMore={readMore}
         setReadMore={setReadMore}
     />
-  ), [currentTime, currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, navigation, onLikePress, paused, readMore, showParent])
-
-  // const renderAbsoluteShadeView = useMemo(() => <FeedAbsoluteShadeView isLandscape={isLandscape}/>, [isLandscape])
+  ), [currentTime, currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, navigation, onLikePress, paused, readMore, screenInsets, showParent])
 
   const setShowParent = useCallback((toggleValue) => {
     if (toggleValue) setShowsParent(toggleValue)
@@ -144,6 +155,7 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   const renderPostView = useMemo(() => (
     <FeedPostView
+          screenInsets={screenInsets}
           setisLandscape={setIsLandscape}
           paused={paused}
           setPaused={setPaused}
@@ -168,8 +180,7 @@ const FeedViewScreen = ({ navigation, route }) => {
   const renderAbsoluteView = useMemo(() => (
     <Fragment>
       {renderPostView}
-      {renderTopView }
-      {/* {renderAbsoluteShadeView} */}
+      {renderTopView}
       {renderBottomView}
     </Fragment>
   ), [renderBottomView, renderPostView, renderTopView])
@@ -220,9 +231,11 @@ const FeedViewScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.blackColor }}>
-      {renderAbsoluteView}
-      {renderThreeDotActionSheet}
-      {renderSharePostActionSheet}
+      <View style={{ flex: 1 }}>
+        {renderAbsoluteView}
+        {renderThreeDotActionSheet}
+        {renderSharePostActionSheet}
+      </View>
     </SafeAreaView>
   )
 }

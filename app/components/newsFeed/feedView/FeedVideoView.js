@@ -2,16 +2,18 @@ import React, {
     useCallback, useMemo, useState, Fragment, useEffect,
 } from 'react';
 import {
- View,
+    Platform,
+    View,
 } from 'react-native';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import { getHeight, getWidth } from '../../../utils';
+import { getScreenHeight, getScreenWidth } from '../../../utils';
 import images from '../../../Constants/ImagePath';
 
 const FeedVideoView = ({
+  screenInsets,
   sourceData,
    isLandscape,
    isFullScreen,
@@ -110,13 +112,14 @@ const FeedVideoView = ({
         setCurrentTime(0);
         setShowParent(true);
         setPaused(true);
-    }, [])
+        if (Platform?.OS === 'android' && videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(0);
+    }, [setCurrentTime, setPaused, setShowParent, videoPlayerRef])
 
     const renderVideo = useMemo(() => (
       <Fragment>
         <View style={{
-              height: getHeight(isLandscape, 100),
-              width: getWidth(isLandscape, 100),
+              height: getScreenHeight({ isLandscape, screenInsets }),
+              width: getScreenWidth({ isLandscape, screenInsets }),
         }}>
           <Video
               disableFocus={true}
@@ -128,21 +131,24 @@ const FeedVideoView = ({
                   onProgress={onProgress}
                   source={{ uri: sourceData?.url ?? '', cache: true }}
                   // source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', cache: true }} // Landscape Video
-                  style={{ height: getHeight(isLandscape, 100), width: getWidth(isLandscape, 100) }}
+                  style={{
+                      height: getScreenHeight({ isLandscape, screenInsets }),
+                      width: getScreenWidth({ isLandscape, screenInsets }),
+                  }}
                   onLoad={() => videoPlayerRef.current.seek(0)}
                   resizeMode={'contain'}
                   onBuffer={(bufferData) => setVideoLoader(bufferData?.isBuffering)}
               />
         </View>
       </Fragment>
-        ), [isFullScreen, isLandscape, isMute, onProgress, paused, setCurrentTime, setPaused, setShowParent, sourceData?.url, videoPlayerRef])
+        ), [isLandscape, isMute, onEndVideo, onProgress, paused, screenInsets, sourceData?.url, videoPlayerRef])
 
     return (
       <TouchableWithoutFeedback onPress={setShowParent} style={{
           alignItems: 'center',
           justifyContent: 'center',
-          width: getWidth(isLandscape, 100),
-          height: getHeight(isLandscape, 100),
+          width: getScreenWidth({ isLandscape, screenInsets }),
+          height: getScreenHeight({ isLandscape, screenInsets }),
       }}>
         {renderVideoLoader}
         {renderPlayPauseButton}
