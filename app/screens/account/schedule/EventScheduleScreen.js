@@ -14,7 +14,6 @@ export default function EventScheduleScreen({
   entity,
   profileID,
   screenUserId,
-  onScroll,
 }) {
   const [filterData, setFilterData] = useState(null);
 
@@ -80,8 +79,7 @@ export default function EventScheduleScreen({
     <View style={styles.mainContainer}>
       {filterData && (
         <SectionList
-        onScroll={onScroll}
-        scrollEventThrottle={1}
+        scrollEnabled={false}
           ListEmptyComponent={
             <Text style={styles.dataNotFoundText}>Data Not Found</Text>
           }

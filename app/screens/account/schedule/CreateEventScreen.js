@@ -359,7 +359,7 @@ export default function CreateEventScreen({ navigation, route }) {
                         ).toFixed(0),
                       ),
 
-                      is_recurring: selectWeekMonth !== 'Does not repeat',
+                      is_recurring: selectWeekMonth !== '',
                       location: searchLocation,
                       latitude: locationDetail.lat,
                       longitude: locationDetail.lng,
@@ -387,7 +387,7 @@ export default function CreateEventScreen({ navigation, route }) {
                         ).toFixed(0),
                       ),
 
-                      is_recurring: selectWeekMonth !== 'Does not repeat',
+                      is_recurring: selectWeekMonth !== '',
                       blocked: is_Blocked,
                       owner_id:
                         authContext.entity.obj.user_id
@@ -416,7 +416,7 @@ export default function CreateEventScreen({ navigation, route }) {
                 ) {
                   rule = `MONTHLY;BYMONTHDAY=${new Date().getDate()}`;
                 }
-                if (selectWeekMonth !== 'Does not repeat') {
+                if (selectWeekMonth !== '') {
                   data[0].untilDate = Number(
                     parseFloat(
                       new Date(eventUntilDateTime).getTime() / 1000,

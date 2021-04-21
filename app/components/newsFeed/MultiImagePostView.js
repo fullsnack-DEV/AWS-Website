@@ -32,16 +32,15 @@ import PostDescSection from './PostDescSection';
 import TagView from './TagView';
 import CustomVideoPlayer from '../CustomVideoPlayer';
 import TCZoomableImage from '../TCZoomableImage';
+import CommentModal from './CommentModal';
 
 function MultiImagePostView({
   backBtnPress,
   attachedImages,
   item,
   caller_id,
-  navigation,
   onImageProfilePress,
   onLikePress,
-  openPostModal,
   currentPage,
 }) {
   const carouselRef = useRef(0);
@@ -53,6 +52,7 @@ function MultiImagePostView({
   const [likeCount, setLikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(item?.reaction_counts?.comment ?? 0);
   const [, setCurrentAssetIndex] = useState(0);
+  const [ShowComment, setShowModelComment] = useState(false);
 
   useEffect(() => {
     let filterLike = [];
@@ -70,6 +70,10 @@ function MultiImagePostView({
       setLike(false);
     }
   }, [caller_id, item]);
+
+  const onClose = () => {
+    setShowModelComment(false)
+  }
 
   let userImage = '';
   if (item?.actor && item?.actor?.data) {
@@ -189,17 +193,14 @@ function MultiImagePostView({
       return <View />;
   }
 
+  // eslint-disable-next-line no-unused-vars
   const updateCommentCount = (dataID, commentCnt) => {
       setCommentCount(commentCnt)
   }
   const onBackPress = () => {
       Orientation.lockToPortrait();
       backBtnPress()
-      navigation.navigate('WriteCommentScreen', {
-          data: item,
-          onDonePress: openPostModal,
-          onSuccessSent: updateCommentCount,
-      });
+       setShowModelComment(true)
   }
 
   const onShareActionSheetItemPress = (index) => {
@@ -420,6 +421,8 @@ function MultiImagePostView({
           cancelButtonIndex={3}
           onPress={onShareActionSheetItemPress}
         />
+        <CommentModal item={item} showCommentModal={ShowComment} onClose={onClose}/>
+
       </View>
     </KeyboardAvoidingView>
   );

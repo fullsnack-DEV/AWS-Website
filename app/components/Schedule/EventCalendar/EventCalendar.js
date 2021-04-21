@@ -59,7 +59,7 @@ export default class EventCalendar extends React.Component {
         events={item}
         width={width}
         styles={this.styles}
-         scrollToFirst={scrollToFirst}
+        scrollToFirst={scrollToFirst}
       />
 
     )
@@ -87,6 +87,8 @@ export default class EventCalendar extends React.Component {
       <VirtualizedList
           // eslint-disable-next-line react/no-string-refs
           ref='calendar'
+          scrollEnabled={false}
+          nestedScrollEnabled
           windowSize={2}
           initialNumToRender={2}
           initialScrollIndex={this.props.size}
@@ -100,12 +102,12 @@ export default class EventCalendar extends React.Component {
           pagingEnabled
           renderItem={this.renderItem.bind(this)}
           style={{ width }}
-          onMomentumScrollEnd={(event) => {
-            // eslint-disable-next-line radix
-            const index = parseInt(event.nativeEvent.contentOffset.x / width)
-            const date = moment(this.props.initDate).add(index - this.props.size, 'days')
-            this.setState({ index, date })
-          }}
+          // onMomentumScrollEnd={(event) => {
+          //   // eslint-disable-next-line radix
+          //   const index = parseInt(event.nativeEvent.contentOffset.x / width)
+          //   const date = moment(this.props.initDate).add(index - this.props.size, 'days')
+          //   this.setState({ index, date })
+          // }}
           {...virtualizedListProps}
         />
 

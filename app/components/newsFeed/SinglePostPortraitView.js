@@ -28,6 +28,7 @@ import fonts from '../../Constants/Fonts';
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import PostDescSection from './PostDescSection';
 import TagView from './TagView';
+import CommentModal from './CommentModal';
 
 export default function SinglePostPortraitView({
   backBtnPress,
@@ -35,14 +36,16 @@ export default function SinglePostPortraitView({
   data,
   item,
   caller_id,
-  navigation,
+
   onImageProfilePress,
   onLikePress,
-  openPostModal,
+
 }) {
   const [topDesc, setTopDesc] = useState(false);
   const [showParentView, setShowParentView] = useState(true);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
+  const [ShowComment, setShowModelComment] = useState(false);
+
   const [portraitImgDimention, setPortraitImgDimention] = useState(() => {
     let height = hp('50%');
     if (data.media_height > data.media_width) {
@@ -103,6 +106,10 @@ export default function SinglePostPortraitView({
       Orientation.removeOrientationListener(orientationChange);
     };
   }, []);
+
+  const onClose = () => {
+    setShowModelComment(false)
+  }
 
   const orientationChange = (orientation) => {
     if (['LANDSCAPE', 'PORTRAITUPSIDEDOWN']?.includes(orientation)) {
@@ -257,10 +264,7 @@ export default function SinglePostPortraitView({
                 <TouchableOpacity
                     onPress={() => {
                       backBtnPress()
-                      navigation.navigate('WriteCommentScreen', {
-                        data: item,
-                        onDonePress: openPostModal,
-                      });
+                      setShowModelComment(true)
                     }}
                     style={styles.imageTouchStyle}>
                   <Image
@@ -369,6 +373,7 @@ export default function SinglePostPortraitView({
             }
           }}
         />
+        <CommentModal item={item} showCommentModal={ShowComment} onClose={onClose}/>
       </View>
     </KeyboardAvoidingView>
   );

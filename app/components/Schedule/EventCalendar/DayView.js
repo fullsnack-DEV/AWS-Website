@@ -137,7 +137,7 @@ export default class DayView extends React.PureComponent {
               activeOpacity={0.5}
               onPress={() => this.onEventTapped(this.props.events[event.index])}
             >
-              <Text numberOfLines={1} style={styles.eventTitle}>{event.title || 'Event'}</Text>
+              <Text numberOfLines={1} style={styles.eventTitle}>{'AAA ' || 'Event'}</Text>
               {numberOfLines > 1
                 ? <Text
                   numberOfLines={numberOfLines - 1}

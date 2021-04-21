@@ -10,6 +10,7 @@ import {
   FlatList,
   TouchableWithoutFeedback,
 } from 'react-native';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -33,6 +34,7 @@ import {
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context';
+import CommentModal from './CommentModal';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 const NewsFeedPostItems = ({
@@ -52,6 +54,8 @@ const NewsFeedPostItems = ({
   const [myItem, setMyItem] = useState();
   const [attachedImages, setAttachedImages] = useState([]);
   const [descriptions, setDescriptions] = useState('');
+  const [ShowComment, setShowModelComment] = useState(false);
+
   useEffect(() => {
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
@@ -249,12 +253,12 @@ const NewsFeedPostItems = ({
   ), [attachedImages?.length, descriptions, myItem?.format_tagged_data, navigation]);
 
   const onWriteCommentPress = useCallback(() => {
-    navigation.navigate('WriteCommentScreen', {
-      data: item,
-      onSuccessSent: updateCommentCount,
-    });
-  }, [item, navigation, updateCommentCount]);
+    setShowModelComment(true)
+  }, []);
 
+const onClose = () => {
+  setShowModelComment(false)
+}
   return (
     <View style={{ flex: 1 }}>
       {renderProfileInfo}
@@ -384,6 +388,7 @@ const NewsFeedPostItems = ({
           onPress={onShareActionSheetItemPress}
         />
       </View>
+      <CommentModal item={item} showCommentModal={ShowComment} onClose={onClose}/>
     </View>
   );
 }
@@ -460,6 +465,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: wp('90%'),
   },
+
 });
 
 export default memo(NewsFeedPostItems);
