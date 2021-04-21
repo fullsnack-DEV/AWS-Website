@@ -24,7 +24,7 @@ export default function EventMonthlySelection({
           }}
           items={dataSource}
           onValueChange={onValueChange}
-          useNativeAndroidPickerStyle={false}
+          useNativeAndroidPickerStyle={true}
           // eslint-disable-next-line no-sequences
           style={ (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid), { ...styles } }
           value={value}

@@ -870,7 +870,7 @@ export default function GameDetailRecord({ navigation, route }) {
                 ]}></View>
                 <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={styles.blackPlayerName}>
+                  <Text style={styles.blackPlayerName} numberOfLines={1}>
                     {item.profile.first_name} {item.profile.last_name}
                   </Text>
                   <Text style={styles.blackPlayerName}>

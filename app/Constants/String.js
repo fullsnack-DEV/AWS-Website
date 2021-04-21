@@ -593,5 +593,6 @@ taggedPeopleText: 'Tagged People',
 taggedMatchesText: 'Tagged matches',
 
 manageChallengeText: 'MANAGE CHALLENGE',
+manageChallengeDetailText: 'In order to receive challenges,\nyou must complete Manage Challenge.',
 };
 export default strings;
