@@ -41,6 +41,7 @@ export default function WelcomeScreen({ navigation }) {
   useEffect(() => {
     onLoad()
   }, [currentBackground])
+
   useEffect(() => {
     const backgroundInterval = setInterval(changeBackground, BACKGROUND_CHANGE_INTERVAL);
     return () => {

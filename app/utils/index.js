@@ -482,20 +482,51 @@ export const getTaggedEntityData = (entity_raw_data, entity_item, entity_type) =
   return entity;
 }
 
-export const getTaggedText = (entityTagList, gameTagList) => {
+export const getTaggedText = (format_tagged_data) => {
+  const gameTagList = format_tagged_data?.filter((item) => item?.entity_type === 'game')
+  const entityTagList = format_tagged_data?.filter((item) => item?.entity_type !== 'game')
   const entityTagsListLength = entityTagList?.length ?? 0;
   const gameTagsListLength = gameTagList?.length ?? 0;
   let matchText = '', entityText = '', betweenText = '', lastText = '', entityLengthText = '', matchLengthText = '';
-  if (entityTagsListLength > 0) entityLengthText = entityTagsListLength;
-  if (gameTagsListLength > 0) matchLengthText = gameTagsListLength;
+  if (entityTagsListLength > 0) entityLengthText = `${entityTagsListLength} `;
+  if (gameTagsListLength > 0) matchLengthText = `${gameTagsListLength} `;
   if (gameTagsListLength > 0) matchText = gameTagsListLength > 1 ? 'matches ' : 'match ';
   if (entityTagsListLength > 0) entityText = entityTagsListLength > 1 ? 'people  ' : 'person ';
   if (gameTagsListLength > 0 && entityTagsListLength > 0) betweenText = 'and ';
   if ((entityTagsListLength + gameTagsListLength) > 0) lastText = (entityTagsListLength + gameTagsListLength) > 1 ? 'were tagged' : 'was tagged';
-  return `${entityLengthText} ${entityText}${betweenText}${matchLengthText} ${matchText}${lastText}`
+  return `${entityLengthText}${entityText}${betweenText}${matchLengthText}${matchText}${lastText}`
 }
 
-export const getWidth = (isLandscape, portraitWidth, landscapeWidth = portraitWidth) => (isLandscape ? hp(landscapeWidth) : wp(portraitWidth))
-export const getHeight = (isLandscape, portraitHeight, landscapeHeight = portraitHeight) => (isLandscape ? wp(landscapeHeight) : hp(portraitHeight))
+export const getScreenWidth = ({
+ isLandscape,
+ screenInsets,
+ avoidScreenInsets = null,
+ portraitWidth = 100,
+ landscapeWidth = portraitWidth,
+}) => {
+  let avoidInsets = avoidScreenInsets ?? false;
+  if (avoidScreenInsets === null) {
+    if (!isLandscape && portraitWidth !== 100) avoidInsets = true
+    else if (isLandscape && landscapeWidth !== 100) avoidInsets = true
+  }
+  const avoidLength = !avoidInsets ? (screenInsets.left + screenInsets.right) : 0;
+  return (isLandscape ? hp(landscapeWidth) : wp(portraitWidth)) - avoidLength
+}
+
+export const getScreenHeight = ({
+ isLandscape,
+ screenInsets,
+ avoidScreenInsets = null,
+ portraitHeight = 100,
+ landscapeHeight = portraitHeight,
+}) => {
+  let avoidInsets = avoidScreenInsets ?? false;
+  if (avoidScreenInsets === null) {
+    if (!isLandscape && portraitHeight !== 100) avoidInsets = true
+    else if (isLandscape && landscapeHeight !== 100) avoidInsets = true
+  }
+  const avoidLength = !avoidInsets ? (screenInsets.top + screenInsets.bottom) : 0;
+  return (isLandscape ? wp(landscapeHeight) : hp(portraitHeight)) - avoidLength;
+}
 
 export const stringContainValidURL = (str) => new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?').test(str)

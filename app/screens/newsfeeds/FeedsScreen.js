@@ -2,7 +2,7 @@ import React, {
   useEffect, memo, useState, useContext, useCallback, useMemo,
 } from 'react';
 import {
-  StyleSheet, View, Alert, Text,
+  StyleSheet, View, Alert, Text, InteractionManager,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
@@ -28,7 +28,7 @@ const FeedsScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext)
   const imageUploadContext = useContext(ImageUploadContext)
   const [postData, setPostData] = useState([]);
-  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
+  const [firstTimeLoading, setFirstTimeLoading] = useState(false);
   const [loading, setloading] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
@@ -36,18 +36,20 @@ const FeedsScreen = ({ navigation }) => {
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
   useEffect(() => {
-    setFirstTimeLoading(true);
+    InteractionManager.runAfterInteractions(() => {
+      setFirstTimeLoading(true);
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
-        .then((response) => {
-          setFirstTimeLoading(false);
-          setPostData([...response.payload.results])
-        })
-        .catch((e) => {
-          setFirstTimeLoading(false);
-          setTimeout(() => Alert.alert('', e.message), 100)
-        });
+          .then((response) => {
+            setFirstTimeLoading(false);
+            setPostData([...response.payload.results])
+          })
+          .catch((e) => {
+            setFirstTimeLoading(false);
+            setTimeout(() => Alert.alert('', e.message), 100)
+          });
+    })
   }, [authContext, authContext.entity]);
 
   const onThreeDotPress = useCallback(() => {

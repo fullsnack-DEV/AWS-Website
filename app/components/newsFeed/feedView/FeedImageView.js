@@ -1,11 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import TCZoomableImage from '../../TCZoomableImage';
-import { getHeight, getWidth } from '../../../utils';
+import { getScreenHeight, getScreenWidth } from '../../../utils';
 
 // const sourceURL = 'https://source.unsplash.com/random?orientation=landscape';
 
 const FeedImageView = ({
+    screenInsets,
     setShowParent,
     sourceData,
     isLandscape,
@@ -13,17 +14,16 @@ const FeedImageView = ({
   <View style={{
             alignItems: 'center',
             justifyContent: 'center',
-            // width: getWidth(isLandscape, 100),
-            // height: getHeight(isLandscape, 100),
   }}>
     <TCZoomableImage
+                screenInsets={screenInsets}
                 onClick={setShowParent}
                 source={{ uri: sourceData?.url ?? '' }}
                 isLandscape={isLandscape}
                 thumbnailSource={{ uri: sourceData?.thumbnail ?? '' }}
                 style={{
-                    width: getWidth(isLandscape, 100),
-                    height: getHeight(isLandscape, 100),
+                    width: getScreenWidth({ isLandscape, screenInsets }),
+                    height: getScreenHeight({ isLandscape, screenInsets }),
                 }}
             />
   </View>

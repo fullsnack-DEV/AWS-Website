@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import _ from 'lodash'
 import {
-    Image, SafeAreaView, ScrollView, StyleSheet, Text, View,
+    Image, ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { TouchableWithoutFeedback, TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,7 +11,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import { getHitSlop, getWidth } from '../../../utils';
+import { getHitSlop, getScreenWidth } from '../../../utils';
 import { commentPostTimeCalculate } from '../../../Constants/LoaderImages';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -19,6 +19,7 @@ import FeedDescriptionSection from './FeedDescriptionSection';
 
 const FeedAbsoluteTopView = ({
     showParent,
+    screenInsets,
     feedItem = {},
     isLandscape,
     readMore,
@@ -68,7 +69,7 @@ const FeedAbsoluteTopView = ({
     }, [currentViewIndex, feedSubItem?.attachments, isFullScreen, setIsFullScreen, setIsLandscape])
 
     return (
-      <SafeAreaView
+      <View
           pointerEvents={showParent ? 'auto' : 'none'}
           style={{
               opacity: showParent ? 1 : 0,
@@ -78,44 +79,49 @@ const FeedAbsoluteTopView = ({
           backgroundColor: readMore ? 'rgba(0,0,0,0.7)' : 'transparent',
           }}>
         <View
-                style={{
-                    zIndex: 100,
-                    paddingHorizontal: 15,
-                    flexDirection: 'row',
-                    width: getWidth(isLandscape, 100),
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}>
+                  style={{
+                      zIndex: 100,
+                      paddingHorizontal: 15,
+                      flexDirection: 'row',
+                      width: getScreenWidth({ isLandscape, screenInsets }),
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                  }}>
           <View style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
           }}>
             <TouchableOpacity
-                    hitSlop={getHitSlop(15)}
-                    onPress={() => {
-                        Orientation.lockToPortrait();
-                        navigation.goBack();
-                    }}
-                >
+                          hitSlop={getHitSlop(15)}
+                          onPress={() => {
+                              Orientation.lockToPortrait();
+                              navigation.goBack();
+                          }}
+                      >
               <FastImage
-                        tintColor={colors.whiteColor}
-                        source={images.backArrow}
-                        resizeMode={'contain'}
-                        style={{ height: 20, width: 20 }}
-                    />
+                              tintColor={colors.whiteColor}
+                              source={images.backArrow}
+                              resizeMode={'contain'}
+                              style={{ height: 20, width: 20 }}
+                          />
             </TouchableOpacity>
 
             <View style={styles.mainContainer}>
               <TouchableWithoutFeedback onPress={onProfilePress}>
                 <Image
-                            style={styles.background}
-                            source={userImage}
-                            resizeMode={'cover'}
-                        />
+                                  style={styles.background}
+                                  source={userImage}
+                                  resizeMode={'cover'}
+                              />
               </TouchableWithoutFeedback>
               <View style={styles.userNameView}>
-                <Text numberOfLines={1} style={{ ...styles.userNameTxt, maxWidth: getWidth(isLandscape, 40) }} onPress={() => {}}>
+                <Text numberOfLines={1} style={{
+                 ...styles.userNameTxt,
+                maxWidth: getScreenWidth({
+                isLandscape, screenInsets, portraitWidth: 40,
+                }),
+                }} onPress={() => {}}>
                   {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
                 </Text>
                 <Text style={styles.activeTimeAgoTxt}>
@@ -133,77 +139,77 @@ const FeedAbsoluteTopView = ({
                 {/*  Mute Unmute Button */}
                 <TouchableOpacity hitSlop={getHitSlop(10)} onPress={() => setIsMute((val) => !val)}>
                   <FastImage
-                              source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
-                              resizeMode={'contain'}
-                              style={{
-                                  marginHorizontal: 10,
-                                  height: 18,
-                                  width: 18,
-                                  tintColor: colors.whiteColor,
-                              }}
-                          />
+                                      source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
+                                      resizeMode={'contain'}
+                                      style={{
+                                          marginHorizontal: 10,
+                                          height: 18,
+                                          width: 18,
+                                          tintColor: colors.whiteColor,
+                                      }}
+                                  />
                 </TouchableOpacity>
 
                 {/*  Full Screen Button */}
                 <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen}>
                   <FastImage
-                              source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
-                              resizeMode={'contain'}
-                              style={{
-                                  marginHorizontal: 5,
-                                  height: 18,
-                                  width: 18,
-                                  tintColor: colors.whiteColor,
-                              }}
-                          />
+                                      source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
+                                      resizeMode={'contain'}
+                                      style={{
+                                          marginHorizontal: 5,
+                                          height: 18,
+                                          width: 18,
+                                          tintColor: colors.whiteColor,
+                                      }}
+                                  />
                 </TouchableOpacity>
               </Fragment>
-              )}
+                      )}
 
             <TouchableOpacity onPress={onThreeDotPress}>
               <Image
-                        source={images.vertical3Dot}
-                        resizeMode={'contain'}
-                        style={{
-                            height: 18,
-                            width: 18,
-                            tintColor: colors.whiteColor,
-                            marginHorizontal: 5,
-                        }} />
+                              source={images.vertical3Dot}
+                              resizeMode={'contain'}
+                              style={{
+                                  height: 18,
+                                  width: 18,
+                                  tintColor: colors.whiteColor,
+                                  marginHorizontal: 5,
+                              }} />
             </TouchableOpacity>
           </View>
         </View>
 
         {(!readMore && isLandscape) && <FeedDescriptionSection
-              readMore={readMore}
-              setReadMore={setReadMore}
-              navigation={navigation}
-              tagData={feedSubItem?.format_tagged_data}
-              descriptions={feedSubItem?.text}
-              isLandscape={isLandscape}
-              descriptionTxt={{ color: colors.whiteColor }}
-          />}
+                  readMore={readMore}
+                  setReadMore={setReadMore}
+                  navigation={navigation}
+                  tagData={feedSubItem?.format_tagged_data}
+                  descriptions={feedSubItem?.text}
+                  isLandscape={isLandscape}
+                  descriptionTxt={{ color: colors.whiteColor }}
+              />}
 
         {readMore && <View style={{ flex: 1, paddingVertical: 15, marginHorizontal: 15 }}>
           <ScrollView indicatorStyle={'white'} style={{ zIndex: 10 }}
-              showsVerticalScrollIndicator={true}>
+                              showsVerticalScrollIndicator={true}>
             <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => setReadMore(!readMore)}>
+                          activeOpacity={1}
+                          onPress={() => setReadMore(!readMore)}>
               <FeedDescriptionSection
-                      readMore={readMore}
-                      setReadMore={setReadMore}
-                      navigation={navigation}
-                      tagData={feedSubItem?.format_tagged_data}
-                      descriptions={feedSubItem?.text}
-                      isLandscape={isLandscape}
-                      descriptionTxt={{ color: colors.whiteColor }}
-                  />
+                              readMore={readMore}
+                              setReadMore={setReadMore}
+                              navigation={navigation}
+                              tagData={feedSubItem?.format_tagged_data}
+                              descriptions={feedSubItem?.text}
+                              isLandscape={isLandscape}
+                              descriptionTxt={{ color: colors.whiteColor }}
+                          />
             </TouchableOpacity>
           </ScrollView>
         </View>
-          }
-      </SafeAreaView>
+              }
+      </View>
     )
 }
 

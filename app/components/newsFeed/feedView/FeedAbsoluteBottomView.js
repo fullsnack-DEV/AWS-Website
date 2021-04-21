@@ -2,15 +2,14 @@ import React, {
     useCallback, Fragment, useContext, useEffect, useState, useMemo,
 } from 'react';
 import {
-    Image, Platform, SafeAreaView, StyleSheet, Text, View,
+    Image, StyleSheet, Text, View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import IosSlider from '@react-native-community/slider';
-import AndroidSlider from 'rn-range-slider';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import { getTaggedText, getWidth } from '../../../utils';
+import { getScreenWidth, getTaggedText } from '../../../utils';
 import fonts from '../../../Constants/Fonts';
 import TagView from '../TagView';
 import AuthContext from '../../../auth/context';
@@ -32,7 +31,9 @@ const FeedAbsoluteBottomView = ({
     videoPlayerRef,
     currentViewIndex,
     shareActionSheetRef,
+    screenInsets,
 }) => {
+    const [slidingStatus, setSlidingStatus] = useState(false);
     const sourceData = feedSubItem?.attachments?.[currentViewIndex];
     const authContext = useContext(AuthContext);
     const [like, setLike] = useState(false);
@@ -65,14 +66,10 @@ const FeedAbsoluteBottomView = ({
         navigation.navigate('FeedTaggedScreen', { taggedData: feedSubItem?.format_tagged_data ?? [] })
     }, [feedSubItem?.format_tagged_data, navigation])
 
-    const taggedText = useMemo(() => {
-        const gameTagList = feedSubItem?.format_tagged_data?.filter((item) => item?.entity_type === 'game')
-        const entityTagList = feedSubItem?.format_tagged_data?.filter((item) => item?.entity_type !== 'game')
-        return getTaggedText(entityTagList, gameTagList)
-    }, [feedSubItem]);
+    const taggedText = useMemo(() => getTaggedText(feedSubItem?.format_tagged_data), [feedSubItem]);
 
     const renderBottomButtons = useMemo(() => !readMore && (
-      <View style={{ ...styles.commentShareLikeView, width: getWidth(isLandscape, 100) }}>
+      <View style={{ ...styles.commentShareLikeView, width: getScreenWidth({ isLandscape, screenInsets }) }}>
 
         {/* Comment And Share Button Button */}
         <View style={{
@@ -80,7 +77,9 @@ const FeedAbsoluteBottomView = ({
                 justifyContent: 'flex-start',
                 alignItems: 'center',
                 paddingLeft: 15,
-                width: getWidth(isLandscape, 70),
+                width: getScreenWidth({
+                    isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 70,
+                }),
         }}>
           <View
                     style={{
@@ -126,7 +125,7 @@ const FeedAbsoluteBottomView = ({
         <View
                 style={{
                     paddingRight: 15,
-                    width: getWidth(isLandscape, 30),
+                    width: getScreenWidth({ isLandscape, screenInsets, portraitWidth: 30 }),
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
@@ -165,36 +164,14 @@ const FeedAbsoluteBottomView = ({
           </TouchableOpacity>
         </View>
       </View>
-    ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress, readMore])
-
-    const renderRail = useCallback(() => (
-      <View
-            style={{
-                flex: 1,
-                height: 4,
-                borderRadius: 5,
-                backgroundColor: 'rgba(255,255,255,0.5)',
-            }}
-        />
-    ), []);
-
-    const renderRailSelected = useCallback(() => (
-      <View
-            style={{
-                flex: 1,
-                height: 4,
-                borderRadius: 5,
-                backgroundColor: colors.whiteColor,
-            }}
-        />
-    ), []);
+    ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress, readMore, screenInsets, shareActionSheetRef])
 
     const renderThumb = useCallback(() => (
       <FastImage
             source={images.videoThumb}
             resizeMode={'contain'}
-            style={{ height: 30, width: 30 }}/>
-    ), []);
+            style={{ height: slidingStatus ? 30 : 15, width: slidingStatus ? 30 : 15 }}/>
+    ), [slidingStatus]);
 
     const secondsToHms = (date) => {
         let hDisplay = '';
@@ -230,7 +207,7 @@ const FeedAbsoluteBottomView = ({
                 opacity: (showParent && !readMore) ? 1 : 0,
                 paddingHorizontal: 10,
                 height: 50,
-                width: getWidth(isLandscape, 100),
+                width: getScreenWidth({ isLandscape, screenInsets }),
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'row',
@@ -239,50 +216,40 @@ const FeedAbsoluteBottomView = ({
         <Text style={{
                 textAlign: 'center',
                 fontSize: 12,
-                width: 50,
+                width: getScreenWidth({
+                 isLandscape, screenInsets, portraitWidth: 15, landscapeWidth: 7.5,
+                }),
                 color: colors.whiteColor,
         }}>
           {secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
         </Text>
-        {Platform?.OS === 'ios' ? (
-          <IosSlider
-                    tapToSeek={true}
-                    value={currentTime}
-                    style={{
-                        flex: 1,
-                    }}
-                    onValueChange={(value) => setCurrentTime(value)}
-                    onSlidingStart={() => !paused && setPaused(true)}
-                    onSlidingComplete={(value) => {
-                        if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(value)
-                        setPaused(false);
-                    }}
-                    step={1}
-                    minimumValue={0}
-                    maximumValue={(sourceData?.duration / 1000)}
-                    minimumTrackTintColor={colors.whiteColor}
-                    maximumTrackTintColor={'rgba(255,255,255,0.5)'}
-                />
-            ) : (
-              <AndroidSlider
-                    disableRange
-                    min={0}
-                    low={currentTime}
-                    max={(sourceData?.duration / 1000)}
-                    step={1}
-                    style={{ flex: 1 }}
-                    renderThumb={renderThumb}
-                    renderRail={renderRail}
-                    renderRailSelected={renderRailSelected}
-                    onValueChanged={(lowValue, highValue, fromUser) => {
-                        setCurrentTime(lowValue);
-                        if (fromUser && videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(lowValue);
-                    }}
-                />
-            )}
+        <MultiSlider
+            markerOffsetX={5}
+            max={(sourceData?.duration / 1000)}
+            enabledTwo={false}
+            isMarkersSeparated={true}
+            customMarkerLeft={renderThumb}
+            values={[currentTime]}
+            sliderLength={getScreenWidth({
+                isLandscape, avoidScreenInsets: false, screenInsets, portraitWidth: 70, landscapeWidth: 85,
+            })}
+            selectedStyle={{ backgroundColor: colors.whiteColor }}
+            trackStyle={{ backgroundColor: colors.userPostTimeColor }}
+            onValuesChange={(values) => setCurrentTime(values?.[0])}
+            onValuesChangeStart={() => {
+                if (!paused) setPaused(true)
+                setSlidingStatus(true);
+            }}
+            onValuesChangeFinish={(values) => {
+                setSlidingStatus(false);
+                if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(values?.[0])
+            }}
+        />
         <Text style={{
                 fontSize: 12,
-                width: 50,
+                width: getScreenWidth({
+                    isLandscape, screenInsets, portraitWidth: 15, landscapeWidth: 7.5,
+                }),
                 color: colors.whiteColor,
                 textAlign: 'center',
 
@@ -291,16 +258,16 @@ const FeedAbsoluteBottomView = ({
         </Text>
 
       </View>
-    ), [currentTime, isLandscape, paused, readMore, renderRail, renderRailSelected, renderThumb, setCurrentTime, setPaused, showParent, sourceData?.duration, videoPlayerRef])
+    ), [currentTime, isLandscape, paused, readMore, renderThumb, screenInsets, setCurrentTime, setPaused, showParent, sourceData?.duration, videoPlayerRef])
 
     return (
       <Fragment>
-        <SafeAreaView
+        <View
             pointerEvents={showParent ? 'auto' : 'none'}
             style={{
                 position: 'absolute',
                 bottom: 0,
-                width: getWidth(isLandscape, 100),
+                width: getScreenWidth({ isLandscape, screenInsets }),
                 opacity: showParent ? 1 : 0,
             }}>
           <View style={{ justifyContent: 'flex-end' }}>
@@ -331,7 +298,7 @@ const FeedAbsoluteBottomView = ({
           {/* Bottom Buttons */}
           {renderBottomButtons}
 
-        </SafeAreaView>
+        </View>
       </Fragment>
     )
 }
@@ -344,8 +311,7 @@ const styles = StyleSheet.create({
     },
     commentShareLikeView: {
         flexDirection: 'row',
-        margin: '3%',
-        marginVertical: '2%',
+        marginBottom: 15,
         alignSelf: 'center',
     },
     commentlengthStyle: {
