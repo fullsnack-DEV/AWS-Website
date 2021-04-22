@@ -10,14 +10,14 @@ import React, {
   useMemo,
 } from 'react';
 import {
-  Image,
-  StyleSheet,
-  NativeEventEmitter,
-  StatusBar,
-  View,
-  Alert,
-  Dimensions,
-  Platform,
+    Image,
+    StyleSheet,
+    NativeEventEmitter,
+    StatusBar,
+    View,
+    Alert,
+    Dimensions,
+    Platform,
 } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -350,13 +350,13 @@ const AppNavigator = ({ navigation }) => {
           <Image source={images.tab_account_group} style={styles.tabImg} />
         );
       }
-    },
-    [authContext?.entity?.obj?.thumbnail, role],
-  );
+    }, [authContext?.entity?.obj?.thumbnail, role],
+);
 
-  return (
-    <Tab.Navigator
-    navigation={navigation}
+    return (
+      <Tab.Navigator
+        lazy={true}
+      navigation={navigation}
       tabBarOptions={{
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
@@ -386,7 +386,7 @@ const AppNavigator = ({ navigation }) => {
           marginTop: 7,
         },
       }}>
-      <Tab.Screen
+        <Tab.Screen
         name="Local Home"
         component={LocalHomeNavigator}
         options={({ route }) => ({
@@ -402,7 +402,7 @@ const AppNavigator = ({ navigation }) => {
           },
         })}
       />
-      <Tab.Screen
+        <Tab.Screen
         name="News Feed"
         component={NewsFeedNavigator}
         options={({ route }) => ({
@@ -418,7 +418,7 @@ const AppNavigator = ({ navigation }) => {
           },
         })}
       />
-      <Tab.Screen
+        <Tab.Screen
         name="Message"
         component={MessageNavigator}
         options={({ route }) => ({
@@ -438,7 +438,7 @@ const AppNavigator = ({ navigation }) => {
           },
         })}
       />
-      <Tab.Screen
+        <Tab.Screen
         name="Schedule"
         component={ScheduleNavigator}
         options={({ route }) => ({
@@ -459,7 +459,7 @@ const AppNavigator = ({ navigation }) => {
         })}
       />
 
-      <Tab.Screen
+        <Tab.Screen
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
@@ -472,7 +472,7 @@ const AppNavigator = ({ navigation }) => {
 
         })}
       />
-    </Tab.Navigator>
+      </Tab.Navigator>
   );
 };
 

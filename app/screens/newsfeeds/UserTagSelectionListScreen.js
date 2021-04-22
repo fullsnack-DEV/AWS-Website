@@ -70,7 +70,7 @@ export default function UserTagSelectionListScreen({ navigation, route }) {
         Alert.alert('', e.messages)
       });
 
-      getAllGames('3f124a09-8620-44ff-b505-8d49261e366e', authContext).then((res) => {
+      getAllGames('0798518e-eb6b-4add-878a-5f52765610c8', authContext).then((res) => {
         setGamesData([...res?.payload])
         console.log(res);
       }).catch((error) => {

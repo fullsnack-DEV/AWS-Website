@@ -61,7 +61,7 @@ const FeedPostView = ({
               )}
         </>
       </View>
-      ), [currentTime, currentViewIndex, isFullScreen, isLandscape, isMute, paused, setCurrentTime, setIsFullScreen, setPaused, setShowParent, showParent, videoPlayerRef])
+      ), [currentTime, currentViewIndex, isFullScreen, isLandscape, isMute, paused, screenInsets, setCurrentTime, setIsFullScreen, setPaused, setShowParent, showParent, videoPlayerRef])
 
  return (
    <Carousel

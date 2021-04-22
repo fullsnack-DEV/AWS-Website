@@ -14,14 +14,11 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import TCGradientButton from './TCGradientButton';
 import TCRoundChart from './TCRoundChart';
-import useRenderCount from '../hooks/useRenderCount'
 
-const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
-  useRenderCount('TCHiringPlayersCard')
-  return (
-    <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
-      <View style={styles.eventText}>
-        <View
+const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => (
+  <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+    <View style={styles.eventText}>
+      <View
             style={{
               width: wp('20%'),
               height: 102,
@@ -29,23 +26,23 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
               borderBottomLeftRadius: 8,
               borderTopLeftRadius: 8,
             }}>
-          <TCRoundChart gameStatsData ={gameStatsData}/>
-        </View>
-        <View style={{ width: wp('40%'), marginLeft: 10 }}>
-          <View style={styles.bottomView}>
-            <Text style={styles.levelText}>Lv.0</Text>
-            <Text style={styles.textSaperator}> | </Text>
-            <Text style={styles.pointView} numberOfLines={1}>
-              0 points
-            </Text>
-          </View>
-          <Text style={styles.eventTitle} numberOfLines={3}>
-            United States women’s soccer team sdafs dsfafdsa fas fdsfa fdsaf
-            fadfasf df dsfads fs
+        <TCRoundChart gameStatsData ={gameStatsData}/>
+      </View>
+      <View style={{ width: wp('40%'), marginLeft: 10 }}>
+        <View style={styles.bottomView}>
+          <Text style={styles.levelText}>Lv.0</Text>
+          <Text style={styles.textSaperator}> | </Text>
+          <Text style={styles.pointView} numberOfLines={1}>
+            0 points
           </Text>
         </View>
+        <Text style={styles.eventTitle} numberOfLines={3}>
+          United States women’s soccer team sdafs dsfafdsa fas fdsfa fdsaf
+          fadfasf df dsfads fs
+        </Text>
       </View>
-      <ImageBackground
+    </View>
+    <ImageBackground
           source={images.soccerBackground}
           style={{
             height: 102,
@@ -57,7 +54,7 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
             alignItems: 'center',
             justifyContent: 'flex-end',
           }}>
-        <TCGradientButton
+      <TCGradientButton
             title={'Join'}
             style={{
               height: 25,
@@ -66,11 +63,10 @@ const TCHiringPlayersCard = ({ cardWidth = '86%', gameStatsData }) => {
             }}
             onPress={() => console.log('Join Press')}
           />
-      </ImageBackground>
-    </View>
+    </ImageBackground>
+  </View>
 
   )
-}
 
 const styles = StyleSheet.create({
   backgroundView: {

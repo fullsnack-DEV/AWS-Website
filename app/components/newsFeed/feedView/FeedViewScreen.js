@@ -2,7 +2,7 @@ import React, {
   Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import {
- Alert, View, SafeAreaView, StatusBar,
+  Alert, View, SafeAreaView, StatusBar,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { useIsFocused } from '@react-navigation/native';
@@ -175,7 +175,7 @@ const FeedViewScreen = ({ navigation, route }) => {
           isFullScreen={isFullScreen}
           onFullScreen={onFullScreen}
     />
-  ), [currentTime, currentViewIndex, feedSubItem, isFullScreen, isLandscape, isMute, onFullScreen, paused, route?.params?.currentPage, setShowParent, showParent])
+  ), [currentTime, currentViewIndex, feedSubItem, isFullScreen, isLandscape, isMute, onFullScreen, paused, route?.params?.currentPage, screenInsets, setShowParent, showParent])
 
   const renderAbsoluteView = useMemo(() => (
     <Fragment>

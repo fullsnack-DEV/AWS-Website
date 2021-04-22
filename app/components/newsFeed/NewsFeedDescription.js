@@ -103,8 +103,8 @@ const NewsFeedDescription = ({
   ), [navigation]);
 
   const renderGameTags = useMemo(() => {
-    const taggedMatchCount = tagData?.filter((item) => item?.entity_type === 'game')?.length
-    return taggedMatchCount?.length > 0 && (
+    const taggedMatchCount = tagData?.filter((item) => item?.entity_type === 'game')?.length ?? 0
+    return taggedMatchCount > 0 && (
       <View style={{ marginVertical: 15 }}>
         <TagView
               tagTextStyle={{ color: colors.greeColor }}
