@@ -14,6 +14,7 @@ import fonts from '../../../Constants/Fonts';
 import TagView from '../TagView';
 import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
+import CommentModal from '../CommentModal';
 
 const FeedAbsoluteBottomView = ({
     feedItem = {},
@@ -39,6 +40,7 @@ const FeedAbsoluteBottomView = ({
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
+    const [ShowComment, setShowModelComment] = useState(false);
 
     useEffect(() => {
         if (feedItem) {
@@ -53,14 +55,11 @@ const FeedAbsoluteBottomView = ({
                 setLike(false);
             }
         }
-    }, [feedItem])
+    }, [authContext?.entity?.uid, feedItem])
 
     const onCommentButtonPress = useCallback(() => {
-        navigation.navigate('WriteCommentScreen', {
-            data: feedItem,
-            onDonePress: (commentData) => { setCommentCount(commentData?.count) },
-        });
-    }, [feedItem, navigation]);
+      setShowModelComment(true)
+    }, []);
 
     const onTaggedPress = useCallback(() => {
         navigation.navigate('FeedTaggedScreen', { taggedData: feedSubItem?.format_tagged_data ?? [] })
@@ -199,7 +198,9 @@ const FeedAbsoluteBottomView = ({
 
         return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
     }
-
+    const onClose = () => {
+      setShowModelComment(false)
+    }
     const renderSeekBar = useMemo(() => (
       <View
             pointerEvents={showParent && !readMore ? 'auto' : 'none'}
@@ -299,6 +300,7 @@ const FeedAbsoluteBottomView = ({
           {renderBottomButtons}
 
         </View>
+        <CommentModal item={feedItem} showCommentModal={ShowComment} onClose={onClose}/>
       </Fragment>
     )
 }

@@ -1,25 +1,32 @@
 import React from 'react';
 import {
-  View,
-  StyleSheet,
-  Text,
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler'
+ View, StyleSheet, Text, Image,
+ } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
 
 export default function CalendarTimeTableView({
-  containerStyle, eventTitleStyle, title, summary, onPress,
+  containerStyle,
+  onPress,
+  eventObj,
+  type,
 }) {
   return (
-
-    <TouchableOpacity style={[styles.containerStyle, containerStyle]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.containerStyle, containerStyle]}
+      onPress={onPress}>
       <View style={styles.eventViewStyle}>
-        <Text style={[styles.eventTitleStyle, eventTitleStyle]}>{summary}</Text>
-        <Text style={styles.eventSummaryStyle}>{title}</Text>
+        {type === 'game' && <Text style={styles.vsText}>VS</Text>}
+        {type === 'game' && <Image
+          source={eventObj?.game?.home_team?.thumbnail ? { uri: eventObj?.game?.home_team?.thumbnail } : images.profilePlaceHolder}
+          style={{ height: 20, width: 20, borderRadius: 40 }}
+          resizeMode={'contain'}
+        />}
+        <Text style={styles.eventSummaryStyle}>{eventObj?.game?.home_team?.group_name || eventObj?.game?.home_team?.full_name}</Text>
       </View>
     </TouchableOpacity>
-
   );
 }
 
@@ -32,17 +39,22 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 5,
   },
   eventViewStyle: {
+    alignSelf: 'center',
     marginLeft: 8,
-    marginTop: 5,
-  },
-  eventTitleStyle: {
-    fontSize: 14,
-    fontFamily: fonts.RBold,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   eventSummaryStyle: {
     color: colors.lightBlackColor,
-    fontSize: 12,
-    fontFamily: fonts.RLight,
-    top: 4,
+    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    marginLeft: 8,
+  },
+  vsText: {
+    color: colors.themeColor,
+    fontSize: 10,
+    fontFamily: fonts.RBold,
+    marginRight: 8,
+    alignSelf: 'center',
   },
 });

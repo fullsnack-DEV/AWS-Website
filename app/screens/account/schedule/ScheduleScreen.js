@@ -86,6 +86,7 @@ import NotificationListTopHeaderShimmer from '../../../components/shimmer/accoun
 import TCThinDivider from '../../../components/TCThinDivider';
 import UnavailableTimeView from '../../../components/challenge/UnavailableTimeView';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
+import MonthHeader from '../../../components/Schedule/Monthheader';
 
 const lastDistance = null;
 let selectedCalendarDate = moment(new Date());
@@ -131,7 +132,6 @@ export default function ScheduleScreen({ navigation }) {
   const minimumDate = moment().add(-1, 'day'); // one day before for midnight check-in usecase
   const currentDate = moment();
 
-  const [monthView, setMonthView] = useState(false);
   const [ratesInventoryDataArray, setRatesInventoryDataArray] = useState([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [selectedCalendarDateString, setselectedCalendarDateString] = useState(
@@ -670,10 +670,34 @@ export default function ScheduleScreen({ navigation }) {
     }
     return (
       <View style={{ flex: 1 }}>
-        {event?.cal_type === 'event' && (
+        {event?.cal_type === 'event' && event?.game && (
           <CalendarTimeTableView
-            title={eventTitle}
-            summary={`${eventDesc} ${eventDesc2}`}
+          type='game'
+            eventObj={event}
+            containerStyle={{
+              borderLeftColor: event_color,
+              width: event.width,
+            }}
+            eventTitleStyle={{ color: event_color }}
+            onPress={() => {
+              if (event?.game?.sport.toLowerCase() === 'soccer') {
+                navigation.navigate('SoccerHome', {
+                  gameId: event?.game_id,
+                });
+              } else {
+                navigation.navigate('TennisHome', {
+                  gameId: event?.game_id,
+                });
+              }
+            }}
+          />
+
+        )}
+        {event?.cal_type === 'event' && !event?.game && (
+          <CalendarTimeTableView
+          type='event'
+          eventObj={event}
+
             containerStyle={{
               borderLeftColor: event_color,
               width: event.width,
@@ -826,10 +850,11 @@ export default function ScheduleScreen({ navigation }) {
       }
       return null;
     });
+
     const temp = [];
     slots.map((e) => {
       if (
-        getSimpleDateFormat(new Date(e.start_datetime * 1000))
+        getSimpleDateFormat(new Date(e.start_datetime))
         === getSimpleDateFormat(new Date(dateObj.dateString))
       ) {
         temp.push(e);
@@ -840,31 +865,27 @@ export default function ScheduleScreen({ navigation }) {
     return null;
   };
 
-  const onKnobClick = () => {
-    console.log('Knob press');
-    setShowTimeTable(!showTimeTable);
-    setMonthView(!monthView);
-  };
-  const onReachedTop = ({ nativeEvent: e }) => {
+  const onReachedCalenderTop = ({ nativeEvent: e }) => {
     const offset = e?.contentOffset?.y;
+    console.log('Offset calender:=>', offset);
 
     if (offset >= 20) {
       Animated.timing(animatedOpacityValue, {
         toValue: 1,
         useNativeDriver: true,
-      }).start(() => setMonthView(true));
+      }).start(() => setListView(true));
     }
-    if (offset <= -80) {
+    if (offset <= -50) {
       // Platform.OS === 'ios' ? -80 : 1
       Animated.timing(animatedOpacityValue, {
         toValue: 0,
         useNativeDriver: true,
-      }).start(() => setMonthView(false));
+      }).start(() => setListView(false));
     }
   };
 
-  const onScroll = (event) => {
-    onReachedTop(event);
+  const onScrollCalender = (event) => {
+    onReachedCalenderTop(event);
   };
   return (
     <View
@@ -908,118 +929,164 @@ export default function ScheduleScreen({ navigation }) {
           style={{
             flexDirection: 'row',
             margin: 15,
+            justifyContent: 'space-between',
           }}>
-          <Text
-            style={
-              scheduleIndexCounter === 0
-                ? styles.activeButton
-                : styles.inActiveButton
-            }
-            onPress={() => {
-              if (activeScreen) {
-                setScheduleIndexCounter(0);
-              } else {
-                showSwitchProfilePopup();
+          <View style={{ flexDirection: 'row' }}>
+            <Text
+              style={
+                scheduleIndexCounter === 0
+                  ? styles.activeButton
+                  : styles.inActiveButton
               }
-            }}>
-            Events
-          </Text>
-          <Text
-            style={
-              scheduleIndexCounter === 1
-                ? styles.activeButton
-                : styles.inActiveButton
-            }
-            onPress={() => {
-              if (activeScreen) {
-                setScheduleIndexCounter(1);
-              } else {
-                showSwitchProfilePopup();
+              onPress={() => {
+                if (activeScreen) {
+                  setScheduleIndexCounter(0);
+                } else {
+                  showSwitchProfilePopup();
+                }
+              }}>
+              Events
+            </Text>
+            <Text
+              style={
+                scheduleIndexCounter === 1
+                  ? styles.activeButton
+                  : styles.inActiveButton
               }
-            }}>
-            Availability
-          </Text>
+              onPress={() => {
+                if (activeScreen) {
+                  setScheduleIndexCounter(1);
+                } else {
+                  showSwitchProfilePopup();
+                }
+              }}>
+              Availability
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            {!isMenu && scheduleIndexCounter !== 1 && (
+              <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                style={{ marginRight: 15 }}
+                onPress={() => {
+                  setShowTimeTable(!showTimeTable);
+                }}>
+                <Image
+                  source={
+                    showTimeTable ? images.scheduleOrange : images.scheduleGray
+                  }
+                  style={{
+                    resizeMode: 'contain',
+                    height: 25,
+                    width: 25,
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              hitSlop={getHitSlop(15)}
+              onPress={() => {
+                setIsMenu(!isMenu);
+                setShowTimeTable(false);
+              }}>
+              <Image
+                source={isMenu ? images.menuOrange : images.menuGray}
+                style={{
+                  resizeMode: 'contain',
+                  height: 25,
+                  width: 25,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         <TCThinDivider width={'100%'} marginBottom={12} />
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
-            <EventAgendaSection
-              showTimeTable={showTimeTable}
-              isMenu={isMenu}
-              horizontal={listView}
-              onPressListView={onPressListView}
-              onPressGridView={onPressGridView}
-              onDayPress={onDayPress}
-              selectedCalendarDate={selectedCalendarDateString}
-              calendarMarkedDates={markingDays}
-            />
-
-            {showTimeTable ? (
-              <View style={{ marginBottom: 100 }}>
-                <EventCalendar
-                  eventTapped={(event) => {
-                    console.log('Event ::--', event);
-                  }}
-                  events={filterTimeTable}
-                  width={width}
-                  initDate={selectionDate}
-                  scrollToFirst={false}
-                  renderEvent={(event) => renderCalenderEvent(event)}
-                  styles={{
-                    event: styles.eventViewStyle,
-                    line: { backgroundColor: colors.lightgrayColor },
-                  }}
+            <ScrollView
+              style={{ flex: 1 }}
+              onScroll={onScrollCalender}
+              nestedScrollEnabled
+              stickyHeaderIndices={[0]}>
+              {isMenu && <MonthHeader />}
+              {!isMenu && (
+                <EventAgendaSection
+                  showTimeTable={showTimeTable}
+                  isMenu={isMenu}
+                  horizontal={listView}
+                  onPressListView={onPressListView}
+                  onPressGridView={onPressGridView}
+                  onDayPress={onDayPress}
+                  selectedCalendarDate={selectedCalendarDateString}
+                  calendarMarkedDates={markingDays}
                 />
-              </View>
-            ) : (
-              <EventScheduleScreen
-                onScroll={onScroll}
-                eventData={eventData}
-                navigation={navigation}
-                profileID={authContext.entity.uid}
-                onThreeDotPress={(item) => {
-                  if (activeScreen) {
-                    setSelectedEventItem(item);
-                  } else {
-                    showSwitchProfilePopup();
-                  }
-                }}
-                onItemPress={async (item) => {
-                  if (activeScreen) {
-                    const entity = authContext.entity;
-                    if (item?.game_id) {
-                      if (item?.game?.sport) {
-                        const gameHome = getGameHomeScreen(item.game.sport);
-                        navigation.navigate(gameHome, {
-                          gameId: item?.game_id,
-                        });
+              )}
+
+              {showTimeTable ? (
+                <View style={{ marginBottom: 100 }}>
+                  <EventCalendar
+                    eventTapped={(event) => {
+                      console.log('Event ::--', event);
+                    }}
+                    events={filterTimeTable}
+                    width={width}
+                    initDate={selectionDate}
+                    // scrollToFirst={false}
+                    renderEvent={(event) => renderCalenderEvent(event)}
+                    styles={{
+                      event: styles.eventViewStyle,
+                      line: { backgroundColor: colors.lightgrayColor },
+                    }}
+                  />
+                </View>
+              ) : (
+                <EventScheduleScreen
+                  eventData={eventSelectDate ? eventData.filter((e) => moment(eventSelectDate).format('YYYY-MM-DD') === moment(e.start_datetime * 1000).format('YYYY-MM-DD')) : eventData}
+                  navigation={navigation}
+                  profileID={authContext.entity.uid}
+                  onThreeDotPress={(item) => {
+                    if (activeScreen) {
+                      setSelectedEventItem(item);
+                    } else {
+                      showSwitchProfilePopup();
+                    }
+                  }}
+                  onItemPress={async (item) => {
+                    if (activeScreen) {
+                      const entity = authContext.entity;
+                      if (item?.game_id) {
+                        if (item?.game?.sport) {
+                          const gameHome = getGameHomeScreen(item.game.sport);
+                          navigation.navigate(gameHome, {
+                            gameId: item?.game_id,
+                          });
+                        }
+                      } else {
+                        getEventById(
+                          entity.role === 'user' ? 'users' : 'groups',
+                          entity.uid || entity.auth.user_id,
+                          item.cal_id,
+                          authContext,
+                        )
+                          .then((response) => {
+                            navigation.navigate('EventScreen', {
+                              data: response.payload,
+                              gameData: item,
+                            });
+                          })
+                          .catch((e) => {
+                            console.log('Error :-', e);
+                          });
                       }
                     } else {
-                      getEventById(
-                        entity.role === 'user' ? 'users' : 'groups',
-                        entity.uid || entity.auth.user_id,
-                        item.cal_id,
-                        authContext,
-                      )
-                        .then((response) => {
-                          navigation.navigate('EventScreen', {
-                            data: response.payload,
-                            gameData: item,
-                          });
-                        })
-                        .catch((e) => {
-                          console.log('Error :-', e);
-                        });
+                      showSwitchProfilePopup();
                     }
-                  } else {
-                    showSwitchProfilePopup();
-                  }
-                }}
-                entity={authContext.entity}
-              />
-            )}
-
+                  }}
+                  entity={authContext.entity}
+                />
+              )}
+            </ScrollView>
             {!createEventModal && (
               <CreateEventButton
                 source={images.plus}
@@ -1036,41 +1103,58 @@ export default function ScheduleScreen({ navigation }) {
         )}
         {!loading && scheduleIndexCounter === 1 && (
           <View style={{ flex: 1 }}>
-            <EventAgendaSection
+            <ScrollView
+              style={{ flex: 1 }}
+              onScroll={onScrollCalender}
+              nestedScrollEnabled
+              stickyHeaderIndices={[0]}>
+              {/* <EventAgendaSection
               showTimeTable={showTimeTable}
               isMenu={isMenu}
-              horizontal={true}
+              horizontal={listView}
               onPressListView={onPressListView}
               onPressGridView={onPressGridView}
               onDayPress={onDayPress}
               selectedCalendarDate={selectedCalendarDateString}
               calendarMarkedDates={markingDays}
-            />
+            /> */}
+              {isMenu && <MonthHeader />}
+              {!isMenu && (
+                <EventAgendaSection
+                  showTimeTable={showTimeTable}
+                  isMenu={isMenu}
+                  horizontal={listView}
+                  onPressListView={onPressListView}
+                  onPressGridView={onPressGridView}
+                  onDayPress={onDayPress}
+                  selectedCalendarDate={selectedCalendarDateString}
+                  calendarMarkedDates={markingDays}
+                />
+              )}
+              {/* Availibility bottom view */}
 
-            {/* Availibility bottom view */}
-
-            <View style={{ marginBottom: 160 }}>
-              {/* <Text style={styles.slotHeader}>
+              <View>
+                {/* <Text style={styles.slotHeader}>
                 Available time For challenge
               </Text> */}
-              <SectionList
-                sections={blockedGroups}
-                renderItem={({ item }) => (
-                  <BlockSlotView
-                    startDate={item.start_datetime}
-                    endDate={item.end_datetime}
-                    allDay={item.allDay}
-                  />
-                )}
-                keyExtractor={(item, index) => index.toString()}
-                renderSectionHeader={({ section: { title } }) => (
-                  <Text style={styles.sectionHeader}>
-                    {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
-                  </Text>
-                )}
-              />
-            </View>
-
+                <SectionList
+                  sections={blockedGroups}
+                  renderItem={({ item }) => (
+                    <BlockSlotView
+                      startDate={item.start_datetime}
+                      endDate={item.end_datetime}
+                      allDay={item.allDay}
+                    />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderSectionHeader={({ section: { title } }) => (
+                    <Text style={styles.sectionHeader}>
+                      {moment(new Date(title)).format('dddd, MMM DD, YYYY')}
+                    </Text>
+                  )}
+                />
+              </View>
+            </ScrollView>
             {!createEventModal && (
               <CreateEventButton
                 source={images.plus}

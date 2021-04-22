@@ -27,16 +27,17 @@ import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import PostDescSection from './PostDescSection';
 import TagView from './TagView';
 import CustomVideoPlayer from '../CustomVideoPlayer';
+import CommentModal from './CommentModal';
 
 export default function SinglePostVideoView({
   backBtnPress,
   data,
   item,
   caller_id,
-  navigation,
+
   onImageProfilePress,
   onLikePress,
-  openPostModal,
+
 }) {
   const [topDesc, setTopDesc] = useState(false);
   const [dimention, setDimention] = useState({ width: wp('100%'), height: '100%' });
@@ -56,6 +57,7 @@ export default function SinglePostVideoView({
   const [isLandScape, setIsLandScape] = useState(false);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [ShowComment, setShowModelComment] = useState(false);
 
   useEffect(() => {
     let filterLike = [];
@@ -73,6 +75,10 @@ export default function SinglePostVideoView({
       setLike(false);
     }
   }, [item]);
+
+    const onClose = () => {
+      setShowModelComment(false)
+    }
 
   let userImage = '';
   if (item.actor && item.actor.data) {
@@ -253,10 +259,7 @@ export default function SinglePostVideoView({
                 <TouchableOpacity
                     onPress={() => {
                       backBtnPress()
-                      navigation.navigate('WriteCommentScreen', {
-                        data: item,
-                        onDonePress: openPostModal,
-                      });
+                      setShowModelComment(true)
                     }}
                     style={styles.imageTouchStyle}>
                   <Image
@@ -365,6 +368,8 @@ export default function SinglePostVideoView({
             }
           }}
         />
+        <CommentModal item={item} showCommentModal={ShowComment} onClose={onClose} />
+
       </View>
     </KeyboardAvoidingView>
   );
