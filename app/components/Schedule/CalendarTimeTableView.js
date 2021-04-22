@@ -24,7 +24,8 @@ export default function CalendarTimeTableView({
           style={{ height: 20, width: 20, borderRadius: 40 }}
           resizeMode={'contain'}
         />}
-        <Text style={styles.eventSummaryStyle}>{eventObj?.game?.home_team?.group_name || eventObj?.game?.home_team?.full_name}</Text>
+        {type === 'event' && <Text numberOfLines={1} style={styles.eventSummaryStyle}>{eventObj?.title}</Text>}
+        {type === 'game' && <Text numberOfLines={1} style={styles.eventSummaryStyle}>{eventObj?.game?.home_team?.group_name || eventObj?.game?.home_team?.full_name}</Text>}
       </View>
     </TouchableOpacity>
   );
@@ -37,9 +38,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 8,
     borderBottomLeftRadius: 5,
     borderTopLeftRadius: 5,
+
   },
   eventViewStyle: {
-    alignSelf: 'center',
     marginLeft: 8,
     justifyContent: 'center',
     flexDirection: 'row',
@@ -49,6 +50,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RRegular,
     marginLeft: 8,
+    marginTop: 2,
+
   },
   vsText: {
     color: colors.themeColor,
