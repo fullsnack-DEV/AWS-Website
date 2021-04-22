@@ -14,18 +14,15 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import TCGradientButton from './TCGradientButton';
 import TCRoundChart from './TCRoundChart';
-import useRenderCount from '../hooks/useRenderCount'
 import { widthPercentageToDP } from '../utils';
 
 const TCTeamsCardPlaceholder = ({
   cardWidth = '86%', gameStatsData, placeholderText = '',
-}) => {
-  useRenderCount('TCHiringPlayersCard')
-  return (
+}) => (
 
-    <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
-      <View style={styles.eventText}>
-        <View
+  <View style={[styles.backgroundView, { width: wp(cardWidth) }]}>
+    <View style={styles.eventText}>
+      <View
             style={{
               width: wp('20%'),
               height: 102,
@@ -33,23 +30,23 @@ const TCTeamsCardPlaceholder = ({
               borderBottomLeftRadius: 8,
               borderTopLeftRadius: 8,
             }}>
-          <TCRoundChart gameStatsData ={gameStatsData}/>
-        </View>
-        <View style={{ width: wp('40%'), marginLeft: 10 }}>
-          <View style={styles.bottomView}>
-            <Text style={styles.levelText}>Lv.0</Text>
-            <Text style={styles.textSaperator}> | </Text>
-            <Text style={styles.pointView} numberOfLines={1}>
-              0 points
-            </Text>
-          </View>
-          <Text style={styles.eventTitle} numberOfLines={3}>
-            United States women’s soccer team sdafs dsfafdsa fas fdsfa fdsaf
-            fadfasf df dsfads fs
+        <TCRoundChart gameStatsData ={gameStatsData}/>
+      </View>
+      <View style={{ width: wp('40%'), marginLeft: 10 }}>
+        <View style={styles.bottomView}>
+          <Text style={styles.levelText}>Lv.0</Text>
+          <Text style={styles.textSaperator}> | </Text>
+          <Text style={styles.pointView} numberOfLines={1}>
+            0 points
           </Text>
         </View>
+        <Text style={styles.eventTitle} numberOfLines={3}>
+          United States women’s soccer team sdafs dsfafdsa fas fdsfa fdsaf
+          fadfasf df dsfads fs
+        </Text>
       </View>
-      <ImageBackground
+    </View>
+    <ImageBackground
           source={images.soccerBackground}
           style={{
             height: 102,
@@ -61,7 +58,7 @@ const TCTeamsCardPlaceholder = ({
             alignItems: 'center',
             justifyContent: 'flex-end',
           }}>
-        <TCGradientButton
+      <TCGradientButton
           startGradientColor = {colors.kHexColorFF8A01}
           endGradientColor = {colors.darkThemeColor}
             title={'$9999+ CAD'}
@@ -72,22 +69,21 @@ const TCTeamsCardPlaceholder = ({
             }}
             onPress={() => console.log('Amount Pressed')}
           />
-      </ImageBackground>
-      <LinearGradient
+    </ImageBackground>
+    <LinearGradient
         colors={[colors.yellowColor, colors.assistTextColor]}
           style={styles.overlayStyle}>
-        <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
-        <TouchableOpacity
+      <Text style={styles.placeholderTextStyle}>{placeholderText}</Text>
+      <TouchableOpacity
               style={styles.startButton}
               onPress={() => {
               }}>
-          <Text style={styles.startTitle}>Start</Text>
-        </TouchableOpacity>
-      </LinearGradient>
-    </View>
+        <Text style={styles.startTitle}>Start</Text>
+      </TouchableOpacity>
+    </LinearGradient>
+  </View>
 
   )
-}
 
 const styles = StyleSheet.create({
   backgroundView: {

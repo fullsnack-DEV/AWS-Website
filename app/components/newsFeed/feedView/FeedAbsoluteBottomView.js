@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import { getScreenWidth, getTaggedText } from '../../../utils';
@@ -166,10 +165,18 @@ const FeedAbsoluteBottomView = ({
     ), [commentCount, isLandscape, like, likeCount, onCommentButtonPress, onLikePress, readMore, screenInsets, shareActionSheetRef])
 
     const renderThumb = useCallback(() => (
-      <FastImage
-            source={images.videoThumb}
-            resizeMode={'contain'}
-            style={{ height: slidingStatus ? 30 : 15, width: slidingStatus ? 30 : 15 }}/>
+      <View
+            style={{
+                elevation: 5,
+                shadowColor: colors.googleColor,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
+                borderRadius: 50,
+                backgroundColor: colors.whiteColor,
+                height: slidingStatus ? 30 : 15,
+                width: slidingStatus ? 30 : 15,
+            }}/>
     ), [slidingStatus]);
 
     const secondsToHms = (date) => {
@@ -222,10 +229,14 @@ const FeedAbsoluteBottomView = ({
                 }),
                 color: colors.whiteColor,
         }}>
-          {secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
+          {currentTime > (sourceData?.duration / 1000)
+              ? secondsToHms(Math.ceil((sourceData?.duration / 1000)?.toFixed(0)))
+              : secondsToHms(Math.ceil(currentTime?.toFixed(0)))
+          }
         </Text>
         <MultiSlider
-            markerOffsetX={5}
+            smoothSnapped={true}
+            markerOffsetX={3}
             max={(sourceData?.duration / 1000)}
             enabledTwo={false}
             isMarkersSeparated={true}

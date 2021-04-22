@@ -17,7 +17,6 @@ function millisToMinutesAndSeconds(millis) {
 
 function ShortsCard({ onPress, cardItem }) {
   const json = JSON.parse(cardItem.object);
-  console.log('DATA:=>', json);
   return (
     <TouchableOpacity onPress={() => onPress({ cardItem }) }>
 

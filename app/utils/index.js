@@ -381,7 +381,6 @@ export const toggleView = (callbackMethod, duration = 2000) => {
   };
 
   LayoutAnimation.configureNext(CustomLayoutLinear);
-  // eslint-disable-next-line no-unused-expressions
   callbackMethod();
 };
 

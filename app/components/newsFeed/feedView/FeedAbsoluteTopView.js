@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import _ from 'lodash'
 import {
-    Image, ScrollView, StyleSheet, Text, View,
+    Image, ScrollView, StyleSheet, Text, View, TouchableOpacity as ReactNativeTouchableOpacity,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { TouchableWithoutFeedback, TouchableOpacity } from 'react-native-gesture-handler';
@@ -191,9 +191,11 @@ const FeedAbsoluteTopView = ({
               />}
 
         {readMore && <View style={{ flex: 1, paddingVertical: 15, marginHorizontal: 15 }}>
-          <ScrollView indicatorStyle={'white'} style={{ zIndex: 10 }}
-                              showsVerticalScrollIndicator={true}>
-            <TouchableOpacity
+          <ScrollView
+              indicatorStyle={'white'}
+              style={{ zIndex: 10 }}
+              showsVerticalScrollIndicator={true}>
+            <ReactNativeTouchableOpacity
                           activeOpacity={1}
                           onPress={() => setReadMore(!readMore)}>
               <FeedDescriptionSection
@@ -205,7 +207,7 @@ const FeedAbsoluteTopView = ({
                               isLandscape={isLandscape}
                               descriptionTxt={{ color: colors.whiteColor }}
                           />
-            </TouchableOpacity>
+            </ReactNativeTouchableOpacity>
           </ScrollView>
         </View>
               }

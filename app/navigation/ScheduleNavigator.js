@@ -1,7 +1,5 @@
 import React from 'react';
 
-import 'react-native-gesture-handler';
-
 import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';

@@ -1,5 +1,4 @@
 import React from 'react';
-import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
