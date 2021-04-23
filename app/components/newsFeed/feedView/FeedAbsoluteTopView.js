@@ -1,5 +1,5 @@
 import React, {
- memo, useCallback, Fragment, useContext,
+    memo, useCallback, Fragment, useContext, useMemo,
 } from 'react';
 import _ from 'lodash'
 import {
@@ -37,6 +37,7 @@ const FeedAbsoluteTopView = ({
     const userImage = feedItem?.actor?.data?.thumbnail ? { uri: feedItem?.actor?.data?.thumbnail } : images?.profilePlaceHolder;
     const authContext = useContext(AuthContext);
 
+    // When user press profile pic / profile name
     const onProfilePress = useCallback(() => {
         if (feedItem?.actor?.id) {
             if (feedItem?.actor?.id !== authContext?.entity?.uid) {
@@ -49,6 +50,7 @@ const FeedAbsoluteTopView = ({
         }
     }, [authContext?.entity?.uid, feedItem?.actor?.data?.entity_type, feedItem?.actor?.id, navigation])
 
+    // When user press full screen icon
     const onFullScreen = useCallback(() => {
         const sourceData = feedSubItem?.attachments?.[currentViewIndex];
         if (isFullScreen) {
@@ -68,154 +70,184 @@ const FeedAbsoluteTopView = ({
         setTimeout(() => Orientation.unlockAllOrientations(), 1500);
     }, [currentViewIndex, feedSubItem?.attachments, isFullScreen, setIsFullScreen, setIsLandscape])
 
+    // Render Top Description with read More functionality
+    const renderDescriptionSection = useMemo(() => (
+      <Fragment>
+        {(!readMore && isLandscape) && <FeedDescriptionSection
+                readMore={readMore}
+                setReadMore={setReadMore}
+                navigation={navigation}
+                tagData={feedSubItem?.format_tagged_data}
+                descriptions={feedSubItem?.text}
+                isLandscape={isLandscape}
+                descriptionTxt={{ color: colors.whiteColor }}
+            />}
+
+        {readMore && <View style={{ flex: 1, paddingVertical: 15, marginHorizontal: 15 }}>
+          <ScrollView
+                    indicatorStyle={'white'}
+                    style={{ zIndex: 10 }}
+                    showsVerticalScrollIndicator={true}>
+            <ReactNativeTouchableOpacity
+                        activeOpacity={1}
+                        onPress={() => setReadMore(!readMore)}>
+              <FeedDescriptionSection
+                            readMore={readMore}
+                            setReadMore={setReadMore}
+                            navigation={navigation}
+                            tagData={feedSubItem?.format_tagged_data}
+                            descriptions={feedSubItem?.text}
+                            isLandscape={isLandscape}
+                            descriptionTxt={{ color: colors.whiteColor }}
+                        />
+            </ReactNativeTouchableOpacity>
+          </ScrollView>
+        </View>
+            }
+      </Fragment>
+    ), [feedSubItem?.format_tagged_data, feedSubItem?.text, isLandscape, navigation, readMore, setReadMore])
+
+    // Render right buttons contain full screen, three dots, mute/unmute
+    const renderTopRightButtons = useMemo(() => (
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+        {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
+          <Fragment>
+            {/*  Mute Unmute Button */}
+            <TouchableOpacity hitSlop={getHitSlop(10)} onPress={() => setIsMute((val) => !val)}>
+              <FastImage
+                            source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
+                            resizeMode={'contain'}
+                            style={{
+                                marginHorizontal: 10,
+                                height: 18,
+                                width: 18,
+                                tintColor: colors.whiteColor,
+                            }}
+                        />
+            </TouchableOpacity>
+
+            {/*  Full Screen Button */}
+            <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen}>
+              <FastImage
+                            source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
+                            resizeMode={'contain'}
+                            style={{
+                                marginHorizontal: 5,
+                                height: 18,
+                                width: 18,
+                                tintColor: colors.whiteColor,
+                            }}
+                        />
+            </TouchableOpacity>
+          </Fragment>
+            )}
+
+        <TouchableOpacity onPress={onThreeDotPress}>
+          <Image
+                    source={images.vertical3Dot}
+                    resizeMode={'contain'}
+                    style={{
+                        height: 18,
+                        width: 18,
+                        tintColor: colors.whiteColor,
+                        marginHorizontal: 5,
+                    }} />
+        </TouchableOpacity>
+      </View>
+    ), [currentViewIndex, feedSubItem?.attachments, isFullScreen, isMute, onFullScreen, onThreeDotPress, setIsMute])
+
+    // Render top profile image and name with back button
+    const renderProfileDisplay = useMemo(() => (
+      <View style={styles.profileContainer}>
+        <TouchableOpacity
+                hitSlop={getHitSlop(15)}
+                onPress={() => {
+                    Orientation.lockToPortrait();
+                    navigation.goBack();
+                }}
+            >
+          <FastImage
+                    tintColor={colors.whiteColor}
+                    source={images.backArrow}
+                    resizeMode={'contain'}
+                    style={{ height: 20, width: 20 }}
+                />
+        </TouchableOpacity>
+
+        <View style={styles.mainContainer}>
+          <TouchableWithoutFeedback onPress={onProfilePress}>
+            <Image
+                        style={styles.background}
+                        source={userImage}
+                        resizeMode={'cover'}
+                    />
+          </TouchableWithoutFeedback>
+          <View style={styles.userNameView}>
+            <Text
+                numberOfLines={1}
+                style={{
+                        ...styles.userNameTxt,
+                        maxWidth: getScreenWidth({
+                                    isLandscape, screenInsets, portraitWidth: 40,
+                                  }),
+                }}
+                onPress={() => {}}>
+              {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
+            </Text>
+            <Text style={styles.activeTimeAgoTxt}>
+              {commentPostTimeCalculate(feedItem?.time, true)}
+            </Text>
+          </View>
+        </View>
+
+      </View>
+    ), [feedItem?.actor?.data?.full_name, feedItem?.time, isLandscape, navigation, onProfilePress, screenInsets, userImage])
+
     return (
       <View
           pointerEvents={showParent ? 'auto' : 'none'}
           style={{
-              opacity: showParent ? 1 : 0,
-              position: 'absolute',
-              top: 0,
+              ...styles.topMainContainer,
+          opacity: showParent ? 1 : 0,
           ...(readMore && { bottom: 0 }),
           backgroundColor: readMore ? 'rgba(0,0,0,0.7)' : 'transparent',
           }}>
         <View
-                  style={{
-                      zIndex: 100,
-                      paddingHorizontal: 15,
-                      flexDirection: 'row',
-                      width: getScreenWidth({ isLandscape, screenInsets }),
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                  }}>
-          <View style={{
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+          style={{
+          ...styles.topSubContainer,
+          width: getScreenWidth({ isLandscape, screenInsets }),
           }}>
-            <TouchableOpacity
-                          hitSlop={getHitSlop(15)}
-                          onPress={() => {
-                              Orientation.lockToPortrait();
-                              navigation.goBack();
-                          }}
-                      >
-              <FastImage
-                              tintColor={colors.whiteColor}
-                              source={images.backArrow}
-                              resizeMode={'contain'}
-                              style={{ height: 20, width: 20 }}
-                          />
-            </TouchableOpacity>
 
-            <View style={styles.mainContainer}>
-              <TouchableWithoutFeedback onPress={onProfilePress}>
-                <Image
-                                  style={styles.background}
-                                  source={userImage}
-                                  resizeMode={'cover'}
-                              />
-              </TouchableWithoutFeedback>
-              <View style={styles.userNameView}>
-                <Text numberOfLines={1} style={{
-                 ...styles.userNameTxt,
-                maxWidth: getScreenWidth({
-                isLandscape, screenInsets, portraitWidth: 40,
-                }),
-                }} onPress={() => {}}>
-                  {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
-                </Text>
-                <Text style={styles.activeTimeAgoTxt}>
-                  {commentPostTimeCalculate(feedItem?.time, true)}
-                </Text>
-              </View>
-            </View>
+          {/* Render top profile image and name with back button */}
+          {renderProfileDisplay}
 
-          </View>
-
-          {/* Right Buttons */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-            {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
-              <Fragment>
-                {/*  Mute Unmute Button */}
-                <TouchableOpacity hitSlop={getHitSlop(10)} onPress={() => setIsMute((val) => !val)}>
-                  <FastImage
-                                      source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
-                                      resizeMode={'contain'}
-                                      style={{
-                                          marginHorizontal: 10,
-                                          height: 18,
-                                          width: 18,
-                                          tintColor: colors.whiteColor,
-                                      }}
-                                  />
-                </TouchableOpacity>
-
-                {/*  Full Screen Button */}
-                <TouchableOpacity hitSlop={getHitSlop(10)} onPress={onFullScreen}>
-                  <FastImage
-                                      source={isFullScreen ? images.videoNormalScreen : images.videoFullScreen }
-                                      resizeMode={'contain'}
-                                      style={{
-                                          marginHorizontal: 5,
-                                          height: 18,
-                                          width: 18,
-                                          tintColor: colors.whiteColor,
-                                      }}
-                                  />
-                </TouchableOpacity>
-              </Fragment>
-                      )}
-
-            <TouchableOpacity onPress={onThreeDotPress}>
-              <Image
-                              source={images.vertical3Dot}
-                              resizeMode={'contain'}
-                              style={{
-                                  height: 18,
-                                  width: 18,
-                                  tintColor: colors.whiteColor,
-                                  marginHorizontal: 5,
-                              }} />
-            </TouchableOpacity>
-          </View>
+          {/* Render right buttons contain full screen, three dots, mute/unmute */}
+          {renderTopRightButtons}
         </View>
 
-        {(!readMore && isLandscape) && <FeedDescriptionSection
-                  readMore={readMore}
-                  setReadMore={setReadMore}
-                  navigation={navigation}
-                  tagData={feedSubItem?.format_tagged_data}
-                  descriptions={feedSubItem?.text}
-                  isLandscape={isLandscape}
-                  descriptionTxt={{ color: colors.whiteColor }}
-              />}
-
-        {readMore && <View style={{ flex: 1, paddingVertical: 15, marginHorizontal: 15 }}>
-          <ScrollView
-              indicatorStyle={'white'}
-              style={{ zIndex: 10 }}
-              showsVerticalScrollIndicator={true}>
-            <ReactNativeTouchableOpacity
-                          activeOpacity={1}
-                          onPress={() => setReadMore(!readMore)}>
-              <FeedDescriptionSection
-                              readMore={readMore}
-                              setReadMore={setReadMore}
-                              navigation={navigation}
-                              tagData={feedSubItem?.format_tagged_data}
-                              descriptions={feedSubItem?.text}
-                              isLandscape={isLandscape}
-                              descriptionTxt={{ color: colors.whiteColor }}
-                          />
-            </ReactNativeTouchableOpacity>
-          </ScrollView>
-        </View>
-              }
+        {/* Render Top Description with read More functionality */}
+        {renderDescriptionSection}
       </View>
     )
 }
 
 const styles = StyleSheet.create({
+    topMainContainer: {
+        position: 'absolute',
+        top: 0,
+    },
+    topSubContainer: {
+        zIndex: 100,
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    profileContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     mainContainer: {
         flexDirection: 'row',
         padding: wp('3%'),

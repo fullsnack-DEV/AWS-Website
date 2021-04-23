@@ -37,15 +37,14 @@ const FeedViewScreen = ({ navigation, route }) => {
   const [isPostOwner, setIsPostOwner] = useState(false);
   const onFullScreen = useCallback(() => setIsFullScreen((val) => setIsFullScreen(!val)), [])
 
-  useEffect(() => {
-  }, [])
-
+  // On change of current slider image / video
   useEffect(() => {
     setCurrentTime(0);
     setPaused(true);
     setIsMute(false);
   }, [currentViewIndex])
 
+  // On data come from parent screen
   useEffect(() => {
     if (route?.params?.feedItem) {
       setIsPostOwner(route?.params?.feedItem?.ownerId === authContext?.entity?.uid || route?.params?.feedItem?.foreign_id === authContext?.entity?.uid);
@@ -56,6 +55,13 @@ const FeedViewScreen = ({ navigation, route }) => {
     }
   }, [route?.params?.feedItem])
 
+  // When isLandscape is changed
+  useEffect(() => {
+    if (isLandscape) setIsFullScreen(true)
+    else setIsFullScreen(false)
+  }, [isLandscape])
+
+  // When screen is focused
   useEffect(() => {
     if (isFocused) {
       StatusBar.setHidden(true);
@@ -74,6 +80,7 @@ const FeedViewScreen = ({ navigation, route }) => {
     };
   }, [isFocused])
 
+  // When orientation is change
   const orientationChange = useCallback((orientation) => {
     // eslint-disable-next-line no-console
     console.log(orientation);
@@ -86,12 +93,15 @@ const FeedViewScreen = ({ navigation, route }) => {
     }
   }, []);
 
+  // When three dot press
   const onThreeDotPress = useCallback(() => {
     threeDotRef.current.show();
   }, [])
 
+  // Render Top Bar which contain creator name and description with other functionality
   const renderTopView = useMemo(() => (
-    <FeedAbsoluteTopView
+    <Fragment>
+      <FeedAbsoluteTopView
         screenInsets={screenInsets}
         onThreeDotPress={onThreeDotPress}
         currentViewIndex={currentViewIndex}
@@ -108,8 +118,10 @@ const FeedViewScreen = ({ navigation, route }) => {
         readMore={readMore}
         setReadMore={setReadMore}
       />
+    </Fragment>
     ), [currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, isMute, navigation, onThreeDotPress, readMore, screenInsets, showParent])
 
+  // When user click on like button
   const onLikePress = useCallback(() => {
     const bodyParams = {
       reaction_type: 'clap',
@@ -121,13 +133,10 @@ const FeedViewScreen = ({ navigation, route }) => {
         });
   }, [authContext, feedItem?.id]);
 
-  useEffect(() => {
-    if (isLandscape) setIsFullScreen(true)
-    else setIsFullScreen(false)
-  }, [isLandscape])
-
+  // Render bottom bar which contain comment , like , share button and description and tagged
   const renderBottomView = useMemo(() => (
-    <FeedAbsoluteBottomView
+    <Fragment>
+      <FeedAbsoluteBottomView
         screenInsets={screenInsets}
         shareActionSheetRef={shareActionSheetRef}
         currentViewIndex={currentViewIndex}
@@ -146,15 +155,19 @@ const FeedViewScreen = ({ navigation, route }) => {
         readMore={readMore}
         setReadMore={setReadMore}
     />
+    </Fragment>
   ), [currentTime, currentViewIndex, feedItem, feedSubItem, isFullScreen, isLandscape, navigation, onLikePress, paused, readMore, screenInsets, showParent])
 
+  // When user touch the screen for hide top and bottom view
   const setShowParent = useCallback((toggleValue) => {
     if (toggleValue) setShowsParent(toggleValue)
     else setShowsParent((val) => !val)
   }, [])
 
+  // Render Middle View which contain post (Video / Image)
   const renderPostView = useMemo(() => (
-    <FeedPostView
+    <Fragment>
+      <FeedPostView
           screenInsets={screenInsets}
           setisLandscape={setIsLandscape}
           paused={paused}
@@ -175,9 +188,11 @@ const FeedViewScreen = ({ navigation, route }) => {
           isFullScreen={isFullScreen}
           onFullScreen={onFullScreen}
     />
+    </Fragment>
   ), [currentTime, currentViewIndex, feedSubItem, isFullScreen, isLandscape, isMute, onFullScreen, paused, route?.params?.currentPage, screenInsets, setShowParent, showParent])
 
-  const renderAbsoluteView = useMemo(() => (
+  // Render main container which contain top, bottom and middle view(post)
+  const renderFeedView = useMemo(() => (
     <Fragment>
       {renderPostView}
       {renderTopView}
@@ -185,6 +200,7 @@ const FeedViewScreen = ({ navigation, route }) => {
     </Fragment>
   ), [renderBottomView, renderPostView, renderTopView])
 
+  // When user click on share button
   const onShareActionSheetItemPress = useCallback((index) => {
     if (index === 0) {
       console.log(1);
@@ -205,18 +221,23 @@ const FeedViewScreen = ({ navigation, route }) => {
     }
   }, [authContext, feedSubItem?.text])
 
+  // Render actionsheet for share button press
   const renderSharePostActionSheet = useMemo(() => (
-    <ActionSheet
+    <Fragment>
+      <ActionSheet
           ref={shareActionSheetRef}
           title={'News Feed Post'}
           options={['Repost', 'Copy Link', 'More', 'Cancel']}
           cancelButtonIndex={3}
           onPress={onShareActionSheetItemPress}
       />
+    </Fragment>
   ), [onShareActionSheetItemPress])
 
+  // Render actionsheet for three dot button press
   const renderThreeDotActionSheet = useMemo(() => (
-    <ActionSheet
+    <Fragment>
+      <ActionSheet
         ref={threeDotRef}
         options={isPostOwner ? ['Edit Privacy', 'Report', 'Cancel'] : ['Report', 'Cancel']}
         cancelButtonIndex={isPostOwner ? 2 : 1}
@@ -227,12 +248,14 @@ const FeedViewScreen = ({ navigation, route }) => {
           } else if (index === 0) Alert.alert('Report')
         }}
     />
+    </Fragment>
   ), [isPostOwner])
 
+  // Main render
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.blackColor }}>
       <View style={{ flex: 1 }}>
-        {renderAbsoluteView}
+        {renderFeedView}
         {renderThreeDotActionSheet}
         {renderSharePostActionSheet}
       </View>

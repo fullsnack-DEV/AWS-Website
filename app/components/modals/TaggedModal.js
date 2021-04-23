@@ -1,20 +1,20 @@
 import React, {
- useCallback, useEffect, useMemo, useState,
+    useCallback, useEffect, useMemo, useState,
 } from 'react';
 import {
- StatusBar, StyleSheet, Text, View,
+    StatusBar, StyleSheet, Text, View,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { Modalize } from 'react-native-modalize';
-import colors from '../../../Constants/Colors';
-import images from '../../../Constants/ImagePath';
-import fonts from '../../../Constants/Fonts';
-import strings from '../../../Constants/String';
-import TCGameCard from '../../TCGameCard';
-import TaggedEntityView from '../../shorts/TaggedEntityView';
-import { getGameHomeScreen } from '../../../utils/gameUtils';
+import colors from '../../Constants/Colors';
+import images from '../../Constants/ImagePath';
+import fonts from '../../Constants/Fonts';
+import strings from '../../Constants/String';
+import TCGameCard from '../TCGameCard';
+import TaggedEntityView from '../shorts/TaggedEntityView';
+import { getGameHomeScreen } from '../../utils/gameUtils';
 
-const FeedTaggedScreen = ({ taggedModalRef, navigation, taggedData }) => {
+const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
     const isFocused = useIsFocused();
     const [gameTagList, setGameTagList] = useState([])
     const [entityTagList, setEntityTagList] = useState([])
@@ -43,55 +43,55 @@ const FeedTaggedScreen = ({ taggedModalRef, navigation, taggedData }) => {
 
     const renderMatchTaggedItems = useCallback(({ item }) => (
       <TCGameCard
-          data={item?.entity_data}
-          cardWidth={'92%'}
-          onPress={() => {
-              const routeName = getGameHomeScreen(item?.entity_data?.sport);
-              if (routeName) navigation.push(routeName, { gameId: item?.entity_id })
-          }}
-      />
+            data={item?.entity_data}
+            cardWidth={'92%'}
+            onPress={() => {
+                const routeName = getGameHomeScreen(item?.entity_data?.sport);
+                if (routeName) navigation.push(routeName, { gameId: item?.entity_id })
+            }}
+        />
     ), [navigation])
 
     const renderEntityTaggedItems = useCallback(({ item }) => {
-            let teamIcon = '';
-            let teamImagePH = '';
-            if (item?.entity_type === 'team') {
-                teamIcon = images.myTeams;
-                teamImagePH = images.team_ph;
-            } else if (item?.entity_type === 'club') {
-                teamIcon = images.myClubs;
-                teamImagePH = images.club_ph;
-            } else if (item?.entity_type === 'league') {
-                teamIcon = images.myLeagues;
-                teamImagePH = images.leaguePlaceholder;
-            } else if (item?.entity_type === 'player') {
-                teamImagePH = images.profilePlaceHolder;
-            }
-            return (
-              <TaggedEntityView
-                        titleStyle={{ color: colors.lightBlackColor }}
-                        cityStyle={{ color: colors.lightBlackColor }}
-                        onProfilePress={() => {
-                            navigation.push('HomeScreen', {
-                                uid: item?.entity_id,
-                                role: ['user', 'player']?.includes(item?.entity_type)
-                                    ? 'user'
-                                    : item?.entity_type,
-                                backButtonVisible: true,
-                                menuBtnVisible: false,
-                            });
-                        }}
-                        teamImage={
-                            item?.entity_data?.thumbnail
-                                ? { uri: item?.entity_data?.thumbnail }
-                                : teamImagePH
-                        }
-                        teamTitle={item?.entity_data?.group_name ?? item?.entity_data?.full_name}
-                        teamIcon={teamIcon}
-                        teamCityName={`${item?.entity_data?.city}`}
-                    />
-            );
-        }, [navigation]);
+        let teamIcon = '';
+        let teamImagePH = '';
+        if (item?.entity_type === 'team') {
+            teamIcon = images.myTeams;
+            teamImagePH = images.team_ph;
+        } else if (item?.entity_type === 'club') {
+            teamIcon = images.myClubs;
+            teamImagePH = images.club_ph;
+        } else if (item?.entity_type === 'league') {
+            teamIcon = images.myLeagues;
+            teamImagePH = images.leaguePlaceholder;
+        } else if (item?.entity_type === 'player') {
+            teamImagePH = images.profilePlaceHolder;
+        }
+        return (
+          <TaggedEntityView
+                titleStyle={{ color: colors.lightBlackColor }}
+                cityStyle={{ color: colors.lightBlackColor }}
+                onProfilePress={() => {
+                    navigation.push('HomeScreen', {
+                        uid: item?.entity_id,
+                        role: ['user', 'player']?.includes(item?.entity_type)
+                            ? 'user'
+                            : item?.entity_type,
+                        backButtonVisible: true,
+                        menuBtnVisible: false,
+                    });
+                }}
+                teamImage={
+                    item?.entity_data?.thumbnail
+                        ? { uri: item?.entity_data?.thumbnail }
+                        : teamImagePH
+                }
+                teamTitle={item?.entity_data?.group_name ?? item?.entity_data?.full_name}
+                teamIcon={teamIcon}
+                teamCityName={`${item?.entity_data?.city}`}
+            />
+        );
+    }, [navigation]);
 
     const renderSectionHeader = useCallback(({ section: { title } }) => {
         if (
@@ -125,17 +125,30 @@ const FeedTaggedScreen = ({ taggedModalRef, navigation, taggedData }) => {
         { title: strings.taggedPeopleText, data: entityTagList, renderItem: renderEntityTaggedItems },
     ], [entityTagList, gameTagList, renderEntityTaggedItems, renderMatchTaggedItems])
 
-    const Handle = () => (
+    const ModalHeader = () => (
       <View style={{
-            backgroundColor: 'white', height: 30, borderTopRightRadius: 10, borderTopLeftRadius: 10,
+          backgroundColor: 'white',
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
       }}>
         <View style={styles.handleStyle}/>
+        <Text style={styles.taggedTitleText}>Tagged</Text>
       </View>
     )
 
-  return (
-    <Modalize
+    const onLayout = (e) => {
+        console.log('sd', e);
+        // setViewHeight(e?.nativeEvent?.layout?.height)
+    }
+    return (
+      <Modalize
+          disableScrollIfPossible={true}
+          withHandle={false}
+          adjustToContentHeight={true}
+          ref={taggedModalRef}
+          HeaderComponent={ModalHeader}
             sectionListProps={{
+                onLayout,
                 showsHorizontalScrollIndicator: false,
                 showsVerticalScrollIndicator: false,
                 ItemSeparatorComponent: renderSeparator,
@@ -143,12 +156,9 @@ const FeedTaggedScreen = ({ taggedModalRef, navigation, taggedData }) => {
                 renderSectionHeader,
                 sections,
             }}
-            disableScrollIfPossible={true}
-            withHandle={false}
-            ref={taggedModalRef}
-            HeaderComponent={() => <Handle/>}
+
         />
-  )
+    )
 }
 
 const styles = StyleSheet.create({
@@ -159,8 +169,8 @@ const styles = StyleSheet.create({
         marginLeft: 15,
     },
     handleStyle: {
+        marginTop: 15,
         alignSelf: 'center',
-        top: 15,
         height: 5,
         width: 40,
         borderRadius: 15,
@@ -191,6 +201,13 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         paddingTop: 10,
     },
+    taggedTitleText: {
+        color: colors.lightBlackColor,
+        fontFamily: fonts.RBold,
+        textAlign: 'center',
+        marginVertical: 15,
+        fontSize: 16,
+    },
 });
 
-export default FeedTaggedScreen;
+export default TaggedModal;
