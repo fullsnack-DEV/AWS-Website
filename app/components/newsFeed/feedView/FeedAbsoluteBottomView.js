@@ -1,5 +1,5 @@
 import React, {
-    useCallback, Fragment, useContext, useEffect, useState, useMemo,
+    useCallback, Fragment, useContext, useEffect, useState, useMemo, useRef,
 } from 'react';
 import {
     Image, StyleSheet, Text, View,
@@ -14,6 +14,7 @@ import TagView from '../TagView';
 import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
 import CommentModal from '../CommentModal';
+import TaggedModal from '../../modals/TaggedModal';
 
 const FeedAbsoluteBottomView = ({
     feedItem = {},
@@ -33,6 +34,7 @@ const FeedAbsoluteBottomView = ({
     shareActionSheetRef,
     screenInsets,
 }) => {
+    const taggedModalRef = useRef(null);
     const [slidingStatus, setSlidingStatus] = useState(false);
     const sourceData = feedSubItem?.attachments?.[currentViewIndex];
     const authContext = useContext(AuthContext);
@@ -61,8 +63,8 @@ const FeedAbsoluteBottomView = ({
     }, []);
 
     const onTaggedPress = useCallback(() => {
-        navigation.navigate('FeedTaggedScreen', { taggedData: feedSubItem?.format_tagged_data ?? [] })
-    }, [feedSubItem?.format_tagged_data, navigation])
+        taggedModalRef.current.open();
+    }, [])
 
     const taggedText = useMemo(() => getTaggedText(feedSubItem?.format_tagged_data), [feedSubItem]);
 
@@ -205,6 +207,7 @@ const FeedAbsoluteBottomView = ({
 
         return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
     }
+
     const onClose = () => {
       setShowModelComment(false)
     }
@@ -283,6 +286,8 @@ const FeedAbsoluteBottomView = ({
                 opacity: showParent ? 1 : 0,
             }}>
           <View style={{ justifyContent: 'flex-end' }}>
+
+            {/* Render Description with read more functionality */}
             {!readMore && !isLandscape && (
               <View style={{ paddingVertical: 5, paddingHorizontal: 10 }}>
                 <FeedDescriptionSection
@@ -296,6 +301,8 @@ const FeedAbsoluteBottomView = ({
                    />
               </View>
             )}
+
+            {/*  Render Tagged Text */}
             {!isLandscape && !readMore && taggedText !== '' && (
               <TouchableOpacity onPress={onTaggedPress}>
                 <TagView
@@ -304,6 +311,8 @@ const FeedAbsoluteBottomView = ({
                 />
               </TouchableOpacity>
             )}
+
+            {/*  Render Video Player Seek Bar */}
             {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && renderSeekBar}
           </View>
 
@@ -311,6 +320,13 @@ const FeedAbsoluteBottomView = ({
           {renderBottomButtons}
 
         </View>
+
+        <TaggedModal
+            navigation={navigation}
+            taggedModalRef={taggedModalRef}
+            taggedData={feedSubItem?.format_tagged_data}
+        />
+
         <CommentModal item={feedItem} showCommentModal={ShowComment} onClose={onClose}/>
       </Fragment>
     )

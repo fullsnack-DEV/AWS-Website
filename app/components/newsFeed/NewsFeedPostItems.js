@@ -243,6 +243,9 @@ const NewsFeedPostItems = ({
     );
   }, [item?.object])
 
+  const onLikersPress = () => {
+    alert(1)
+  }
   const renderDescription = useMemo(() => (
     <NewsFeedDescription
           descriptions={descriptions}
@@ -350,16 +353,17 @@ const onClose = () => {
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-
-            <Text
+            <TouchableOpacity onPress={onLikersPress}>
+              <Text
               style={[
                 styles.commentlengthStyle,
                 {
                   color: like === true ? '#FF8A01' : colors.reactionCountColor,
                 },
               ]}>
-              {likeCount <= 0 ? '' : likeCount}
-            </Text>
+                {likeCount <= 0 ? '' : likeCount}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={onNewsFeedLikePress}
               style={styles.imageTouchStyle}>
