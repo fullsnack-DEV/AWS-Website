@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useContext,
   useLayoutEffect,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -27,7 +28,7 @@ import {
   SectionList,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { hasNotch } from 'react-native-device-info';
 import {
   widthPercentageToDP as wp,
@@ -45,6 +46,7 @@ import { createReaction, getReactions } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
+import { getTaggedText } from '../../utils';
 
 import { commentPostTimeCalculate } from '../../Constants/LoaderImages';
 import PostDescSection from '../newsFeed/PostDescSection';
@@ -107,17 +109,18 @@ function ShortsVideoView({
   console.log('Video Item:', videoItem);
   const profileItem = multiAttachItem?.actor?.data;
   const descriptionItem = JSON.parse(multiAttachItem?.object)?.text;
-  const taggedItems = JSON.parse(multiAttachItem?.object)?.format_tagged_data || [];
+  const taggedItems = useMemo(() => JSON.parse(multiAttachItem?.object)?.format_tagged_data || [], [multiAttachItem?.object]);
+
   const entityTagList = taggedItems.filter(
     (e) => e?.entity_type === 'player'
       || e?.entity_type === 'team'
       || e?.entity_type === 'club'
       || e?.entity_type === 'user',
   );
-  const gameTagList = taggedItems.filter((e) => e?.entity_type === 'game');
+  const gameTagList = useMemo(() => taggedItems.filter((e) => e?.entity_type === 'game'), [taggedItems]);
 
+  const taggedText = useMemo(() => getTaggedText(taggedItems), [taggedItems]);
   // const [componentHeight, onLayout] = Utility.useComponentSize();
-
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const onKeyboardShow = (event) => setKeyboardOffset(event.endCoordinates.height);
   const onKeyboardHide = () => setKeyboardOffset(0);
@@ -315,46 +318,6 @@ function ShortsVideoView({
       return <View style={styles.saperatorLineGame} />;
     }
     return <View></View>;
-  };
-
-  const getTaggedText = () => {
-    console.log('ET', entityTagList)
-    console.log('GT', gameTagList)
-    if (entityTagList.length > 0 && gameTagList.length > 0) {
-      if (entityTagList.length > 1 && gameTagList.length > 1) {
-        return `${entityTagList.length} matches and ${entityTagList.length} people were tagged`;
-      }
-      if (entityTagList.length === 1 && gameTagList.length > 1) {
-        return `${entityTagList.length} match and ${entityTagList.length} people were tagged`;
-      }
-      if (entityTagList.length > 1 && gameTagList.length === 1) {
-        return `${entityTagList.length} matches and ${entityTagList.length} person were tagged`;
-      }
-      if (entityTagList.length === 1 && gameTagList.length === 1) {
-        return `${entityTagList.length} match and ${entityTagList.length} person were tagged`;
-      }
-    } else {
-      if (entityTagList.length > 0 && gameTagList.length === 0) {
-        if (entityTagList.length > 1 && gameTagList.length === 0) {
-          return `${entityTagList.length} matches were tagged`;
-        }
-        if (entityTagList.length === 1 && gameTagList.length === 0) {
-          return `${entityTagList.length} match was tagged`;
-        }
-      }
-      if (entityTagList.length === 0 && gameTagList.length > 0) {
-        if (entityTagList.length === 0 && gameTagList.length > 1) {
-          return `${gameTagList.length} people were tagged`;
-        }
-        if (entityTagList.length === 0 && gameTagList.length === 1) {
-          return `${gameTagList.length} person was tagged`;
-        }
-      }
-      if (entityTagList.length === 0 && gameTagList.length === 0) {
-        return '';
-      }
-    }
-    return '';
   };
 
   const getMarginTop = () => {
@@ -623,7 +586,7 @@ function ShortsVideoView({
                     )}
                   </View>
 
-                  {getTaggedText() !== '' && (
+                  {taggedText !== '' && (
                     <TouchableWithoutFeedback
                       style={styles.mainContainerStyle}
                       onPress={() => {
@@ -634,7 +597,7 @@ function ShortsVideoView({
                         style={styles.imageStyle}
                         resizeMode={'contain'}
                       />
-                      <Text style={styles.tagTextStyle}>{getTaggedText()}</Text>
+                      <Text style={styles.tagTextStyle}>{taggedText}</Text>
                     </TouchableWithoutFeedback>
                   )}
                 </View>

@@ -264,9 +264,10 @@ export default function ScheduleScreen({ navigation }) {
   const getEventsList = useCallback(
     (selectedObj) => {
       setloading(true);
+      console.log('selectedObj:=>', selectedObj);
       const date = moment(new Date()).format('YYYY-MM-DD');
       const entity = selectedObj; // authContext.entity;
-      const entityRole = entity?.entity_type === 'user' ? 'users' : 'groups';
+      const entityRole = (entity?.entity_type === 'user' || entity?.entity_type === 'player') ? 'users' : 'groups';
       const uid = entity?.group_id || entity?.user_id;
       const eventdata = [];
       const timetabledata = [];
@@ -704,15 +705,7 @@ export default function ScheduleScreen({ navigation }) {
             }}
             eventTitleStyle={{ color: event_color }}
             onPress={() => {
-              if (event?.game?.sport.toLowerCase() === 'soccer') {
-                navigation.navigate('SoccerHome', {
-                  gameId: event?.game_id,
-                });
-              } else {
-                navigation.navigate('TennisHome', {
-                  gameId: event?.game_id,
-                });
-              }
+              Alert.alert('This is normal event')
             }}
           />
         )}
@@ -852,7 +845,7 @@ export default function ScheduleScreen({ navigation }) {
     });
 
     const temp = [];
-    slots.map((e) => {
+    (slots || []).map((e) => {
       if (
         getSimpleDateFormat(new Date(e.start_datetime))
         === getSimpleDateFormat(new Date(dateObj.dateString))
@@ -1042,7 +1035,7 @@ export default function ScheduleScreen({ navigation }) {
                 </View>
               ) : (
                 <EventScheduleScreen
-                  eventData={eventSelectDate ? eventData.filter((e) => moment(eventSelectDate).format('YYYY-MM-DD') === moment(e.start_datetime * 1000).format('YYYY-MM-DD')) : eventData}
+                  eventData={eventSelectDate ? (eventData || []).filter((e) => moment(eventSelectDate).format('YYYY-MM-DD') === moment(e.start_datetime * 1000).format('YYYY-MM-DD')) : eventData}
                   navigation={navigation}
                   profileID={authContext.entity.uid}
                   onThreeDotPress={(item) => {
@@ -1417,6 +1410,16 @@ export default function ScheduleScreen({ navigation }) {
               gameData: selectedEventItem,
             });
             console.log('Event:::', index);
+          }
+          if (actionSheetOpetions()?.[index] === 'Edit') {
+            navigation.navigate('EditEventScreen', {
+              data: selectedEventItem,
+              gameData: selectedEventItem,
+            });
+            console.log('Event:::', index);
+          }
+          if (actionSheetOpetions()?.[index] === 'Delete') {
+            console.log('Event Delete');
           }
           setSelectedEventItem(null);
         }}
