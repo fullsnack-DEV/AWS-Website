@@ -14,7 +14,7 @@ import colors from '../Constants/Colors'
 import fonts from '../Constants/Fonts'
 
 export default function TCProfileView({
-  image = images.profilePlaceHolder,
+  image,
   name,
   location,
   type = 'large',
@@ -24,7 +24,7 @@ export default function TCProfileView({
 
     <View style={[styles.topViewContainer, Props]}>
       <View style={styles.profileView}>
-        {image && <Image source={ image } style={ styles.profileImage } />}
+        <Image source={image ? { uri: image } : images.profilePlaceHolder} style={ styles.profileImage } />
       </View>
       <View style={styles.topTextContainer}>
         {type === 'medium' && name && <Text style={[styles.mediumNameText, { color }]} numberOfLines={1}>{name}</Text>}

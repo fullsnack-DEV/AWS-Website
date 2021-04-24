@@ -58,7 +58,6 @@ import {
   blockedSlots,
   // deleteEvent
 } from '../../../api/Schedule';
-
 import CreateEventButton from '../../../components/Schedule/CreateEventButton';
 import CreateEventBtnModal from '../../../components/Schedule/CreateEventBtnModal';
 import EventBlockTimeTableView from '../../../components/Schedule/EventBlockTimeTableView';
@@ -196,11 +195,23 @@ export default function ScheduleScreen({ navigation }) {
         setSlots(bookSlots);
 
         const markedDates = {};
-        // const group = bookSlots.reduce((r, a) => {
-        //   // r[a.start_datetime] = [...r[a.start_datetime] || [], a];
-        //   r[new Date(a.start_datetime)] = [...(r[new Date(a.start_datetime)] || []), a];
-        //   return r;
-        // }, {});
+
+        // const start = new Date();
+        // start.setHours(0, 0, 0, 0);
+
+        // const end = new Date();
+        // end.setHours(23, 59, 59, 999);
+
+        // const timespan = 30 * 60; // 30 minutes
+
+        // const newArrayOfObj = bookSlots.map((e) => ({
+        //   ...e,
+        //   start: e.start_datetime,
+        //   end: e.end_datetime,
+        // }));
+
+        // const bookable = availability(start, end, timespan, newArrayOfObj);
+        // console.log('bookable:=>', bookable);
 
         const group = bookSlots.reduce((groups, data) => {
           const title = moment(new Date(data.start_datetime * 1000)).format(

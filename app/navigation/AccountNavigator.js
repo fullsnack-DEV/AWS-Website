@@ -695,7 +695,7 @@ const AccountNavigator = () => (
       name="RegisterPlayer"
       component={RegisterPlayer}
       options={{
-        title: 'Register as a personal player',
+        title: 'Add Sport',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -711,7 +711,7 @@ const AccountNavigator = () => (
       name="RegisterPlayerForm2"
       component={RegisterPlayerForm2}
       options={{
-        title: 'Register as a personal player',
+        title: 'Add Sport',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
