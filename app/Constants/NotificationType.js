@@ -37,6 +37,8 @@ const NotificationType = {
   scorekeeperReservationAutoRestoredDueToAlterPaymentFailed: 'scorekeeperReservationAutoRestoredDueToAlterPaymentFailed',
   scorekeeperReservationCanceledDuringAwaitingPayment: 'scorekeeperReservationCanceledDuringAwaitingPayment',
   scorekeeperReservationRestoredDuringAwaitingPayment: 'scorekeeperReservationRestoredDuringAwaitingPayment',
+  clap: 'clap',
+  tagged: 'tagged',
 };
 
 export default NotificationType

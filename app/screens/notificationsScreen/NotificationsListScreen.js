@@ -418,7 +418,12 @@ function NotificationsListScreen({ navigation }) {
       showSwitchProfilePopup();
     }
   };
-
+  const onNotificationClick = (notificationItem) => {
+      const verbTypes = [NotificationType.clap, NotificationType.tagged]
+      if (verbTypes.includes(notificationItem?.verb)) {
+          navigation.navigate('SingleNotificationScreen', { notificationItem })
+      }
+  }
   const renderPendingRequestComponent = ({ item }) => (
     <AppleStyleSwipeableRow
       onPress={() => onDelete({ item })}
@@ -430,7 +435,7 @@ function NotificationsListScreen({ navigation }) {
           selectedEntity={selectedEntity}
           onAccept={() => onAccept(item.activities[0].id)}
           onDecline={() => onDecline(item.activities[0].id)}
-          onPress={() => {}}
+          onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
         />
       )}
@@ -441,7 +446,7 @@ function NotificationsListScreen({ navigation }) {
           selectedEntity={selectedEntity}
           onDetailPress={() => onDetailPress(item)}
           onMessagePress={onMessagePress}
-          onPress={() => {}}
+          onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
         />
       )}
@@ -457,9 +462,7 @@ function NotificationsListScreen({ navigation }) {
         data={item}
         onPressFirstEntity={openHomePage}
         onPressSecondEntity={openHomePage}
-        onPressCard={() => {
-            console.log(item)
-        }}
+        onPressCard={() => onNotificationClick(item)}
       />
     </AppleStyleSwipeableRow>
   );

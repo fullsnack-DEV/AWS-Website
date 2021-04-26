@@ -67,6 +67,7 @@ import CurruentScorekeeperReservationScreen from '../screens/scorekeeper/alterSc
 import AlterScorekeeperScreen from '../screens/scorekeeper/alterScorekeeper/AlterScorekeeperScreen';
 import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/ScorekeeperSelectMatch';
 import ScorekeeperAcceptDeclineScreen from '../screens/scorekeeper/ScorekeeperAcceptDeclineScreen';
+import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 
 const Stack = createStackNavigator();
 
@@ -653,6 +654,8 @@ function NotificationNavigator() {
               headerShown: false,
             } }
         />
+      <Stack.Screen name="SingleNotificationScreen" component={ SingleNotificationScreen }/>
+
       <Stack.Screen
             name="SoccerRecordList"
             component={ SoccerRecordList }

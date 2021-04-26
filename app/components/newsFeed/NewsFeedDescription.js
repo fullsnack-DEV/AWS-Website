@@ -1,11 +1,12 @@
 /* eslint-disable no-useless-escape */
 import React, {
-  useState, useContext, useCallback, useMemo,
+  useState, useContext, useCallback, useMemo, useRef,
 } from 'react';
 import {
   StyleSheet, View, Text, FlatList,
 } from 'react-native';
 import ParsedText from 'react-native-parsed-text';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
@@ -13,6 +14,8 @@ import TCGameCard from '../TCGameCard';
 import images from '../../Constants/ImagePath';
 import TagView from './TagView';
 import { getGameHomeScreen } from '../../utils/gameUtils';
+import { getTaggedText } from '../../utils';
+import TaggedModal from '../modals/TaggedModal';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 // const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
@@ -28,6 +31,7 @@ const NewsFeedDescription = ({
   navigation,
   disableTouch = false,
 }) => {
+  const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
   const [readMore, setReadMore] = useState();
 
@@ -102,16 +106,16 @@ const NewsFeedDescription = ({
     </View>
   ), [navigation]);
 
-  const renderGameTags = useMemo(() => {
-    const taggedMatchCount = tagData?.filter((item) => item?.entity_type === 'game')?.length ?? 0
-    return taggedMatchCount > 0 && (
-      <View style={{ marginVertical: 15 }}>
+  const renderGameTags = useMemo(() => tagData?.length > 0 && (
+    <View style={{ marginVertical: 15 }}>
+      <TouchableOpacity onPress={() => taggedModalRef.current.open()}>
         <TagView
               tagTextStyle={{ color: colors.greeColor }}
               source={images.tagGreenImage}
-              tagText={`${taggedMatchCount} game${taggedMatchCount > 1 ? 's were' : ' was'} tagged`}
+              tagText={getTaggedText(tagData)}
           />
-        <FlatList
+      </TouchableOpacity>
+      <FlatList
               bounces={false}
               contentContainerStyle={{ paddingHorizontal: 15 }}
               showsVerticalScrollIndicator={false}
@@ -122,9 +126,8 @@ const NewsFeedDescription = ({
               renderItem={renderSelectedGame}
               keyExtractor={(item) => item?.entity_id }
           />
-      </View>
-    )
-  }, [renderSelectedGame, tagData])
+    </View>
+    ), [renderSelectedGame, tagData])
 
   const renderDescriptions = useMemo(() => descriptions?.length > 0 && (
     <View style={{ paddingHorizontal: 15 }}>
@@ -155,6 +158,11 @@ const NewsFeedDescription = ({
     <View style={[styles.containerStyle, containerStyle]}>
       <View pointerEvents={disableTouch ? 'none' : 'auto'}>
         {renderDescriptions}
+        <TaggedModal
+            navigation={navigation}
+            taggedModalRef={taggedModalRef}
+            taggedData={tagData}
+        />
       </View>
       {renderGameTags}
     </View>

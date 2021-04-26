@@ -327,6 +327,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   feedViewShareButton: require('../assets/images/feedViewShareButton.png'),
 
   doubleTeamCreated: require('../assets/images/double_team_created.png'),
+  likePlay: require('../assets/images/likePlay.png'),
 
 };
 

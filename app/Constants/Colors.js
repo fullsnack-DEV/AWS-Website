@@ -53,6 +53,7 @@ const colors = {
   offGrayColor: '#ebebeb',
   radoffwhiteioButtonColor: '#45C1C0',
   lightBlackColor: '#333333',
+  extraLightBlackColor: '#424242',
   veryLightBlack: '#616161',
   userPostTimeColor: '#999999',
   reactionCountColor: '#5c5c5c',

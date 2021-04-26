@@ -35,6 +35,7 @@ import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context';
 import CommentModal from './CommentModal';
+import LikersModal from '../modals/LikersModal';
 
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 const NewsFeedPostItems = ({
@@ -47,6 +48,7 @@ const NewsFeedPostItems = ({
   onEditPressDone,
   updateCommentCount,
 }) => {
+  const likersModalRef = useRef(null);
   const authContext = useContext(AuthContext);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -231,9 +233,9 @@ const NewsFeedPostItems = ({
 
   const renderURLPreview = useMemo(() => {
     const obj = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object
-    let desc = obj?.text.toLowerCase()
-    const position = desc.search(urlRegex)
-    if (position !== -1 && desc.substring(position)?.startsWith('www')) desc = addStr(desc, position, 'http://')
+    let desc = obj?.text?.toLowerCase()
+    const position = desc?.search(urlRegex)
+    if (position !== -1 && desc?.substring(position)?.startsWith('www')) desc = addStr(desc, position, 'http://')
     return (<RNUrlPreview
             text={desc}
             containerStyle={styles.urlPreviewContainerStyle}
@@ -243,9 +245,6 @@ const NewsFeedPostItems = ({
     );
   }, [item?.object])
 
-  const onLikersPress = () => {
-    alert(1)
-  }
   const renderDescription = useMemo(() => (
     <NewsFeedDescription
           descriptions={descriptions}
@@ -353,7 +352,7 @@ const onClose = () => {
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-            <TouchableOpacity onPress={onLikersPress}>
+            <TouchableOpacity onPress={() => likersModalRef.current.open('top')}>
               <Text
               style={[
                 styles.commentlengthStyle,
@@ -392,6 +391,10 @@ const onClose = () => {
           onPress={onShareActionSheetItemPress}
         />
       </View>
+      <LikersModal
+          likersModalRef={likersModalRef}
+          navigation={navigation}
+      />
       <CommentModal item={item} showCommentModal={ShowComment} onClose={onClose}/>
     </View>
   );

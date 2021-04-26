@@ -1,10 +1,10 @@
 import React, {
     useCallback, useEffect, useMemo, useState,
 } from 'react';
+import { Portal } from 'react-native-portalize';
 import {
-    StatusBar, StyleSheet, Text, View,
+    StyleSheet, Text, View,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import { Modalize } from 'react-native-modalize';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -15,7 +15,6 @@ import TaggedEntityView from '../shorts/TaggedEntityView';
 import { getGameHomeScreen } from '../../utils/gameUtils';
 
 const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
-    const isFocused = useIsFocused();
     const [gameTagList, setGameTagList] = useState([])
     const [entityTagList, setEntityTagList] = useState([])
 
@@ -28,29 +27,25 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
         }
     }, [taggedData])
 
-    useEffect(() => {
-        if (isFocused) {
-            StatusBar.setBarStyle('dark-content');
-            StatusBar.setBackgroundColor(colors.whiteColor);
-        }
-    }, [isFocused])
-
     const renderSeparator = ({ section }) => {
         if (section.title === strings.taggedPeopleText) return <View style={styles.separatorLine} />;
         if (section.title === strings.taggedMatchesText) return <View style={styles.separatorLineGame} />;
         return <View/>;
     };
 
+    const handleCloseModal = useCallback(() => taggedModalRef.current.close(), [taggedModalRef])
+
     const renderMatchTaggedItems = useCallback(({ item }) => (
       <TCGameCard
             data={item?.entity_data}
             cardWidth={'92%'}
             onPress={() => {
+                handleCloseModal();
                 const routeName = getGameHomeScreen(item?.entity_data?.sport);
                 if (routeName) navigation.push(routeName, { gameId: item?.entity_id })
             }}
         />
-    ), [navigation])
+    ), [handleCloseModal, navigation])
 
     const renderEntityTaggedItems = useCallback(({ item }) => {
         let teamIcon = '';
@@ -72,6 +67,7 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
                 titleStyle={{ color: colors.lightBlackColor }}
                 cityStyle={{ color: colors.lightBlackColor }}
                 onProfilePress={() => {
+                    handleCloseModal();
                     navigation.push('HomeScreen', {
                         uid: item?.entity_id,
                         role: ['user', 'player']?.includes(item?.entity_type)
@@ -91,7 +87,7 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
                 teamCityName={`${item?.entity_data?.city}`}
             />
         );
-    }, [navigation]);
+    }, [handleCloseModal, navigation]);
 
     const renderSectionHeader = useCallback(({ section: { title } }) => {
         if (
@@ -101,7 +97,6 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
             return (
               <View style={styles.closeStyle}>
                 <Text style={styles.tagTitle}>{title}</Text>
-
               </View>
             );
         }
@@ -132,23 +127,25 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
           borderTopLeftRadius: 10,
       }}>
         <View style={styles.handleStyle}/>
-        <Text style={styles.taggedTitleText}>Tagged</Text>
+        <Text style={styles.titleText}>Tagged</Text>
+        <View style={styles.headerSeparator}/>
       </View>
     )
 
-    const onLayout = (e) => {
-        console.log('sd', e);
-        // setViewHeight(e?.nativeEvent?.layout?.height)
-    }
     return (
-      <Modalize
+      <Portal>
+        <Modalize
           disableScrollIfPossible={true}
           withHandle={false}
+          modalStyle={{
+              borderTopRightRadius: 25,
+              borderTopLeftRadius: 25,
+              overflow: 'hidden',
+          }}
           adjustToContentHeight={true}
           ref={taggedModalRef}
           HeaderComponent={ModalHeader}
             sectionListProps={{
-                onLayout,
                 showsHorizontalScrollIndicator: false,
                 showsVerticalScrollIndicator: false,
                 ItemSeparatorComponent: renderSeparator,
@@ -156,8 +153,8 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
                 renderSectionHeader,
                 sections,
             }}
-
         />
+      </Portal>
     )
 }
 
@@ -201,12 +198,18 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         paddingTop: 10,
     },
-    taggedTitleText: {
-        color: colors.lightBlackColor,
+    titleText: {
+        color: colors.extraLightBlackColor,
         fontFamily: fonts.RBold,
         textAlign: 'center',
         marginVertical: 15,
         fontSize: 16,
+    },
+    headerSeparator: {
+        width: '100%',
+        backgroundColor: colors.grayBackgroundColor,
+        height: 2,
+        marginBottom: 15,
     },
 });
 
