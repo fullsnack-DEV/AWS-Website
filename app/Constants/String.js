@@ -122,6 +122,8 @@ const strings = {
   star: '*',
   newText: 'new',
   SportsTextFieldTitle: 'Choose a sport that the team will play.',
+
+  SportsTextFieldClubTitle: 'Choose sports that members or teams in the club will play.',
   selectSportPlaceholder: 'Choose a Sport',
   teamNameTitle: 'What is the team name?',
   teamNamePlaceholder: 'Enter Team Name',
@@ -140,6 +142,8 @@ const strings = {
   maxPlaceholder: 'Max',
   minPlaceholder: 'Min',
   locationTitle: 'Where is the home city of the team?',
+
+  locationClubTitle: 'Where is the home city of the club?',
   currentCity: 'Home City',
   birthdateText: 'Choose Date of birth',
   searchCityPlaceholder: 'Search by city or postal code',
@@ -148,6 +152,7 @@ const strings = {
   countryText: 'Country',
   postalCodeText: 'Postal Code/Zip',
   requiredText: 'required',
+  createClubNotes: 'You can change the sports after you have created the club.',
   clubBelongText: 'The created team will belong to',
   clubText: 'Club',
   // CreateTeam Screen 2
@@ -209,8 +214,8 @@ const strings = {
     'If the challenge sender cancels less than 24 hours before the game starting time the game fee and service fee are not refunded.',
 
   // CreateClub Screen 1
-  clubNameTitle: 'Club Name',
-  clubNameplaceholder: 'Enter Club Name',
+  clubNameTitle: 'What is the club name?',
+  clubNameplaceholder: 'Club name',
 
   // CreateClub Screen 2
   inviteTitle: 'Invitation to Membership',
@@ -601,9 +606,17 @@ descriptionTextDetails: 'Describe yourself in the sport.',
 descriptionTeamTextDetails: 'Describe the team more so that people can know about the team.',
 descriptionTeamTextPlaceholder: 'Describe the team.',
 
+descriptionClubTextDetails: 'Describe the club more so that people can know about the club.',
+descriptionClubTextPlaceholder: 'Describe the club.',
+
 noFollowersTocreateTeam: 'You have no followers, so you can not create team.',
 followersDescription: 'Who do you want to make the team with? Choose a person among your followers.',
 followersPlaceholder: 'Search',
 photoUploadTitle: 'Review the team, and add the profile photo and cover photo.',
+
+photoUploadClubTitle: 'Review the club, and add the profile photo and cover photo.',
+
+playersGenderText: 'Player\'s Gender',
+
 };
 export default strings;

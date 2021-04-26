@@ -104,7 +104,13 @@ import ReviewSection from '../../components/Home/ReviewSection';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
-import { getQBAccountType, QBcreateUser } from '../../utils/QuickBlox';
+import {
+ getQBAccountType, QBcreateUser,
+  QB_ACCOUNT_TYPE,
+  QBconnectAndSubscribe,
+  QBlogin,
+  QBLogout,
+} from '../../utils/QuickBlox';
 
 import RefereeReservationItem from '../../components/Schedule/RefereeReservationItem';
 import { getRefereeReservationDetails } from '../../api/Reservations';
@@ -250,9 +256,10 @@ const HomeScreen = ({ navigation, route }) => {
   const [isEntityCreateModalVisible, setIsEntityCreateModalVisible] = useState(
     false,
   );
-  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] = useState(
-    false,
-  );
+  const [
+    isDoubleSportTeamCreatedVisible,
+    setIsDoubleSportTeamCreatedVisible,
+  ] = useState(false);
 
   // const [reviewsData] = useState(reviews_data);
 
@@ -265,9 +272,10 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
-      setIsEntityCreateModalVisible(true);
+      setIsEntityCreateModalVisible(true)
+      onSwitchProfile(route?.params?.entityObj);
     }
-  }, [route?.params?.isEntityCreated]);
+  }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
 
   useEffect(() => {
     if (route?.params?.isDoubleSportTeamCreated) {
@@ -511,7 +519,9 @@ const HomeScreen = ({ navigation, route }) => {
   const createPostAfterUpload = (dataParams) => {
     createPost({ ...dataParams, is_gallery: true }, authContext)
       .then(() => {
-        if (galleryRef?.current?.refreshGallery) { galleryRef.current.refreshGallery(); }
+        if (galleryRef?.current?.refreshGallery) {
+          galleryRef.current.refreshGallery();
+        }
       })
       .catch((error) => {
         setloading(false);
@@ -2667,6 +2677,99 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
+  const switchQBAccount = async (accountData, entity) => {
+    let currentEntity = entity;
+    const entityType = accountData?.entity_type;
+    const uid = entityType === 'player' ? 'user_id' : 'group_id';
+    QBLogout()
+      .then(() => {
+        const {
+ USER, CLUB, LEAGUE, TEAM,
+ } = QB_ACCOUNT_TYPE;
+        let accountType = USER;
+        if (entityType === 'club') accountType = CLUB;
+        else if (entityType === 'team') accountType = TEAM;
+        else if (entityType === 'league') accountType = LEAGUE;
+        QBlogin(
+          accountData[uid],
+          {
+            ...accountData,
+            full_name: accountData.group_name,
+          },
+          accountType,
+        )
+          .then(async (res) => {
+            currentEntity = {
+              ...currentEntity,
+              QB: { ...res.user, connected: true, token: res?.session?.token },
+            };
+            authContext.setEntity({ ...currentEntity });
+            await Utility.setStorage('authContextEntity', { ...currentEntity });
+            QBconnectAndSubscribe(currentEntity)
+              .then((qbRes) => {
+                setloading(false);
+                if (qbRes?.error) {
+                  console.log('Towns Cup', qbRes?.error);
+                }
+              })
+              .catch(() => {
+                setloading(false);
+              });
+          })
+          .catch(() => {
+            setloading(false);
+          });
+      })
+      .catch(() => {
+        setloading(false);
+      });
+  };
+
+  const onSwitchProfile = async (item) => {
+    setloading(true);
+    switchProfile(item)
+      .then((currentEntity) => {
+        switchQBAccount(item, currentEntity);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const switchProfile = async (item) => {
+    let currentEntity = authContext.entity;
+
+    if (item.entity_type === 'player') {
+      currentEntity = {
+        ...currentEntity,
+        uid: item.user_id,
+        role: 'user',
+        obj: item,
+      };
+    } else if (item.entity_type === 'team') {
+      currentEntity = {
+        ...currentEntity,
+        uid: item.group_id,
+        role: 'team',
+        obj: item,
+      };
+    } else if (item.entity_type === 'club') {
+      currentEntity = {
+        ...currentEntity,
+        uid: item.group_id,
+        role: 'club',
+        obj: item,
+      };
+    }
+    authContext.setEntity({ ...currentEntity });
+    await Utility.setStorage('authContextEntity', { ...currentEntity });
+
+    return currentEntity;
+  };
+
   return (
     <View style={styles.mainContainer}>
       <ActionSheet
@@ -3807,7 +3910,6 @@ const HomeScreen = ({ navigation, route }) => {
         hasBackdrop
         onBackdropPress={() => setIsEntityCreateModalVisible(false)}
         backdropOpacity={0}>
-
         <View style={styles.modalContainerViewStyle}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -3829,13 +3931,28 @@ const HomeScreen = ({ navigation, route }) => {
 
           <View
             style={{
-
               alignItems: 'center',
               flex: 1,
               justifyContent: 'center',
             }}>
-            <ImageBackground source={route?.params?.entityObj?.thumbnail ? route?.params?.entityObj?.thumbnail : images.teamGreenPH} style={styles.groupsImg} >
-              <Text style={{ color: colors.whiteColor, fontSize: 22, fontFamily: fonts.RBlack }}>{`${route?.params?.groupName?.charAt(0)?.toUpperCase()}`}</Text>
+            <ImageBackground
+              source={
+                route?.params?.entityObj?.thumbnail
+                  ? route?.params?.entityObj?.thumbnail
+                  : route?.params?.role === 'club'
+                  ? images.clubPlaceholder
+                  : images.teamGreenPH
+              }
+              style={styles.groupsImg}>
+              <Text
+                style={{
+                  color: colors.whiteColor,
+                  fontSize: 20,
+                  fontFamily: fonts.RBlack,
+                  marginBottom: 4,
+                }}>{`${route?.params?.groupName
+                ?.charAt(0)
+                ?.toUpperCase()}`}</Text>
             </ImageBackground>
             <View
               style={{
@@ -3857,25 +3974,32 @@ const HomeScreen = ({ navigation, route }) => {
             <Text style={[styles.foundText, { fontFamily: fonts.RRegular }]}>
               {'has been created.'}
             </Text>
+            <Text style={[styles.manageChallengeDetailTitle, { margin: 15 }]}>
+              {`Your account has been switched to the ${route?.params?.groupName} account.`}
+            </Text>
           </View>
-          <Text style={styles.manageChallengeDetailTitle}>
-            {strings.manageChallengeDetailText}
-          </Text>
+
+          {route?.params?.role === 'team' && (
+            <Text style={styles.manageChallengeDetailTitle}>
+              {strings.manageChallengeDetailText}
+            </Text>
+          )}
           <TouchableOpacity
             style={styles.goToProfileButton}
             onPress={() => {
               Alert.alert('Manage challenge');
             }}>
             <Text style={styles.goToProfileTitle}>
-              {strings.manageChallengeText}
+              {route?.params?.role === 'club'
+                ? 'OK'
+                : strings.manageChallengeText}
             </Text>
           </TouchableOpacity>
         </View>
-
       </Modal>
 
       <Modal
-        isVisible={isDoubleSportTeamCreatedVisible}// isDoubleSportTeamCreatedVisible
+        isVisible={isDoubleSportTeamCreatedVisible} // isDoubleSportTeamCreatedVisible
         backdropColor="black"
         style={{
           margin: 0,
@@ -3886,7 +4010,6 @@ const HomeScreen = ({ navigation, route }) => {
         hasBackdrop
         onBackdropPress={() => setIsDoubleSportTeamCreatedVisible(false)}
         backdropOpacity={0}>
-
         <View style={styles.modalContainerViewStyle}>
           <Image style={styles.background} source={images.orangeLayer} />
           <Image style={styles.background} source={images.entityCreatedBG} />
@@ -3908,36 +4031,40 @@ const HomeScreen = ({ navigation, route }) => {
 
           <View
             style={{
-
               alignItems: 'center',
               flex: 1,
               justifyContent: 'center',
             }}>
-
-            <Text style={[styles.doubleSportCreatedText, { fontFamily: fonts.RRegular }]}>
+            <Text
+              style={[
+                styles.doubleSportCreatedText,
+                { fontFamily: fonts.RRegular },
+              ]}>
               {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
             </Text>
 
             <Text style={styles.inviteText}>
-              When<Text style={{ fontFamily: fonts.RBold }}> {route?.params?.name} </Text>accepts your invite, the team will be created.
+              When
+              <Text style={{ fontFamily: fonts.RBold }}>
+                {' '}
+                {route?.params?.name}{' '}
+              </Text>
+              accepts your invite, the team will be created.
             </Text>
             <Image
-                source={images.doubleTeamCreated}
-                style={styles.doubleTeamImage}
-              />
+              source={images.doubleTeamCreated}
+              style={styles.doubleTeamImage}
+            />
           </View>
 
           <TouchableOpacity
             style={styles.goToProfileButton}
             onPress={() => {
-              setIsDoubleSportTeamCreatedVisible(false)
+              setIsDoubleSportTeamCreatedVisible(false);
             }}>
-            <Text style={styles.goToProfileTitle}>
-              OK
-            </Text>
+            <Text style={styles.goToProfileTitle}>OK</Text>
           </TouchableOpacity>
         </View>
-
       </Modal>
       {/* Entity create modal */}
 
@@ -4212,7 +4339,6 @@ const styles = StyleSheet.create({
     width: 212,
 
     resizeMode: 'contain',
-
   },
 });
 

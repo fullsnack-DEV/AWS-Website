@@ -31,6 +31,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TCThinDivider from '../../../components/TCThinDivider';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCGradientButton from '../../../components/TCGradientButton';
+import { languageList } from '../../../utils';
 
 export default function RegisterPlayerForm2({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -42,19 +43,8 @@ export default function RegisterPlayerForm2({ navigation, route }) {
   const [languages, setLanguages] = useState([]);
   const selectedLanguage = [];
   useEffect(() => {
-    const language = [
-      { language: 'English', id: 1 },
-      { language: 'English(Canada)', id: 2 },
-      { language: 'English(Singapore)', id: 3 },
-      { language: 'English(UK)', id: 4 },
-      { language: 'English(US)', id: 5 },
-      { language: 'Deutsch', id: 6 },
-      { language: 'Italiano', id: 7 },
-      { language: 'Korean', id: 8 },
-    ];
-
     const arr = [];
-    for (const tempData of language) {
+    for (const tempData of languageList) {
       tempData.isChecked = false;
       arr.push(tempData);
     }

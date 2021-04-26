@@ -33,6 +33,7 @@ import TCInnerLoader from '../../../components/TCInnerLoader';
 import { getUserDetails } from '../../../api/Users';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThinDivider from '../../../components/TCThinDivider';
+import { languageList } from '../../../utils';
 
 const MAX_CERTIFICATE_UPLOAD = 5;
 export default function RegisterReferee({ navigation }) {
@@ -65,24 +66,14 @@ export default function RegisterReferee({ navigation }) {
     getUserDetails(authContext?.entity?.uid, authContext).then((res) => {
       setRefereesData(res?.payload?.referee_data);
     });
-    const language = [
-      { language: 'English', id: 1 },
-      { language: 'English(Canada)', id: 2 },
-      { language: 'English(Singapore)', id: 3 },
-      { language: 'English(UK)', id: 4 },
-      { language: 'English(US)', id: 5 },
-      { language: 'Deutsch', id: 6 },
-      { language: 'Italiano', id: 7 },
-      { language: 'Korean', id: 8 },
-    ];
 
     const arr = [];
-    for (const tempData of language) {
+    for (const tempData of languageList) {
       tempData.isChecked = false;
       arr.push(tempData);
     }
     setLanguages(arr);
-  }, []);
+  }, [authContext]);
   useEffect(() => {
     let languageText = '';
     if (selectedLanguages) {
@@ -583,9 +574,9 @@ export default function RegisterReferee({ navigation }) {
                 const referee_data = [];
                 bodyParams.sport_name = sports.charAt(0).toUpperCase() + sports.slice(1);
                 bodyParams.descriptions = description;
-                const languageList = [];
-                if (selectedLanguages?.length) { selectedLanguages.map((item) => languageList.push({ language_name: item })); }
-                bodyParams.language = languageList;
+                const languageData = [];
+                if (selectedLanguages?.length) { selectedLanguages.map((item) => languageData.push({ language_name: item })); }
+                bodyParams.language = languageData;
                 bodyParams.certificates = certificate;
                 referee_data[0] = bodyParams;
                 bodyParams = { referee_data };
