@@ -24,6 +24,7 @@ const images = {
   checkWhite: require('../assets/images/ic_white_check.png'),
   check: require('../assets/images/check.png'),
   checkGreen: require('../assets/images/green_check.png'),
+  radioCheckYellow: require('../assets/images/radio_check_yellow.png'),
   whiteUncheck: require('../assets/images/white_uncheck.png'),
   uncheckWhite: require('../assets/images/ic_white_uncheck.png'),
   checkEditor: require('../assets/images/ic_check_editor.png'),
@@ -324,6 +325,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   feedViewUnLike: require('../assets/images/feedViewUnLike.png'),
   feedViewCommentButton: require('../assets/images/feedViewCommentButton.png'),
   feedViewShareButton: require('../assets/images/feedViewShareButton.png'),
+
+  doubleTeamCreated: require('../assets/images/double_team_created.png'),
 
 };
 

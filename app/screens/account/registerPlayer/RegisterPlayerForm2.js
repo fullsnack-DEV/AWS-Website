@@ -1,8 +1,4 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable no-unused-expressions */
-import React, {
-  useState, useContext,
-} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,355 +7,341 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  ScrollView,
-  Alert, Platform,
+  Alert,
+  FlatList,
+  Dimensions,
+  Platform,
 } from 'react-native';
 
-import LinearGradient from 'react-native-linear-gradient';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import FastImage from 'react-native-fast-image';
-import images from '../../../Constants/ImagePath';
-import AuthContext from '../../../auth/context';
-import ActivityLoader from '../../../components/loader/ActivityLoader';
-import strings from '../../../Constants/String';
-import * as Utility from '../../../utils/index';
+import Modal from 'react-native-modal';
 
+import images from '../../../Constants/ImagePath';
+import strings from '../../../Constants/String';
+import colors from '../../../Constants/Colors';
+import fonts from '../../../Constants/Fonts';
+import AuthContext from '../../../auth/context';
 import { patchPlayer } from '../../../api/Users';
-import colors from '../../../Constants/Colors'
-import fonts from '../../../Constants/Fonts'
-import TCKeyboardView from '../../../components/TCKeyboardView';
+import * as Utility from '../../../utils';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import TCThinDivider from '../../../components/TCThinDivider';
+import TCFormProgress from '../../../components/TCFormProgress';
+import TCGradientButton from '../../../components/TCGradientButton';
 
 export default function RegisterPlayerForm2({ navigation, route }) {
-  // For activity indigator
-  const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
-  const [matchFee, onMatchFeeChanged] = React.useState('');
-  const [selected, setSelected] = useState(0);
+  const [loading, setloading] = useState(false);
+  const [description, setDescription] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [languagesName, setLanguagesName] = useState('');
+  const [languages, setLanguages] = useState([]);
+  const selectedLanguage = [];
+  useEffect(() => {
+    const language = [
+      { language: 'English', id: 1 },
+      { language: 'English(Canada)', id: 2 },
+      { language: 'English(Singapore)', id: 3 },
+      { language: 'English(UK)', id: 4 },
+      { language: 'English(US)', id: 5 },
+      { language: 'Deutsch', id: 6 },
+      { language: 'Italiano', id: 7 },
+      { language: 'Korean', id: 8 },
+    ];
 
-  const registerPlayerCall = () => {
-    if (route.params && route.params.bodyParams) {
-      const bodyParams = { ...route.params.bodyParams };
-      if (authContext?.user?.registered_sports?.some((e) => e.sport_name?.toLowerCase() === bodyParams.sport_name?.toLowerCase())) {
-        Alert.alert(strings.alertmessagetitle, strings.sportAlreadyRegisterd)
-      } else {
-        setloading(true);
-        bodyParams.fee = matchFee;
-        if (selected === 0) {
-          bodyParams.cancellation_policy = 'strict';
-        } else if (selected === 1) {
-          bodyParams.cancellation_policy = 'moderate';
-        } else {
-          bodyParams.cancellation_policy = 'flexible';
-        }
-
-        const registerdPlayerData = authContext?.user?.registered_sports || []
-        registerdPlayerData.push(bodyParams);
-        const body = {
-          registered_sports: registerdPlayerData,
-        }
-        patchPlayer(body, authContext).then(async (response) => {
-          if (response.status === true) {
-            const entity = authContext.entity
-            entity.auth.user = response.payload;
-            entity.obj = response.payload;
-            authContext.setEntity({ ...entity })
-            authContext.setUser(response.payload)
-            await Utility.setStorage('authContextUser', response.payload);
-            navigation.navigate('RegisterPlayerSuccess');
-          } else {
-            Alert.alert('Towns Cup', response.messages);
-          }
-          console.log('RESPONSE IS:: ', response);
-          setloading(false);
-        }).catch(() => setloading(false));
-      }
+    const arr = [];
+    for (const tempData of language) {
+      tempData.isChecked = false;
+      arr.push(tempData);
     }
+    setLanguages(arr);
+  }, []);
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
 
+  const isIconCheckedOrNot = ({ item, index }) => {
+    languages[index].isChecked = !item.isChecked;
+
+    setLanguages([...languages]);
+  };
+
+  useEffect(() => {
+    let languageText = '';
+    if (selectedLanguages) {
+      selectedLanguages.map((langItem, index) => {
+        languageText = languageText + (index ? ', ' : '') + langItem;
+        return null;
+      });
+      setLanguagesName(languageText);
+    }
+  }, [selectedLanguages]);
+
+  const renderLanguage = ({ item, index }) => (
+    <TouchableWithoutFeedback
+      style={styles.listItem}
+      onPress={() => {
+        isIconCheckedOrNot({ item, index });
+      }}>
+      <View
+        style={{
+          padding: 20,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.language}</Text>
+        <View style={styles.checkbox}>
+          {languages[index].isChecked ? (
+            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
+          ) : (
+            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+
+const doneOnPress = () => {
+    setloading(true);
+    const bodyParams = { ...route?.params?.bodyParams };
+    bodyParams.descriptions = description;
+    bodyParams.currency_type = authContext?.entity?.obj?.currency_type;
+    bodyParams.language = selectedLanguages;
+    const registerdPlayerData = authContext?.user?.registered_sports || [];
+    registerdPlayerData.push(bodyParams);
+    const body = {
+      registered_sports: registerdPlayerData,
+    };
+
+    patchPlayer(body, authContext)
+      .then(async (response) => {
+        if (response.status === true) {
+          setloading(false);
+          const entity = authContext.entity;
+
+          entity.auth.user = response.payload;
+          entity.obj = response.payload;
+          authContext.setEntity({ ...entity });
+          authContext.setUser(response.payload);
+          await Utility.setStorage('authContextUser', response.payload);
+          navigation.navigate('AccountScreen', { createdSportName: route?.params?.bodyParams?.sport_name });
+        } else {
+          Alert.alert('Towns Cup', response.messages);
+        }
+        console.log('RESPONSE IS:: ', response);
+        setloading(false);
+      })
+      .catch(() => setloading(false));
+}
+
   return (
-    <TCKeyboardView>
-      <ScrollView style={ styles.mainContainer }>
-        <ActivityLoader visible={ loading } />
-        <View style={ styles.formSteps }>
-          <View style={ styles.form1 }></View>
-          <View style={ styles.form2 }></View>
-        </View>
+    <View style={{ flex: 1 }}>
+      <TCFormProgress totalSteps={2} curruentStep={2} />
+      <ActivityLoader visible={loading} />
 
-        <Text style={ styles.LocationText }>
-          {strings.matchFeesTitle}
-
-          <Text style={ styles.smallTxt }> {strings.perHourText} </Text>
-        </Text>
-
-        <View style={ styles.matchFeeView }>
+      <Text style={styles.LocationText}>{strings.languageText}</Text>
+      <TouchableOpacity onPress={toggleModal}>
+        <View style={styles.searchView}>
           <TextInput
-            placeholder={ strings.enterFeePlaceholder }
-            style={ styles.feeText }
-            onChangeText={ (text) => onMatchFeeChanged(text) }
-            value={ (matchFee) }
-            keyboardType={ 'decimal-pad' }/>
-          <Text style={ styles.curruency }>{route?.params?.bodyParams?.currency_type}</Text>
+            style={styles.searchTextField}
+            placeholder={strings.languagePlaceholder}
+            value={languagesName}
+            editable={false}
+            pointerEvents="none"
+          />
         </View>
-        <View>
-          <Text style={ styles.LocationText }>
-            {strings.cancellationPolicyTitle}
-          </Text>
-        </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => setSelected(0) }>
-            {selected === 0 ? (
-              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <FastImage
-                source={ images.radioUnselect }
-                style={ styles.unSelectRadioImage }
-              />
-            )}
-          </TouchableWithoutFeedback>
-          <Text style={ styles.radioText }>{strings.strictText}</Text>
-        </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => setSelected(1) }>
-            {selected === 1 ? (
-              <FastImage source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <FastImage
-                source={ images.radioUnselect }
-                style={ styles.unSelectRadioImage }
-              />
-            )}
-          </TouchableWithoutFeedback>
-          <Text style={ styles.radioText }>{strings.moderateText}</Text>
-        </View>
-        <View style={ styles.radioButtonView }>
-          <TouchableWithoutFeedback onPress={ () => setSelected(2) }>
-            {selected === 2 ? (
-              <Image source={ images.radioSelect } style={ styles.radioImage } />
-            ) : (
-              <Image
-                source={ images.radioUnselect }
-                style={ styles.unSelectRadioImage }
-              />
-            )}
-          </TouchableWithoutFeedback>
-          <Text style={ styles.radioText }>{strings.flexibleText}</Text>
-        </View>
-        {selected === 0 && (
-          <View>
-            <Text style={ styles.membershipText }>{strings.strictText} </Text>
-            <Text style={ styles.whoJoinText }>
-              <Text style={ styles.membershipSubText }>
-                {strings.strictPoint1Title}
-              </Text>
-              {'\n'}
-              {strings.strictPoint1Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.strictPoint2Title}
-              </Text>
-              {'\n'}
-              {strings.strictPoint2Desc}
+      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+        <Text style={styles.LocationText}>
+          {strings.descriptionTextDetails}
+        </Text>
+      </View>
+      <TextInput
+        style={styles.descriptionTxt}
+        onChangeText={(text) => setDescription(text)}
+        value={description}
+        multiline
+        textAlignVertical={'top'}
+        numberOfLines={4}
+        placeholder={strings.descriptionTextDetails}
+      />
+      <View style={{ flex: 1 }} />
+      <Modal
+        isVisible={isModalVisible}
+        backdropColor="black"
+        onBackdropPress={() => setModalVisible(false)}
+        onRequestClose={() => setModalVisible(false)}
+        backdropOpacity={0}
+        style={{
+          marginLeft: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          marginRight: 0,
+          marginBottom: 0,
+        }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 1.3,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}>
+              <Image source={images.cancelImage} style={styles.closeButton} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: 'center',
+                marginVertical: 20,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Languages
             </Text>
+            <TouchableOpacity
+              onPress={() => {
+                for (const temp of languages) {
+                  if (temp.isChecked) {
+                    selectedLanguage.push(temp.language);
+                  }
+                }
+                setSelectedLanguages(selectedLanguage);
+                toggleModal();
+              }}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.themeColor,
+                }}>
+                Apply
+              </Text>
+            </TouchableOpacity>
           </View>
-        )}
-        {selected === 1 && (
-          <View>
-            <Text style={ styles.membershipText }>{strings.moderateText} </Text>
-            <Text style={ styles.whoJoinText }>
-              <Text style={ styles.membershipSubText }>
-                {strings.moderatePoint1Title}
-              </Text>
-              {'\n'}
-              {strings.moderatePoint1Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.moderatePoint2Title}
-              </Text>
-              {'\n'}
-              {strings.moderatePoint2Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.moderatePoint3Title}
-              </Text>
-              {strings.moderatePoint3Desc}
-            </Text>
-          </View>
-        )}
-        {selected === 2 && (
-          <View>
-            <Text style={ styles.membershipText }>{strings.flexibleText} </Text>
-            <Text style={ styles.whoJoinText }>
-              <Text style={ styles.membershipSubText }>
-                {strings.flexiblePoint1Title}
-              </Text>
-              {'\n'}
-              {strings.flexiblePoint1Desc}
-              {'\n'}
-              {'\n'}
-              <Text style={ styles.membershipSubText }>
-                {strings.flexiblePoint2Title}
-              </Text>
-              {'\n'}
-              {strings.flexiblePoint2Desc}
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity onPress={ () => {
-          registerPlayerCall()
-        } }>
-          <LinearGradient
-            colors={ [colors.yellowColor, colors.themeColor] }
-            style={ styles.nextButton }>
-            <Text style={ styles.nextButtonText }>{strings.doneTitle}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </ScrollView>
-    </TCKeyboardView>
+          <View style={styles.separatorLine} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={languages}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderLanguage}
+          />
+        </View>
+      </Modal>
+      <TCGradientButton
+        isDisabled={languagesName === ''}
+        title={strings.nextTitle}
+        style={{ marginBottom: 30 }}
+        onPress={doneOnPress}
+      />
+
+    </View>
   );
 }
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    marginBottom: '22%',
-  },
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
   LocationText: {
-    marginTop: hp('2%'),
+    marginTop: hp('3%'),
     color: colors.lightBlackColor,
-    fontSize: wp('3.8%'),
+    fontSize: 20,
     textAlign: 'left',
-    // fontFamily: fonts.RBold,
+    fontFamily: fonts.RRegular,
     paddingLeft: 15,
   },
-  smallTxt: {
-    color: colors.grayColor,
-    fontSize: wp('2.8%'),
-    marginTop: hp('2%'),
-
-    textAlign: 'left',
-    // fontFamily: fonts.RBold,
-  },
-  curruency: {
+  closeButton: {
     alignSelf: 'center',
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 15,
-    textAlign: 'right',
+    width: 13,
+    height: 13,
+    marginLeft: 5,
+    resizeMode: 'contain',
   },
-  feeText: {
+
+  descriptionTxt: {
+    height: 120,
     fontSize: wp('3.8%'),
-    width: '95%',
+    width: wp('92%'),
+    alignSelf: 'center',
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    color: 'black',
+    paddingRight: 30,
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
   },
-  matchFeeView: {
+  separatorLine: {
+    alignSelf: 'center',
+    backgroundColor: colors.grayColor,
+    height: 0.5,
+    marginTop: 14,
+    width: wp('92%'),
+  },
+
+  searchView: {
     alignSelf: 'center',
     backgroundColor: colors.offwhite,
     borderRadius: 5,
-    color: 'black',
     elevation: 3,
     flexDirection: 'row',
-    fontSize: wp('3.5%'),
     marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
     paddingVertical: Platform.OS === 'ios' ? 12 : 0,
+    paddingLeft: 15,
     shadowColor: colors.googleColor,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
     width: wp('92%'),
   },
-  nextButton: {
+  searchTextField: {
     alignSelf: 'center',
-    borderRadius: 30,
-    height: 45,
-    marginBottom: 40,
-    marginTop: wp('12%'),
-    width: '90%',
-  },
-  nextButtonText: {
-    alignSelf: 'center',
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: wp('4%'),
-    marginVertical: 10,
-  },
-  radioButtonView: {
-    flexDirection: 'row',
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 15,
-  },
-  radioText: {
-    alignSelf: 'center',
-    color: colors.lightBlackColor,
+    color: colors.blackColor,
+    flex: 1,
     fontSize: wp('3.8%'),
-    marginLeft: 15,
-    marginRight: 15,
+    width: wp('80%'),
   },
-  radioImage: {
-    height: 22,
-    width: 22,
-    resizeMode: 'contain',
-    // tintColor: colors.radioButtonColor,
-    alignSelf: 'center',
-  },
-  unSelectRadioImage: {
-    alignSelf: 'center',
-    height: 22,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    width: 22,
-  },
-  membershipText: {
-    color: colors.veryLightBlack,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginLeft: 15,
-    marginTop: 20,
-  },
-  membershipSubText: {
-    color: colors.veryLightBlack,
+  languageList: {
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: 16,
-    fontWeight: 'bold',
-    lineHeight: 20,
-    marginLeft: 15,
-    marginTop: 20,
+    fontSize: wp('4%'),
   },
-  whoJoinText: {
-    color: colors.veryLightBlack,
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginBottom: 20,
-    marginLeft: 15,
-    marginTop: 10,
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
   },
-
+  checkbox: {},
 });

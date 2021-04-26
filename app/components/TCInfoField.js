@@ -36,13 +36,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignItems: 'center',
+
   },
   fieldTitle: {
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     flex: 0.33,
-    paddingTop: 4,
+    // paddingTop: 4,
   },
   fieldValue: {
     fontSize: 16,

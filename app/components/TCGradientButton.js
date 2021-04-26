@@ -20,13 +20,15 @@ const TCGradientButton = ({
   endGradientColor = colors.yellowColor,
   outerContainerStyle,
   disabled = false,
+  isDisabled = false,
+
   ...props
 }) => (
-  <TouchableOpacity disabled={disabled} onPress={ onPress } style={ [styles.outerContainerStyle, outerContainerStyle, props] }>
+  <TouchableOpacity disabled={disabled || isDisabled} onPress={ onPress } style={ [styles.outerContainerStyle, outerContainerStyle, props] }>
     <LinearGradient
-       colors={[startGradientColor, endGradientColor]}
+       colors={isDisabled ? [colors.grayBackgroundColor, colors.grayBackgroundColor] : [endGradientColor, startGradientColor]}
        style={[styles.containerStyle, style]}>
-      <Text style={ [styles.buttonText, textStyle] }>{title}</Text>
+      <Text style={ [styles.buttonText, textStyle, { color: isDisabled ? colors.blocklightgraycolor : colors.whiteColor }] }>{title}</Text>
       {rightIcon && <Image style={[styles.rightIconStyle, rightIconStyle]} source={rightIcon} />}
     </LinearGradient>
   </TouchableOpacity>
@@ -45,7 +47,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     alignSelf: 'center',
-    color: colors.whiteColor,
     fontSize: 14,
     fontFamily: fonts.RBold,
   },

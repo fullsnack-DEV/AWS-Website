@@ -250,6 +250,10 @@ const HomeScreen = ({ navigation, route }) => {
   const [isEntityCreateModalVisible, setIsEntityCreateModalVisible] = useState(
     false,
   );
+  const [isDoubleSportTeamCreatedVisible, setIsDoubleSportTeamCreatedVisible] = useState(
+    false,
+  );
+
   // const [reviewsData] = useState(reviews_data);
 
   const selectionDate = moment(eventSelectDate).format('YYYY-MM-DD');
@@ -264,6 +268,12 @@ const HomeScreen = ({ navigation, route }) => {
       setIsEntityCreateModalVisible(true);
     }
   }, [route?.params?.isEntityCreated]);
+
+  useEffect(() => {
+    if (route?.params?.isDoubleSportTeamCreated) {
+      setIsDoubleSportTeamCreatedVisible(true);
+    }
+  }, [route?.params?.isDoubleSportTeamCreated]);
 
   useEffect(() => {
     if (isFocused) {
@@ -3864,6 +3874,71 @@ const HomeScreen = ({ navigation, route }) => {
 
       </Modal>
 
+      <Modal
+        isVisible={isDoubleSportTeamCreatedVisible}// isDoubleSportTeamCreatedVisible
+        backdropColor="black"
+        style={{
+          margin: 0,
+          justifyContent: 'flex-end',
+          backgroundColor: colors.blackOpacityColor,
+          flex: 1,
+        }}
+        hasBackdrop
+        onBackdropPress={() => setIsDoubleSportTeamCreatedVisible(false)}
+        backdropOpacity={0}>
+
+        <View style={styles.modalContainerViewStyle}>
+          <Image style={styles.background} source={images.orangeLayer} />
+          <Image style={styles.background} source={images.entityCreatedBG} />
+          <TouchableOpacity
+            onPress={() => setIsDoubleSportTeamCreatedVisible(false)}
+            style={{ alignSelf: 'flex-end' }}>
+            <Image
+              source={images.cancelWhite}
+              style={{
+                marginTop: 25,
+                marginRight: 25,
+                height: 15,
+                width: 15,
+                resizeMode: 'contain',
+                tintColor: colors.whiteColor,
+              }}
+            />
+          </TouchableOpacity>
+
+          <View
+            style={{
+
+              alignItems: 'center',
+              flex: 1,
+              justifyContent: 'center',
+            }}>
+
+            <Text style={[styles.doubleSportCreatedText, { fontFamily: fonts.RRegular }]}>
+              {`You have completed all the process to create a team at your end. An invite will be sent to ${route?.params?.name}.`}
+            </Text>
+
+            <Text style={styles.inviteText}>
+              When<Text style={{ fontFamily: fonts.RBold }}> {route?.params?.name} </Text>accepts your invite, the team will be created.
+            </Text>
+            <Image
+                source={images.doubleTeamCreated}
+                style={styles.doubleTeamImage}
+              />
+          </View>
+
+          <TouchableOpacity
+            style={styles.goToProfileButton}
+            onPress={() => {
+              setIsDoubleSportTeamCreatedVisible(false)
+            }}>
+            <Text style={styles.goToProfileTitle}>
+              OK
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+      </Modal>
       {/* Entity create modal */}
 
       {!createEventModal && currentTab === 3 && (
@@ -4075,6 +4150,13 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontSize: 25,
   },
+  doubleSportCreatedText: {
+    color: colors.whiteColor,
+    fontSize: 25,
+    fontFamily: fonts.RBold,
+    margin: 15,
+    textAlign: 'center',
+  },
   groupsImg: {
     height: 75,
     resizeMode: 'contain',
@@ -4100,6 +4182,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 15,
   },
+  inviteText: {
+    alignSelf: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    textAlign: 'center',
+    margin: 15,
+  },
   goToProfileTitle: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
@@ -4116,6 +4206,13 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     borderColor: colors.whiteColor,
     borderWidth: 2,
+  },
+  doubleTeamImage: {
+    height: 150,
+    width: 212,
+
+    resizeMode: 'contain',
+
   },
 });
 

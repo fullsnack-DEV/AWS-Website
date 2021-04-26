@@ -22,6 +22,8 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import Modal from 'react-native-modal';
+
 // import ActionSheet from 'react-native-actionsheet';
 // import { useIsDrawerOpen } from '@react-navigation/drawer';
 import MarqueeText from 'react-native-marquee';
@@ -56,10 +58,13 @@ import {
 import strings from '../../Constants/String';
 import Header from '../../components/Home/Header';
 
-export default function AccountScreen({ navigation }) {
+export default function AccountScreen({ navigation, route }) {
   const scrollRef = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
+  const [isSportCreateModalVisible, setIsSportCreateModalVisible] = useState(
+    false,
+  );
   const [group, setGroup] = useState({});
   const [parentGroup, setParentGroup] = useState();
   const [groupList, setGroupList] = useState([]);
@@ -184,8 +189,14 @@ export default function AccountScreen({ navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
+    if (route?.params?.createdSportName) {
+      setIsSportCreateModalVisible(true);
+    }
+  }, [route?.params?.createdSportName]);
+
+  useEffect(() => {
     getData();
-  }, [authContext]);
+  }, []);
 
   const getParentClub = useCallback(
     (item) => {
@@ -284,7 +295,7 @@ export default function AccountScreen({ navigation }) {
   const switchProfile = useCallback(
     async (item) => {
       let currentEntity = authContext.entity;
-        delete currentEntity?.QB;
+      delete currentEntity?.QB;
       if (item.entity_type === 'player') {
         if (currentEntity.obj.entity_type === 'team') {
           team.push(currentEntity.obj);
@@ -392,7 +403,7 @@ export default function AccountScreen({ navigation }) {
             });
         })
         .catch(async (error) => {
-            console.log('QB Issue', error)
+          console.log('QB Issue', error);
           setloading(false);
         });
     },
@@ -404,11 +415,11 @@ export default function AccountScreen({ navigation }) {
       setloading(true);
       switchProfile(item)
         .then((currentEntity) => {
-            scrollRef.current.scrollTo({ x: 0, y: 0 });
-            setloading(false);
-            authContext.setEntity({ ...currentEntity })
-            Utility.setStorage('authContextEntity', { ...currentEntity })
-            switchQBAccount(item, currentEntity);
+          scrollRef.current.scrollTo({ x: 0, y: 0 });
+          setloading(false);
+          authContext.setEntity({ ...currentEntity });
+          Utility.setStorage('authContextEntity', { ...currentEntity });
+          switchQBAccount(item, currentEntity);
         })
         .catch((e) => {
           setloading(false);
@@ -433,14 +444,14 @@ export default function AccountScreen({ navigation }) {
       'Towns Cup',
       'Are you sure want to logout?',
       [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-              text: 'OK',
-              onPress: onLogout,
-          },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: onLogout,
+        },
       ],
       { cancelable: false },
     );
@@ -576,7 +587,9 @@ export default function AccountScreen({ navigation }) {
                     ? { uri: item.thumbnail }
                     : images.profilePlaceHolder
                 }
-                style={item.thumbnail ? styles.playerProfileImg : styles.playerImg}
+                style={
+                  item.thumbnail ? styles.playerProfileImg : styles.playerImg
+                }
               />
             </View>
           )}
@@ -588,7 +601,9 @@ export default function AccountScreen({ navigation }) {
                     ? { uri: item.thumbnail }
                     : images.clubPlaceholder
                 }
-                style={item.thumbnail ? styles.entityProfileImg : styles.entityImg}
+                style={
+                  item.thumbnail ? styles.entityProfileImg : styles.entityImg
+                }
               />
               {item.thumbnail ? null : (
                 <Text style={styles.oneCharacterText}>
@@ -688,7 +703,7 @@ export default function AccountScreen({ navigation }) {
           <Text
             style={
               item.group_name.length > 26
-                ? [styles.entityName, { width: wp('60%') }]
+                ? [styles.entityName, { width: wp('50%') }]
                 : styles.entityName
             }
             numberOfLines={1}>
@@ -1208,6 +1223,85 @@ export default function AccountScreen({ navigation }) {
           <Text style={styles.listItems}>Log out</Text>
           <Image source={images.nextArrow} style={styles.nextArrow} />
         </TouchableWithoutFeedback>
+
+        {/* Sport created modal */}
+        <Modal
+          isVisible={isSportCreateModalVisible}
+          backdropColor="black"
+          style={{
+            margin: 0,
+            justifyContent: 'flex-end',
+            backgroundColor: colors.blackOpacityColor,
+            flex: 1,
+          }}
+          hasBackdrop
+          onBackdropPress={() => setIsSportCreateModalVisible(false)}
+          backdropOpacity={0}>
+          <View style={styles.modalContainerViewStyle}>
+            <Image style={styles.background} source={images.orangeLayer} />
+            <Image style={styles.background} source={images.entityCreatedBG} />
+            <TouchableOpacity
+              onPress={() => setIsSportCreateModalVisible(false)}
+              style={{ alignSelf: 'flex-end' }}>
+              <Image
+                source={images.cancelWhite}
+                style={{
+                  marginTop: 25,
+                  marginRight: 25,
+                  height: 15,
+                  width: 15,
+                  resizeMode: 'contain',
+                  tintColor: colors.whiteColor,
+                }}
+              />
+            </TouchableOpacity>
+
+            <View
+              style={{
+                alignItems: 'center',
+                flex: 1,
+                justifyContent: 'center',
+              }}>
+              <View
+                style={{
+                  height: 77,
+                  width: 77,
+                  backgroundColor: colors.whiteColor,
+                  borderRadius: 154,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Image
+                  source={images.profilePlaceHolder}
+                  style={styles.groupsImg}
+                />
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}></View>
+              <Text style={styles.foundText}>
+                {`${route?.params?.createdSportName}\nadded as your sports`}
+              </Text>
+            </View>
+            <Text style={styles.manageChallengeDetailTitle}>
+              {strings.manageChallengeDetailText}
+            </Text>
+            <TouchableOpacity
+              style={styles.goToProfileButton}
+              onPress={() => {
+                Alert.alert('Manage challenge');
+              }}>
+              <Text style={styles.goToProfileTitle}>
+                {strings.manageChallengeText}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        {/* Sport created modal */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -1520,5 +1614,60 @@ const styles = StyleSheet.create({
     borderColor: colors.grayColor,
     borderWidth: 0.5,
     width: wp(100),
+  },
+
+  background: {
+    height: '100%',
+    position: 'absolute',
+    resizeMode: 'stretch',
+    width: '100%',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  foundText: {
+    color: colors.whiteColor,
+    fontSize: 25,
+    fontFamily: fonts.RRegular,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  groupsImg: {
+    height: 75,
+    resizeMode: 'contain',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 75,
+  },
+
+  goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 40,
+    borderWidth: 1,
+    height: 45,
+    marginBottom: wp('15%'),
+    width: '92%',
+  },
+  manageChallengeDetailTitle: {
+    alignSelf: 'center',
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.whiteColor,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  goToProfileTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 15,
+    height: 50,
+    padding: 12,
+    textAlign: 'center',
+  },
+  modalContainerViewStyle: {
+    height: '94%',
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
 });
