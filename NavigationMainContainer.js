@@ -4,6 +4,7 @@ import React, {
 import { NavigationContainer } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
+import { Host } from 'react-native-portalize';
 import AuthContext from './app/auth/context';
 import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
@@ -85,7 +86,9 @@ export default function NavigationMainContainer() {
     <Fragment>
       {appInitialize ? (
         <NavigationContainer theme={navigationTheme}>
-          {authContext?.entity?.isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
+          <Host>
+            {authContext?.entity?.isLoggedIn ? <AppNavigator /> : <AuthNavigator />}
+          </Host>
         </NavigationContainer>
       ) : (
         <ActivityLoader visible={true}/>

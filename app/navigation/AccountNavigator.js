@@ -171,6 +171,7 @@ import AccountScreen from '../screens/account/AccountScreen';
 import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
 import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
+import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2098,6 +2099,8 @@ const AccountNavigator = () => (
       component={ReservationNavigator}
       options={{ headerShown: false }}
     />
+
+    <Stack.Screen name="SingleNotificationScreen" component={ SingleNotificationScreen } options={{ headerShown: false }}/>
   </Stack.Navigator>
 );
 

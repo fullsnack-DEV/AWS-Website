@@ -15,6 +15,7 @@ import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
 import CommentModal from '../CommentModal';
 import TaggedModal from '../../modals/TaggedModal';
+import LikersModal from '../../modals/LikersModal';
 
 const FeedAbsoluteBottomView = ({
     feedItem = {},
@@ -35,6 +36,7 @@ const FeedAbsoluteBottomView = ({
     screenInsets,
 }) => {
     const taggedModalRef = useRef(null);
+    const likersModalRef = useRef(null);
     const [slidingStatus, setSlidingStatus] = useState(false);
     const sourceData = feedSubItem?.attachments?.[currentViewIndex];
     const authContext = useContext(AuthContext);
@@ -130,16 +132,19 @@ const FeedAbsoluteBottomView = ({
                     alignItems: 'center',
                     justifyContent: 'flex-end',
                 }}>
-
-          <Text
+          <TouchableOpacity onPress={() => {
+              likersModalRef.current.open()
+          }}>
+            <Text
                     style={[
                         styles.commentlengthStyle,
                         {
                             color: like === true ? '#FF8A01' : colors.whiteColor,
                         },
                     ]}>
-            {likeCount === 0 ? '' : likeCount}
-          </Text>
+              {likeCount === 0 ? '' : likeCount}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
                     onPress={() => {
                         setLike(!like);
@@ -325,6 +330,11 @@ const FeedAbsoluteBottomView = ({
             navigation={navigation}
             taggedModalRef={taggedModalRef}
             taggedData={feedSubItem?.format_tagged_data}
+        />
+
+        <LikersModal
+              likersModalRef={likersModalRef}
+              navigation={navigation}
         />
 
         <CommentModal item={feedItem} showCommentModal={ShowComment} onClose={onClose}/>
