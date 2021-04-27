@@ -141,13 +141,13 @@ export default function CreateTeamForm1({ navigation, route }) {
               obj.type = tempData.sport_type;
               arr.push(obj);
             }
-          } else {
-            const obj = {};
+          } else if (tempData.sport_type === 'double') {
+              const obj = {};
             obj.label = tempData.sport_name;
             obj.value = tempData.sport_name;
             obj.type = tempData.sport_type;
             arr.push(obj);
-          }
+            }
         }
         setSportsData(arr);
         setTimeout(() => setloading(false), 1000);
@@ -344,41 +344,6 @@ const styles = StyleSheet.create({
   fieldView: {
     marginTop: 15,
   },
-
-  // form1: {
-  //   backgroundColor: colors.themeColor,
-  //   height: 5,
-  //   marginLeft: 2,
-  //   marginRight: 2,
-  //   width: 10,
-  // },
-  // form2: {
-  //   backgroundColor: colors.lightgrayColor,
-  //   height: 5,
-  //   marginLeft: 2,
-  //   marginRight: 2,
-  //   width: 10,
-  // },
-  // form3: {
-  //   backgroundColor: colors.lightgrayColor,
-  //   height: 5,
-  //   marginLeft: 2,
-  //   marginRight: 2,
-  //   width: 10,
-  // },
-  // form4: {
-  //   backgroundColor: colors.lightgrayColor,
-  //   height: 5,
-  //   marginLeft: 2,
-  //   marginRight: 2,
-  //   width: 10,
-  // },
-  // formSteps: {
-  //   alignSelf: 'flex-end',
-  //   flexDirection: 'row',
-  //   marginRight: 15,
-  //   marginTop: 15,
-  // },
 
   // eslint-disable-next-line react-native/no-unused-styles
   inputAndroid: {

@@ -35,6 +35,7 @@ import TCLabel from '../../../components/TCLabel';
 import TCMessageButton from '../../../components/TCMessageButton';
 import Header from '../../../components/Home/Header';
 import TCKeyboardView from '../../../components/TCKeyboardView';
+import { languageList } from '../../../utils';
 
 export default function PersonalInformationScreen({ navigation, route }) {
   const authContext = useContext(AuthContext);
@@ -50,17 +51,8 @@ export default function PersonalInformationScreen({ navigation, route }) {
     phone_number: '',
     country_code: '',
   }]);
-  const language = [
-    { language: 'English', id: 1 },
-    { language: 'English(Canada)', id: 2 },
-    { language: 'English(Singapore)', id: 3 },
-    { language: 'English(UK)', id: 4 },
-    { language: 'English(US)', id: 5 },
-    { language: 'Deutsch', id: 6 },
-    { language: 'Italiano', id: 7 },
-    { language: 'Korean', id: 8 },
-  ];
-  const [languageList, setLanguageList] = useState(language);
+
+  const [languageData, setLanguageData] = useState(languageList);
   const [isModalVisible, setModalVisible] = useState(false);
   const [languages, setLanguages] = useState(authContext?.entity?.obj?.language);
   const selectedLanguage = [];
@@ -97,7 +89,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
 
   useEffect(() => {
     const arr = [];
-    for (const temp of languageList) {
+    for (const temp of languageData) {
       if (userInfo.language) {
         if (userInfo.language.includes(temp.language)) {
           temp.isChecked = true
@@ -155,11 +147,11 @@ export default function PersonalInformationScreen({ navigation, route }) {
   const isIconCheckedOrNot = ({ item, index }) => {
     console.log('SELECTED:::', index);
 
-    languageList[index].isChecked = !item.isChecked;
+    languageData[index].isChecked = !item.isChecked;
 
-    setLanguageList([...languageList]);
+    setLanguageData([...languageData]);
 
-    for (const temp of languageList) {
+    for (const temp of languageData) {
       if (temp.isChecked) {
         selectedLanguage.push(temp.language);
       }
@@ -175,7 +167,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
               isIconCheckedOrNot({ item, index });
             } }>
       <View>
-        <Text style={ styles.languageList }>{item.language}</Text>
+        <Text style={ styles.languageData }>{item.language}</Text>
         <View style={ styles.checkbox }>
           {item.isChecked ? (
             <Image
@@ -398,7 +390,7 @@ export default function PersonalInformationScreen({ navigation, route }) {
             <View style={styles.sepratorStyle} />
             <View style={ styles.separatorLine }></View>
             <FlatList
-            data={ languageList }
+            data={ languageData }
             keyExtractor={(index) => index.toString()}
             renderItem={ renderLanguage }
             style={ { marginBottom: '25%' } }
@@ -540,7 +532,7 @@ const styles = StyleSheet.create({
     marginTop: wp('5%'),
     width: '90%',
   },
-  languageList: {
+  languageData: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     fontSize: wp('4%'),

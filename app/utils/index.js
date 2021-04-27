@@ -27,23 +27,23 @@ export const groupMemberGenderItems = [
   { label: 'All', value: 'all' },
 ];
 
+export const languageList = [
+  { language: 'English', id: 1 },
+  // { language: 'English(Canada)', id: 2 },
+  // { language: 'English(Singapore)', id: 3 },
+  // { language: 'English(UK)', id: 4 },
+  // { language: 'English(US)', id: 5 },
+  { language: 'Deutsch', id: 2 },
+  { language: 'Italiano', id: 3 },
+  { language: 'Korean', id: 4 },
+];
+
 export const groupMembershipFeeTypes = [
   { label: 'Weekly', value: 'weekly' },
   { label: 'Biweekly', value: 'biweekly' },
   { label: 'Monthly', value: 'monthly' },
   { label: 'Yearly', value: 'yearly' },
 ]
-
-export const languages = [
-  { language: 'English', id: 1 },
-  { language: 'English(Canada)', id: 2 },
-  { language: 'English(Singapore)', id: 3 },
-  { language: 'English(UK)', id: 4 },
-  { language: 'English(US)', id: 5 },
-  { language: 'Deutsch', id: 6 },
-  { language: 'Italiano', id: 7 },
-  { language: 'Korean', id: 8 },
-];
 
 export const isFieldEmpty = (text) => {
   console.log('text', text);

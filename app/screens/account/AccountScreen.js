@@ -57,6 +57,7 @@ import {
 } from '../../utils/QuickBlox';
 import strings from '../../Constants/String';
 import Header from '../../components/Home/Header';
+import TCGradientButton from '../../components/TCGradientButton';
 
 export default function AccountScreen({ navigation, route }) {
   const scrollRef = useRef();
@@ -78,14 +79,17 @@ export default function AccountScreen({ navigation, route }) {
   // For activity indigator
   const [loading, setloading] = useState(false);
 
+  const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
+  const [createEntity, setCreateEntity] = useState('');
+
   // Account menu opetions
   const userMenu = [
     { key: 'Reservations' },
     { key: 'Sports', member: [{ opetions: 'Add a sport' }] },
     { key: 'Refereeing', member: [{ opetions: 'Register as a referee' }] },
     { key: 'Scorekeeping', member: [{ opetions: 'Register as a scorekeeper' }] },
-    { key: 'Teams', member: [{ opetions: 'Create a Team' }] },
-    { key: 'Clubs', member: [{ opetions: 'Create a Club' }] },
+    { key: 'Teams', member: [{ opetions: 'Create Team' }] },
+    { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
     // {key: 'My Leagues', member:[{opetions: 'Create a League'}]},
     // {key: 'Register as a Referee'},
     // {key: 'Register as a personal player'},
@@ -107,7 +111,7 @@ export default function AccountScreen({ navigation, route }) {
     { key: 'Reservations' },
     { key: 'Members' },
     // {key: 'My Leagues'},
-    { key: 'Clubs', member: [{ opetions: 'Create a Club' }] },
+    { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
     {
       key: 'Payment & Payout',
       member: [
@@ -121,7 +125,7 @@ export default function AccountScreen({ navigation, route }) {
   const clubMenu = [
     { key: 'Reservations' },
     { key: 'Members' },
-    { key: 'Teams', member: [{ opetions: 'Create a Team' }] },
+    { key: 'Teams', member: [{ opetions: 'Create Team' }] },
     // {key: 'My Leagues'},
     // {key: 'Invite Teams'},
     {
@@ -468,7 +472,7 @@ export default function AccountScreen({ navigation, route }) {
       navigation.navigate('RegisterPlayer');
     } else if (section === 'Register as a scorekeeper') {
       navigation.navigate('RegisterScorekeeper');
-    } else if (section === 'Create a Club') {
+    } else if (section === 'Create Club') {
       navigation.navigate('CreateClubForm1');
     } else if (section === 'Setting & Privacy') {
       const entity = authContext.entity;
@@ -494,15 +498,12 @@ export default function AccountScreen({ navigation, route }) {
         navigation.navigate('RegisterScorekeeper');
       } else if (options === 'Add a sport') {
         navigation.navigate('RegisterPlayer');
-      } else if (options === 'Create a Team') {
-        const entity = authContext.entity;
-        if (entity.role === 'user') {
-          navigation.navigate('CreateTeamForm1');
-        } else {
-          navigation.navigate('CreateTeamForm1', { clubObject: group });
-        }
-      } else if (options === 'Create a Club') {
-        navigation.navigate('CreateClubForm1');
+      } else if (options === 'Create Team') {
+        setCreateEntity('team');
+        setIsRulesModalVisible(true)
+      } else if (options === 'Create Club') {
+        setCreateEntity('club');
+        setIsRulesModalVisible(true)
       } else if (options === 'Payment Method') {
         navigation.navigate('Account', {
           screen: 'PaymentMethodsScreen',
@@ -807,10 +808,10 @@ export default function AccountScreen({ navigation, route }) {
           {rowItem.opetions === 'Register as a scorekeeper' && (
             <Image source={images.registerReferee} style={styles.subMenuItem} />
           )}
-          {rowItem.opetions === 'Create a Team' && (
+          {rowItem.opetions === 'Create Team' && (
             <Image source={images.createTeam} style={styles.subMenuItem} />
           )}
-          {rowItem.opetions === 'Create a Club' && (
+          {rowItem.opetions === 'Create Club' && (
             <Image source={images.createClub} style={styles.subMenuItem} />
           )}
           {rowItem.opetions === 'Create a League' && (
@@ -876,6 +877,21 @@ export default function AccountScreen({ navigation, route }) {
     ),
     [renderTopRightNotificationButton],
   );
+
+  const onNextPressed = () => {
+    setIsRulesModalVisible(false)
+    const entity = authContext.entity;
+        if (createEntity === 'team') {
+          if (entity.role === 'user') {
+            navigation.navigate('CreateTeamForm1');
+          } else {
+            navigation.navigate('CreateTeamForm1', { clubObject: group });
+          }
+        }
+        if (createEntity === 'club') {
+          navigation.navigate('CreateClubForm1');
+        }
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -1302,6 +1318,83 @@ export default function AccountScreen({ navigation, route }) {
         </Modal>
 
         {/* Sport created modal */}
+
+        {/* Rules notes modal */}
+        <Modal
+          isVisible={isRulesModalVisible} // isRulesModalVisible
+          backdropColor="black"
+          onBackdropPress={() => setIsRulesModalVisible(false)}
+          onRequestClose={() => setIsRulesModalVisible(false)}
+          backdropOpacity={0}
+          style={{
+            margin: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}>
+          <View
+            style={{
+              width: '100%',
+              height: Dimensions.get('window').height / 1.7,
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.5,
+              shadowRadius: 5,
+              elevation: 15,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingHorizontal: 15,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginVertical: 20,
+                  fontSize: 16,
+                  fontFamily: fonts.RBold,
+                  color: colors.lightBlackColor,
+                }}>
+                {createEntity === 'club' ? 'Create Club' : 'Create Team'}
+              </Text>
+            </View>
+            <View style={styles.separatorLine} />
+            <View style={{ flex: 1 }}>
+              <ScrollView>
+
+                <Text style={[styles.rulesText, { margin: 15 }]}>
+                  {'When your team creates a club:'}
+                </Text>
+                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                  {'\n• your team will belong to the club initially.'}
+                </Text >
+                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                  {'\n• your team can leave the club anytime later.'}
+                </Text>
+                <Text style={[styles.rulesText, { marginLeft: 15 }]}>
+                  {
+                      '\n• the admins of your team will be the admins of the club initially.'
+                    }
+                </Text>
+
+              </ScrollView>
+            </View>
+            <TCGradientButton
+              isDisabled={false}
+              title={strings.nextTitle}
+              style={{ marginBottom: 30 }}
+              onPress={onNextPressed}
+            />
+          </View>
+        </Modal>
+
+        {/* Rules notes modal */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -1670,4 +1763,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
   },
+
+ rulesText: {
+  fontFamily: fonts.RRegular,
+  fontSize: 16,
+  color: colors.lightBlackColor,
+},
 });
