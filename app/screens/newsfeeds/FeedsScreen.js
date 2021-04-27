@@ -315,10 +315,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   backImageStyle: {
-    height: 36,
-    width: 36,
-    tintColor: colors.blackColor,
-    resizeMode: 'contain',
+    height: 40,
+    width: 40,
   },
 });
 

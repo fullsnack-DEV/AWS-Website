@@ -26,6 +26,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-snap-carousel';
+import FastImage from 'react-native-fast-image';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -388,9 +389,12 @@ export default function LocalHomeScreen({ navigation }) {
         <Header
           showBackgroundColor={true}
           leftComponent={
-            <TouchableOpacity onPress={() => setSettingPopup(true)}>
-              <Image source={images.home_setting} style={styles.townsCupIcon} />
-            </TouchableOpacity>
+            <View>
+              <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
+            </View>
+              // <TouchableOpacity onPress={() => setSettingPopup(true)}>
+              // <Image source={images.home_setting} style={styles.townsCupIcon} />
+              // </TouchableOpacity>
           }
           centerComponent={
             <TouchableOpacity
@@ -1194,4 +1198,8 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: 'white',
   },
+backImageStyle: {
+    height: 40,
+    width: 40,
+},
 });
