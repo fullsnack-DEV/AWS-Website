@@ -38,7 +38,8 @@ const strings = {
   passwordPlaceHolder: 'Password',
   forgotPassword: 'Forgot Password?',
   checkEmailText: 'Please check your e-mail',
-  checkEmailDescText: 'We have sent you an email with a link to reset your password. It may take a few minutes for you to receive it.',
+  checkEmailDescText:
+    'We have sent you an email with a link to reset your password. It may take a few minutes for you to receive it.',
   signTerms:
     'By continuing you agree to Towny\'s Terms of Service, We will manage information about you as described in our PrivacyPolicy and Cookie Policy.',
   resetText: 'Reset your password.',
@@ -107,13 +108,15 @@ const strings = {
   addBirthdayText: 'Add your birthday.',
   notDisplayText: 'This won’t be displayed on your public profile.',
   whyAskingText: 'Why is TownsCup asking for my birthday?',
-  birthdatText: 'You must be at least 13 years old to have a TownsCup account in most countries.\n\nIf account represents someone under the age of 13, the user must clearly state in the account’s bio that the account is managed by a parent or manager.\n\nThis information also helps TownsCup provide age-appropriate services to its users. Furthermore, this information is required when you join a group or sports game which has age requirements in the TownsCup Community.',
+  birthdatText:
+    'You must be at least 13 years old to have a TownsCup account in most countries.\n\nIf account represents someone under the age of 13, the user must clearly state in the account’s bio that the account is managed by a parent or manager.\n\nThis information also helps TownsCup provide age-appropriate services to its users. Furthermore, this information is required when you join a group or sports game which has age requirements in the TownsCup Community.',
 
   // Choose gender screen
   addGenderText: 'Add your gender.',
   notDisplayGenderText: 'This won’t be displayed on your public profile.',
   whyAskingGenderText: 'Why is TownsCup asking for my gender?',
-  genderText: 'This information helps TownsCup provide gender-appropriate services to its users. Furthermore, this information is also required when you join a group or sports game which has gender-requirement in the TownsCup community.',
+  genderText:
+    'This information helps TownsCup provide gender-appropriate services to its users. Furthermore, this information is also required when you join a group or sports game which has gender-requirement in the TownsCup community.',
   maleRadioText: 'Male',
   femaleRadioText: 'Female',
   otherRadioText: 'Other',
@@ -123,7 +126,8 @@ const strings = {
   newText: 'new',
   SportsTextFieldTitle: 'Choose a sport that the team will play.',
 
-  SportsTextFieldClubTitle: 'Choose sports that members or teams in the club will play.',
+  SportsTextFieldClubTitle:
+    'Choose sports that members or teams in the club will play.',
   selectSportPlaceholder: 'Choose a Sport',
   teamNameTitle: 'What is the team name?',
   teamNamePlaceholder: 'Enter Team Name',
@@ -170,6 +174,9 @@ const strings = {
     'A team admin can send a new member the invoice for the registration fee after the member joins your team.',
   basicFeeTitle: 'Basic Fee',
   enterFeePlaceholder: 'Enter fee',
+  venueNamePlaceholder: 'Venue Name',
+  venueAddressPlaceholder: 'Address',
+  venueDetailsPlaceholder: 'Details',
   feeDetailsText: 'Fee Details',
   feeDetailsPlaceholder: 'Write Details regarding the registration fee…',
   membershipFeeTitle: 'Membership Fee',
@@ -189,29 +196,31 @@ const strings = {
   flexibleText: 'Flexible',
   requesterWarningText:
     '*Requester: The team or person who sends the game reservation request initialy *Requestee: The team or person who receives the game reservation request initialy',
-  strictPoint1Title: '-Cancellation 7 days in advance -',
-  strictPoint2Title: '-Cancellation less than 7 days in advance -',
+  strictPoint1Title: 'Cancellation 14 days in advance',
+  strictPoint2Title: 'Cancellation less than 14 days in advance',
+  strictPoint3Title: 'Cancellation less than 24 hours in advance',
   strictPoint1Desc:
-    'The challenge sender can cancel the game reservation up to 7 days before the game starting time and get a 50% refund, but not service fee. If only 50% of the reservation has been paid, no refund will be issued and the remaining 50% will simply not be charged.',
-
+    'Free cancellation up to 14 days before the game reservation’s start time. However, the service fee is non-refundable.',
   strictPoint2Desc:
-    'If the challenge sender cancels less than 7 days before the game starting time the game fee and service fee are not refunded.',
+    'The challenger can cancel the game reservation up to 7 days before the game reservation’s start time and get a 50% refund of the game fee, excluding the service fee.',
+  strictPoint3Desc:
+    'If the challenger cancels less than 24 hours before the the game reservation’s start time,the game fee and service fee are non-refundable.',
 
-  moderatePoint1Title: '-Cancellation 14 days in advance-',
-  moderatePoint2Title: '-Cancellation less than 14 days in advance-',
-  moderatePoint3Title: '-Cancellation less than 24 hours in advance-',
+  moderatePoint1Title: 'Cancellation 7 days in advance',
+  moderatePoint2Title: 'Cancellation less than 7 days in advance',
+  moderatePoint3Title: 'Cancellation less than 24 hours in advance',
   moderatePoint1Desc:
-    'Free cancellation until 14 days before the game starting time.',
+    'Free cancellation up to 7 days before the game reservation’s start time. However, the service fee is non-refundable.',
   moderatePoint2Desc:
-    'The challenge sender can cancel less than 7 days before the game starting time and get a 50% refund, but not service fee. If only 50% of the reservation has been paid, no refund will be issued and the remaining 50% will simply not be charged.',
+    'The challenger can cancel the game reservation less than 7 days before the game reservation’s start time and get a 50% refund of the game fee, but not the service fee.',
   moderatePoint3Desc:
-    'If the challenge sender cancels less than 24 hours before the game starting time the game fee and service fee are not refunded.',
-  flexiblePoint1Title: '-Cancellation 24 hours in advance-',
-  flexiblePoint2Title: '-Cancellation less than 24 hours in advance-',
+    'If the challenger cancels less than 24 hours before the game reservation’s start time, the match fee and service fee are non-refundable.',
+  flexiblePoint1Title: 'Cancellation 24 hours in advance',
+  flexiblePoint2Title: 'Cancellation less than 24 hours in advance',
   flexiblePoint1Desc:
-    'Free cancellation until 24 hours before the game starting time.',
+    'Free cancellation up to 24 hours before the game reservation’s start time. However, the service fee is non-refundable.',
   flexiblePoint2Desc:
-    'If the challenge sender cancels less than 24 hours before the game starting time the game fee and service fee are not refunded.',
+    'If the challenger cancels less than 24 hours before the game reservation’s start time, the game fee and service fee are non-refundable.',
 
   // CreateClub Screen 1
   clubNameTitle: 'What is the club name?',
@@ -248,12 +257,14 @@ const strings = {
   descriptionPlaceholder: 'Describe yourself as a personal player',
   matchFeesTitle: 'Match Fee',
   perHourText: '(per hour)',
-  configureEmailText: 'Can not open mail composer, please setup mail account from seting',
+  configureEmailText:
+    'Can not open mail composer, please setup mail account from seting',
 
   // Register Referee Screen
   certificateTitle: 'Certificates',
   addCertiTitle: 'Add a Certificate',
-  addCertiMainTitle: 'Please add the certificates or documents showing your professional experience.',
+  addCertiMainTitle:
+    'Please add the certificates or documents showing your professional experience.',
   descriptionRefereePlaceholder: 'Describe yourself as a referee',
   certificateSubTitle:
     'Please add the certificates or documents showing your professional experience.',
@@ -269,11 +280,14 @@ const strings = {
   titleValue: 'Games with Vancouver Whitecaps',
   about: 'Description',
   aboutPlaceholder: 'Enter Description',
-  createAboutValue: 'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',
-  aboutValue: 'I love playing soccer, Association football, more commonly known as football or soccer, [a] is a team sport played between seven teams of eleven players with a spherical ball.',
+  createAboutValue:
+    'I love playing soccer, Association football, commonly known as football or soccer, [a] is a sport played between seven teams of eleven with a spherical ball.',
+  aboutValue:
+    'I love playing soccer, Association football, more commonly known as football or soccer, [a] is a team sport played between seven teams of eleven players with a spherical ball.',
   eventColorTitle: 'Event Color',
   eventCreatedTitle: 'Events Created By You',
-  groupEventTitle: 'The events of which group do you want to be displayed in your schedule?',
+  groupEventTitle:
+    'The events of which group do you want to be displayed in your schedule?',
   eventImportedTitle: 'Event Imported From Other Groups',
   games: 'Games',
   scheduleMatchTitle: 'Scheduled Matches',
@@ -290,10 +304,12 @@ const strings = {
   availableTitle: 'Challenge Availability',
   scheduleTitle: 'Schedule',
   whoCanSeeShcedule: 'Who can see your schedule?',
-  availableSubTitle: 'Do you want to set the time to be available to receive a challenge request during this event?',
+  availableSubTitle:
+    'Do you want to set the time to be available to receive a challenge request during this event?',
   available: 'Available',
   blocked: 'Blocked',
-  editChallengeTitle: 'Set the time to be available to receive a challenge request or block it.',
+  editChallengeTitle:
+    'Set the time to be available to receive a challenge request or block it.',
 
   // Group setting & Privacy
   connectionTitle: 'Connetions',
@@ -332,7 +348,8 @@ const strings = {
   enterBioPlaceholder: 'Enter Your Biography',
   enterAboutPlaceholder: 'Enter Your About',
 
-  inviteEmailText: 'Please enter the e-mail account of the person that you want to invite.',
+  inviteEmailText:
+    'Please enter the e-mail account of the person that you want to invite.',
   inviteSearchText: 'Who do you want to invite to your team?',
   addEmailText: '+ Add E-Mail',
   addPhone: '+ Add Phone',
@@ -388,7 +405,8 @@ const strings = {
   today: 'Today',
   earlier: 'Earlier',
 
-  trashmessage: 'Notifications in trash will be permanently deleted 30 days after they are moved in trash.',
+  trashmessage:
+    'Notifications in trash will be permanently deleted 30 days after they are moved in trash.',
   left: 'left',
   responsetime: '* Response time :',
   responsetimeexpired: 'RESPONSE PERIOD EXPIRED',
@@ -402,7 +420,8 @@ const strings = {
   sendAlterRequest: 'SEND ALTERATION REQUEST',
   cancel: 'Cancel',
   goToGameHome: 'GO TO GAME HOME',
-  alreadyjoinclubmessage: 'Your team can’t join this club because a team can join only a club.',
+  alreadyjoinclubmessage:
+    'Your team can’t join this club because a team can join only a club.',
   isinvitedsuccesfully: 'is invited successfully',
 
   bioPrivacyTitle: 'Who can see Bio?',
@@ -485,7 +504,8 @@ const strings = {
   addOptionMessage: '+ Add a payment method',
   selectPaymentText: 'Please select payment method.',
   selectPaymentMethod: 'Select a payment method',
-  cannotAcceptText: 'Reservation can not be change after game has been started.',
+  cannotAcceptText:
+    'Reservation can not be change after game has been started.',
   refereeOfferExpiryText: 'Offer expired or game start time already passed.',
   selectCardText: 'Please select payment method.',
   reservationRequestSent: 'SENT',
@@ -525,16 +545,20 @@ const strings = {
   max5Referee: 'Maximum 5 referees can be added.',
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
-  cannotChangeReservationText: 'Reservation can not be change after game has been started.',
-  cannotChangeReservationGameStartedText: 'Reservation can not be change after game time has beed expired or offer expired.',
-  cannotCancelReservationText: 'Reservation cannot be cancel after game time passed or offer expired.',
+  cannotChangeReservationText:
+    'Reservation can not be change after game has been started.',
+  cannotChangeReservationGameStartedText:
+    'Reservation can not be change after game time has beed expired or offer expired.',
+  cannotCancelReservationText:
+    'Reservation cannot be cancel after game time passed or offer expired.',
   selectSetText: 'Select sets',
   selectNumberOfGameText: 'Select number of games',
   gameScoreText: 'Select game score',
   selectWiningPoints: 'Select wining points',
   selectPointsText: 'Select points',
   selectAnyCard: 'Please any of the card.',
-  networkConnectivityErrorMessage: 'Could not connect to the internet. Please check your network',
+  networkConnectivityErrorMessage:
+    'Could not connect to the internet. Please check your network',
   recentPointDelete: 'The recentest won point will be canceled.',
   noWonPoint: 'Score not added yet.',
   gameNotStarted: 'Game not started yet.',
@@ -546,9 +570,11 @@ const strings = {
   reviewForPlayers: 'Review for Players',
   reviewForReferees: 'Review for Referees',
   editReviewForTeams: 'Edit Review for Teams',
-  completeReviewFirst: 'Please, complete all ratings before moving to the next.',
+  completeReviewFirst:
+    'Please, complete all ratings before moving to the next.',
   punchualityDesc: 'Did the the referee arrive at the match place on time?',
-  punchualityDescScorekeeper: 'Did the the scorekeeper arrive at the match place on time?',
+  punchualityDescScorekeeper:
+    'Did the the scorekeeper arrive at the match place on time?',
   chooseTeamFirst: 'Please choose any one team for review.',
   descriptionScorekeeperPlaceholder: 'Describe yourself as a scorekeeper',
 
@@ -574,49 +600,90 @@ const strings = {
   enterValidGameFee: 'Please enter valid game fee.',
   whatsGoingText: 'What\'s going on?',
   writeText: 'Please write some text or select any image.',
-  cannotCancelReservationAfterGameStartText: 'Reservation cannot be cancel after game game has beed started.',
-cannotChooseDatetime: 'This datetime is overlapping with blocked datetime.',
-recentMatchesTitle: 'Recent Matches',
-upcomingMatchesTitle: 'Upcoming Matches',
-lookingForTitle: 'Looking for a challenger',
-shortsTitle: 'Shorts',
-hiringPlayerTitle: 'Hiring players',
-lookingForTeamTitle: 'Looking for a team',
-refereesTitle: 'Referees',
-scorekeeperTitle: 'Scorekeepers',
-searchTitle: 'Search by city, state or country',
-challengeeSecureText: 'The challengee secures the match place',
-challengerSecureText: 'The challenger secures the match place',
-recentMatchPlaceholderText: 'There are no recent games.\nWould you like to start your game?',
-upcomingMatchPlaceholderText: 'There is no Upcoming Match.\nWould you like to start your challenge?',
-challengerPlaceholderText: 'There is no challenge.\nWould you like to start your challenge?',
-hiringPlayersPlaceholderText: 'There is no Hiring team.\nWould you like to start to hire players?',
-lookingTeamsPlaceholderText: 'There is no Player.\nWould you like to start registering players?',
-refereesPlaceholderText: 'There is no referee.\nWould you like to start registering Referees?',
-scorekeepersPlaceholderText: 'There is no Scorekeeper.\nWould you like to start registering\nScorekeeper?',
-taggedPeopleText: 'Tagged People',
-taggedMatchesText: 'Tagged matches',
+  cannotCancelReservationAfterGameStartText:
+    'Reservation cannot be cancel after game game has beed started.',
+  cannotChooseDatetime: 'This datetime is overlapping with blocked datetime.',
+  recentMatchesTitle: 'Recent Matches',
+  upcomingMatchesTitle: 'Upcoming Matches',
+  lookingForTitle: 'Looking for a challenger',
+  shortsTitle: 'Shorts',
+  hiringPlayerTitle: 'Hiring players',
+  lookingForTeamTitle: 'Looking for a team',
+  refereesTitle: 'Referees',
+  scorekeeperTitle: 'Scorekeepers',
+  searchTitle: 'Search by city, state or country',
+  challengeeSecureText: 'The challengee secures the match place',
+  challengerSecureText: 'The challenger secures the match place',
+  recentMatchPlaceholderText:
+    'There are no recent games.\nWould you like to start your game?',
+  upcomingMatchPlaceholderText:
+    'There is no Upcoming Match.\nWould you like to start your challenge?',
+  challengerPlaceholderText:
+    'There is no challenge.\nWould you like to start your challenge?',
+  hiringPlayersPlaceholderText:
+    'There is no Hiring team.\nWould you like to start to hire players?',
+  lookingTeamsPlaceholderText:
+    'There is no Player.\nWould you like to start registering players?',
+  refereesPlaceholderText:
+    'There is no referee.\nWould you like to start registering Referees?',
+  scorekeepersPlaceholderText:
+    'There is no Scorekeeper.\nWould you like to start registering\nScorekeeper?',
+  taggedPeopleText: 'Tagged People',
+  taggedMatchesText: 'Tagged matches',
 
-manageChallengeText: 'MANAGE CHALLENGE',
-manageChallengeDetailText: 'In order to receive challenges,\nyou must complete Manage Challenge.',
+  manageChallengeText: 'MANAGE CHALLENGE',
+  manageChallengeDetailText:
+    'In order to receive challenges,\nyou must complete Manage Challenge.',
 
-sportsText: 'Choose a sport that the you want to play.',
-languageText: 'Which languages can you communicate in.',
-descriptionTextDetails: 'Describe yourself in the sport.',
-descriptionTeamTextDetails: 'Describe the team more so that people can know about the team.',
-descriptionTeamTextPlaceholder: 'Describe the team.',
+  sportsText: 'Choose a sport that the you want to play.',
+  languageText: 'Which languages can you communicate in.',
+  descriptionTextDetails: 'Describe yourself in the sport.',
+  descriptionTeamTextDetails:
+    'Describe the team more so that people can know about the team.',
+  descriptionTeamTextPlaceholder: 'Describe the team.',
 
-descriptionClubTextDetails: 'Describe the club more so that people can know about the club.',
-descriptionClubTextPlaceholder: 'Describe the club.',
+  descriptionClubTextDetails:
+    'Describe the club more so that people can know about the club.',
+  descriptionClubTextPlaceholder: 'Describe the club.',
 
-noFollowersTocreateTeam: 'You have no followers, so you can not create team.',
-followersDescription: 'Who do you want to make the team with? Choose a person among your followers.',
-followersPlaceholder: 'Search',
-photoUploadTitle: 'Review the team, and add the profile photo and cover photo.',
+  noFollowersTocreateTeam: 'You have no followers, so you can not create team.',
+  followersDescription:
+    'Who do you want to make the team with? Choose a person among your followers.',
+  followersPlaceholder: 'Search',
+  photoUploadTitle:
+    'Review the team, and add the profile photo and cover photo.',
 
-photoUploadClubTitle: 'Review the club, and add the profile photo and cover photo.',
+  photoUploadClubTitle:
+    'Review the club, and add the profile photo and cover photo.',
 
-playersGenderText: 'Player\'s Gender',
+  playersGenderText: 'Player\'s Gender',
+
+  manageChallengeShhetItem: 'Manage Challenge',
+  challengeSettingTitle:
+    'These challenge settings will be applied when a team challenges your team. When your team challenges another team, the team’s challenge setting will be applied for the challenge.',
+
+  challengeSettingNotes:
+    'In order to activate the “challenge” button and receive a challenge (game Reservation request), please fill in and save all the lists below.',
+
+  gameTyleTitle: 'Choose a game type.',
+  officialTypeText: 'The game result has an effect on TC points and TC level of the challenger and you.',
+  friendlyTypeText: 'The game result has no effect on TC points and TC level of the challenger and you.',
+
+  officialGameType: 'Official',
+  friendlyGameType: 'Friendly',
+
+  refuncPolicyTitle: 'Choose one of refund policies',
+
+  gameFeeTitle: 'Set the game fee that you want to charge to your challenger.',
+  gameRulesTitle: 'Write down the rules of the game you will play against the challenger.',
+
+  gameRulesSubTitle1: 'General rules',
+  gameRulesSubTitle2: 'Special rules',
+
+  generalRulesPlaceholder: 'Add the rules that are generally used in this sport.',
+  specialRulesPlaceholder: 'Add any rules that are unique or that you want to emphasize.',
+
+  venueTitle: 'Add at lease one venue that you will be able to secure for a game against a challenger at your expense.',
 
 };
 export default strings;

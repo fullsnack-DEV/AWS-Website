@@ -21,8 +21,8 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import Modal from 'react-native-modal';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import TCProfileView from '../../../../components/TCProfileView';
-
 import AuthContext from '../../../../auth/context';
 
 import images from '../../../../Constants/ImagePath';
@@ -30,7 +30,7 @@ import strings from '../../../../Constants/String';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
-import { groupMemberGenderItems, languageList } from '../../../../utils';
+import { getHitSlop, groupMemberGenderItems, languageList } from '../../../../utils';
 import TCFormProgress from '../../../../components/TCFormProgress';
 
 import TCThinDivider from '../../../../components/TCThinDivider';
@@ -276,53 +276,56 @@ export default function CreateTeamForm2({ navigation, route }) {
   return (
     <>
       <TCFormProgress totalSteps={3} curruentStep={2} />
-      <ScrollView
+      <KeyboardAwareScrollView>
+        <ScrollView
         style={styles.mainContainer}
         showsVerticalScrollIndicator={false}>
-        {followersList ? (
-          <View style={styles.fieldView}>
-            <TCLabel title={strings.followersDescription} />
-            {follower && (
-              <View
+
+          {followersList ? (
+            <View style={styles.fieldView}>
+              <TCLabel title={strings.followersDescription} />
+              {follower && (
+                <View
                 style={{
                   margin: 15,
                   marginTop: 25,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}>
-                <TCProfileView
+                  <TCProfileView
                   type={'medium'}
                   name={follower?.full_name}
                   location={follower?.city}
                   image={follower?.thumbnail}
                 />
-                <TouchableOpacity
+                  <TouchableOpacity
                   style={styles.closeButton}
+                  hitSlop={getHitSlop(15)}
                   onPress={() => {
                     setFollower();
                     setFollowersSelection();
                   }}>
-                  <Image
+                    <Image
                     source={images.cancelImage}
                     style={styles.closeButton}
                   />
-                </TouchableOpacity>
-              </View>
+                  </TouchableOpacity>
+                </View>
             )}
-            {!follower && (
-              <TouchableOpacity onPress={() => setVisibleFollowersModal(true)}>
-                <View style={styles.searchView}>
-                  <TextInput
+              {!follower && (
+                <TouchableOpacity onPress={() => setVisibleFollowersModal(true)}>
+                  <View style={styles.searchView}>
+                    <TextInput
                     style={styles.searchTextField}
                     placeholder={strings.followersPlaceholder}
                     value={gender}
                     editable={false}
                     pointerEvents="none"
                   />
-                </View>
-              </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
             )}
-          </View>
+            </View>
         ) : (
           <View style={{ flex: 1 }}>
             <View style={styles.fieldView}>
@@ -463,29 +466,29 @@ export default function CreateTeamForm2({ navigation, route }) {
             </View>
           </View>
         )}
-        <Text style={styles.LocationText}>{strings.languageText}</Text>
-        <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
-          <Text
+          <Text style={styles.LocationText}>{strings.languageText}</Text>
+          <TouchableOpacity style={styles.languageView} onPress={toggleModal}>
+            <Text
             style={
               languagesName
                 ? styles.languageText
                 : styles.languagePlaceholderText
             }
             numberOfLines={50}>
-            {languagesName || 'Add language'}
-          </Text>
-        </TouchableOpacity>
+              {languagesName || 'Add language'}
+            </Text>
+          </TouchableOpacity>
 
-        <View
+          <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-          <Text style={styles.LocationText}>
-            {strings.descriptionTeamTextDetails}
-          </Text>
-        </View>
-        <TextInput
+            <Text style={styles.LocationText}>
+              {strings.descriptionTeamTextDetails}
+            </Text>
+          </View>
+          <TextInput
           style={styles.descriptionTxt}
           onChangeText={(text) => setDescription(text)}
           value={description}
@@ -495,8 +498,11 @@ export default function CreateTeamForm2({ navigation, route }) {
           placeholder={strings.descriptionTeamTextPlaceholder}
           placeholderTextColor={colors.userPostTimeColor}
         />
-        <View style={{ flex: 1 }} />
-      </ScrollView>
+
+          {/* <View style={{ flex: 1 }} /> */}
+
+        </ScrollView>
+      </KeyboardAwareScrollView>
       <TCGradientButton
         isDisabled={
           follower
@@ -866,7 +872,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 13,
     height: 13,
-    marginLeft: 5,
     resizeMode: 'contain',
   },
 
@@ -898,6 +903,7 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     alignSelf: 'center',
     marginTop: 12,
+    marginBottom: 12,
     paddingVertical: 12,
     paddingHorizontal: 15,
     color: colors.lightBlackColor,

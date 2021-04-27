@@ -32,6 +32,8 @@ import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
+import { Portal } from 'react-native-portalize';
+import { Modalize } from 'react-native-modalize';
 import BackgroundProfile from '../../components/Home/BackgroundProfile';
 import Header from '../../components/Home/Header';
 import images from '../../Constants/ImagePath';
@@ -105,7 +107,8 @@ import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import RefereeReviewerList from './RefereeReviewerList';
 import * as Utility from '../../utils';
 import {
- getQBAccountType, QBcreateUser,
+  getQBAccountType,
+  QBcreateUser,
   QB_ACCOUNT_TYPE,
   QBconnectAndSubscribe,
   QBlogin,
@@ -176,6 +179,7 @@ const HomeScreen = ({ navigation, route }) => {
   const isFocused = useIsFocused();
   // const viewRef = useRef();
   const mainFlatListRef = useRef();
+  const confirmationRef = useRef();
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [isUserHome, setIsUserHome] = useState(false);
   const [isClubHome, setIsClubHome] = useState(false);
@@ -253,9 +257,6 @@ const HomeScreen = ({ navigation, route }) => {
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [currentPlayInObject, setCurrentPlayInObject] = useState(null);
 
-  const [isEntityCreateModalVisible, setIsEntityCreateModalVisible] = useState(
-    false,
-  );
   const [
     isDoubleSportTeamCreatedVisible,
     setIsDoubleSportTeamCreatedVisible,
@@ -269,11 +270,14 @@ const HomeScreen = ({ navigation, route }) => {
   );
   const eventEditDeleteAction = useRef();
   const addRoleActionSheet = useRef();
+  const manageChallengeActionSheet = useRef();
 
   useEffect(() => {
     if (route?.params?.isEntityCreated) {
-      setIsEntityCreateModalVisible(true)
       onSwitchProfile(route?.params?.entityObj);
+      setTimeout(() => {
+        confirmationRef.current.open();
+      }, 1000);
     }
   }, [route?.params?.entityObj, route?.params?.isEntityCreated]);
 
@@ -2287,33 +2291,63 @@ const HomeScreen = ({ navigation, route }) => {
     }
   }, [navigation, route.params]);
 
+  const onThreeDotPressed = useCallback(() => {
+    manageChallengeActionSheet.current.show()
+  }, []);
+
   const renderTopFixedButtons = useMemo(
     () => (
       <View
         style={{
-          position: 'absolute',
           zIndex: 5,
           top: 30,
-          justifyContent: 'flex-start',
+          justifyContent: 'space-between',
           paddingLeft: 15,
-          alignItems: 'center',
+          paddingRight: 15,
         }}>
         {route && route.params && route.params.backButtonVisible && (
-          <TouchableOpacity
+          <View
             style={{
-              backgroundColor: 'rgba(0,0,0,0.4)',
-              height: 30,
-              width: 30,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 25,
-            }}
-            onPress={onBackPress}>
-            <Image
-              source={images.backArrow}
-              style={{ height: 15, width: 15, tintColor: colors.whiteColor }}
-            />
-          </TouchableOpacity>
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              flex: 1,
+            }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.4)',
+                height: 30,
+                width: 30,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 25,
+              }}
+              onPress={onBackPress}>
+              <Image
+                source={images.backArrow}
+                style={{ height: 15, width: 15, tintColor: colors.whiteColor }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.4)',
+                height: 30,
+                width: 30,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 25,
+              }}
+              onPress={onThreeDotPressed}>
+              <Image
+                source={images.threeDotIcon}
+                style={{
+                  height: 15,
+                  width: 15,
+                  tintColor: colors.whiteColor,
+                  resizeMode: 'contain',
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     ),
@@ -2726,13 +2760,11 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const onSwitchProfile = async (item) => {
-    setloading(true);
     switchProfile(item)
       .then((currentEntity) => {
         switchQBAccount(item, currentEntity);
       })
       .catch((e) => {
-        setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -2791,6 +2823,20 @@ const HomeScreen = ({ navigation, route }) => {
           } else if (index === 2) {
             // Add Scorekeeper
             navigation.navigate('RegisterScorekeeper');
+          }
+        }}
+      />
+      <ActionSheet
+        ref={manageChallengeActionSheet}
+        options={[
+          strings.manageChallengeShhetItem,
+          strings.cancel,
+        ]}
+        cancelButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            // Add Playing
+            navigation.navigate('ManageChallengeScreen');
           }
         }}
       />
@@ -3898,7 +3944,106 @@ const HomeScreen = ({ navigation, route }) => {
       )}
 
       {/* Entity create modal */}
-      <Modal
+      <Portal>
+        <Modalize
+          disableScrollIfPossible={true}
+          withHandle={false}
+          modalStyle={{
+            margin: 0,
+            justifyContent: 'flex-end',
+            backgroundColor: colors.blackOpacityColor,
+            flex: 1,
+          }}
+          ref={confirmationRef}>
+          <View style={styles.modalContainerViewStyle}>
+            <Image style={styles.background} source={images.orangeLayer} />
+            <Image style={styles.background} source={images.entityCreatedBG} />
+            <TouchableOpacity
+              onPress={() => confirmationRef.current.close()}
+              style={{ alignSelf: 'flex-end' }}>
+              <Image
+                source={images.cancelWhite}
+                style={{
+                  marginTop: 25,
+                  marginRight: 25,
+                  height: 15,
+                  width: 15,
+                  resizeMode: 'contain',
+                  tintColor: colors.whiteColor,
+                }}
+              />
+            </TouchableOpacity>
+
+            <View
+              style={{
+                alignItems: 'center',
+                flex: 1,
+                justifyContent: 'center',
+              }}>
+              <ImageBackground
+                source={
+                  route?.params?.entityObj?.thumbnail
+                    ? route?.params?.entityObj?.thumbnail
+                    : route?.params?.role === 'club'
+                    ? images.clubPlaceholder
+                    : images.teamGreenPH
+                }
+                style={styles.groupsImg}>
+                <Text
+                  style={{
+                    color: colors.whiteColor,
+                    fontSize: 20,
+                    fontFamily: fonts.RBlack,
+                    marginBottom: 4,
+                  }}>{`${route?.params?.groupName
+                  ?.charAt(0)
+                  ?.toUpperCase()}`}</Text>
+              </ImageBackground>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Text style={[styles.foundText, { fontFamily: fonts.RBold }]}>
+                  {`${route?.params?.groupName}`}
+                </Text>
+                <Image
+                  source={
+                    route?.params?.role === 'team'
+                      ? images.teamPatch
+                      : images.clubPatch
+                  }
+                  style={styles.entityPatchImage}
+                />
+              </View>
+              <Text style={[styles.foundText, { fontFamily: fonts.RRegular }]}>
+                {'has been created.'}
+              </Text>
+              <Text style={[styles.manageChallengeDetailTitle, { margin: 15 }]}>
+                {`Your account has been switched to the ${route?.params?.groupName} account.`}
+              </Text>
+            </View>
+
+            {route?.params?.role === 'team' && (
+              <Text style={styles.manageChallengeDetailTitle}>
+                {strings.manageChallengeDetailText}
+              </Text>
+            )}
+            <TouchableOpacity
+              style={styles.goToProfileButton}
+              onPress={() => {
+                Alert.alert('Manage challenge');
+              }}>
+              <Text style={styles.goToProfileTitle}>
+                {route?.params?.role === 'club'
+                  ? 'OK'
+                  : strings.manageChallengeText}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modalize>
+      </Portal>
+      {/* <Modal
         isVisible={isEntityCreateModalVisible}
         backdropColor="black"
         style={{
@@ -3910,93 +4055,8 @@ const HomeScreen = ({ navigation, route }) => {
         hasBackdrop
         onBackdropPress={() => setIsEntityCreateModalVisible(false)}
         backdropOpacity={0}>
-        <View style={styles.modalContainerViewStyle}>
-          <Image style={styles.background} source={images.orangeLayer} />
-          <Image style={styles.background} source={images.entityCreatedBG} />
-          <TouchableOpacity
-            onPress={() => setIsEntityCreateModalVisible(false)}
-            style={{ alignSelf: 'flex-end' }}>
-            <Image
-              source={images.cancelWhite}
-              style={{
-                marginTop: 25,
-                marginRight: 25,
-                height: 15,
-                width: 15,
-                resizeMode: 'contain',
-                tintColor: colors.whiteColor,
-              }}
-            />
-          </TouchableOpacity>
 
-          <View
-            style={{
-              alignItems: 'center',
-              flex: 1,
-              justifyContent: 'center',
-            }}>
-            <ImageBackground
-              source={
-                route?.params?.entityObj?.thumbnail
-                  ? route?.params?.entityObj?.thumbnail
-                  : route?.params?.role === 'club'
-                  ? images.clubPlaceholder
-                  : images.teamGreenPH
-              }
-              style={styles.groupsImg}>
-              <Text
-                style={{
-                  color: colors.whiteColor,
-                  fontSize: 20,
-                  fontFamily: fonts.RBlack,
-                  marginBottom: 4,
-                }}>{`${route?.params?.groupName
-                ?.charAt(0)
-                ?.toUpperCase()}`}</Text>
-            </ImageBackground>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <Text style={[styles.foundText, { fontFamily: fonts.RBold }]}>
-                {`${route?.params?.groupName}`}
-              </Text>
-              <Image
-                source={
-                  route?.params?.role === 'team'
-                    ? images.teamPatch
-                    : images.clubPatch
-                }
-                style={styles.entityPatchImage}
-              />
-            </View>
-            <Text style={[styles.foundText, { fontFamily: fonts.RRegular }]}>
-              {'has been created.'}
-            </Text>
-            <Text style={[styles.manageChallengeDetailTitle, { margin: 15 }]}>
-              {`Your account has been switched to the ${route?.params?.groupName} account.`}
-            </Text>
-          </View>
-
-          {route?.params?.role === 'team' && (
-            <Text style={styles.manageChallengeDetailTitle}>
-              {strings.manageChallengeDetailText}
-            </Text>
-          )}
-          <TouchableOpacity
-            style={styles.goToProfileButton}
-            onPress={() => {
-              Alert.alert('Manage challenge');
-            }}>
-            <Text style={styles.goToProfileTitle}>
-              {route?.params?.role === 'club'
-                ? 'OK'
-                : strings.manageChallengeText}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+      </Modal> */}
 
       <Modal
         isVisible={isDoubleSportTeamCreatedVisible} // isDoubleSportTeamCreatedVisible

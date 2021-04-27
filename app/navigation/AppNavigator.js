@@ -143,6 +143,13 @@ const getTabBarVisibility = (route) => {
     || routeName === 'ShortsPlayScreen'
     || routeName === 'FeedViewScreen'
     || routeName === 'SingleNotificationScreen'
+    || routeName === 'ManageChallengeScreen'
+    || routeName === 'GameType'
+    || routeName === 'RefundPolicy'
+    || routeName === 'GameFee'
+    || routeName === 'GameRules'
+    || routeName === 'Venue'
+
   ) {
     return false;
   }

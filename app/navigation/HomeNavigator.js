@@ -172,6 +172,7 @@ import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
 import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
+import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2085,6 +2086,7 @@ const HomeNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="NotificationNavigator"
       component={NotificationNavigator}
@@ -2099,6 +2101,23 @@ const HomeNavigator = () => (
     />
 
     <Stack.Screen name="SingleNotificationScreen" component={ SingleNotificationScreen }/>
+
+    <Stack.Screen
+      name="ManageChallengeScreen"
+      component={ManageChallengeScreen}
+      options={{
+        title: 'Manage Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 
