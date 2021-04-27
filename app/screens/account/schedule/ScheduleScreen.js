@@ -37,6 +37,7 @@ import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
+import FastImage from 'react-native-fast-image';
 import EventCalendar from '../../../components/Schedule/EventCalendar/EventCalendar';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
@@ -752,6 +753,10 @@ export default function ScheduleScreen({ navigation }) {
     () => (
       <>
         <Header
+           leftComponent={<View>
+             <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
+           </View>
+            }
           showBackgroundColor={true}
           centerComponent={
             <Text style={styles.eventTitleTextStyle}>Schedule</Text>
@@ -1557,5 +1562,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 8,
     marginTop: 8,
+  },
+  backImageStyle: {
+    height: 40,
+    width: 40,
   },
 });

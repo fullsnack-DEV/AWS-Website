@@ -90,7 +90,7 @@ const NewsFeedDescription = ({
 
   const renderURLText = useCallback((matchingString) => {
     const match = matchingString.match(urlRegex);
-    const color = colors.navyBlue;
+    const color = colors.eventBlueColor;
     return <Text style={{ color }}>{match?.[0]}</Text>
   }, [])
 

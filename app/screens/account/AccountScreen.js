@@ -31,6 +31,7 @@ import firebase from '@react-native-firebase/app';
 import ExpanableList from 'react-native-expandable-section-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -866,6 +867,10 @@ export default function AccountScreen({ navigation, route }) {
     () => (
       <>
         <Header
+          leftComponent={<View>
+            <FastImage source={images.tc_message_top_icon} resizeMode={'contain'} style={styles.backImageStyle} />
+          </View>
+          }
           showBackgroundColor={true}
           centerComponent={
             <Text style={styles.eventTitleTextStyle}>Account</Text>
@@ -1768,5 +1773,9 @@ const styles = StyleSheet.create({
   fontFamily: fonts.RRegular,
   fontSize: 16,
   color: colors.lightBlackColor,
+ },
+backImageStyle: {
+    height: 40,
+    width: 40,
 },
 });

@@ -19,7 +19,6 @@ import { Text } from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-community/clipboard';
-import RNUrlPreview from 'react-native-url-preview';
 import Carousel from 'react-native-snap-carousel';
 import images from '../../Constants/ImagePath';
 import SingleImage from './SingleImage';
@@ -36,8 +35,8 @@ import fonts from '../../Constants/Fonts'
 import AuthContext from '../../auth/context';
 import CommentModal from './CommentModal';
 import LikersModal from '../modals/LikersModal';
+import CustomURLPreview from '../account/CustomURLPreview';
 
-const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
 const NewsFeedPostItems = ({
   navigation,
   item,
@@ -229,20 +228,9 @@ const NewsFeedPostItems = ({
     </View>
   ), [item?.actor?.data?.full_image, item?.actor?.data?.full_name, item?.time, onImageProfilePress, showThreeDot])
 
-  const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length)
-
   const renderURLPreview = useMemo(() => {
     const obj = typeof item?.object === 'string' ? JSON.parse(item?.object) : item?.object
-    let desc = obj?.text?.toLowerCase()
-    const position = desc?.search(urlRegex)
-    if (position !== -1 && desc?.substring(position)?.startsWith('www')) desc = addStr(desc, position, 'http://')
-    return (<RNUrlPreview
-            text={desc}
-            containerStyle={styles.urlPreviewContainerStyle}
-            imageProps={{ resizeMode: 'cover' }}
-            imageStyle={styles.previewImageStyle}
-        />
-    );
+    return <CustomURLPreview text={obj?.text} />
   }, [item?.object])
 
   const renderDescription = useMemo(() => (
@@ -459,20 +447,6 @@ const styles = StyleSheet.create({
     marginLeft: wp('4%'),
     width: wp('70%'),
   },
-  urlPreviewContainerStyle: {
-    flexDirection: 'column',
-    margin: 5,
-    borderWidth: 1,
-    borderColor: colors.grayBackgroundColor,
-    padding: 8,
-    borderRadius: 10,
-  },
-  previewImageStyle: {
-    alignSelf: 'center',
-    height: 100,
-    width: wp('90%'),
-  },
-
 });
 
 export default memo(NewsFeedPostItems);

@@ -39,6 +39,7 @@ const NotificationType = {
   scorekeeperReservationRestoredDuringAwaitingPayment: 'scorekeeperReservationRestoredDuringAwaitingPayment',
   clap: 'clap',
   tagged: 'tagged',
+  comment: 'comment',
 };
 
 export default NotificationType

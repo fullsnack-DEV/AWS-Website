@@ -419,7 +419,8 @@ function NotificationsListScreen({ navigation }) {
     }
   };
   const onNotificationClick = (notificationItem) => {
-      const verbTypes = [NotificationType.clap, NotificationType.tagged]
+      console.log(notificationItem?.verb)
+      const verbTypes = [NotificationType.clap, NotificationType.tagged, NotificationType.comment]
       if (verbTypes.includes(notificationItem?.verb)) {
           navigation.navigate('SingleNotificationScreen', { notificationItem })
       }
