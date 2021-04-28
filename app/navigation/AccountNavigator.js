@@ -172,6 +172,13 @@ import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
 import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
+import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
+import GameType from '../screens/challenge/manageChallenge/settings/GameType';
+import RefundPolicy from '../screens/challenge/manageChallenge/settings/RefundPolicy';
+import GameFee from '../screens/challenge/manageChallenge/settings/GameFee';
+import GameRules from '../screens/challenge/manageChallenge/settings/GameRules';
+import Venue from '../screens/challenge/manageChallenge/settings/Venue';
+
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2101,6 +2108,104 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen name="SingleNotificationScreen" component={ SingleNotificationScreen } options={{ headerShown: false }}/>
+    <Stack.Screen
+      name="ManageChallengeScreen"
+      component={ManageChallengeScreen}
+      options={{
+        title: 'Manage Challenge',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="GameType"
+      component={GameType}
+      options={{
+        title: 'Game Type',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RefundPolicy"
+      component={RefundPolicy}
+      options={{
+        title: 'Refund Policies',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="GameFee"
+      component={GameFee}
+      options={{
+        title: 'Game Fee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="GameRules"
+      component={GameRules}
+      options={{
+        title: 'Game Rules',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="Venue"
+      component={Venue}
+      options={{
+        title: 'Venue',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
   </Stack.Navigator>
 );
 
