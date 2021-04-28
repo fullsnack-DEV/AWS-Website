@@ -112,7 +112,7 @@ export default function AccountScreen({ navigation, route }) {
     { key: 'Reservations' },
     { key: 'Members' },
     // {key: 'My Leagues'},
-    { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
+    // { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
     {
       key: 'Payment & Payout',
       member: [

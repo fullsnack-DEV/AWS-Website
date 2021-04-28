@@ -543,6 +543,8 @@ const strings = {
   chooseFutureDate: 'Please choose future date for challenge.',
   chooseCorrectDate: 'Please choose correct date and time.',
   max5Referee: 'Maximum 5 referees can be added.',
+  maxVenue: 'Maximum 10 venue can be added.',
+
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
   cannotChangeReservationText:
@@ -684,6 +686,24 @@ const strings = {
   specialRulesPlaceholder: 'Add any rules that are unique or that you want to emphasize.',
 
   venueTitle: 'Add at lease one venue that you will be able to secure for a game against a challenger at your expense.',
+
+  homeAwayTitle: 'Choose which team will be the home team and the away team.',
+  availibilityTitle: 'Are you ready to accept new challenges?',
+
+  AvailibilitySubTitle: 'Accept new challenges',
+  officialOnly: 'Official only',
+  friendlyOnly: 'Friendly only',
+  allType: 'All',
+
+refereeSettingTitle: 'How many referees do you want to hire for the match?',
+refereeSettingNote: 'Which team will secure the referee at its own expense?',
+
+scorekeeperSettingTitle: 'How many scorekeepers do you want to hire for the match?',
+scorekeeperSettingNote: 'Which team will secure the scorekeeper at its own expense?',
+
+gameDurationTitle1: 'Set the Game duration.',
+gameDurationTitle2: 'If the scores are tied at the end of the periods above,',
+detailsTitleText: 'Please add more details if needed.',
 
 };
 export default strings;

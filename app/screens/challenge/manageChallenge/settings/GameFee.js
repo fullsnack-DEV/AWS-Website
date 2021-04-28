@@ -4,7 +4,7 @@ import {
   View,
   Text,
   TextInput,
-  Alert,
+
 } from 'react-native';
 
 import {
@@ -23,7 +23,9 @@ export default function GameFee({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={styles.saveButtonStyle} onPress={() => Alert.alert('Save')}>Save</Text>
+        <Text style={styles.saveButtonStyle} onPress={() => {
+          navigation.navigate('ManageChallengeScreen', { gameFee: basicFee })
+        }}>Save</Text>
       ),
     });
   }, [navigation]);

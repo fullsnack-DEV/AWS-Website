@@ -178,7 +178,11 @@ import RefundPolicy from '../screens/challenge/manageChallenge/settings/RefundPo
 import GameFee from '../screens/challenge/manageChallenge/settings/GameFee';
 import GameRules from '../screens/challenge/manageChallenge/settings/GameRules';
 import Venue from '../screens/challenge/manageChallenge/settings/Venue';
-
+import HomeAway from '../screens/challenge/manageChallenge/settings/HomeAway';
+import Availibility from '../screens/challenge/manageChallenge/settings/Availibility';
+import RefereesSetting from '../screens/challenge/manageChallenge/settings/RefereesSetting';
+import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
+import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2206,6 +2210,88 @@ const AccountNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="HomeAway"
+      component={HomeAway}
+      options={{
+        title: 'Home & Away',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="Availibility"
+      component={Availibility}
+      options={{
+        title: 'Availibility',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="RefereesSetting"
+      component={RefereesSetting}
+      options={{
+        title: 'Referee',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="ScorekeepersSetting"
+      component={ScorekeepersSetting}
+      options={{
+        title: 'Scorekeeper',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="GameDuration"
+      component={GameDuration}
+      options={{
+        title: 'Game Duration',
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
   </Stack.Navigator>
 );
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -18,14 +18,27 @@ import colors from '../../../../Constants/Colors';
 import TCLable from '../../../../components/TCLabel';
 import strings from '../../../../Constants/String';
 
-export default function GameType() {
-  const [typeSelection, setTypeSelection] = useState({ key: 'All', id: 3 });
+export default function GameType({ navigation }) {
+  const [typeSelection, setTypeSelection] = useState({ key: strings.allType, id: 3 });
 
   const gameTypeList = [
-    { key: 'Official only', id: 1 },
-    { key: 'Friendly only', id: 2 },
-    { key: 'All', id: 3 },
+    { key: strings.officialOnly, id: 1 },
+    { key: strings.friendlyOnly, id: 2 },
+    { key: strings.allType, id: 3 },
   ];
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text
+          style={styles.saveButtonStyle}
+          onPress={() => {
+              navigation.navigate('ManageChallengeScreen', { gameType: typeSelection.key })
+          }}>
+          Save
+        </Text>
+      ),
+    });
+  }, [navigation, typeSelection.key]);
 
   const renderGameTypes = ({ item }) => (
     <TouchableWithoutFeedback
@@ -59,7 +72,7 @@ export default function GameType() {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderGameTypes}
       />
-      {(typeSelection.key === 'Official only' || typeSelection.key === 'All') && <View
+      {(typeSelection.key === strings.officialOnly || typeSelection.key === strings.allType) && <View
         style={styles.gameTypeNotes}>
         <Text
           style={styles.gameTypeTitle}>
@@ -71,7 +84,7 @@ export default function GameType() {
         </Text>
       </View>}
 
-      {(typeSelection.key === 'Friendly only' || typeSelection.key === 'All') && <View
+      {(typeSelection.key === strings.friendlyOnly || typeSelection.key === strings.allType) && <View
         style={styles.gameTypeNotes}>
         <Text
           style={styles.gameTypeTitle}>
@@ -171,5 +184,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.veryLightBlack,
   },
-
+  saveButtonStyle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    marginRight: 10,
+  },
 });
