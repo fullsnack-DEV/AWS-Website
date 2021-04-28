@@ -314,7 +314,7 @@ function MultiImagePostView({
                                     onPress={onBackPress}
                                     style={styles.imageTouchStyle}>
                   <Image
-                                        style={[styles.commentImage, { top: 2 }]}
+                                        style={styles.commentImage}
                                         source={images.commentImage}
                                         resizeMode={'cover'}
                                     />
@@ -460,8 +460,8 @@ const styles = StyleSheet.create({
     width: hp('5%'),
   },
   commentImage: {
-    height: 32,
-    width: 32,
+    height: 15,
+    width: 15,
     alignSelf: 'flex-end',
   },
   commentShareLikeView: {

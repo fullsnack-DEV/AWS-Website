@@ -1675,10 +1675,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerRightImg: {
-    height: 30,
+    height: 20,
     marginRight: 20,
     resizeMode: 'cover',
-    width: 30,
+    width: 20,
   },
   roundBadge: {
     backgroundColor: 'red',

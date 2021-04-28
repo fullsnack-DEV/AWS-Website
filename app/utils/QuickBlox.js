@@ -2,14 +2,14 @@ import QB from 'quickblox-react-native-sdk';
 import _ from 'lodash';
 import { QB_Auth_Password } from './constant';
 import images from '../Constants/ImagePath';
-import normalApiCall from './normalApiCall';
+import qbApiCall from './qbApiCall';
 
 const MESSAGE_LIMIT = 50;
 const DIALOG_LIST_LIMIT = 1000;
 const USERS_LIST_LIMIT = 1000;
 export const QB_MAX_ASSET_SIZE_UPLOAD = 104857600;
-export const QB_UNREAD_MESSAGE_COUNT_API = 'https://api.quickblox.com/chat/Message/unread.json?token=';
-
+const QUICKBLOX_BASE_URL = 'https://api.quickblox.com';
+export const QB_UNREAD_MESSAGE_COUNT_API = `${QUICKBLOX_BASE_URL}/chat/Message/unread.json?token=`;
 const MESSAGES_SORT = {
   ascending: false,
   field: QB.chat.MESSAGES_SORT.FIELD.DATE_SENT,
@@ -156,7 +156,7 @@ export const QBupdateUser = async (
   }
   custData.full_name = pureName;
   const qbObj = await getQBObject(authContext);
-  const url = `https://api.quickblox.com/users/${qbObj?.id}.json`;
+  const url = `${QUICKBLOX_BASE_URL}/users/${qbObj?.id}.json`;
   const userObj = {
  user: {
       full_name: fullName,
@@ -262,14 +262,11 @@ export const QBupdateDialogNameAndPhoto = (
       return QB.chat.updateDialog(update)
     }
     const qbObj = await getQBObject(authContext);
-    const url = `https://api.quickblox.com/chat/Dialog/${dialogId}.json`;
-      return normalApiCall({
+    const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
+      return qbApiCall({
         url,
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'QB-Token': qbObj?.token,
-        },
+        qbToken: qbObj?.token,
         data: update,
       }).then((res) => ({
           // eslint-disable-next-line no-underscore-dangle
@@ -311,7 +308,7 @@ export const QBupdateDialogInvitees2 = async (
       update.photo = 'https://picsum.photos/id/320/640/1136';
       if (addUsers?.length > 0) update.push_all = { occupants_ids: addUsers };
       if (removeUsers?.length > 0) update.pull_all = { occupants_ids: removeUsers };
-      const url = `https://api.quickblox.com/chat/Dialog/${dialogId}.json`;
+      const url = `${QUICKBLOX_BASE_URL}/chat/Dialog/${dialogId}.json`;
       return fetch(url, {
         method: 'PUT',
         headers: {

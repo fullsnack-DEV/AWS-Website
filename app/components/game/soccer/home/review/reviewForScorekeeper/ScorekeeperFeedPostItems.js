@@ -358,9 +358,9 @@ function ScorekeeperFeedPostItems({
                   }}
                   style={styles.imageTouchStyle}>
                 <Image
-                    style={[styles.commentImage, { top: 2 }]}
+                    style={styles.commentImage}
                     source={images.commentImage}
-                    resizeMode={'cover'}
+                    resizeMode={'contain'}
                   />
               </TouchableOpacity>
               {item?.reaction_counts?.comment !== undefined && (
@@ -527,8 +527,8 @@ const styles = StyleSheet.create({
     width: hp('5%'),
   },
   commentImage: {
-    height: 32,
-    width: 32,
+    height: 15,
+    width: 15,
     alignSelf: 'flex-end',
   },
 

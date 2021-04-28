@@ -243,7 +243,7 @@ export default function ChooseLocationScreen({ navigation }) {
       </View>
       {noData && (
         <Text style={ styles.noDataText }>
-          Please enter at least 3 characters to find a city
+          Please, enter at least 3 characters to see cities.
         </Text>
       )}
       {currentLocation && <TouchableWithoutFeedback

@@ -16,8 +16,8 @@ import {
     StatusBar,
     View,
     Alert,
-    Dimensions,
-    Platform,
+    // Dimensions,
+    // Platform,
 } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -36,30 +36,29 @@ import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
 import strings from '../Constants/String';
 import ScheduleNavigator from './ScheduleNavigator';
-import fonts from '../Constants/Fonts';
 
 // import HomeNavigator from './HomeNavigator';
 // import HomeNavigator from './HomeNavigator';
 // import AccountScreen from '../screens/account/AccountScreen';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
-const DEFAULT_1X_HEIGHT = 30;
+// const DEFAULT_1X_HEIGHT = 30;
 
 const Tab = createBottomTabNavigator();
 
-const getHeight = () => {
-  if (Platform.OS === 'ios') {
-    if (Dimensions.get('window').height <= 320) {
-      return DEFAULT_1X_HEIGHT
-    }
-    if (Dimensions.get('window').height > 320 && Dimensions.get('window').height <= 828) {
-      return DEFAULT_1X_HEIGHT * 2
-    }
-    if (Dimensions.get('window').height > 828 && Dimensions.get('window').height <= 1242) {
-      return DEFAULT_1X_HEIGHT * 3
-    }
-  }
-}
+// const getHeight = () => {
+//   if (Platform.OS === 'ios') {
+//     if (Dimensions.get('window').height <= 320) {
+//       return DEFAULT_1X_HEIGHT
+//     }
+//     if (Dimensions.get('window').height > 320 && Dimensions.get('window').height <= 828) {
+//       return DEFAULT_1X_HEIGHT * 2
+//     }
+//     if (Dimensions.get('window').height > 828 && Dimensions.get('window').height <= 1242) {
+//       return DEFAULT_1X_HEIGHT * 3
+//     }
+//   }
+// }
 
 const getTabBarVisibility = (route) => {
   // let routeName = '';
@@ -365,14 +364,9 @@ const AppNavigator = ({ navigation }) => {
         lazy={true}
       navigation={navigation}
       tabBarOptions={{
+        showLabel: false,
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
-
-        labelStyle: {
-          fontSize: 11,
-          fontFamily: fonts.RRegular,
-          marginBottom: 9.5,
-        },
         style: {
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
@@ -380,17 +374,17 @@ const AppNavigator = ({ navigation }) => {
           shadowOpacity: 0.4,
           shadowRadius: 15,
           elevation: 2,
-          height:
-            Platform.OS === 'android'
-              ? '7.5%'
-              : getHeight(),
+          // height:
+          //   Platform.OS === 'android'
+          //     ? '7.5%'
+          //     : getHeight(),
           // borderTopWidth: 5,
           // borderTopColor: 'transparent',
           // height: heightPercentageToDP(10),
         },
         tabStyle: {
           // height: heightPercentageToDP(9),
-          marginTop: 7,
+          // marginTop: 7,
         },
       }}>
         <Tab.Screen
@@ -474,6 +468,7 @@ const AppNavigator = ({ navigation }) => {
           ...(unreadNotificationCount > 0 && {
             tabBarBadge: unreadNotificationCount,
           }),
+          tabBarBadgeStyle: { zIndex: 10 },
           tabBarVisible: getTabBarVisibility(route),
           tabBarIcon: renderTabIcon,
 

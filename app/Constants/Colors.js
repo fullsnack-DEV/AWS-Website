@@ -60,7 +60,7 @@ const colors = {
   purpleColor: '#c08bd1',
   disableColor: '#cccccc',
   postSeprator: '#e1e1e1',
-  greeColor: '#45C188',
+  greeColor: '#00C168',
   eventBlueColor: '#0093FF',
   writePostSepratorColor: '#E0E0E0',
   reservationAmountColor: '#FF8A01',
