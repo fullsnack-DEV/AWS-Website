@@ -22,12 +22,15 @@ import {
   Dimensions,
   Animated,
   ImageBackground,
+  TouchableWithoutFeedback,
+ Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
+
 import moment from 'moment';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
@@ -256,6 +259,9 @@ const HomeScreen = ({ navigation, route }) => {
   const [languagesName, setLanguagesName] = useState('');
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [currentPlayInObject, setCurrentPlayInObject] = useState(null);
+
+  const [challengePopup, setChallengePopup] = useState(false);
+  const [selectedChallengeOption, setSelectedChallengeOption] = useState();
 
   const [
     isDoubleSportTeamCreatedVisible,
@@ -1024,7 +1030,8 @@ const HomeScreen = ({ navigation, route }) => {
       authContext.entity.obj.sport.toLowerCase()
       === currentUserData.sport.toLowerCase()
     ) {
-      navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
+      setChallengePopup(true)
+      // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
     } else {
       Alert.alert(
         strings.alertmessagetitle,
@@ -4128,6 +4135,81 @@ const HomeScreen = ({ navigation, route }) => {
       </Modal>
       {/* Entity create modal */}
 
+      {/* Create Challenge modal */}
+      <Modal
+              onBackdropPress={() => setChallengePopup(false)}
+              backdropOpacity={1}
+              animationType="slide"
+              hasBackdrop
+              style={{
+                margin: 0,
+                backgroundColor: colors.blackOpacityColor,
+              }}
+              visible={challengePopup}>
+        <View style={styles.bottomPopupContainer}>
+          <View style={styles.viewsContainer}>
+            <Text
+                    onPress={() => setChallengePopup(false)}
+                    style={styles.cancelText}>
+              Cancel
+            </Text>
+            <Text style={styles.locationText}>Challenge</Text>
+            <Text style={styles.doneText} onPress={() => {
+              if (selectedChallengeOption === 0) {
+                setChallengePopup(false)
+                navigation.navigate('ChallengeScreen', { groupObj: currentUserData });
+              }
+              if (selectedChallengeOption === 1) {
+                setChallengePopup(false)
+                navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
+                // navigation.navigate('InviteChallengeScreen', { groupObj: currentUserData });
+              }
+            }}>{(selectedChallengeOption === 0 || selectedChallengeOption === 1) ? 'Next' : ''}</Text>
+          </View>
+          <TCThinDivider width={'100%'} marginBottom={15} />
+          <TouchableWithoutFeedback
+                  onPress={() => setSelectedChallengeOption(0)}>
+            {selectedChallengeOption === 0 ? (
+              <LinearGradient
+                      colors={[colors.yellowColor, colors.orangeGradientColor]}
+                      style={styles.backgroundView}>
+                <Text
+                        style={[
+                          styles.curruentLocationText,
+                          { color: colors.whiteColor },
+                        ]}>
+                  Continue to Challenge
+                </Text>
+              </LinearGradient>
+                  ) : (
+                    <View style={styles.backgroundView}>
+                      <Text style={styles.curruentLocationText}>
+                        Continue to Challenge
+                      </Text>
+                    </View>
+                  )}
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+                  onPress={() => setSelectedChallengeOption(1)}>
+            {selectedChallengeOption === 1 ? (
+              <LinearGradient
+                      colors={[colors.yellowColor, colors.orangeGradientColor]}
+                      style={styles.backgroundView}>
+                <Text
+                        style={[styles.myCityText, { color: colors.whiteColor }]}>
+                  Invite to Challenge
+                </Text>
+              </LinearGradient>
+                  ) : (
+                    <View style={styles.backgroundView}>
+                      <Text style={styles.myCityText}>Invite to Challenge</Text>
+                    </View>
+                  )}
+          </TouchableWithoutFeedback>
+        </View>
+      </Modal>
+      {/* Create Challenge modal */}
+
       {!createEventModal && currentTab === 3 && (
         <CreateEventButton
           source={images.plus}
@@ -4400,6 +4482,79 @@ const styles = StyleSheet.create({
 
     resizeMode: 'contain',
   },
+
+  bottomPopupContainer: {
+    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
+    backgroundColor: colors.whiteColor,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.googleColor,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
+  },
+  backgroundView: {
+    alignSelf: 'center',
+    backgroundColor: colors.whiteColor,
+    borderRadius: 8,
+    elevation: 5,
+    flexDirection: 'row',
+    height: 50,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    width: '86%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+
+  myCityText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  curruentLocationText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  doneText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.themeColor,
+  },
+  locationText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  cancelText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.veryLightGray,
+  },
+  viewsContainer: {
+    height: 60,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 20,
+    marginRight: 20,
+  },
+
 });
 
 export default HomeScreen;

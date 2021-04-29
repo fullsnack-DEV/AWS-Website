@@ -110,6 +110,7 @@ export default function AccountScreen({ navigation, route }) {
   ];
   const teamMenu = [
     { key: 'Reservations' },
+    { key: 'Manage Challenge' },
     { key: 'Members' },
     // {key: 'My Leagues'},
     // { key: 'Clubs', member: [{ opetions: 'Create Club' }] },
@@ -487,6 +488,8 @@ export default function AccountScreen({ navigation, route }) {
     } else if (section === 'Members') {
       const entity = authContext.entity;
       navigation.navigate('GroupMembersScreen', { groupID: entity.uid });
+    } else if (section === 'Manage Challenge') {
+      navigation.navigate('ManageChallengeScreen');
     }
   };
 
@@ -1188,6 +1191,9 @@ export default function AccountScreen({ navigation, route }) {
                 )}
                 {section === 'Leagues' && (
                   <Image source={images.myLeagues} style={styles.menuItem} />
+                )}
+                {section === 'Manage Challenge' && (
+                  <Image source={images.manageChallengeIcon} style={styles.menuItem} />
                 )}
                 {section === 'Payment & Payout' && (
                   <Image

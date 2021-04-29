@@ -50,6 +50,8 @@ import ScorekeeperBookingDateAndTime
     from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
+import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
 
 const Stack = createStackNavigator();
 
@@ -641,6 +643,40 @@ const NewsFeedNavigator = () => (
           name={'FeedViewScreen'}
           component={FeedViewScreen}
           options={{ headerShown: false }}
+      />
+
+    <Stack.Screen
+          name="ChallengeScreen"
+          component={ChallengeScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="InviteChallengeScreen"
+          component={InviteChallengeScreen}
+          options={{
+              title: 'Invite to Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
       />
 
   </Stack.Navigator>
