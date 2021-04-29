@@ -258,7 +258,7 @@ export default function SignupScreen({ navigation }) {
     } if (param[0].includes('google')) {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject({ provider: 'google' });
-    } if (param[0].includes('apple')) {
+    } if (param[0].includes('apple.com')) {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject({ provider: 'apple' });
     }

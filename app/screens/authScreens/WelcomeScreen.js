@@ -169,6 +169,19 @@ export default function WelcomeScreen({ navigation }) {
     });
   };
 
+  const checkUserIsRegistratedOrNotWithFirebase = (email) => new Promise((resolve, reject) => {
+    auth().fetchSignInMethodsForEmail(email).then((isAccountThereInFirebase) => {
+      if (isAccountThereInFirebase?.length > 0) {
+        resolve(isAccountThereInFirebase);
+      } else {
+        resolve(false);
+      }
+    }).catch((error) => {
+      reject(error);
+      console.log(error);
+    })
+  })
+
   const checkUserIsRegistratedOrNotWithTownscup = (email) => new Promise((resolve) => {
     checkTownscupEmail(encodeURIComponent(email)).then(() => {
       resolve(true);
@@ -302,6 +315,20 @@ export default function WelcomeScreen({ navigation }) {
 
   // Login With Apple manage function
 
+  const registerWithAnotherProvider = (param) => new Promise((resolve, reject) => {
+    if (param.includes('facebook')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'facebook' });
+    } else if (param.includes('google')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'google' });
+    } else if (param.includes('apple.com')) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ provider: 'apple' });
+    }
+    resolve(true);
+  })
+
   const handleIOSAppleLogin = async () => {
     if (!appleAuth.isSupported) {
       alert('Apple Login not supported')
@@ -318,9 +345,33 @@ export default function WelcomeScreen({ navigation }) {
           }, 200)
         } else {
           // Create a Firebase credential from the response
-          const { identityToken, nonce, fullName } = appleAuthRequestResponse;
-          const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
-          await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+          const {
+            identityToken,
+            nonce,
+            fullName,
+            email,
+          } = appleAuthRequestResponse;
+          checkUserIsRegistratedOrNotWithFirebase(email).then((providerData) => {
+            registerWithAnotherProvider(providerData).then(async () => {
+              const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
+              await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+            }).catch(async (error) => {
+              if (error?.provider !== 'apple') {
+                console.log(error)
+                setloading(false)
+                setTimeout(() => {
+                  Alert.alert('Townscup', `This email is already registrated with ${error?.provider}`)
+                }, 100)
+              } else {
+                const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
+                await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+              }
+            })
+          }).catch(async (error) => {
+            console.log(error);
+            const appleCredential = await auth.AppleAuthProvider.credential(identityToken, nonce);
+            await signInSignUpWithSocialCredential(appleCredential, 'APPLE iOS| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+          })
         }
       }).catch(() => setloading(false));
     }
@@ -343,9 +394,32 @@ export default function WelcomeScreen({ navigation }) {
       const appleAuthRequestResponse = await appleAuthAndroid.signIn();
       console.log(appleAuthRequestResponse);
       setloading(true);
-      const { id_token, nonce, fullName } = appleAuthRequestResponse;
-      const appleAndroidCredential = await auth.AppleAuthProvider.credential(id_token, nonce);
-      await signInSignUpWithSocialCredential(appleAndroidCredential, 'APPLE Android| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+      const {
+        id_token,
+        nonce,
+        fullName,
+        email,
+      } = appleAuthRequestResponse;
+      checkUserIsRegistratedOrNotWithFirebase(email).then((providerData) => {
+        registerWithAnotherProvider(providerData).then(async () => {
+          const appleAndroidCredential = await auth.AppleAuthProvider.credential(id_token, nonce);
+          await signInSignUpWithSocialCredential(appleAndroidCredential, 'APPLE Android| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+        }).catch(async (error) => {
+          if (error?.provider !== 'apple') {
+            console.log(error)
+            setloading(false)
+            setTimeout(() => {
+              Alert.alert('Townscup', `This email is already registrated with ${error?.provider}`)
+            }, 100)
+          } else {
+            const appleAndroidCredential = await auth.AppleAuthProvider.credential(id_token, nonce);
+            await signInSignUpWithSocialCredential(appleAndroidCredential, 'APPLE Android| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+          }
+        })
+      }).catch(async () => {
+        const appleAndroidCredential = await auth.AppleAuthProvider.credential(id_token, nonce);
+        await signInSignUpWithSocialCredential(appleAndroidCredential, 'APPLE Android| ', { first_name: fullName?.givenName, last_name: fullName?.familyName })
+      })
     }
   };
 

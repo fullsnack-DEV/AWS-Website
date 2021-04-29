@@ -26,6 +26,8 @@ const TCHorizontalMessageOverview = (
     numberOfUnreadMessages = 0,
     lastMessageDate = new Date(),
     onPress,
+    // occupantsIds,
+    // occupantsData,
   },
 ) => {
   // eslint-disable-next-line no-restricted-globals
@@ -40,6 +42,7 @@ const TCHorizontalMessageOverview = (
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
       <View style={styles.imageMainContainer}>
+        {/* <MessageOccupantsProfilePic occupantsIds={occupantsIds} occupantsData={occupantsData}/> */}
         <FastImage source={profilePic} resizeMode={'cover'} style={styles.imageContainer} />
       </View>
       <View style={styles.rightContainer}>
