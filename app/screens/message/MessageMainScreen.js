@@ -124,8 +124,8 @@ const MessageMainScreen = ({ navigation }) => {
       }
     }
     console.log(`${fullName} `, item)
-
     return (<TCHorizontalMessageOverview
+        occupantsIds={item?.occupantsIds}
         entityType={firstTwoChar}
         profilePic={getQBProfilePic(item?.type, index, firstTwoChar, item?.photo)}
         dialogType={item?.type}
