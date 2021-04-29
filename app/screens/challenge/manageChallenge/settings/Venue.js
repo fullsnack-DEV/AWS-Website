@@ -2,13 +2,8 @@ import React, {
  useEffect, useState, useContext, useLayoutEffect,
  } from 'react';
 import {
-  Alert,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  FlatList,
-
+ Alert, StyleSheet, View, Text, FlatList,
+  SafeAreaView,
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -19,6 +14,7 @@ import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import TCLabel from '../../../../components/TCLabel';
 import TCMessageButton from '../../../../components/TCMessageButton';
+import TCTextInputClear from '../../../../components/TCTextInputClear';
 
 let entity = {};
 export default function Venue({ navigation, route }) {
@@ -65,7 +61,7 @@ export default function Venue({ navigation, route }) {
   }, [isFocused]);
 
   const addVenue = () => {
-    if (venue.length < 5) {
+    if (venue.length < 10) {
       const obj = {
         id: venue.length === 0 ? 0 : venue.length,
 
@@ -76,14 +72,14 @@ export default function Venue({ navigation, route }) {
       };
       setVenue([...venue, obj]);
     } else {
-      Alert.alert(strings.titleBasic, strings.max5Referee);
+      Alert.alert(strings.titleBasic, strings.maxVenue);
     }
   };
 
   const renderVenue = ({ index }) => (
     <View>
       <View style={styles.viewTitleContainer}>
-        <Text style={styles.refereeCountTitle}>Venue {index + 1}</Text>
+        <Text style={styles.venueCountTitle}>Venue {index + 1}</Text>
         {index !== 0 && (
           <Text
             style={styles.deleteButton}
@@ -97,40 +93,55 @@ export default function Venue({ navigation, route }) {
       </View>
 
       <View style={styles.viewContainer}>
-        <TextInput
-            placeholder={strings.venueNamePlaceholder}
-            style={styles.nameInputContainer}
-            onChangeText={(text) => {
-                const ven = [...venue];
-                venue[index].name = text;
-                setVenue(ven);
-            }}
-            value={venue[index].name}></TextInput>
 
-        <TextInput
-            placeholder={strings.venueAddressPlaceholder}
-            style={styles.nameInputContainer}
-            onChangeText={(text) => {
-                const ven = [...venue];
-                venue[index].address = text;
-                setVenue(ven);
-            }}
-            value={venue[index].address}></TextInput>
+        <TCTextInputClear
+        placeholder={strings.venueNamePlaceholder}
+          onChangeText={(text) => {
+            const ven = [...venue];
+            venue[index].name = text;
+            setVenue(ven);
+          }}
+          value={venue[index].name}
+          onPressClear={() => {
+            const ven = [...venue];
+            venue[index].name = '';
+            setVenue(ven);
+          }}
+          multiline={false}
+        />
 
-        <TextInput
-          style={styles.detailsText}
+        <TCTextInputClear
+        placeholder={strings.venueAddressPlaceholder}
+          onChangeText={(text) => {
+            const ven = [...venue];
+            venue[index].address = text;
+            setVenue(ven);
+          }}
+          value={venue[index].address}
+          onPressClear={() => {
+            const ven = [...venue];
+            venue[index].address = '';
+            setVenue(ven);
+          }}
+          multiline={false}
+        />
+
+        <TCTextInputClear
+        placeholder={strings.venueDetailsPlaceholder}
           onChangeText={(text) => {
             const ven = [...venue];
             venue[index].details = text;
             setVenue(ven);
           }}
           value={venue[index].details}
-          multiline
-          textAlignVertical={'top'}
-          numberOfLines={4}
-          placeholder={strings.venueDetailsPlaceholder}
-
+          onPressClear={() => {
+            const ven = [...venue];
+            venue[index].details = '';
+            setVenue(ven);
+          }}
+          multiline={true}
         />
+
         {/* <View style={styles.radioContainer}>
             <Text style={styles.radioText}>None</Text>
             <TouchableOpacity
@@ -207,15 +218,17 @@ export default function Venue({ navigation, route }) {
 
   return (
     <TCKeyboardView>
-      <View>
-        <TCLabel title={strings.venueTitle} style={{ marginRight: 15 }}/>
+      <SafeAreaView>
+        <View>
+          <TCLabel title={strings.venueTitle} style={{ marginRight: 15 }} />
 
-        <FlatList
+          <FlatList
           data={venue}
           renderItem={renderVenue}
           keyExtractor={(item, index) => index.toString()}
-          style={{ marginBottom: 15 }}/>
-        <TCMessageButton
+          style={{ marginBottom: 15 }}
+        />
+          <TCMessageButton
           title={'+ Add Venue'}
           width={120}
           alignSelf={'center'}
@@ -223,7 +236,8 @@ export default function Venue({ navigation, route }) {
           marginBottom={40}
           onPress={() => addVenue()}
         />
-      </View>
+        </View>
+      </SafeAreaView>
 
       {/* <TCGradientButton title={editableAlter ? strings.doneTitle : strings.nextTitle} onPress={() => {
         if (editableAlter) {
@@ -251,19 +265,19 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
-  refereeCountTitle: {
+  venueCountTitle: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    marginLeft: 15,
+    marginLeft: 25,
     marginTop: 15,
-    marginBottom: 10,
+
   },
 
   deleteButton: {
     fontSize: 12,
     fontFamily: fonts.RRegular,
-    color: colors.themeColor,
+    color: colors.darkThemeColor,
     marginRight: 25,
   },
   viewTitleContainer: {
@@ -276,46 +290,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 10,
   },
-  nameInputContainer: {
-    alignSelf: 'center',
-    backgroundColor: colors.offwhite,
 
-    borderRadius: 5,
-    color: 'black',
-    elevation: 3,
-    flexDirection: 'row',
-    fontSize: 16,
-    height: 40,
-    fontFamily: fonts.RRegular,
-    marginTop: 12,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-
-    paddingVertical: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    width: '92%',
-  },
-  detailsText: {
-    height: 120,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    width: '92%',
-    alignSelf: 'center',
-    marginTop: 12,
-    marginBottom: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: colors.lightBlackColor,
-    paddingRight: 30,
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-  },
 });

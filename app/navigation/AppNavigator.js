@@ -148,6 +148,11 @@ const getTabBarVisibility = (route) => {
     || routeName === 'GameFee'
     || routeName === 'GameRules'
     || routeName === 'Venue'
+    || routeName === 'HomeAway'
+    || routeName === 'Availibility'
+    || routeName === 'RefereesSetting'
+    || routeName === 'ScorekeepersSetting'
+    || routeName === 'GameDuration'
 
   ) {
     return false;
