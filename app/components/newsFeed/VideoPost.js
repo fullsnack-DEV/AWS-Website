@@ -14,6 +14,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors'
 import fonts from '../../Constants/Fonts'
 import SinglePostVideoView from './SinglePostVideoView';
+import { toggleView } from '../../utils';
 
 function VideoPost({
   item,
@@ -29,24 +30,21 @@ function VideoPost({
   const [mute, setMute] = useState(true);
   const [play, setPlay] = useState(false);
   const [videoLoad, setVideoLoad] = useState(false);
-
+  const [height, setHeight] = useState(wp(68))
   const uploadVideoURL = data && typeof data.thumbnail === 'string'
   && (!data.thumbnail.split('http')[1] || !data.thumbnail.split('https')[1]) ? null : data.thumbnail;
-  let height = wp('96%');
-  if (data.media_height > data.media_width) {
-    height = wp('124%')
-  } else if (data.media_height < data.media_width) {
-    height = wp('68%')
-  } else {
-    height = wp('96%')
-  }
+
+  const setVideoHeight = useCallback((orientation) => {
+    if (orientation === 'portrait') toggleView(() => setHeight(wp(124)), 300);
+  }, [])
 
   const toggleModal = useCallback(() => {
     // setModalVisible((isVisible) => !isVisible);
-    navigation.navigate('FeedViewScreen', { feedItem: item })
-  }, [item, navigation]);
+    navigation.navigate('FeedViewScreen', { feedItem: item, updateCommentCount })
+  }, [item, navigation, updateCommentCount]);
 
-  const onVideoLoad = useCallback(() => {
+  const onVideoLoad = useCallback((videoMetaData) => {
+      setVideoHeight(videoMetaData?.naturalSize?.orientation)
       videoPlayerRef.current.seek(0)
       setVideoLoad(true);
   }, [])
@@ -104,6 +102,7 @@ function VideoPost({
 
       <TouchableWithoutFeedback onPress={toggleModal}>
         <Video
+            repeat={true}
             ref={videoPlayerRef}
             paused={!play}
             muted={!mute}

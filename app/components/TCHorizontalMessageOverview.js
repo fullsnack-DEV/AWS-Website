@@ -14,6 +14,7 @@ import colors from '../Constants/Colors';
 import TCBadge from './TCBadge';
 import TCGroupNameBadge from './TCGroupNameBadge';
 import { QB_ACCOUNT_TYPE } from '../utils/QuickBlox';
+// import MessageOccupantsProfilePic from './message/MessageOccupantsProfilePic';
 
 const TCHorizontalMessageOverview = (
   {
@@ -42,7 +43,7 @@ const TCHorizontalMessageOverview = (
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
       <View style={styles.imageMainContainer}>
-        {/* <MessageOccupantsProfilePic occupantsIds={occupantsIds} occupantsData={occupantsData}/> */}
+        {/* <MessageOccupantsProfilePic occupantsIds={occupantsIds}/> */}
         <FastImage source={profilePic} resizeMode={'cover'} style={styles.imageContainer} />
       </View>
       <View style={styles.rightContainer}>

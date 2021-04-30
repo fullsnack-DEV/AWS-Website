@@ -36,8 +36,8 @@ function SingleImage({
 
   const toggleModal = useCallback(() => {
     // setModalVisible((isOpen) => !isOpen);
-    navigation.navigate('FeedViewScreen', { feedItem: item })
-  }, [item, navigation]);
+    navigation.navigate('FeedViewScreen', { feedItem: item, updateCommentCount })
+  }, [item, navigation, updateCommentCount]);
 
   const onModalClose = useCallback(() => setModalVisible(false), [])
   const onModalOpen = useCallback((commentData) => {

@@ -40,6 +40,7 @@ import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequest
 
 import colors from '../Constants/Colors'
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 
 const Stack = createStackNavigator();
 
@@ -514,6 +515,7 @@ const ReservationNavigator = () => (
           },
         } }
       />
+    <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

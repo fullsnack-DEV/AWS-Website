@@ -1168,14 +1168,14 @@ const HomeScreen = ({ navigation, route }) => {
           authContext,
         )
           .then((res) => {
-            const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            const currentDateTime = new Date().getTime();
             const recentMatch = [];
             const upcomingMatch = [];
             console.log('Recentest Match API Response::->', res);
             if (res.payload.length > 0) {
               res.payload.map((event_item) => {
                 const eventStartDate = event_item.start_datetime * 1000;
-                const isFutureDate = eventStartDate > date;
+                const isFutureDate = eventStartDate > currentDateTime;
                 const isGameEnded = event_item?.status === GameStatus.ended;
                 if (isGameEnded) {
                   recentMatch.push(event_item);

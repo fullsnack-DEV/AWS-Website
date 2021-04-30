@@ -51,6 +51,7 @@ const NewsFeedPostItems = ({
   const authContext = useContext(AuthContext);
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(0);
   const [showThreeDot, setShowThreeDot] = useState(false);
   const [myItem, setMyItem] = useState();
   const [attachedImages, setAttachedImages] = useState([]);
@@ -61,6 +62,9 @@ const NewsFeedPostItems = ({
     let filterLike = [];
     if (item?.reaction_counts?.clap !== undefined) {
       setLikeCount(item?.reaction_counts?.clap);
+    }
+    if (item?.reaction_counts?.comment !== undefined) {
+      setCommentCount(item?.reaction_counts?.comment ?? 0)
     }
     if (item?.own_reactions?.clap !== undefined) {
       filterLike = item?.own_reactions?.clap?.filter((clapItem) => clapItem?.user_id === caller_id);
@@ -304,11 +308,9 @@ const onClose = () => {
                   resizeMode={'contain'}
                 />
               </TouchableOpacity>
-              {item?.reaction_counts?.comment !== undefined && (
+              {commentCount > 0 && (
                 <Text style={styles.commentlengthStyle}>
-                  {item?.reaction_counts?.comment > 0
-                    ? item?.reaction_counts?.comment
-                    : ''}
+                  {commentCount}
                 </Text>
               )}
             </View>
@@ -383,7 +385,16 @@ const onClose = () => {
           likersModalRef={likersModalRef}
           navigation={navigation}
       />
-      <CommentModal item={item} showCommentModal={ShowComment} onClose={onClose}/>
+      <CommentModal
+          item={item}
+          showCommentModal={ShowComment}
+          onClose={onClose}
+          updateCommentCount={(updatedCommentData) => {
+            updateCommentCount(updatedCommentData)
+            setCommentCount(updatedCommentData?.count)
+          }
+          }
+      />
     </View>
   );
 }

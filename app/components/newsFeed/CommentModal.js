@@ -33,6 +33,7 @@ import WriteCommentItems from './WriteCommentItems';
     item,
     showCommentModal,
     onClose,
+    updateCommentCount,
   }) => {
     const authContext = useContext(AuthContext);
 
@@ -166,9 +167,8 @@ import WriteCommentItems from './WriteCommentItems';
                               .then((response) => {
                                 const dataOfComment = [...commentData];
                                 dataOfComment.unshift(response.payload);
+                                updateCommentCount({ id: item?.id, count: dataOfComment?.length });
                                 setCommentData(dataOfComment);
-                                // commentCount(dataOfComment?.length || '')
-                                console.log('Comment count:=>', dataOfComment.reaction_counts.comment);
                                 setCommentText('');
                               })
                               .catch((e) => {
