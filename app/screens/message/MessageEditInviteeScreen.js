@@ -269,7 +269,7 @@ const MessageEditInviteeScreen = ({ navigation, route }) => {
         console.log(error);
       })
     }
-  }, [authContext, navigation, route?.params?.dialog, route?.params?.participants, selectedInvitees])
+  }, [authContext?.entity?.QB?.id, navigation, route.params, selectedInvitees])
 
   const renderHeader = useMemo(() => (
     <Header

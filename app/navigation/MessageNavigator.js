@@ -12,6 +12,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
 import MessageSearchScreen from '../screens/message/MessageSearchScreen';
 import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScreen';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 
 const Stack = createStackNavigator();
 
@@ -91,6 +92,7 @@ const MessageNavigator = () => (
         },
       }}
     />
+    <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
     <Stack.Screen
       name="MessageEditInviteeScreen"
       component={ MessageEditInviteeScreen }

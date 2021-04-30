@@ -34,6 +34,7 @@ const FeedAbsoluteBottomView = ({
     currentViewIndex,
     shareActionSheetRef,
     screenInsets,
+    updateCommentCount,
 }) => {
     const taggedModalRef = useRef(null);
     const likersModalRef = useRef(null);
@@ -237,7 +238,7 @@ const FeedAbsoluteBottomView = ({
                 }),
                 color: colors.whiteColor,
         }}>
-          {currentTime > (sourceData?.duration / 1000)
+          {currentTime > ((sourceData?.duration ?? 0) / 1000)
               ? secondsToHms(Math.ceil((sourceData?.duration / 1000)?.toFixed(0)))
               : secondsToHms(Math.ceil(currentTime?.toFixed(0)))
           }
@@ -245,7 +246,7 @@ const FeedAbsoluteBottomView = ({
         <MultiSlider
             smoothSnapped={true}
             markerOffsetX={3}
-            max={(sourceData?.duration / 1000)}
+            max={((sourceData?.duration ?? 0) / 1000)}
             enabledTwo={false}
             isMarkersSeparated={true}
             customMarkerLeft={renderThumb}
@@ -264,7 +265,7 @@ const FeedAbsoluteBottomView = ({
                 setSlidingStatus(false);
                 if (videoPlayerRef?.current?.seek) videoPlayerRef.current.seek(values?.[0])
             }}
-        />
+         />
         <Text style={{
                 fontSize: 12,
                 width: getScreenWidth({
@@ -337,7 +338,15 @@ const FeedAbsoluteBottomView = ({
               navigation={navigation}
         />
 
-        <CommentModal item={feedItem} showCommentModal={ShowComment} onClose={onClose}/>
+        <CommentModal
+            item={feedItem}
+            showCommentModal={ShowComment}
+            onClose={onClose}
+            updateCommentCount={(updatedCommentData) => {
+                setCommentCount(updatedCommentData?.count)
+                updateCommentCount(updatedCommentData);
+            }}
+        />
       </Fragment>
     )
 }

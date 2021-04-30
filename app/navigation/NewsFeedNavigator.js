@@ -639,11 +639,7 @@ const NewsFeedNavigator = () => (
           }}
       />
 
-    <Stack.Screen
-          name={'FeedViewScreen'}
-          component={FeedViewScreen}
-          options={{ headerShown: false }}
-      />
+    <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
 
     <Stack.Screen
           name="ChallengeScreen"

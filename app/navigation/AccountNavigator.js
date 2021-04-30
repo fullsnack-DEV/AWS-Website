@@ -183,6 +183,7 @@ import Availibility from '../screens/challenge/manageChallenge/settings/Availibi
 import RefereesSetting from '../screens/challenge/manageChallenge/settings/RefereesSetting';
 import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
 import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -2291,7 +2292,7 @@ const AccountNavigator = () => (
         },
       }}
     />
-
+    <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

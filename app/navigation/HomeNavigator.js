@@ -173,6 +173,7 @@ import ReservationNavigator from './ReservationNavigator';
 import LeaveReviewTennis from '../screens/game/tennis/review/leaveReview/LeaveReviewTennis';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1808,6 +1809,7 @@ const HomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen name={'FeedViewScreen'} component={FeedViewScreen} options={{ headerShown: false }} />
     <Stack.Screen
       name="AlterRefereeScreen"
       component={AlterRefereeScreen}

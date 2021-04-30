@@ -236,14 +236,15 @@ const FeedsScreen = ({ navigation }) => {
           })
     }
   }, [authContext, isMoreLoading, isNextDataLoading, postData])
-  const updateCommentCount = (updatedComment) => {
+
+  const updateCommentCount = useCallback((updatedComment) => {
     const pData = [...postData]
     const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id)
     if (pIndex !== -1) {
       pData[pIndex].reaction_counts.comment = updatedComment?.count
       setPostData([...pData]);
     }
-  }
+  }, [postData])
 
   const renderImageProgress = useMemo(() => <ImageProgress/>, [])
 
