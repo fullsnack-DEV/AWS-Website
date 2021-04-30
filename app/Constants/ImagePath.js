@@ -331,6 +331,9 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   manageChallengeIcon: require('../assets/images/manage_challenge.png'),
   infoToolTipIcon: require('../assets/images/info_icon.png'),
 
+  challengerFlag: require('../assets/images/challenger_flag.png'),
+  challengeeCup: require('../assets/images/challengee_cup.png'),
+
 };
 
 export default images;

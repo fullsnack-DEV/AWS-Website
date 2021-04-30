@@ -11,18 +11,21 @@ import images from '../Constants/ImagePath';
 
 function TCChallengeTitle({
   title,
-  style,
+  titleStyle,
   value,
+  staticValueText = '',
+  valueStyle,
   tooltipText = '',
   tooltipHeight = 40,
   tooltipWidth = 40,
   isEdit = false,
   onEditPress,
+  containerStyle,
   ...otherProps
 }) {
   return (
-    <View style={styles.mainViewContainer}>
-      <Text style={[styles.labelText, style]} {...otherProps}>
+    <View style={[styles.mainViewContainer, containerStyle]}>
+      <Text style={[styles.labelText, titleStyle]} {...otherProps}>
         {title}
       </Text>
       <View
@@ -31,7 +34,7 @@ function TCChallengeTitle({
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Text style={styles.valueText}>{value}</Text>
+        <Text style={[styles.valueText, valueStyle]}>{value}</Text><Text style={styles.staticValueText}>{staticValueText}</Text>
         {tooltipText !== '' && (
           <Tooltip
             popover={
@@ -89,6 +92,11 @@ const styles = StyleSheet.create({
     height: 15,
     resizeMode: 'contain',
     marginLeft: 10,
+  },
+  staticValueText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });
 

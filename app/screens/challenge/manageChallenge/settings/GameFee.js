@@ -28,7 +28,7 @@ export default function GameFee({ navigation, route }) {
         }}>Save</Text>
       ),
     });
-  }, [navigation]);
+  }, [basicFee, navigation]);
 
   useEffect(() => {
     if (route && route.params && route.params.editableAlter && route.params.body) {

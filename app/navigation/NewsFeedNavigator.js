@@ -52,6 +52,8 @@ import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekee
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
+import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
+import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -679,6 +681,38 @@ const NewsFeedNavigator = () => (
           }}
       />
 
+    <Stack.Screen
+          name="ChooseVenueScreen"
+          component={ChooseVenueScreen}
+          options={{
+              title: 'Venue',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+    <Stack.Screen
+          name="ChallengePreviewScreen"
+          component={ChallengePreviewScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
   </Stack.Navigator>
 );
 
