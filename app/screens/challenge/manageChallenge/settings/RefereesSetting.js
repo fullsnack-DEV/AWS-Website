@@ -19,6 +19,7 @@ import TCLabel from '../../../../components/TCLabel';
 import TCThinDivider from '../../../../components/TCThinDivider';
 import images from '../../../../Constants/ImagePath';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function RefereesSetting({ navigation }) {
   const [selection, setSelection] = useState();
@@ -208,8 +209,9 @@ export default function RefereesSetting({ navigation }) {
   );
 
   return (
-    <SafeAreaView>
-      <View>
+    <TCKeyboardView style={{ flex: 1 }}>
+      <SafeAreaView>
+
         <TCLabel
           title={strings.refereeSettingTitle}
           style={{ marginRight: 15 }}
@@ -257,34 +259,35 @@ export default function RefereesSetting({ navigation }) {
               setDetail('');
             }}
             multiline={true}/>}
-      </View>
-      <Modal
+
+        <Modal
         isVisible={visibleModal}
         backdropColor="black"
         onBackdropPress={() => setVisibleModal(false)}
         onRequestClose={() => setVisibleModal(false)}
         backdropOpacity={0}
         style={styles.modalStyle}>
-        <View style={styles.modalViewContainer}>
-          <View style={styles.modalHeaderContainer}>
-            <TouchableOpacity
+          <View style={styles.modalViewContainer}>
+            <View style={styles.modalHeaderContainer}>
+              <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setVisibleModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text style={styles.itemText}>{strings.playersGenderText}</Text>
-            <Text></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
+                <Image source={images.cancelImage} style={styles.closeButton} />
+              </TouchableOpacity>
+              <Text style={styles.itemText}>{strings.refereesTitle}</Text>
+              <Text></Text>
+            </View>
+            <View style={styles.separatorLine} />
+            <FlatList
             ItemSeparatorComponent={() => <TCThinDivider />}
             data={[1, 2, 3, 4, 5]}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderNumbersOf}
           />
-        </View>
-      </Modal>
-    </SafeAreaView>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    </TCKeyboardView>
   );
 }
 const styles = StyleSheet.create({
@@ -437,4 +440,5 @@ const styles = StyleSheet.create({
   teamTextContainer: {
     marginLeft: 20,
   },
+
 });

@@ -1,281 +1,442 @@
 import React, {
-    useEffect, useState, useContext, useLayoutEffect,
-    } from 'react';
-   import {
-    Alert, StyleSheet, View, Text, FlatList,
-     SafeAreaView,
-   } from 'react-native';
+ useState, useLayoutEffect, useCallback,
+ } from 'react';
+import {
+  Alert,
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  SafeAreaView,
+  TextInput,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 
-   import { useIsFocused } from '@react-navigation/native';
-   import AuthContext from '../../../../auth/context';
-   import strings from '../../../../Constants/String';
-   import fonts from '../../../../Constants/Fonts';
-   import colors from '../../../../Constants/Colors';
-   import TCKeyboardView from '../../../../components/TCKeyboardView';
-   import TCLabel from '../../../../components/TCLabel';
-   import TCMessageButton from '../../../../components/TCMessageButton';
-   import TCTextInputClear from '../../../../components/TCTextInputClear';
+// import { useIsFocused } from '@react-navigation/native';
+// import AuthContext from '../../../../auth/context';
+import strings from '../../../../Constants/String';
+import fonts from '../../../../Constants/Fonts';
+import colors from '../../../../Constants/Colors';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
+import TCLabel from '../../../../components/TCLabel';
+import TCMessageButton from '../../../../components/TCMessageButton';
+import TCTextInputClear from '../../../../components/TCTextInputClear';
+import images from '../../../../Constants/ImagePath';
+import { getNumberSuffix } from '../../../../utils/gameUtils';
 
-   let entity = {};
-   export default function GameDuration({ navigation, route }) {
-     const isFocused = useIsFocused();
-     const authContext = useContext(AuthContext);
+// const entity = {};
+export default function GameDuration({ navigation }) {
+  // const isFocused = useIsFocused();
+  // const authContext = useContext(AuthContext);
+  const [firstPeriod, setFirstPeriod] = useState('');
 
-     const [venue, setVenue] = useState([
-       {
-         id: 0,
+  const [withOverTime, setWithOverTime] = useState(true);
+  const [details, setDetails] = useState('');
+  const [period, setPeriod] = useState([
+    {
+      id: 0,
+      interval: '',
+      secondPeriod: '',
+    },
+  ]);
+  const [overTime, setOverTime] = useState([
+    {
+      id: 0,
+      interval: '',
+      firstOverTime: '',
+    },
+  ]);
 
-         responsible_team_id: 'none',
-         name: '',
-         address: '',
-         details: '',
-       },
-     ]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text
+          style={styles.saveButtonStyle}
+          onPress={() => Alert.alert('Save')}>
+          Save
+        </Text>
+      ),
+    });
+  }, [navigation]);
 
-     useLayoutEffect(() => {
-       navigation.setOptions({
-         headerRight: () => (
-           <Text
-             style={styles.saveButtonStyle}
-             onPress={() => Alert.alert('Save')}>
-             Save
-           </Text>
-         ),
-       });
-     }, [navigation]);
+  const addPeriod = () => {
+    if (period.length < 10) {
+      const obj = {
+        id: period.length === 0 ? 0 : period.length,
+        interval: '',
+        secondPeriod: '',
+      };
+      setPeriod([...period, obj]);
+    } else {
+      Alert.alert(strings.titleBasic, strings.maxPeriod);
+    }
+  };
+  const addOverTime = () => {
+    if (overTime.length < 10) {
+      const obj = {
+        id: overTime.length === 0 ? 0 : overTime.length,
+        interval: '',
+        firstOverTime: '',
+      };
+      setOverTime([...overTime, obj]);
+    } else {
+      Alert.alert(strings.titleBasic, strings.maxOverTime);
+    }
+  };
 
-     useEffect(() => {
-       entity = authContext.entity;
-       console.log(entity);
-       if (route && route.params && route.params.editable && route.params.body) {
-         setVenue([...route.params.body.referee]);
-       }
-       if (
-         route
-         && route.params
-         && route.params.editableAlter
-         && route.params.body
-       ) {
-         setVenue([...route.params.body.referee]);
-       }
-     }, [isFocused]);
+  const renderPeriods = useCallback(
+    ({ index }) => (
+      <View>
+        <View style={styles.viewTitleContainer}>
+          <Text></Text>
+          {index !== 0 && (
+            <Text
+              style={styles.deleteButton}
+              onPress={() => {
+                period.splice(index, 1);
+                setPeriod([...period]);
+              }}>
+              Delete
+            </Text>
+          )}
+        </View>
 
-     const addVenue = () => {
-       if (venue.length < 10) {
-         const obj = {
-           id: venue.length === 0 ? 0 : venue.length,
+        <View style={styles.viewContainer}>
 
-           responsible_team_id: 'none',
-           name: '',
-           address: '',
-           details: '',
-         };
-         setVenue([...venue, obj]);
-       } else {
-         Alert.alert(strings.titleBasic, strings.maxVenue);
-       }
-     };
+          <View style={styles.textTitle}>
+            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+              {strings.intervalText}
+            </Text>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                keyboardType="numeric"
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  const per = [...period];
+                  period[index].interval = text;
+                  setPeriod(per);
+                }}
+                value={period[index].interval}
+              />
+              <Text style={styles.minText}>{strings.minuteText}</Text>
+            </View>
+          </View>
 
-     const renderPeriods = ({ index }) => (
-       <View>
-         <View style={styles.viewTitleContainer}>
-           <Text ></Text>
-           {index !== 0 && (
-             <Text
-               style={styles.deleteButton}
-               onPress={() => {
-                 venue.splice(index, 1);
-                 setVenue([...venue]);
-               }}>
-               Delete
-             </Text>
-           )}
-         </View>
+          <View style={styles.textTitle}>
+            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+              {/* {strings.secondPeriodText} */}
+              {`${getNumberSuffix(index + 2)} Period`}
+            </Text>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                keyboardType="numeric"
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  const per = [...period];
+                  period[index].secondPeriod = text;
+                  setPeriod(per);
+                }}
+                value={period[index].secondPeriod}
+              />
+              <Text style={styles.minText}> {strings.minuteText}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    ),
+    [period],
+  );
+  const renderOverTime = useCallback(
+    ({ index }) => (
+      <View>
+        <View style={styles.viewTitleContainer}>
+          <Text style={styles.venueCountTitle}></Text>
+          {index !== 0 && (
+            <Text
+              style={styles.deleteButton}
+              onPress={() => {
+                overTime.splice(index, 1);
+                setOverTime([...overTime]);
+              }}>
+              Delete
+            </Text>
+          )}
+        </View>
 
-         <View style={styles.viewContainer}>
+        <View style={styles.viewContainer}>
+          <View style={styles.textTitle}>
+            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+              {strings.intervalText}
 
-           <TCTextInputClear
-            placeholder={strings.venueNamePlaceholder}
-             onChangeText={(text) => {
-               const ven = [...venue];
-               venue[index].name = text;
-               setVenue(ven);
-             }}
-             value={venue[index].name}
-             onPressClear={() => {
-               const ven = [...venue];
-               venue[index].name = '';
-               setVenue(ven);
-             }}
-             multiline={false}
-           />
+            </Text>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                keyboardType="numeric"
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  const over = [...overTime];
+                  overTime[index].interval = text;
+                  setOverTime(over);
+                }}
+                value={overTime[index].interval}
+              />
+              <Text style={styles.minText}> {strings.minuteText}</Text>
+            </View>
+          </View>
 
-           <TCTextInputClear
-           placeholder={strings.venueAddressPlaceholder}
-             onChangeText={(text) => {
-               const ven = [...venue];
-               venue[index].address = text;
-               setVenue(ven);
-             }}
-             value={venue[index].address}
-             onPressClear={() => {
-               const ven = [...venue];
-               venue[index].address = '';
-               setVenue(ven);
-             }}
-             multiline={false}
-           />
+          <View style={styles.textTitle}>
+            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+              {/* {strings.firstOverTimeText} */}
+              {`${getNumberSuffix(index + 1)} Overtime`}
+            </Text>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                keyboardType="numeric"
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  const over = [...overTime];
+                  overTime[index].firstOverTime = text;
+                  setOverTime(over);
+                }}
+                value={overTime[index].firstOverTime}
+              />
+              <Text style={styles.minText}> {strings.minuteText}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    ),
+    [overTime],
+  );
+  return (
+    <TCKeyboardView>
+      <SafeAreaView>
+        <View>
+          <TCLabel
+            title={strings.gameDurationTitle1}
+            style={{ marginRight: 15 }}
+          />
+          <View style={[styles.textTitle, { marginLeft: 15, marginRight: 15, marginBottom: -10 }]}>
+            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+              {strings.firstPeriodText}
+            </Text>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                keyboardType="numeric"
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  setFirstPeriod(text)
+                }}
+                value={firstPeriod}
+              />
+              <Text style={styles.minText}>{strings.minuteText}</Text>
+            </View>
+          </View>
+          <FlatList
+            data={period}
+            renderItem={renderPeriods}
+            keyExtractor={(item, index) => index.toString()}
+            style={{ marginBottom: 15 }}
+          />
+          <TCMessageButton
+            title={'+ Add Interval & Period'}
+            width={150}
+            alignSelf={'center'}
+            marginTop={15}
+            marginBottom={40}
+            onPress={() => addPeriod()}
+          />
+          <TCLabel
+            title={strings.gameDurationTitle2}
+            style={{ marginRight: 15 }}
+          />
+          <View
+            style={{
+              justifyContent: 'center',
+              marginBottom: 5,
+              marginTop: 10,
+            }}>
+            <TouchableOpacity
+              style={styles.checkBoxContainer}
+              onPress={() => {
+                setWithOverTime(!withOverTime);
+              }}>
+              <Text style={[styles.minText, { marginLeft: 10 }]}>
+                {strings.withoutOverTimeText}
+              </Text>
+              <View>
+                {withOverTime === false ? (
+                  <Image
+                    source={images.radioCheckYellow}
+                    style={styles.checkboxImg}
+                  />
+                ) : (
+                  <Image
+                    source={images.radioUnselect}
+                    style={styles.checkboxImg}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
 
-           <TCTextInputClear
-           placeholder={strings.venueDetailsPlaceholder}
-             onChangeText={(text) => {
-               const ven = [...venue];
-               venue[index].details = text;
-               setVenue(ven);
-             }}
-             value={venue[index].details}
-             onPressClear={() => {
-               const ven = [...venue];
-               venue[index].details = '';
-               setVenue(ven);
-             }}
-             multiline={true}
-           />
+          <View
+            style={{
+              justifyContent: 'center',
+              marginTop: 10,
+            }}>
+            <TouchableOpacity
+              style={styles.checkBoxContainer}
+              onPress={() => {
+                setWithOverTime(!withOverTime);
+              }}>
+              <Text style={[styles.minText, { marginLeft: 10 }]}>
+                {strings.withOverTimeText}
+              </Text>
+              <View>
+                {withOverTime === true ? (
+                  <Image
+                    source={images.radioCheckYellow}
+                    style={styles.checkboxImg}
+                  />
+                ) : (
+                  <Image
+                    source={images.radioUnselect}
+                    style={styles.checkboxImg}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
+          {withOverTime ? <View>
+            <FlatList
+            data={overTime}
+            renderItem={renderOverTime}
+            keyExtractor={(item, index) => index.toString()}
+            style={{ marginBottom: 15 }}
+          />
+            <TCMessageButton
+            title={'+ Add Interval & Overtime'}
+            width={160}
+            alignSelf={'center'}
+            marginTop={15}
+            marginBottom={40}
+            onPress={() => addOverTime()}
+          />
+          </View> : <View style={{ marginBottom: 40 }}/>}
+          <View style={styles.totalTimeContainer}>
+            <Text style={[styles.minText, { marginLeft: 10, flex: 0.4 }]}>
+              {strings.totalTimeTitle}
+            </Text>
 
-         </View>
-       </View>
-     );
-     const renderOverTime = ({ index }) => (
-       <View>
-         <View style={styles.viewTitleContainer}>
-           <Text style={styles.venueCountTitle}></Text>
-           {index !== 0 && (
-             <Text
-                style={styles.deleteButton}
-                onPress={() => {
-                  venue.splice(index, 1);
-                  setVenue([...venue]);
-                }}>
-               Delete
-             </Text>
-            )}
-         </View>
-
-         <View style={styles.viewContainer}>
-
-           <TCTextInputClear
-            placeholder={strings.venueNamePlaceholder}
-              onChangeText={(text) => {
-                const ven = [...venue];
-                venue[index].name = text;
-                setVenue(ven);
-              }}
-              value={venue[index].name}
-              onPressClear={() => {
-                const ven = [...venue];
-                venue[index].name = '';
-                setVenue(ven);
-              }}
-              multiline={false}
-            />
-
-           <TCTextInputClear
-            placeholder={strings.venueAddressPlaceholder}
-              onChangeText={(text) => {
-                const ven = [...venue];
-                venue[index].address = text;
-                setVenue(ven);
-              }}
-              value={venue[index].address}
-              onPressClear={() => {
-                const ven = [...venue];
-                venue[index].address = '';
-                setVenue(ven);
-              }}
-              multiline={false}
-            />
-
-           <TCTextInputClear
+            <Text style={styles.totalTimeText}> 3h 30m</Text>
+          </View>
+          <TCLabel title={strings.detailsTitleText} style={{ marginRight: 15 }} />
+          <TCTextInputClear
             placeholder={strings.venueDetailsPlaceholder}
-              onChangeText={(text) => {
-                const ven = [...venue];
-                venue[index].details = text;
-                setVenue(ven);
-              }}
-              value={venue[index].details}
-              onPressClear={() => {
-                const ven = [...venue];
-                venue[index].details = '';
-                setVenue(ven);
-              }}
-              multiline={true}
-            />
+            onChangeText={(text) => {
+              setDetails(text);
+            }}
+            value={details}
+            onPressClear={() => {
+              setDetails('');
+            }}
+            multiline={true}
+          />
+        </View>
+      </SafeAreaView>
+    </TCKeyboardView>
+  );
+}
+const styles = StyleSheet.create({
+  viewContainer: {
+    marginLeft: 15,
+    marginRight: 15,
+  },
 
-         </View>
-       </View>
-      );
-     return (
-       <TCKeyboardView>
-         <SafeAreaView>
-           <View>
-             <TCLabel title={strings.gameDurationTitle1} style={{ marginRight: 15 }} />
+  deleteButton: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    color: colors.darkThemeColor,
+    marginRight: 25,
+    marginTop: 15,
+  },
+  viewTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  saveButtonStyle: {
+    fontFamily: fonts.RMedium,
+    fontSize: 16,
+    marginRight: 10,
+  },
+  textInputContainer: {
+    flex: 0.6,
+    flexDirection: 'row',
+    height: 40,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    // width: '70%',
+    alignItems: 'center',
+    marginBottom: 2,
+    paddingHorizontal: 15,
+    color: colors.lightBlackColor,
+    paddingRight: 15,
+    backgroundColor: colors.offwhite,
+    borderRadius: 5,
+    shadowColor: colors.googleColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1,
+    elevation: 3,
+    marginLeft: 25,
+    marginRight: 25,
+    justifyContent: 'space-between',
+  },
+  textInput: {
+    height: 40,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    width: '76%',
+    alignSelf: 'center',
+    color: colors.lightBlackColor,
+  },
+  minText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  textTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  checkboxImg: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
+  checkBoxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 35,
 
-             <FlatList
-             data={venue}
-             renderItem={renderPeriods}
-             keyExtractor={(item, index) => index.toString()}
-             style={{ marginBottom: 15 }}
-           />
-             <TCMessageButton
-             title={'+ Add Interval & Period'}
-             width={150}
-             alignSelf={'center'}
-             marginTop={15}
-             marginBottom={40}
-             onPress={() => addVenue()}
-           />
-             <TCLabel title={strings.gameDurationTitle2} style={{ marginRight: 15 }} />
-             <FlatList
-             data={venue}
-             renderItem={renderOverTime}
-             keyExtractor={(item, index) => index.toString()}
-             style={{ marginBottom: 15 }}
-           />
-             <TCMessageButton
-             title={'+ Add Interval & Overtime'}
-             width={160}
-             alignSelf={'center'}
-             marginTop={15}
-             marginBottom={40}
-             onPress={() => addVenue()}
-           />
-           </View>
-         </SafeAreaView>
-
-       </TCKeyboardView>
-     );
-   }
-   const styles = StyleSheet.create({
-     viewContainer: {
-       marginLeft: 15,
-       marginRight: 15,
-     },
-
-     deleteButton: {
-       fontSize: 12,
-       fontFamily: fonts.RRegular,
-       color: colors.darkThemeColor,
-       marginRight: 25,
-     },
-     viewTitleContainer: {
-       flexDirection: 'row',
-       alignItems: 'center',
-       justifyContent: 'space-between',
-     },
-     saveButtonStyle: {
-       fontFamily: fonts.RMedium,
-       fontSize: 16,
-       marginRight: 10,
-     },
-
-   });
+    justifyContent: 'space-between',
+  },
+  totalTimeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 25,
+    marginLeft: 5,
+    justifyContent: 'space-between',
+  },
+  totalTimeText: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+});

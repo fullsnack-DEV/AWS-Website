@@ -544,6 +544,8 @@ const strings = {
   chooseCorrectDate: 'Please choose correct date and time.',
   max5Referee: 'Maximum 5 referees can be added.',
   maxVenue: 'Maximum 10 venue can be added.',
+maxPeriod: 'Maximum 10 period can be added.',
+maxOverTime: 'Maximum 10 overtime can be added.',
 
   max5Scorekeeper: 'Maximum 5 scorekeeper can be added.',
   serchByLocation: 'Search by address',
@@ -704,6 +706,16 @@ scorekeeperSettingNote: 'Which team will secure the scorekeeper at its own expen
 gameDurationTitle1: 'Set the Game duration.',
 gameDurationTitle2: 'If the scores are tied at the end of the periods above,',
 detailsTitleText: 'Please add more details if needed.',
+
+firstPeriodText: '1st Period',
+intervalText: 'Interval',
+secondPeriodText: '2nd Period',
+
+withoutOverTimeText: 'the game ends without over time.',
+withOverTimeText: 'the game goes into over time.',
+firstOverTimeText: '1st overtime',
+minuteText: 'min.',
+totalTimeTitle: 'Total time :',
 
 };
 export default strings;
