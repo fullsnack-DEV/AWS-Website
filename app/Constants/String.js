@@ -47,6 +47,7 @@ const strings = {
   confirmAndPayTitle: 'CONFIRM AND PAY',
   applyTitle: 'APPLY',
   cancelTitle: 'CANCEL',
+  reservTitle: 'RESERVE',
   doneTitle: 'DONE',
   saveTitle: 'SAVE',
   moveTitle: 'MOVE',

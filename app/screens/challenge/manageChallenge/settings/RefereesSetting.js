@@ -70,7 +70,7 @@ export default function RefereesSetting({ navigation }) {
           justifyContent: 'space-between',
         }}>
         <Text style={styles.languageList}>{item}</Text>
-        <View style={styles.checkbox}>
+        <View>
           {selection === item ? (
             <Image
               source={images.radioCheckYellow}

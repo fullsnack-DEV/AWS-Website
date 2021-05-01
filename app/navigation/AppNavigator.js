@@ -155,6 +155,8 @@ const getTabBarVisibility = (route) => {
     || routeName === 'GameDuration'
     || routeName === 'ChallengeScreen'
     || routeName === 'InviteChallengeScreen'
+    || routeName === 'ChooseVenueScreen'
+    || routeName === 'ChallengePreviewScreen'
 
   ) {
     return false;

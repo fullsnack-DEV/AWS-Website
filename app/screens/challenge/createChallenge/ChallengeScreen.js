@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 import {
   StyleSheet,
@@ -6,10 +7,9 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  TextInput,
+
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import moment from 'moment';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -23,10 +23,9 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCThickDivider from '../../../components/TCThickDivider';
 import images from '../../../Constants/ImagePath';
 import TCLabel from '../../../components/TCLabel';
-import EventMapView from '../../../components/Schedule/EventMapView';
 import AuthContext from '../../../auth/context';
-import { getTimeDifForReservation } from '../../../utils/Time';
 import TCChallengeTitle from '../../../components/TCChallengeTitle';
+import SecureRefereeView from '../../../components/SecureRefereeView';
 
 let entity = {};
 let bodyParams = {};
@@ -61,7 +60,7 @@ export default function ChallengeScreen({ navigation, route }) {
     bodyParams = {};
   }, []);
   useEffect(() => {
-      console.log(venue);
+    console.log(venue);
     if (isFocused) {
       entity = authContext.entity;
       if (route && route.params && route.params.groupObj) {
@@ -177,67 +176,6 @@ export default function ChallengeScreen({ navigation, route }) {
     });
   };
 
-  const getDateFormat = (dateValue) => moment(new Date(dateValue * 1000)).format('MMM DD, yy');
-  const time_format = (d) => moment(new Date(d)).format('hh:mm A');
-
-  const checkValidation = () => {
-    if (
-      (route?.params?.body?.start_datetime === null
-        && route?.params?.body?.end_datetime === null)
-      || (!bodyParams?.start_datetime && !bodyParams?.end_datetime)
-    ) {
-      Alert.alert('Towns Cup', 'Please choose start and end time.');
-      return false;
-    }
-    if (venueData.title === null) {
-      Alert.alert('Towns Cup', 'Venue title cannot be blank');
-      return false;
-    }
-    if (venueData.address === null || venueData.address === '') {
-      Alert.alert('Towns Cup', 'Venue address cannot be blank');
-      return false;
-    }
-    return true;
-  };
-
-  const configureParams = () => {
-    // if ((route && route.params && route.params.editable && route.params.body) || (route && route.params && route.params.editableAlter && route.params.body)) {
-    //   bodyParams = { ...route.params.body }
-    // }
-
-    console.log('Venue Object:', route?.params?.venueObj);
-    console.log('Venue Data:', venueData);
-    const termLength = route?.params?.venueObj?.terms?.length;
-    bodyParams.home_team = teams[0];
-    bodyParams.away_team = teams[1];
-    bodyParams.hourly_game_fee = route?.params?.groupObj?.game_fee;
-    bodyParams.currency_type = route?.params?.groupObj?.currency_type || 'CAD';
-    bodyParams.venue = {
-      ...venueData,
-      title: venueTitle || venueData.title,
-      city:
-        route?.params?.venueObj?.terms[termLength - 3]?.value
-        || venueData?.city,
-      state:
-        route?.params?.venueObj?.terms[termLength - 2]?.value
-        || venueData?.state,
-      country:
-        route?.params?.venueObj?.terms[termLength - 1]?.value
-        || venueData?.country,
-      lat: cordinate?.latitude,
-      long: cordinate?.longitude,
-    };
-    bodyParams.sport = sport;
-    bodyParams.responsible_to_secure_venue = secureVenue === 0
-        ? teamData[0].group_name
-          || `${teamData[0].first_name} ${teamData[0].last_name}`
-        : teamData[1].group_name
-          || `${teamData[1].first_name} ${teamData[1].last_name}`;
-
-    console.log('FORM ! BODY PARAMS', bodyParams);
-    return bodyParams;
-  };
-
   return (
     teams.length > 0 && (
       <TCKeyboardView>
@@ -259,7 +197,7 @@ export default function ChallengeScreen({ navigation, route }) {
           </View>
           <TouchableOpacity>
             <View style={[styles.borderButtonView, styles.shadowView]}>
-              <View/>
+              <View />
               <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
               <Image
                 source={images.arrowGraterthan}
@@ -282,7 +220,12 @@ export default function ChallengeScreen({ navigation, route }) {
           />
           <TCThickDivider />
 
-          <TCChallengeTitle title={'Game Fee'} value={'150 CAD /Game'} />
+          <TCChallengeTitle title={'Game Fee'} value={'150'} staticValueText={'CAD /Game'} valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+          }}/>
           <TCThickDivider />
 
           <TCChallengeTitle
@@ -324,117 +267,119 @@ export default function ChallengeScreen({ navigation, route }) {
           <TCThickDivider marginTop={20} />
         </View>
         <View>
-          <TCLabel title={'Date & Time'} required={true} />
-          <View style={styles.viewContainer}>
-            {/* <TCTouchableLabel
-              title={route && route.params && route.params.from ? `${route.params.from}` : 'Choose Date & Time'}
-              showNextArrow={true}
+          <TCLabel title={'Game Duration'} />
+          <TCChallengeTitle
+            containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
+            title={'1st period'}
+            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+            value={'30'}
+            valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+            }}
+            staticValueText={'min.'}
+          />
+          <TCChallengeTitle
+            containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
+            title={'Interval'}
+            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+            value={'35'}
+            valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+            }}
+            staticValueText={'min.'}
+          />
+          <TCChallengeTitle
+            containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 20 }}
+            title={'2nd period'}
+            titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
+            value={'25'}
+            valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+            }}
+            staticValueText={'min.'}
+          />
+          <Text
+            style={styles.normalTextStyle}>
+            {strings.gameDurationTitle2}
+          </Text>
+          <TCThickDivider marginTop={20}/>
 
-              onPress={() => navigation.navigate('ChooseDateTimeScreen', { otherTeam: route.params.groupObj })}/> */}
-            <View>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('ChooseDateTimeScreen', {
-                    otherTeam: route.params.groupObj,
-                    body: bodyParams,
-                    team: {
-                      home_team: entity.obj,
-                      away_team: route?.params?.groupObj,
-                    },
-                  });
-                }}
-                style={styles.containerStyle}>
-                <TextInput
-                  placeholder={'Choose Date & Time'}
-                  multiline={true}
-                  textAlignVertical={'top'}
-                  style={styles.textInput}
-                  value={
-                    bodyParams
-                    && bodyParams.start_datetime
-                    && bodyParams.end_datetime
-                    && `${getTimeDifForReservation(
-                      bodyParams.start_datetime * 1000,
-                      bodyParams.end_datetime * 1000,
-                    )}\n${getDateFormat(
-                      bodyParams.start_datetime,
-                    )}  ${time_format(
-                      new Date(bodyParams.start_datetime * 1000),
-                    )} - ${time_format(
-                      new Date(bodyParams.end_datetime * 1000),
-                    )}`
-                  }
-                  editable={false}
-                  pointerEvents="none"
-                />
-                <Image style={styles.nextIconStyle} source={images.nextArrow} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <TCThickDivider marginTop={20} />
-        </View>
-        <View>
-          <TCLabel
+          <View>
+            <TCLabel
             title={'Venue'}
             required={false}
             style={{ marginBottom: 20 }}
           />
 
-          <Text style={styles.venueTitle}>Calgary stampede</Text>
-          <View style={styles.venueContainer}>
-            <Text style={styles.venueAddress}>
-              555 Saddledome Rise SE, Calgary, AB T2G 2W1
-            </Text>
+            {/* <Text style={styles.venueTitle}>Calgary stampede</Text>
+            <View style={styles.venueContainer}>
+              <Text style={styles.venueAddress}>
+                555 Saddledome Rise SE, Calgary, AB T2G 2W1
+              </Text>
 
-            <EventMapView
+              <EventMapView
               coordinate={cordinate}
               region={region}
               style={styles.map}
             />
+            </View> */}
+
+            <TouchableOpacity onPress={() => {
+              navigation.navigate('ChooseVenueScreen')
+            }}>
+              <View style={[styles.borderButtonView, styles.shadowView]}>
+                <View />
+                <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
+                <Image
+                source={images.arrowGraterthan}
+                style={styles.arrowImage}
+              />
+              </View>
+            </TouchableOpacity>
+            <TCThickDivider marginTop={10} />
           </View>
-          <TCThickDivider marginTop={8} />
+
+          <TCLabel title={'Game Rules'} style={{ marginBottom: 15 }}/>
+          <Text style={styles.venueTitle}>General Rules</Text>
+          <Text style={styles.rulesDetail}>
+            1. Tackle is not allowed
+            2. 3 times of 30 minute game for 90 minute
+          </Text>
+          <TCThickDivider marginTop={20} />
+
+          <TCChallengeTitle title={'Referees'} value={'2'} staticValueText={'Referees'} valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+          }}/>
+          <SecureRefereeView entityName={'Makani Team'} entity={'Referee'} entityNumber={1}/>
+          <TCThickDivider marginTop={20}/>
+
+          <TCChallengeTitle title={'Scorekeepers'} value={'2'} staticValueText={'Scorekeepers'} valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+          }}/>
+          <SecureRefereeView entityName={'Kishan Team'} entity={'Scorekeeper'} entityNumber={1}/>
+          <TCThickDivider marginTop={20} />
+
         </View>
 
-        <Text style={styles.smallTxt}>
-          {' ('}
-          <Text style={styles.mendatory}>{strings.star} </Text>
-          {strings.requiredText}
-          {')'}
-        </Text>
-
         <TCGradientButton
-          title={editableAlter ? strings.doneTitle : strings.nextTitle}
+          title={editableAlter ? strings.doneTitle : strings.reservTitle}
           onPress={() => {
-            console.log('Before Body params::', bodyParams);
-            if (checkValidation()) {
-              if (route && route.params && route.params.editable) {
-                navigation.push('CreateChallengeForm4', {
-                  teamData: teams,
-                  body: configureParams(),
-                });
-              } else if (editableAlter) {
-                navigation.navigate('EditChallenge', {
-                  challengeObj: {
-                    ...bodyParams,
-                    home_team: teams[0],
-                    away_team: teams[1],
-                    venue: { ...venueData, title: venueTitle || venueData.title },
-                    sport,
-                    responsible_to_secure_venue:
-                      secureVenue === 0
-                        ? teamData[0].group_name
-                          || `${teamData[0].first_name} ${teamData[0].last_name}`
-                        : teamData[1].group_name
-                          || `${teamData[1].first_name} ${teamData[1].last_name}`,
-                  },
-                });
-              } else {
-                navigation.push('CreateChallengeForm2', {
-                  teamData: teams,
-                  body: configureParams(),
-                });
-              }
-            }
+                navigation.push('ChallengePreviewScreen');
           }}
         />
       </TCKeyboardView>
@@ -504,15 +449,15 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   homeLableStyle: {
-    flex: 0.12,
+    flex: 0.14,
     margin: 15,
     marginRight: 20,
-    fontFamily: fonts.RLight,
-    fontSize: 14,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
     color: colors.lightBlackColor,
   },
   teamViewStyle: {
-    flex: 0.88,
+    flex: 0.86,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -537,7 +482,6 @@ const styles = StyleSheet.create({
     width: 8,
     resizeMode: 'cover',
     tintColor: colors.themeColor,
-
   },
   swapImageStyle: {
     height: 25,
@@ -597,6 +541,13 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     color: colors.lightBlackColor,
+  },
+  rulesDetail: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 15,
+    marginRight: 15,
   },
   venueContainer: {
     marginLeft: 15,
@@ -691,5 +642,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
+  },
+  normalTextStyle: {
+    marginLeft: 25,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.RRegular,
   },
 });
