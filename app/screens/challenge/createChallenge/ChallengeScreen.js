@@ -177,37 +177,37 @@ export default function ChallengeScreen({ navigation, route }) {
   };
 
   return (
-    teams.length > 0 && (
-      <TCKeyboardView>
-        <View>
-          <View style={[styles.teamContainer, { marginTop: 15 }]}>
-            <View
+
+    <TCKeyboardView>
+      <View>
+        <View style={[styles.teamContainer, { marginTop: 15 }]}>
+          <View
               style={{
                 flexDirection: 'row',
               }}>
-              <Image source={images.teamPlaceholder} style={styles.imageView} />
-              <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>Kishan Team</Text>
-                <Text style={styles.locationLable}>Surat, GJ</Text>
-                <Text style={styles.locationLable}>
-                  TC Level 15 TC points 3,000
-                </Text>
-              </View>
+            <Image source={images.teamPlaceholder} style={styles.imageView} />
+            <View style={styles.teamTextContainer}>
+              <Text style={styles.teamNameLable}>Kishan Team</Text>
+              <Text style={styles.locationLable}>Surat, GJ</Text>
+              <Text style={styles.locationLable}>
+                TC Level 15 TC points 3,000
+              </Text>
             </View>
           </View>
-          <TouchableOpacity>
-            <View style={[styles.borderButtonView, styles.shadowView]}>
-              <View />
-              <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
-              <Image
+        </View>
+        <TouchableOpacity>
+          <View style={[styles.borderButtonView, styles.shadowView]}>
+            <View />
+            <Text style={styles.detailButtonText}>CHECK AVAILIBILITY</Text>
+            <Image
                 source={images.arrowGraterthan}
                 style={styles.arrowImage}
               />
-            </View>
-          </TouchableOpacity>
-          <TCThickDivider marginTop={15} />
+          </View>
+        </TouchableOpacity>
+        <TCThickDivider marginTop={15} />
 
-          <TCChallengeTitle
+        <TCChallengeTitle
             title={'Type of Game'}
             value={'Official'}
             tooltipText={
@@ -218,17 +218,17 @@ export default function ChallengeScreen({ navigation, route }) {
             isEdit={true}
             onEditPress={() => Alert.alert('Edit Pressed')}
           />
-          <TCThickDivider />
+        <TCThickDivider />
 
-          <TCChallengeTitle title={'Game Fee'} value={'150'} staticValueText={'CAD /Game'} valueStyle={{
+        <TCChallengeTitle title={'Game Fee'} value={'150'} staticValueText={'CAD /Game'} valueStyle={{
               fontFamily: fonts.RBold,
               fontSize: 16,
               color: colors.greenColorCard,
               marginRight: 2,
-          }}/>
-          <TCThickDivider />
+        }}/>
+        <TCThickDivider />
 
-          <TCChallengeTitle
+        <TCChallengeTitle
             title={'Refund Policy'}
             value={'Flexible'}
             tooltipText={
@@ -237,38 +237,48 @@ export default function ChallengeScreen({ navigation, route }) {
             tooltipHeight={hp('18%')}
             tooltipWidth={wp('50%')}
           />
-          <TCThickDivider />
-        </View>
-        <View>
-          <TCLabel title={'Home & Away'} style={{ marginBottom: 10 }} />
-          <View style={styles.teamContainer}>
-            <Text style={styles.homeLableStyle}>Home</Text>
-            <View style={styles.teamViewStyle}>
-              <Image source={images.teamPlaceholder} style={styles.imageView} />
+        <TCThickDivider />
+      </View>
+      <View>
 
-              <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>Kishan Team</Text>
-                <Text style={styles.locationLable}>Surat, GJ</Text>
-              </View>
+        <TCChallengeTitle
+            title={'Home & Away'}
+            isEdit={true}
+            onEditPress={() => Alert.alert('Edit Pressed')}
+          />
+        <View style={styles.teamContainer}>
+          <Text style={styles.homeLableStyle}>Home</Text>
+          <View style={styles.teamViewStyle}>
+            <Image source={images.teamPlaceholder} style={styles.imageView} />
+
+            <View style={styles.teamTextContainer}>
+              <Text style={styles.teamNameLable}>Kishan Team</Text>
+              <Text style={styles.locationLable}>Surat, GJ</Text>
             </View>
           </View>
+        </View>
 
-          <View style={styles.teamContainer}>
-            <Text style={styles.homeLableStyle}>Away</Text>
-            <View style={styles.teamViewStyle}>
-              <Image source={images.teamPlaceholder} style={styles.imageView} />
+        <View style={styles.teamContainer}>
+          <Text style={styles.homeLableStyle}>Away</Text>
+          <View style={styles.teamViewStyle}>
+            <Image source={images.teamPlaceholder} style={styles.imageView} />
 
-              <View style={styles.teamTextContainer}>
-                <Text style={styles.teamNameLable}>Makani Team</Text>
-                <Text style={styles.locationLable}>Mumbai, MH</Text>
-              </View>
+            <View style={styles.teamTextContainer}>
+              <Text style={styles.teamNameLable}>Makani Team</Text>
+              <Text style={styles.locationLable}>Mumbai, MH</Text>
             </View>
           </View>
-          <TCThickDivider marginTop={20} />
         </View>
-        <View>
-          <TCLabel title={'Game Duration'} />
-          <TCChallengeTitle
+        <TCThickDivider marginTop={20} />
+      </View>
+      <View>
+
+        <TCChallengeTitle
+            title={'Game Duration'}
+            isEdit={true}
+            onEditPress={() => Alert.alert('Edit Pressed')}
+          />
+        <TCChallengeTitle
             containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
             title={'1st period'}
             titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
@@ -281,7 +291,7 @@ export default function ChallengeScreen({ navigation, route }) {
             }}
             staticValueText={'min.'}
           />
-          <TCChallengeTitle
+        <TCChallengeTitle
             containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 5 }}
             title={'Interval'}
             titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
@@ -294,7 +304,7 @@ export default function ChallengeScreen({ navigation, route }) {
             }}
             staticValueText={'min.'}
           />
-          <TCChallengeTitle
+        <TCChallengeTitle
             containerStyle={{ marginLeft: 25, marginTop: 5, marginBottom: 20 }}
             title={'2nd period'}
             titleStyle={{ fontSize: 16, fontFamily: fonts.RRegular }}
@@ -307,20 +317,21 @@ export default function ChallengeScreen({ navigation, route }) {
             }}
             staticValueText={'min.'}
           />
-          <Text
+        <Text
             style={styles.normalTextStyle}>
-            {strings.gameDurationTitle2}
-          </Text>
-          <TCThickDivider marginTop={20}/>
+          {strings.gameDurationTitle2}
+        </Text>
+        <TCThickDivider marginTop={20}/>
 
-          <View>
-            <TCLabel
+        <View>
+
+          <TCChallengeTitle
             title={'Venue'}
-            required={false}
-            style={{ marginBottom: 20 }}
+            isEdit={true}
+            onEditPress={() => Alert.alert('Edit Pressed')}
           />
 
-            {/* <Text style={styles.venueTitle}>Calgary stampede</Text>
+          {/* <Text style={styles.venueTitle}>Calgary stampede</Text>
             <View style={styles.venueContainer}>
               <Text style={styles.venueAddress}>
                 555 Saddledome Rise SE, Calgary, AB T2G 2W1
@@ -333,113 +344,67 @@ export default function ChallengeScreen({ navigation, route }) {
             />
             </View> */}
 
-            <TouchableOpacity onPress={() => {
+          <TouchableOpacity onPress={() => {
               navigation.navigate('ChooseVenueScreen')
-            }}>
-              <View style={[styles.borderButtonView, styles.shadowView]}>
-                <View />
-                <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
-                <Image
+          }}>
+            <View style={[styles.borderButtonView, styles.shadowView]}>
+              <View />
+              <Text style={styles.detailButtonText}>CHOOSE A VENUE</Text>
+              <Image
                 source={images.arrowGraterthan}
                 style={styles.arrowImage}
               />
-              </View>
-            </TouchableOpacity>
-            <TCThickDivider marginTop={10} />
-          </View>
-
-          <TCLabel title={'Game Rules'} style={{ marginBottom: 15 }}/>
-          <Text style={styles.venueTitle}>General Rules</Text>
-          <Text style={styles.rulesDetail}>
-            1. Tackle is not allowed
-            2. 3 times of 30 minute game for 90 minute
-          </Text>
-          <TCThickDivider marginTop={20} />
-
-          <TCChallengeTitle title={'Referees'} value={'2'} staticValueText={'Referees'} valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-          }}/>
-          <SecureRefereeView entityName={'Makani Team'} entity={'Referee'} entityNumber={1}/>
-          <TCThickDivider marginTop={20}/>
-
-          <TCChallengeTitle title={'Scorekeepers'} value={'2'} staticValueText={'Scorekeepers'} valueStyle={{
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              color: colors.greenColorCard,
-              marginRight: 2,
-          }}/>
-          <SecureRefereeView entityName={'Kishan Team'} entity={'Scorekeeper'} entityNumber={1}/>
-          <TCThickDivider marginTop={20} />
-
+            </View>
+          </TouchableOpacity>
+          <TCThickDivider marginTop={10} />
         </View>
 
-        <TCGradientButton
+        <TCChallengeTitle
+            title={'Game Rules'}
+            isEdit={true}
+            onEditPress={() => Alert.alert('Edit Pressed')}
+          />
+        <Text style={styles.venueTitle}>General Rules</Text>
+        <Text style={styles.rulesDetail}>
+          1. Tackle is not allowed
+          2. 3 times of 30 minute game for 90 minute
+        </Text>
+        <TCThickDivider marginTop={20} />
+
+        <TCChallengeTitle title={'Referees'} value={'2'} staticValueText={'Referees'} valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+        }}/>
+        <SecureRefereeView entityName={'Makani Team'} entity={'Referee'} entityNumber={1}/>
+        <TCThickDivider marginTop={20}/>
+
+        <TCChallengeTitle title={'Scorekeepers'} value={'2'} staticValueText={'Scorekeepers'} valueStyle={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              color: colors.greenColorCard,
+              marginRight: 2,
+        }}/>
+        <SecureRefereeView entityName={'Kishan Team'} entity={'Scorekeeper'} entityNumber={1}/>
+        <TCThickDivider marginTop={20} />
+
+      </View>
+
+      <TCGradientButton
           title={editableAlter ? strings.doneTitle : strings.reservTitle}
           onPress={() => {
+                // navigation.push('ChallengePaymentScreen');
                 navigation.push('ChallengePreviewScreen');
           }}
+          outerContainerStyle={{ marginBottom: 45 }}
         />
-      </TCKeyboardView>
-    )
+    </TCKeyboardView>
+
   );
 }
 
 const styles = StyleSheet.create({
-  form1: {
-    backgroundColor: colors.themeColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form2: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form3: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form4: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  form5: {
-    backgroundColor: colors.lightgrayColor,
-    height: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 10,
-  },
-  formSteps: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    marginRight: 15,
-    marginTop: 15,
-  },
-
-  smallTxt: {
-    color: colors.grayColor,
-    fontSize: 12,
-    fontFamily: fonts.RLight,
-    marginLeft: 15,
-    marginTop: 10,
-  },
-  mendatory: {
-    color: colors.redColor,
-  },
 
   teamContainer: {
     flex: 1,
@@ -461,12 +426,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  imageShadowView: {
-    shadowColor: colors.googleColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.4,
-    shadowRadius: 1,
-  },
+
   imageView: {
     height: 40,
     width: 40,
@@ -483,12 +443,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     tintColor: colors.themeColor,
   },
-  swapImageStyle: {
-    height: 25,
-    width: 25,
-    resizeMode: 'cover',
-    marginLeft: 20,
-  },
+
   teamNameLable: {
     fontFamily: fonts.RMedium,
     fontSize: 16,
@@ -502,34 +457,7 @@ const styles = StyleSheet.create({
   teamTextContainer: {
     marginLeft: 20,
   },
-  swapContainer: {
-    marginLeft: 15,
-    marginTop: 5,
-    marginBottom: 5,
-  },
-  viewContainer: {
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  radioSelectStyle: {
-    resizeMode: 'cover',
-    height: 22,
-    width: 22,
-    marginRight: 15,
-  },
-  radioContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  radioText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginTop: 25,
-  },
+
   venueTitle: {
     fontFamily: fonts.RMedium,
     fontSize: 16,
@@ -537,11 +465,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 5,
   },
-  venueAddress: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+
   rulesDetail: {
     fontFamily: fonts.RRegular,
     fontSize: 16,
@@ -549,72 +473,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
-  venueContainer: {
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  map: {
-    height: 150,
-    marginTop: 15,
-    marginBottom: 15,
-  },
-  responsibilityText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginRight: 15,
-  },
-  responsibilityNote: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.orangeNotesColor,
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  responsibilityNoteMedium: {
-    fontFamily: fonts.RMedium,
-  },
-  containerStyle: {
-    flex: 1,
-    flexDirection: 'row',
-    paddingBottom: 10,
-    paddingTop: 10,
-    marginHorizontal: 15,
-    backgroundColor: colors.offwhite,
-    borderRadius: 5,
-    shadowColor: colors.blackColor,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-    elevation: 3,
-  },
 
-  textInput: {
-    flex: 1,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    paddingHorizontal: 10,
-    color: colors.lightBlackColor,
-  },
-  nextIconStyle: {
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    height: 18,
-    width: 12,
-    marginEnd: 10,
-    tintColor: colors.userPostTimeColor,
-  },
-  downIconStyle: {
-    alignSelf: 'center',
-    resizeMode: 'contain',
-    height: 12,
-    width: 18,
-    marginEnd: 10,
-    tintColor: colors.userPostTimeColor,
-  },
   detailButtonText: {
     alignSelf: 'center',
     fontFamily: fonts.RBold,
@@ -647,6 +506,6 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    color: colors.RRegular,
+    color: colors.lightBlackColor,
   },
 });

@@ -327,6 +327,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   feedViewShareButton: require('../assets/images/feedViewShareButton.png'),
 
   doubleTeamCreated: require('../assets/images/double_team_created.png'),
+  challengeSentPlane: require('../assets/images/challenge_sent_plane.png'),
   likePlay: require('../assets/images/likePlay.png'),
   manageChallengeIcon: require('../assets/images/manage_challenge.png'),
   infoToolTipIcon: require('../assets/images/info_icon.png'),

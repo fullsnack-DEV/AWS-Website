@@ -40,7 +40,7 @@ export default function ChallengeHeaderView() {
           style={styles.teamProfileImage}
         />
           <Text numberOfLines={2} style={styles.entityNameText}>
-            KLishan Team
+            New York Whitecaps FC
           </Text>
         </View>
       </View>
@@ -83,7 +83,8 @@ export default function ChallengeHeaderView() {
           style={styles.teamProfileImage}
         />
           <Text numberOfLines={2} style={styles.entityNameText}>
-            Makani Team
+            Vancouver
+            Whitecaps FC
           </Text>
         </View>
       </View>

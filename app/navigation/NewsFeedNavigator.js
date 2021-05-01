@@ -54,6 +54,7 @@ import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScree
 import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
 import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
 import ChallengePreviewScreen from '../screens/challenge/createChallenge/ChallengePreviewScreen';
+import ChallengePaymentScreen from '../screens/challenge/createChallenge/ChallengePaymentScreen';
 
 const Stack = createStackNavigator();
 
@@ -696,6 +697,23 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
           name="ChallengePreviewScreen"
           component={ChallengePreviewScreen}
+          options={{
+              title: 'Challenge',
+              headerTintColor: colors.blackColor,
+              headerTitleStyle: {
+                  fontWeight: '500',
+              },
+              headerStyle: {
+                  backgroundColor: colors.whiteColor,
+                  borderBottomColor: colors.grayColor,
+                  borderBottomWidth: 0.3,
+              },
+          }}
+      />
+
+    <Stack.Screen
+          name="ChallengePaymentScreen"
+          component={ChallengePaymentScreen}
           options={{
               title: 'Challenge',
               headerTintColor: colors.blackColor,
