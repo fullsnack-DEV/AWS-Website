@@ -16,9 +16,10 @@ import fonts from '../Constants/Fonts'
 export default function TCGroupNameBadge({
  name = 'Tiger Youths', textStyle, groupType = 'team', ...otherProps
 }) {
-  let typeImage = images.teamT;
+  let typeImage = '';
   if (groupType === 'player') typeImage = ''
   else if (groupType === 'club') typeImage = images.clubC
+  else if (groupType === 'team') typeImage = images.teamT
   else if (groupType === 'league') typeImage = images.clubC
 
   return (
