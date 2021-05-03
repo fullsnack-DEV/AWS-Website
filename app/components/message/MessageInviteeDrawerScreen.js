@@ -186,10 +186,11 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: hp(2),
+    marginVertical: hp(1.5),
     marginLeft: wp(3),
   },
   rowText: {
+    width: '75%',
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,

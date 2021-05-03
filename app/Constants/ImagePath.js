@@ -287,6 +287,7 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   yellowQBGroup: require('../assets/images/yellowQBGroup.png'),
   yellowQBUser: require('../assets/images/yellowQBUser.png'),
   messageSearchButton: require('../assets/images/messageSearchButton.png'),
+  messageSearchButton2: require('../assets/images/messageSearchButton2.png'),
   yellowCheckBox: require('../assets/images/yellowCheckBox.png'),
   tc_message_top_icon: require('../assets/images/tc_message_top_icon.png'),
   welcomeImage1: require('../assets/images/welcomeImage1.png'),
@@ -335,6 +336,16 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   challengerFlag: require('../assets/images/challenger_flag.png'),
   challengeeCup: require('../assets/images/challengee_cup.png'),
 
+  clubSmallIcon: require('../assets/images/clubSmallIcon.png'),
+  teamSmallIcon: require('../assets/images/teamSmallIcon.png'),
+  leagueSmallIcon: require('../assets/images/leagueSmallIcon.png'),
+
+  clubCover: require('../assets/images/clubCover.png'),
+  leagueCover: require('../assets/images/leagueCover.png'),
+  teamCover: require('../assets/images/teamCover.png'),
+
+  selectAddMessageButton: require('../assets/images/selectAddMessageButton.png'),
+  selectMessageSearchButton: require('../assets/images/selectMessageSearchButton.png'),
 };
 
 export default images;

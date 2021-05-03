@@ -6,20 +6,14 @@ import {
   Text,
 } from 'react-native';
 import moment from 'moment';
-import FastImage from 'react-native-fast-image';
 import { widthPercentageToDP as wp } from '../utils';
 import fonts from '../Constants/Fonts';
-import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import TCBadge from './TCBadge';
-import TCGroupNameBadge from './TCGroupNameBadge';
-import { QB_ACCOUNT_TYPE } from '../utils/QuickBlox';
-// import MessageOccupantsProfilePic from './message/MessageOccupantsProfilePic';
+import MessageOccupantsProfilePic from './message/MessageOccupantsProfilePic';
 
-const TCHorizontalMessageOverview = (
+const TCHorizontalMessageOverview = memo((
   {
-    entityType = '',
-    profilePic = images.profilePlaceHolder,
     dialogType = '',
     title = '',
     subTitle = '',
@@ -27,32 +21,18 @@ const TCHorizontalMessageOverview = (
     numberOfUnreadMessages = 0,
     lastMessageDate = new Date(),
     onPress,
-    // occupantsIds,
-    // occupantsData,
+    occupantsIds,
   },
 ) => {
   // eslint-disable-next-line no-restricted-globals
   const getDateAndMonth = useMemo(() => ((!isNaN(lastMessageDate)) ? moment(lastMessageDate).format('DD MMM') : ''), [lastMessageDate]);
-  const getEntityType = useMemo(() => {
-    if (entityType === QB_ACCOUNT_TYPE.LEAGUE) return 'league';
-    if (QB_ACCOUNT_TYPE.TEAM) return 'team'
-    if (QB_ACCOUNT_TYPE.CLUB) return 'club'
-    return 'player'
-  }, [entityType])
-
   return (
     <TouchableOpacity style={styles.horizontalMessageOverviewContainer} onPress={onPress}>
-      <View style={styles.imageMainContainer}>
-        {/* <MessageOccupantsProfilePic occupantsIds={occupantsIds}/> */}
-        <FastImage source={profilePic} resizeMode={'cover'} style={styles.imageContainer} />
-      </View>
+      <MessageOccupantsProfilePic occupantsIds={occupantsIds}/>
       <View style={styles.rightContainer}>
         <View style={styles.rightTitleContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {[QB_ACCOUNT_TYPE.LEAGUE, QB_ACCOUNT_TYPE.TEAM, QB_ACCOUNT_TYPE.CLUB].includes(entityType)
-                ? <TCGroupNameBadge textStyle={styles.title} name={title} groupType={getEntityType} />
-                : <Text style={styles.title}>{title}</Text>
-            }
+            <Text style={styles.title}>{title}</Text>
             <Text style={styles.numberOfMembers}>{numberOfMembers && dialogType === 2 && numberOfMembers.length}</Text>
           </View>
           <View>
@@ -66,7 +46,8 @@ const TCHorizontalMessageOverview = (
       </View>
     </TouchableOpacity>
   )
-}
+})
+
 const styles = StyleSheet.create({
   horizontalMessageOverviewContainer: {
     width: wp(100),
@@ -123,4 +104,4 @@ const styles = StyleSheet.create({
     color: colors.grayColor,
   },
 })
-export default memo(TCHorizontalMessageOverview);
+export default TCHorizontalMessageOverview;

@@ -121,15 +121,12 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
     ], [entityTagList, gameTagList, renderEntityTaggedItems, renderMatchTaggedItems])
 
     const ModalHeader = () => (
-      <View style={{
-          backgroundColor: 'white',
-          borderTopRightRadius: 10,
-          borderTopLeftRadius: 10,
-      }}>
+      <View style={styles.headerStyle}>
         <View style={styles.handleStyle}/>
         <Text style={styles.titleText}>Tagged</Text>
         <View style={styles.headerSeparator}/>
       </View>
+
     )
 
     return (
@@ -137,10 +134,15 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
         <Modalize
           disableScrollIfPossible={true}
           withHandle={false}
+          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
           modalStyle={{
               borderTopRightRadius: 25,
               borderTopLeftRadius: 25,
-              overflow: 'hidden',
+              shadowColor: colors.blackColor,
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+              elevation: 10,
           }}
           adjustToContentHeight={true}
           ref={taggedModalRef}
@@ -159,6 +161,11 @@ const TaggedModal = ({ taggedModalRef, navigation, taggedData }) => {
 }
 
 const styles = StyleSheet.create({
+    headerStyle: {
+        borderTopRightRadius: 25,
+        borderTopLeftRadius: 25,
+        backgroundColor: colors.whiteColor,
+    },
     tagTitle: {
         fontSize: 20,
         fontFamily: fonts.RRegular,

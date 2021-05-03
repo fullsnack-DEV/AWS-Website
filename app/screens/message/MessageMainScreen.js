@@ -5,12 +5,11 @@ import {
   View,
   StyleSheet,
   NativeEventEmitter,
-  TouchableOpacity,
   Text,
   SafeAreaView,
   FlatList,
 } from 'react-native';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import QB from 'quickblox-react-native-sdk';
 import { useIsFocused, StackActions } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -37,6 +36,7 @@ const MessageMainScreen = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [endReachedCalled, setEndReachedCalled] = useState(false);
+  const [pressStatus, setPressStatus] = useState(null);
   const [savedDialogsData, setSavedDialogsData] = useState({
     append: {},
     dialogs: [],
@@ -123,7 +123,7 @@ const MessageMainScreen = ({ navigation }) => {
         fullName = item?.name?.slice(2, item?.name?.length)
       }
     }
-    console.log(`${fullName} `, item)
+
     return (<TCHorizontalMessageOverview
         occupantsIds={item?.occupantsIds}
         entityType={firstTwoChar}
@@ -179,16 +179,25 @@ const MessageMainScreen = ({ navigation }) => {
             }
             rightComponent={authContext?.entity?.QB
               && <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
-                  <FastImage source={images.messageSearchButton} resizeMode={'contain'} style={styles.rightImageStyle} />
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPressIn={() => setPressStatus('messageButton')}
+                    onPressOut={() => setPressStatus(null)}
+                    style={{ paddingHorizontal: 5 }}
+                    onPress={() => { navigation.navigate('MessageInviteScreen') }}>
+                  <FastImage source={pressStatus === 'messageButton' ? images.selectAddMessageButton : images.addMessageChat} resizeMode={'contain'} style={{ ...styles.rightImageStyle }} />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ padding: 2 }} onPress={() => { navigation.navigate('MessageInviteScreen') }}>
-                  <FastImage source={images.addMessageChat} resizeMode={'contain'} style={styles.rightImageStyle} />
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPressIn={() => setPressStatus('searchButton')}
+                    onPressOut={() => setPressStatus(null)}
+                    style={{ paddingHorizontal: 5 }} onPress={() => { navigation.navigate('MessageSearchScreen') }}>
+                  <FastImage source={pressStatus === 'searchButton' ? images.selectMessageSearchButton : images.messageSearchButton2} resizeMode={'contain'} style={{ ...styles.rightImageStyle }} />
                 </TouchableOpacity>
               </View>
             }
         />
-    ), [navigation, authContext?.entity?.QB])
+    ), [authContext?.entity?.QB, pressStatus, navigation])
 
   return (
     <SafeAreaView style={ styles.mainContainer }>
@@ -229,8 +238,8 @@ const styles = StyleSheet.create({
     width: 40,
   },
   rightImageStyle: {
-    height: 36,
-    width: 36,
+    height: 20,
+    width: 20,
     tintColor: colors.blackColor,
     resizeMode: 'contain',
   },

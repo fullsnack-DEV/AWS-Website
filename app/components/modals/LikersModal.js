@@ -17,7 +17,7 @@ const LikersModal = ({ likersModalRef }) => {
     const handleCloseModal = useCallback(() => likersModalRef.current.close(), [likersModalRef])
 
     const ModalHeader = () => (
-      <View>
+      <View style={styles.headerStyle}>
         <View style={styles.handleStyle}/>
         <Text style={styles.titleText}>Likes</Text>
         <View style={styles.headerSeparator}/>
@@ -59,10 +59,15 @@ const LikersModal = ({ likersModalRef }) => {
         <Modalize
           disableScrollIfPossible={true}
           withHandle={false}
+          overlayStyle={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
           modalStyle={{
               borderTopRightRadius: 25,
               borderTopLeftRadius: 25,
-              overflow: 'hidden',
+              shadowColor: colors.blackColor,
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+              elevation: 10,
           }}
           adjustToContentHeight={true}
           ref={likersModalRef}
@@ -75,6 +80,11 @@ const LikersModal = ({ likersModalRef }) => {
 }
 
 const styles = StyleSheet.create({
+    headerStyle: {
+        borderTopRightRadius: 25,
+        borderTopLeftRadius: 25,
+        backgroundColor: colors.whiteColor,
+    },
     handleStyle: {
         marginTop: 15,
         alignSelf: 'center',
