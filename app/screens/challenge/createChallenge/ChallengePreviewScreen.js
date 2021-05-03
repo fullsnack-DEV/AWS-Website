@@ -1,11 +1,7 @@
 import React from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-
-  Alert,
-} from 'react-native';
+ StyleSheet, View, Text, Alert,
+ } from 'react-native';
 
 import strings from '../../../Constants/String';
 import fonts from '../../../Constants/Fonts';
@@ -24,19 +20,39 @@ import SecureRefereeView from '../../../components/SecureRefereeView';
 import GameFeeCard from '../../../components/challenge/GameFeeCard';
 import ChallengeHeaderView from '../../../components/challenge/ChallengeHeaderView';
 import ChallengeStatusView from '../../../components/challenge/ChallengeStatusView';
+import ReservationStatus from '../../../Constants/ReservationStatus';
 
 export default function ChallengePreviewScreen() {
   return (
     <TCKeyboardView>
-
       <Text style={styles.challengeNumberStyle}>Request No.111125D3</Text>
-      <ChallengeHeaderView/>
+      <ChallengeHeaderView />
       <TCThinDivider />
-      <ChallengeStatusView/>
-      <TCThickDivider/>
+      {/* offered: 'offered',*
+  changeRequest: 'changeRequest',*
+  accepted: 'accepted',*
+  restored: 'restored',*
+  declined: 'declined',*
+  cancelled: 'cancelled',*
+  pendingpayment: 'pendingpayment',*
+  pendingrequestpayment: 'pendingrequestpayment',*
+  requestcancelled: 'requestcancelled',*  */}
+      <ChallengeStatusView
+        isSender={!true}
+        isTeam={true}
+        senderName={'Sender Team'}
+        receiverName={'Receiver Team'}
+        offerExpiry={
+          ReservationStatus.offered === 'offered'
+          || ReservationStatus.offered === 'changeRequest'
+            ? new Date().getTime()
+            : ''
+        } // only if status offered
+        status={ReservationStatus.accepted}
+      />
+      <TCThickDivider />
 
       <View>
-
         <TCLabel title={'Match · Soccer'} />
 
         <TCInfoImageField
@@ -192,6 +208,7 @@ export default function ChallengePreviewScreen() {
         onPress={() => {
           Alert.alert('Next');
         }}
+        outerContainerStyle={{ marginBottom: 45 }}
       />
     </TCKeyboardView>
   );
@@ -227,11 +244,11 @@ const styles = StyleSheet.create({
     color: colors.RRegular,
   },
   challengeNumberStyle: {
-      fontSize: 12,
-      fontFamily: fonts.RLight,
-      color: colors.lightBlackColor,
-      alignSelf: 'flex-end',
-      margin: 15,
-      marginBottom: 0,
+    fontSize: 12,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    alignSelf: 'flex-end',
+    margin: 15,
+    marginBottom: 0,
   },
 });

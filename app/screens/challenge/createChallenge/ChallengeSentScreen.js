@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 import {
-  View, StyleSheet, Image, Text,
+  View, StyleSheet, Image, Text, TouchableOpacity,
 } from 'react-native';
+import {
+  widthPercentageToDP as wp,
 
+} from 'react-native-responsive-screen';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors'
 import fonts from '../../../Constants/Fonts'
@@ -18,7 +21,7 @@ export default function ChallengeSentScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
 
       <Image style={styles.background} source={images.orangeLayer} />
-      <Image style={styles.background} source={images.bgImage} />
+      <Image style={styles.background} source={images.entityCreatedBG} />
       {/* <TouchableOpacity onPress={() => {
         navigation.pop(1000)
       }}>
@@ -26,11 +29,12 @@ export default function ChallengeSentScreen({ navigation, route }) {
       </TouchableOpacity> */}
       <View style={styles.mailContainer}>
         <Text style={styles.invitationText}>Challenge sent</Text>
-        <View style={styles.imageContainer}>
-          <Image source={images.emailSent1} style={styles.rotateImage}/>
-        </View>
         <Text style={styles.infoText}>When {route && route.params && route.params.groupObj && (route.params.groupObj.group_name || `${route.params.groupObj.first_name} ${route.params.groupObj.last_name}`)} accepts your
           match reservation request, you will be notified.</Text>
+        <View style={styles.imageContainer}>
+          <Image source={images.challengeSentPlane} style={styles.rotateImage}/>
+        </View>
+
       </View>
       {/* {route && route.params && route.params.groupObj && <TCBorderButton
       title={`GO TO ${(route.params.groupObj.group_name)?.toUpperCase() || `${route.params.groupObj.first_name?.toUpperCase()} ${route.params.groupObj.last_name?.toUpperCase()}`}`}
@@ -47,7 +51,13 @@ export default function ChallengeSentScreen({ navigation, route }) {
           menuBtnVisible: false,
         })
       }}/>} */}
-
+      <TouchableOpacity
+            style={styles.goToProfileButton}
+            onPress={() => {
+              navigation.popToTop()
+            }}>
+        <Text style={styles.goToProfileTitle}>OK</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -63,14 +73,23 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'stretch',
   },
-  // backButtonImage: {
-  //   marginTop: 55,
-  //   marginLeft: 15,
-  //   height: 15,
-  //   width: 15,
-  //   tintColor: colors.whiteColor,
-  //   resizeMode: 'cover',
-  // },
+  goToProfileButton: {
+    alignSelf: 'center',
+    borderColor: colors.whiteColor,
+    borderRadius: 40,
+    borderWidth: 1,
+    height: 45,
+    marginBottom: wp('15%'),
+    width: '92%',
+  },
+  goToProfileTitle: {
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
+    fontSize: 15,
+    height: 50,
+    padding: 12,
+    textAlign: 'center',
+  },
   mailContainer: {
     alignSelf: 'center',
     justifyContent: 'center',
@@ -82,14 +101,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOpacity: 0.29,
-    shadowOffset: {
-      width: 0,
-      height: 1.5,
-    },
-    shadowRadius: 3,
-    marginBottom: 35,
   },
   infoText: {
     fontSize: 16,
@@ -97,7 +108,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     marginLeft: 30,
     marginRight: 30,
-    marginTop: 35,
+    marginTop: 15,
+    marginBottom: 25,
     textAlign: 'center',
     lineHeight: 25,
   },
@@ -106,8 +118,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rotateImage: {
-    width: 146,
-    height: 146,
+    height: 150,
+    width: 212,
     resizeMode: 'contain',
   },
 })

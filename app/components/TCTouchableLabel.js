@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
   nextIconStyle: {
     alignSelf: 'center',
     resizeMode: 'contain',
-    height: 18,
-    width: 12,
+    height: 14,
+    width: 8,
     marginEnd: 10,
     tintColor: colors.userPostTimeColor,
   },
