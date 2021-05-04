@@ -350,6 +350,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   challengerInvitePlane: require('../assets/images/challenger_invite_plane.png'),
   savedIcon: require('../assets/images/savedIcon.png'),
 
+  messageIcon: require('../assets/images/message_ic.png'),
+
 };
 
 export default images;

@@ -213,8 +213,6 @@ export default function ChallengeScreen({ navigation, route }) {
           }
           tooltipHeight={hp('6%')}
           tooltipWidth={wp('50%')}
-          isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
         />
         <TCThickDivider />
 
@@ -245,8 +243,6 @@ export default function ChallengeScreen({ navigation, route }) {
       <View>
         <TCChallengeTitle
           title={'Home & Away'}
-          isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
         />
         <View style={styles.teamContainer}>
           <Text style={styles.homeLableStyle}>Home</Text>
@@ -276,8 +272,6 @@ export default function ChallengeScreen({ navigation, route }) {
       <View>
         <TCChallengeTitle
           title={'Game Duration'}
-          isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
         />
         <TCChallengeTitle
           containerStyle={{ marginLeft: 25, marginTop: 15, marginBottom: 5 }}
@@ -324,8 +318,6 @@ export default function ChallengeScreen({ navigation, route }) {
         <View>
           <TCChallengeTitle
             title={'Date & Time'}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
           />
 
           <View>
@@ -365,8 +357,6 @@ export default function ChallengeScreen({ navigation, route }) {
         <View>
           <TCChallengeTitle
             title={'Venue'}
-            isEdit={true}
-            onEditPress={() => Alert.alert('Edit Pressed')}
           />
 
           {/* <Text style={styles.venueTitle}>Calgary stampede</Text>
@@ -400,8 +390,6 @@ export default function ChallengeScreen({ navigation, route }) {
 
         <TCChallengeTitle
           title={'Game Rules'}
-          isEdit={true}
-          onEditPress={() => Alert.alert('Edit Pressed')}
         />
         <Text style={styles.venueTitle}>General Rules</Text>
         <Text style={styles.rulesDetail}>

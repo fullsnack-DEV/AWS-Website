@@ -23,7 +23,7 @@ import {
   Animated,
   ImageBackground,
   TouchableWithoutFeedback,
- Platform,
+  Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -135,6 +135,8 @@ import ProfileScreenShimmer from '../../components/shimmer/account/ProfileScreen
 import { ImageUploadContext } from '../../context/GetContexts';
 import GameStatus from '../../Constants/GameStatus';
 import AllInOneGallery from './AllInOneGallery';
+import UserHomeHeader from '../../components/Home/UserHomeHeader';
+import TCProfileButton from '../../components/TCProfileButton';
 
 const TAB_ITEMS = ['Info', 'Refereed Match', 'Reviews'];
 const TAB_ITEMS_SCOREKEEPER = ['Info', 'Scorekeepers Match', 'Reviews'];
@@ -1030,7 +1032,7 @@ const HomeScreen = ({ navigation, route }) => {
       authContext.entity.obj.sport.toLowerCase()
       === currentUserData.sport.toLowerCase()
     ) {
-      setChallengePopup(true)
+      setChallengePopup(true);
       // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
     } else {
       Alert.alert(
@@ -2299,7 +2301,7 @@ const HomeScreen = ({ navigation, route }) => {
   }, [navigation, route.params]);
 
   const onThreeDotPressed = useCallback(() => {
-    manageChallengeActionSheet.current.show()
+    manageChallengeActionSheet.current.show();
   }, []);
 
   const renderTopFixedButtons = useMemo(
@@ -2361,6 +2363,52 @@ const HomeScreen = ({ navigation, route }) => {
     [onBackPress, route],
   );
 
+  const renderUserTopFixedButtons = useMemo(
+    () => (
+      <View
+        style={{
+          zIndex: 5,
+          top: 52,
+          justifyContent: 'space-between',
+          paddingLeft: 15,
+          paddingRight: 15,
+        }}>
+        {route && route.params && route.params.backButtonVisible && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              flex: 1,
+            }}>
+            <TouchableOpacity onPress={onBackPress}>
+              <Image
+                source={images.backArrow}
+                style={{
+                  height: 22,
+                  width: 22,
+                  resizeMode: 'contain',
+                  tintColor: colors.lightBlackColor,
+                }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onThreeDotPressed}>
+              <Image
+                source={images.threeDotIcon}
+                style={{
+                  height: 15,
+                  width: 15,
+                  tintColor: colors.lightBlackColor,
+                  resizeMode: 'contain',
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    ),
+    [onBackPress, route],
+  );
+
   const renderBackground = useMemo(
     () => (bgImage ? (
       <FastImage
@@ -2382,6 +2430,18 @@ const HomeScreen = ({ navigation, route }) => {
       />
     ),
     [currentUserData, onConnectionButtonPress],
+  );
+
+  const renderHeaderBackgroundUserProfile = useMemo(
+    () => (
+      <UserHomeHeader
+        currentUserData={currentUserData}
+        onConnectionButtonPress={onConnectionButtonPress}
+        onAction={onUserAction}
+        isAdmin={isAdmin}
+      />
+    ),
+    [currentUserData, isAdmin, onConnectionButtonPress, onUserAction],
   );
 
   const renderHeaderUserHomeTopSection = useMemo(
@@ -2437,7 +2497,10 @@ const HomeScreen = ({ navigation, route }) => {
   const renderMainHeaderComponent = useMemo(
     () => (
       <View style={{ zIndex: 1 }}>
-        {renderHeaderBackgroundProfile}
+        {isUserHome
+          ? renderHeaderBackgroundUserProfile
+          : renderHeaderBackgroundProfile}
+
         <View style={{ flex: 1 }}>
           {renderHeaderUserHomeTopSection}
           {renderHeaderTeamHomeTopSection}
@@ -2447,7 +2510,9 @@ const HomeScreen = ({ navigation, route }) => {
       </View>
     ),
     [
+      isUserHome,
       renderHeaderBackgroundProfile,
+      renderHeaderBackgroundUserProfile,
       renderHeaderClubHomeTopSection,
       renderHeaderTeamHomeTopSection,
       renderHeaderUserHomeTopSection,
@@ -2456,19 +2521,65 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderMainFlatList = useMemo(
     () => (
-      <View style={{ flex: 1 }}>
-        <ScrollableTabs
-          tabs={
-            isTeamHome
-              ? ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery', 'Review']
-              : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']
-          }
-          currentTab={currentTab}
-          onTabPress={setCurrentTab}
-        />
+      <View style={{ flex: 1, margin: 15 }}>
+        {isUserHome ? (
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.RBold,
+                color: colors.lightBlackColor,
+              }}>
+              Timeline
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 15,
+                marginBottom: 15,
+              }}>
+              <TCProfileButton
+                title={'Gallery'}
+                style={{ marginRight: 15, alignItems: 'center' }}
+                showArrow={false}
+                textStyle={styles.buttonTextStyle}
+                onPressProfile={() => {
+                  Alert.alert('Gallery');
+                }}
+              />
+              <TCProfileButton
+                title={'Scoreboard'}
+                style={styles.firstButtonStyle}
+                showArrow={false}
+                textStyle={styles.buttonTextStyle}
+                onPressProfile={() => {
+                  Alert.alert('Scoreboard');
+                }}
+              />
+            </View>
+            <TCThinDivider width={'100%'} />
+          </View>
+        ) : (
+          <ScrollableTabs
+            tabs={
+              isTeamHome
+                ? [
+                    'Post',
+                    'Info',
+                    'Scoreboard',
+                    'Schedule',
+                    'Gallery',
+                    'Review',
+                  ]
+                : ['Post', 'Info', 'Scoreboard', 'Schedule', 'Gallery']
+            }
+            currentTab={currentTab}
+            onTabPress={setCurrentTab}
+          />
+        )}
       </View>
     ),
-    [isTeamHome, currentTab],
+    [isUserHome, isTeamHome, currentTab],
   );
 
   const onFeedPress = useCallback(
@@ -2633,7 +2744,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const MainHeaderComponent = () => (
     <>
-      {renderBackground}
+      {!isUserHome && renderBackground}
       {renderMainHeaderComponent}
       {renderMainFlatList}
       {renderHomeMainTabContain}
@@ -2835,10 +2946,7 @@ const HomeScreen = ({ navigation, route }) => {
       />
       <ActionSheet
         ref={manageChallengeActionSheet}
-        options={[
-          strings.manageChallengeShhetItem,
-          strings.cancel,
-        ]}
+        options={[strings.manageChallengeShhetItem, strings.cancel]}
         cancelButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
@@ -2851,8 +2959,8 @@ const HomeScreen = ({ navigation, route }) => {
       <ActivityLoader visible={loading} />
 
       <View style={{ flex: 1 }}>
-        {renderTopFixedButtons}
-        {fixedHeader}
+        {isUserHome ? renderUserTopFixedButtons : renderTopFixedButtons}
+        {!isUserHome && fixedHeader}
         {firstTimeLoading ? (
           // <ShimmerLoader shimmerComponents={['BackgroundProfileShimmer']}/>
           <ProfileScreenShimmer />
@@ -4137,74 +4245,83 @@ const HomeScreen = ({ navigation, route }) => {
 
       {/* Create Challenge modal */}
       <Modal
-              onBackdropPress={() => setChallengePopup(false)}
-              backdropOpacity={1}
-              animationType="slide"
-              hasBackdrop
-              style={{
-                margin: 0,
-                backgroundColor: colors.blackOpacityColor,
-              }}
-              visible={challengePopup}>
+        onBackdropPress={() => setChallengePopup(false)}
+        backdropOpacity={1}
+        animationType="slide"
+        hasBackdrop
+        style={{
+          margin: 0,
+          backgroundColor: colors.blackOpacityColor,
+        }}
+        visible={challengePopup}>
         <View style={styles.bottomPopupContainer}>
           <View style={styles.viewsContainer}>
             <Text
-                    onPress={() => setChallengePopup(false)}
-                    style={styles.cancelText}>
+              onPress={() => setChallengePopup(false)}
+              style={styles.cancelText}>
               Cancel
             </Text>
             <Text style={styles.locationText}>Challenge</Text>
-            <Text style={styles.doneText} onPress={() => {
-              if (selectedChallengeOption === 0) {
-                setChallengePopup(false)
-                navigation.navigate('ChallengeScreen', { groupObj: currentUserData });
-              }
-              if (selectedChallengeOption === 1) {
-                setChallengePopup(false)
-                // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
-                 navigation.navigate('InviteChallengeScreen', { groupObj: currentUserData });
-              }
-            }}>{(selectedChallengeOption === 0 || selectedChallengeOption === 1) ? 'Next' : ''}</Text>
+            <Text
+              style={styles.doneText}
+              onPress={() => {
+                if (selectedChallengeOption === 0) {
+                  setChallengePopup(false);
+                  navigation.navigate('ChallengeScreen', {
+                    groupObj: currentUserData,
+                  });
+                }
+                if (selectedChallengeOption === 1) {
+                  setChallengePopup(false);
+                  // navigation.navigate('CreateChallengeForm1', { groupObj: currentUserData });
+                  navigation.navigate('InviteChallengeScreen', {
+                    groupObj: currentUserData,
+                  });
+                }
+              }}>
+              {selectedChallengeOption === 0 || selectedChallengeOption === 1
+                ? 'Next'
+                : ''}
+            </Text>
           </View>
-          <TCThinDivider width={'100%'} marginBottom={15}/>
+          <TCThinDivider width={'100%'} marginBottom={15} />
           <TouchableWithoutFeedback
-                  onPress={() => setSelectedChallengeOption(0)}>
+            onPress={() => setSelectedChallengeOption(0)}>
             {selectedChallengeOption === 0 ? (
               <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
                 <Text
-                        style={[
-                          styles.curruentLocationText,
-                          { color: colors.whiteColor },
-                        ]}>
+                  style={[
+                    styles.curruentLocationText,
+                    { color: colors.whiteColor },
+                  ]}>
                   Continue to Challenge
                 </Text>
               </LinearGradient>
-                  ) : (
-                    <View style={styles.backgroundView}>
-                      <Text style={styles.curruentLocationText}>
-                        Continue to Challenge
-                      </Text>
-                    </View>
-                  )}
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.curruentLocationText}>
+                  Continue to Challenge
+                </Text>
+              </View>
+            )}
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
-                  onPress={() => setSelectedChallengeOption(1)}>
+            onPress={() => setSelectedChallengeOption(1)}>
             {selectedChallengeOption === 1 ? (
               <LinearGradient
-                      colors={[colors.yellowColor, colors.orangeGradientColor]}
-                      style={styles.backgroundView}>
-                <Text
-                        style={[styles.myCityText, { color: colors.whiteColor }]}>
+                colors={[colors.yellowColor, colors.orangeGradientColor]}
+                style={styles.backgroundView}>
+                <Text style={[styles.myCityText, { color: colors.whiteColor }]}>
                   Invite to Challenge
                 </Text>
               </LinearGradient>
-                  ) : (
-                    <View style={styles.backgroundView}>
-                      <Text style={styles.myCityText}>Invite to Challenge</Text>
-                    </View>
-                  )}
+            ) : (
+              <View style={styles.backgroundView}>
+                <Text style={styles.myCityText}>Invite to Challenge</Text>
+              </View>
+            )}
           </TouchableWithoutFeedback>
         </View>
       </Modal>
@@ -4554,7 +4671,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-
 });
 
 export default HomeScreen;
