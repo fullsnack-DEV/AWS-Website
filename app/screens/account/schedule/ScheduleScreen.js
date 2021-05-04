@@ -33,6 +33,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 // import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { SpringScrollView } from 'react-native-spring-scrollview';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import { useIsFocused } from '@react-navigation/native';
@@ -1013,7 +1014,7 @@ export default function ScheduleScreen({ navigation }) {
         <TCInnerLoader visible={loading} />
         {!loading && scheduleIndexCounter === 0 && (
           <View style={{ flex: 1 }}>
-            <ScrollView
+            <SpringScrollView
               style={{ flex: 1 }}
               onScroll={onScrollCalender}
               nestedScrollEnabled
@@ -1095,7 +1096,7 @@ export default function ScheduleScreen({ navigation }) {
                   entity={authContext.entity}
                 />
               )}
-            </ScrollView>
+            </SpringScrollView>
             {!createEventModal && (
               <CreateEventButton
                 source={images.plus}

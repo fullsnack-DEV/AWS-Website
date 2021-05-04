@@ -349,6 +349,8 @@ tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
   selectMessageSearchButton: require('../assets/images/selectMessageSearchButton.png'),
   challengerInvitePlane: require('../assets/images/challenger_invite_plane.png'),
 
+  messageIcon: require('../assets/images/message_ic.png'),
+
 };
 
 export default images;

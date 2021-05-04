@@ -213,38 +213,10 @@ const UserHomeTopSection = ({
     </View>
     ), [userDetails.games])
 
-  const renderEditProfileButton = useMemo(() => (
-    <TCProfileButton
-            title={strings.editprofiletitle}
-            style={styles.editButtonStyle}
-            textStyle={styles.buttonTextStyle}
-            onPressProfile = {() => onAction('edit')}
-            showArrow={false}/>
-    ), []);
-
   return (
     <View style={{ paddingTop: 20, paddingBottom: 20 }}>
-      {isAdmin && renderEditProfileButton}
+
       {!isAdmin && <View style={styles.otherUserStyle}>
-
-        {loggedInEntity.role === 'user' && <View style={styles.messageButtonStyle}>
-
-          {(userDetails && userDetails.is_following) && <TCProfileButton
-          title={strings.following}
-          style={styles.firstButtonStyle}
-          rightImage = {images.check}
-          imageStyle = {styles.checkMarkStyle}
-          textStyle={styles.buttonTextStyle}
-          onPressProfile = {() => { onAction('unfollow') } }
-          /> }
-
-          {(userDetails && !userDetails.is_following) && <TCGradientButton
-          outerContainerStyle={styles.firstButtonOuterStyle}
-          style={styles.firstButtonStyle}
-          textStyle={styles.buttonTextStyle}
-          title={strings.follow}
-          onPress = {() => { onAction('follow') }}/> }
-        </View>}
 
         {loggedInEntity.role !== 'user' && <View style={styles.messageButtonStyle}>
           {isMember && <TCProfileButton
@@ -263,13 +235,6 @@ const UserHomeTopSection = ({
           title={strings.invite}
           onPress = {() => { onAction('invite') }}/> }
         </View>}
-
-        <TCProfileButton
-        title={strings.message}
-        style={styles.messageButtonStyle}
-        textStyle={styles.buttonTextStyle}
-        showArrow={false}
-        onPressProfile = {() => { onAction('message') }}/>
       </View> }
 
       {/* Play in section */}
@@ -320,16 +285,9 @@ const UserHomeTopSection = ({
 const styles = StyleSheet.create({
   sectionStyle: {
     flex: 1,
-    marginTop: 25,
     marginBottom: 0,
     marginHorizontal: 15,
     backgroundColor: colors.whiteColor,
-  },
-  editButtonStyle: {
-    marginHorizontal: 15,
-    height: 28,
-    marginVertical: 0,
-    width: 'auto',
   },
   otherUserStyle: {
     flexDirection: 'row',
